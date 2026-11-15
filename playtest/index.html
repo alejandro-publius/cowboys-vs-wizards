@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#161219">
+  <title>Cowboys vs. Wizards — Playtest</title>
+  <style>@@STYLE@@</style>
+</head>
+<body>
+  <header class="masthead">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">✦</span><h1>Cowboys <i>vs.</i> Wizards</h1></div>
+    <nav class="modes" aria-label="Game mode">
+      <button id="duel-mode" type="button" aria-pressed="true">Duel</button>
+      <button id="bounty-mode" type="button" aria-pressed="false">Bounty</button>
+    </nav>
+    <button id="restart" type="button" class="quiet">New duel</button>
+  </header>
+  <main class="table">
+    <div class="left-column">
+      <section id="arena" class="arena" aria-label="Duel board">
+        <div id="canvas" class="canvas" aria-hidden="true"></div>
+        <div class="arena-trim" aria-hidden="true"></div>
+        <div class="enemy hud" id="wizard-hud">
+          <span class="faction">Wizard</span><span class="base-name">Rune Gate</span>
+          <div id="wizard-orbs" class="orb-row"></div><small id="wizard-counts"></small>
+        </div>
+        <div class="friendly hud" id="cowboy-hud">
+          <span class="faction">You</span><span class="base-name">Saloon</span>
+          <div id="cowboy-orbs" class="orb-row"></div>
+        </div>
+        <div class="round" id="round"></div>
+        <div id="lanes" class="lanes" aria-label="Lane positions"></div>
+        <div id="fx" class="fx" aria-hidden="true"></div>
+        <div id="outcome" class="outcome" hidden>
+          <div class="result-card" role="status">
+            <span class="result-mark" aria-hidden="true">✦</span>
+            <h2 id="result-title"></h2>
+            <p id="result-detail"></p>
+            <button id="again" class="primary" type="button"></button>
+          </div>
+        </div>
+      </section>
+      <section class="tray" aria-label="Your cards">
+        <div class="deck"><div class="deck-back" aria-hidden="true"></div><span id="deck-count"></span></div>
+        <div class="hand-region">
+          <div class="hand-heading"><h2>Your hand</h2><span id="hand-count"></span></div>
+          <div id="hand" class="hand"></div>
+        </div>
+      </section>
+    </div>
+    <aside class="side-panel" aria-label="Turn controls">
+      <div class="objective" id="objective" hidden>
+        <p class="eyebrow">Bounty</p>
+        <h2>Save the Saloon</h2>
+        <p>Win the duel in the final clash. Both bases have two orbs left.</p>
+        <details><summary>Hint</summary><p>Cover the center lane and use Deadeye to clear the Skeleton with one orb.</p></details>
+      </div>
+      <section class="action-panel" aria-labelledby="action-title">
+        <p id="turn" class="eyebrow"></p>
+        <h2 id="action-title"></h2>
+        <p id="instruction" aria-live="polite"></p>
+        <div class="action-buttons">
+          <button id="confirm" class="primary" type="button" hidden></button>
+          <button id="end" class="primary" type="button">End turn</button>
+          <button id="cancel" class="quiet" type="button" hidden>Cancel</button>
+        </div>
+      </section>
+      <section class="history" aria-labelledby="history-heading">
+        <h2 id="history-heading">Duel log</h2>
+        <ol id="log"></ol>
+      </section>
+      <details class="rules">
+        <summary>How to play</summary>
+        <ul>
+          <li>Summon once each turn. Stronger cards require sacrificing friendly troops as tribute.</li>
+          <li>Cast one spell after summoning, or cast it on its own.</li>
+          <li>Both sides attack after both turns end. An unblocked lane hits the opposing base.</li>
+          <li>Destroy the opposing base, or lead on base orbs after round nine.</li>
+        </ul>
+      </details>
+      <div class="seedline"><span id="seed"></span><button id="replay" class="link" type="button">Replay seed</button></div>
+    </aside>
+  </main>
+  <script type="application/json" id="models">@@MODELS@@</script>
+  <script>@@CODE@@</script>
+  <script type="text/plain" id="licenses">@@LICENSES@@</script>
+</body>
+</html>
