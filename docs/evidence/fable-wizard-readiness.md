@@ -17,8 +17,8 @@ browser.
 
 ## Commands and results
 
-Run from the worktree root. `$OUT` is a scratch directory outside the repository
-(`/private/tmp/claude-501/-Users-alexvintera/ac65561a-9125-40c9-8df3-02f338728dd9/scratchpad/wizard`).
+Run from the worktree root. `$OUT` is any scratch directory outside the
+repository.
 
 | Command | Result |
 | --- | --- |
