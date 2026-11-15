@@ -1,0 +1,95 @@
+{
+  "recordedAt": "2026-11-14T23:39:54.995640-08:00",
+  "performedBy": "Codex",
+  "method": "Read GLB 2 JSON chunk only; does not establish visual quality or runtime deformation quality",
+  "assets": [
+    {
+      "file": "/Users/alexvintera/Documents/Codex/2026-11-14/new-chat/cowboys-vs-wizards-board/assets/billy.glb",
+      "bytes": 2531696,
+      "meshes": 1,
+      "skins": 0,
+      "animations": [],
+      "jointCount": 0
+    },
+    {
+      "file": "/Users/alexvintera/Documents/Codex/2026-11-14/new-chat/cowboys-vs-wizards-board/assets/board.glb",
+      "bytes": 2988784,
+      "meshes": 1,
+      "skins": 0,
+      "animations": [],
+      "jointCount": 0
+    },
+    {
+      "file": "/Users/alexvintera/Documents/Codex/2026-11-14/new-chat/cowboys-vs-wizards-board/assets/cowboy-tile.glb",
+      "bytes": 1023316,
+      "meshes": 1,
+      "skins": 0,
+      "animations": [],
+      "jointCount": 0
+    },
+    {
+      "file": "/Users/alexvintera/Documents/Codex/2026-11-14/new-chat/cowboys-vs-wizards-board/assets/gateway.glb",
+      "bytes": 1485068,
+      "meshes": 1,
+      "skins": 0,
+      "animations": [],
+      "jointCount": 0
+    },
+    {
+      "file": "/Users/alexvintera/Documents/Codex/2026-11-14/new-chat/cowboys-vs-wizards-board/assets/revolver.glb",
+      "bytes": 704192,
+      "meshes": 1,
+      "skins": 0,
+      "animations": [],
+      "jointCount": 0
+    },
+    {
+      "file": "/Users/alexvintera/Documents/Codex/2026-11-14/new-chat/cowboys-vs-wizards-board/assets/saloon.glb",
+      "bytes": 1864684,
+      "meshes": 1,
+      "skins": 0,
+      "animations": [],
+      "jointCount": 0
+    },
+    {
+      "file": "/Users/alexvintera/Documents/Codex/2026-11-14/new-chat/cowboys-vs-wizards-board/assets/wizard-tile.glb",
+      "bytes": 989836,
+      "meshes": 1,
+      "skins": 0,
+      "animations": [],
+      "jointCount": 0
+    },
+    {
+      "file": "/Users/alexvintera/Documents/Codex/2026-11-14/new-chat/cowboys-vs-wizards-board/assets/wizard.glb",
+      "bytes": 2845456,
+      "meshes": 1,
+      "skins": 0,
+      "animations": [],
+      "jointCount": 0
+    },
+    {
+      "file": "/Users/alexvintera/Downloads/wizard figure 3d model.glb",
+      "bytes": 65636012,
+      "meshes": 1,
+      "skins": 0,
+      "animations": [],
+      "jointCount": 0
+    },
+    {
+      "file": "/Users/alexvintera/Downloads/cowboy 3d model.glb",
+      "bytes": 63566204,
+      "meshes": 1,
+      "skins": 0,
+      "animations": [],
+      "jointCount": 0
+    },
+    {
+      "file": "/Users/alexvintera/Downloads/cowboy action figure 3d model.glb",
+      "bytes": 65832168,
+      "meshes": 1,
+      "skins": 0,
+      "animations": [],
+      "jointCount": 0
+    }
+  ]
+}

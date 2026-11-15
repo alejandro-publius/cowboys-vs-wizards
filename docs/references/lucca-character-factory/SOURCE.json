@@ -1,0 +1,55 @@
+{
+  "repository": "https://github.com/luccacerfz/character-factory-skills",
+  "commit": "2db5685a73b9089b703f8f9529cb7ac68f898f04",
+  "license": "MIT",
+  "copiedBy": "Codex",
+  "purpose": "Reference documents for adapting animation work to Three.js/GLB. Not installed as a Claude or Kiro plugin.",
+  "privateDependenciesIncluded": false,
+  "files": [
+    {
+      "local": "README.md",
+      "upstream": "README.md",
+      "gitBlobSha": "7dbc7348fe604ce99a32ca87b4f1bcdcc7abc9c7"
+    },
+    {
+      "local": "LICENSE",
+      "upstream": "LICENSE",
+      "gitBlobSha": "f8adb344081015b0b03eb90a01cfb8b1eaeefcd7"
+    },
+    {
+      "local": "character-factory.md",
+      "upstream": "plugins/character-factory/skills/character-factory/SKILL.md",
+      "gitBlobSha": "aaa03a5ed7e44b44dddda1dcffae9810cd940d63"
+    },
+    {
+      "local": "character-review.md",
+      "upstream": "plugins/character-factory/skills/character-review/SKILL.md",
+      "gitBlobSha": "8f7b7fc33f53cdbd721c5e06177a5bf58236294b"
+    },
+    {
+      "local": "character-design.md",
+      "upstream": "plugins/character-factory/skills/character-design/SKILL.md",
+      "gitBlobSha": "23e28053b8d6c2a588e61ec0a84e58fa8955002e"
+    },
+    {
+      "local": "character-rig.md",
+      "upstream": "plugins/character-factory/skills/character-rig/SKILL.md",
+      "gitBlobSha": "0147dac07a12dc7a5c587ea2c3017ebe5c67a13c"
+    },
+    {
+      "local": "character-clips.md",
+      "upstream": "plugins/character-factory/skills/character-clips/SKILL.md",
+      "gitBlobSha": "9c5b23eca044a2a68067474355cadcd1fa217410"
+    },
+    {
+      "local": "character-engine.md",
+      "upstream": "plugins/character-factory/skills/character-engine/SKILL.md",
+      "gitBlobSha": "8ab77934b15436514be565062443cba1a95813b8"
+    },
+    {
+      "local": "character-show.md",
+      "upstream": "plugins/character-factory/skills/character-show/SKILL.md",
+      "gitBlobSha": "6b90dd787e0d2c89a1ea98eb50659dc47fdd3958"
+    }
+  ]
+}
