@@ -4,6 +4,15 @@ Work by Claude Fable 5.2 (Claude Code worker), 2026-11-15, on branch
 `fable/summon-rules`. Not Kiro or Codex work. Scope: setup and summons only. No
 combat, spells, CPU, turn progression or rendering.
 
+Update from job C (`fable/match-engine`, see `docs/evidence/fable-match-engine.md`),
+which extended this code. What changed in the text below: the top-level
+`summonUsed` flag is now `allowances[side].summonUsed`; the state gained `seed`,
+`round`, `startingSide`, `allowances`, `actionIds` and `result`; spell cards
+gained `relocates`; an accepted `applyAction` also returns `events`; there are
+more rejection reasons, and `summon-after-spell` now sits right after
+`summon-used`. The test and mutation results below are job A's and were not
+rerun for this note. Open questions 2, 3 and 8 are answered by job C.
+
 ## API
 
 `src/game/cards.js`

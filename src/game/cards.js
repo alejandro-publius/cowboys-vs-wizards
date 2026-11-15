@@ -1,19 +1,23 @@
-// Card data from docs/kiro-task-01.md. Spells carry no stats here: their
-// effects belong to a later job, and they can never be summoned.
+// Card data from docs/kiro-task-01.md. Both spells remove one health from a
+// chosen enemy troop (see actions.js); `relocates` marks the one that may
+// also move the survivor. Spells can never be summoned.
 export const SIDES = ["cowboy", "wizard"];
+// Health removed by either spell.
+export const SPELL_DAMAGE = 1;
+export const opponent = (side) => (side === SIDES[0] ? SIDES[1] : SIDES[0]);
 
 const DECK_LISTS = {
   cowboy: [
     { name: "Sheriff", kind: "troop", stars: 2, health: 3, attack: 1, copies: 6 },
     { name: "Billy", kind: "troop", stars: 5, health: 4, attack: 2, copies: 3 },
     { name: "Mounted Billy", kind: "troop", stars: 7, health: 5, attack: 3, copies: 1 },
-    { name: "Deadeye", kind: "spell", copies: 2 },
+    { name: "Deadeye", kind: "spell", relocates: false, copies: 2 },
   ],
   wizard: [
     { name: "Skeleton", kind: "troop", stars: 1, health: 3, attack: 1, copies: 6 },
     { name: "Wizard", kind: "troop", stars: 5, health: 4, attack: 2, copies: 3 },
     { name: "Dragon", kind: "troop", stars: 8, health: 5, attack: 3, copies: 1 },
-    { name: "Singularity", kind: "spell", copies: 2 },
+    { name: "Singularity", kind: "spell", relocates: true, copies: 2 },
   ],
 };
 

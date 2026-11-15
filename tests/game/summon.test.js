@@ -66,7 +66,7 @@ test("seeded setup: 12 unique cards per side, four in hand, three slots, five or
     assert.equal(baseOrbs, 5);
   }
   assert.ok(SIDES.includes(state.activeSide));
-  assert.equal(state.summonUsed, false);
+  for (const side of SIDES) assert.equal(state.allowances[side].summonUsed, false);
   assertConservation(state);
 });
 
@@ -103,7 +103,7 @@ test("full-board sacrifice: a tribute summon reuses the slot it vacates", () => 
   ]);
   assert.deepEqual(one.state.sides.cowboy.discard, ["cowboy-sheriff-2"]);
   assert.deepEqual(one.state.sides.cowboy.hand, ["cowboy-mounted-billy-1"]);
-  assert.equal(one.state.summonUsed, true);
+  assert.equal(one.state.allowances.cowboy.summonUsed, true);
   assert.equal(one.state.revision, state.revision + 1);
   assert.equal(one.state.rng, state.rng);
   assertConservation(one.state);
