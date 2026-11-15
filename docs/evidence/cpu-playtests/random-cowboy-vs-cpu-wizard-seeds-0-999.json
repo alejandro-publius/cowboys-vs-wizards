@@ -1,0 +1,156 @@
+{
+  "rulesVersion": "orb-duel-draft-1",
+  "seeds": {
+    "from": 0,
+    "to": 999,
+    "matches": 1000
+  },
+  "bots": {
+    "cowboy": "random",
+    "wizard": "cpu"
+  },
+  "stepBound": 54,
+  "results": {
+    "cowboy": {
+      "wins": 29,
+      "losses": 945,
+      "draws": 26
+    },
+    "wizard": {
+      "wins": 945,
+      "losses": 29,
+      "draws": 26
+    }
+  },
+  "byStartingSide": {
+    "cowboy": {
+      "matches": 480,
+      "cowboy": 17,
+      "wizard": 458,
+      "draw": 5
+    },
+    "wizard": {
+      "matches": 520,
+      "cowboy": 12,
+      "wizard": 487,
+      "draw": 21
+    }
+  },
+  "openingHandsWithoutFreeSummon": {
+    "cowboy": 23,
+    "wizard": 40,
+    "startingSide": 35
+  },
+  "outcomesWithoutFreeSummon": {
+    "startingSide": {
+      "wins": 12,
+      "losses": 20,
+      "draws": 3
+    },
+    "secondSide": {
+      "wins": 7,
+      "losses": 21,
+      "draws": 0
+    }
+  },
+  "winnerActedInFinalRound": {
+    "first": 363,
+    "second": 611
+  },
+  "endings": {
+    "base-destroyed": 995,
+    "round-limit": 5
+  },
+  "finalRound": {
+    "3": 233,
+    "4": 393,
+    "5": 221,
+    "6": 81,
+    "7": 39,
+    "8": 19,
+    "9": 14
+  },
+  "actionsPerMatch": {
+    "min": 9,
+    "max": 40,
+    "mean": 18.45,
+    "distribution": {
+      "9": 3,
+      "10": 32,
+      "11": 69,
+      "12": 78,
+      "13": 34,
+      "14": 20,
+      "15": 43,
+      "16": 112,
+      "17": 155,
+      "18": 68,
+      "19": 24,
+      "20": 39,
+      "21": 67,
+      "22": 69,
+      "23": 34,
+      "24": 8,
+      "25": 21,
+      "26": 31,
+      "27": 18,
+      "28": 6,
+      "29": 7,
+      "30": 17,
+      "31": 10,
+      "32": 3,
+      "33": 8,
+      "34": 3,
+      "35": 6,
+      "36": 2,
+      "37": 1,
+      "38": 3,
+      "39": 7,
+      "40": 2
+    }
+  },
+  "summons": {
+    "Sheriff": {
+      "side": "cowboy",
+      "summons": 2235,
+      "matches": 987
+    },
+    "Billy": {
+      "side": "cowboy",
+      "summons": 1104,
+      "matches": 743
+    },
+    "Mounted Billy": {
+      "side": "cowboy",
+      "summons": 146,
+      "matches": 146
+    },
+    "Skeleton": {
+      "side": "wizard",
+      "summons": 3048,
+      "matches": 1000
+    },
+    "Wizard": {
+      "side": "wizard",
+      "summons": 1137,
+      "matches": 819
+    },
+    "Dragon": {
+      "side": "wizard",
+      "summons": 144,
+      "matches": 144
+    }
+  },
+  "spells": {
+    "Deadeye": {
+      "side": "cowboy",
+      "casts": 1056,
+      "matches": 785
+    },
+    "Singularity": {
+      "side": "wizard",
+      "casts": 755,
+      "matches": 589
+    }
+  }
+}

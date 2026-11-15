@@ -1,0 +1,21 @@
+seed 14  rules orb-duel-draft-1  cowboy=cpu wizard=cpu  starts: cowboy
+opening hand cowboy: Billy, Mounted Billy, Billy, Billy
+opening hand wizard: Skeleton, Singularity, Skeleton, Wizard
+R1 cowboy  end-phase
+R1 wizard  summon Skeleton -> lane 0
+R1 wizard  end-phase
+R1 clash   L0 Skeleton>cowboy base 5->4
+R1 after   cowboy base 4 [- | - | -]   wizard base 5 [Skeleton 3 | - | -]
+R2 wizard  summon Skeleton -> lane 1
+R2 wizard  end-phase
+R2 cowboy  summon Sheriff -> lane 0
+R2 cowboy  end-phase
+R2 clash   L0 Sheriff>Skeleton 3->2; L0 Skeleton>Sheriff 3->2; L1 Skeleton>cowboy base 4->3
+R2 after   cowboy base 3 [Sheriff 2 | - | -]   wizard base 5 [Skeleton 2 | Skeleton 3 | -]
+R3 cowboy  summon Billy -> lane 0 (tribute lanes 0)
+R3 cowboy  end-phase
+R3 wizard  summon Wizard -> lane 2 (tribute lanes 0)
+R3 wizard  end-phase
+R3 clash   L0 Billy>wizard base 5->3; L1 Skeleton>cowboy base 3->2; L2 Wizard>cowboy base 2->0
+R3 after   cowboy base 0 [Billy 4 | - | -]   wizard base 3 [- | Skeleton 3 | Wizard 4]
+result: wizard wins (base-destroyed) in round 3 after 11 actions

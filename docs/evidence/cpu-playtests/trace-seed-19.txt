@@ -1,0 +1,43 @@
+seed 19  rules orb-duel-draft-1  cowboy=cpu wizard=cpu  starts: cowboy
+opening hand cowboy: Sheriff, Deadeye, Sheriff, Mounted Billy
+opening hand wizard: Skeleton, Singularity, Skeleton, Skeleton
+R1 cowboy  summon Sheriff -> lane 0
+R1 cowboy  end-phase
+R1 wizard  summon Skeleton -> lane 0
+R1 wizard  end-phase
+R1 clash   L0 Sheriff>Skeleton 3->2; L0 Skeleton>Sheriff 3->2
+R1 after   cowboy base 5 [Sheriff 2 | - | -]   wizard base 5 [Skeleton 2 | - | -]
+R2 wizard  summon Skeleton -> lane 1
+R2 wizard  cast Singularity on Sheriff lane 0: 2->1
+R2 wizard  end-phase
+R2 cowboy  summon Sheriff -> lane 1
+R2 cowboy  cast Deadeye on Skeleton lane 0: 2->1
+R2 cowboy  end-phase
+R2 clash   L0 Sheriff>Skeleton 1->0; L0 Skeleton>Sheriff 1->0; L1 Sheriff>Skeleton 3->2; L1 Skeleton>Sheriff 3->2; defeated: Sheriff (cowboy L0), Skeleton (wizard L0)
+R2 after   cowboy base 5 [- | Sheriff 2 | -]   wizard base 5 [- | Skeleton 2 | -]
+R3 cowboy  summon Billy -> lane 0 (tribute lanes 1)
+R3 cowboy  end-phase
+R3 wizard  summon Skeleton -> lane 0
+R3 wizard  end-phase
+R3 clash   L0 Billy>Skeleton 3->1; L0 Skeleton>Billy 4->3; L1 Skeleton>cowboy base 5->4
+R3 after   cowboy base 4 [Billy 3 | - | -]   wizard base 5 [Skeleton 1 | Skeleton 2 | -]
+R4 wizard  summon Wizard -> lane 1 (tribute lanes 1)
+R4 wizard  end-phase
+R4 cowboy  summon Sheriff -> lane 1
+R4 cowboy  cast Deadeye on Skeleton lane 0: 1->0, defeated
+R4 cowboy  end-phase
+R4 clash   L0 Billy>wizard base 5->3; L1 Sheriff>Wizard 4->3; L1 Wizard>Sheriff 3->1
+R4 after   cowboy base 4 [Billy 3 | Sheriff 1 | -]   wizard base 3 [- | Wizard 3 | -]
+R5 cowboy  summon Billy -> lane 2 (tribute lanes 1)
+R5 cowboy  end-phase
+R5 wizard  summon Skeleton -> lane 0
+R5 wizard  end-phase
+R5 clash   L0 Billy>Skeleton 3->1; L0 Skeleton>Billy 3->2; L1 Wizard>cowboy base 4->2; L2 Billy>wizard base 3->1
+R5 after   cowboy base 2 [Billy 2 | - | Billy 4]   wizard base 1 [Skeleton 1 | Wizard 3 | -]
+R6 wizard  summon Wizard -> lane 0 (tribute lanes 0)
+R6 wizard  end-phase
+R6 cowboy  summon Billy -> lane 0 (tribute lanes 0)
+R6 cowboy  end-phase
+R6 clash   L0 Billy>Wizard 4->2; L0 Wizard>Billy 4->2; L1 Wizard>cowboy base 2->0; L2 Billy>wizard base 1->0
+R6 after   cowboy base 0 [Billy 2 | - | Billy 4]   wizard base 0 [Wizard 2 | Wizard 3 | -]
+result: draw (base-destroyed) in round 6 after 27 actions
