@@ -1,7 +1,7 @@
 import * as T from "three";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 import Rapier from "@dimforge/rapier3d-compat";
-import physics from "./gravity.cjs";
+import physics from "../physics/gravity.cjs";
 import {rigActor, grip, pose, pointOn, wizardStaffGrip} from "./rig.js";
 
 export const v=(x=0,y=0,z=0)=>new T.Vector3(x,y,z);

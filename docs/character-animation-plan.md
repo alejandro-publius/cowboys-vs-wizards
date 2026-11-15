@@ -10,11 +10,11 @@ The upstream Python tools, shell scripts and Unity C# importer are private and a
 
 ## Verified starting point
 
-See `evidence/asset-rig-inventory.json`. The optimized Billy and Wizard and their original Downloads exports have zero glTF skins, zero joint lists and zero embedded animation clips. The Sheriff original is also static. Existing `rig.js` supplies procedural deformation, so this finding does not mean the demo cannot move; it means we do not yet have exported skeletal animation suitable for the upstream pipeline. Blender 5.2.0 LTS is installed (version command verified); the upstream guide targets 4.5, so script/API compatibility requires checking. Its MCP connection has not been verified.
+See `evidence/asset-rig-inventory.json`. The optimized Billy and Wizard and their original Downloads exports have zero glTF skins, zero joint lists and zero embedded animation clips. The Sheriff original is also static. Existing `src/render/rig.js` supplies procedural deformation, so this finding does not mean the demo cannot move; it means we do not yet have exported skeletal animation suitable for the upstream pipeline. Blender 5.2.0 LTS is installed (version command verified); the upstream guide targets 4.5, so script/API compatibility requires checking. Its MCP connection has not been verified.
 
 ## Order
 
-1. Finish the headless card engine, legal actions and combat-event contract in Kiro (`kiro-task-01.md`).
+1. Finish the headless card engine, legal actions and combat-event contract using the active assignments in `fable-tasks.md`. `kiro-task-01.md` remains the rule reference; attribute implementation to the actual agent.
 2. Audit the wizard's actual rest mesh and staff first. Inspect front/side and hand close-ups, identify whether the staff can be separated cleanly, and measure arm/hand landmarks. Do not guess a hand position from the posed bounding box. Record whether the existing model can be rigged or requires a new empty-hand export plus separate staff. This audit must name a concrete asset request if blocked.
 3. Rig only that character, with the prop on a separate attachment, at most 50 deforming bones as an initial budget and up to four skin influences per vertex. Document any justified exception. Preserve the original GLB.
 4. Author idle, cast, hit and defeat clips. Define wind-up, release, impact and recovery. Maintain a stable staff grip and intentional foot contacts. Summoning is a later clip once this set reads well.

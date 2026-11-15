@@ -1,5 +1,5 @@
 import {readFileSync} from "node:fs";
-import {assets, loadAssets} from "./scene.js";
+import {assets, loadAssets} from "../src/render/scene.js";
 globalThis.self=globalThis;
 globalThis.createImageBitmap=async blob=>{
   const b=Buffer.from(await blob.arrayBuffer());
@@ -12,4 +12,5 @@ globalThis.createImageBitmap=async blob=>{
   }
   throw new Error("Invalid embedded texture");
 };
-export const localModels=()=>loadAssets(Object.fromEntries(assets.map(name=>[name,readFileSync("assets/"+name+".glb")])));
+const modelsDirectory = new URL("../assets/models/", import.meta.url);
+export const localModels=()=>loadAssets(Object.fromEntries(assets.map(name=>[name,readFileSync(new URL(name+".glb", modelsDirectory))])));

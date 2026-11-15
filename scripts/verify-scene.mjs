@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
-import {createDuel,timings,v} from "./scene.js";
-import {grip,wizardStaffGrip} from "./rig.js";
+import {createDuel,timings,v} from "../src/render/scene.js";
+import {grip,wizardStaffGrip} from "../src/render/rig.js";
 import {localModels} from "./load-local.mjs";
 
 const duel=await createDuel(await localModels());

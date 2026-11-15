@@ -1,9 +1,47 @@
-# Cowboys vs. Wizards board prototype
+# Cowboys vs. Wizards
 
-Open the bundled HTML in a WebGL 2 browser for a single Billy versus wizard exchange. If graphics acceleration is unavailable, the page shows the recorded exchange.
+A haunted Western browser card game in progress. The runnable build is a Billy
+versus wizard attack demo on six tiles. Decks, tribute summons, a CPU opponent
+and one-to-five troop health orbs are the next gameplay milestones.
 
-To build from this folder, run `npm install` then `npm run build`. The HTML in `dist/` embeds the models and replay. Run `npm run check` to verify tile placement, staff grip, aerial knockback and attack timing using Node. The check loads model geometry and physics with placeholder image decoding. Review the rendered scene in a browser to check textures and shaders.
+## Run
 
-`scene.js` assembles the board, applies the attack timeline and defines the camera. `rig.js` skins Billy and the wizard and positions the revolver and staff. `gravity.cjs` implements the earlier Singularity physics. The eight reduced GLBs in `assets/` were made from the project's Tripo exports. The staff and breakable chunks are generated in the scene.
+Use Node 22 or newer. Install once with `npm ci`.
 
-Runtime dependencies are Three.js (MIT) and Rapier (Apache-2.0). The packed HTML includes their notices.
+- `npm run build` creates `dist/cowboys-vs-wizards-board-duel.html`. Open it in
+  a WebGL 2 browser. Models and the fallback recording are embedded.
+- `npm run check` checks geometry, event order, grip socket and aerial knockback
+  with placeholder image decoding. It does not judge appearance or frame rate.
+
+## Code map
+
+| Path | Responsibility |
+| --- | --- |
+| `src/main.js` | Browser controls, sound and frame loop |
+| `src/render/scene.js` | Board, camera, effects and attack timeline |
+| `src/render/rig.js` | Procedural deformation and prop attachment |
+| `src/physics/gravity.cjs` | Singularity physics |
+| `src/ui/layout.html` | Demo layout and styles |
+| `scripts/` | Build and scene verification |
+| `assets/models/` | Eight optimized Tripo GLBs |
+| `assets/media/` | Poster and replay |
+| `.kiro/` | Kiro requirements and steering |
+| `docs/fable-tasks.md` | Active assignments and ownership |
+
+Read AGENTS.md before editing. Game rules will live in `src/game/`, independent
+of Three.js. Each parallel worker gets its own git worktree and owned paths.
+
+## Assets and attribution
+
+GLBs are static exports; the procedural rig supplies demo motion. Skeletal clips
+are still missing. The older inventory in `docs/evidence/` refers to the former
+`assets/*.glb` paths; those files now live in `assets/models/` with identical bytes.
+
+Lucca Cerf's pinned MIT-licensed documents are in
+`docs/references/lucca-character-factory/`. Their private execution tools are
+not included. Read `docs/character-animation-plan.md` for adaptation and load
+only the needed reference section for an animation task.
+
+The build embeds Three.js (MIT) and Rapier (Apache-2.0) notices. Attribute Codex,
+Fable, Kiro, Tripo and user contributions separately; work outside Kiro must not
+be represented as Kiro work.

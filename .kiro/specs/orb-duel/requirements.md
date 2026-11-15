@@ -4,7 +4,7 @@
 
 Orb Duel adds a full card-match game mode to the Cowboys vs. Wizards board prototype. The player builds a hand of troop and spell cards, summons characters onto the three-lane board, and battles a CPU opponent. Each base starts with five orbs; the first side to lose all five orbs loses the match. Troops display 1–5 orbs above their heads. The match proceeds in rounds: both sides take actions simultaneously, then troops clash across matching lanes.
 
-The feature builds on `scene.js`, `rig.js`, and `gravity.cjs` without replacing existing "fire / cast / exchange" playback. All new logic is additive.
+The feature builds on `src/render/scene.js`, `src/render/rig.js`, and `src/physics/gravity.cjs` without replacing existing "fire / cast / exchange" playback. All new logic is additive.
 
 > **Milestone 1** covers the draw-select-summon-display loop: drawing a card, selecting it in the hand UI, placing a troop onto a tile, and showing its health orbs. Requirements 1–5 define Milestone 1 in full detail. Requirements 6–13 define the broader match rules and are staged for later milestones.
 

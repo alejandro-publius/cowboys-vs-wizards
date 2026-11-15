@@ -1,5 +1,5 @@
 import * as T from "three";
-import {createDuel,loadAssets,timings} from "./scene.js";
+import {createDuel,loadAssets,timings} from "./render/scene.js";
 const get=id=>document.getElementById(id);
 const end={fire:timings.fireEnd,cast:timings.castEnd,exchange:timings.end};
 const cues={
