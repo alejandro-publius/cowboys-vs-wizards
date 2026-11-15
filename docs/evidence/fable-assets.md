@@ -16,15 +16,34 @@ Run from the worktree root.
 
 | Command | Result |
 | --- | --- |
-| `node --test tests/assets/audit.test.mjs` | 12 tests, 12 pass, 0 fail, exit 0 |
+| `node --test tests/assets/audit.test.mjs` | 15 tests, 15 pass, 0 fail, exit 0 (12 before the CLI tests below were added) |
 | `node scripts/audit-assets.mjs` | 8 files, 0 invalid, exit 0 |
 | `git status --short assets/` before and after the script | no output both times |
 | `shasum -a 256 assets/models/*.glb` before and after the script | identical; modification times also identical |
 
-The script's fixed input folder cannot hold bad files, so its failure exit was
-checked once on a copy of the script in a temporary folder outside the repo:
-an empty models folder exits 1, and two bad files (a 4-byte file and a text
-file named `.glb`) each print an `ERROR <file>: <reason>` line and exit 1.
+## CLI exit code (automated)
+
+Added by Claude Fable 5.2 (Claude Code worker) on November 15, 2026, on branch
+`fable/asset-cli-test`, Node v26.0.0.
+
+The CLI takes an optional directory: `node scripts/audit-assets.mjs [dir]`.
+Without it the input is still `assets/models/`. Three tests spawn the real CLI
+with `node:child_process` on a directory from `fs.mkdtempSync` under
+`os.tmpdir()`, which each test removes afterwards. They write nothing inside
+the repository.
+
+| Temporary directory holds | Exit code | Output checked |
+| --- | --- | --- |
+| one malformed `.glb` (a valid file cut 4 bytes short) | 1 | `ERROR bad.glb: header length ...` and `1 .glb files, 1 invalid` |
+| one valid minimal `.glb` | 0 | no `ERROR`, `1 .glb files, 0 invalid` |
+| nothing | 1 | `0 .glb files, 0 invalid` |
+
+One mutation check: with the line `if (failed || !names.length) process.exitCode = 1;`
+removed, all 15 tests ran, 13 passed and 2 failed (the malformed-file and
+empty-directory CLI tests, both `actual: 0, expected: 1`). After restoring the
+line: 15 pass, 0 fail. No `audit-assets-*` directory was left in the temporary
+folder, `git status --short assets/` printed nothing, and the SHA-256 of all
+eight `.glb` files was identical before and after.
 
 ## Script output
 
@@ -84,8 +103,9 @@ does not parse or is not an object.
 ## Mutation checks
 
 Each guard was removed from `scripts/audit-assets.mjs` in place, the test
-command above was run, and the script was restored. All 12 tests ran each time,
-so each red is a failed assertion, not a startup crash.
+command above was run, and the script was restored. This was done before the
+CLI tests existed, when the file had 12 tests. All 12 ran each time, so each
+red is a failed assertion, not a startup crash.
 
 | Guard removed | Result | Test that went red |
 | --- | --- | --- |

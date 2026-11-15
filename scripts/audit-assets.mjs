@@ -1,4 +1,5 @@
-// Read-only report on the GLB exports in assets/models/. Node built-ins only.
+// Read-only report on the GLB exports in assets/models/ (or in the directory
+// given as the first argument). Node built-ins only.
 // It reads the GLB container and its JSON chunk; it never decodes geometry
 // and never writes, so it cannot judge grip, smoothness or visual quality.
 import { readdirSync, readFileSync, realpathSync } from "node:fs";
@@ -111,7 +112,8 @@ export function report(files) {
 }
 
 function main() {
-  const dir = fileURLToPath(new URL("../assets/models/", import.meta.url));
+  // Optional directory argument, so tests can point the CLI at a temporary folder.
+  const dir = process.argv[2] ?? fileURLToPath(new URL("../assets/models/", import.meta.url));
   const names = readdirSync(dir).filter((f) => f.toLowerCase().endsWith(".glb"));
   const { text, failed } = report(names.map((n) => [n, readFileSync(join(dir, n))])); // readFileSync opens read-only
   console.log(text);

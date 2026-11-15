@@ -1,11 +1,17 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 import { parseGlb, report } from "../../scripts/audit-assets.mjs";
 
 const JSON_CHUNK = 0x4e4f534a;
 const BIN_CHUNK = 0x004e4942;
 
-// Fixtures are built in memory; nothing here reads or writes a file.
+// Fixtures are built in memory. Only the CLI tests at the end touch the disk,
+// and only inside a directory under os.tmpdir().
 function chunk(type, data, pad = 0x20) {
   const body = Buffer.concat([data, Buffer.alloc((4 - (data.length % 4)) % 4, pad)]);
   const head = Buffer.alloc(8);
@@ -138,4 +144,36 @@ test("report sorts by filename and counts invalid files with a per-file error", 
   assert.equal(lines[5], "3 .glb files, 1 invalid");
   assert.equal(failed, 1);
   assert.equal(report([["b.glb", glb(triangle, bin)]]).failed, 0);
+});
+
+// Spawns the real CLI on a fresh temporary directory holding the given files.
+function runCli(files) {
+  const dir = mkdtempSync(join(tmpdir(), "audit-assets-"));
+  try {
+    for (const [name, buf] of Object.entries(files)) writeFileSync(join(dir, name), buf);
+    const cli = fileURLToPath(new URL("../../scripts/audit-assets.mjs", import.meta.url));
+    return spawnSync(process.execPath, [cli, dir], { encoding: "utf8" });
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+test("CLI exits non-zero with a per-file ERROR line for a malformed GLB", () => {
+  const r = runCli({ "bad.glb": glb(triangle, bin).subarray(0, -4) }); // valid file cut 4 bytes short
+  assert.equal(r.status, 1, r.stderr);
+  assert.match(r.stdout, /^ERROR bad\.glb: header length/m);
+  assert.match(r.stdout, /^1 \.glb files, 1 invalid$/m);
+});
+
+test("CLI exits 0 for a valid minimal GLB", () => {
+  const r = runCli({ "ok.glb": glb(triangle, bin) });
+  assert.equal(r.status, 0, r.stderr);
+  assert.doesNotMatch(r.stdout, /ERROR/);
+  assert.match(r.stdout, /^1 \.glb files, 0 invalid$/m);
+});
+
+test("CLI exits non-zero for a directory with no GLB files", () => {
+  const r = runCli({});
+  assert.equal(r.status, 1, r.stderr);
+  assert.match(r.stdout, /^0 \.glb files, 0 invalid$/m);
 });
