@@ -1,0 +1,62 @@
+seed 17  rules orb-duel-draft-1  cowboy=cpu wizard=cpu  starts: wizard
+opening hand cowboy: Billy, Sheriff, Sheriff, Billy
+opening hand wizard: Skeleton, Skeleton, Dragon, Wizard
+R1 wizard  summon Skeleton -> lane 0
+R1 wizard  end-phase
+R1 cowboy  summon Sheriff -> lane 0
+R1 cowboy  end-phase
+R1 clash   L0 Sheriff>Skeleton 3->2; L0 Skeleton>Sheriff 3->2
+R1 after   cowboy base 5 [Sheriff 2 | - | -]   wizard base 5 [Skeleton 2 | - | -]
+R2 cowboy  summon Sheriff -> lane 1
+R2 cowboy  cast Deadeye on Skeleton lane 0: 2->1
+R2 cowboy  end-phase
+R2 wizard  summon Skeleton -> lane 1
+R2 wizard  cast Singularity on Sheriff lane 0: 2->1
+R2 wizard  end-phase
+R2 clash   L0 Sheriff>Skeleton 1->0; L0 Skeleton>Sheriff 1->0; L1 Sheriff>Skeleton 3->2; L1 Skeleton>Sheriff 3->2; defeated: Sheriff (cowboy L0), Skeleton (wizard L0)
+R2 after   cowboy base 5 [- | Sheriff 2 | -]   wizard base 5 [- | Skeleton 2 | -]
+R3 wizard  summon Wizard -> lane 0 (tribute lanes 1)
+R3 wizard  end-phase
+R3 cowboy  summon Billy -> lane 0 (tribute lanes 1)
+R3 cowboy  end-phase
+R3 clash   L0 Billy>Wizard 4->2; L0 Wizard>Billy 4->2
+R3 after   cowboy base 5 [Billy 2 | - | -]   wizard base 5 [Wizard 2 | - | -]
+R4 cowboy  summon Billy -> lane 0 (tribute lanes 0)
+R4 cowboy  end-phase
+R4 wizard  summon Wizard -> lane 0 (tribute lanes 0)
+R4 wizard  end-phase
+R4 clash   L0 Billy>Wizard 4->2; L0 Wizard>Billy 4->2
+R4 after   cowboy base 5 [Billy 2 | - | -]   wizard base 5 [Wizard 2 | - | -]
+R5 wizard  summon Wizard -> lane 0 (tribute lanes 0)
+R5 wizard  end-phase
+R5 cowboy  summon Sheriff -> lane 1
+R5 cowboy  end-phase
+R5 clash   L0 Billy>Wizard 4->2; L0 Wizard>Billy 2->0; L1 Sheriff>wizard base 5->4; defeated: Billy (cowboy L0)
+R5 after   cowboy base 5 [- | Sheriff 3 | -]   wizard base 4 [Wizard 2 | - | -]
+R6 cowboy  summon Sheriff -> lane 0
+R6 cowboy  cast Deadeye on Wizard lane 0: 2->1
+R6 cowboy  end-phase
+R6 wizard  summon Skeleton -> lane 1
+R6 wizard  cast Singularity on Sheriff lane 0: 3->2
+R6 wizard  end-phase
+R6 clash   L0 Sheriff>Wizard 1->0; L0 Wizard>Sheriff 2->0; L1 Sheriff>Skeleton 3->2; L1 Skeleton>Sheriff 3->2; defeated: Sheriff (cowboy L0), Wizard (wizard L0)
+R6 after   cowboy base 5 [- | Sheriff 2 | -]   wizard base 4 [- | Skeleton 2 | -]
+R7 wizard  summon Skeleton -> lane 0
+R7 wizard  end-phase
+R7 cowboy  summon Sheriff -> lane 0
+R7 cowboy  end-phase
+R7 clash   L0 Sheriff>Skeleton 3->2; L0 Skeleton>Sheriff 3->2; L1 Sheriff>Skeleton 2->1; L1 Skeleton>Sheriff 2->1
+R7 after   cowboy base 5 [Sheriff 2 | Sheriff 1 | -]   wizard base 4 [Skeleton 2 | Skeleton 1 | -]
+R8 cowboy  summon Sheriff -> lane 2
+R8 cowboy  end-phase
+R8 wizard  summon Skeleton -> lane 2
+R8 wizard  end-phase
+R8 clash   L0 Sheriff>Skeleton 2->1; L0 Skeleton>Sheriff 2->1; L1 Sheriff>Skeleton 1->0; L1 Skeleton>Sheriff 1->0; L2 Sheriff>Skeleton 3->2; L2 Skeleton>Sheriff 3->2; defeated: Sheriff (cowboy L1), Skeleton (wizard L1)
+R8 after   cowboy base 5 [Sheriff 1 | - | Sheriff 2]   wizard base 4 [Skeleton 1 | - | Skeleton 2]
+R9 wizard  summon Skeleton -> lane 1
+R9 wizard  end-phase
+R9 cowboy  summon Billy -> lane 0 (tribute lanes 0)
+R9 cowboy  end-phase
+R9 clash   L0 Billy>Skeleton 1->0; L0 Skeleton>Billy 4->3; L1 Skeleton>cowboy base 5->4; L2 Sheriff>Skeleton 2->1; L2 Skeleton>Sheriff 2->1; defeated: Skeleton (wizard L0)
+R9 after   cowboy base 4 [Billy 3 | - | Sheriff 1]   wizard base 4 [- | Skeleton 3 | Skeleton 1]
+result: draw (round-limit) in round 9 after 40 actions

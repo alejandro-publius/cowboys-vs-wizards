@@ -1,0 +1,20 @@
+seed 47  rules orb-duel-draft-1  cowboy=cpu wizard=cpu  starts: wizard
+opening hand cowboy: Sheriff, Sheriff, Deadeye, Sheriff
+opening hand wizard: Wizard, Singularity, Wizard, Dragon
+R1 wizard  end-phase
+R1 cowboy  summon Sheriff -> lane 0
+R1 cowboy  end-phase
+R1 clash   L0 Sheriff>wizard base 5->4
+R1 after   cowboy base 5 [Sheriff 3 | - | -]   wizard base 4 [- | - | -]
+R2 cowboy  summon Sheriff -> lane 1
+R2 cowboy  end-phase
+R2 wizard  end-phase
+R2 clash   L0 Sheriff>wizard base 4->3; L1 Sheriff>wizard base 3->2
+R2 after   cowboy base 5 [Sheriff 3 | Sheriff 3 | -]   wizard base 2 [- | - | -]
+R3 wizard  summon Skeleton -> lane 0
+R3 wizard  end-phase
+R3 cowboy  summon Sheriff -> lane 2
+R3 cowboy  end-phase
+R3 clash   L0 Sheriff>Skeleton 3->2; L0 Skeleton>Sheriff 3->2; L1 Sheriff>wizard base 2->1; L2 Sheriff>wizard base 1->0
+R3 after   cowboy base 5 [Sheriff 2 | Sheriff 3 | Sheriff 3]   wizard base 0 [Skeleton 2 | - | -]
+result: cowboy wins (base-destroyed) in round 3 after 10 actions
