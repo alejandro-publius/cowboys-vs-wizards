@@ -7,7 +7,7 @@
 //   Wizard attack  a shortened demo staff raise (staffKeys) with the jewel
 //                  glowing, then a violet bolt from the jewel (impact 1.1 s, end 1.6 s)
 //   Sheriff attack its own draw, fire and recover (src/render/sheriff.js) with
-//                  the same muzzle flash, tracer and sparks (impact 1.04 s, end 1.85 s)
+//                  the same muzzle flash, tracer and sparks (impact 0.89 s, end 1.58 s)
 //   token attack   the board's lunge
 //   Deadeye        the leftmost Billy's shot, or a tracer from the Saloon
 //   Singularity    a dark well with a violet ring at the target while the

@@ -21,7 +21,8 @@ async page => {
   const problems = [];
   page.on("pageerror", (error) => problems.push(String(error)));
   page.on("console", (message) => {
-    if (message.type() === "error" && !message.text().includes("favicon")) problems.push(message.text());
+    // The local file server has no favicon; that 404 is not a page problem.
+    if (message.type() === "error" && !message.location().url.endsWith("/favicon.ico")) problems.push(message.text());
   });
   await page.setViewportSize({width: 1440, height: 900});
   await page.clock.install();
@@ -56,15 +57,15 @@ async page => {
 
   // At seed 0 the Wizard answers with a Skeleton in lane 1 and the clash
   // starts 2760 ms after End phase. The Sheriff's cue: hand on the revolver
-  // at 340 ms, aimed at 800, shot at 950, impact at 1040, holstered at 1600.
+  // at 290 ms, aimed at 680, shot at 800, impact at 890, holstered at 1360.
   const CLASH = 2760;
   const runs = [
     await play("cowboy-0",
-      {"summon-fall": 300, "summon-landing": 440, "idle": 1400},
-      {"windup-reach": CLASH + 300, "windup-aimed": CLASH + 900, "fire-close": CLASH + 960, "recover": CLASH + 1320}),
+      {"summon-fall": 200, "summon-landing": 440, "idle": 1400},
+      {"windup-reach": CLASH + 270, "windup-aimed": CLASH + 760, "fire-close": CLASH + 810, "recover": CLASH + 1150}),
     await play("cowboy-0-wide",
       {},
-      {"before-impact": CLASH + 1000, "impact": CLASH + 1060}),
+      {"before-impact": CLASH + 850, "impact": CLASH + 910}),
     await play("",
       {"board-view": 1400},
       {}),
