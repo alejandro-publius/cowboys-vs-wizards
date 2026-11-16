@@ -50,10 +50,13 @@ function refreshHealth(state){
   }
 }
 function recording(){
-  const encoded=get("video-data").textContent, decoded=atob(encoded);
-  const bytes=new Uint8Array(decoded.length);
-  for(let i=0;i<decoded.length;i++)bytes[i]=decoded.charCodeAt(i);
-  get("recording").src=URL.createObjectURL(new Blob([bytes],{type:"video/mp4"}));
+  const video=get("video-data");
+  if(video.dataset.src)get("recording").src=video.dataset.src;
+  else{
+    const decoded=atob(video.textContent),bytes=new Uint8Array(decoded.length);
+    for(let i=0;i<decoded.length;i++)bytes[i]=decoded.charCodeAt(i);
+    get("recording").src=URL.createObjectURL(new Blob([bytes],{type:"video/mp4"}));
+  }
   get("boot").hidden=true;get("fallback").hidden=false;
 }
 async function launch(){

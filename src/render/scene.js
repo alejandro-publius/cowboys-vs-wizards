@@ -22,13 +22,17 @@ function decode(data){
   return bytes;
 }
 
+function modelBuffer(input){
+  const bytes=decode(input);
+  return bytes.byteOffset===0&&bytes.byteLength===bytes.buffer.byteLength
+    ?bytes.buffer:bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength);
+}
+
 export async function loadAssets(source,names=assets){
   const loader=new GLTFLoader();
   const entries=await Promise.all(names.map(async name=>{
-    const bytes=decode(source[name]);
-    const buffer=bytes.byteOffset===0&&bytes.byteLength===bytes.buffer.byteLength
-      ?bytes.buffer:bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength);
-    const model=(await loader.parseAsync(buffer,"")).scene;
+    const input=source[name];
+    const model=(input?.url?await loader.loadAsync(input.url):await loader.parseAsync(modelBuffer(input),"")).scene;
     model.traverse(mesh=>{if(mesh.isMesh)mesh.geometry.userData.asset=name;});
     return [name,model];
   }));

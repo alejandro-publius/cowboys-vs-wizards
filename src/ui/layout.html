@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Cowboys vs. Wizards | Board Duel</title>
+<link rel="icon" href="data:,">
 <style>
 :root{color-scheme:dark;font-family:"Instrument Sans",system-ui,sans-serif;color:#f4e9d9;background:#211923;--gold:#eab979;--violet:#dfadef}
 *{box-sizing:border-box}body{margin:0}button{font:inherit;cursor:pointer}[hidden]{display:none!important}
@@ -50,7 +51,7 @@ meter::-webkit-meter-bar{background:#ffffff17;border:0}meter::-webkit-meter-opti
   </header>
   <div id="boot" role="status">Loading the board…</div>
   <section id="fallback" aria-label="Recorded exchange" hidden>
-    <video id="recording" controls playsinline preload="none" poster="data:image/jpeg;base64,@@POSTER@@"></video>
+    <video id="recording" controls playsinline preload="none" poster="@@POSTER@@"></video>
     <p>Showing the recorded exchange. Open this file in a WebGL 2 browser to control the duel.</p>
   </section>
   <section id="controls" aria-label="Attack controls" hidden>
@@ -68,6 +69,6 @@ meter::-webkit-meter-bar{background:#ffffff17;border:0}meter::-webkit-meter-opti
   <section id="match" aria-label="Orb Duel match" hidden></section>
 </main>
 <script id="models" type="application/json">@@ASSETS@@</script>
-<script id="video-data" type="application/octet-stream">@@VIDEO@@</script>
+<script id="video-data" type="application/octet-stream" data-src="@@VIDEOURL@@">@@VIDEO@@</script>
 <script>@@SCRIPT@@</script>
 </body></html>

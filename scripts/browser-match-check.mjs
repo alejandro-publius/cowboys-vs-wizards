@@ -2,7 +2,7 @@
 // (dist/cowboys-vs-wizards-board-duel.html). It speaks the DevTools protocol
 // over Node's built-in WebSocket, so it needs no extra dependency.
 //
-//   npm run build && node scripts/browser-match-check.mjs [--seed N] [--swiftshader] [--out-dir PATH]
+//   npm run build && node scripts/browser-match-check.mjs [--seed N] [--url URL] [--swiftshader] [--summary] [--out-dir PATH]
 //
 // Without --seed it uses the first seed in which the Cowboys start and can
 // summon a Sheriff from the opening hand, checked with Fable's Engine here in
@@ -36,6 +36,9 @@ const option = (name) => {
   const i = args.indexOf(name);
   return i < 0 ? undefined : args[i + 1];
 };
+const servedUrl = option("--url");
+if (args.includes("--url") && !servedUrl) throw new Error("--url needs a page URL");
+const baseUrl = servedUrl ? new URL(servedUrl) : pathToFileURL(pagePath);
 const outputPath = option("--out-dir");
 if (args.includes("--out-dir") && (!outputPath || outputPath.startsWith("--"))) {
   throw new Error("--out-dir needs a directory");
@@ -172,7 +175,7 @@ const SNAPSHOT = `(() => {
     seedKind: text($(".match-details .match-muted", match)),
     prompt: text($(".match-prompt", match)), message: !message || message.hidden ? "" : text(message),
     hand: $$(".match-hand .card-front", match).map((b) => ({cardId: b.dataset.cardId, name: $(".front-face", b)?.dataset.unit ?? null,
-      hasArt: Boolean($(".front-face", b) && getComputedStyle($(".front-face", b)).backgroundImage.includes("data:image/webp;base64,")),
+      hasArt: Boolean($(".front-face", b) && getComputedStyle($(".front-face", b)).backgroundImage.startsWith("url(")),
       pressed: b.getAttribute("aria-pressed") === "true", disabled: b.disabled})),
     lanes: $$(".match-slot", match).map((b) => ({side: b.dataset.side, slot: Number(b.dataset.slot), text: text(b),
       label: b.getAttribute("aria-label"), disabled: b.disabled, pressed: b.getAttribute("aria-pressed") === "true"})),
@@ -315,10 +318,11 @@ async function runOnce(seed, flags, tilePoints) {
     }
 
     // Step 1: match mode loads, no fallback video, seed shown.
-    const url = `${pathToFileURL(pagePath).href}?seed=${seed}`;
-    report.url = url;
+    const url = new URL(baseUrl);
+    url.searchParams.set("seed", seed);
+    report.url = url.href;
     const loadStarted = Date.now();
-    await send("Page.navigate", {url});
+    await send("Page.navigate", {url: url.href});
     let s = await waitFor("the page to boot", (x) => x.bootHidden, 180000);
     if (!s.fallbackHidden) {
       report.webglFailed = true;
@@ -347,8 +351,8 @@ async function runOnce(seed, flags, tilePoints) {
     // Step 2: four cards, deck count, card back.
     const opening = publicState(createMatch(seed), "cowboy");
     const background = await evaluate(`getComputedStyle(document.querySelector("#match .match-own .card-back")).backgroundImage`);
-    const embedded = background.match(/base64,([A-Za-z0-9+/=]+)/)?.[1];
-    const backHash = embedded ? sha256(Buffer.from(embedded, "base64")) : null;
+    const backUrl = background.match(/url\("([^"]+)"\)/)?.[1];
+    const backHash = backUrl ? sha256(await resourceBytes(backUrl)) : null;
     const fileHash = sha256(await readFile(path.join(root, "assets/cards/card-back.png")));
     await screenshot("illustrated-hand.png");
     await click('#match [data-action="view-art"]');
@@ -360,7 +364,8 @@ async function runOnce(seed, flags, tilePoints) {
       await click('.card-viewer [data-art="' + id + '"]');
       const preview = await evaluate('(async () => {' +
         'const face = document.querySelector(".card-preview .front-face");' +
-        'const art = getComputedStyle(face).backgroundImage.match(/data:image[/]webp;base64,[A-Za-z0-9+/=]+/)?.[0];' +
+        'const css = getComputedStyle(face).backgroundImage;' +
+        'const art = css.startsWith("url(") ? css.split(String.fromCharCode(34))[1] : null;' +
         'if (!art) return {name:face.dataset.unit, decoded:false};' +
         'const image = new Image(); image.src = art; await image.decode();' +
         'return {name:face.dataset.unit, decoded:image.naturalWidth > 0};' +
@@ -377,7 +382,7 @@ async function runOnce(seed, flags, tilePoints) {
         && s.hand.every((card) => card.hasArt) && allCatalogArt && flipped
         && s.cowboyDeck === String(opening.sides.cowboy.deckCount) && s.cardBacks > 0 && backHash === fileHash,
       {hand: s.hand.map((card) => card.name), engineHand: opening.sides.cowboy.hand.map((id) => CARDS[id].name),
-        frontArtEmbeddedWebp: s.hand.map((card) => card.hasArt), catalogArt, flipped,
+        frontArtPresent: s.hand.map((card) => card.hasArt), catalogArt, flipped,
         cowboyDeck: s.cowboyDeck, engineDeckCount: opening.sides.cowboy.deckCount, wizardDeck: s.wizardDeck,
         wizardHandBacks: s.wizardHand, cardBackElements: s.cardBacks, bases: [s.cowboyBase, s.wizardBase],
         deckPileImageSha256: backHash, cardBackFileSha256: fileHash});
@@ -428,7 +433,7 @@ async function runOnce(seed, flags, tilePoints) {
       const cueArrivalMs = effect.getTiming().duration * effect.getKeyframes()[2].computedOffset;
       animation.currentTime = cueArrivalMs;
       const face = node.querySelector(".front-face");
-      const illustratedFace = face?.dataset.unit === "Sheriff" && getComputedStyle(face).backgroundImage.includes("data:image/webp;base64,");
+      const illustratedFace = face?.dataset.unit === "Sheriff" && getComputedStyle(face).backgroundImage.startsWith("url(");
       const box = node.getBoundingClientRect();
       animation.currentTime = elapsed;
       animation.play();
@@ -555,14 +560,19 @@ if (run.webglFailed && !args.includes("--swiftshader")) {
   attempts.push({flags: run.flags, webglFailed: true, consoleErrors: run.consoleErrors});
   run = await runOnce(seed, SWIFTSHADER, tilePoints);
 }
-const pageBytes = await readFile(pagePath);
+async function resourceBytes(url) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`${response.status} while loading ${url}`);
+  return Buffer.from(await response.arrayBuffer());
+}
+const pageBytes = servedUrl ? await resourceBytes(baseUrl) : await readFile(pagePath);
 const result = {
   date: new Date().toLocaleString("en-US", {timeZone: "America/Los_Angeles", timeZoneName: "short"}),
   commit: shell("git", ["rev-parse", "--short", "HEAD"]),
   uncommittedChanges: Boolean(shell("git", ["status", "--porcelain"])),
   machine: {model: shell("sysctl", ["-n", "hw.model"]), cpu: os.cpus()[0]?.model, memoryGB: Math.round(os.totalmem() / 2 ** 30),
     macOS: shell("sw_vers", ["-productVersion"]), arch: os.arch(), node: process.version},
-  page: {file: "dist/cowboys-vs-wizards-board-duel.html", bytes: pageBytes.length, sha256: sha256(pageBytes)},
+  page: {file: servedUrl ? baseUrl.href : "dist/cowboys-vs-wizards-board-duel.html", bytes: pageBytes.length, sha256: sha256(pageBytes)},
   viewport: [WIDTH, HEIGHT],
   seed,
   openingHand: publicState(createMatch(seed), "cowboy").sides.cowboy.hand.map((id) => CARDS[id].name),
@@ -572,7 +582,11 @@ const result = {
 };
 await mkdir(outDir, {recursive: true});
 await writeFile(path.join(outDir, "browser-run.json"), JSON.stringify(result, null, 2) + "\n");
-console.log(JSON.stringify(result, null, 2));
+if (args.includes("--summary")) {
+  console.log(`Chrome ${result.chrome} · revision ${result.commit ?? "unavailable"} · seed ${result.seed}`);
+  console.log(`Build SHA-256 ${result.page.sha256}`);
+  console.log(`Browser receipt ${path.relative(root, path.join(outDir, "browser-run.json"))}`);
+} else console.log(JSON.stringify(result, null, 2));
 const pending = result.steps.filter((each) => each.state !== "observed").map((each) => each.id);
 console.log(`\nobserved ${result.steps.length - pending.length} of 8 steps; pending: ${pending.join(", ") || "none"}; console errors: ${result.consoleErrors.length}`);
 process.exitCode = result.error || pending.length || result.steps.length !== 8 || result.consoleErrors.length ? 1 : 0;
