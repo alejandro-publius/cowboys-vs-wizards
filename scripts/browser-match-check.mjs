@@ -2,7 +2,10 @@
 // (dist/cowboys-vs-wizards-board-duel.html). It speaks the DevTools protocol
 // over Node's built-in WebSocket, so it needs no extra dependency.
 //
-//   npm run build && node scripts/browser-match-check.mjs [--seed N] [--url URL] [--swiftshader] [--summary] [--out-dir PATH]
+//   npm run build && node scripts/browser-match-check.mjs [--seed N] [--url URL] [--swiftshader] [--summary] [--out-dir PATH] [--showcase]
+//
+// --showcase plays the seed 60 Mounted Billy route instead of the eight steps
+// and writes to .artifacts/kiro/showcase/ unless --out-dir is given.
 //
 // Without --seed it uses the first seed in which the Cowboys start and can
 // summon a Sheriff from the opening hand, checked with Fable's Engine here in
@@ -19,12 +22,14 @@ import {fileURLToPath, pathToFileURL} from "node:url";
 import * as T from "three";
 import {matchCamera, resizeMatchCamera} from "../src/render/match-camera.js";
 import {CARDS} from "../src/game/cards.js";
+import {chooseAction} from "../src/game/cpu.js";
 import {legalActions} from "../src/game/legal.js";
 import {createMatch} from "../src/game/state.js";
 import {publicState} from "../src/game/view.js";
 import {createBoardScene} from "../src/render/scene.js";
 import {SHERIFF_LANDING} from "../src/render/sheriff.js";
 import {localModels} from "./load-local.mjs";
+import {playMatch} from "./play-match.mjs";
 
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const SWIFTSHADER = ["--use-angle=swiftshader", "--enable-unsafe-swiftshader"];
@@ -43,7 +48,12 @@ const outputPath = option("--out-dir");
 if (args.includes("--out-dir") && (!outputPath || outputPath.startsWith("--"))) {
   throw new Error("--out-dir needs a directory");
 }
-const outDir = outputPath ? path.resolve(outputPath) : path.join(root, "docs/evidence/kiro-match-ui");
+// --showcase replays the seed 60 Mounted Billy route (docs/morning-handoff.md)
+// through real clicks, for recording. Its default output is ignored by git.
+const showcase = args.includes("--showcase");
+if (showcase && option("--seed") !== undefined && Number(option("--seed")) !== 60) throw new Error("--showcase always uses seed 60");
+const outDir = outputPath ? path.resolve(outputPath)
+  : path.join(root, showcase ? ".artifacts/kiro/showcase" : "docs/evidence/kiro-match-ui");
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const shell = (command, list) => {
@@ -348,6 +358,64 @@ async function runOnce(seed, flags, tilePoints) {
       {status: s.status, fallbackHidden: s.fallbackHidden, demoControlsHidden: s.controlsHidden, demoToolsHidden: s.toolsHidden,
         modeButton: s.modeText, seedShown: `${s.seed} ${s.seedKind}`, details: s.details, prompt: s.prompt});
 
+    if (showcase) {
+      // The legal Cowboy route for seed 60 comes from the engine's CPU bots;
+      // every action is then made with real clicks on the page.
+      const route = playMatch(60, {cowboy: chooseAction, wizard: chooseAction}).log
+        .filter(({round, side}) => side === "cowboy" && round <= 5);
+      const seen = {};
+      report.showcase = seen;
+      const must = (ok, message, state) => {
+        if (!ok) throw new Error(`${message}: ${laneTexts(state)}`);
+      };
+      for (const {round, action: each} of route) {
+        if (round === 5 && each.type === "end-phase") {
+          s = await snapshot();
+          const billy = lane(s, "cowboy", 1), dragon = lane(s, "wizard", 1);
+          must(billy.text.startsWith("Mounted Billy ") && dragon.text === "Dragon 5/5", "Mounted Billy and the Dragon do not face off in the center lane", s);
+          seen.faceoff = laneTexts(s);
+          await screenshot("seed-60-faceoff.png");
+        }
+        if (each.type === "end-phase") {
+          await click(action("end-phase"));
+          s = await waitFor(`round ${round + 1}`, (x) => x.status === "accepting_input" && x.details?.startsWith(`Round ${round + 1} `), 25000);
+          if (round === 4) {
+            must(lane(s, "cowboy", 1).text.startsWith("Mounted Billy ") && lane(s, "cowboy", 2).text === "Empty",
+              "Singularity did not move Mounted Billy from lane 3 to lane 2", s);
+            seen.singularity = laneTexts(s);
+          }
+        } else {
+          const mountedSummon = round === 4 && each.type === "summon";
+          if (mountedSummon) {
+            must(each.tributes?.length === 2 && each.tributes.includes(1) && each.tributes.includes(2)
+              && lane(s, "cowboy", 1).text.startsWith("Sheriff ") && lane(s, "cowboy", 2).text.startsWith("Billy "),
+            "the two tribute troops are missing", s);
+          }
+          await click(cardSelector(each.cardId));
+          for (const tribute of each.tributes ?? []) await click(laneSelector("cowboy", tribute));
+          await click(laneSelector(each.type === "spell" ? "wizard" : "cowboy", each.target ?? each.slot));
+          await click(action("confirm"));
+          s = await settle("a selected card resolves");
+          if (mountedSummon) {
+            must(lane(s, "cowboy", 2).text === "Mounted Billy 5/5" && lane(s, "cowboy", 1).text === "Empty",
+              "the tribute did not leave Mounted Billy in lane 3 with five orbs", s);
+            seen.summon = {tributes: each.tributes, lanes: laneTexts(s)};
+            await sleep(300);
+            await screenshot("seed-60-mounted-billy.png");
+          }
+        }
+      }
+      seen.afterClash = laneTexts(s);
+      must(lane(s, "wizard", 1).text === "Dragon 2/5" && !s.lanes.some((each) => each.text?.includes("Mounted Billy")),
+        "the Dragon is not at two orbs, or the rider remains", s);
+      await sleep(400);
+      await screenshot("seed-60-result.png");
+      step(2, "Mounted Billy enters lane 3 with five orbs after two tributes", Boolean(seen.summon), seen.summon);
+      step(3, "Singularity moves him to lane 2, facing the five-orb Dragon", Boolean(seen.singularity && seen.faceoff), {singularity: seen.singularity, faceoff: seen.faceoff});
+      step(4, "After the clash the Dragon has two orbs and the rider is gone", true, {afterClash: seen.afterClash});
+      return report;
+    }
+
     // Step 2: four cards, deck count, card back.
     const opening = publicState(createMatch(seed), "cowboy");
     const background = await evaluate(`getComputedStyle(document.querySelector("#match .match-own .card-back")).backgroundImage`);
@@ -552,8 +620,9 @@ async function runOnce(seed, flags, tilePoints) {
   return report;
 }
 
-const seed = chooseSeed();
-const tilePoints = await cowboyTilePoints();
+const seed = showcase ? 60 : chooseSeed();
+const expectedSteps = showcase ? 4 : 8;
+const tilePoints = showcase ? [] : await cowboyTilePoints();
 const attempts = [];
 let run = await runOnce(seed, args.includes("--swiftshader") ? SWIFTSHADER : [], tilePoints);
 if (run.webglFailed && !args.includes("--swiftshader")) {
@@ -588,5 +657,5 @@ if (args.includes("--summary")) {
   console.log(`Browser receipt ${path.relative(root, path.join(outDir, "browser-run.json"))}`);
 } else console.log(JSON.stringify(result, null, 2));
 const pending = result.steps.filter((each) => each.state !== "observed").map((each) => each.id);
-console.log(`\nobserved ${result.steps.length - pending.length} of 8 steps; pending: ${pending.join(", ") || "none"}; console errors: ${result.consoleErrors.length}`);
-process.exitCode = result.error || pending.length || result.steps.length !== 8 || result.consoleErrors.length ? 1 : 0;
+console.log(`\nobserved ${result.steps.length - pending.length} of ${expectedSteps} steps; pending: ${pending.join(", ") || "none"}; console errors: ${result.consoleErrors.length}`);
+process.exitCode = result.error || pending.length || result.steps.length !== expectedSteps || result.consoleErrors.length ? 1 : 0;
