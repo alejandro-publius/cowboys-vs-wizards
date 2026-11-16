@@ -20,6 +20,7 @@ Evidence through November 15, 2026. The commit table identifies the builds each 
 | `1f4c7cd` | Kiro added a blue pulse for the actual attacking troops during the existing clash pause. |
 | `415af3c` | Kiro added stack depth, card selection lift, and flight from a confirmed troop card to the chosen lane indicator. Codex connected the flight to the controller’s accepted action result. |
 | `daf61d6` | Kiro added two board graveyards that absorb cards as defeats, tributes, and spells enter discard. See `docs/evidence/kiro-duel-graveyards.md`. |
+| `c2a7dc6` | Kiro added the Cowboy deck-to-hand draw and flip. Codex fixed duplicate copies and deck alignment, then ran 19 passing targeted tests. See `docs/kiro-build-log.md`. |
 
 The scripted Chrome evidence applies to `64e3614`. Browser verification for the later visual changes is deferred. We used Agent Focus to inspect the active IDE session and looked at Extensions, Powers, and Memory settings.
 
