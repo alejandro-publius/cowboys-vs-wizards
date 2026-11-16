@@ -16,6 +16,7 @@ const notices=await Promise.all([utf8("node_modules/three/LICENSE"),utf8("node_m
 const html=(await utf8("src/ui/layout.html")).replace("@@ASSETS@@",JSON.stringify(assetMap))
   .replace("@@POSTER@@",await base64("assets/media/board.jpg"))
   .replace("@@VIDEO@@",await base64("assets/media/replay.mp4"))
+  .replace("@@CARDBACK@@",await base64("assets/cards/card-back.png"))
   .replace("@@SCRIPT@@",()=>script)
   .replace("</body>",'<script type="text/plain" id="licenses">\n'+notices.join("\n")+'\n</script>\n</body>');
 await mkdir(path("dist/"),{recursive:true});

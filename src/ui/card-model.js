@@ -1,0 +1,103 @@
+// Render data for the Orb Duel card overlay (src/ui/cards.js). Pure: it reads
+// the displayed Player_View, the selection options and the controller's UI
+// state, never the full Engine state. The Wizard side is counts only, so no
+// Wizard card identity can reach the overlay. Card fronts are plain text and
+// labelled temporary until the approved front design is imported.
+//
+// cardModel({displayed, options, status, seed, seedPinned, message}) takes
+// the controller's displayed(), options(), status(), seed(), seedPinned()
+// and message(); displayed and options may be null.
+import {CARDS} from "../game/cards.js";
+import {SLOT_COUNT} from "../game/state.js";
+
+export const TEMPORARY_FRONT = "Temporary card front";
+export const RESULT_LABELS = Object.freeze({win: "Victory", loss: "Defeat", draw: "Draw"});
+
+// Shown instead of the selection prompt while the controller takes no input.
+const WAITING = {
+  idle: "No match is running.",
+  playing: "Playing out the last move…",
+  cpu_turn: "The Wizard is choosing a move…",
+  terminal: "The match is over.",
+  error: "Playback stopped.",
+};
+
+function phase(displayed) {
+  if (!displayed) return "No match";
+  if (displayed.result) return "Match over";
+  return displayed.activeSide === "cowboy" ? "Cowboy phase (you)" : "Wizard phase (CPU)";
+}
+
+function front(cardId, selected) {
+  const card = CARDS[cardId];
+  const troop = card.kind === "troop";
+  return {
+    cardId,
+    name: card.name,
+    kind: card.kind,
+    stars: troop ? card.stars : "Spell",
+    health: troop ? card.health : null,
+    attack: troop ? card.attack : null,
+    selected,
+    label: TEMPORARY_FRONT,
+  };
+}
+
+function troopSummary(troop) {
+  if (!troop) return null;
+  const card = CARDS[troop.cardId];
+  return {name: card.name, health: troop.health, max: card.health};
+}
+
+export function cardModel({displayed = null, options = null, status = "idle", seed = null, seedPinned = false, message = null} = {}) {
+  const accepting = status === "accepting_input";
+  const cowboy = displayed?.sides.cowboy ?? null;
+  const wizard = displayed?.sides.wizard ?? null;
+  const selected = options?.cardId ?? null;
+  const outcome = displayed?.result?.outcome;
+  return {
+    status,
+    round: displayed?.round ?? null,
+    phase: phase(displayed),
+    seed: {value: seed, pinned: seed !== null && Boolean(seedPinned), text: seed === null ? "–" : String(seed)},
+    cowboy: {
+      deckCount: cowboy?.deckCount ?? null,
+      handCount: cowboy?.handCount ?? null,
+      baseOrbs: cowboy?.baseOrbs ?? null,
+      hand: (cowboy?.hand ?? []).map((cardId) => front(cardId, cardId === selected)),
+    },
+    // Counts only: never the Wizard hand or deck.
+    wizard: {
+      deckCount: wizard?.deckCount ?? null,
+      handCount: wizard?.handCount ?? null,
+      baseOrbs: wizard?.baseOrbs ?? null,
+    },
+    prompt: accepting || status === "submitting" ? options?.prompt ?? "" : WAITING[status] ?? "",
+    message: message ?? "",
+    lanes: Array.from({length: SLOT_COUNT}, (_, lane) => ({
+      lane,
+      cowboy: troopSummary(cowboy?.board[lane]),
+      wizard: troopSummary(wizard?.board[lane]),
+    })),
+    // Slots a click can choose now: own (Cowboy) and enemy (Wizard).
+    slots: {
+      cowboy: accepting ? [...(options?.ownSlots ?? [])] : [],
+      wizard: accepting ? [...(options?.enemySlots ?? [])] : [],
+    },
+    tributes: [...(options?.tributes ?? [])],
+    buttons: {
+      hand: accepting,
+      confirm: accepting && Boolean(options?.canConfirm),
+      cancel: accepting && Boolean(options?.canCancel),
+      skip: accepting && Boolean(options?.canSkip),
+      endPhase: accepting,
+      restart: status !== "idle",
+    },
+    result: outcome === undefined ? null : {
+      outcome,
+      label: RESULT_LABELS[outcome] ?? outcome,
+      reason: displayed.result.reason ?? null,
+      round: displayed.result.round ?? null,
+    },
+  };
+}

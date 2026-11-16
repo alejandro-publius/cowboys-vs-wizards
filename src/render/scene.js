@@ -31,7 +31,7 @@ export async function loadAssets(source){
   return Object.fromEntries(entries);
 }
 
-function fit(asset, {width,height,depth,x=0,y=0,z=0,yaw=0}){
+export function fit(asset, {width,height,depth,x=0,y=0,z=0,yaw=0}){
   const copy=asset.clone(true), box=new T.Box3().setFromObject(copy);
   const center=box.getCenter(v()), size=box.getSize(v());
   copy.position.sub(v(center.x,box.min.y,center.z));
@@ -43,13 +43,13 @@ function fit(asset, {width,height,depth,x=0,y=0,z=0,yaw=0}){
   copy.traverse(model=>{if(model.isMesh){model.castShadow=true;model.receiveShadow=true;}});
   return parent;
 }
-function surface(model,x,z){
+export function surface(model,x,z){
   model.updateWorldMatrix(true,true);
   const hit=new T.Raycaster(v(x,9,z),v(0,-1,0),0,16).intersectObject(model,true)[0];
   if(!hit)throw new Error("Unable to seat a piece on the board at "+x+", "+z);
   return hit.point.y;
 }
-function setBoard(scene,models){
+export function setBoard(scene,models){
   const board=fit(models.board,{width:11.65,height:.57,depth:8.15});
   scene.add(board);
   const deck=surface(board,0,0),tiles=[];
@@ -68,7 +68,7 @@ function setBoard(scene,models){
   scene.add(saloon,gate);
   return {board,deck,tiles,saloon,gate};
 }
-function attachPistol(actor,model){
+export function attachPistol(actor,model){
   const holder=new T.Group(), p=new T.Group(), prop=model.clone(true), tip=new T.Object3D();
   // Tripo's side-view revolver points along -X. Rotate it into the actor's forward axis.
   const anchor=v(.255,.356,0);
@@ -78,7 +78,7 @@ function attachPistol(actor,model){
   prop.traverse(node=>{if(node.isMesh)node.castShadow=true;});
   return {holder,tip};
 }
-function attachStaff(actor){
+export function attachStaff(actor){
   const hand=actor.rig.sides[1];
   const holder=new T.Group(), oak=new T.MeshStandardMaterial({color:0x493023,roughness:.77}),
     brass=new T.MeshStandardMaterial({color:0xbe8d50,roughness:.32,metalness:.66});
@@ -134,7 +134,7 @@ function placeDebris(scene,deck){
   }
   return {layout,meshes};
 }
-function lighting(scene){
+export function lighting(scene){
   scene.add(new T.HemisphereLight(0xebdfff,0x81503b,1.73));
   const key=new T.DirectionalLight(0xffe5c3,2.35), rim=new T.DirectionalLight(0xc4acf7,1.30);
   key.position.set(-5.3,8.7,5.0);
@@ -146,7 +146,7 @@ function lighting(scene){
   scene.add(key,rim,flash,rift);
   return {flash,rift};
 }
-function makeEffects(scene){
+export function makeEffects(scene){
   const neon=(color)=>new T.MeshBasicMaterial({color,transparent:true,
     blending:T.AdditiveBlending,depthWrite:false,toneMapped:false});
   const shotFlash=new T.Group(), sparkCone=new T.Mesh(new T.ConeGeometry(.068,.195,8),neon(0xffe2ac));
@@ -193,13 +193,13 @@ function makeEffects(scene){
   elements.forEach(mesh=>{mesh.visible=false;scene.add(mesh);});
   return {shotFlash,tracer,ripple,sparks,well,diskMaterial,embers,fragments};
 }
-const drawKeys=[
+export const drawKeys=[
   [0,[-.221,.468,.026],0],[.22,[-.233,.437,.031],.78],[.34,[-.168,.445,-.036],1],
   [.45,[-.179,.547,.012],1],[.66,[-.139,.623,.178],.83],[.775,[-.132,.642,.214],.71],
   [.83,[-.137,.676,.163],.66],[.98,[-.131,.625,.196],.72],[1.19,[-.182,.532,.082],.9],
   [1.37,[-.168,.445,-.036],1],[1.58,[-.221,.468,.026],0]
 ];
-const staffKeys=[
+export const staffKeys=[
   [0,[.263,.430,.125],.79],[.30,[.219,.559,.139],.77],[.55,[.210,.508,.190],.93],
   [1.53,[.232,.505,.179],.88],[2.12,[.197,.559,.133],.92],[2.30,[.219,.499,.204],.93],
   [2.51,[.223,.457,.176],.88],[3.11,[.247,.441,.140],.81],[3.69,[.263,.430,.125],.79]
@@ -238,7 +238,7 @@ function kickingLegs(amount,throwback,t){
     foot:[-.24*amount,0,0]
   }));
 }
-function motion(keys,t,turn){
+export function motion(keys,t,turn){
   if(t<=0||t>=keys.at(-1)[0])return null;
   const i=keys.findIndex(([time])=>time>=t);
   const [start,first,bend1]=keys[i-1],[end,last,bend2]=keys[i];
@@ -402,4 +402,20 @@ export async function createDuel(models){
   const state=()=>({mode,elapsed,health:{...health},...result,affected:sim.pieces.filter(p=>p.dynamic).length});
   draw();
   return {scene,camera,billy,wizard,gun,staff,events,stage,view,reset,step,draw,state,well:effects.well,sim:()=>sim};
+}
+
+// The createDuel stage without its actors, physics or debris: the same floor,
+// fog, board, tiles, Saloon, Gateway, lighting and board camera. `light` holds
+// the flash and rift point lights, both off. Used by the Orb Duel match board.
+export async function createBoardScene(models){
+  const scene=new T.Scene();
+  scene.background=new T.Color(0x27202a);
+  scene.fog=new T.FogExp2(0x27202a,.025);
+  const floor=new T.Mesh(new T.PlaneGeometry(120,120),new T.MeshStandardMaterial({color:0x352630,roughness:.98}));
+  floor.rotation.x=-Math.PI/2;floor.position.y=-.039;floor.receiveShadow=true;scene.add(floor);
+  const stage=setBoard(scene,models), light=lighting(scene);
+  const camera=new T.PerspectiveCamera(40,16/9,.1,80);
+  camera.position.set(3.65,10.10,12.20);
+  camera.lookAt(v(.06,-.035,.74));camera.updateMatrixWorld(true);
+  return {scene,camera,stage,light};
 }

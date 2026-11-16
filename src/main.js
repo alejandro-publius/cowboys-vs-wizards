@@ -1,5 +1,11 @@
 import * as T from "three";
 import {createDuel,loadAssets,timings} from "./render/scene.js";
+import {createMatchBoard} from "./render/match-board.js";
+import {withCues} from "./render/cues.js";
+import {createScheduler} from "./match/scheduler.js";
+import {createController} from "./match/controller.js";
+import {mountCards} from "./ui/cards.js";
+import {cardModel} from "./ui/card-model.js";
 const get=id=>document.getElementById(id);
 const end={fire:timings.fireEnd,cast:timings.castEnd,exchange:timings.end};
 const cues={
@@ -53,7 +59,11 @@ async function launch(){
   renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;
   renderer.toneMappingExposure=1.08;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.35));
-  const duel=await createDuel(await loadAssets(JSON.parse(get("models").textContent)));
+  // The models are parsed once and shared by the attack demo and the card match.
+  const models=await loadAssets(JSON.parse(get("models").textContent));
+  const duel=await createDuel(models);
+  const scheduler=createScheduler();
+  const board=await createMatchBoard({models,scheduler});
   get("models").remove();
   const stage=get("stage");
   stage.append(renderer.domElement);
@@ -63,10 +73,13 @@ async function launch(){
     duel.camera.aspect=width/height;
     duel.camera.fov=width/height<1?59:40;
     duel.camera.updateProjectionMatrix();
+    board.resize(width,height);
   }
   new ResizeObserver(size).observe(stage);
   size();
   let active=false,previous=0,ticks=0,context=null,enabled=false,frameId=0;
+  // "match" (Orb Duel card match, the default) or "demo" (the attack demo).
+  let appMode=null;
   const moves=[get("fire"),get("cast"),get("watch")],status=get("status");
   const useControls=playing=>{active=playing;for(const button of moves)button.disabled=playing;};
   const message=text=>{if(status.textContent!==text)status.textContent=text;};
@@ -74,6 +87,10 @@ async function launch(){
     if(active)return;
     duel.reset(mode);ticks=0;useControls(true);refreshHealth(duel.state());
     message(mode==="cast"?"The wizard raises his staff.":"Billy reaches for his revolver.");
+  }
+  function resetDemo(){
+    duel.reset();ticks=0;useControls(false);refreshHealth(duel.state());
+    message("Choose an attack or play the exchange.");
   }
   get("sound").addEventListener("click",async()=>{
     const Audio=window.AudioContext||window.webkitAudioContext;
@@ -88,25 +105,80 @@ async function launch(){
     get("camera").setAttribute("aria-pressed",String(duel.view.duel));
     get("camera").textContent=duel.view.duel?"Duel camera":"Board camera";duel.draw();
   });
-  get("reset").addEventListener("click",()=>{
-    duel.reset();ticks=0;useControls(false);refreshHealth(duel.state());
-    message("Choose an attack or play the exchange.");
-  });
+  get("reset").addEventListener("click",resetDemo);
   get("fire").addEventListener("click",()=>start("fire"));
   get("cast").addEventListener("click",()=>start("cast"));
   get("watch").addEventListener("click",()=>start("exchange"));
   document.addEventListener("keydown",event=>{
-    if(get("controls").hidden||event.repeat||event.metaKey||event.altKey||event.ctrlKey)return;
+    if(appMode!=="demo"||get("controls").hidden||event.repeat||event.metaKey||event.altKey||event.ctrlKey)return;
     if(event.key==="1")start("fire");
     if(event.key==="2")start("cast");
     if(event.code==="Space"&&event.target===document.body){event.preventDefault();start("exchange");}
   });
+
+  // Orb Duel card match: the controller holds the Engine state and drives the
+  // match board (with the Billy and Wizard cues) and the card overlay.
+  let controller=null;
+  function showMatch(){
+    if(!controller)return;
+    const state=controller.status(),options=controller.options();
+    overlay.render(cardModel({displayed:controller.displayed(),options,status:state,
+      seed:controller.seed(),seedPinned:controller.seedPinned(),message:controller.message()}));
+    board.highlight(state==="accepting_input"&&options?{cowboy:options.ownSlots,wizard:options.enemySlots}:{});
+  }
+  const overlay=mountCards(get("match"),{
+    onCard:cardId=>controller.input({type:"card",cardId}),
+    onSlot:(side,slot)=>controller.input({type:"slot",side,slot}),
+    onConfirm:()=>controller.input({type:"confirm"}),
+    onCancel:()=>controller.input({type:"cancel"}),
+    onSkip:()=>controller.input({type:"skip"}),
+    onEndPhase:()=>controller.endPhase(),
+    onRestart:()=>controller.restart(),
+    onReplaySeed:text=>controller.start(text)
+  });
+  controller=createController({scheduler,renderer:withCues(board),onChange:showMatch});
+  const params=new URLSearchParams(location.search);
+  function startMatch(){
+    scheduler.tick(performance.now());
+    if(!controller.start(params.get("seed")??undefined))controller.start();
+  }
+  renderer.domElement.addEventListener("pointerdown",event=>{
+    if(appMode!=="match"||event.button!==0)return;
+    const box=renderer.domElement.getBoundingClientRect();
+    const hit=board.pick((event.clientX-box.left)/box.width*2-1,1-(event.clientY-box.top)/box.height*2);
+    if(hit)controller.input({type:"slot",side:hit.side,slot:hit.slot});
+  });
+  document.addEventListener("keydown",event=>{
+    if(appMode==="match"&&event.key==="Escape")controller.input({type:"cancel"});
+  });
+  function setMode(next){
+    if(next===appMode)return;
+    if(appMode==="match")controller.leave();
+    if(appMode==="demo")resetDemo();
+    appMode=next;
+    const match=next==="match";
+    get("match").hidden=!match;
+    get("controls").hidden=match;get("tools").hidden=match;
+    get("mode").textContent=match?"Attack demo":"Card match";
+    if(match)startMatch();
+    else{previous=0;ticks=0;}
+  }
+  get("mode").addEventListener("click",()=>setMode(appMode==="match"?"demo":"match"));
+
   renderer.domElement.addEventListener("webglcontextlost",event=>{
     event.preventDefault();cancelAnimationFrame(frameId);get("tools").hidden=true;get("controls").hidden=true;
+    get("modes").hidden=true;get("match").hidden=true;controller.leave();
     renderer.domElement.remove();recording();
   },{once:true});
-  get("boot").hidden=true;get("controls").hidden=false;get("tools").hidden=false;
+  get("boot").hidden=true;get("modes").hidden=false;
+  setMode(params.get("mode")==="demo"?"demo":"match");
   function frame(now){
+    if(appMode==="match"){
+      try{scheduler.tick(now);}catch(error){console.error(error);}
+      renderer.render(board.scene,board.camera);
+      frameId=requestAnimationFrame(frame);
+      return;
+    }
     ticks+=previous ? Math.min(.05,(now-previous)/1000):0;
     previous=now;
     const dt=1/60;
