@@ -12,7 +12,7 @@ import './load-local.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const directory=path.resolve(process.argv[2]||path.join(root,'.artifacts/sourced-sheriff'));
 const motion=process.argv[3]||'walk';
-assert(['walk','idle'].includes(motion),'existing source clip required');
+assert(['walk','idle','headShake'].includes(motion),'existing source clip required');
 const bytes=fs.readFileSync(path.join(directory,'sheriff-mixamo-'+motion+'-preview.glb'));
 const gltf=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');
 const clip=gltf.animations.find(c=>c.name==='Mixamo_'+motion+'_retargeted');

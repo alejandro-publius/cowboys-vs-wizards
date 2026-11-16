@@ -1,5 +1,5 @@
 // Retarget one existing Mixamo clip onto the existing Sheriff skinning rig.
-// Usage: node scripts/retarget-sheriff-source-clip.mjs DIRECTORY_CONTAINING_Xbot.glb [walk|idle]
+// Usage: node scripts/retarget-sheriff-source-clip.mjs DIRECTORY_CONTAINING_Xbot.glb [walk|idle|headShake]
 // Source and preview limits: docs/evidence/sheriff-sourced-walk-preview.md
 import fs from 'node:fs';
 import path from 'node:path';
@@ -11,7 +11,7 @@ import {rigActor} from '../src/render/rig.js';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const dir=path.resolve(process.argv[2] || path.join(root,'.artifacts/sourced-sheriff'));
 const motion=process.argv[3]||'walk';
-if(!['walk','idle'].includes(motion))throw Error('Choose an existing walk or idle clip');
+if(!['walk','idle','headShake'].includes(motion))throw Error('Choose an existing walk, idle or headShake clip');
 const outputName='sheriff-mixamo-'+motion+'-preview.glb';
 function readGLB(p){const b=fs.readFileSync(p);let o=12,g,bin;while(o<b.length){const n=b.readUInt32LE(o),t=b.readUInt32LE(o+4);if(t===0x4e4f534a)g=JSON.parse(b.subarray(o+8,o+8+n).toString());else if(t===0x004e4942)bin=b.subarray(o+8,o+8+n);o+=n+8;}return {b,g,bin};}
 async function load(p){const {b}=readGLB(p);return new GLTFLoader().parseAsync(b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength),'');}

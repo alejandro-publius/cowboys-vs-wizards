@@ -1,7 +1,7 @@
 # Sheriff sourced standing idle preview
 Prepared November 16, 2026. Isolated preview; the public game is unchanged.
 
-The user liked the sourced walk but asked for the Sheriff to remain on his tile without walking in place. This preview applies the existing Mixamo idle clip to the same Tripo Sheriff and existing game rig. The approved walk reference is preserved separately. The standing idle is awaiting user visual review.
+The user liked the sourced walk but asked for the Sheriff to remain on his tile without walking in place. This preview applies the existing Mixamo idle clip to the same Tripo Sheriff and existing game rig. The approved walk reference is preserved separately. The user rejected this preview as visually still. It is not an accepted idle choice.
 
 ## Source and transformation
 - Character: unchanged assets/models/sheriff.glb, the user's Tripo Sheriff.
@@ -26,3 +26,7 @@ Reproduce:
 4. node scripts/record-sheriff-board-preview.mjs --out-dir .artifacts/sheriff-idle-board-preview --close-only
 
 The clip has not been connected to live match states or deployed. Existing coarse skin weights and full gameplay transitions still need review before integration.
+
+## User feedback
+
+The user responded "he is just standing still?". Preserve that rejection; numerical motion alone is not enough for visual acceptance. See [the stationary gesture candidate](sheriff-stationary-gesture-preview.md) for the next sourced motion preview.
