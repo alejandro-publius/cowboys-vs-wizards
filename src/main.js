@@ -7,7 +7,8 @@ import {withCues} from "./render/cues.js";
 import {withClashReady} from "./render/clash-ready.js";
 import {withGraveyards} from "./render/graveyards.js";
 import {createScheduler} from "./match/scheduler.js";
-import {createController} from "./match/controller.js";
+import {createController,FABLE_ENGINE} from "./match/controller.js";
+import {openingMatch,parseOpeningParams} from "./game/opening-policy.js";
 import {mountCards} from "./ui/cards.js";
 import {cardModel} from "./ui/card-model.js";
 const get=id=>document.getElementById(id);
@@ -199,8 +200,11 @@ async function launch(){
       return {left:box.left+(p.x+1)/2*box.width-size/2,top:box.top+(1-p.y)/2*box.height-size/2,width:size,height:size};
     }
   });
-  controller=createController({scheduler,renderer:matchView,onChange:showMatch});
   const params=new URLSearchParams(location.search);
+  // ?opening=shipped|both[&first=cowboy|wizard] opts into the local opening A/B; otherwise the default engine runs.
+  const opening=parseOpeningParams(params);
+  const engine=opening&&{...FABLE_ENGINE,createMatch:seed=>openingMatch(seed,opening.opening,opening.first)};
+  controller=createController({...(engine&&{engine}),scheduler,renderer:matchView,onChange:showMatch});
   // ?closeup=cowboy-0 (or cowboy-0-wide) views one tile from the front, to check a model.
   const closeup=/^(cowboy|wizard)-([0-2])(-wide)?$/.exec(params.get("closeup")??"");
   if(closeup)board.closeUp(closeup[1],Number(closeup[2]),Boolean(closeup[3]));

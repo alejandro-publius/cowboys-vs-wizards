@@ -74,7 +74,7 @@ function parseSeed(seed) {
   return Number.isSafeInteger(value) ? value : null;
 }
 
-const FABLE_ENGINE = Object.freeze({ createMatch, applyAction, legalActions, publicState });
+export const FABLE_ENGINE = Object.freeze({ createMatch, applyAction, legalActions, publicState });
 const randomUint32 = () => crypto.getRandomValues(new Uint32Array(1))[0];
 
 export function createController({
