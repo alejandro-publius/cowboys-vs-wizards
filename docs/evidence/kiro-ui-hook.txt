@@ -1,0 +1,33 @@
+Kiro duel-presenter SessionStart check
+2026-11-16T06:30:14Z
+✔ card model: counts, one front per held card, no Wizard card identity, temporary label, outcomes and seed (seeds 0-99) (163.022459ms)
+ℹ Cowboy outcomes: {"win":50,"loss":35,"draw":15}
+✔ card model: no match yet, the result labels and the message (0.251125ms)
+✔ Feature: orb-duel, Property 5: Cancellation (1347.980333ms)
+ℹ cuts: {"cpuQueued":13,"midClash":61,"insideImpact":54}
+✔ Feature: orb-duel, Property 6: CPU information limit (436.291959ms)
+✔ clicks, end phase and submit() during playback or the CPU turn are ignored and reach no Engine call (0.466084ms)
+✔ a double confirm, or end phase twice, applies once (0.303375ms)
+✔ re-submitting a committed action after the drain is rejected and changes nothing (0.343709ms)
+✔ a generated seed reaches createMatch and is recorded; the default comes from crypto (3.543708ms)
+✔ restart reuses a pinned seed and otherwise generates a new one (0.344125ms)
+✔ a seed that is not a whole number is refused before createMatch, leaving the match untouched (5.027ms)
+✔ seeds 14, 27 and 47 keep the createMatch opening hands and play to a result (3.3535ms)
+✔ seeds 0-99 finish with the displayed outcome equal to the Engine result (492.087083ms)
+ℹ Cowboy outcomes: {"win":50,"loss":35,"draw":15}
+✔ Feature: orb-duel, Property 2: Presenter fidelity (513.338333ms)
+✔ Feature: orb-duel, Property 3: Clash completeness (441.649875ms)
+ℹ coverage: {"clashes":741,"attacks":2734,"zeroedAttackers":539,"zeroedBeforeOwnImpact":120,"chainedBaseHits":68,"clashDefeats":539,"spellDefeats":71,"moves":19}
+✔ Feature: orb-duel, Property 4: Displayed health bounds (445.670167ms)
+✔ an unsupported event type throws a development error naming it, before anything is queued (0.466375ms)
+✔ clear() mid-clash stops every later renderer call, orb setter and callback (1.665834ms)
+✔ a displayed state that differs from `to` at drain, or from `from` at start, calls onError naming the path (0.473583ms)
+✔ a draw identifies the new hand position when another copy is held (0.186042ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2388.191125

@@ -2,13 +2,13 @@
 // (dist/cowboys-vs-wizards-board-duel.html). It speaks the DevTools protocol
 // over Node's built-in WebSocket, so it needs no extra dependency.
 //
-//   npm run build && node scripts/browser-match-check.mjs [--seed N] [--swiftshader]
+//   npm run build && node scripts/browser-match-check.mjs [--seed N] [--swiftshader] [--out-dir PATH]
 //
 // Without --seed it uses the first seed in which the Cowboys start and can
 // summon a Sheriff from the opening hand, checked with Fable's Engine here in
 // Node. If WebGL fails with Chrome's default GPU path it retries once with
 // SwiftShader. Screenshots and browser-run.json go to
-// docs/evidence/kiro-match-ui/, and the JSON is also printed. A step is
+// docs/evidence/kiro-match-ui/ by default. Use --out-dir for a separate run. The JSON is also printed. A step is
 // "observed" only when the page showed it; anything else stays "pending".
 import {execFileSync, spawn} from "node:child_process";
 import {createHash} from "node:crypto";
@@ -29,12 +29,16 @@ const SWIFTSHADER = ["--use-angle=swiftshader", "--enable-unsafe-swiftshader"];
 const WIDTH = 1440, HEIGHT = 900;
 const root = fileURLToPath(new URL("../", import.meta.url));
 const pagePath = path.join(root, "dist/cowboys-vs-wizards-board-duel.html");
-const outDir = path.join(root, "docs/evidence/kiro-match-ui");
 const args = process.argv.slice(2);
 const option = (name) => {
   const i = args.indexOf(name);
   return i < 0 ? undefined : args[i + 1];
 };
+const outputPath = option("--out-dir");
+if (args.includes("--out-dir") && (!outputPath || outputPath.startsWith("--"))) {
+  throw new Error("--out-dir needs a directory");
+}
+const outDir = outputPath ? path.resolve(outputPath) : path.join(root, "docs/evidence/kiro-match-ui");
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const shell = (command, list) => {
@@ -116,7 +120,8 @@ async function launchChrome(extra) {
         await Promise.race([exited, sleep(5000)]);
         if (child.exitCode === null) child.kill("SIGKILL");
       }
-      await rm(profile, {recursive: true, force: true});
+      // Chrome helpers can still be writing into the profile as they exit.
+      await rm(profile, {recursive: true, force: true, maxRetries: 5});
     },
   };
 }
@@ -269,8 +274,9 @@ async function runOnce(seed, flags, tilePoints) {
     async function screenshot(name) {
       const {data} = await send("Page.captureScreenshot", {format: "png"});
       await mkdir(outDir, {recursive: true});
-      await writeFile(path.join(outDir, name), Buffer.from(data, "base64"));
-      report.screenshots.push(`docs/evidence/kiro-match-ui/${name}`);
+      const screenshotPath = path.join(outDir, name);
+      await writeFile(screenshotPath, Buffer.from(data, "base64"));
+      report.screenshots.push(outputPath ? screenshotPath : path.relative(root, screenshotPath));
     }
     const step = (id, title, observed, detail) => report.steps.push({id, title, state: observed ? "observed" : "pending", detail});
     const cardSelector = (cardId) => `#match .match-hand [data-card-id="${cardId}"]`;
@@ -385,14 +391,30 @@ async function runOnce(seed, flags, tilePoints) {
     if (pickedBy === "lane button") await click(laneSelector("cowboy", slot));
     const ready = await snapshot();
     await click(action("confirm"));
+    const flightLanding = await evaluate(`(() => {
+      const node = document.querySelector("#match .card-flight");
+      const animation = node?.getAnimations()[0];
+      if (!animation) return null;
+      const elapsed = animation.currentTime;
+      animation.pause();
+      animation.currentTime = Number(animation.effect.getTiming().duration) - 1;
+      const box = node.getBoundingClientRect();
+      animation.currentTime = elapsed;
+      animation.play();
+      return {x: box.left + box.width / 2, y: box.top + box.height / 2};
+    })()`);
+    const expectedLanding = tilePoints.find((point) => point.slot === slot);
+    const landingError = flightLanding
+      ? Math.hypot(flightLanding.x - expectedLanding.x, flightLanding.y - expectedLanding.y)
+      : null;
     const summonSeen = new Set();
     s = await settle("the summon playback", summonSeen);
     await sleep(300);
     await screenshot("summon-sheriff.png");
     const placed = lane(s, "cowboy", slot);
     step(4, "Select Sheriff, pick a lane, confirm; the troop and its orbs appear",
-      ready.buttons.confirm && placed?.text === "Sheriff 3/3" && s.hand.length === 3 && summonSeen.has("playing") && s.status === "accepting_input",
-      {lanePickedBy: pickedBy, canvasTilePoints: tilePoints, uncoveredTiles: free.map((point) => point.slot), slot,
+      ready.buttons.confirm && placed?.text === "Sheriff 3/3" && s.hand.length === 3 && summonSeen.has("playing") && s.status === "accepting_input" && landingError !== null && landingError < 4,
+      {flightLanding, expectedLanding, landingError, lanePickedBy: pickedBy, canvasTilePoints: tilePoints, uncoveredTiles: free.map((point) => point.slot), slot,
         promptBeforeConfirm: ready.prompt, laneSummary: placed?.text, laneLabel: placed?.label, handAfter: s.hand.map((card) => card.name),
         statusesSeen: [...summonSeen]});
 

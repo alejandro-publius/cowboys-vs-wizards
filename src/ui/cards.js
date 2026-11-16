@@ -8,7 +8,9 @@
 //
 // mountCards(root, handlers) -> {render(model)}
 // handlers: onCard(cardId), onSlot(side, slot), onConfirm(), onCancel(),
-//   onSkip(), onEndPhase(), onRestart(), onReplaySeed(text)
+//   onSkip(), onEndPhase(), onRestart(), onReplaySeed(text),
+//   summonTarget(slot) -> {left, top, width, height} screen rect of the Cowboy
+//   board tile for a summon flight, or null to fall back to the lane button
 // render() sets root.dataset.status to the controller status.
 
 const ACTIONS = {confirm: "onConfirm", cancel: "onCancel", skip: "onSkip", "end-phase": "onEndPhase", restart: "onRestart"};
@@ -206,9 +208,12 @@ export function mountCards(root, handlers = {}) {
     const card = model.cowboy.hand.find((each) => each.cardId === cardId);
     if (!card || card.kind !== "troop" || slot === null) return null;
     const source = hand.querySelector(`[data-card-id="${CSS.escape(cardId)}"]`);
-    const target = lanes.querySelector(`[data-side="cowboy"][data-slot="${slot}"]`);
-    if (!source || !target) return null;
-    return {cardId, source, from: source.getBoundingClientRect(), to: target.getBoundingClientRect()};
+    // Prefer the selected 3D board tile; fall back to the lane button.
+    const board = handlers.summonTarget?.(slot);
+    const usable = board && [board.left, board.top, board.width, board.height].every(Number.isFinite) && board.width > 0 && board.height > 0;
+    const to = usable ? board : lanes.querySelector(`[data-side="cowboy"][data-slot="${slot}"]`)?.getBoundingClientRect();
+    if (!source || !to) return null;
+    return {cardId, source, from: source.getBoundingClientRect(), to};
   }
 
   function launch({cardId, source, from, to}) {

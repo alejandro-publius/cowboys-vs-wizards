@@ -139,7 +139,20 @@ async function launch(){
     onSkip:()=>controller.input({type:"skip"}),
     onEndPhase:()=>controller.endPhase(),
     onRestart:()=>controller.restart(),
-    onReplaySeed:text=>controller.start(text)
+    onReplaySeed:text=>controller.start(text),
+    // Screen rect of the Cowboy tile for slot, projected through the board camera.
+    summonTarget:slot=>{
+      const tile=board.stage.tiles[slot];
+      if(!tile||tile.faction!=="cowboy")return null;
+      const box=renderer.domElement.getBoundingClientRect();
+      if(!(box.width>0&&box.height>0))return null;
+      // board.camera is the camera the match renders with (see frame()).
+      board.camera.updateMatrixWorld();
+      const p=new T.Vector3(tile.x,tile.top,tile.z).project(board.camera);
+      if(!Number.isFinite(p.x)||!Number.isFinite(p.y)||!Number.isFinite(p.z)||p.z<-1||p.z>1)return null;
+      const size=Math.max(24,box.width*.06);
+      return {left:box.left+(p.x+1)/2*box.width-size/2,top:box.top+(1-p.y)/2*box.height-size/2,width:size,height:size};
+    }
   });
   controller=createController({scheduler,renderer:matchView,onChange:showMatch});
   const params=new URLSearchParams(location.search);

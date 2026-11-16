@@ -154,3 +154,10 @@ Kiro references for the planned work are [steering](https://kiro.dev/docs/steeri
 - **Work** — Kiro CLI connected the match's existing Cowboy draw event to a short card flight. The horseshoe back turns into the face and settles in the new hand position during the draw pause. The initial deal remains immediate and the Wizard hand stays private.
 - **Integration** — Codex used the appended hand position for duplicate card names, aligned the origin with the top deck card, and added a duplicate-draw regression.
 - **Verification** — Syntax check and all 19 targeted presenter, controller and card-model tests passed after integration. Browser verification is pending.
+
+## 2026-11-15 — 3D summon landing review (Kiro CLI, custom agent)
+
+- **Problem:** Review of the summon landing target found two gaps. `summonTarget` in `src/main.js` did not handle a canvas with zero width or height, and only checked `p.x` for a finite value. `src/ui/cards.js` used `??`, so a malformed rect would not fall back to the lane button.
+- **Change (Kiro CLI):** `summonTarget` now returns `null` for zero bounds or a non-finite projected x, y or z. It still projects through `board.camera`, which `frame()` renders in match mode. `summonGeometry` uses the board rect only when its fields are finite and its size is positive. Otherwise it uses the native lane button rect. The accepted-action flow is unchanged.
+- **Verification:** The SessionStart hook ran the focused tests at 2026-11-15 22:30 PST (06:30Z). Result: 19 tests, 19 pass, 0 fail, including the orb-duel Presenter fidelity, clash completeness, cancellation and CPU information properties over seeds 0-99. The hook ran before this edit and covers the Presenter and card model. It does not exercise `summonTarget` or `summonGeometry`. I did not re-run the tests.
+- **Pending:** The coordinator's Chrome run and build. These will check the landing position on screen and the zero-bounds fallback.
