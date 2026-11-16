@@ -1,0 +1,23 @@
+import {build} from 'esbuild';
+import {mkdir,readFile,writeFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+import path from 'node:path';
+import {arenaModelNames,perimeterModelNames} from '../src/render/model-assets.js';
+const root=fileURLToPath(new URL('../',import.meta.url));
+const out=path.resolve(process.argv[3]||path.join(root,'.artifacts/character-motion-preview'));await mkdir(out,{recursive:true});
+const input={};
+for(const name of [...arenaModelNames,...perimeterModelNames])input[name]=(await readFile(path.join(root,'assets/models',name+'.glb'))).toString('base64');
+const source=process.argv[2]||path.join(root,'tmp/sourced-motion/sheriff-mixamo-walk-preview.glb');
+const clipBytes=await readFile(source);
+input['preview-character']=clipBytes.toString('base64');
+const clipJson=JSON.parse(clipBytes.subarray(20,20+clipBytes.readUInt32LE(12)).toString());
+const meta=clipJson.animations[0].extras;
+const character=meta.character||process.argv[4];
+const placement={billy:{side:'cowboy',height:1.93,yaw:Math.PI},wizard:{side:'wizard',height:2.02,yaw:0},skeleton:{side:'wizard',height:1.2,yaw:0},dragon:{side:'wizard',height:1.25,footprint:2.1,yaw:-Math.PI/2,native:true},'mounted-billy':{side:'cowboy',height:1.7,footprint:2.05,yaw:Math.PI,native:true}}[character];
+if(!placement)throw Error('Unknown preview character');
+const previewConfig={...placement,character,zoom:3.35*1.62/placement.height,clipName:clipJson.animations[0].name,sourceClip:meta.sourceClip,source:meta.source||(meta.creator+' '+meta.sourceFile)};
+
+const bundle=await build({absWorkingDir:root,entryPoints:['src/render/character-motion-preview.js'],bundle:true,write:false,platform:'browser',target:'es2022',loader:{'.webp':'dataurl'},minify:true,legalComments:'inline'});
+const js=bundle.outputFiles[0].text.replace(/<\/script/gi,'<\\/script');
+const html='<!doctype html><meta charset="utf-8"><title>Character motion — board preview</title><style>html,body{margin:0;background:#27202a;overflow:hidden}canvas{display:block;width:100vw;height:100vh}</style><body><script type="application/json" id="preview-models">'+JSON.stringify(input)+'</script><script type="application/json" id="preview-config">'+JSON.stringify(previewConfig)+'</script><script>'+js+'</script>';
+await writeFile(path.join(out,'index.html'),html);console.log(path.join(out,'index.html'));

@@ -8,6 +8,15 @@ const angles = (x,y,z) => q().setFromEuler(new T.Euler(x,y,z));
 export const wizardStaffGrip = v(.283,.347,.108);
 
 const builds = {
+  // Technical skinning landmarks for the existing Tripo Skeleton, normalized to height 1.
+  // From the existing front/side asset views; no motion is authored in this profile.
+  skeleton: {
+    pelvis:[0,.51,0], spine:[0,.61,0], chest:[0,.735,0], head:[0,.85,0],
+    arm:[[.15,.77,0],[.205,.63,0],[.275,.47,.025],[.285,.43,.03]],
+    leg:[[.075,.49,0],[.108,.29,0],[.135,.065,.01]],
+    waist:[.455,.54], neck:[.823,.864], shoulder:[.12,.16], forearm:[.17,.23], hands:[.36,.46]
+  },
+
   billy: {
     pelvis:[0,.468,0], spine:[0,.552,-.009], chest:[0,.648,-.007], head:[0,.746,-.009],
     arm:[[.110,.671,.002],[.177,.550,.007],[.221,.468,.026],[.234,.426,.043]],
