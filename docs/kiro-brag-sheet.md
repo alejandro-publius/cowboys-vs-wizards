@@ -8,7 +8,7 @@
 6. **MCP.** Kiro CLI called the workspace’s read-only `inspect_duel_replay` tool. It verified eight observed steps and zero errors on the matching build, then rejected the same clean report paired with an older HTML file as stale. It also confirmed the matching standalone and static web builds separately.
 7. **Property-based testing.** Kiro exercised display fidelity, simultaneous attacks, one-to-five orb bounds, public-information limits and stale playback across seeds 0–99. The seed and test name make a reproduced failure actionable. [Property and match test evidence](evidence/kiro-match-ui.md)
 8. **Powers.** Kiro loaded our locally installed Orb Duel Review Power. Its procedure tells a new review session to consult the workspace MCP, inspect the actual artifact hash and explain the verdict. Both the Power load and the tool call ran in the same Kiro sessions for the matching and stale cases.
-9. **Workflows.** The saved `orb-duel-replay` recipe runs verification in one Kiro step and assembles the receipt in another. The November 16 release-candidate run finished both steps on `ed234b0` with 104 passing Node tests and eight observed Chrome checks. [Workflow recipe](../.kiro/workflows/orb-duel-replay.workflow.json)
+9. **Workflows.** The saved `orb-duel-replay` recipe runs verification in one Kiro step and assembles the receipt in another. The November 16 latest run finished both steps on `2e63259` with 104 passing Node tests and eight observed Chrome checks. [Workflow recipe](../.kiro/workflows/orb-duel-replay.workflow.json)
 
 ## Evidence to show
 

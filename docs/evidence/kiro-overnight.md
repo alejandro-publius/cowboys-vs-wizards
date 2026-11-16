@@ -60,7 +60,10 @@ delivery path. Both receipts matched the corresponding built page.
 The saved Workflow runs one exact verification command and writes one report.
 The Mac’s Kiro workspace has an exact `fs_read` approval for the verification
 worker’s current directory, added in the second run. The agent profile scopes
-the verification command and report path.
+the verification command and report path. A fresh CLI session at `2e63259`
+still prompted for that workspace read. Codex approved it once. Both steps
+finished with 104 passing tests and eight clean Chrome checks. For routine
+edits, the direct verifier runs the same checks outside the Workflow.
 
 ## Opening experiment
 
