@@ -20,6 +20,8 @@
 
 14. **Measured character imports.** Kiro optimized the original Skeleton, checked its fit on the Wizard tile and authored articulated Dragon and Mounted Billy attacks in Blender. The clips use the duel scheduler’s impact. Kiro’s read-only asset tool records the actual GLB hash, geometry and clip inventory. [Character evidence](evidence/kiro-character-assets.md) · [MCP tool](../.kiro/powers/orb-duel-review/server.mjs)
 
+15. **Custom Kiro Crew app: Night Watch.** Kiro CLI authored its balance-comparison adapter and HTTP backend; Codex completed the dashboard, schedule integration and validation. The app compared a three-orb versus four-orb Skeleton over the same 1,000 seeds, observed a 19.1-percentage-point Wizard win-share increase, detected a deliberate failed rules check and generated an issue draft. The scheduled run was demonstrated in an isolated Crew profile. [App and setup](../apps/night-watch/README.md) · [Actual evidence](evidence/kiro-night-watch.md).
+
 ## Evidence to show
 
 | Screen | What the judge sees |
