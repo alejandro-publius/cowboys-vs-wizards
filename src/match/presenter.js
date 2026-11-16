@@ -18,6 +18,12 @@
 // { side, slot } of every attacker in the damage events that follow a clash
 // pause; clashReady([], 0) ends it as the attacks start.
 //
+// drawing() is { key, side, cardId, handIndex, ms } during a visible draw's
+// pause, else null. handIndex identifies the appended card even when the hand
+// already holds another copy of cardId. The event carries no card ID. The key is
+// unique per played draw and ms is the pause. A draw for a side whose hand
+// `to` lacks (the Wizard) is never reported.
+//
 // Errors. enqueue throws for an unsupported event type before queueing
 // anything. A displayed state that differs from a batch's `from` when the
 // batch starts, or from its `to` after its last event, and anything thrown
@@ -34,6 +40,11 @@ export const DEFAULT_PAUSES = Object.freeze({
   draw: 250,
   result: 300,
 });
+
+// Wait after a draw into a visible hand (the Cowboy's), in ms, unless
+// `pauses.draw` is set: long enough for the overlay to fly the card from the
+// deck to its hand position and settle before the next event.
+export const VISIBLE_DRAW_PAUSE = 450;
 
 const EVENT_TYPES = new Set(["summon", "spell", "damage", "defeat", ...Object.keys(DEFAULT_PAUSES)]);
 
@@ -103,6 +114,8 @@ export function createPresenter({ scheduler, renderer, pauses = {}, onChange, on
   // never acts, even when the scheduler epoch was not advanced.
   let generation = 0;
   const timers = new Set(); // scheduler ids of this generation's pending callbacks
+  let drawing = null; // see drawing() above
+  let draws = 0; // played visible draws, never reset, so a key is never reused
 
   const live = (gen) => gen === generation && !halted;
 
@@ -113,6 +126,7 @@ export function createPresenter({ scheduler, renderer, pauses = {}, onChange, on
 
   function fail(error) {
     halted = true;
+    drawing = null;
     cancelTimers();
     if (!onError) throw error;
     onError(error);
@@ -172,12 +186,18 @@ export function createPresenter({ scheduler, renderer, pauses = {}, onChange, on
   };
 
   function playPause(gen, event, next) {
+    const visibleDraw = event.type === "draw" && Object.hasOwn(batch.to.sides[event.side], "hand");
+    const pause = pauses[event.type] ?? (visibleDraw ? VISIBLE_DRAW_PAUSE : DEFAULT_PAUSES[event.type]);
+    const handIndex = visibleDraw ? displayed.sides[event.side].hand.length : null;
     const patch = PATCHES[event.type];
     if (patch) {
       patch(event, batch.to);
+      if (visibleDraw) {
+        const cardId = displayed.sides[event.side].hand[handIndex];
+        if (cardId !== undefined) drawing = { key: `draw-${++draws}`, side: event.side, cardId, handIndex, ms: pause };
+      }
       if (!changed(gen)) return;
     }
-    const pause = pauses[event.type] ?? DEFAULT_PAUSES[event.type];
     if (event.type === "clash" && renderer.clashReady) {
       // The attackers come from the damage events playClash plays next,
       // including troops that a later event of the same clash defeats.
@@ -193,7 +213,10 @@ export function createPresenter({ scheduler, renderer, pauses = {}, onChange, on
         if (!live(gen)) return;
       }
     }
-    later(gen, pause, () => play(gen, next));
+    later(gen, pause, () => {
+      drawing = null; // the drawn card has settled in the hand
+      play(gen, next);
+    });
   }
 
   function playSummon(gen, event, next) {
@@ -349,6 +372,7 @@ export function createPresenter({ scheduler, renderer, pauses = {}, onChange, on
     queue = [];
     batch = null;
     halted = false;
+    drawing = null;
   }
 
   return {
@@ -377,6 +401,7 @@ export function createPresenter({ scheduler, renderer, pauses = {}, onChange, on
     },
 
     busy: () => batch !== null || queue.length > 0,
+    drawing: () => (drawing === null ? null : { ...drawing }),
     displayed: () => structuredClone(displayed),
   };
 }
