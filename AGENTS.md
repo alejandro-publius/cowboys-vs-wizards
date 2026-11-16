@@ -4,6 +4,11 @@ Read the task, this file and the owned files. Use docs/AGENT-ROUTER.md to
 locate relevant paths and focused tests; read it only when orientation is needed.
 Read imports one level at a time. Never dump the repo or reference collection.
 
+- Source new art and motion from the user’s Tripo exports or finished assets
+  and animation clips in GitHub repos they supplied. Confirm reuse rights
+  and record the source. Plan any new design, asset or animation with the
+  user before creating it. Apply this to Blender, in-game visual effects and
+  poses, and work delegated to Fable or Kiro.
 - Preserve the approved haunted Western art and existing attack demo.
 - Build a small browser card game: visible deck/hand, three lanes per side,
   tribute summons and one-to-five life orbs per living troop.
