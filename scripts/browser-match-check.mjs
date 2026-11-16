@@ -509,11 +509,19 @@ async function runOnce(seed, flags, tilePoints) {
       const cueArrivalMs = effect.getTiming().duration * effect.getKeyframes()[2].computedOffset;
       animation.currentTime = cueArrivalMs;
       const face = node.querySelector(".front-face");
-      const illustratedFace = face?.dataset.unit === "Sheriff" && getComputedStyle(face).backgroundImage.startsWith("url(");
+      const layerDepth = (layer) => {
+        const transform = layer && getComputedStyle(layer).transform;
+        return transform && transform !== "none" ? new DOMMatrixReadOnly(transform).m43 : 0;
+      };
+      const faceDepth = layerDepth(face);
+      const paperDepth = layerDepth(node.querySelector(".card-slice:last-child"));
+      const illustratedFace = face?.dataset.unit === "Sheriff"
+        && getComputedStyle(face).backgroundImage.startsWith("url(")
+        && faceDepth > paperDepth;
       const box = node.getBoundingClientRect();
       animation.currentTime = elapsed;
       animation.play();
-      return {x: box.left + box.width / 2, y: box.top + box.height / 2, illustratedFace, cueArrivalMs};
+      return {x: box.left + box.width / 2, y: box.top + box.height / 2, illustratedFace, faceDepth, paperDepth, cueArrivalMs};
     })()`);
     const expectedLanding = tilePoints.find((point) => point.slot === slot);
     const landingError = flightLanding
