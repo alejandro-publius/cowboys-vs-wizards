@@ -6,19 +6,19 @@
       "type": "step",
       "id": "verify-duel",
       "agent": "wf-coder",
-      "prompt": "Run exactly `node scripts/verify-duel.mjs --browser` as one shell call from the project root. Use its standard output and exit status for the test totals, Chrome step count, console errors, revision, build hash and receipt path. The command emits these directly. Signal success only if the check exits zero. On failure give the first failing test or browser step. This step owns verification only."
+      "prompt": "Run exactly `node scripts/verify-duel.mjs --browser` from the project root as one shell call. The final response must contain the literal Command and Exit status fields even when the command output does not print its own exit status. Then give the exact Node counts, seed 0, revision, observed Chrome steps, pending step IDs, console errors, SHA-256 and receipt path. Use the actual shell result. On failure state the first failure and the exit status. Do not edit source."
     },
     {
       "type": "step",
       "id": "verify-showdown",
       "agent": "wf-coder",
-      "prompt": "The seed-0 verification just finished with this result.\n{{previous.output}}\nIf it did not exit zero, stop and report that the showdown was not run. Otherwise run exactly `node scripts/browser-match-check.mjs --showcase --summary --out-dir .artifacts/kiro/showcase` as one shell call from the project root. Do not rebuild: it must replay the same standalone build. First copy the seed-0 test totals, Chrome step count, console errors, revision, build SHA-256 and receipt path from the result above. Then report for the showdown its revision, seed, build SHA-256, receipt path, observed steps out of 4, pending step ids, console errors and exit status, and state whether its build SHA-256 equals the seed-0 build SHA-256 above. Signal success only if it exits zero and the two build hashes match. This step owns verification only."
+      "prompt": "Read the seed-0 result below.\n{{verify-duel.output}}\nIf the seed-0 command failed, report that this step was skipped. Otherwise run exactly `node scripts/browser-match-check.mjs --showcase --summary --out-dir .artifacts/kiro/showcase` against the existing standalone page. The final response must contain the literal Command and Exit status fields, revision, seed 60, the observed steps out of 4, pending IDs, console errors, SHA-256 and receipt path. State whether the seed-60 SHA-256 matches seed 0. A passing result requires exit 0 and a matching hash. Do not edit source."
     },
     {
       "type": "step",
       "id": "report",
       "agent": "wf-coder",
-      "prompt": "Here is the completed showdown result, which also names the seed-0 result it followed.\n{{previous.output}}\nWrite .artifacts/kiro/replay/report.md through the file-writing tool. Include for each of the two runs (seed 0 with eight steps, seed 60 showdown with four steps) the exact revision, command, exit status, observed Chrome checks, console errors, built page SHA-256 and receipt path, plus Node test counts from the seed-0 run. State whether the two build hashes match. Mark missing checks pending. Use this file only. Signal completion with its path."
+      "prompt": "Use the two original workflow step results directly.\nSeed 0.\n{{verify-duel.output}}\nSeed 60.\n{{verify-showdown.output}}\nWrite .artifacts/kiro/replay/report.md only. Give each run a table with Command, Exit status, revision, observed steps, console errors, build SHA-256 and receipt path. Include both commands verbatim and both observed exit statuses. Use the seed-0 Step result for its Node counts. Compare the two build hashes. Mark a missing value pending, and name which step omitted it. Signal completion with the report path."
     }
   ]
 }
