@@ -14,6 +14,8 @@
 
 11. **Compaction hooks.** A manual `/compact` in Kiro CLI 3.3.0 fired both hooks in the `duel-presenter` profile. Kiro reopened the session and gave both replay seeds and the exact receipt ID from the post-compaction output. [Compaction evidence](evidence/kiro-submission-preflight.md#kiro-compaction-check)
 
+12. **Crew browser playtest.** Crew used its managed browser to play Sheriff in lane 1 and advance the opening round. Its screenshot showed boxed developer labels over the Skeleton tokens. Codex removed those labels and verified the next build in Chrome. [Browser playtest evidence](evidence/kiro-submission-preflight.md#kiro-crew-browser-playtest)
+
 ## Evidence to show
 
 | Screen | What the judge sees |

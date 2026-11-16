@@ -34,6 +34,12 @@ On November 16, Codex ran `kiro-cli chat --v3 --trust-workspace --agent duel-pre
 
 The hook appends the phase, revision, receipt ID, and whether Kiro supplied a summary to `.artifacts/kiro/duel-compaction.jsonl`. The game checks are defined in the existing replay scripts.
 
+## Kiro Crew browser playtest
+
+On November 16, Kiro Crew 0.12.2 opened seed 0 in its managed Chromium and used its browser tools to play the first turn. Its snapshots identified Sheriff as playable, marked lane 1 as the selected destination, and reported Sheriff at three life orbs after the summon. Crew ended the turn and observed round 2 and the Wizard response.
+
+Crew saved a round 2 screenshot in its browser snapshot folder on the Mac. The image showed boxed developer labels above two Skeleton tokens. Codex removed the labels in `2d8d14c`. The updated Mac build at `4282c9e` passed the five Chrome opening checks with zero console errors, and its round 2 screenshot showed the tokens and orbs with the labels removed. All 107 Node tests passed. The replay and screenshot are in `.artifacts/kiro/token-labels/` in the playable worktree.
+
 ## Fable audit and latest static replay
 
 Fable 5.2 reviewed the clean candidate at `66b6cb9`. It verified the MIT license, 26 files under root `.kiro/`, and a largest tracked asset of about 3.7 MiB. It flagged local-only play instructions and dead evidence links, which Codex corrected. A fresh read of the public remote on November 16 found `main` at `37960ed`, 52 commits behind the audited candidate. [Play instructions](../../README.md#play)
