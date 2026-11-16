@@ -1,0 +1,1 @@
+{ "type": "wizard-singularity", "side": "wizard", "order": 4, "name": "Singularity", "kind": "spell", "relocates": true, "copies": 2 }

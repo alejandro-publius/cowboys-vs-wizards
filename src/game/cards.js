@@ -1,25 +1,15 @@
 // Card data from docs/kiro-task-01.md. Both spells remove one health from a
 // chosen enemy troop (see actions.js); `relocates` marks the one that may
 // also move the survivor. Spells can never be summoned.
+import { CARD_SPECS } from "./card-specs.generated.js";
+
 export const SIDES = ["cowboy", "wizard"];
 // Health removed by either spell.
 export const SPELL_DAMAGE = 1;
 export const opponent = (side) => (side === SIDES[0] ? SIDES[1] : SIDES[0]);
 
-const DECK_LISTS = {
-  cowboy: [
-    { name: "Sheriff", kind: "troop", stars: 2, health: 3, attack: 1, copies: 6 },
-    { name: "Billy", kind: "troop", stars: 5, health: 4, attack: 2, copies: 3 },
-    { name: "Mounted Billy", kind: "troop", stars: 7, health: 5, attack: 3, copies: 1 },
-    { name: "Deadeye", kind: "spell", relocates: false, copies: 2 },
-  ],
-  wizard: [
-    { name: "Skeleton", kind: "troop", stars: 1, health: 3, attack: 1, copies: 6 },
-    { name: "Wizard", kind: "troop", stars: 5, health: 4, attack: 2, copies: 3 },
-    { name: "Dragon", kind: "troop", stars: 8, health: 5, attack: 3, copies: 1 },
-    { name: "Singularity", kind: "spell", relocates: true, copies: 2 },
-  ],
-};
+// The card list is generated from .kiro/specs/duel-card-pipeline/cards/*.json
+// (node scripts/sync-card-specs.mjs). Edit the specs to change the catalog.
 
 // Every card instance that exists in a match, keyed by its unique ID
 // (for example "cowboy-mounted-billy-1"). State holds IDs only, so no
@@ -30,9 +20,9 @@ export const DECKS = {};
 
 for (const side of SIDES) {
   DECKS[side] = [];
-  for (const { copies, ...card } of DECK_LISTS[side]) {
+  for (const { type, order, copies, ...card } of CARD_SPECS.filter((spec) => spec.side === side)) {
     for (let copy = 1; copy <= copies; copy++) {
-      const id = `${side}-${card.name.toLowerCase().replaceAll(" ", "-")}-${copy}`;
+      const id = `${type}-${copy}`;
       CARDS[id] = Object.freeze({ id, side, ...card });
       DECKS[side].push(id);
     }

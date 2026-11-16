@@ -1,0 +1,1 @@
+{ "type": "cowboy-billy", "side": "cowboy", "order": 2, "name": "Billy", "kind": "troop", "stars": 5, "health": 4, "attack": 2, "copies": 3 }

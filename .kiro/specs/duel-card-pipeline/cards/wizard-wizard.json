@@ -1,0 +1,1 @@
+{ "type": "wizard-wizard", "side": "wizard", "order": 2, "name": "Wizard", "kind": "troop", "stars": 5, "health": 4, "attack": 2, "copies": 3 }
