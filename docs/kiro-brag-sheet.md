@@ -1,16 +1,28 @@
 # How we used Kiro on Cowboys vs. Wizards
 
-Evidence through November 15, 2026. Update these eight entries from the release evidence before submitting to Devpost.
+Evidence through November 15, 2026. The commit table identifies the builds each claim applies to.
 
-1. **Kiro IDE.** We used the IDE to turn the 3D attack prototype into a playable card duel on top of Fable’s rules and CPU. Kiro built the hand, legal card and tribute selection, board interaction, queued combat, impact-timed orb loss, and restart. The seed-0 Chrome run completed eight scripted steps with zero console errors, including reaching a result and restarting during clash playback. See `docs/evidence/kiro-match-ui/browser-run.json` and `src/match/`.
-2. **Custom agents.** The recorded work used Kiro’s built-in Spec agent. Next, give a workspace `duel-qa` agent a frozen build and a fixed sequence of clicks. Have it return a Chrome capture, the build hash, and any visual or timing discrepancy it reproduces.
-3. **Agent hooks.** Next, have a File Save command hook run `node --test tests/match/presenter.test.js` when Kiro edits the presenter. Show the actual trigger, exit status, and result.
-4. **Spec-driven development.** We revised the requirements to use 1–5 life orbs per troop and use stars for tribute costs. Kiro then based its design and ten-task plan on the existing engine. One acceptance criterion governed both the presentation and the tests. A defeated troop still finishes its attack in a simultaneous clash. See `.kiro/specs/orb-duel/` and `tests/match/presenter.test.js`.
-5. **Steering.** We placed durable game and evidence constraints in `.kiro/steering/build-evidence.md`. The spec and tests carry the seeds, action invariants, and orb bounds. For the next task, capture the steering file Kiro loads and the design decision it guides.
-6. **MCP.** Kiro’s baseline browser script drove Chrome through the DevTools Protocol. Next, have `duel-qa` use Chrome DevTools MCP to inspect an actual clash and capture the frame and console output directly from Kiro.
-7. **Property-based testing.** Kiro’s 41 match tests include deterministic property checks over seeds 0–99. They cover cancellation, display fidelity, simultaneous attacks, orb bounds, and the CPU’s public-information limit. See `tests/match/`, `.kiro/specs/orb-duel/tasks.meta.json`, and `docs/evidence/kiro-match-ui.md`.
-8. **Powers.** Next, install a small Duel Replay Power that bundles the replay procedure and Chrome DevTools MCP. Record an activation and the Chrome artifact it produces so someone else can rerun the check.
+1. **Kiro IDE and CLI.** The IDE Spec session turned the attack prototype into a playable match using Fable’s rules and CPU. Kiro CLI ran the reusable replay Workflow and implemented the later board and card presentation changes.
+2. **Agents.** Kiro’s built-in Spec agent dispatched the ten implementation tasks. The replay Workflow used two `wf-coder` step sessions. A run by a project-defined agent is evidence to collect.
+3. **Agent hooks.** The proposed presenter File Save hook would run `node --test tests/match/presenter.test.js`. Record the hook firing and its exit status when implemented.
+4. **Spec-driven development.** Kiro revised the requirements for 1–5 troop orbs, tribute costs, and simultaneous clashes. It wrote `requirements.md`, `design.md`, and a ten-task plan, then ran the format validator. The requirement that a defeated attacker can still finish its clash attack became a presenter test.
+5. **Steering.** Codex prepared `.kiro/steering/build-evidence.md`. Kiro used it to record seeds, commands, observed results, and who did the work in the build log and evidence notes.
+6. **MCP.** Desktop Commander gave Codex access to the local Kiro UI. The Chrome replay used a Node script and the DevTools Protocol. A Kiro session using an MCP tool directly is evidence to collect.
+7. **Property-based testing.** The 41 passing match tests included seeded properties over seeds 0–99 for selection isolation, display fidelity, simultaneous attacks, orb bounds, stale playback, and the CPU’s public-information limit.
+8. **Powers.** We inspected Build with Firebase in the IDE. Record a Power activation that contributes to the game before claiming its use in the submission.
 
-**Attribution.** Fable built the engine, CPU, and seeded balance simulations. Kiro built the Mac match interface and its verification. Codex developed a separate hosted playtest and adapted Lucca Cerf’s Character Factory material for the asset workflow. The Chrome receipt identifies an uncommitted Kiro build on `b3c77bd`. Update the evidence against the release commit and matching hosted build.
+## Recorded game and Workflow changes
+
+| Commit | Work and evidence |
+| --- | --- |
+| `64e3614` | Kiro built the hand, approved card back, legal card and tribute selection, canvas placement, CPU turns, queued combat, impact-timed orbs, results, and restart. Seed 0 completed all eight scripted Chrome steps with zero console errors. See `docs/evidence/kiro-match-browser.md` and `docs/evidence/kiro-match-ui.md`. |
+| `a785378` | Codex wrote the `orb-duel-replay` Workflow recipe and isolated its output. Kiro CLI ran both steps, with six passing presenter tests and a fresh Chrome replay that observed all eight steps with zero console errors. Its HTML hash matched the original closeout build. See `docs/evidence/kiro-workflow-replay.md`. |
+| `1f4c7cd` | Kiro added a blue pulse for the actual attacking troops during the existing clash pause. |
+| `415af3c` | Kiro added stack depth, card selection lift, and flight from a confirmed troop card to the chosen lane indicator. Codex connected the flight to the controller’s accepted action result. |
+| `daf61d6` | Kiro added two board graveyards that absorb cards as defeats, tributes, and spells enter discard. See `docs/evidence/kiro-duel-graveyards.md`. |
+
+The scripted Chrome evidence applies to `64e3614`. Browser verification for the later visual changes is deferred. We used Agent Focus to inspect the active IDE session and looked at Extensions, Powers, and Memory settings.
+
+**Attribution.** Fable authored the rules, CPU, and balance simulations. Kiro authored the playable interface, its verification, and the visual changes listed above. Codex authored the replay recipe, built separate hosted playtest work, and adapted Lucca Cerf’s Character Factory material for the asset workflow.
 
 [Research, implementation, and recording plan](kiroween-research-and-recording.md) · [Kiroween submission rules](https://kiroween.devpost.com/rules)
