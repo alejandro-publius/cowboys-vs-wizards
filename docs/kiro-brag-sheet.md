@@ -23,7 +23,7 @@ Evidence through November 15, 2026. The commit table identifies the builds each 
 | `c2a7dc6` | Kiro added the Cowboy deck-to-hand draw and flip. Codex fixed duplicate copies and deck alignment, then ran 19 passing targeted tests. See `docs/kiro-build-log.md`. |
 | `b6d0f5f` | Kiro’s custom presenter agent moved the summon flight onto the selected 3D tile and handled invalid screen bounds. The SessionStart hook ran 19 passing tests. Codex integrated the final Fable Wizard and Sheriff with the Kiro presentation work and added a browser check of the card’s landing position. |
 
-The scripted Chrome evidence applies to `64e3614`. Browser verification for the later visual changes is deferred. We used Agent Focus to inspect the active IDE session and looked at Extensions, Powers, and Memory settings.
+Codex verified the assembled build at `b6d0f5f` in Chrome after integrating Fable’s Wizard and Sheriff and Kiro’s presentation work. All eight replay steps passed with zero console errors, including mid-clash restart. The summon landed 0.082 CSS pixels from the projected tile center. See `docs/evidence/combined-demo.md`. Earlier, we used Agent Focus to inspect the IDE session and looked at Extensions, Powers, and Memory settings.
 
 **Attribution.** Fable authored the rules, CPU, and balance simulations. Kiro authored the playable interface, its verification, and the visual changes listed above. Codex authored the replay recipe, built separate hosted playtest work, and adapted Lucca Cerf’s Character Factory material for the asset workflow.
 
