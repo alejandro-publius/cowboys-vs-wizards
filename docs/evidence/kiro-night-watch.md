@@ -16,3 +16,9 @@ Night Watch is a Kiro Crew app that compares two exact Cowboys vs. Wizards commi
 Kiro CLI authored the simulator adapter and HTTP backend. Codex connected the Crew dashboard and scheduler, fixed the tribute assertion and the gateway proxy route, and ran the integration checks. [App source and setup](../../apps/night-watch/README.md)
 
 The normal Mac Crew profile has Night Watch 0.1.1 installed. Crew’s App Store controls trust for this app before activation. The recurring job was verified in the isolated profile.
+
+## Repository integration smoke — November 16
+
+While integrating the standalone extension, we ran `balance.build_report` against the same committed game revision (`d6b6190`) as baseline and candidate, with seeds 0–19 and a 10-point alert threshold. It executed 44 game-rule tests successfully, returned `steady`, and reported identical results: 14 Cowboy wins, 4 Wizard wins, 2 draws (13 first-seat wins and 5 second-seat wins). There were no card changes. This is a **20-seed smoke test**, not a new 1,000-seed balance claim.
+
+Four new dependency-free Python unit tests passed (configuration boundaries, alert thresholds, steady results and isolated report storage). JavaScript syntax checks and an isolated local HTTP smoke confirmed that health/state endpoints work, invalid configuration returns HTTP 400 and no report or scheduled job is created by startup. These integration checks did not re-run the observed Kiro Crew GUI or scheduled 1,000-seed trial described above.
