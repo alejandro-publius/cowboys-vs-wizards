@@ -195,3 +195,9 @@ Kiro CLI 3.3.0 ran all four steps for the isolated Skeleton health proposal and 
 Codex confirmed that the baseline matches every runtime card and both deck orders, fixed the per-command exit receipts, and verified the clean static release. It passed 107 Node tests, eight opening replay checks and four showdown checks. Kiro’s MCP confirmed the opening receipt and built HTML matched.
 
 Kiro Crew 0.12.2 ran the baseline and the one-orb increase over the same 1,000 seeds each. Wizard wins rose from 472 to 663. The release candidate retains the three-orb baseline. [Card pipeline evidence](evidence/kiro-card-pipeline.md) · [Static preflight](evidence/kiro-submission-preflight.md)
+
+### 2026-11-16 12:20 PST — Mounted Billy rig candidate misses the hand-deformation gate
+
+Kiro (this isolated worktree session) built a sparse Blender 5.2 rig on the optimized `mounted-billy.glb` and exported `mounted-billy-rigged.glb` with clips `mounted_attack` and `mounted_idle` under `.artifacts/kiro/rig/` (ignored by Git, with the editable `.blend`). Measured on the re-imported export: 1 skin, 11 joints, 4 influences, round-trip fit 5e-7 stage units, same three 1024 px textures, hoof drift 0 and pose closure 0 in both clips. The stage scale is 1.7347 (height 1.7 over the 0.98-unit mesh).
+
+The gate failed. 747 of 102,971 edges stretch over 3x at the attack peak, with a worst stretch of 30x at the right fist. The rein, belt, bandolier, rolled sleeve, vest edge and cloak are welded within about 1-3 cm of the fist, and the revolver is a fixed holstered prop. Production keeps `assets/models/mounted-billy.glb`. A re-export with the arm, hand, rein and revolver as separate meshes is needed. Viewed in fixed side, front and three-quarter renders only; no browser run and no human review yet. Details: `.artifacts/kiro/rig/README.md` and `gate_report.json`. Pending: coordinator integration and browser check.
