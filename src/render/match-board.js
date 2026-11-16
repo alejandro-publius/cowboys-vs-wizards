@@ -46,10 +46,15 @@ const RIGGED = {Billy: {kind: "billy", height: 1.93}, Wizard: {kind: "wizard", h
 // Mounted Billy's horse is +Z natively (yaw PI faces the Wizards at -Z).
 // The Skeleton faces +Z natively, toward the Cowboys from the Wizard side (yaw 0).
 const STATIC = {
-  Dragon: {kind: "dragon", asset: "dragon", height: 1.25, footprint: 2.1, yaw: -Math.PI / 2},
-  "Mounted Billy": {kind: "mounted-billy", asset: "mounted-billy", height: 1.7, footprint: 2.05, yaw: Math.PI},
+  Dragon: {kind: "dragon", asset: "dragon", height: 1.25, footprint: 2.1, yaw: -Math.PI / 2,
+    rig: {asset: "dragon-rigged", clip: "dragon_attack", impactFrame: 18}},
+  "Mounted Billy": {kind: "mounted-billy", asset: "mounted-billy", height: 1.7, footprint: 2.05, yaw: Math.PI,
+    rig: {asset: "mounted-billy-rigged", clip: "mounted_attack", impactFrame: 20}},
   Skeleton: {kind: "skeleton", asset: "skeleton", height: 1.2, footprint: 1.2, yaw: 0},
 };
+// Both candidate clips are authored at 30 fps. The impact frames come from the
+// authors' receipts: the Dragon's node extras and Mounted Billy's rig_meta.json.
+const CLIP_FPS = 30;
 const FLASH = {cowboy: 0xffb95e, wizard: 0xc192ff};
 
 // Shared geometry and materials; never disposed.
@@ -238,14 +243,29 @@ export async function createMatchBoard({models, scheduler} = {}) {
     } else if (STATIC[card.name] && models[STATIC[card.name].asset]) {
       // Static Tripo mesh (no skin), fitted to a height and capped footprint. Its
       // geometry and materials are shared with models[asset], so none are owned.
-      const {kind, asset, height, footprint: limit, yaw} = STATIC[card.name];
-      const mesh = fit(models[asset], {height, yaw});
+      const {kind, asset, height, footprint: limit, yaw, rig} = STATIC[card.name];
+      // A rigged copy replaces the static mesh only when its skin and exact clip name are present.
+      const source = models[rig?.asset], clip = source?.animations.find((one) => one.name === rig.clip);
+      const articulated = Boolean(clip) && Boolean(source.getObjectByProperty("isSkinnedMesh", true));
+      const mesh = fit(articulated ? source : models[asset], {height, yaw});
       const size = new T.Box3().setFromObject(mesh).getSize(v());
       const footprint = Math.max(size.x, size.z);
       const scale = Math.min(1, limit / footprint);
       mesh.scale.multiplyScalar(scale);
       body.add(mesh);
       Object.assign(piece, {kind, height: size.y * scale, width: footprint * scale});
+      if (articulated) {
+        // Each piece owns its bones, skeleton and mixer; geometry and materials stay shared.
+        const skinned = mesh.getObjectByProperty("isSkinnedMesh", true);
+        skinned.frustumCulled = false;
+        const mixer = new T.AnimationMixer(mesh), action = mixer.clipAction(clip);
+        action.play();
+        piece.clip = {action, mixer, duration: clip.duration, impact: rig.impactFrame / CLIP_FPS};
+        piece.owned.push(skinned.skeleton, {dispose: () => {
+          mixer.stopAllAction();
+          mixer.uncacheRoot(mesh);
+        }});
+      }
     } else if (rigged) {
       const actor = rigActor(models[rigged.kind], rigged.kind, rigged.height);
       piece.owned.push(actor.body.geometry, actor.body.skeleton);
@@ -393,7 +413,16 @@ export async function createMatchBoard({models, scheduler} = {}) {
     const {impact, end} = CUES.attack;
     const reach = targetPoint(target).sub(piece.root.position).setY(0);
     reach.setLength(Math.min(1, reach.length() * .3));
-    animate(end, (u, ms) => {
+    // An articulated piece plays its clip on the scheduler's clock, anchored on its tile.
+    // The clip's contact pose lands on the game's impact; the clip ends at the cue's end
+    // in its rest pose.
+    if (piece.clip) {
+      const {action, mixer, duration, impact: contact} = piece.clip;
+      animate(end, (u, ms) => {
+        action.time = ms <= impact ? contact * ms / impact : contact + (duration - contact) * (ms - impact) / (end - impact);
+        mixer.update(0);
+      });
+    } else animate(end, (u, ms) => {
       const k = ms <= impact ? smooth(ms / impact) : 1 - smooth((ms - impact) / (end - impact));
       piece.body.position.set(reach.x * k, 0, reach.z * k);
     });

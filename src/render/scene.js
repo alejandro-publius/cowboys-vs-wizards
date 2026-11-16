@@ -1,11 +1,14 @@
 import * as T from "three";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
+import {clone as cloneWithSkeleton} from "three/addons/utils/SkeletonUtils.js";
 import Rapier from "@dimforge/rapier3d-compat";
 import physics from "../physics/gravity.cjs";
 import {rigActor, grip, pose, pointOn, wizardStaffGrip} from "./rig.js";
 
 export const v=(x=0,y=0,z=0)=>new T.Vector3(x,y,z);
-export const assets=["board","cowboy-tile","wizard-tile","saloon","gateway","billy","wizard","revolver","sheriff","dragon","mounted-billy","skeleton"];
+export const assets=["board","cowboy-tile","wizard-tile","saloon","gateway","billy","wizard","revolver","sheriff","dragon","mounted-billy","skeleton","dragon-rigged","mounted-billy-rigged"];
+// Candidate rigs with attack clips. A rig that fails to load leaves its static troop in play.
+export const optionalAssets=["dragon-rigged","mounted-billy-rigged"];
 export const timings={shot:.77,impact:.86,fireEnd:1.58,well:.55,release:2.30,repulse:2.43,land:3.02,castEnd:3.69,
   drawStart:.48,castStart:2.28,end:6.16};
 const mix=T.MathUtils.lerp;
@@ -32,15 +35,26 @@ export async function loadAssets(source,names=assets){
   const loader=new GLTFLoader();
   const entries=await Promise.all(names.map(async name=>{
     const input=source[name];
-    const model=(input?.url?await loader.loadAsync(input.url):await loader.parseAsync(modelBuffer(input),"")).scene;
-    model.traverse(mesh=>{if(mesh.isMesh)mesh.geometry.userData.asset=name;});
-    return [name,model];
+    try{
+      const gltf=input?.url?await loader.loadAsync(input.url):await loader.parseAsync(modelBuffer(input),"");
+      const model=gltf.scene;
+      model.animations=gltf.animations;
+      model.traverse(mesh=>{if(mesh.isMesh)mesh.geometry.userData.asset=name;});
+      return [name,model];
+    }catch(error){
+      if(!optionalAssets.includes(name))throw error;
+      console.warn("Optional model "+name+" did not load; keeping the static troop.",error);
+      return [name,undefined];
+    }
   }));
   return Object.fromEntries(entries);
 }
 
 export function fit(asset, {width,height,depth,x=0,y=0,z=0,yaw=0}){
-  const copy=asset.clone(true), box=new T.Box3().setFromObject(copy);
+  // Skinned meshes need their own bones, so clone through SkeletonUtils.
+  const copy=cloneWithSkeleton(asset);
+  copy.updateMatrixWorld(true);
+  const box=new T.Box3().setFromObject(copy);
   const center=box.getCenter(v()), size=box.getSize(v());
   copy.position.sub(v(center.x,box.min.y,center.z));
   const parent=new T.Group(), uniform=height/size.y;
