@@ -3,8 +3,8 @@
 Evidence through November 15, 2026. The commit table identifies the builds each claim applies to.
 
 1. **Kiro IDE and CLI.** The IDE Spec session turned the attack prototype into a playable match using Fable’s rules and CPU. Kiro CLI ran the reusable replay Workflow and implemented the later board and card presentation changes.
-2. **Agents.** Kiro’s built-in Spec agent dispatched the ten implementation tasks. The replay Workflow used two `wf-coder` step sessions. A run by a project-defined agent is evidence to collect.
-3. **Agent hooks.** The proposed presenter File Save hook would run `node --test tests/match/presenter.test.js`. Record the hook firing and its exit status when implemented.
+2. **Custom agents.** Codex configured the project’s `duel-presenter` profile with the existing steering and scoped command permissions. Kiro CLI used it to implement and review the card flight onto the actual 3D board tile. Its profile is `.kiro/agents/duel-presenter.json`. Earlier, the built-in Spec agent dispatched the ten match tasks and the replay Workflow used two `wf-coder` sessions.
+3. **Agent hooks.** The `duel-presenter` SessionStart hook automatically ran the three focused presenter, controller and card-model suites. All 19 tests passed. The recorded output is `docs/evidence/kiro-ui-hook.txt`. The check runs before a new task, so the record identifies which edits came afterward.
 4. **Spec-driven development.** Kiro revised the requirements for 1–5 troop orbs, tribute costs, and simultaneous clashes. It wrote `requirements.md`, `design.md`, and a ten-task plan, then ran the format validator. The requirement that a defeated attacker can still finish its clash attack became a presenter test.
 5. **Steering.** Codex prepared `.kiro/steering/build-evidence.md`. Kiro used it to record seeds, commands, observed results, and who did the work in the build log and evidence notes.
 6. **MCP.** Desktop Commander gave Codex access to the local Kiro UI. The Chrome replay used a Node script and the DevTools Protocol. A Kiro session using an MCP tool directly is evidence to collect.
@@ -21,6 +21,7 @@ Evidence through November 15, 2026. The commit table identifies the builds each 
 | `415af3c` | Kiro added stack depth, card selection lift, and flight from a confirmed troop card to the chosen lane indicator. Codex connected the flight to the controller’s accepted action result. |
 | `daf61d6` | Kiro added two board graveyards that absorb cards as defeats, tributes, and spells enter discard. See `docs/evidence/kiro-duel-graveyards.md`. |
 | `c2a7dc6` | Kiro added the Cowboy deck-to-hand draw and flip. Codex fixed duplicate copies and deck alignment, then ran 19 passing targeted tests. See `docs/kiro-build-log.md`. |
+| `b6d0f5f` | Kiro’s custom presenter agent moved the summon flight onto the selected 3D tile and handled invalid screen bounds. The SessionStart hook ran 19 passing tests. Codex integrated the final Fable Wizard and Sheriff with the Kiro presentation work and added a browser check of the card’s landing position. |
 
 The scripted Chrome evidence applies to `64e3614`. Browser verification for the later visual changes is deferred. We used Agent Focus to inspect the active IDE session and looked at Extensions, Powers, and Memory settings.
 
