@@ -1,5 +1,4 @@
 import * as T from "three";
-import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 import {addPerimeter, loadGroundTexture} from "./render/perimeter.js";
 import {createDuel,loadAssets,timings} from "./render/scene.js";
 import {createMatchBoard} from "./render/match-board.js";
@@ -65,15 +64,16 @@ async function launch(){
   renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.35));
   // The models are parsed once and shared by the attack demo and the card match.
   const source=JSON.parse(get("models").textContent);
-  const models=await loadAssets(source);
-  const duel=await createDuel(models);
+  const [models,corners,ground]=await Promise.all([
+    loadAssets(source),
+    loadAssets(source,["graveyard-corner","ghost-town-corner"]),
+    loadGroundTexture()
+  ]);
+  // The exchange scene (and Rapier) is created on first demand and then reused.
+  let duel=null,duelLoading=null,lost=false;
   const scheduler=createScheduler();
   const board=await createMatchBoard({models,scheduler});
-  const corners=await Promise.all(["graveyard-corner","ghost-town-corner"].map(async name=>{
-    const bytes=Uint8Array.from(atob(source[name]),char=>char.charCodeAt(0));
-    return [name,(await new GLTFLoader().parseAsync(bytes.buffer,"")).scene];
-  }));
-  addPerimeter(board.scene,Object.fromEntries(corners),await loadGroundTexture());
+  addPerimeter(board.scene,corners,ground);
   get("models").remove();
   const stage=get("stage");
   stage.append(renderer.domElement);
@@ -81,9 +81,11 @@ async function launch(){
   function size(){
     const width=Math.max(1,stage.clientWidth),height=Math.max(1,stage.clientHeight);
     renderer.setSize(width,height,false);
-    duel.camera.aspect=width/height;
-    duel.camera.fov=width/height<1?59:40;
-    duel.camera.updateProjectionMatrix();
+    if(duel){
+      duel.camera.aspect=width/height;
+      duel.camera.fov=width/height<1?59:40;
+      duel.camera.updateProjectionMatrix();
+    }
     board.resize(width,height);
     overlay?.layout();
   }
@@ -96,11 +98,12 @@ async function launch(){
   const useControls=playing=>{active=playing;for(const button of moves)button.disabled=playing;};
   const message=text=>{if(status.textContent!==text)status.textContent=text;};
   function start(mode){
-    if(active)return;
+    if(active||!duel)return;
     duel.reset(mode);ticks=0;useControls(true);refreshHealth(duel.state());
     message(mode==="cast"?"The wizard raises his staff.":"Billy reaches for his revolver.");
   }
   function resetDemo(){
+    if(!duel)return;
     duel.reset();ticks=0;useControls(false);refreshHealth(duel.state());
     message("Choose an attack or play the exchange.");
   }
@@ -113,6 +116,7 @@ async function launch(){
     get("sound").textContent=enabled?"Mute":"Sound";
   });
   get("camera").addEventListener("click",()=>{
+    if(!duel)return;
     duel.view.duel=!duel.view.duel;
     get("camera").setAttribute("aria-pressed",String(duel.view.duel));
     get("camera").textContent=duel.view.duel?"Duel camera":"Board camera";duel.draw();
@@ -221,15 +225,42 @@ async function launch(){
     if(match)startMatch();
     else{previous=0;ticks=0;}
   }
-  get("mode").addEventListener("click",()=>setMode(appMode==="match"?"demo":"match"));
+  // Switching to the demo creates the exchange scene first; the match stays
+  // rendered meanwhile, and a failed load leaves the match active and retryable.
+  async function loadDuel(){
+    duelLoading=createDuel(models);
+    try{
+      duel=await duelLoading;
+    }catch(error){
+      console.error(error);
+      duel=null;
+    }finally{
+      duelLoading=null;
+    }
+    return Boolean(duel);
+  }
+  async function requestMode(next){
+    if(lost)return;
+    if(next==="match"||duel){setMode(next);return;}
+    if(duelLoading)return;
+    const button=get("mode");
+    button.disabled=true;
+    const loaded=await loadDuel();
+    button.disabled=false;
+    if(loaded&&!lost)setMode("demo");
+  }
+  get("mode").addEventListener("click",()=>requestMode(appMode==="match"?"demo":"match"));
 
   renderer.domElement.addEventListener("webglcontextlost",event=>{
-    event.preventDefault();cancelAnimationFrame(frameId);get("tools").hidden=true;get("controls").hidden=true;
+    event.preventDefault();lost=true;cancelAnimationFrame(frameId);get("tools").hidden=true;get("controls").hidden=true;
     get("modes").hidden=true;get("match").hidden=true;controller.leave();
     renderer.domElement.remove();recording();
   },{once:true});
+  // Direct ?mode=demo boots into the exchange; the match is the fallback.
+  const bootDemo=params.get("mode")==="demo"&&await loadDuel();
+  if(lost)return;
   get("boot").hidden=true;get("modes").hidden=false;
-  setMode(params.get("mode")==="demo"?"demo":"match");
+  setMode(bootDemo?"demo":"match");
   function frame(now){
     if(appMode==="match"){
       try{scheduler.tick(now);}catch(error){console.error(error);}

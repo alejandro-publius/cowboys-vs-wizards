@@ -14,17 +14,21 @@ const pulse=(t,from,peak,to)=>ease(from,peak,t)*(1-ease(peak,to,t));
 const vec=({x,y,z})=>v(x,y,z);
 const obj=({x,y,z})=>({x,y,z});
 
-export async function loadAssets(source){
+function decode(data){
+  if(typeof data!=="string")return data;
+  if(typeof Uint8Array.fromBase64==="function")return Uint8Array.fromBase64(data);
+  const raw=atob(data),bytes=new Uint8Array(raw.length);
+  for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
+  return bytes;
+}
+
+export async function loadAssets(source,names=assets){
   const loader=new GLTFLoader();
-  const entries=await Promise.all(assets.map(async name=>{
-    const data=source[name];
-    let bytes=data;
-    if(typeof data==="string"){
-      const raw=atob(data);
-      bytes=new Uint8Array(raw.length);
-      for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
-    }
-    const model=(await loader.parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),"")).scene;
+  const entries=await Promise.all(names.map(async name=>{
+    const bytes=decode(source[name]);
+    const buffer=bytes.byteOffset===0&&bytes.byteLength===bytes.buffer.byteLength
+      ?bytes.buffer:bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength);
+    const model=(await loader.parseAsync(buffer,"")).scene;
     model.traverse(mesh=>{if(mesh.isMesh)mesh.geometry.userData.asset=name;});
     return [name,model];
   }));
