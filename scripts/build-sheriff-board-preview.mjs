@@ -1,0 +1,15 @@
+import {build} from 'esbuild';
+import {mkdir,readFile,writeFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+import path from 'node:path';
+import {arenaModelNames,perimeterModelNames} from '../src/render/model-assets.js';
+const root=fileURLToPath(new URL('../',import.meta.url));
+const out=path.join(root,'.artifacts/sheriff-board-preview');await mkdir(out,{recursive:true});
+const input={};
+for(const name of [...arenaModelNames,...perimeterModelNames])input[name]=(await readFile(path.join(root,'assets/models',name+'.glb'))).toString('base64');
+const source=process.argv[2]||path.join(root,'tmp/sourced-motion/sheriff-mixamo-walk-preview.glb');
+input['approved-sheriff']=(await readFile(source)).toString('base64');
+const bundle=await build({absWorkingDir:root,entryPoints:['src/render/sheriff-board-preview.js'],bundle:true,write:false,platform:'browser',target:'es2022',loader:{'.webp':'dataurl'},minify:true,legalComments:'inline'});
+const js=bundle.outputFiles[0].text.replace(/<\/script/gi,'<\\/script');
+const html='<!doctype html><meta charset="utf-8"><title>Approved Sheriff walk — board preview</title><style>html,body{margin:0;background:#27202a;overflow:hidden}canvas{display:block;width:100vw;height:100vh}</style><body><script type="application/json" id="preview-models">'+JSON.stringify(input)+'</script><script>'+js+'</script>';
+await writeFile(path.join(out,'index.html'),html);console.log(path.join(out,'index.html'));

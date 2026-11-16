@@ -24,3 +24,17 @@ The supplied Lummox article supports the inspect, prepare, export, and verify-in
 Ran scripts/check-sheriff-source-clip.mjs against the exact exported GLB with the game's Three.js r180. It passed import, track validation, finite deformed vertices, joint-motion variation, independent character instances, and deterministic replay. The exported model has 16 bones, 28,252 vertices, three embedded image resources and one 0.967-second clip.
 
 This was a programmatic engine check, not a browser render. At the six sampled times, the lowest deformed vertex reached y=-0.064835 in normalized model space. Ground placement and foot contact need review on the board. The next visual checkpoint is this same clip in the actual browser environment. Gameplay triggers and live-site integration are still pending.
+
+## Board video preview
+
+The user requested the approved motion on the actual board with a video. Built an isolated preview entry using the existing createMatchBoard, addPerimeter, ground texture, camera, lighting and Three.js WebGL renderer. It places the unchanged approved GLB at the Sheriff's existing 1.62 world-unit scale on the center Cowboy tile.
+
+Root height is seated against four sampled boot-contact points on the tile each frame. The animation channels are unchanged. This prevents the below-zero vertices identified in the earlier check from placing the boot under the tile. It is not a full locomotion or foot-sliding validation.
+
+Captured one walk cycle from the normal board view and one from the existing close-up camera, using the project's isolated Chrome rendering harness. The video repeats the wide cycle twice and the close cycle four times. Browser recording reported zero runtime exceptions. The minimum sampled post-pose boot clearance was 0.003 world units.
+
+Reproduce with:
+- node scripts/build-sheriff-board-preview.mjs PATH_TO_APPROVED_GLB
+- node scripts/record-sheriff-board-preview.mjs
+
+The clip is an on-board motion preview. It does not replace the public game, its combat reactions, or its movement rules.
