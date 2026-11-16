@@ -143,3 +143,9 @@ Kiro references for the planned work are [steering](https://kiro.dev/docs/steeri
   - Assets: the approved card front file (OQ-A), production card textures, and models, rigs and animation for Sheriff, Mounted Billy, Skeleton and Dragon, which are labelled temporary tokens for now. Billy and Wizard cue polish is also pending.
   - Balance, as a separate task: in Fable's CPU-vs-CPU run over seeds 0–999 (rules `orb-duel-draft-1`), opening hands without a free summon lost 62 of 63, and the side that started round 1 won 583 to 314 ([CPU playtests](evidence/fable-cpu-playtests.md)).
   - Several closing sub-agent runs were cancelled or failed with a network error. The last one rebuilt the page, reran the browser script and downscaled the screenshots before it stopped. This closeout used those outputs after checking the page hash.
+
+### 2026-11-15 — Card-to-summon interaction in the Orb Duel UI
+- **Work** — Kiro CLI added stack depth to the approved deck back and lift to the hand cards. A confirmed troop card flies to its chosen lane indicator over 520 ms. The flight clears with the match and respects reduced motion.
+- **Integration** — Codex connected the flight to the controller’s accepted action result before committing. The UI reads the pending lane from the card model.
+- **Verification** — Build and browser play-through were deferred at the user's request.
+- **Assets** — Card fronts use the existing temporary text cards. OQ-A tracks identification of the approved front art.

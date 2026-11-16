@@ -34,20 +34,22 @@ const back = () => el("span", {class: "card-back", "aria-hidden": "true"});
 
 function pile(name) {
   const count = el("span", {class: "match-count"});
-  const node = el("div", {class: "match-pile", role: "img"}, back(), count);
+  // Up to three stacked backs, so a deck looks thicker than a nearly empty one.
+  const node = el("div", {class: "match-pile", role: "img"}, back(), back(), back(), count);
   return {
     node,
     set(n) {
       setText(count, shown(n));
       node.setAttribute("aria-label", `${name}: ${cards(n)}`);
+      node.dataset.layers = String(Math.min(3, Math.max(1, Math.ceil((n ?? 0) / 4))));
       node.classList.toggle("empty", !n);
     },
   };
 }
 
-function cardButton(card, enabled) {
+function cardButton(card, enabled, inFlight) {
   const tier = card.kind === "spell" ? "Spell" : `Troop · ${card.stars} star${card.stars === 1 ? "" : "s"}`;
-  return el("button", {type: "button", class: "card-front", "data-card-id": card.cardId, "aria-pressed": String(card.selected), disabled: !enabled},
+  return el("button", {type: "button", class: inFlight ? "card-front in-flight" : "card-front", "data-card-id": card.cardId, "aria-pressed": String(card.selected), disabled: !enabled},
     el("span", {class: "card-name"}, card.name),
     el("span", {class: "card-tier"}, tier),
     card.kind === "spell" ? null : el("span", {class: "card-stats"}, `Health ${card.health} · Attack ${card.attack}`),
@@ -123,20 +125,80 @@ export function mountCards(root, handlers = {}) {
 
   root.replaceChildren(top, bottom, result);
 
+  // The one transient card animation: a copy of the confirmed troop card
+  // flying from its hand position to the chosen lane's indicator.
+  let model = null;
+  let flight = null; // {cardId, node, animation}
+
+  function clearFlight() {
+    if (!flight) return;
+    const {node, animation} = flight;
+    flight = null;
+    animation?.cancel();
+    node.remove();
+    for (const card of hand.querySelectorAll(".in-flight")) card.classList.remove("in-flight");
+  }
+
+  // Geometry for a confirm that can summon a troop, read before the click is
+  // sent because the render that follows rebuilds the hand and lanes.
+  function summonGeometry() {
+    if (!model?.buttons.confirm) return null;
+    const {cardId, slot} = model.selection;
+    const card = model.cowboy.hand.find((each) => each.cardId === cardId);
+    if (!card || card.kind !== "troop" || slot === null) return null;
+    const source = hand.querySelector(`[data-card-id="${CSS.escape(cardId)}"]`);
+    const target = lanes.querySelector(`[data-side="cowboy"][data-slot="${slot}"]`);
+    if (!source || !target) return null;
+    return {cardId, source, from: source.getBoundingClientRect(), to: target.getBoundingClientRect()};
+  }
+
+  function launch({cardId, source, from, to}) {
+    if (typeof root.animate !== "function" || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!from.width || !from.height || !to.width) return;
+    clearFlight();
+    const node = el("div", {class: "card-front card-flight", "aria-hidden": "true"}, ...Array.from(source.childNodes, (child) => child.cloneNode(true)));
+    Object.assign(node.style, {left: `${from.left}px`, top: `${from.top}px`, width: `${from.width}px`, height: `${from.height}px`});
+    root.append(node);
+    const dx = to.left + to.width / 2 - (from.left + from.width / 2);
+    const dy = to.top + to.height / 2 - (from.top + from.height / 2);
+    const animation = node.animate([
+      {transform: "translate(0,0) scale(1.06)", opacity: 1},
+      {transform: `translate(${dx * 0.08}px,${dy * 0.08 - 18}px) scale(1.1) rotate(-2deg)`, opacity: 1, offset: 0.2},
+      {transform: `translate(${dx}px,${dy}px) scale(.3) rotate(3deg)`, opacity: 0.9, offset: 0.9},
+      {transform: `translate(${dx}px,${dy}px) scale(.25)`, opacity: 0},
+    ], {duration: 520, easing: "cubic-bezier(.4,0,.2,1)"});
+    flight = {cardId, node, animation};
+    hand.querySelector(`[data-card-id="${CSS.escape(cardId)}"]`)?.classList.add("in-flight");
+    animation.onfinish = () => {
+      if (flight?.node === node) clearFlight();
+    };
+  }
+
   root.addEventListener("click", (event) => {
     const button = event.target.closest?.("button");
     if (!button || !root.contains(button) || button.disabled || button.type === "submit") return;
     const {cardId, side, slot, action} = button.dataset;
     if (cardId) call("onCard", cardId);
     else if (side) call("onSlot", side, Number(slot));
-    else if (ACTIONS[action]) call(ACTIONS[action]);
+    else if (action === "confirm") {
+      const geometry = summonGeometry();
+      const outcome = call("onConfirm");
+      if (geometry && outcome?.ok && model.status !== "error") launch(geometry);
+    } else if (ACTIONS[action]) {
+      if (action === "restart" || action === "cancel") clearFlight();
+      call(ACTIONS[action]);
+    }
   });
   seedForm.addEventListener("submit", (event) => {
     event.preventDefault();
+    clearFlight();
     call("onReplaySeed", seedInput.value.trim());
   });
 
-  function render(model) {
+  function render(next) {
+    model = next;
+    // Idle (mode switch), error, a refusal message or another match end the flight.
+    if (flight && (model.status === "idle" || model.status === "error" || model.message || model.round === null)) clearFlight();
     root.dataset.status = model.status;
     setText(round, model.round === null ? "No round" : `Round ${model.round}`);
     setText(phase, model.phase);
@@ -160,7 +222,7 @@ export function mountCards(root, handlers = {}) {
       slotButton("wizard", lane, wizard, model.slots.wizard.includes(lane), false),
       slotButton("cowboy", lane, cowboy, model.slots.cowboy.includes(lane), model.tributes.includes(lane)),
     ]));
-    hand.replaceChildren(...model.cowboy.hand.map((card) => cardButton(card, model.buttons.hand)));
+    hand.replaceChildren(...model.cowboy.hand.map((card) => cardButton(card, model.buttons.hand, card.cardId === flight?.cardId)));
     if (refocus) root.querySelector(refocus)?.focus();
 
     for (const [name, button] of Object.entries(buttons)) button.disabled = !model.buttons[name];
