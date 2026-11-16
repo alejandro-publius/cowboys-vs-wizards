@@ -1,5 +1,5 @@
 # Remaining-character sourced motion previews
-Prepared November 16, 2026. Update: user rejected Billy Wave and Dragon full Yes. Restrained replacements are pending; see billy-dragon-restrained-revision.md. Other three candidates remain pending. Public demo and match behavior unchanged.
+Prepared November 16, 2026. Update: user rejected Billy Wave and Dragon full Yes. Billy restrained replacement remains pending. Dragon neck-only replacement was also rejected; see dragon-sourced-fire-ring.md for pending fire-ring candidate. Other three candidates remain pending. Public demo and match behavior unchanged.
 
 The user approved the Sheriff stationary gesture with "perfect!!!" and requested distinct sourced motions for the remaining characters. The Sheriff reference remains unchanged. These new candidates use finished Quaternius clips, not newly authored poses or animation curves.
 

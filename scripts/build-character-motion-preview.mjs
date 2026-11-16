@@ -11,11 +11,12 @@ const source=process.argv[2]||path.join(root,'tmp/sourced-motion/sheriff-mixamo-
 const clipBytes=await readFile(source);
 input['preview-character']=clipBytes.toString('base64');
 const clipJson=JSON.parse(clipBytes.subarray(20,20+clipBytes.readUInt32LE(12)).toString());
-const meta=clipJson.animations[0].extras;
+const fireRing=process.argv.includes('--fire-ring');
+const meta=clipJson.animations?.[0]?.extras||{};
 const character=meta.character||process.argv[4];
 const placement={billy:{side:'cowboy',height:1.93,yaw:Math.PI},wizard:{side:'wizard',height:2.02,yaw:0},skeleton:{side:'wizard',height:1.2,yaw:0},dragon:{side:'wizard',height:1.25,footprint:2.1,yaw:-Math.PI/2,native:true},'mounted-billy':{side:'cowboy',height:1.7,footprint:2.05,yaw:Math.PI,native:true}}[character];
 if(!placement)throw Error('Unknown preview character');
-const previewConfig={...placement,character,zoom:3.35*1.62/placement.height,clipName:clipJson.animations[0].name,sourceClip:meta.sourceClip,source:meta.source||(meta.creator+' '+meta.sourceFile)};
+const previewConfig={...placement,character,zoom:3.35*1.62/placement.height,fireRing,clipName:fireRing?'Sourced fire ring (Dragon bind pose)':clipJson.animations[0].name,sourceClip:fireRing?'fire effect':meta.sourceClip,source:fireRing?'Sprite Fusion fire by Hugo Duprez (MIT)':meta.source||(meta.creator+' '+meta.sourceFile)};
 
 const bundle=await build({absWorkingDir:root,entryPoints:['src/render/character-motion-preview.js'],bundle:true,write:false,platform:'browser',target:'es2022',loader:{'.webp':'dataurl'},minify:true,legalComments:'inline'});
 const js=bundle.outputFiles[0].text.replace(/<\/script/gi,'<\\/script');

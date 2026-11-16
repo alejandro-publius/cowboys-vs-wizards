@@ -1,3 +1,4 @@
+import {addSourcedFireRing} from './sourced-fire-ring.js';
 import * as T from 'three';
 import {clone} from 'three/addons/utils/SkeletonUtils.js';
 import {arenaModelNames,perimeterModelNames} from './model-assets.js';
@@ -32,10 +33,11 @@ async function main(){
  let mesh;actor.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}if(o.isSkinnedMesh){mesh=o;o.frustumCulled=false;}});
  if(!mesh)throw Error('Character must retain its skin');
  board.scene.add(actor);
- const clip=models['preview-character'].animations.find(c=>c.name===config.clipName);
+ const clip=config.fireRing?{name:config.clipName,duration:4}:models['preview-character'].animations.find(c=>c.name===config.clipName);
  if(!clip)throw Error('Requested source clip missing');
- const mixer=new T.AnimationMixer(actor);mixer.clipAction(clip).play();
- mixer.setTime(0);actor.updateMatrixWorld(true);
+ const mixer=config.fireRing?null:new T.AnimationMixer(actor);if(mixer){mixer.clipAction(clip).play();mixer.setTime(0);}actor.updateMatrixWorld(true);
+ const fireRing=config.fireRing?addSourcedFireRing(board.scene,tile):null;
+ const bindPose=config.fireRing?mesh.skeleton.bones.map(b=>[...b.position.toArray(),...b.quaternion.toArray(),...b.scale.toArray()]):null;
  if(config.character==='wizard'){
   const hand=actor.getObjectByName('wizard_left_wrist');
   const staff=attachStaff({rig:{sides:[null,{hand,wrist:new T.Vector3(.278,.397,.072)}]}});
@@ -54,7 +56,7 @@ async function main(){
  const point=new T.Vector3();
  let last={};
  function frame(t,view='wide'){
-  mixer.setTime(t);actor.position.set(tile.x,tile.top,tile.z);actor.updateMatrixWorld(true);mesh.skeleton.update();
+  if(mixer)mixer.setTime(t);if(fireRing)fireRing.frame(t);actor.position.set(tile.x,tile.top,tile.z);actor.updateMatrixWorld(true);mesh.skeleton.update();
   const feet=Array.from({length:4},()=>({point:new T.Vector3(0,Infinity,0),i:-1}));
   for(const {i,group} of boots){
    point.fromBufferAttribute(position,i);mesh.applyBoneTransform(i,point);point.applyMatrix4(mesh.matrixWorld);
@@ -71,6 +73,7 @@ async function main(){
    board.camera.position.copy(wide.position);board.camera.quaternion.copy(wide.quaternion);board.camera.zoom=1;
   }
   board.camera.updateProjectionMatrix();board.camera.updateMatrixWorld(true);
+  if(bindPose){for(let i=0;i<bindPose.length;i++){const b=mesh.skeleton.bones[i],now=[...b.position.toArray(),...b.quaternion.toArray(),...b.scale.toArray()];if(now.some((v,j)=>Math.abs(v-bindPose[i][j])>1e-9))throw Error('Fire preview must not animate Dragon bones');}}
   renderer.render(board.scene,board.camera);
   const footCheck=feet.map(({i})=>{const p=mesh.getVertexPosition(i,new T.Vector3()).applyMatrix4(mesh.matrixWorld);const y=surface(tile.model,p.x,p.z);const a=p.clone().project(board.camera);const b=new T.Vector3(p.x,y,p.z).project(board.camera);return {position:p.toArray(),ground:y,gap:p.y-y,pixel:[(a.x+1)*640,(1-a.y)*360],groundPixel:[(b.x+1)*640,(1-b.y)*360]};});
   last={footCheck,time:t,view,groundCorrection:correction,minBootClearance:Math.min(...supports.map(s=>s.foot.y+correction-s.ground)),
@@ -79,7 +82,7 @@ async function main(){
  }
  frame(0);
  window.__characterMotionPreview={frame,info:{clip:clip.name,duration:clip.duration,height:config.height,renderer:'Three.js r'+T.REVISION,
-  character:config.character,source:config.source+', clip '+config.sourceClip,ground:'Existing '+config.side+' tile; per-frame root seating only'},get last(){return last;}};
+  effect:fireRing?.info,character:config.character,source:config.source+', clip '+config.sourceClip,ground:'Existing '+config.side+' tile; per-frame root seating only'},get last(){return last;}};
  window.__previewReady=true;
  const start=performance.now();
  function loop(now){if(!window.__captureFrames)frame((now-start)/1000,'close');requestAnimationFrame(loop);}

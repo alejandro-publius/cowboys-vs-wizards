@@ -1,5 +1,5 @@
 # Billy and Dragon restrained revision
-Prepared November 16, 2026. Isolated board previews; pending user approval.
+Prepared November 16, 2026. Update: user rejected Dragon neck-only nod. See dragon-sourced-fire-ring.md for replacement. Billy remains pending.
 
 The user rejected Billy's RobotExpressive Wave and Dragon's full Quaternius Yes wing/head motion. Those are superseded candidates, not accepted designs. Sheriff headShake remains accepted. Wizard, Skeleton and Mounted Billy remain pending without edits.
 
