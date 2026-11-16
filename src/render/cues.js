@@ -29,6 +29,7 @@
 import * as T from "three";
 import {SLOT_COUNT} from "../game/state.js";
 import {drawKeys, motion, timings, v} from "./scene.js";
+import {reactToFire} from "./fire-reaction.js";
 import {grip, pose} from "./rig.js";
 import {SHERIFF_SHOT, SHERIFF_YAW, drawSheriff, idleSheriff} from "./sheriff.js";
 import {WIZARD_CAST, castWizard, idleWizard} from "./wizard.js";
@@ -41,15 +42,16 @@ const UP = v(0, 1, 0), FORWARD = v(0, 0, 1);
 
 const VIOLET_BOLT = {
   halo: 0xc6a0ff, head: 0xb27dff, core: 0xf4e4ff, trail: 0x9c63ff,
-  burst: 0xd9b8ff, ring: 0xdd9aff, sparks: [0xc89cff, 0xf3e2ff], lift: 0,
+  burst: 0xd9b8ff, ring: 0xdd9aff, sparks: [0xc89cff, 0xf3e2ff], lift: 0, impactSize: 1,
 };
 const FIRE_BOLT = {
   halo: 0xffa33d, head: 0xff632b, core: 0xffecb0, trail: 0xe74d1e,
-  burst: 0xff8638, ring: 0xffae55, sparks: [0xff6726, 0xffcc68], lift: .32,
+  burst: 0xff8638, ring: 0xffae55, sparks: [0xff6726, 0xffcc68], lift: .32, impactSize: .65,
 };
 
 // Cue second at which the Saloon fires Deadeye when no Billy stands.
 const SALOON_SHOT = .35;
+const FIRE_REACTION_MS = 1020;
 export const CUE_TIMES = Object.freeze({
   billy: Object.freeze({impact: toMs(timings.impact), end: toMs(timings.fireEnd)}),
   sheriff: Object.freeze({impact: toMs(SHERIFF_SHOT.impact), end: toMs(SHERIFF_SHOT.end)}),
@@ -121,6 +123,10 @@ const GEOMETRY = {
   ring: new T.TorusGeometry(1, .03, 8, 64),
   edge: new T.TorusGeometry(1, .018, 7, 64),
   well: new T.SphereGeometry(1, 28, 18),
+  flame: new T.LatheGeometry([
+    new T.Vector2(0, 0), new T.Vector2(.58, .04), new T.Vector2(.93, .23),
+    new T.Vector2(.73, .48), new T.Vector2(.31, .76), new T.Vector2(0, 1),
+  ], 8),
 };
 
 // One cue's effect meshes in board.effects, hidden until the cue shows them.
@@ -314,14 +320,14 @@ export function withCues(board) {
       burst.visible = since >= 0 && since < .22;
       if (burst.visible) {
         burst.position.copy(contact);
-        burst.scale.setScalar(.25 + 2.4 * since);
+        burst.scale.setScalar(colors.impactSize * (.25 + 2.4 * since));
         burst.material.opacity = .9 * (1 - since / .22);
       }
       ring.visible = since >= 0 && since < .45;
       if (ring.visible) {
         ring.position.copy(contact);
         ring.quaternion.copy(board.camera.quaternion);
-        ring.scale.setScalar(.2 + .85 * ease(0, .45, since));
+        ring.scale.setScalar(colors.impactSize * (.2 + .85 * ease(0, .45, since)));
         ring.material.opacity = .9 * (1 - since / .45);
       }
       sparks(since, contact, origin ?? jewel);
@@ -333,6 +339,59 @@ export function withCues(board) {
       fx.dispose();
     });
     return {...CUE_TIMES.wizard};
+  }
+
+  function fireAtFeet(ground, height, impact, end) {
+    const fx = cueEffects(board);
+    const amber = neon(0xff641c, 0), gold = neon(0xffd672, 0);
+    const circle = fx.add("fire-ground", GEOMETRY.edge, neon(0xf58934, 0));
+    circle.position.copy(ground).y += .018;
+    circle.rotation.x = -Math.PI / 2;
+    const size = T.MathUtils.clamp(height, .9, 1.7);
+    const flames = Array.from({length: 6}, (_, i) => ({
+      tongue: fx.add("fire-feet", GEOMETRY.flame, amber),
+      core: fx.add("fire-core", GEOMETRY.flame, gold),
+      angle: i * Math.PI / 3 + .18,
+    }));
+    board.animate(end, (u, elapsed) => {
+      const t = elapsed - impact;
+      const duration = end - impact;
+      const strength = ease(0, 85, t) * (1 - ease(duration * .64, duration, t));
+      circle.visible = strength > 0;
+      circle.scale.setScalar(size * (.29 + .07 * ease(0, 250, t)));
+      circle.material.opacity = .24 * strength;
+      amber.opacity = .73 * strength;
+      gold.opacity = .8 * strength;
+      flames.forEach(({tongue, core, angle}, i) => {
+        const wave = .8 + .2 * Math.sin(t * .033 + i * 1.7);
+        const width = size * (.043 + .017 * wave);
+        const reach = size * (.11 + .21 * wave) * Math.sqrt(strength);
+        const radius = size * (.17 + .045 * (i % 2));
+        tongue.position.copy(ground);
+        tongue.position.x += radius * Math.cos(angle);
+        tongue.position.z += radius * Math.sin(angle);
+        tongue.position.y += .02;
+        tongue.rotation.set(.25 * Math.sin(angle), 0, -.25 * Math.cos(angle));
+        tongue.scale.set(width, reach, width);
+        core.position.copy(tongue.position);
+        core.rotation.copy(tongue.rotation);
+        core.scale.set(width * .55, reach * .62, width * .55);
+        tongue.visible = core.visible = strength > 0;
+      });
+    }, () => fx.dispose());
+  }
+
+  function firebolt(caster, target) {
+    const wizard = leftmost(caster, "wizard");
+    const gateway = wizard ? undefined : board.targetPoint({kind: "base", side: caster});
+    const victim = board.piece(target.side, target.slot);
+    const ground = victim.root.position.clone();
+    const hit = ground.clone().setY(ground.y + .1);
+    const cue = staffBolt(wizard, hit, FIRE_BOLT, gateway);
+    const end = cue.impact + FIRE_REACTION_MS;
+    fireAtFeet(ground, victim.height, cue.impact, end);
+    reactToFire(board, victim, FIRE_REACTION_MS, cue.impact);
+    return {impact: cue.impact, end};
   }
 
   // A dark well with a violet ring grows in front of the target and
@@ -387,13 +446,9 @@ export function withCues(board) {
   function spell(event) {
     const {spell: name, caster, target} = event;
     if (name !== "Deadeye" && name !== "Singularity" && name !== "Firebolt") return board.spell(event);
+    if (name === "Firebolt") return firebolt(caster, target);
     const contact = board.targetPoint({kind: "troop", side: target.side, slot: target.slot});
     if (name === "Singularity") return singularity(contact, caster);
-    if (name === "Firebolt") {
-      const wizard = leftmost(caster, "wizard");
-      const gateway = wizard ? undefined : board.targetPoint({kind: "base", side: caster});
-      return staffBolt(wizard, contact, FIRE_BOLT, gateway);
-    }
     const billy = leftmost(caster, "billy");
     return billy ? billyShot(billy, contact) : saloonShot(contact);
   }
