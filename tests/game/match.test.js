@@ -183,7 +183,7 @@ test("full-board tribute: a two-tribute summon lands on a vacated slot and fight
   assert.deepEqual(summoned.state.sides.wizard.board, [
     { cardId: "wizard-dragon-1", health: 5 },
     null,
-    { cardId: "wizard-skeleton-3", health: 3 },
+    start.sides.wizard.board[2],
   ]);
   assert.deepEqual(summoned.state.sides.wizard.discard, ["wizard-skeleton-1", "wizard-skeleton-2"]);
 
