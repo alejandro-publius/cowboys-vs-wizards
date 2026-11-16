@@ -1,0 +1,18 @@
+{
+  "name": "orb-duel-replay",
+  "description": "Run the local duel verification (Node suites, build, Chrome replay of seed 0) and report the observed results.",
+  "steps": [
+    {
+      "type": "step",
+      "id": "verify-duel",
+      "agent": "wf-coder",
+      "prompt": "From the project root run `git rev-parse --short HEAD`, then `node scripts/verify-duel.mjs --browser` once. This step owns verification commands and the ignored outputs in .artifacts/kiro/replay only; edit no source files. Report the revision, the exit status, and the final `ℹ tests`, `ℹ pass` and `ℹ fail` counts printed by the Node suites. Read .artifacts/kiro/replay/browser-run.json and report the observed step count out of 8, the console error count, the built page SHA-256, and the absolute paths of that receipt and its screenshots. Signal success only if the command exits zero, all eight steps are observed, and there are zero console errors. Otherwise signal error with the first failing test or browser step exactly as printed."
+    },
+    {
+      "type": "step",
+      "id": "report",
+      "agent": "wf-coder",
+      "prompt": "The verification results are below.\n{{previous.output}}\nWrite a concise report to .artifacts/kiro/replay/report.md containing only values from those results: revision, command, exit status, test pass/fail counts, browser steps observed out of 8, console error count, page SHA-256, and the receipt path. Make no claim about appearance, clarity or fun, and mark anything not present in the results as pending. Edit no other file. Signal success with the report path."
+    }
+  ]
+}

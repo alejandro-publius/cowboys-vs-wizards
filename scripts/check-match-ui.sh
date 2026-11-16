@@ -1,6 +1,8 @@
 #!/bin/sh
 # Invoked by the duel-presenter Kiro agent's SessionStart hook.
-report="docs/evidence/kiro-ui-hook.txt"
+# Output goes to ignored .artifacts/kiro/; tracked evidence under docs/evidence/ is left alone.
+mkdir -p .artifacts/kiro
+report=".artifacts/kiro/ui-hook.txt"
 {
   printf 'Kiro duel-presenter SessionStart check\n'
   date -u '+%Y-%m-%dT%H:%M:%SZ'
