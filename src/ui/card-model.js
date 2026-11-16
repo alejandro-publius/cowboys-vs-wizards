@@ -88,6 +88,10 @@ export function cardModel({displayed = null, options = null, status = "idle", se
     // The pending choice: cardId and, once a tile is chosen, its slot. The
     // overlay uses it to fly a confirmed summon from the hand to its lane.
     selection: {cardId: selected, slot: options?.slot ?? null},
+    // A Cowboy draw being played, with the new card's position in the hand.
+    draw: options?.draw?.side === "cowboy" && cowboy?.hand[options.draw.handIndex] === options.draw.cardId
+      ? {key: options.draw.key, handIndex: options.draw.handIndex, ms: options.draw.ms}
+      : null,
     buttons: {
       hand: accepting,
       confirm: accepting && Boolean(options?.canConfirm),
