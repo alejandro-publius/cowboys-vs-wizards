@@ -544,6 +544,7 @@ async function runOnce(seed, flags, tilePoints) {
     await click(action("end-phase"));
     const clashSeen = new Set();
     s = await settle("the CPU turn and the clash", clashSeen);
+    await screenshot("round-two.png");
     const changed = before.cowboyBase !== s.cowboyBase || before.wizardBase !== s.wizardBase || laneTexts(before) !== laneTexts(s);
     step(5, "End phase; the CPU acts and the clash changes orb or Base counts",
       clashSeen.has("cpu_turn") && changed && before.details !== s.details,

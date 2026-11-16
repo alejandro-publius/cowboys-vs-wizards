@@ -157,7 +157,7 @@ test("Characters use their own models, and the static troops are real meshes", a
   const skeletonFront = new T.Vector3(0, 0, 1).applyQuaternion(skeletonMesh.getWorldQuaternion(new T.Quaternion()));
   assert.ok(skeletonFront.z > 0.99, "the Skeleton faces +Z toward the Cowboys");
 
-  // Without a loaded model the existing labelled-free temporary token is used.
+  // Without a loaded model the existing unlabeled temporary token is used.
   const fallback = await createMatchBoard({ models: { ...models, skeleton: undefined }, scheduler: createScheduler() });
   fallback.reset(FULL());
   assert.equal(fallback.piece("wizard", 0).kind, "token");

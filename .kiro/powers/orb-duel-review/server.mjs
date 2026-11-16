@@ -14,7 +14,7 @@ const TARGETS = {
 };
 const REQUIRED_STEPS = 8;
 // Board characters only, mapped to fixed repo paths. Input never becomes a path.
-const CHARACTERS = Object.fromEntries(["billy", "mounted-billy", "sheriff", "wizard", "dragon"].map((name) => [name, `assets/models/${name}.glb`]));
+const CHARACTERS = Object.fromEntries(["billy", "mounted-billy", "sheriff", "wizard", "dragon", "skeleton"].map((name) => [name, `assets/models/${name}.glb`]));
 
 function readFixed(rel) {
   try {
