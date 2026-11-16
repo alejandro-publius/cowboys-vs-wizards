@@ -132,7 +132,13 @@ async function launch(){
   // match board (with the Billy and Wizard cues) and the card overlay.
   let controller=null;
   // The graveyards react when the Presenter's displayed discard lists grow.
-  const matchView=withGraveyards(withClashReady(withCues(board)));
+  const cued=withGraveyards(withClashReady(withCues(board)));
+  // Starts the 3D summon, tells the overlay its cue, and returns the cue as is.
+  const matchView={...cued,summon(spec){
+    const cue=cued.summon(spec);
+    overlay?.summonStarted(spec,cue);
+    return cue;
+  }};
   function showMatch(){
     if(!controller)return;
     const state=controller.status(),options=controller.options(),displayed=controller.displayed();
@@ -203,7 +209,7 @@ async function launch(){
   });
   function setMode(next){
     if(next===appMode)return;
-    if(appMode==="match")controller.leave();
+    if(appMode==="match"){overlay.cancelSummon();controller.leave();}
     if(appMode==="demo")resetDemo();
     appMode=next;
     const match=next==="match";

@@ -200,6 +200,23 @@ export function mountCards(root, handlers = {}) {
     }
   }
 
+  // Geometry and cardId+slot of the confirmed human summon, until its
+  // renderer cue starts (after any tributes leave).
+  let pending = null;
+  function cancelSummon() {
+    pending = null;
+    clearFlight();
+  }
+
+  // Called when the renderer starts a summon, with its returned cue. Only the
+  // pending human card and slot launches; CPU and stale summons do nothing.
+  function summonStarted({side, slot, cardId}, cue) {
+    const mine = pending;
+    if (!mine || side !== "cowboy" || mine.cardId !== cardId || mine.slot !== slot) return;
+    pending = null;
+    if (cue && Number.isFinite(cue.impact) && cue.impact > 0) launch(mine, cue.impact);
+  }
+
   function clearDraw() {
     if (!drawFlight) return;
     const {handIndex, node, animation, turn} = drawFlight;
@@ -262,24 +279,28 @@ export function mountCards(root, handlers = {}) {
     const usable = board && [board.left, board.top, board.width, board.height].every(Number.isFinite) && board.width > 0 && board.height > 0;
     const to = usable ? board : lanes.querySelector(`[data-side="cowboy"][data-slot="${slot}"]`)?.getBoundingClientRect();
     if (!source || !to) return null;
-    return {cardId, source, from: source.getBoundingClientRect(), to};
+    // The hand is rebuilt before the summon starts, so keep a copy of the face.
+    return {cardId, slot, faces: Array.from(source.childNodes, (child) => child.cloneNode(true)),
+      from: source.getBoundingClientRect(), to};
   }
 
-  function launch({cardId, source, from, to}) {
+  // Launched by summonStarted() on the accepted summon's renderer cue; the
+  // flight lasts until that cue's impact, where the troop lands.
+  function launch({cardId, faces, from, to}, ms) {
     if (reducedMotion()) return;
     if (!from.width || !from.height || !to.width) return;
     clearFlight();
-    const node = el("div", {class: "card-front card-flight", "aria-hidden": "true"}, ...Array.from(source.childNodes, (child) => child.cloneNode(true)));
+    const node = el("div", {class: "card-front card-flight", "aria-hidden": "true"}, ...faces);
     Object.assign(node.style, {left: `${from.left}px`, top: `${from.top}px`, width: `${from.width}px`, height: `${from.height}px`});
     root.append(node);
     const dx = to.left + to.width / 2 - (from.left + from.width / 2);
     const dy = to.top + to.height / 2 - (from.top + from.height / 2);
     const animation = node.animate([
-      {transform: "translate(0,0) scale(1.06)", opacity: 1},
-      {transform: `translate(${dx * 0.08}px,${dy * 0.08 - 18}px) scale(1.1) rotate(-2deg)`, opacity: 1, offset: 0.2},
+      {transform: "translate(0,0) scale(1.06)", opacity: 1, easing: "ease-out"},
+      {transform: `translate(${dx * 0.08}px,${dy * 0.08 - 18}px) scale(1.1) rotate(-2deg)`, opacity: 1, offset: 0.2, easing: "cubic-bezier(.4,0,.2,1)"},
       {transform: `translate(${dx}px,${dy}px) scale(.3) rotate(3deg)`, opacity: 0.9, offset: 0.9},
       {transform: `translate(${dx}px,${dy}px) scale(.25)`, opacity: 0},
-    ], {duration: 520, easing: "cubic-bezier(.4,0,.2,1)"});
+    ], {duration: ms / 0.9});
     flight = {cardId, node, animation};
     hand.querySelector(`[data-card-id="${CSS.escape(cardId)}"]`)?.classList.add("in-flight");
     animation.onfinish = () => {
@@ -304,11 +325,11 @@ export function mountCards(root, handlers = {}) {
     if (cardId) call("onCard", cardId);
     else if (side) call("onSlot", side, Number(slot));
     else if (action === "confirm") {
-      const geometry = summonGeometry();
+      pending = summonGeometry();
       const outcome = call("onConfirm");
-      if (geometry && outcome?.ok && model.status !== "error") launch(geometry);
+      if (!outcome?.ok || model.status === "error") pending = null;
     } else if (ACTIONS[action]) {
-      if (action === "restart" || action === "cancel") clearFlight();
+      if (action === "restart" || action === "cancel") cancelSummon();
       if (action === "restart") clearDraw();
       if(action==="restart")menu.close();
       call(ACTIONS[action]);
@@ -316,7 +337,7 @@ export function mountCards(root, handlers = {}) {
   });
   seedForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    clearFlight();
+    cancelSummon();
     clearDraw();
     call("onReplaySeed", seedInput.value.trim());
     menu.close();
@@ -325,7 +346,7 @@ export function mountCards(root, handlers = {}) {
   function render(next) {
     model = next;
     // Idle (mode switch), error, a refusal message or another match end the flight.
-    if (flight && (model.status === "idle" || model.status === "error" || model.message || model.round === null)) clearFlight();
+    if (model.status === "idle" || model.status === "error" || model.message || model.round === null || model.result) cancelSummon();
     // A draw flight lasts only while the Presenter plays that draw: restart,
     // mode switch, error and the end of its pause all end it.
     if (drawFlight && model.draw?.key !== drawFlight.key) clearDraw();
@@ -402,5 +423,5 @@ export function mountCards(root, handlers = {}) {
     place(wizardDeck.node,handlers.deckTarget?.("wizard"));
   }
   new ResizeObserver(layout).observe(root);
-  return {render,layout};
+  return {render,layout,summonStarted,cancelSummon};
 }

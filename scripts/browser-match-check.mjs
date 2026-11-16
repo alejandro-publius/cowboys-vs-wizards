@@ -23,6 +23,7 @@ import {legalActions} from "../src/game/legal.js";
 import {createMatch} from "../src/game/state.js";
 import {publicState} from "../src/game/view.js";
 import {createBoardScene} from "../src/render/scene.js";
+import {SHERIFF_LANDING} from "../src/render/sheriff.js";
 import {localModels} from "./load-local.mjs";
 
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
@@ -349,12 +350,34 @@ async function runOnce(seed, flags, tilePoints) {
     const embedded = background.match(/base64,([A-Za-z0-9+/=]+)/)?.[1];
     const backHash = embedded ? sha256(Buffer.from(embedded, "base64")) : null;
     const fileHash = sha256(await readFile(path.join(root, "assets/cards/card-back.png")));
-    step(2, "Hand shows 4 cards; deck count and card back present",
+    await screenshot("illustrated-hand.png");
+    await click('#match [data-action="view-art"]');
+    const catalog = await evaluate(
+      '[...document.querySelectorAll(".card-viewer [data-art]")].map(button => button.dataset.art)'
+    );
+    const catalogArt = [];
+    for (const id of catalog) {
+      await click('.card-viewer [data-art="' + id + '"]');
+      const preview = await evaluate('(async () => {' +
+        'const face = document.querySelector(".card-preview .front-face");' +
+        'const art = getComputedStyle(face).backgroundImage.match(/data:image[/]webp;base64,[A-Za-z0-9+/=]+/)?.[0];' +
+        'if (!art) return {name:face.dataset.unit, decoded:false};' +
+        'const image = new Image(); image.src = art; await image.decode();' +
+        'return {name:face.dataset.unit, decoded:image.naturalWidth > 0};' +
+        '})()');
+      catalogArt.push({ ...preview, expected: CARDS[id]?.name });
+    }
+    const allCatalogArt = catalogArt.length === 8 && new Set(catalogArt.map((card) => card.name)).size === 8
+      && catalogArt.every((card) => card.decoded && card.name === card.expected);
+    await click('.card-viewer [data-action="flip-art"]');
+    const flipped = await evaluate('document.querySelector(".card-preview").classList.contains("is-flipped")');
+    await click('.card-viewer [data-action="close-art"]');
+    step(2, "The hand and all eight catalog cards show illustrated faces and flip to the deck back",
       s.hand.length === 4 && s.hand.every((card, i) => card.cardId === opening.sides.cowboy.hand[i])
-        && s.hand.every((card) => card.hasArt)
+        && s.hand.every((card) => card.hasArt) && allCatalogArt && flipped
         && s.cowboyDeck === String(opening.sides.cowboy.deckCount) && s.cardBacks > 0 && backHash === fileHash,
       {hand: s.hand.map((card) => card.name), engineHand: opening.sides.cowboy.hand.map((id) => CARDS[id].name),
-        frontArtEmbeddedWebp: s.hand.map((card) => card.hasArt),
+        frontArtEmbeddedWebp: s.hand.map((card) => card.hasArt), catalogArt, flipped,
         cowboyDeck: s.cowboyDeck, engineDeckCount: opening.sides.cowboy.deckCount, wizardDeck: s.wizardDeck,
         wizardHandBacks: s.wizardHand, cardBackElements: s.cardBacks, bases: [s.cowboyBase, s.wizardBase],
         deckPileImageSha256: backHash, cardBackFileSha256: fileHash});
@@ -401,11 +424,15 @@ async function runOnce(seed, flags, tilePoints) {
       if (!animation) return null;
       const elapsed = animation.currentTime;
       animation.pause();
-      animation.currentTime = Number(animation.effect.getTiming().duration) - 1;
+      const effect = animation.effect;
+      const cueArrivalMs = effect.getTiming().duration * effect.getKeyframes()[2].computedOffset;
+      animation.currentTime = cueArrivalMs;
+      const face = node.querySelector(".front-face");
+      const illustratedFace = face?.dataset.unit === "Sheriff" && getComputedStyle(face).backgroundImage.includes("data:image/webp;base64,");
       const box = node.getBoundingClientRect();
       animation.currentTime = elapsed;
       animation.play();
-      return {x: box.left + box.width / 2, y: box.top + box.height / 2};
+      return {x: box.left + box.width / 2, y: box.top + box.height / 2, illustratedFace, cueArrivalMs};
     })()`);
     const expectedLanding = tilePoints.find((point) => point.slot === slot);
     const landingError = flightLanding
@@ -417,7 +444,8 @@ async function runOnce(seed, flags, tilePoints) {
     await screenshot("summon-sheriff.png");
     const placed = lane(s, "cowboy", slot);
     step(4, "Select Sheriff, pick a lane, confirm; the troop and its orbs appear",
-      ready.buttons.confirm && placed?.text === "Sheriff 3/3" && s.hand.length === 3 && summonSeen.has("playing") && s.status === "accepting_input" && landingError !== null && landingError < 4,
+      ready.buttons.confirm && placed?.text === "Sheriff 3/3" && s.hand.length === 3 && summonSeen.has("playing") && s.status === "accepting_input" && landingError !== null && landingError < 4
+        && flightLanding.illustratedFace && Math.abs(flightLanding.cueArrivalMs - SHERIFF_LANDING.impact) < 0.1,
       {flightLanding, expectedLanding, landingError, lanePickedBy: pickedBy, canvasTilePoints: tilePoints, uncoveredTiles: free.map((point) => point.slot), slot,
         promptBeforeConfirm: ready.prompt, laneSummary: placed?.text, laneLabel: placed?.label, handAfter: s.hand.map((card) => card.name),
         statusesSeen: [...summonSeen]});
