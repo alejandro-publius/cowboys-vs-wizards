@@ -531,14 +531,30 @@ export async function createMatchBoard({models, scheduler, makeLabel = makeTextL
     return null;
   }
 
-  function resize(width, height) {
-    resizeMatchCamera(camera, width, height);
+  let depthOffset = 0;
+  function resize(width, height, tray = 0) {
+    // Frame the area above the hand as before, then extend the frustum downward under it.
+    const visible = Math.max(1, height - tray);
+    resizeMatchCamera(camera, width, visible);
+    camera.bottom -= (camera.top - camera.bottom) * tray / visible;
+
+    // A tall viewport can put the lowest ray's origin below the ground.
+    // Move back along the orthographic view axis to keep the terrain in frame.
+    const upY = new T.Vector3(0, 1, 0).applyQuaternion(camera.quaternion).y;
+    const backY = new T.Vector3(0, 0, 1).applyQuaternion(camera.quaternion).y;
+    const nearBottomY = camera.position.y + camera.bottom * upY - (depthOffset + camera.near) * backY;
+    const clearance = backY > 0 ? Math.max(0, -nearBottomY / backY) : 0;
+    camera.translateZ(clearance - depthOffset);
+    depthOffset = clearance;
+    camera.updateMatrixWorld(true);
+    camera.updateProjectionMatrix();
   }
 
   // Moves the camera in front of one tile, low enough to see the model's face.
   // `wide` views the whole lane from the side instead, so the attacker and
   // its target are both in frame.
   function closeUp(side, slot, wide = false) {
+    depthOffset = 0;
     const tile = tilePoint(side, slot), toward = -Math.sign(tile.z);
     if (wide) {
       camera.position.set(tile.x + (slot === SLOT_COUNT - 1 ? -5.6 : 5.6), tile.y + 2.3, tile.z + toward * 2);

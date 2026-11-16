@@ -81,6 +81,8 @@ async function launch(){
   const stage=get("stage");
   stage.append(renderer.domElement);
   let overlay=null;
+  // "match" (Orb Duel card match, the default) or "demo" (the attack demo).
+  let appMode=null;
   function size(){
     const width=Math.max(1,stage.clientWidth),height=Math.max(1,stage.clientHeight);
     renderer.setSize(width,height,false);
@@ -89,14 +91,14 @@ async function launch(){
       duel.camera.fov=width/height<1?59:40;
       duel.camera.updateProjectionMatrix();
     }
-    board.resize(width,height);
+    // The stage runs under the hand; keep the board framed above it.
+    const tray=Math.min(height-1,Number.parseFloat(getComputedStyle(stage).paddingBottom));
+    board.resize(width,height,tray);
     overlay?.layout();
   }
   new ResizeObserver(size).observe(stage);
   size();
   let active=false,previous=0,ticks=0,context=null,enabled=false,frameId=0;
-  // "match" (Orb Duel card match, the default) or "demo" (the attack demo).
-  let appMode=null;
   const moves=[get("fire"),get("cast"),get("watch")],status=get("status");
   const useControls=playing=>{active=playing;for(const button of moves)button.disabled=playing;};
   const message=text=>{if(status.textContent!==text)status.textContent=text;};
@@ -221,8 +223,8 @@ async function launch(){
     appMode=next;
     const match=next==="match";
     get("arena").classList.toggle("is-match",match);
-    size();
     get("match").hidden=!match;
+    size();
     get("controls").hidden=match;get("tools").hidden=match;
     get("mode").textContent=match?"Attack demo":"Card match";
     if(match)startMatch();
