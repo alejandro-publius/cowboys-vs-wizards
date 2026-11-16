@@ -7,8 +7,10 @@ import {createInterface} from "node:readline";
 import {fileURLToPath} from "node:url";
 
 const root = fileURLToPath(new URL("../../../", import.meta.url));
-const RECEIPT = ".artifacts/kiro/replay/browser-run.json";
-const PAGE = "dist/cowboys-vs-wizards-board-duel.html";
+const TARGETS = {
+  standalone: {receipt: ".artifacts/kiro/replay/browser-run.json", page: "dist/cowboys-vs-wizards-board-duel.html"},
+  web: {receipt: ".artifacts/kiro/web-replay/browser-run.json", page: "dist/web/index.html"},
+};
 const REQUIRED_STEPS = 8;
 
 function readFixed(rel) {
@@ -19,8 +21,9 @@ function readFixed(rel) {
   }
 }
 
-function inspect() {
-  const out = {receiptPath: RECEIPT, pagePath: PAGE};
+function inspect(target) {
+  const {receipt: RECEIPT, page: PAGE} = TARGETS[target];
+  const out = {target, receiptPath: RECEIPT, pagePath: PAGE};
   const page = readFixed(PAGE);
   if (page.bytes) {
     out.currentBuild = {bytes: page.bytes.length, sha256: createHash("sha256").update(page.bytes).digest("hex")};
@@ -79,8 +82,12 @@ function inspect() {
 
 const TOOL = {
   name: "inspect_duel_replay",
-  description: "Check the fixed Chrome replay receipt against the current built Orb Duel page. Takes no arguments.",
-  inputSchema: {type: "object", properties: {}, additionalProperties: false},
+  description: "Check a fixed Chrome replay receipt against its current built Orb Duel page. Optional target: standalone (default) or web.",
+  inputSchema: {
+    type: "object",
+    properties: {target: {type: "string", enum: ["standalone", "web"], default: "standalone"}},
+    additionalProperties: false,
+  },
 };
 
 function reply(id, result) { process.stdout.write(JSON.stringify({jsonrpc: "2.0", id, result}) + "\n"); }
@@ -104,8 +111,11 @@ function handle(msg) {
       const params = msg.params;
       if (!params || params.name !== TOOL.name) return fail(msg.id, -32602, "Unknown tool");
       const args = params.arguments ?? {};
-      if (typeof args !== "object" || Array.isArray(args) || Object.keys(args).length) return fail(msg.id, -32602, "inspect_duel_replay takes an empty object");
-      return reply(msg.id, {content: [{type: "text", text: JSON.stringify(inspect(), null, 2)}]});
+      if (typeof args !== "object" || args === null || Array.isArray(args)) return fail(msg.id, -32602, "inspect_duel_replay takes an object");
+      if (Object.keys(args).some((key) => key !== "target")) return fail(msg.id, -32602, "Only the target input is accepted");
+      const target = args.target === undefined ? "standalone" : args.target;
+      if (target !== "standalone" && target !== "web") return fail(msg.id, -32602, "target must be standalone or web");
+      return reply(msg.id, {content: [{type: "text", text: JSON.stringify(inspect(target), null, 2)}]});
     }
     default:
       return fail(msg.id, -32601, "Method not found");
