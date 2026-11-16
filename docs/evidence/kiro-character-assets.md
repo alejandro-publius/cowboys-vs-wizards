@@ -17,4 +17,6 @@ Release `c4ec67c` passed 107 Node tests and both public Chrome routes, 8 of 8 ch
 
 Each character has its own skeleton and mixer. The match scheduler maps the clip contact pose to the game’s 400 ms impact and returns it to rest at 800 ms. The same scheduler handles reset and simultaneous attack playback. [Attack tests](../../tests/match/attack-clips.test.js)
 
+The final character release `44e2729` passed 112 Node tests and all 12 checks across both public Chrome replays, with zero console errors. The public HTML and the 2:16 recording use the same build SHA-256, `51733084f2b3f59a1aa359845ef6cc23373fd6ec17904c8d76234cc440c18bd2`. [Deployment run](https://github.com/alejandro-publius/cowboys-vs-wizards/actions/runs/43949511553)
+
 The local Kiro Power calls `inspect_character_asset` for the actual GLB digest, triangle count, joints and clips. The coordinator paired it with visual review and the replay. [Asset audit](../../scripts/audit-assets.mjs) · [Power](../../.kiro/powers/orb-duel-review/POWER.md)

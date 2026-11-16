@@ -28,4 +28,4 @@ imports; do not dump the repository or all reference documents.
 - Attribute work to the actual app/agent. Never invent test, visual, performance,
   Kiro-usage or PR evidence. Each worker has its own evidence note.
 - For animation work read docs/character-animation-plan.md and the relevant
-  Lucca reference sections only. Current GLBs are static exports; preserve them.
+  Lucca reference sections only. Preserve the original Tripo GLBs. The game’s Dragon and Mounted Billy GLBs contain exported attack clips.
