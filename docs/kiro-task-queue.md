@@ -1,5 +1,7 @@
 # Kiro task queue
 
+> **Historical task dispatch — not the current queue.** These assignments were prepared before the playable release. Engine, CPU, asset audit, and the UI now exist on `main`. Read [the dated status snapshot](PROJECT-STATUS.md) and inspect current code before assigning new work. Preserve this document for provenance; do not rerun its jobs blindly.
+
 **Scheduling update:** the user assigned initial implementation to the signed-in Fable session. Use `fable-tasks.md` for active ownership and status. Do not run a duplicate engine worker in Kiro. After engine commits exist, Kiro can reconcile requirements and implement a bounded UI milestone. Record each tool’s actual contribution.
 
 Prepared by Codex. Run one bounded task at a time, inspect the result and relevant checks, then send the next. Do not execute this entire queue in a single prompt. Numeric balance remains a playable draft.

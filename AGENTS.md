@@ -1,7 +1,8 @@
 # Working on this game
 
-Read README.md, your assignment and its owned files. Read relevant functions and
-imports; do not dump the repository or all reference documents.
+Read the task, this file and the owned files. Use docs/AGENT-ROUTER.md to
+locate relevant paths and focused tests; read it only when orientation is needed.
+Read imports one level at a time. Never dump the repo or reference collection.
 
 - Preserve the approved haunted Western art and existing attack demo.
 - Build a small browser card game: visible deck/hand, three lanes per side,
@@ -14,13 +15,16 @@ imports; do not dump the repository or all reference documents.
   generic frameworks, unused abstractions and speculative infrastructure.
 - Add no language or dependency without a concrete reason. Profile a real
   bottleneck before proposing a rewrite or optimization.
-- Run the affected check once; repeat after relevant changes or failures.
-  Pure game-rule tests do not require a renderer build.
+- Run the smallest affected check once; repeat after relevant changes or
+  failures. Pure rules need no renderer build. Do not re-run every browser
+  replay for a docs-only change or treat historical test receipts as new runs.
 - Do not dump binary assets into text context. Keep generated builds,
   dependencies, credentials and temporary worktrees out of commits.
-- docs/fable-tasks.md is the active task list. Workers own only their assigned
-  paths in separate worktrees. The coordinator owns shared package files,
-  entry points, logs and integration. Never overwrite another worker's changes.
+- docs/PROJECT-STATUS.md is the dated status snapshot; docs/fable-tasks.md
+  and docs/kiro-task-queue.md are historical assignments, not open tasks.
+  Workers own only their assigned paths in separate worktrees. The coordinator
+  owns shared package files, entry points, logs and integration. Never
+  overwrite another worker's changes.
 - Stop at the task boundary. Commit one focused change and report actual
   checks, changed files and blockers. Never auto-merge PRs.
 - Verify the existing GitHub remote and its history before publishing. No

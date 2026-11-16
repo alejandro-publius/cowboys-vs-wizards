@@ -18,8 +18,9 @@ README.md has the build command and check table.
   requests. Include a cancellation check when changing those interactions.
 - Reuse the eight approved fronts and the deck back when changing playback or
   inputs. Verify the original exchange at `?mode=demo` after a mode change.
-- Dragon and Mounted Billy are fitted static models. Skeleton is the remaining
-  temporary troop token.
+- Dragon and Mounted Billy use fitted GLBs with authored attack clips;
+  Skeleton uses its optimized Tripo mesh. Sheriff uses a procedural rig and
+  revolver cue. Keep the original exports and browser timing intact.
 
 ## Iterate cheaply
 
