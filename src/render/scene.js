@@ -5,7 +5,7 @@ import physics from "../physics/gravity.cjs";
 import {rigActor, grip, pose, pointOn, wizardStaffGrip} from "./rig.js";
 
 export const v=(x=0,y=0,z=0)=>new T.Vector3(x,y,z);
-export const assets=["board","cowboy-tile","wizard-tile","saloon","gateway","billy","wizard","revolver","sheriff"];
+export const assets=["board","cowboy-tile","wizard-tile","saloon","gateway","billy","wizard","revolver","sheriff","dragon"];
 export const timings={shot:.77,impact:.86,fireEnd:1.58,well:.55,release:2.30,repulse:2.43,land:3.02,castEnd:3.69,
   drawStart:.48,castStart:2.28,end:6.16};
 const mix=T.MathUtils.lerp;

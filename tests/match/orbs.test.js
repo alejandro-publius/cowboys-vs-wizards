@@ -115,7 +115,7 @@ test("Cowboy slot i stands on stage.tiles[i] and Wizard slot i on stage.tiles[3 
   }
 });
 
-test("Billy and Wizard pieces hold the rigged models; the three cards without a model are labelled temporary tokens", async () => {
+test("Characters use their own models and the two missing troops use labelled tokens", async () => {
   const { board } = await setup();
   board.reset(FULL());
   for (const [side, kind] of [["cowboy", "billy"], ["wizard", "wizard"]]) {
@@ -136,7 +136,7 @@ test("Billy and Wizard pieces hold the rigged models; the three cards without a 
   assert.equal(wizard.staff.holder.parent, wizard.actor.rig.sides[1].hand, "the staff is in the Wizard's hand");
 
   // The Sheriff has its own model; tests/match/sheriff.test.js covers it.
-  for (const [side, slot, name] of [["cowboy", 2, "Mounted Billy"], ["wizard", 0, "Skeleton"], ["wizard", 2, "Dragon"]]) {
+  for (const [side, slot, name] of [["cowboy", 2, "Mounted Billy"], ["wizard", 0, "Skeleton"]]) {
     const piece = board.piece(side, slot);
     let skinned = 0;
     piece.root.traverse((node) => node.isSkinnedMesh && (skinned += 1));
@@ -149,12 +149,28 @@ test("Billy and Wizard pieces hold the rigged models; the three cards without a 
     assert.equal(skinned, 0, name);
     assert.ok(!used.has("billy") && !used.has("wizard"), `${name} uses ${[...used]}`);
   }
-  assert.ok(board.piece("wizard", 2).height > board.piece("wizard", 0).height, "Dragon is larger than Skeleton");
+
+  const dragon = board.piece("wizard", 2);
+  dragon.root.updateWorldMatrix(true, true);
+  const dragonBox = new T.Box3().setFromObject(dragon.body.children[0]);
+  const dragonSize = dragonBox.getSize(new T.Vector3());
+  let dragonSkinned = 0;
+  dragon.root.traverse((node) => node.isSkinnedMesh && (dragonSkinned += 1));
+  assert.equal(dragon.kind, "dragon");
+  assert.equal(dragon.temporary, false);
+  assert.equal(dragon.token, null);
+  assert.equal(dragon.label, null);
+  assert.equal(dragonSkinned, 0, "the Dragon is a static mesh");
+  assert.ok(assetsIn(dragon.root).has("dragon"));
+  assert.ok(Math.max(dragonSize.x, dragonSize.z) <= 2.1 + 1e-6, "Dragon footprint is at most 2.1");
+  assert.ok(Math.abs(dragonBox.min.y - dragon.root.position.y) < 1e-6, "Dragon sits on its tile");
+  assert.equal(dragon.owned.length, 0, "the Dragon's shared geometry and materials are not disposed");
+  assert.ok(dragon.height > board.piece("wizard", 0).height, "Dragon is larger than Skeleton");
 
   const texts = [];
   const { board: custom } = await setup({ makeLabel: (text) => texts.push(text) && new T.Object3D() });
   custom.reset(viewWith([troop("Sheriff", 3), null, null], [null, null, troop("Dragon", 5)]));
-  assert.deepEqual(texts, ["Dragon - temporary token"]);
+  assert.deepEqual(texts, []);
 });
 
 test("reset builds exactly the view's troops and orbs; clear() leaves no piece, orb or effect", async () => {
