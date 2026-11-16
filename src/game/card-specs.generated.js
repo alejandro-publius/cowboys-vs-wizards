@@ -8,5 +8,6 @@ export const CARD_SPECS = [
   {"type":"wizard-skeleton","side":"wizard","order":1,"name":"Skeleton","kind":"troop","stars":1,"health":3,"attack":1,"copies":6},
   {"type":"wizard-wizard","side":"wizard","order":2,"name":"Wizard","kind":"troop","stars":5,"health":4,"attack":2,"copies":3},
   {"type":"wizard-dragon","side":"wizard","order":3,"name":"Dragon","kind":"troop","stars":8,"health":5,"attack":3,"copies":1},
-  {"type":"wizard-singularity","side":"wizard","order":4,"name":"Singularity","kind":"spell","relocates":true,"copies":2},
+  {"type":"wizard-singularity","side":"wizard","order":4,"name":"Singularity","kind":"spell","relocates":true,"copies":1},
+  {"type":"wizard-firebolt","side":"wizard","order":5,"name":"Firebolt","kind":"spell","relocates":false,"copies":1},
 ];
