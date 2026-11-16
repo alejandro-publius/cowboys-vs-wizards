@@ -13,3 +13,14 @@ Prepared November 16, 2026. Isolated preview; no game or public-site behavior ch
 - No automatic runtime fallback, new effects, hand-keyed movement, or main-branch merge was added.
 
 Run the script with a local directory containing Xbot.glb. It writes sheriff-mixamo-walk-preview.glb in that directory. Keep source assets and rendered output outside version control.
+
+## User-approved reference and engine check
+
+On November 16, 2026 the user responded "I LOVE THIS!!!" to the four-second Sheriff walk preview. Preserve that exact motion as the approved visual reference while checking its in-game presentation.
+Video SHA-256: 53a5bdf6851655ccae7b2306579bedbf405130139d9415efacb4e7ad5dacf92b.
+
+The supplied Lummox article supports the inspect, prepare, export, and verify-in-engine workflow. Its new asset-generation examples are not tasks for this project.
+
+Ran scripts/check-sheriff-source-clip.mjs against the exact exported GLB with the game's Three.js r180. It passed import, track validation, finite deformed vertices, joint-motion variation, independent character instances, and deterministic replay. The exported model has 16 bones, 28,252 vertices, three embedded image resources and one 0.967-second clip.
+
+This was a programmatic engine check, not a browser render. At the six sampled times, the lowest deformed vertex reached y=-0.064835 in normalized model space. Ground placement and foot contact need review on the board. The next visual checkpoint is this same clip in the actual browser environment. Gameplay triggers and live-site integration are still pending.
