@@ -22,6 +22,12 @@ node scripts/browser-match-check.mjs --url http://127.0.0.1:48181/web/ --showcas
 
 The Mac checkout has the test summary and Kiro transcripts under `.artifacts/kiro/preflight-card-pipeline/`. The `showcase/` directory contains the mounted summon, faceoff and result frames. [Route to record](../morning-handoff.md#the-duel-to-film)
 
+## Transparent player hand
+
+On November 16, Kiro CLI 3.3.0 removed the hand’s brown backing and extended the 3D canvas behind the cards. Codex verified the rendered hand and corrected the camera framing after the first replay exposed a shifted summon landing. A 390 × 844 Chrome pass confirmed that the ground continues behind the hand, the empty area passes input through to the canvas, and the playable card can be selected after the hand scrolls.
+
+The game code at `e1e901d` passed 107 Node tests. Chrome observed 8 of 8 opening checks and 4 of 4 Mounted Billy showcase checks at 1440 × 900 with zero console errors. Both checked the static HTML with SHA-256 `d28cf20a580506e5442fe62355be97a5305c00acaa649e711c968b860756e095`. The Kiro transcript and Chrome receipts are in `.artifacts/kiro/hand-overlay/` in the `kiro-first-turn` worktree on the Mac.
+
 ## Clash property check
 
 Codex ran Kiro’s **Property 3: Clash completeness** in a copy of the presenter. Its normal run passed across seeds 0–99 and covered 741 clashes and 2,734 attacks, including 539 attacks by troops defeated in the same clash. A deliberate edit in the copy suppressed those attacks’ animation calls. The same property failed on seed 0 with two animations for three damage events. The committed presenter passed the clean preflight. [Property test](../../tests/match/presenter.test.js)

@@ -10,6 +10,8 @@
 8. **Powers.** Kiro activated the local Orb Duel Review Power to load the artifact review procedure. The Power directs the agent to the workspace MCP configuration for its verdict. Kiro used that setup to check both matching and stale artifacts. [Power and MCP evidence](evidence/kiro-overnight.md#power-and-mcp)
 9. **Workflows.** The saved `orb-duel-replay` recipe runs verification in one step and assembles the receipt in another. The November 16 run on `2e63259` finished both steps with 104 passing Node tests and eight observed Chrome checks after a workspace-read approval. [Workflow recipe](../.kiro/workflows/orb-duel-replay.workflow.json) · [Run evidence](evidence/kiro-overnight.md#release-candidate-replay) · Summoning Circle also completed four steps for a stat proposal and for `review existing`. [Summoning Circle](evidence/kiro-card-pipeline.md#summoning-circle-workflow)
 
+10. **Player feedback in the live game.** Kiro CLI moved the card hand over the 3D environment after playtest feedback about the brown strip. Codex checked it in Chrome at desktop and phone widths and rebuilt the running Mac version. [Hand overlay evidence](evidence/kiro-submission-preflight.md#transparent-player-hand)
+
 ## Evidence to show
 
 | Screen | What the judge sees |
