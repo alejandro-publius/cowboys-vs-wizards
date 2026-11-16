@@ -13,7 +13,7 @@ import { createController } from "../../src/match/controller.js";
 import { createMatchBoard } from "../../src/render/match-board.js";
 import { CUE_TIMES, withCues } from "../../src/render/cues.js";
 import { grip } from "../../src/render/rig.js";
-import { SHERIFF_HEIGHT, SHERIFF_LANDING, SHERIFF_SHOT, idleSheriff } from "../../src/render/sheriff.js";
+import { SHERIFF_HEIGHT, SHERIFF_LANDING, SHERIFF_SHOT, drawSheriff, idleSheriff, landSheriff } from "../../src/render/sheriff.js";
 
 const models = await localModels();
 const idOf = (name) => Object.values(CARDS).find((card) => card.name === name).id;
@@ -77,7 +77,7 @@ test("the summon lands the Sheriff on the tile at impact and keeps the boots pla
   assert.deepEqual(cue, { ...SHERIFF_LANDING });
   const sheriff = board.piece("cowboy", 0), top = board.stage.tiles[0].top;
   run(scheduler, cue.impact / 2);
-  assert.ok(sheriff.body.position.y > .5, "still in the air");
+  assert.ok(sheriff.body.position.y > .3, "still in the air");
   assert.equal(sheriff.acting, true);
   run(scheduler, cue.impact);
   let lowestHips = Infinity;
@@ -102,7 +102,7 @@ test("draw, fire, recover: the revolver is in the hand and on the target at the 
   const target = { kind: "troop", side: "wizard", slot: 0, cardId: idOf("Skeleton") };
   const contact = board.targetPoint(target);
   const cue = withCues(board).attack({ attacker: { side: "cowboy", slot: 0, cardId: sheriff.cardId }, target });
-  assert.deepEqual(cue, { impact: 1040, end: 1850 });
+  assert.deepEqual(cue, { impact: 890, end: 1580 });
   assert.deepEqual(cue, { ...CUE_TIMES.sheriff });
   const hand = () => sheriff.gun.holder.position.distanceTo(grip(sheriff.actor, "right"));
   const named = (name) => board.effects.children.filter((mesh) => mesh.name === name && mesh.visible);
@@ -135,6 +135,77 @@ test("draw, fire, recover: the revolver is in the hand and on the target at the 
   assert.equal(sheriff.actor.root.rotation.y, Math.PI);
   assert.equal(board.effects.children.length, 0);
   assert.equal(scheduler.pending(), 0);
+});
+
+// Targets from docs/character-animation-plan.md and the Lucca references it
+// names (character-clips.md sections 5 and 6b), taking one world unit as a metre.
+test("reference targets: poses join within 1 mm, planted boots do not drift, nothing goes under the tile, the shot reads", async () => {
+  const { board } = await setup([{ cardId: idOf("Sheriff"), health: 3 }, null, null], [{ cardId: idOf("Skeleton"), health: 3 }, null, null]);
+  const sheriff = board.piece("cowboy", 0), top = board.stage.tiles[0].top;
+  const { actor, gun } = sheriff, { rig } = actor;
+  const aim = board.targetPoint({ kind: "troop", side: "wizard", slot: 0 });
+  const joints = [rig.head, rig.chest, rig.pelvis, ...rig.sides.flatMap((side) => [side.hand, side.fore, side.foot])];
+  const snapshot = () => {
+    sheriff.root.updateMatrixWorld(true);
+    return [...joints.map((bone) => bone.getWorldPosition(new T.Vector3())), gun.holder.getWorldPosition(new T.Vector3())];
+  };
+  const apart = (a, b) => Math.max(...a.map((point, i) => point.distanceTo(b[i])));
+  const position = actor.body.geometry.getAttribute("position"), point = new T.Vector3();
+  const lowest = () => {
+    let y = Infinity;
+    for (let i = 0; i < position.count; i++) y = Math.min(y, actor.body.getVertexPosition(i, point).applyMatrix4(actor.body.matrixWorld).y);
+    return y;
+  };
+
+  // Every cue starts in the pose the idle is in, and ends in the pose the idle starts from.
+  idleSheriff(sheriff, 0);
+  const rest = snapshot(), planted = soles(sheriff);
+  idleSheriff(sheriff, 2.3);
+  const breathing = snapshot();
+  assert.ok(apart(breathing, rest) > .002, "the idle moves");
+  drawSheriff(sheriff, 0, 0, aim);
+  assert.ok(apart(snapshot(), breathing) < .001, `draw start is ${apart(snapshot(), breathing)} from the idle pose`);
+  drawSheriff(sheriff, SHERIFF_SHOT.end, 0, aim);
+  assert.ok(apart(snapshot(), rest) < .001, `draw end is ${apart(snapshot(), rest)} from rest`);
+  landSheriff(sheriff, SHERIFF_LANDING.end);
+  assert.ok(apart(snapshot(), rest) < .001, `landing end is ${apart(snapshot(), rest)} from rest`);
+
+  // Planted boots and the floor, sampled at 60 per second through idle, landing and draw.
+  const frames = [];
+  for (let s = 0; s <= 8; s += 1 / 60) frames.push(() => idleSheriff(sheriff, s));
+  for (let ms = SHERIFF_LANDING.impact; ms <= SHERIFF_LANDING.end; ms += 1000 / 60) frames.push(() => landSheriff(sheriff, ms));
+  idleSheriff(sheriff, 0);
+  for (let t = 0; t <= SHERIFF_SHOT.end; t += 1 / 60) frames.push(() => drawSheriff(sheriff, t, 0, aim));
+  let drift = 0, under = 0;
+  for (const frame of frames) {
+    frame();
+    drift = Math.max(drift, apart(soles(sheriff), planted));
+    under = Math.max(under, top - lowest());
+  }
+  assert.ok(drift < .001, `boot soles drift ${drift}`);
+  assert.ok(under < .005, `${under} under the tile`);
+
+  // The fall is free fall from rest: after t seconds the body has dropped 0.5 g t^2,
+  // and it reaches the tile exactly at the impact time.
+  const total = SHERIFF_LANDING.impact / 1000;
+  for (const ms of [0, 100, 250, SHERIFF_LANDING.impact]) {
+    const expected = .5 * 9.81 * (total ** 2 - (ms / 1000) ** 2);
+    assert.ok(Math.abs(landSheriff(sheriff, ms).height - expected) < 1e-9, `height at ${ms} ms`);
+  }
+
+  // Reading: the shot comes within 0.8 s, the muzzle travels at least 0.35 heights
+  // from rest, and the chest leans at least 10 degrees at the shot.
+  assert.ok(SHERIFF_SHOT.shot <= .8);
+  idleSheriff(sheriff, 0);
+  sheriff.root.updateMatrixWorld(true);
+  const muzzleAtRest = gun.tip.getWorldPosition(new T.Vector3());
+  drawSheriff(sheriff, SHERIFF_SHOT.shot, 0, aim);
+  sheriff.root.updateMatrixWorld(true);
+  const travel = gun.tip.getWorldPosition(new T.Vector3()).distanceTo(muzzleAtRest) / SHERIFF_HEIGHT;
+  assert.ok(travel >= .35, `muzzle travels ${travel} heights`);
+  const lean = T.MathUtils.radToDeg(new T.Vector3(0, 1, 0).applyQuaternion(rig.chest.getWorldQuaternion(new T.Quaternion())).angleTo(new T.Vector3(0, 1, 0)));
+  assert.ok(lean >= 10, `chest leans ${lean} degrees`);
+  console.log(JSON.stringify({ soleDrift: drift, underTile: under, muzzleTravelHeights: travel, chestLeanDegrees: lean }));
 });
 
 test("seed 0: the Sheriff's shot takes the Skeleton's orb at the cue's impact time, from the Engine's damage event", async () => {

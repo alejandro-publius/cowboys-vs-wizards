@@ -238,8 +238,12 @@ export async function createMatchBoard({models, scheduler, makeLabel = makeTextL
       piece.owned.push(piece.actor.body.geometry, piece.actor.body.skeleton);
       // Breathes whenever it is drawn and no cue is posing it. Idle keeps no
       // scheduler entry, so it survives scheduler.advance() and never counts as pending.
+      // The idle clock restarts after each cue, so the idle begins in the pose the cue ended in.
+      let idleFrom = null;
       piece.actor.body.onBeforeRender = () => {
-        if (!piece.acting) idleSheriff(piece, performance.now() / 1000);
+        const now = performance.now() / 1000;
+        if (piece.acting) idleFrom = null;
+        else idleSheriff(piece, now - (idleFrom ??= now));
       };
       body.add(piece.actor.root);
     } else if (rigged) {
