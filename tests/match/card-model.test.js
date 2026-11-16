@@ -9,6 +9,7 @@ import { CARDS, SIDES } from "../../src/game/cards.js";
 import { createMatch } from "../../src/game/state.js";
 import { applyAction } from "../../src/game/actions.js";
 import { publicState } from "../../src/game/view.js";
+import { legalActions } from "../../src/game/legal.js";
 import { chooseAction } from "../../src/game/cpu.js";
 import { emptySelection, selectionOptions, selectionStep } from "../../src/match/selection.js";
 import { RESULT_LABELS, cardModel } from "../../src/ui/card-model.js";
@@ -39,6 +40,7 @@ function checkModel(model, { view, state, options, status, seed }) {
   assert.equal(model.cowboy.baseOrbs, own.baseOrbs);
   assert.deepEqual(model.cowboy.hand.map((card) => card.cardId), own.hand, "one entry per held card, in hand order");
   const selected = options?.cardId ?? null;
+  const playable = status === "accepting_input" && options ? legalActions(view, "cowboy") : [];
   for (const card of model.cowboy.hand) {
     const data = CARDS[card.cardId];
     assert.deepEqual(card, {
@@ -49,6 +51,7 @@ function checkModel(model, { view, state, options, status, seed }) {
       health: data.health ?? null,
       attack: data.attack ?? null,
       selected: data.id === selected,
+      playable: playable.some((action) => action.cardId === data.id),
     });
   }
 

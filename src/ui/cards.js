@@ -56,9 +56,15 @@ function pile(name) {
 }
 
 function cardButton(card, enabled, inFlight) {
-  return el("button", {type:"button",class:"card-front card-stage"+(inFlight?" in-flight":""),
-    "data-card-id":card.cardId,"aria-label":describeCard(card),
-    "aria-pressed":String(card.selected),disabled:!enabled}, createCardBody(card));
+  return el("button", {
+    type: "button",
+    class: "card-front card-stage" + (inFlight ? " in-flight" : ""),
+    "data-card-id": card.cardId,
+    "data-playable": card.playable,
+    "aria-label": describeCard(card) + (card.playable ? ", playable now" : ""),
+    "aria-pressed": String(card.selected),
+    disabled: !enabled,
+  }, createCardBody(card));
 }
 function orbRow(value,side) {
   return el("span",{class:"base-orbs "+side,"aria-hidden":"true"},

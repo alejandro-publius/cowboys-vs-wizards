@@ -26,7 +26,7 @@ function phase(displayed) {
   return displayed.activeSide === "cowboy" ? "Cowboy phase (you)" : "Wizard phase (CPU)";
 }
 
-function front(cardId, selected) {
+function front(cardId, selected, playable) {
   const card = CARDS[cardId];
   const troop = card.kind === "troop";
   return {
@@ -37,6 +37,7 @@ function front(cardId, selected) {
     health: troop ? card.health : null,
     attack: troop ? card.attack : null,
     selected,
+    playable,
   };
 }
 
@@ -51,6 +52,7 @@ export function cardModel({displayed = null, options = null, status = "idle", se
   const cowboy = displayed?.sides.cowboy ?? null;
   const wizard = displayed?.sides.wizard ?? null;
   const selected = options?.cardId ?? null;
+  const playable = new Set(accepting ? options?.playableCardIds : []);
   const outcome = displayed?.result?.outcome;
   return {
     status,
@@ -61,7 +63,7 @@ export function cardModel({displayed = null, options = null, status = "idle", se
       deckCount: cowboy?.deckCount ?? null,
       handCount: cowboy?.handCount ?? null,
       baseOrbs: cowboy?.baseOrbs ?? null,
-      hand: (cowboy?.hand ?? []).map((cardId) => front(cardId, cardId === selected)),
+      hand: (cowboy?.hand ?? []).map((cardId) => front(cardId, cardId === selected, playable.has(cardId))),
     },
     // Counts only: never the Wizard hand or deck.
     wizard: {

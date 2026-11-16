@@ -146,16 +146,19 @@ export function selectionStep(current, input, view, { accepting = false, newActi
   }
 }
 
-function idlePrompt(view) {
+function idlePrompt(view, hasPlayableCards) {
   if (view.result) return "The match is over.";
   if (view.activeSide !== view.viewer) return "Waiting for the opponent.";
-  return "Choose a card to play, or end your phase.";
+  return hasPlayableCards ? "Choose a glowing card, or end your phase." : "End your phase.";
 }
 
 // What the overlay may offer for the current step: clickable own and enemy
 // slots, the chosen tributes, button flags and a short prompt.
 export function selectionOptions(current, view) {
+  const actions = legalActions(view, view.viewer);
+  const playableCardIds = [...new Set(actions.map((action) => action.cardId).filter(Boolean))];
   const options = {
+    playableCardIds,
     step: current.step,
     cardId: current.cardId ?? null,
     tributes: [...(current.tributes ?? [])],
@@ -167,12 +170,12 @@ export function selectionOptions(current, view) {
     prompt: "",
   };
   if (current.step === "idle") {
-    options.prompt = idlePrompt(view);
+    options.prompt = idlePrompt(view, playableCardIds.length > 0);
     return options;
   }
 
   const card = CARDS[current.cardId];
-  const entries = entriesFor(view, current.cardId);
+  const entries = actions.filter((action) => action.cardId === current.cardId);
   switch (current.step) {
     case "tribute": {
       const cost = tributeCost(card.stars);

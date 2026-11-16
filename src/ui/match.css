@@ -64,6 +64,11 @@
 #match .card-front {--table-pitch:24deg;--pitch:var(--table-pitch);--yaw:calc(var(--fan,0)*2deg - 5deg);--roll:calc(var(--fan,0)*2.5deg);flex:0 0 var(--hand-card-width);width:var(--hand-card-width);padding:0;border:0;border-radius:var(--card-radius);background:none;min-height:0;text-align:left;white-space:normal;touch-action:manipulation}
 #match .card-front:not(:disabled):hover,#match .card-front:focus-visible {--pitch:10deg;--lift:-6px;--shadow-y:13px;--shadow-blur:8px;--sheen:60%;z-index:2}
 #match .card-front[aria-pressed=true] {--pitch:4deg;--yaw:-6deg;--roll:0deg;--lift:-14px;--scale:1.06;--sheen:60%;--shadow-x:13px;--shadow-y:24px;--shadow-blur:12px;--shadow-strength:.5;z-index:3}
+#match .match-hand .card-front[data-playable][aria-pressed=false] .front-face {
+  outline: 2px solid #a3f4c9;
+  outline-offset: 1px;
+  box-shadow: inset 0 0 0 1px #dfad6a85, 0 0 9px 4px #65d5a5ad, 0 0 20px 6px #65d5a54d;
+}
 #match .card-front[aria-pressed=true] .front-face {outline:2px solid #ffcf8c;outline-offset:1px}
 #match .card-front:disabled {opacity:1}
 #match .card-front:disabled .front-face::after {background:#170b1a26}

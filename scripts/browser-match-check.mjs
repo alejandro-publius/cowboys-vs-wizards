@@ -186,7 +186,9 @@ const SNAPSHOT = `(() => {
     prompt: text($(".match-prompt", match)), message: !message || message.hidden ? "" : text(message),
     hand: $$(".match-hand .card-front", match).map((b) => ({cardId: b.dataset.cardId, name: $(".front-face", b)?.dataset.unit ?? null,
       hasArt: Boolean($(".front-face", b) && getComputedStyle($(".front-face", b)).backgroundImage.startsWith("url(")),
-      pressed: b.getAttribute("aria-pressed") === "true", disabled: b.disabled})),
+      pressed: b.getAttribute("aria-pressed") === "true", disabled: b.disabled,
+      playable: b.hasAttribute("data-playable"),
+      outlined: getComputedStyle($(".front-face", b)).outlineStyle === "solid"})),
     lanes: $$(".match-slot", match).map((b) => ({side: b.dataset.side, slot: Number(b.dataset.slot), text: text(b),
       label: b.getAttribute("aria-label"), disabled: b.disabled, pressed: b.getAttribute("aria-pressed") === "true"})),
     cowboyDeck: text($(".match-own .match-count", match)), cowboyBase: text($(".match-own .match-base", match)),
@@ -418,6 +420,11 @@ async function runOnce(seed, flags, tilePoints) {
 
     // Step 2: four cards, deck count, card back.
     const opening = publicState(createMatch(seed), "cowboy");
+    const openingMoves = legalActions(opening, "cowboy");
+    const openingMarksMatch = s.hand.every((card) => {
+      const playable = openingMoves.some((action) => action.cardId === card.cardId);
+      return card.playable === playable && card.outlined === playable;
+    });
     const background = await evaluate(`getComputedStyle(document.querySelector("#match .match-own .card-back")).backgroundImage`);
     const backUrl = background.match(/url\("([^"]+)"\)/)?.[1];
     const backHash = backUrl ? sha256(await resourceBytes(backUrl)) : null;
@@ -447,10 +454,11 @@ async function runOnce(seed, flags, tilePoints) {
     await click('.card-viewer [data-action="close-art"]');
     step(2, "The hand and all eight catalog cards show illustrated faces and flip to the deck back",
       s.hand.length === 4 && s.hand.every((card, i) => card.cardId === opening.sides.cowboy.hand[i])
-        && s.hand.every((card) => card.hasArt) && allCatalogArt && flipped
+        && s.hand.every((card) => card.hasArt) && allCatalogArt && flipped && openingMarksMatch
         && s.cowboyDeck === String(opening.sides.cowboy.deckCount) && s.cardBacks > 0 && backHash === fileHash,
       {hand: s.hand.map((card) => card.name), engineHand: opening.sides.cowboy.hand.map((id) => CARDS[id].name),
-        frontArtPresent: s.hand.map((card) => card.hasArt), catalogArt, flipped,
+        frontArtPresent: s.hand.map((card) => card.hasArt),
+        glowingCards: s.hand.filter((card) => card.outlined).map((card) => card.name), catalogArt, flipped,
         cowboyDeck: s.cowboyDeck, engineDeckCount: opening.sides.cowboy.deckCount, wizardDeck: s.wizardDeck,
         wizardHandBacks: s.wizardHand, cardBackElements: s.cardBacks, bases: [s.cowboyBase, s.wizardBase],
         deckPileImageSha256: backHash, cardBackFileSha256: fileHash});
