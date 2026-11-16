@@ -4,10 +4,18 @@ out=.artifacts/kiro/card-hook.txt
 if [ "${1:-}" = "--save-hook" ]; then out=.artifacts/kiro/card-save-hook.txt; fi
 mkdir -p .artifacts/kiro || exit 1
 log="$out.$$.tmp"
+
+run_check() {
+    "$@"
+    check_status=$?
+    printf '%s: exit %s\n' "$*" "$check_status"
+    return "$check_status"
+}
+
 {
-    node scripts/sync-card-specs.mjs &&
-        node scripts/sync-card-specs.mjs --check &&
-        node --test tests/game/card-specs.test.js
+    run_check node scripts/sync-card-specs.mjs &&
+        run_check node scripts/sync-card-specs.mjs --check &&
+        run_check node --test tests/game/card-specs.test.js
 } > "$log" 2>&1
 status=$?
 printf 'overall exit %s\n' "$status" >> "$log"
