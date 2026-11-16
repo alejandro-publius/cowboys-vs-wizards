@@ -1,0 +1,178 @@
+{
+  "rulesVersion": "orb-duel-draft-1",
+  "seeds": {
+    "from": 0,
+    "to": 999,
+    "deals": 1000
+  },
+  "bots": {
+    "cowboy": "cpu",
+    "wizard": "cpu"
+  },
+  "variants": {
+    "current": "the deal createMatch(seed) produces",
+    "guaranteed": "a side dealt no free-summon troop swaps its fourth card with the free-summon troop nearest the top of its deck"
+  },
+  "dealsWithoutFreeSummon": {
+    "current": {
+      "cowboy": 23,
+      "wizard": 40,
+      "eitherSide": 62,
+      "bothSides": 1
+    },
+    "guaranteed": {
+      "cowboy": 0,
+      "wizard": 0,
+      "eitherSide": 0,
+      "bothSides": 0
+    }
+  },
+  "allMatches": {
+    "current": {
+      "matches": 2000,
+      "wins": {
+        "cowboy": 880,
+        "wizard": 943,
+        "draw": 177
+      },
+      "byStartingSide": {
+        "cowboy": {
+          "cowboy": 585,
+          "wizard": 321,
+          "draw": 94
+        },
+        "wizard": {
+          "cowboy": 295,
+          "wizard": 622,
+          "draw": 83
+        }
+      },
+      "actedFirstWins": 1207,
+      "actedSecondWins": 616,
+      "endings": {
+        "round-limit": 343,
+        "base-destroyed": 1657
+      },
+      "meanRounds": 7.28,
+      "meanActions": 31.88
+    },
+    "guaranteed": {
+      "matches": 2000,
+      "wins": {
+        "cowboy": 855,
+        "wizard": 960,
+        "draw": 185
+      },
+      "byStartingSide": {
+        "cowboy": {
+          "cowboy": 578,
+          "wizard": 327,
+          "draw": 95
+        },
+        "wizard": {
+          "cowboy": 277,
+          "wizard": 633,
+          "draw": 90
+        }
+      },
+      "actedFirstWins": 1211,
+      "actedSecondWins": 604,
+      "endings": {
+        "round-limit": 363,
+        "base-destroyed": 1637
+      },
+      "meanRounds": 7.44,
+      "meanActions": 32.72
+    }
+  },
+  "changedDeals": {
+    "current": {
+      "matches": 124,
+      "wins": {
+        "cowboy": 79,
+        "wizard": 44,
+        "draw": 1
+      },
+      "byStartingSide": {
+        "cowboy": {
+          "cowboy": 39,
+          "wizard": 22,
+          "draw": 1
+        },
+        "wizard": {
+          "cowboy": 40,
+          "wizard": 22,
+          "draw": 0
+        }
+      },
+      "actedFirstWins": 61,
+      "actedSecondWins": 62,
+      "endings": {
+        "base-destroyed": 122,
+        "round-limit": 2
+      },
+      "meanRounds": 3.86,
+      "meanActions": 15.01
+    },
+    "guaranteed": {
+      "matches": 124,
+      "wins": {
+        "cowboy": 54,
+        "wizard": 61,
+        "draw": 9
+      },
+      "byStartingSide": {
+        "cowboy": {
+          "cowboy": 32,
+          "wizard": 28,
+          "draw": 2
+        },
+        "wizard": {
+          "cowboy": 22,
+          "wizard": 33,
+          "draw": 7
+        }
+      },
+      "actedFirstWins": 65,
+      "actedSecondWins": 50,
+      "endings": {
+        "base-destroyed": 102,
+        "round-limit": 22
+      },
+      "meanRounds": 6.52,
+      "meanActions": 28.46
+    }
+  },
+  "sideDealtNoFreeSummon": {
+    "current": {
+      "actedFirst": {
+        "wins": 0,
+        "losses": 62,
+        "draws": 1
+      },
+      "actedSecond": {
+        "wins": 1,
+        "losses": 61,
+        "draws": 1
+      }
+    },
+    "guaranteed": {
+      "actedFirst": {
+        "wins": 32,
+        "losses": 24,
+        "draws": 7
+      },
+      "actedSecond": {
+        "wins": 27,
+        "losses": 33,
+        "draws": 3
+      }
+    }
+  },
+  "matchesWithDifferentWinner": 66,
+  "currentRulesSeededStart": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+  }
+}

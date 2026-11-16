@@ -39,8 +39,8 @@ export function makeBot(kind, seed, side) {
 
 // Plays `seed` to its result. Bots only ever receive publicState for their own
 // side. Throws if a bot's action is rejected or the step bound is reached.
-export function playMatch(seed, bots) {
-  const opening = createMatch(seed);
+// An experiment may pass its own `opening` state in place of the seeded deal.
+export function playMatch(seed, bots, opening = createMatch(seed)) {
   let state = opening;
   const log = [];
   while (!state.result) {
@@ -88,9 +88,9 @@ function clashLines(round, events, state) {
   ];
 }
 
-export function traceLines(seed, kinds) {
+export function traceLines(seed, kinds, dealt) {
   const bots = Object.fromEntries(SIDES.map((side) => [side, makeBot(kinds[side], seed, side)]));
-  const { opening, state, log } = playMatch(seed, bots);
+  const { opening, state, log } = playMatch(seed, bots, dealt);
   const lines = [
     `seed ${seed}  rules ${RULES_VERSION}  ${SIDES.map((side) => `${side}=${kinds[side]}`).join(" ")}  starts: ${opening.startingSide}`,
     ...SIDES.map((side) => `opening hand ${side}: ${names(opening.sides[side].hand)}`),
