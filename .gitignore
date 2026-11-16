@@ -7,3 +7,7 @@ dist/
 .env
 .env.*
 !.env.example
+
+# Optional Python tooling
+__pycache__/
+*.pyc
