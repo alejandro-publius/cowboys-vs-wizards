@@ -20,6 +20,7 @@
 | New card and card registration | `.kiro/specs/duel-card-pipeline/`, `scripts/sync-card-specs.mjs` | `node --test tests/game/card-specs.test.js` |
 | Build / public site / replay | `scripts/{build,verify-duel,browser-match-check}.mjs`, `.github/workflows/pages.yml` | `node scripts/verify-duel.mjs`; browser option only for a page-affecting change |
 | Kiro tooling and evidence | relevant file in `.kiro/{specs,agents,steering,hooks,workflows,powers}/` plus matching evidence note | smallest relevant command; don't claim a Kiro run without a receipt |
+| Optional Night Watch Crew app | `apps/night-watch/README.md`, then the specific Python backend or UI file | `python3 -m unittest discover -s apps/night-watch/backend -p 'test_*.py'` |
 
 The table is a locator, not an instruction to read **every** listed file. The bracketed path group is shorthand, not a literal filesystem path.
 

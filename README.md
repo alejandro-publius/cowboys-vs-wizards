@@ -57,6 +57,8 @@ Kiro's Requirements-First Orb Duel spec, custom agent, workspace steering, hooks
 
 [Follow the judge evidence trail](docs/JUDGE-GUIDE.md) · [Kiro usage and receipts](docs/kiro-brag-sheet.md) · [Actual build log](docs/kiro-build-log.md)
 
+For ongoing balance review, the separate [Night Watch Kiro Crew extension](apps/night-watch/README.md) compares committed game revisions on matching CPU seeds, records changes and drafts issue reports. It is an optional local development tool, **not** part of the shipped browser game. [Crew run evidence](docs/evidence/kiro-night-watch.md).
+
 ## Code map
 
 | Path | Owns |

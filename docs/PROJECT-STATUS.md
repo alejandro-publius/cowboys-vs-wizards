@@ -1,6 +1,6 @@
 # Project status — observed November 16, 2026
 
-**Snapshot:** public `main` at `a403c71`, after navigation PR #8 and the optional opening-hand preview PR #9. This page summarizes tracked source and existing evidence. It is **not** a claim that these checks were rerun while preparing this documentation. Inspect current HEAD, the latest Actions run, and the actual rendered game when the branch changes.
+**Snapshot:** updated November 16, 2026, after merged navigation PR #8, optional opening-hand preview PR #9, Night Watch PR #11 and art-sourcing guidance PR #12. This page summarizes tracked source and existing evidence, not an always-current checkout or a claim that historical checks were rerun. Inspect the current `main` HEAD, the latest Actions run and the rendered game after any release change.
 
 ## Built and available
 
@@ -12,6 +12,7 @@
 | Presentation | Illustrated hand, 3D lanes, orbs, animated cues, graveyard, restart in `src/ui/`, `src/render/`, `src/match/` |
 | Characters | Sheriff procedural draw/fire; Wizard cast; optimized Skeleton mesh; Dragon and Mounted Billy GLB attack clips; [character evidence](evidence/kiro-character-assets.md) |
 | Kiro usage | Orb Duel Spec, steering, hooks, agent, saved Workflow, Power + review MCP, artifact hash checks; [actual evidence](kiro-brag-sheet.md) |
+| Optional Crew extension | [Night Watch](../apps/night-watch/README.md) compares exact commits over matching seeded matches and can generate issue drafts; [observed Crew evidence](evidence/kiro-night-watch.md). Not part of the browser game. |
 | Verification | Existing browser receipts and test counts: [release preflight](evidence/kiro-submission-preflight.md); [character release](evidence/kiro-character-assets.md). Always distinguish past receipts from a new test run |
 
 ## Next valuable work (proposed, not shipped)
