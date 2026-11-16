@@ -1,5 +1,6 @@
 // Local duel verification, run once from the project root:
-//   node scripts/verify-duel.mjs            Node suites in tests/game, tests/match, tests/assets
+//   node scripts/verify-duel.mjs            Node suites in tests/game, tests/match, tests/assets,
+//                                           then the Dragon and Mounted Billy GLB structure preflight
 //   node scripts/verify-duel.mjs --browser  also build once and replay seed 0 in native Chrome
 // Browser outputs (screenshots, browser-run.json) go to .artifacts/kiro/replay.
 // The first failing check's exit status is returned.
@@ -31,6 +32,9 @@ const files = ["tests/game", "tests/match", "tests/assets"].flatMap((dir) =>
     .sort()
     .map((f) => `${dir}/${f}`));
 run(process.execPath, ["--test", ...files]);
+
+// Read-only structure preflight of the two animated shipped models (not motion approval).
+run(process.execPath, ["scripts/check-sourced-animation.mjs", "assets/models/dragon.glb", "assets/models/mounted-billy.glb"]);
 
 if (args.includes("--browser")) {
   run(process.execPath, ["scripts/build.mjs"]);
