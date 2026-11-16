@@ -115,7 +115,7 @@ test("Cowboy slot i stands on stage.tiles[i] and Wizard slot i on stage.tiles[3 
   }
 });
 
-test("Characters use their own models and the two missing troops use labelled tokens", async () => {
+test("Characters use their own models, the static troops are real meshes, and Skeleton is a labelled token", async () => {
   const { board } = await setup();
   board.reset(FULL());
   for (const [side, kind] of [["cowboy", "billy"], ["wizard", "wizard"]]) {
@@ -136,7 +136,7 @@ test("Characters use their own models and the two missing troops use labelled to
   assert.equal(wizard.staff.holder.parent, wizard.actor.rig.sides[1].hand, "the staff is in the Wizard's hand");
 
   // The Sheriff has its own model; tests/match/sheriff.test.js covers it.
-  for (const [side, slot, name] of [["cowboy", 2, "Mounted Billy"], ["wizard", 0, "Skeleton"]]) {
+  for (const [side, slot, name] of [["wizard", 0, "Skeleton"]]) {
     const piece = board.piece(side, slot);
     let skinned = 0;
     piece.root.traverse((node) => node.isSkinnedMesh && (skinned += 1));
@@ -149,6 +149,28 @@ test("Characters use their own models and the two missing troops use labelled to
     assert.equal(skinned, 0, name);
     assert.ok(!used.has("billy") && !used.has("wizard"), `${name} uses ${[...used]}`);
   }
+
+  const mounted = board.piece("cowboy", 2);
+  mounted.root.updateWorldMatrix(true, true);
+  const mountedBox = new T.Box3().setFromObject(mounted.body.children[0]);
+  const mountedSize = mountedBox.getSize(new T.Vector3());
+  let mountedSkinned = 0;
+  mounted.root.traverse((node) => node.isSkinnedMesh && (mountedSkinned += 1));
+  assert.equal(mounted.kind, "mounted-billy");
+  assert.equal(mounted.temporary, false);
+  assert.equal(mounted.token, null, "no temporary token");
+  assert.equal(mounted.label, null);
+  assert.equal(mountedSkinned, 0, "Mounted Billy is a static mesh");
+  assert.deepEqual([...assetsIn(mounted.body.children[0])], ["mounted-billy"]);
+  assert.ok(Math.abs(mountedSize.y - 1.7) < 0.01, `Mounted Billy height ${mountedSize.y}`);
+  assert.ok(Math.max(mountedSize.x, mountedSize.z) <= 2.05 + 1e-6, "Mounted Billy footprint is at most 2.05");
+  assert.ok(Math.abs(mountedBox.min.y - mounted.root.position.y) < 1e-6, "hooves sit on the tile");
+  assert.equal(mounted.owned.length, 0, "Mounted Billy's shared geometry and materials are not disposed");
+  assert.equal(shownOrbs(mounted.orbs.group), 5, "five health orbs are shown");
+  assert.ok(mounted.orbs.group.position.y >= mountedSize.y, "the orbs sit above the model");
+  assert.ok(mountedBox.max.y <= mounted.orbs.group.position.y + mounted.root.position.y);
+  const mountedFront = new T.Vector3(0, 0, 1).applyQuaternion(mounted.body.children[0].getWorldQuaternion(new T.Quaternion()));
+  assert.ok(mountedFront.z < -0.99, "the horse faces -Z toward the Wizards");
 
   const dragon = board.piece("wizard", 2);
   dragon.root.updateWorldMatrix(true, true);

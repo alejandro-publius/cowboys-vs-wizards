@@ -2,9 +2,9 @@
 // built on the createDuel stage from createBoardScene. Cowboy slot i stands on
 // stage.tiles[i] and Wizard slot i on stage.tiles[3 + i]. Billy and Wizard
 // cards use the rigged models from the demo (the Wizard's motion is in
-// src/render/wizard.js), and the Sheriff uses its own model (src/render/sheriff.js). The Dragon is a static
-// mesh (assets/models/dragon.glb). Mounted Billy and Skeleton have no models
-// yet, so they get labelled temporary tokens. Each troop has a
+// src/render/wizard.js), and the Sheriff uses its own model (src/render/sheriff.js). The Dragon and Mounted Billy are static
+// meshes (assets/models/dragon.glb, mounted-billy.glb). Skeleton has no model
+// yet, so it gets a labelled temporary token. Each troop has a
 // procedural orb row and each Base has five.
 //
 // The cues are basic placeholders (task 8 refines Billy and Wizard). All
@@ -42,7 +42,12 @@ export const CUES = Object.freeze({
 
 // Cards with a rigged model, and the heights the demo uses for them.
 const RIGGED = {Billy: {kind: "billy", height: 1.93}, Wizard: {kind: "wizard", height: WIZARD_HEIGHT}, Sheriff: {kind: "sheriff", height: SHERIFF_HEIGHT}};
-const DRAGON_HEIGHT = 1.25, DRAGON_FOOTPRINT = 2.1;
+// Static single-mesh troops. The Dragon's head is +X natively (yaw -PI/2 faces +Z);
+// Mounted Billy's horse is +Z natively (yaw PI faces the Wizards at -Z).
+const STATIC = {
+  Dragon: {kind: "dragon", asset: "dragon", height: 1.25, footprint: 2.1, yaw: -Math.PI / 2},
+  "Mounted Billy": {kind: "mounted-billy", asset: "mounted-billy", height: 1.7, footprint: 2.05, yaw: Math.PI},
+};
 const FLASH = {cowboy: 0xffb95e, wizard: 0xc192ff};
 
 // Shared geometry and materials; never disposed.
@@ -264,16 +269,17 @@ export async function createMatchBoard({models, scheduler, makeLabel = makeTextL
       });
       idles(piece, idleWizard);
       body.add(piece.actor.root);
-    } else if (card.name === "Dragon") {
-      // Static Tripo mesh (no skin), head toward +X natively; yaw -PI/2 faces +Z.
-      // Its geometry and materials are shared with models.dragon, so none are owned.
-      const dragon = fit(models.dragon, {height: DRAGON_HEIGHT, yaw: -Math.PI / 2});
-      const size = new T.Box3().setFromObject(dragon).getSize(v());
+    } else if (STATIC[card.name]) {
+      // Static Tripo mesh (no skin), fitted to a height and capped footprint. Its
+      // geometry and materials are shared with models[asset], so none are owned.
+      const {kind, asset, height, footprint: limit, yaw} = STATIC[card.name];
+      const mesh = fit(models[asset], {height, yaw});
+      const size = new T.Box3().setFromObject(mesh).getSize(v());
       const footprint = Math.max(size.x, size.z);
-      const scale = Math.min(1, DRAGON_FOOTPRINT / footprint);
-      dragon.scale.multiplyScalar(scale);
-      body.add(dragon);
-      Object.assign(piece, {kind: "dragon", height: size.y * scale, width: footprint * scale});
+      const scale = Math.min(1, limit / footprint);
+      mesh.scale.multiplyScalar(scale);
+      body.add(mesh);
+      Object.assign(piece, {kind, height: size.y * scale, width: footprint * scale});
     } else if (rigged) {
       const actor = rigActor(models[rigged.kind], rigged.kind, rigged.height);
       piece.owned.push(actor.body.geometry, actor.body.skeleton);
@@ -307,7 +313,7 @@ export async function createMatchBoard({models, scheduler, makeLabel = makeTextL
     piece.hitbox = new T.Mesh(UNIT.hit, HIT);
     piece.hitbox.name = "hitbox";
     piece.hitbox.visible = false;
-    const wide = piece.kind === "dragon" ? Math.max(.5, piece.width * .6) : .5;
+    const wide = piece.width ? Math.max(.5, piece.width * .6) : .5;
     piece.hitbox.scale.set(wide, piece.height, wide);
     piece.hitbox.position.y = piece.height / 2;
     root.add(piece.hitbox);
