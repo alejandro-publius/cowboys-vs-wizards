@@ -1,0 +1,9 @@
+{
+  "type": "wizard-firebolt",
+  "side": "wizard",
+  "order": 5,
+  "name": "Firebolt",
+  "kind": "spell",
+  "relocates": false,
+  "copies": 1
+}

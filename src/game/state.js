@@ -5,7 +5,7 @@ export const BASE_ORBS = 5;
 export const OPENING_HAND = 4;
 export const MAX_ROUNDS = 9;
 // Names the rule set in reports. Change it whenever a rule or card value changes.
-export const RULES_VERSION = "orb-duel-draft-1";
+export const RULES_VERSION = "orb-duel-firebolt-preview";
 
 // mulberry32 step. The whole generator is one uint32, so it lives in the
 // match state as a plain number and replays from a seed are identical.

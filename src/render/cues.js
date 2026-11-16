@@ -11,6 +11,7 @@
 //                  the same muzzle flash, tracer and sparks (impact 0.89 s, end 1.58 s)
 //   token attack   the board's lunge
 //   Deadeye        the leftmost Billy's shot, or a tracer from the Saloon
+//   Firebolt       a staff ember or a bolt from the Wizard Gateway
 //   Singularity    a dark well with a violet ring at the target while the
 //                  leftmost Wizard piece, if there is one, casts with its staff
 // A Billy or Wizard turns toward a target outside its lane (a Base) and back.
@@ -37,6 +38,15 @@ const pulse = (t, from, peak, to) => ease(from, peak, t) * (1 - ease(peak, to, t
 const mix = T.MathUtils.lerp;
 const toMs = (seconds) => Math.round(seconds * 1000);
 const UP = v(0, 1, 0), FORWARD = v(0, 0, 1);
+
+const VIOLET_BOLT = {
+  halo: 0xc6a0ff, head: 0xb27dff, core: 0xf4e4ff, trail: 0x9c63ff,
+  burst: 0xd9b8ff, ring: 0xdd9aff, sparks: [0xc89cff, 0xf3e2ff], lift: 0,
+};
+const FIRE_BOLT = {
+  halo: 0xffa33d, head: 0xff632b, core: 0xffecb0, trail: 0xe74d1e,
+  burst: 0xff8638, ring: 0xffae55, sparks: [0xff6726, 0xffcc68], lift: .32,
+};
 
 // Cue second at which the Saloon fires Deadeye when no Billy stands.
 const SALOON_SHOT = .35;
@@ -257,27 +267,28 @@ export function withCues(board) {
     return {...CUE_TIMES.saloon};
   }
 
-  // The Wizard winds up, thrusts its staff and sends a violet bolt from the
-  // jewel to `contact`. The effects are sized to read from the board camera.
-  function staffBolt(piece, contact) {
+  // Charge at the staff jewel or the Gateway, then send a bolt to `contact`. The effects are sized to read from the board camera.
+  function staffBolt(piece, contact, colors = VIOLET_BOLT, gateway) {
     const {impact, end} = CUE_TIMES.wizard, cast = WIZARD_CAST.bolt;
     const fx = cueEffects(board);
-    const halo = fx.add("jewel-glow", GEOMETRY.glow, neon(0xc6a0ff, 0));
-    const head = fx.add("bolt", GEOMETRY.glow, neon(0xb27dff, .95));
-    const core = fx.add("bolt", GEOMETRY.glow, neon(0xf4e4ff));
-    const trail = fx.add("bolt-trail", GEOMETRY.trail, neon(0x9c63ff, .8));
-    const burst = fx.add("bolt-burst", GEOMETRY.glow, neon(0xd9b8ff, 0));
-    const ring = fx.add("bolt-ring", GEOMETRY.ring, neon(0xdd9aff));
-    const sparks = sparkSpray(fx, [0xc89cff, 0xf3e2ff], 12, .45);
-    const turn = turnToward(piece, 0, contact);
+    const halo = fx.add("jewel-glow", GEOMETRY.glow, neon(colors.halo, 0));
+    const head = fx.add("bolt", GEOMETRY.glow, neon(colors.head, .95));
+    const core = fx.add("bolt", GEOMETRY.glow, neon(colors.core));
+    const trail = fx.add("bolt-trail", GEOMETRY.trail, neon(colors.trail, .8));
+    const burst = fx.add("bolt-burst", GEOMETRY.glow, neon(colors.burst, 0));
+    const ring = fx.add("bolt-ring", GEOMETRY.ring, neon(colors.ring));
+    const sparks = sparkSpray(fx, colors.sparks, 12, .45);
+    const turn = piece ? turnToward(piece, 0, contact) : 0;
     const flight = impact / 1000 - cast.release;
-    const jewel = v(), tail = v();
+    const jewel = piece ? v() : gateway.clone(), tail = v();
     let origin = null;
-    piece.acting = true;
+    if (piece) piece.acting = true;
     board.animate(end, (u, elapsed) => {
       const t = elapsed / 1000;
-      const charge = castWizard(piece, t, turn, cast);
-      piece.staff.jewel.getWorldPosition(jewel);
+      const charge = piece
+        ? castWizard(piece, t, turn, cast)
+        : pulse(t, .06, .70, cast.release);
+      if (piece) piece.staff.jewel.getWorldPosition(jewel);
       // The charge gathers at the jewel and flares as the bolt leaves it.
       const flare = pulse(t, cast.release - .04, cast.release + .02, cast.release + .16);
       halo.visible = charge > .01 || flare > .01;
@@ -289,10 +300,14 @@ export function withCues(board) {
       head.visible = core.visible = trail.visible = progress >= 0 && progress < 1;
       if (head.visible) {
         head.position.lerpVectors(origin, contact, progress);
+        head.position.y += colors.lift * Math.sin(Math.PI * progress);
         head.scale.setScalar(.19 + .025 * Math.sin(t * 90));
         core.position.copy(head.position);
         core.scale.setScalar(.1);
-        span(trail, tail.lerpVectors(origin, contact, Math.max(0, progress - .45)), head.position);
+        const tailProgress = Math.max(0, progress - .45);
+        tail.lerpVectors(origin, contact, tailProgress);
+        tail.y += colors.lift * Math.sin(Math.PI * tailProgress);
+        span(trail, tail, head.position);
         trail.scale.x = trail.scale.z = 2.6;
       }
       const since = t - impact / 1000;
@@ -311,8 +326,10 @@ export function withCues(board) {
       }
       sparks(since, contact, origin ?? jewel);
     }, () => {
-      idleWizard(piece, 0);
-      piece.acting = false;
+      if (piece) {
+        idleWizard(piece, 0);
+        piece.acting = false;
+      }
       fx.dispose();
     });
     return {...CUE_TIMES.wizard};
@@ -369,9 +386,14 @@ export function withCues(board) {
 
   function spell(event) {
     const {spell: name, caster, target} = event;
-    if (name !== "Deadeye" && name !== "Singularity") return board.spell(event);
+    if (name !== "Deadeye" && name !== "Singularity" && name !== "Firebolt") return board.spell(event);
     const contact = board.targetPoint({kind: "troop", side: target.side, slot: target.slot});
     if (name === "Singularity") return singularity(contact, caster);
+    if (name === "Firebolt") {
+      const wizard = leftmost(caster, "wizard");
+      const gateway = wizard ? undefined : board.targetPoint({kind: "base", side: caster});
+      return staffBolt(wizard, contact, FIRE_BOLT, gateway);
+    }
     const billy = leftmost(caster, "billy");
     return billy ? billyShot(billy, contact) : saloonShot(contact);
   }

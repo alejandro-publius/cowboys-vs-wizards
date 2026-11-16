@@ -1,10 +1,10 @@
-// Card data from docs/kiro-task-01.md. Both spells remove one health from a
+// Spells remove one health from a
 // chosen enemy troop (see actions.js); `relocates` marks the one that may
 // also move the survivor. Spells can never be summoned.
 import { CARD_SPECS } from "./card-specs.generated.js";
 
 export const SIDES = ["cowboy", "wizard"];
-// Health removed by either spell.
+// Health removed by each damage spell.
 export const SPELL_DAMAGE = 1;
 export const opponent = (side) => (side === SIDES[0] ? SIDES[1] : SIDES[0]);
 
