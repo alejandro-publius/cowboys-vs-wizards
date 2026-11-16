@@ -50,10 +50,10 @@ const FULL = () => viewWith(
   [troop("Skeleton", 3), troop("Wizard", 4), troop("Dragon", 5)],
 );
 
-async function setup(options = {}) {
+async function setup() {
   const scheduler = createScheduler();
   scheduler.tick(0);
-  const board = await createMatchBoard({ models, scheduler, ...options });
+  const board = await createMatchBoard({ models, scheduler });
   return { board, scheduler };
 }
 
@@ -144,8 +144,7 @@ test("Characters use their own models, the static troops are real meshes, and Sk
     assert.equal(piece.kind, "token", name);
     assert.equal(piece.temporary, true, name);
     assert.equal(piece.token.userData.temporary, true, name);
-    assert.equal(piece.label.userData.text, `${name} - temporary token`);
-    assert.ok(showing(piece.label), `${name} label is visible`);
+    assert.equal(piece.root.getObjectByName("label"), undefined, "placeholder has no debug label");
     assert.equal(skinned, 0, name);
     assert.ok(!used.has("billy") && !used.has("wizard"), `${name} uses ${[...used]}`);
   }
@@ -159,7 +158,6 @@ test("Characters use their own models, the static troops are real meshes, and Sk
   assert.equal(mounted.kind, "mounted-billy");
   assert.equal(mounted.temporary, false);
   assert.equal(mounted.token, null, "no temporary token");
-  assert.equal(mounted.label, null);
   assert.equal(mountedSkinned, 0, "Mounted Billy is a static mesh");
   assert.deepEqual([...assetsIn(mounted.body.children[0])], ["mounted-billy"]);
   assert.ok(Math.abs(mountedSize.y - 1.7) < 0.01, `Mounted Billy height ${mountedSize.y}`);
@@ -181,7 +179,6 @@ test("Characters use their own models, the static troops are real meshes, and Sk
   assert.equal(dragon.kind, "dragon");
   assert.equal(dragon.temporary, false);
   assert.equal(dragon.token, null);
-  assert.equal(dragon.label, null);
   assert.equal(dragonSkinned, 0, "the Dragon is a static mesh");
   assert.ok(assetsIn(dragon.root).has("dragon"));
   assert.ok(Math.max(dragonSize.x, dragonSize.z) <= 2.1 + 1e-6, "Dragon footprint is at most 2.1");
@@ -189,10 +186,6 @@ test("Characters use their own models, the static troops are real meshes, and Sk
   assert.equal(dragon.owned.length, 0, "the Dragon's shared geometry and materials are not disposed");
   assert.ok(dragon.height > board.piece("wizard", 0).height, "Dragon is larger than Skeleton");
 
-  const texts = [];
-  const { board: custom } = await setup({ makeLabel: (text) => texts.push(text) && new T.Object3D() });
-  custom.reset(viewWith([troop("Sheriff", 3), null, null], [null, null, troop("Dragon", 5)]));
-  assert.deepEqual(texts, []);
 });
 
 test("reset builds exactly the view's troops and orbs; clear() leaves no piece, orb or effect", async () => {

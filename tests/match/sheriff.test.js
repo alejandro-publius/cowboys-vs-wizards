@@ -48,7 +48,6 @@ test("the Sheriff stands on its tile at board scale, facing the Wizards with the
   const sheriff = board.piece("cowboy", 0), billy = board.piece("cowboy", 1), tile = board.stage.tiles[0];
   assert.equal(sheriff.kind, "sheriff");
   assert.equal(sheriff.temporary, false);
-  assert.equal(sheriff.label, null, "no temporary-token label");
   assert.equal(sheriff.actor.body.isSkinnedMesh, true);
   assert.equal(sheriff.actor.body.geometry.userData.asset, "sheriff");
   assert.equal(sheriff.actor.root.rotation.y, Math.PI, "faces the Wizards");

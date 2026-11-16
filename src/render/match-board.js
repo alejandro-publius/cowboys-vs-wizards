@@ -4,7 +4,7 @@
 // cards use the rigged models from the demo (the Wizard's motion is in
 // src/render/wizard.js), and the Sheriff uses its own model (src/render/sheriff.js). The Dragon and Mounted Billy are static
 // meshes (assets/models/dragon.glb, mounted-billy.glb). Skeleton has no model
-// yet, so it gets a labelled temporary token. Each troop has a
+// yet, so it gets a temporary token. Each troop has a
 // procedural orb row and each Base has five.
 //
 // The cues are basic placeholders (task 8 refines Billy and Wizard). All
@@ -13,7 +13,7 @@
 // therefore stops every cue. clear() cancels this board's entries and starts
 // a new generation, so a callback from before it never acts.
 //
-// await createMatchBoard({models, scheduler, makeLabel}) resolves to:
+// await createMatchBoard({models, scheduler}) resolves to:
 //   scene, camera, stage, light (flash and rift point lights), effects, bases
 //   renderer: reset(view), clear(), setTroopOrbs(side, slot, n), setBaseOrbs(side, n),
 //     summon({side, slot, cardId, health}), attack({attacker, target}),
@@ -92,42 +92,6 @@ export function tileIndex(side, slot) {
   return SIDES.indexOf(side) * SLOT_COUNT + slot;
 }
 
-// The default label: a canvas sprite in the browser. Without a document
-// (Node), a plain Object3D that carries the text in userData.text.
-export function makeTextLabel(text) {
-  if (typeof document === "undefined") {
-    const label = new T.Object3D();
-    label.name = "label";
-    label.userData.text = text;
-    return label;
-  }
-  const canvas = document.createElement("canvas");
-  const font = '600 30px "Instrument Sans", system-ui, sans-serif';
-  let context = canvas.getContext("2d");
-  context.font = font;
-  canvas.width = Math.ceil(context.measureText(text).width) + 32;
-  canvas.height = 48;
-  context = canvas.getContext("2d"); // resizing reset the context state
-  context.font = font;
-  context.fillStyle = "rgba(25,17,27,.86)";
-  context.strokeStyle = "rgba(234,185,121,.8)";
-  context.lineWidth = 2;
-  context.beginPath();
-  context.roundRect(1, 1, canvas.width - 2, canvas.height - 2, 10);
-  context.fill();
-  context.stroke();
-  context.fillStyle = "#fff0dd";
-  context.textBaseline = "middle";
-  context.fillText(text, 16, canvas.height / 2 + 1);
-  const texture = new T.CanvasTexture(canvas);
-  texture.colorSpace = T.SRGBColorSpace;
-  const sprite = new T.Sprite(new T.SpriteMaterial({map: texture, transparent: true, depthWrite: false, fog: false, toneMapped: false}));
-  sprite.scale.set(.3 * canvas.width / canvas.height, .3, 1);
-  sprite.name = "label";
-  sprite.userData.text = text;
-  return sprite;
-}
-
 // A temporary stand-in in faction colours, taller and wider for more stars.
 function tokenModel(card, side) {
   const tall = .8 + .11 * card.stars, radius = .24 + .022 * card.stars, head = radius * .6;
@@ -157,7 +121,7 @@ function tokenModel(card, side) {
   return {group, height: brim + hat};
 }
 
-export async function createMatchBoard({models, scheduler, makeLabel = makeTextLabel} = {}) {
+export async function createMatchBoard({models, scheduler} = {}) {
   if (!models || !scheduler) throw new TypeError("createMatchBoard needs models and a scheduler");
   const {scene, stage, light} = await createBoardScene(models);
   const camera = matchCamera();
@@ -254,7 +218,7 @@ export async function createMatchBoard({models, scheduler, makeLabel = makeTextL
     root.userData = {piece: true, side, slot, cardId};
     root.add(body);
     const piece = {side, slot, cardId, name: card.name, kind: "token", temporary: false, acting: false, root, body, height: 0,
-      actor: null, gun: null, holster: null, staff: null, token: null, label: null, orbs: null, hitbox: null, owned: []};
+      actor: null, gun: null, holster: null, staff: null, token: null, orbs: null, hitbox: null, owned: []};
     const rigged = RIGGED[card.name];
     if (rigged?.kind === "sheriff") {
       Object.assign(piece, buildSheriff(models), rigged);
@@ -295,17 +259,8 @@ export async function createMatchBoard({models, scheduler, makeLabel = makeTextL
       Object.assign(piece, {kind: rigged.kind, actor, height: rigged.height});
     } else {
       const {group: token, height} = tokenModel(card, side);
-      const label = makeLabel(`${card.name} - temporary token`);
-      label.position.y = height + .55;
-      label.traverse((node) => {
-        for (const material of [node.material].flat()) {
-          if (!material) continue;
-          piece.owned.push(material);
-          if (material.map) piece.owned.push(material.map);
-        }
-      });
-      body.add(token, label);
-      Object.assign(piece, {kind: "token", temporary: true, token, label, height});
+      body.add(token);
+      Object.assign(piece, {kind: "token", temporary: true, token, height});
     }
     piece.orbs = createTroopOrbs(side);
     piece.orbs.group.position.y = piece.height + .22;
