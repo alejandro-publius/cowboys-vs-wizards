@@ -20,6 +20,7 @@
 | New card and card registration | `.kiro/specs/duel-card-pipeline/`, `scripts/sync-card-specs.mjs` | `node --test tests/game/card-specs.test.js` |
 | Build / public site / replay | `scripts/{build,verify-duel,browser-match-check}.mjs`, `.github/workflows/pages.yml` | `node scripts/verify-duel.mjs`; browser option only for a page-affecting change |
 | Kiro tooling and evidence | relevant file in `.kiro/{specs,agents,steering,hooks,workflows,powers}/` plus matching evidence note | smallest relevant command; don't claim a Kiro run without a receipt |
+| User asks what to work on next / deferred ideas | `docs/FUTURE-IDEAS.md` | Recall tentative far-future ideas; keep them out of the active queue |
 
 The table is a locator, not an instruction to read **every** listed file. The bracketed path group is shorthand, not a literal filesystem path.
 
