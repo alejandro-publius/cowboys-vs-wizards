@@ -4,7 +4,7 @@
   "method": "Read GLB 2 JSON chunk only; does not establish visual quality or runtime deformation quality",
   "assets": [
     {
-      "file": "/Users/alexvintera/Documents/Codex/2026-11-14/new-chat/cowboys-vs-wizards-board/assets/billy.glb",
+      "file": "assets/models/billy.glb",
       "bytes": 2531696,
       "meshes": 1,
       "skins": 0,
@@ -12,7 +12,7 @@
       "jointCount": 0
     },
     {
-      "file": "/Users/alexvintera/Documents/Codex/2026-11-14/new-chat/cowboys-vs-wizards-board/assets/board.glb",
+      "file": "assets/models/board.glb",
       "bytes": 2988784,
       "meshes": 1,
       "skins": 0,
@@ -20,7 +20,7 @@
       "jointCount": 0
     },
     {
-      "file": "/Users/alexvintera/Documents/Codex/2026-11-14/new-chat/cowboys-vs-wizards-board/assets/cowboy-tile.glb",
+      "file": "assets/models/cowboy-tile.glb",
       "bytes": 1023316,
       "meshes": 1,
       "skins": 0,
@@ -28,7 +28,7 @@
       "jointCount": 0
     },
     {
-      "file": "/Users/alexvintera/Documents/Codex/2026-11-14/new-chat/cowboys-vs-wizards-board/assets/gateway.glb",
+      "file": "assets/models/gateway.glb",
       "bytes": 1485068,
       "meshes": 1,
       "skins": 0,
@@ -36,7 +36,7 @@
       "jointCount": 0
     },
     {
-      "file": "/Users/alexvintera/Documents/Codex/2026-11-14/new-chat/cowboys-vs-wizards-board/assets/revolver.glb",
+      "file": "assets/models/revolver.glb",
       "bytes": 704192,
       "meshes": 1,
       "skins": 0,
@@ -44,7 +44,7 @@
       "jointCount": 0
     },
     {
-      "file": "/Users/alexvintera/Documents/Codex/2026-11-14/new-chat/cowboys-vs-wizards-board/assets/saloon.glb",
+      "file": "assets/models/saloon.glb",
       "bytes": 1864684,
       "meshes": 1,
       "skins": 0,
@@ -52,7 +52,7 @@
       "jointCount": 0
     },
     {
-      "file": "/Users/alexvintera/Documents/Codex/2026-11-14/new-chat/cowboys-vs-wizards-board/assets/wizard-tile.glb",
+      "file": "assets/models/wizard-tile.glb",
       "bytes": 989836,
       "meshes": 1,
       "skins": 0,
@@ -60,7 +60,7 @@
       "jointCount": 0
     },
     {
-      "file": "/Users/alexvintera/Documents/Codex/2026-11-14/new-chat/cowboys-vs-wizards-board/assets/wizard.glb",
+      "file": "assets/models/wizard.glb",
       "bytes": 2845456,
       "meshes": 1,
       "skins": 0,
@@ -68,7 +68,7 @@
       "jointCount": 0
     },
     {
-      "file": "/Users/alexvintera/Downloads/wizard figure 3d model.glb",
+      "file": "wizard figure 3d model.glb",
       "bytes": 65636012,
       "meshes": 1,
       "skins": 0,
@@ -76,7 +76,7 @@
       "jointCount": 0
     },
     {
-      "file": "/Users/alexvintera/Downloads/cowboy 3d model.glb",
+      "file": "cowboy 3d model.glb",
       "bytes": 63566204,
       "meshes": 1,
       "skins": 0,
@@ -84,7 +84,7 @@
       "jointCount": 0
     },
     {
-      "file": "/Users/alexvintera/Downloads/cowboy action figure 3d model.glb",
+      "file": "cowboy action figure 3d model.glb",
       "bytes": 65832168,
       "meshes": 1,
       "skins": 0,

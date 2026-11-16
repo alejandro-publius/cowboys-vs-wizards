@@ -575,4 +575,4 @@ await writeFile(path.join(outDir, "browser-run.json"), JSON.stringify(result, nu
 console.log(JSON.stringify(result, null, 2));
 const pending = result.steps.filter((each) => each.state !== "observed").map((each) => each.id);
 console.log(`\nobserved ${result.steps.length - pending.length} of 8 steps; pending: ${pending.join(", ") || "none"}; console errors: ${result.consoleErrors.length}`);
-process.exitCode = result.error || pending.length || result.steps.length < 8 ? 1 : 0;
+process.exitCode = result.error || pending.length || result.steps.length !== 8 || result.consoleErrors.length ? 1 : 0;

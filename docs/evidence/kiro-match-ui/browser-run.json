@@ -318,7 +318,7 @@
     "docs/evidence/kiro-match-ui/result.png"
   ],
   "chrome": "Chrome/157.0.8103.51",
-  "url": "file:///Users/alexvintera/Documents/Codex/2026-11-14/new-chat/cowboys-vs-wizards-board/dist/cowboys-vs-wizards-board-duel.html?seed=0",
+  "url": "dist/cowboys-vs-wizards-board-duel.html?seed=0",
   "loadMs": 645,
   "webgl": {
     "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
