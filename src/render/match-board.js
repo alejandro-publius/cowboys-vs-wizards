@@ -3,8 +3,8 @@
 // stage.tiles[i] and Wizard slot i on stage.tiles[3 + i]. Billy and Wizard
 // cards use the rigged models from the demo (the Wizard's motion is in
 // src/render/wizard.js), and the Sheriff uses its own model (src/render/sheriff.js). The Dragon and Mounted Billy are static
-// meshes (assets/models/dragon.glb, mounted-billy.glb). Skeleton has no model
-// yet, so it gets a temporary token. Each troop has a
+// meshes (assets/models/dragon.glb, mounted-billy.glb), as is the Skeleton
+// (skeleton.glb). A troop whose model did not load gets a temporary token. Each troop has a
 // procedural orb row and each Base has five.
 //
 // The cues are basic placeholders (task 8 refines Billy and Wizard). All
@@ -44,9 +44,11 @@ export const CUES = Object.freeze({
 const RIGGED = {Billy: {kind: "billy", height: 1.93}, Wizard: {kind: "wizard", height: WIZARD_HEIGHT}, Sheriff: {kind: "sheriff", height: SHERIFF_HEIGHT}};
 // Static single-mesh troops. The Dragon's head is +X natively (yaw -PI/2 faces +Z);
 // Mounted Billy's horse is +Z natively (yaw PI faces the Wizards at -Z).
+// The Skeleton faces +Z natively, toward the Cowboys from the Wizard side (yaw 0).
 const STATIC = {
   Dragon: {kind: "dragon", asset: "dragon", height: 1.25, footprint: 2.1, yaw: -Math.PI / 2},
   "Mounted Billy": {kind: "mounted-billy", asset: "mounted-billy", height: 1.7, footprint: 2.05, yaw: Math.PI},
+  Skeleton: {kind: "skeleton", asset: "skeleton", height: 1.2, footprint: 1.2, yaw: 0},
 };
 const FLASH = {cowboy: 0xffb95e, wizard: 0xc192ff};
 
@@ -233,7 +235,7 @@ export async function createMatchBoard({models, scheduler} = {}) {
       });
       idles(piece, idleWizard);
       body.add(piece.actor.root);
-    } else if (STATIC[card.name]) {
+    } else if (STATIC[card.name] && models[STATIC[card.name].asset]) {
       // Static Tripo mesh (no skin), fitted to a height and capped footprint. Its
       // geometry and materials are shared with models[asset], so none are owned.
       const {kind, asset, height, footprint: limit, yaw} = STATIC[card.name];

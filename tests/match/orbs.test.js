@@ -115,7 +115,7 @@ test("Cowboy slot i stands on stage.tiles[i] and Wizard slot i on stage.tiles[3 
   }
 });
 
-test("Characters use their own models, the static troops are real meshes, and Skeleton is a labelled token", async () => {
+test("Characters use their own models, and the static troops are real meshes", async () => {
   const { board } = await setup();
   board.reset(FULL());
   for (const [side, kind] of [["cowboy", "billy"], ["wizard", "wizard"]]) {
@@ -136,18 +136,32 @@ test("Characters use their own models, the static troops are real meshes, and Sk
   assert.equal(wizard.staff.holder.parent, wizard.actor.rig.sides[1].hand, "the staff is in the Wizard's hand");
 
   // The Sheriff has its own model; tests/match/sheriff.test.js covers it.
-  for (const [side, slot, name] of [["wizard", 0, "Skeleton"]]) {
-    const piece = board.piece(side, slot);
-    let skinned = 0;
-    piece.root.traverse((node) => node.isSkinnedMesh && (skinned += 1));
-    const used = assetsIn(piece.root);
-    assert.equal(piece.kind, "token", name);
-    assert.equal(piece.temporary, true, name);
-    assert.equal(piece.token.userData.temporary, true, name);
-    assert.equal(piece.root.getObjectByName("label"), undefined, "placeholder has no debug label");
-    assert.equal(skinned, 0, name);
-    assert.ok(!used.has("billy") && !used.has("wizard"), `${name} uses ${[...used]}`);
-  }
+  const skeleton = board.piece("wizard", 0);
+  skeleton.root.updateWorldMatrix(true, true);
+  const skeletonMesh = skeleton.body.children[0];
+  const skeletonBox = new T.Box3().setFromObject(skeletonMesh);
+  const skeletonSize = skeletonBox.getSize(new T.Vector3());
+  let skeletonSkinned = 0;
+  skeleton.root.traverse((node) => node.isSkinnedMesh && (skeletonSkinned += 1));
+  assert.equal(skeleton.kind, "skeleton");
+  assert.equal(skeleton.temporary, false);
+  assert.equal(skeleton.token, null, "no temporary token");
+  assert.equal(skeletonSkinned, 0, "the Skeleton is a static mesh");
+  assert.deepEqual([...assetsIn(skeletonMesh)], ["skeleton"]);
+  assert.equal(skeleton.root.getObjectByName("label"), undefined, "no debug label");
+  assert.ok(Math.abs(skeletonSize.y - 1.2) < 0.01, `Skeleton height ${skeletonSize.y}`);
+  assert.ok(Math.abs(skeletonBox.min.y - skeleton.root.position.y) < 1e-6, "the feet sit on the Wizard-side tile");
+  assert.equal(skeleton.owned.length, 0, "the Skeleton's shared geometry and materials are not disposed");
+  assert.equal(shownOrbs(skeleton.orbs.group), 3, "three health orbs are shown");
+  assert.ok(skeleton.orbs.group.position.y >= skeletonSize.y, "the orbs sit above the model");
+  const skeletonFront = new T.Vector3(0, 0, 1).applyQuaternion(skeletonMesh.getWorldQuaternion(new T.Quaternion()));
+  assert.ok(skeletonFront.z > 0.99, "the Skeleton faces +Z toward the Cowboys");
+
+  // Without a loaded model the existing labelled-free temporary token is used.
+  const fallback = await createMatchBoard({ models: { ...models, skeleton: undefined }, scheduler: createScheduler() });
+  fallback.reset(FULL());
+  assert.equal(fallback.piece("wizard", 0).kind, "token");
+  assert.equal(fallback.piece("wizard", 0).temporary, true);
 
   const mounted = board.piece("cowboy", 2);
   mounted.root.updateWorldMatrix(true, true);
