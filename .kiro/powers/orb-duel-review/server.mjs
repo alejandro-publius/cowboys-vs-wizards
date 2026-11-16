@@ -11,6 +11,9 @@ const root = fileURLToPath(new URL("../../../", import.meta.url));
 const TARGETS = {
   standalone: {receipt: ".artifacts/kiro/replay/browser-run.json", page: "dist/cowboys-vs-wizards-board-duel.html"},
   web: {receipt: ".artifacts/kiro/web-replay/browser-run.json", page: "dist/web/index.html"},
+  // Seed 60 Mounted Billy showdown on the same standalone build. Its receipt must also
+  // share the build hash with the seed-0 standalone receipt (companion).
+  showcase: {receipt: ".artifacts/kiro/showcase/browser-run.json", page: "dist/cowboys-vs-wizards-board-duel.html", steps: 4, seed: 60, companion: "standalone"},
 };
 const REQUIRED_STEPS = 8;
 // Board characters only, mapped to fixed repo paths. Input never becomes a path.
@@ -25,7 +28,7 @@ function readFixed(rel) {
 }
 
 function inspect(target) {
-  const {receipt: RECEIPT, page: PAGE} = TARGETS[target];
+  const {receipt: RECEIPT, page: PAGE, steps: required = REQUIRED_STEPS, seed: requiredSeed, companion} = TARGETS[target];
   const out = {target, receiptPath: RECEIPT, pagePath: PAGE};
   const page = readFixed(PAGE);
   if (page.bytes) {
@@ -54,14 +57,26 @@ function inspect(target) {
   const reasons = [];
   if (!out.currentBuild.sha256) reasons.push(`current build ${out.currentBuild.error}; cannot compare`);
   else if (!matches) reasons.push("receipt hash differs from the current build (stale receipt)");
-  if (observed !== REQUIRED_STEPS) reasons.push(`${observed} of ${REQUIRED_STEPS} steps observed`);
-  if (steps.length !== REQUIRED_STEPS) reasons.push(`receipt lists ${steps.length} steps`);
+  if (observed !== required) reasons.push(`${observed} of ${required} steps observed`);
+  if (steps.length !== required) reasons.push(`receipt lists ${steps.length} steps`);
+  if (requiredSeed !== undefined && receipt.seed !== requiredSeed) reasons.push(`receipt seed is ${JSON.stringify(receipt.seed ?? null)}, required ${requiredSeed}`);
+  let companionHash = null;
+  let companionStale = false;
+  if (companion) {
+    const other = readFixed(TARGETS[companion].receipt);
+    try {
+      const page = other.bytes ? JSON.parse(other.bytes.toString("utf8")).page : null;
+      companionHash = page && typeof page.sha256 === "string" ? page.sha256 : null;
+    } catch { /* reported below */ }
+    if (!companionHash) reasons.push(`${companion} receipt ${other.error ?? "has no page.sha256"}; cannot confirm the same build`);
+    else if (companionHash !== hash) { companionStale = true; reasons.push(`receipt hash differs from the ${companion} receipt hash`); }
+  }
   if (errors.length) reasons.push(`${errors.length} console error(s)`);
   if (receipt.error) reasons.push("receipt records a run error");
 
   let verdict = "pass";
   if (!out.currentBuild.sha256) verdict = "fail";
-  else if (!matches) verdict = "stale";
+  else if (!matches || companionStale) verdict = "stale";
   else if (reasons.length) verdict = "fail";
   return {
     ...out,
@@ -73,9 +88,10 @@ function inspect(target) {
       uncommittedChanges: receipt.uncommittedChanges ?? null,
       seed: receipt.seed ?? null,
       sha256: hash,
+      ...(companion && {companion: {target: companion, receiptPath: TARGETS[companion].receipt, sha256: companionHash, sameBuild: companionHash === hash}}),
       coversCurrentBuild: matches,
       stepsObserved: observed,
-      stepsRequired: REQUIRED_STEPS,
+      stepsRequired: required,
       pendingSteps: steps.filter((each) => !each || each.state !== "observed").map((each) => each && each.id),
       consoleErrorCount: errors.length,
       screenshots: Array.isArray(receipt.screenshots) ? receipt.screenshots : [],
@@ -102,10 +118,10 @@ function inspectCharacter(model) {
 
 const TOOL = {
   name: "inspect_duel_replay",
-  description: "Check a fixed Chrome replay receipt against its current built Orb Duel page. Optional target: standalone (default) or web.",
+  description: "Check a fixed Chrome replay receipt against its current built Orb Duel page. Optional target: standalone (default, seed-0 eight steps), web, or showcase (seed 60, four steps, same standalone build).",
   inputSchema: {
     type: "object",
-    properties: {target: {type: "string", enum: ["standalone", "web"], default: "standalone"}},
+    properties: {target: {type: "string", enum: Object.keys(TARGETS), default: "standalone"}},
     additionalProperties: false,
   },
 };
@@ -153,7 +169,7 @@ function handle(msg) {
       if (typeof args !== "object" || args === null || Array.isArray(args)) return fail(msg.id, -32602, "inspect_duel_replay takes an object");
       if (Object.keys(args).some((key) => key !== "target")) return fail(msg.id, -32602, "Only the target input is accepted");
       const target = args.target === undefined ? "standalone" : args.target;
-      if (target !== "standalone" && target !== "web") return fail(msg.id, -32602, "target must be standalone or web");
+      if (typeof target !== "string" || !Object.hasOwn(TARGETS, target)) return fail(msg.id, -32602, `target must be one of: ${Object.keys(TARGETS).join(", ")}`);
       return reply(msg.id, {content: [{type: "text", text: JSON.stringify(inspect(target), null, 2)}]});
     }
     default:

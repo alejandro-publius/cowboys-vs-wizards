@@ -6,13 +6,14 @@ description: Give a verdict on the Orb Duel Chrome replay receipt by calling ins
 Choose one route, then call `inspect_duel_replay`. Do not run Chrome or rebuild.
 - Standalone build: call with `{}` or `{"target":"standalone"}`.
 - Packaged web judge build: call with `{"target":"web"}`.
+- Seed 60 showdown on the same standalone build: call with `{"target":"showcase"}`. Use it after the standalone call; a full claim needs both to pass.
 Accept no other input, and never pass a path, URL or command.
 
 Report, from the tool output only:
 - The returned `target`.
 - `verdict`: pass, fail, stale, absent or malformed, with each entry in `reasons`.
-- Whether the receipt hash covers the current build hash, plus the receipt commit and seed.
-- Steps observed out of 8, pending step ids, and console error count.
+- Whether the receipt hash covers the current build hash, plus the receipt commit and seed. For showcase, the seed must be 60, and `receipt.companion.sameBuild` must be true: it shows the showcase and standalone receipts carry the same build hash.
+- Steps observed out of `stepsRequired` (8, or 4 for showcase), pending step ids, and console error count.
 - The receipt and screenshot paths.
 
 Only `pass` supports the claim that the current build replayed cleanly in Chrome under that seed. Receipts do not show appearance or fun; those need rendered review and human playtests. For `stale` or `absent`, say the replay must be rerun by the coordinator.
