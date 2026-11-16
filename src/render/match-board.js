@@ -24,10 +24,11 @@
 import * as T from "three";
 import {CARDS, SIDES} from "../game/cards.js";
 import {SLOT_COUNT} from "../game/state.js";
-import {attachPistol, attachStaff, createBoardScene, drawKeys, motion, staffKeys, v} from "./scene.js";
+import {attachPistol, attachStaff, createBoardScene, drawKeys, motion, v} from "./scene.js";
 import {grip, pose, rigActor} from "./rig.js";
 import {createBaseOrbs, createTroopOrbs} from "./orbs.js";
 import {SHERIFF_HEIGHT, SHERIFF_LANDING, buildSheriff, idleSheriff, landSheriff} from "./sheriff.js";
+import {idleWizard} from "./wizard.js";
 
 export const CUES = Object.freeze({
   summon: Object.freeze({impact: 350, end: 600}),
@@ -236,15 +237,6 @@ export async function createMatchBoard({models, scheduler, makeLabel = makeTextL
     if (rigged?.kind === "sheriff") {
       Object.assign(piece, buildSheriff(models), rigged);
       piece.owned.push(piece.actor.body.geometry, piece.actor.body.skeleton);
-      // Breathes whenever it is drawn and no cue is posing it. Idle keeps no
-      // scheduler entry, so it survives scheduler.advance() and never counts as pending.
-      // The idle clock restarts after each cue, so the idle begins in the pose the cue ended in.
-      let idleFrom = null;
-      piece.actor.body.onBeforeRender = () => {
-        const now = performance.now() / 1000;
-        if (piece.acting) idleFrom = null;
-        else idleSheriff(piece, now - (idleFrom ??= now));
-      };
       body.add(piece.actor.root);
     } else if (rigged) {
       const actor = rigActor(models[rigged.kind], rigged.kind, rigged.height);
@@ -260,8 +252,6 @@ export async function createMatchBoard({models, scheduler, makeLabel = makeTextL
         piece.gun.holder.rotation.set(1.38, -.15, .066);
       } else {
         piece.staff = attachStaff(actor);
-        pose(actor, {spine: [.008, 0, 0], left: {goal: v(...staffKeys[0][1]), bend: .79, roll: [-1.475, .06, -.14]}});
-        piece.staff.jewel.material.emissiveIntensity = .81;
         piece.staff.holder.traverse((node) => {
           if (node.isMesh) piece.owned.push(node.geometry, node.material);
         });
@@ -281,6 +271,17 @@ export async function createMatchBoard({models, scheduler, makeLabel = makeTextL
       });
       body.add(token, label);
       Object.assign(piece, {kind: "token", temporary: true, token, label, height});
+    }
+    if (piece.kind === "wizard" || piece.kind === "sheriff") {
+      const idle = piece.kind === "wizard" ? idleWizard : idleSheriff;
+      idle(piece, 0);
+      // Idle runs only outside a cue and restarts at its ending pose.
+      let idleFrom = null;
+      piece.actor.body.onBeforeRender = () => {
+        const now = performance.now() / 1000;
+        if (piece.acting) idleFrom = null;
+        else idle(piece, now - (idleFrom ??= now));
+      };
     }
     piece.orbs = createTroopOrbs(side);
     piece.orbs.group.position.y = piece.height + .22;
