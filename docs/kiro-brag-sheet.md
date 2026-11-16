@@ -12,6 +12,8 @@
 
 10. **Player feedback in the live game.** Kiro CLI moved the card hand over the 3D environment after playtest feedback about the brown strip. Codex checked it in Chrome at desktop and phone widths and rebuilt the running Mac version. [Hand overlay evidence](evidence/kiro-submission-preflight.md#transparent-player-hand)
 
+11. **Compaction hooks.** A manual `/compact` in Kiro CLI 3.3.0 fired both hooks in the `duel-presenter` profile. Kiro reopened the session and gave both replay seeds and the exact receipt ID from the post-compaction output. [Compaction evidence](evidence/kiro-submission-preflight.md#kiro-compaction-check)
+
 ## Evidence to show
 
 | Screen | What the judge sees |

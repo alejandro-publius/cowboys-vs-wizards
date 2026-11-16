@@ -28,6 +28,18 @@ On November 16, Kiro CLI 3.3.0 removed the hand’s brown backing and extended t
 
 The game code at `e1e901d` passed 107 Node tests. Chrome observed 8 of 8 opening checks and 4 of 4 Mounted Billy showcase checks at 1440 × 900 with zero console errors. Both checked the static HTML with SHA-256 `d28cf20a580506e5442fe62355be97a5305c00acaa649e711c968b860756e095`. The Kiro transcript and Chrome receipts are in `.artifacts/kiro/hand-overlay/` in the `kiro-first-turn` worktree on the Mac.
 
+## Kiro compaction check
+
+On November 16, Codex ran `kiro-cli chat --v3 --trust-workspace --agent duel-presenter` on `861af78` and invoked `/compact` after four turns. `PreCompact` logged the Git revision. `PostCompact` received the summary and returned the replay plan along with receipt `861af78-1794855476196`. In a resumed Kiro CLI 3.3.0 session, Kiro named seed 0 for the opening and seed 60 for the Mounted Billy showdown and quoted that exact receipt from its context. [Hook profile](../../.kiro/agents/duel-presenter.json) · [Receipt script](../../scripts/duel-compaction.mjs)
+
+The hook appends the phase, revision, receipt ID, and whether Kiro supplied a summary to `.artifacts/kiro/duel-compaction.jsonl`. The game checks are defined in the existing replay scripts.
+
+## Fable audit and latest static replay
+
+Fable 5.2 reviewed the clean candidate at `66b6cb9`. It verified the MIT license, 26 files under root `.kiro/`, and a largest tracked asset of about 3.7 MiB. It flagged local-only play instructions and dead evidence links, which Codex corrected. A fresh read of the public remote on November 16 found `main` at `37960ed`, 52 commits behind the audited candidate. [Play instructions](../../README.md#play)
+
+Chrome 157 replayed the static build at 1440 × 900. Seed 0 observed 8 of 8 checks and seed 60 observed 4 of 4 checks, with zero console errors. Both receipts cover HTML SHA-256 `0295185db7b77700ae249bdfd2898fe396529a79d00e767dff6ac68459b31b92`. The documentation and hook changes also rebuilt to that same hash.
+
 ## Clash property check
 
 Codex ran Kiro’s **Property 3: Clash completeness** in a copy of the presenter. Its normal run passed across seeds 0–99 and covered 741 clashes and 2,734 attacks, including 539 attacks by troops defeated in the same clash. A deliberate edit in the copy suppressed those attacks’ animation calls. The same property failed on seed 0 with two animations for three damage events. The committed presenter passed the clean preflight. [Property test](../../tests/match/presenter.test.js)
