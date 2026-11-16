@@ -187,3 +187,11 @@ browser and performance comparisons. The first playable frame reached 686 ms
 median versus 1,109 ms on the same Mac before the mounted import. The optional
 static web build passed the same eight seeded browser steps as the standalone
 build. [Replay evidence](evidence/kiro-overnight.md) · [Kiro write-up](kiro-brag-sheet.md)
+
+### 2026-11-16 — Summoning Circle and Crew balance trial
+
+Kiro CLI 3.3.0 ran all four steps for the isolated Skeleton health proposal and for `review existing`. The file save regenerated the catalog automatically. The authored proposal passed three registration tests. The review-only run left a clean Git checkout.
+
+Codex confirmed that the baseline matches every runtime card and both deck orders, fixed the per-command exit receipts, and verified the clean static release. It passed 107 Node tests, eight opening replay checks and four showdown checks. Kiro’s MCP confirmed the opening receipt and built HTML matched.
+
+Kiro Crew 0.12.2 ran the baseline and the one-orb increase over the same 1,000 seeds each. Wizard wins rose from 472 to 663. The release candidate retains the three-orb baseline. [Card pipeline evidence](evidence/kiro-card-pipeline.md) · [Static preflight](evidence/kiro-submission-preflight.md)

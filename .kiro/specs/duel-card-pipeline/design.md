@@ -18,4 +18,4 @@ Edit card spec -> save -> hook -> `sh scripts/check-card-specs.sh` -> sync, sync
 ## Verification
 - Wrapper: exit status and `card-hook.txt`.
 - R2: the data-driven card spec test compares the catalog with the expected deck order.
-- Hook and workflow: real runs by the coordinator after integration; until then pending.
+- The observed save hook, both Workflow trials and the Crew balance preview are recorded in the [card pipeline evidence](../../../docs/evidence/kiro-card-pipeline.md).

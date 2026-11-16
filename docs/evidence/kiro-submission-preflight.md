@@ -1,17 +1,17 @@
 # Kiroween submission preflight
 
-The candidate at `1d8f381` adds the existing MIT license to the playable duel at `2d4867a`. A clean checkout installed with `npm ci`, passed 104 Node tests and built the static game. The Orb Duel spec is tracked under root `.kiro/`.
+The candidate at `46592c7` includes the playable duel, the existing MIT license and the card registration pipeline. A clean checkout installed with `npm ci`, passed 107 Node tests and built the static game. The Orb Duel spec and card save hook are tracked under root `.kiro/`. [Card registration evidence](kiro-card-pipeline.md)
 
 ## Chrome replay on the static build
 
-On November 16, 2026, Mac Chrome 157.0.8103.52 loaded the static build at 1440 × 900 over HTTP from `/web/` on localhost. Both recordings used the same HTML SHA-256, `e77d68508f2dc8f570f9d4053774662b31ae1a9def04a45120183593016ead6a`.
+On November 16, 2026, Mac Chrome 157.0.8103.52 loaded the static build at 1440 × 900 over HTTP from `/web/` on localhost. Both recordings used the same HTML SHA-256, `34a72d68d90e5bade1985a35a80586b054f92658a32f57d4282aaba5968dd0cc`.
 
 | Seed | Checks | Console errors | What ran |
 | --- | ---: | ---: | --- |
 | 0 | 8 of 8 | 0 | Illustrated hand and catalog, selection and cancellation, Sheriff summon, CPU clash, match result, restart during playback and attack-demo round trip. |
 | 60 | 4 of 4 | 0 | Two tributes summon Mounted Billy with five orbs. Singularity moves him to the center with three orbs. His attack drops the Dragon from five orbs to two before Billy leaves the board. |
 
-Kiro CLI 3.3.0 called `inspect_duel_replay` with target `web`. The tool returned `pass` for the seed-0 receipt and confirmed the hash against `dist/web/index.html`. A resumed Kiro session read the completed seed-60 browser receipt and confirmed that it recorded the same hash. The MCP verdict covers seed 0. [Replay tool](../../.kiro/powers/orb-duel-review/server.mjs)
+Kiro CLI 3.3.0 called `inspect_duel_replay` with target `web`. The tool returned `pass` for the seed-0 receipt and confirmed the hash against `dist/web/index.html`. Kiro read the completed seed-60 browser receipt and confirmed that it recorded the same hash. A rebuild after the check-wrapper change reproduced that hash. The MCP verdict covers seed 0. [Replay tool](../../.kiro/powers/orb-duel-review/server.mjs)
 
 To reproduce, run `npm ci`, `node scripts/verify-duel.mjs` and `npm run build -- --web`. Serve `dist` with `python3 -m http.server 48181 --bind 127.0.0.1 --directory dist`. From a second terminal, run:
 
@@ -20,7 +20,7 @@ node scripts/browser-match-check.mjs --url http://127.0.0.1:48181/web/ --seed 0 
 node scripts/browser-match-check.mjs --url http://127.0.0.1:48181/web/ --showcase --summary --out-dir .artifacts/kiro/preflight/showcase
 ```
 
-The Mac checkout has the test summary and Kiro transcripts under `.artifacts/kiro/preflight/`. The `showcase/` directory contains the mounted summon, faceoff and result frames. [Route to record](../morning-handoff.md#the-duel-to-film)
+The Mac checkout has the test summary and Kiro transcripts under `.artifacts/kiro/preflight-card-pipeline/`. The `showcase/` directory contains the mounted summon, faceoff and result frames. [Route to record](../morning-handoff.md#the-duel-to-film)
 
 ## Clash property check
 
