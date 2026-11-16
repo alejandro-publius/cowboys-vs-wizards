@@ -161,3 +161,7 @@ Kiro references for the planned work are [steering](https://kiro.dev/docs/steeri
 - **Change (Kiro CLI):** `summonTarget` now returns `null` for zero bounds or a non-finite projected x, y or z. It still projects through `board.camera`, which `frame()` renders in match mode. `summonGeometry` uses the board rect only when its fields are finite and its size is positive. Otherwise it uses the native lane button rect. The accepted-action flow is unchanged.
 - **Verification:** The SessionStart hook ran the focused tests at 2026-11-15 22:30 PST (06:30Z). Result: 19 tests, 19 pass, 0 fail, including the orb-duel Presenter fidelity, clash completeness, cancellation and CPU information properties over seeds 0-99. The hook ran before this edit and covers the Presenter and card model. It does not exercise `summonTarget` or `summonGeometry`. I did not re-run the tests.
 - **Pending:** The coordinator's Chrome run and build. These will check the landing position on screen and the zero-bounds fallback.
+
+### 2026-11-15 — Combined demo verification
+
+Codex integrated Fable’s final Wizard and Sheriff with Kiro’s presentation work and verified build `b6d0f5f` in Chrome. All eight replay steps passed with zero console errors. The summoned card landed 0.082 CSS pixels from the selected tile center. The 19-test custom-agent hook output and final browser receipt are retained in `docs/evidence/`. See [combined demo evidence](evidence/combined-demo.md).
