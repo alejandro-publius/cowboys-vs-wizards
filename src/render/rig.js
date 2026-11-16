@@ -12,13 +12,20 @@ const builds = {
     pelvis:[0,.468,0], spine:[0,.552,-.009], chest:[0,.648,-.007], head:[0,.746,-.009],
     arm:[[.110,.671,.002],[.177,.550,.007],[.221,.468,.026],[.234,.426,.043]],
     leg:[[.063,.434,-.008],[.096,.261,-.008],[.125,.086,-.006]],
-    waist:[.411,.493], neck:[.688,.761], shoulder:[.114,.147], forearm:[.148,.188]
+    waist:[.411,.493], neck:[.688,.761], shoulder:[.114,.147], forearm:[.148,.188], hands:[.28,.40]
   },
   wizard: {
     pelvis:[0,.353,-.013], spine:[0,.418,-.008], chest:[0,.519,-.009], head:[0,.617,.014],
     arm:[[.126,.546,-.012],[.219,.452,.015],[.278,.397,.072],[.301,.356,.109]],
     leg:[[.062,.26,-.010],[.086,.162,-.008],[.103,.072,-.008]],
-    waist:[.138,.353], neck:[.583,.660], shoulder:[.133,.184], forearm:[.184,.244]
+    waist:[.138,.353], neck:[.583,.660], shoulder:[.133,.184], forearm:[.184,.244], hands:[.27,.33]
+  },
+  // Measured on assets/models/sheriff.glb (docs/evidence/fable-sheriff-integration.md).
+  sheriff: {
+    pelvis:[0,.40,0], spine:[0,.47,.005], chest:[0,.555,.005], head:[0,.675,0],
+    arm:[[.205,.592,0],[.275,.505,.025],[.335,.435,.06],[.345,.385,.078]],
+    leg:[[.095,.365,0],[.115,.265,0],[.14,.085,-.005]],
+    waist:[.345,.425], neck:[.655,.715], shoulder:[.155,.2], forearm:[.21,.25], hands:[.22,.30]
   }
 };
 
@@ -67,7 +74,7 @@ function applyWeights(geometry, rig, kind) {
     const head = kind==="wizard" ? Math.max(smooth(...spec.neck,y),
       smooth(.485,.584,y)*smooth(.051,.111,z)*(1-smooth(.089,.152,lateral))) :
       smooth(...spec.neck,y);
-    const armBand = smooth(kind==="billy"?.28:.27,kind==="billy"?.40:.33,y) *
+    const armBand = smooth(...spec.hands,y) *
       (1-smooth(spec.arm[0][1]+.015,spec.arm[0][1]+.078,y));
     const span=T.MathUtils.lerp(spec.forearm[0],spec.shoulder[0],smooth(.42,spec.arm[0][1],y));
     const arm = (1-head)*armBand*smooth(span,span+.046,lateral);
@@ -146,7 +153,7 @@ export function rigActor(scene, kind, height) {
   return {root,body,rig,kind};
 }
 
-function solveArm(actor, side, goal, bend, roll) {
+function solveArm(actor, side, goal, bend, roll, follow) {
   const {chest}=actor.rig;
   const [upper,fore,hand]=[side.upper,side.fore,side.hand];
   if(!goal) {
@@ -171,7 +178,9 @@ function solveArm(actor, side, goal, bend, roll) {
   upper.quaternion.copy(upperQ);
   fore.quaternion.copy(upperQ.invert()).multiply(lowerQ);
   // Counter the elbow rotation at the hand, keeping the grip turned with the prop.
-  hand.quaternion.copy(lowerQ.invert()).multiply(angles(...roll));
+  // With `follow` the hand stays in line with the forearm instead, so the wrist does not bend.
+  if(follow)hand.quaternion.copy(angles(...roll));
+  else hand.quaternion.copy(lowerQ.invert()).multiply(angles(...roll));
 }
 
 export function pose(actor, {spine=[0,0,0], chest=[0,0,0], head=[0,0,0], right, left, legs}={}) {
@@ -186,7 +195,7 @@ export function pose(actor, {spine=[0,0,0], chest=[0,0,0], head=[0,0,0], right, 
   });
   actor.root.updateMatrixWorld(true);
   for(const [side,instruction] of [[rig.sides[0],right],[rig.sides[1],left]]) {
-    if(instruction) solveArm(actor,side,instruction.goal,instruction.bend,instruction.roll);
+    if(instruction) solveArm(actor,side,instruction.goal,instruction.bend,instruction.roll,instruction.follow);
     else solveArm(actor,side,null,0,null);
   }
   actor.root.updateMatrixWorld(true);

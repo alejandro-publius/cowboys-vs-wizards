@@ -5,7 +5,7 @@ import physics from "../physics/gravity.cjs";
 import {rigActor, grip, pose, pointOn, wizardStaffGrip} from "./rig.js";
 
 export const v=(x=0,y=0,z=0)=>new T.Vector3(x,y,z);
-export const assets=["board","cowboy-tile","wizard-tile","saloon","gateway","billy","wizard","revolver"];
+export const assets=["board","cowboy-tile","wizard-tile","saloon","gateway","billy","wizard","revolver","sheriff"];
 export const timings={shot:.77,impact:.86,fireEnd:1.58,well:.55,release:2.30,repulse:2.43,land:3.02,castEnd:3.69,
   drawStart:.48,castStart:2.28,end:6.16};
 const mix=T.MathUtils.lerp;
@@ -68,12 +68,12 @@ export function setBoard(scene,models){
   scene.add(saloon,gate);
   return {board,deck,tiles,saloon,gate};
 }
-export function attachPistol(actor,model){
+export function attachPistol(actor,model,size=.225){
   const holder=new T.Group(), p=new T.Group(), prop=model.clone(true), tip=new T.Object3D();
   // Tripo's side-view revolver points along -X. Rotate it into the actor's forward axis.
   const anchor=v(.255,.356,0);
   prop.position.sub(anchor);tip.position.set(-.453,.483,0).sub(anchor);
-  p.rotation.y=Math.PI/2;p.scale.setScalar(.225);
+  p.rotation.y=Math.PI/2;p.scale.setScalar(size);
   p.add(prop,tip);holder.add(p);actor.root.add(holder);
   prop.traverse(node=>{if(node.isMesh)node.castShadow=true;});
   return {holder,tip};

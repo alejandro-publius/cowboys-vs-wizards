@@ -108,7 +108,7 @@ test("Cowboy slot i stands on stage.tiles[i] and Wizard slot i on stage.tiles[3 
   assert.deepEqual(board.camera.projectionMatrix.elements, duel.camera.projectionMatrix.elements);
 });
 
-test("Billy and Wizard pieces hold the rigged models; the other four cards are labelled temporary tokens", async () => {
+test("Billy and Wizard pieces hold the rigged models; the three cards without a model are labelled temporary tokens", async () => {
   const { board } = await setup();
   board.reset(FULL());
   for (const [side, kind] of [["cowboy", "billy"], ["wizard", "wizard"]]) {
@@ -128,7 +128,8 @@ test("Billy and Wizard pieces hold the rigged models; the other four cards are l
   const wizard = board.piece("wizard", 1);
   assert.equal(wizard.staff.holder.parent, wizard.actor.rig.sides[1].hand, "the staff is in the Wizard's hand");
 
-  for (const [side, slot, name] of [["cowboy", 0, "Sheriff"], ["cowboy", 2, "Mounted Billy"], ["wizard", 0, "Skeleton"], ["wizard", 2, "Dragon"]]) {
+  // The Sheriff has its own model; tests/match/sheriff.test.js covers it.
+  for (const [side, slot, name] of [["cowboy", 2, "Mounted Billy"], ["wizard", 0, "Skeleton"], ["wizard", 2, "Dragon"]]) {
     const piece = board.piece(side, slot);
     let skinned = 0;
     piece.root.traverse((node) => node.isSkinnedMesh && (skinned += 1));
@@ -141,13 +142,12 @@ test("Billy and Wizard pieces hold the rigged models; the other four cards are l
     assert.equal(skinned, 0, name);
     assert.ok(!used.has("billy") && !used.has("wizard"), `${name} uses ${[...used]}`);
   }
-  assert.ok(board.piece("cowboy", 2).height > board.piece("cowboy", 0).height, "Mounted Billy is larger than Sheriff");
   assert.ok(board.piece("wizard", 2).height > board.piece("wizard", 0).height, "Dragon is larger than Skeleton");
 
   const texts = [];
   const { board: custom } = await setup({ makeLabel: (text) => texts.push(text) && new T.Object3D() });
   custom.reset(viewWith([troop("Sheriff", 3), null, null], [null, null, troop("Dragon", 5)]));
-  assert.deepEqual(texts, ["Sheriff - temporary token", "Dragon - temporary token"]);
+  assert.deepEqual(texts, ["Dragon - temporary token"]);
 });
 
 test("reset builds exactly the view's troops and orbs; clear() leaves no piece, orb or effect", async () => {
