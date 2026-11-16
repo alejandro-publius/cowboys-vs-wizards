@@ -1,10 +1,11 @@
 // Read-only MCP server (newline-delimited JSON-RPC over stdio) for reviewing the
-// Orb Duel Chrome replay receipt. It reads two fixed files under this repo and
-// nothing else: no arbitrary paths, writes, network, shell or database.
+// Orb Duel Chrome replay receipt and the board character GLBs. It reads only
+// fixed files under this repo: no arbitrary paths, writes, network, shell or database.
 import {createHash} from "node:crypto";
 import {readFileSync} from "node:fs";
 import {createInterface} from "node:readline";
 import {fileURLToPath} from "node:url";
+import {parseGlb} from "../../../scripts/audit-assets.mjs";
 
 const root = fileURLToPath(new URL("../../../", import.meta.url));
 const TARGETS = {
@@ -12,6 +13,8 @@ const TARGETS = {
   web: {receipt: ".artifacts/kiro/web-replay/browser-run.json", page: "dist/web/index.html"},
 };
 const REQUIRED_STEPS = 8;
+// Board characters only, mapped to fixed repo paths. Input never becomes a path.
+const CHARACTERS = Object.fromEntries(["billy", "mounted-billy", "sheriff", "wizard", "dragon"].map((name) => [name, `assets/models/${name}.glb`]));
 
 function readFixed(rel) {
   try {
@@ -80,12 +83,40 @@ function inspect(target) {
   };
 }
 
+// Identity and inventory of one character GLB, from the same parseGlb the audit script uses.
+function inspectCharacter(model) {
+  const path = CHARACTERS[model];
+  const file = readFixed(path);
+  if (file.error) return {isError: true, body: {model, path, error: `model asset ${file.error}`}};
+  try {
+    const glb = parseGlb(file.bytes);
+    return {body: {
+      model, path, sha256: createHash("sha256").update(file.bytes).digest("hex"), bytes: glb.bytes,
+      meshes: glb.meshes, vertices: glb.vertices, triangles: glb.triangles, unknown: glb.unknown,
+      skins: glb.skins, joints: glb.joints, clips: glb.clips, extensions: glb.extensions,
+    }};
+  } catch (error) {
+    return {isError: true, body: {model, path, error: `invalid GLB: ${error.message}`}};
+  }
+}
+
 const TOOL = {
   name: "inspect_duel_replay",
   description: "Check a fixed Chrome replay receipt against its current built Orb Duel page. Optional target: standalone (default) or web.",
   inputSchema: {
     type: "object",
     properties: {target: {type: "string", enum: ["standalone", "web"], default: "standalone"}},
+    additionalProperties: false,
+  },
+};
+
+const CHARACTER_TOOL = {
+  name: "inspect_character_asset",
+  description: `Report SHA-256, bytes, triangles and skin/joint/clip inventory of one board character GLB. Required model: ${Object.keys(CHARACTERS).join(", ")}.`,
+  inputSchema: {
+    type: "object",
+    properties: {model: {type: "string", enum: Object.keys(CHARACTERS)}},
+    required: ["model"],
     additionalProperties: false,
   },
 };
@@ -106,9 +137,17 @@ function handle(msg) {
     case "ping":
       return reply(msg.id, {});
     case "tools/list":
-      return reply(msg.id, {tools: [TOOL]});
+      return reply(msg.id, {tools: [TOOL, CHARACTER_TOOL]});
     case "tools/call": {
       const params = msg.params;
+      if (params?.name === CHARACTER_TOOL.name) {
+        const args = params.arguments;
+        if (typeof args !== "object" || args === null || Array.isArray(args)) return fail(msg.id, -32602, "inspect_character_asset takes an object");
+        if (Object.keys(args).some((key) => key !== "model")) return fail(msg.id, -32602, "Only the model input is accepted");
+        if (typeof args.model !== "string" || !Object.hasOwn(CHARACTERS, args.model)) return fail(msg.id, -32602, `model must be one of: ${Object.keys(CHARACTERS).join(", ")}`);
+        const {isError, body} = inspectCharacter(args.model);
+        return reply(msg.id, {content: [{type: "text", text: JSON.stringify(body, null, 2)}], ...(isError && {isError})});
+      }
       if (!params || params.name !== TOOL.name) return fail(msg.id, -32602, "Unknown tool");
       const args = params.arguments ?? {};
       if (typeof args !== "object" || args === null || Array.isArray(args)) return fail(msg.id, -32602, "inspect_duel_replay takes an object");

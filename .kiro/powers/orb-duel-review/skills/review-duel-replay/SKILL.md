@@ -16,3 +16,6 @@ Report, from the tool output only:
 - The receipt and screenshot paths.
 
 Only `pass` supports the claim that the current build replayed cleanly in Chrome under that seed. Receipts do not show appearance or fun; those need rendered review and human playtests. For `stale` or `absent`, say the replay must be rerun by the coordinator.
+
+## Character asset identity
+To identify the GLB behind a screenshot or replay, call `inspect_character_asset` with `{"model":"<name>"}`, where name is billy, mounted-billy, sheriff, wizard or dragon. Accept no path. An unknown name is a protocol error; a missing or invalid file returns `isError` with the reason. Report `sha256`, `bytes`, `triangles` (or `unknown` with its reasons), skins, joints and clips from the output only. This does not change the replay verdict and does not show appearance, grip, deformation or contact; those need a Blender review of the named file.
