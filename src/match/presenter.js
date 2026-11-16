@@ -14,6 +14,9 @@
 //   spell({ spell, cardId, caster, target }) -> { impact, end }
 //   remove({ side, slot }) -> { end }
 //   move({ side, from, to }) -> { end }
+// Optional: clashReady(troops, ms) shows a pre-attack cue for ms on the
+// { side, slot } of every attacker in the damage events that follow a clash
+// pause; clashReady([], 0) ends it as the attacks start.
 //
 // Errors. enqueue throws for an unsupported event type before queueing
 // anything. A displayed state that differs from a batch's `from` when the
@@ -174,7 +177,23 @@ export function createPresenter({ scheduler, renderer, pauses = {}, onChange, on
       patch(event, batch.to);
       if (!changed(gen)) return;
     }
-    later(gen, pauses[event.type] ?? DEFAULT_PAUSES[event.type], () => play(gen, next));
+    const pause = pauses[event.type] ?? DEFAULT_PAUSES[event.type];
+    if (event.type === "clash" && renderer.clashReady) {
+      // The attackers come from the damage events playClash plays next,
+      // including troops that a later event of the same clash defeats.
+      const troops = [];
+      for (let i = next; i < batch.events.length && batch.events[i].type === "damage"; i++) {
+        const { side, slot } = batch.events[i].attacker;
+        if (Number.isInteger(slot) && !troops.some((each) => each.side === side && each.slot === slot)) {
+          troops.push({ side, slot });
+        }
+      }
+      if (troops.length > 0) {
+        renderer.clashReady(troops, pause);
+        if (!live(gen)) return;
+      }
+    }
+    later(gen, pause, () => play(gen, next));
   }
 
   function playSummon(gen, event, next) {
@@ -244,6 +263,8 @@ export function createPresenter({ scheduler, renderer, pauses = {}, onChange, on
     let stop = index;
     while (stop < events.length && events[stop].type === "damage") stop += 1;
     const group = events.slice(index, stop);
+    renderer.clashReady?.([], 0); // the pre-attack cue ends as the attacks start
+    if (!live(gen)) return;
     const start = scheduler.now();
     const cues = [];
     for (const { attacker, target } of group) {

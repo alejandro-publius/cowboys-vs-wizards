@@ -2,6 +2,7 @@ import * as T from "three";
 import {createDuel,loadAssets,timings} from "./render/scene.js";
 import {createMatchBoard} from "./render/match-board.js";
 import {withCues} from "./render/cues.js";
+import {withClashReady} from "./render/clash-ready.js";
 import {createScheduler} from "./match/scheduler.js";
 import {createController} from "./match/controller.js";
 import {mountCards} from "./ui/cards.js";
@@ -136,7 +137,7 @@ async function launch(){
     onRestart:()=>controller.restart(),
     onReplaySeed:text=>controller.start(text)
   });
-  controller=createController({scheduler,renderer:withCues(board),onChange:showMatch});
+  controller=createController({scheduler,renderer:withClashReady(withCues(board)),onChange:showMatch});
   const params=new URLSearchParams(location.search);
   function startMatch(){
     scheduler.tick(performance.now());
