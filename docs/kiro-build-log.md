@@ -200,4 +200,10 @@ Kiro Crew 0.12.2 ran the baseline and the one-orb increase over the same 1,000 s
 
 The published build showed a purple pawn for the Skeleton. The user's Tripo export (1,927,403 triangles, three 4096² textures, 67.7 MB) was decimated to 59,999 triangles with 1024² textures in headless Blender 5.2 (one-off scripts, not committed). `assets/models/skeleton.glb` is 3,067,712 bytes (sha256 `e0ecd861…`), static, no skin. It is fitted like the Dragon and Mounted Billy: 1.2 high, feet on the Wizard-side tile, front toward +Z (the Cowboys), three orbs. A missing model falls back to the existing token.
 
-Verified: 92 Node tests pass, including feet, height, facing, orb count and the fallback. Both built targets passed the eight seed-0 Chrome steps with zero console errors. Local evidence (ignored): `.artifacts/kiro/skeleton/`. The seed-0 screenshot shows the Skeleton in lane 1 with three orbs. Animation of the Skeleton remains the shared summon, hit and defeat cues only.
+Kiro ran 92 focused Node tests covering feet, height, facing, orbs and the fallback. The published Skeleton build passed all 107 Node tests. Both built targets passed the eight seed-0 Chrome steps with zero console errors. Local evidence (ignored): `.artifacts/kiro/skeleton/`. The seed-0 screenshot shows the Skeleton in lane 1 with three orbs. Animation of the Skeleton remains the shared summon, hit and defeat cues only.
+
+### 2026-11-16 — Dragon and Mounted Billy attack clips
+
+Kiro used Blender 5.2 to attach armatures and authored a short attack for each character. One pass on Mounted Billy stretched the connected arm and reins. A second Kiro pass used a smaller recoil and checked the same camera views again. The attack tests cover each troop’s independent bones, the contact pose, return to rest, reset during playback and the fallback for a missing clip.
+
+Codex integrated one GLB per troop and matched each exported contact pose to the engine’s existing impact. The reference inputs, measurements, published Skeleton check and final verification instructions are in the [character evidence](evidence/kiro-character-assets.md).

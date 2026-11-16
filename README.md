@@ -46,6 +46,6 @@ Read [AGENTS.md](AGENTS.md) before editing. Work on one owned area in a separate
 
 ## Assets and attribution
 
-Mounted Billy, Dragon and Skeleton are fitted, textured character meshes. Billy, Wizard and Sheriff use procedural rigs. See the [animation plan](docs/character-animation-plan.md) before adding clips or replacing an export.
+Dragon and Mounted Billy play articulated Blender attack clips. Skeleton uses its fitted Tripo mesh with the duel’s summon, hit and defeat cues. Billy, Wizard and Sheriff use procedural rigs. See the [animation plan](docs/character-animation-plan.md) before adding clips or replacing an export.
 
 The build includes Three.js (MIT) and Rapier (Apache-2.0) notices. The pinned Lucca Cerf references and their MIT license are in [docs/references/lucca-character-factory](docs/references/lucca-character-factory). The [build log](docs/kiro-build-log.md) attributes work by Kiro, Fable, Codex, Tripo and the user.

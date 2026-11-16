@@ -172,12 +172,12 @@ test("Characters use their own models, and the static troops are real meshes", a
   assert.equal(mounted.kind, "mounted-billy");
   assert.equal(mounted.temporary, false);
   assert.equal(mounted.token, null, "no temporary token");
-  assert.equal(mountedSkinned, 0, "Mounted Billy is a static mesh");
+  assert.equal(mountedSkinned, 1, "Mounted Billy uses the rigged candidate");
   assert.deepEqual([...assetsIn(mounted.body.children[0])], ["mounted-billy"]);
   assert.ok(Math.abs(mountedSize.y - 1.7) < 0.01, `Mounted Billy height ${mountedSize.y}`);
   assert.ok(Math.max(mountedSize.x, mountedSize.z) <= 2.05 + 1e-6, "Mounted Billy footprint is at most 2.05");
   assert.ok(Math.abs(mountedBox.min.y - mounted.root.position.y) < 1e-6, "hooves sit on the tile");
-  assert.equal(mounted.owned.length, 0, "Mounted Billy's shared geometry and materials are not disposed");
+  assert.equal(mounted.owned.length, 2, "Mounted Billy owns only its skeleton and mixer");
   assert.equal(shownOrbs(mounted.orbs.group), 5, "five health orbs are shown");
   assert.ok(mounted.orbs.group.position.y >= mountedSize.y, "the orbs sit above the model");
   assert.ok(mountedBox.max.y <= mounted.orbs.group.position.y + mounted.root.position.y);
@@ -193,11 +193,11 @@ test("Characters use their own models, and the static troops are real meshes", a
   assert.equal(dragon.kind, "dragon");
   assert.equal(dragon.temporary, false);
   assert.equal(dragon.token, null);
-  assert.equal(dragonSkinned, 0, "the Dragon is a static mesh");
+  assert.equal(dragonSkinned, 1, "the Dragon uses the rigged candidate");
   assert.ok(assetsIn(dragon.root).has("dragon"));
   assert.ok(Math.max(dragonSize.x, dragonSize.z) <= 2.1 + 1e-6, "Dragon footprint is at most 2.1");
   assert.ok(Math.abs(dragonBox.min.y - dragon.root.position.y) < 1e-6, "Dragon sits on its tile");
-  assert.equal(dragon.owned.length, 0, "the Dragon's shared geometry and materials are not disposed");
+  assert.equal(dragon.owned.length, 2, "the Dragon owns only its skeleton and mixer");
   assert.ok(dragon.height > board.piece("wizard", 0).height, "Dragon is larger than Skeleton");
 
 });

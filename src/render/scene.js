@@ -1,5 +1,6 @@
 import * as T from "three";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
+import {clone as cloneWithSkeleton} from "three/addons/utils/SkeletonUtils.js";
 import Rapier from "@dimforge/rapier3d-compat";
 import physics from "../physics/gravity.cjs";
 import {rigActor, grip, pose, pointOn, wizardStaffGrip} from "./rig.js";
@@ -32,7 +33,8 @@ export async function loadAssets(source,names=assets){
   const loader=new GLTFLoader();
   const entries=await Promise.all(names.map(async name=>{
     const input=source[name];
-    const model=(input?.url?await loader.loadAsync(input.url):await loader.parseAsync(modelBuffer(input),"")).scene;
+    const {scene: model, animations}=input?.url?await loader.loadAsync(input.url):await loader.parseAsync(modelBuffer(input),"");
+    model.animations=animations;
     model.traverse(mesh=>{if(mesh.isMesh)mesh.geometry.userData.asset=name;});
     return [name,model];
   }));
@@ -40,7 +42,10 @@ export async function loadAssets(source,names=assets){
 }
 
 export function fit(asset, {width,height,depth,x=0,y=0,z=0,yaw=0}){
-  const copy=asset.clone(true), box=new T.Box3().setFromObject(copy);
+  // Skinned meshes need their own bones, so clone through SkeletonUtils.
+  const copy=asset.getObjectByProperty("isSkinnedMesh",true)?cloneWithSkeleton(asset):asset.clone(true);
+  copy.updateMatrixWorld(true);
+  const box=new T.Box3().setFromObject(copy);
   const center=box.getCenter(v()), size=box.getSize(v());
   copy.position.sub(v(center.x,box.min.y,center.z));
   const parent=new T.Group(), uniform=height/size.y;

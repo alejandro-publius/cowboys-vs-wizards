@@ -18,6 +18,8 @@
 
 13. **GitHub Pages release.** Kiro CLI drafted the deployment workflow, which runs the duel tests and records the HTML hash before publishing. Codex verified the published hash and replayed both public routes in Chrome. [Live release evidence](evidence/kiro-submission-preflight.md#live-release) · [Deployment workflow](../.github/workflows/pages.yml)
 
+14. **Measured character imports.** Kiro optimized the original Skeleton, checked its fit on the Wizard tile and authored articulated Dragon and Mounted Billy attacks in Blender. The clips use the duel scheduler’s impact. Kiro’s read-only asset tool records the actual GLB hash, geometry and clip inventory. [Character evidence](evidence/kiro-character-assets.md) · [MCP tool](../.kiro/powers/orb-duel-review/server.mjs)
+
 ## Evidence to show
 
 | Screen | What the judge sees |

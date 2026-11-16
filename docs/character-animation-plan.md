@@ -12,26 +12,11 @@ The upstream Python tools, shell scripts and Unity C# importer are private and a
 
 See `evidence/asset-rig-inventory.json`. The optimized Billy and Wizard and their original Downloads exports have zero glTF skins, zero joint lists and zero embedded animation clips. The Sheriff original is also static. Existing `src/render/rig.js` supplies procedural deformation, so this finding does not mean the demo cannot move; it means we do not yet have exported skeletal animation suitable for the upstream pipeline. Blender 5.2.0 LTS is installed (version command verified); the upstream guide targets 4.5, so script/API compatibility requires checking. Its MCP connection has not been verified.
 
-## Next asset pass
+## In-game character imports
 
-Seed 60 reproduces a real center-lane clash between Mounted Billy and the
-Dragon. In Chrome the rider summoned with five orbs, moved through
-Singularity and finished his attack before retiring. The current exports have
-a single textured static mesh each. Use the existing suite of board contact and
-orb checks as the import baseline. See [the replay route](morning-handoff.md).
+Kiro fitted the original Skeleton to the Wizard tile and authored attack clips for the Dragon and Mounted Billy. The measurements use the fixed-camera comparison from [Blender Game Skills](https://github.com/majidmanzarpour/blender-game-skills), the contact checks from the pinned Character Factory notes and the export review from [Reference Asset Compiler](https://github.com/raydeStar/reference-asset-compiler). [Character evidence](evidence/kiro-character-assets.md)
 
-1. Export the Skeleton to replace the last troop token. Compare front, side
-   and board-scale silhouettes against its approved illustration.
-2. For Mounted Billy’s animated attack, prepare a skinned horse and rider,
-   with explicit hoof contacts and a separate gun attachment. The current
-   export is joined and fitted for board placement.
-3. For the Dragon, validate wing and neck deformation in the exchange pose
-   first. Export one idle and one attack with a named impact frame before
-   building the other clips.
-
-Reuse the pinned Character Factory notes for contacts and timing. For the
-next import, apply the fixed-view comparison from [Blender Game Skills](https://github.com/majidmanzarpour/blender-game-skills)
-and attach the asset hash to the browser review, as in [Reference Asset Compiler](https://github.com/raydeStar/reference-asset-compiler).
+Seed 0 shows the Skeleton in the Wizard response. Seed 60 reproduces the Mounted Billy and Dragon clash. [Replay routes](morning-handoff.md)
 
 ## Original animation plan
 
