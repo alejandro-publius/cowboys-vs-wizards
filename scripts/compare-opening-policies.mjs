@@ -9,38 +9,11 @@ import assert from "node:assert/strict";
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
-import { CARDS, DECKS, SIDES, opponent, tributeCost } from "../src/game/cards.js";
+import { CARDS, DECKS, SIDES } from "../src/game/cards.js";
 import { createMatch, RULES_VERSION } from "../src/game/state.js";
+import { VARIANTS, drought, openingMatch } from "../src/game/opening-policy.js";
 import { chooseAction } from "../src/game/cpu.js";
 import { playMatch, wholeNumber } from "./play-match.mjs";
-
-const isFree = (id) => CARDS[id].kind === "troop" && tributeCost(CARDS[id].stars) === 0;
-const drought = (hand) => !hand.some(isFree);
-
-// A hand with no free troop trades its last-dealt card for the topmost free
-// troop in its own deck. Sizes and deck order are otherwise unchanged.
-function guaranteeFree(state) {
-  for (const side of SIDES) {
-    const { hand, deck } = state.sides[side];
-    if (!drought(hand)) continue;
-    const at = deck.findIndex(isFree); // six free troops per deck, four cards dealt: always found
-    [hand[hand.length - 1], deck[at]] = [deck[at], hand[hand.length - 1]];
-  }
-}
-// The side acting second in round 1 draws the top of its deck early.
-function extraCard(state) {
-  const own = state.sides[opponent(state.startingSide)];
-  own.hand.push(own.deck.shift());
-}
-export const VARIANTS = {
-  shipped: () => {},
-  freeOpener: guaranteeFree,
-  extraCard,
-  both(state) {
-    guaranteeFree(state);
-    extraCard(state);
-  },
-};
 
 const SORTED_DECKS = Object.fromEntries(SIDES.map((side) => [side, [...DECKS[side]].sort()]));
 function assertConserved(state, label) {
@@ -54,10 +27,9 @@ function assertConserved(state, label) {
 const CPU_BOTS = { cowboy: chooseAction, wizard: chooseAction };
 
 // Each variant starts from the same shuffled deck, with both seats measured.
+export { VARIANTS };
 export function playVariant(seed, starter, variant) {
-  const opening = createMatch(seed);
-  opening.startingSide = opening.activeSide = starter;
-  VARIANTS[variant](opening);
+  const opening = openingMatch(seed, variant, starter);
   const label = `seed ${seed} ${variant}`;
   assertConserved(opening, `${label} opening`);
   const { state, log } = playMatch(seed, CPU_BOTS, opening);
