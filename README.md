@@ -14,7 +14,7 @@ Open `dist/cowboys-vs-wizards-board-duel.html`. The single file includes the mod
 
 For a static website, run `npm run build -- --web` and serve the entire `dist/web/` directory. It contains an `index.html` and content-hashed assets. Relative URLs allow hosting under a subdirectory.
 
-See the [morning handoff](docs/morning-handoff.md) for the tested seed 60 route to the Mounted Billy and Dragon clash.
+Follow the tested seed 60 route to the Mounted Billy and Dragon clash. [Seed 60 play-through](docs/morning-handoff.md#the-duel-to-film)
 
 ## Verify
 

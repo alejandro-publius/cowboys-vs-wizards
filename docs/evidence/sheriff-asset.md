@@ -12,7 +12,7 @@ normal maps to 1024 × 1024. All three maps are embedded in the GLB.
 | Vertices | 968,616 | 28,252 |
 
 Asset: [sheriff.glb](../../assets/models/sheriff.glb).
-The [render comparison](sheriff-comparison.webp) shows the original on the
+The local `sheriff-comparison.webp` render shows the original on the
 left and the optimized copy on the right under the same camera and light.
 The silhouettes overlap by 99.6% in that view. The texture resize softens
 fine fabric grain.

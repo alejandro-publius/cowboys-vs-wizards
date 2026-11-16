@@ -1,6 +1,6 @@
 # Cowboys vs. Wizards morning handoff
 
-Open the playable build on the Mac at [seed 0](http://127.0.0.1:48180/cowboys-vs-wizards-board-duel.html?seed=0). Work from the `codex/playable-duel` checkout in `.worktrees/playable-duel`. The public repository still describes the earlier attack prototype.
+Build the game from the repository root and open the standalone HTML with `?seed=0` appended. [Build instructions](../README.md#play)
 
 ```sh
 node scripts/verify-duel.mjs
@@ -21,7 +21,7 @@ node scripts/browser-match-check.mjs --showcase --summary
 The Chrome run saves the mounted summon, center-lane faceoff and clash result
 with a build-hash receipt in `.artifacts/kiro/showcase/`.
 
-Start with [seed 60](http://127.0.0.1:48180/cowboys-vs-wizards-board-duel.html?seed=60). Lanes are numbered left to right. These inputs were replayed in Chrome.
+Open the built game with `?seed=60` appended. Lanes are numbered left to right. These inputs were replayed in Chrome.
 
 | Round | Cowboy action |
 | --- | --- |
