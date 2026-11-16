@@ -66,11 +66,6 @@ function cardButton(card, enabled, inFlight) {
     disabled: !enabled,
   }, createCardBody(card));
 }
-function orbRow(value,side) {
-  return el("span",{class:"base-orbs "+side,"aria-hidden":"true"},
-    ...Array.from({length:5},(_,i)=>el("i",{class:i<value?"lit":""})));
-}
-
 function slotButton(side, slot, troop, clickable, chosen) {
   const owner = side === "cowboy" ? "Your" : "Wizard";
   const contents = troop ? `${troop.name}, ${troop.health} of ${troop.max} health` : "empty";
@@ -108,19 +103,16 @@ export function mountCards(root, handlers = {}) {
   const restart = el("button", {type: "button", "data-action": "restart"}, "Restart");
   const wizardDeck = pile("Wizard deck");
   const wizardHand = el("div", {class: "match-backs", role: "img"});
-  const wizardBase = el("span", {class: "match-base"});
-  const menu = el("dialog", {class:"match-panel match-details duel-dialog","aria-label":"Duel menu"},
+  const wizardBase = el("span", {class: "match-base sr-only"});
+  const menu = el("dialog", {class:"match-details duel-dialog","aria-label":"Duel menu"},
     el("div",{class:"dialog-heading"},el("h2",{},"Cowboys vs. Wizards"),el("button",{type:"button","data-action":"close-menu","aria-label":"Close menu"},"×")),
     el("p",{},round," · ",phase),
     el("div",{class:"match-line"},el("span",{},"Seed ",seedText," ",seedKind),seedForm,restart),
     el("p",{class:"match-muted"},"Pick a card, choose a lit tile, then summon. Stars set the tribute cost. Each orb is one life."));
   const menuButton=el("button",{class:"arena-menu",type:"button","data-action":"menu","aria-label":"Open duel menu"},"☰");
-  const wizardOrbs=el("span",{class:"base-health"});
-  wizardBase.classList.add("sr-only");
   const top=el("div",{class:"match-top"},menuButton,menu,
-    el("section",{class:"match-opponent","aria-label":"Wizard hand and deck"},
-      el("div",{class:"base-badge enemy"},el("span",{class:"match-side"},"WIZARDS"),el("strong",{},"The Gateway"),wizardOrbs,wizardBase),
-      wizardDeck.node,wizardHand));
+    el("section",{class:"match-opponent","aria-label":"Wizard hand, deck, and The Gateway"},
+      wizardDeck.node,wizardHand,wizardBase));
 
   const prompt = el("p", {class: "match-prompt", role: "status"});
   const message = el("p", {class: "match-message", role: "alert"});
@@ -128,24 +120,20 @@ export function mountCards(root, handlers = {}) {
   const hand = el("div", {class: "match-hand", role: "group", "aria-label": "Your hand"});
   const cowboyDeck = pile("Your deck");
   const cowboyBase = el("span", {class:"match-base sr-only"});
-  const cowboyOrbs=el("span",{class:"base-health"});
   const buttons = {
     confirm: el("button", {type: "button", "data-action": "confirm"}, "Confirm"),
     cancel: el("button", {type: "button", "data-action": "cancel"}, "Cancel"),
     skip: el("button", {type: "button", "data-action": "skip"}, "Skip move"),
     endPhase: el("button", {type: "button", "data-action": "end-phase"}, "End phase"),
   };
-  const selectedName=el("strong",{class:"selected-name"});
-  const selectedStats=el("span",{class:"selected-stats"});
   const selectionPanel=el("div",{class:"selection-panel",hidden:true},
-    el("div",{class:"selection-copy"},selectedName,selectedStats,prompt),
+    prompt,
     el("div",{class:"match-buttons selection-actions"},buttons.confirm,buttons.cancel,buttons.skip));
   const handCount=el("span",{class:"hand-count"});
   const viewArt=el("button",{class:"view-art",type:"button","data-action":"view-art"},"Card art");
   const bottom=el("div",{class:"match-bottom"},selectionPanel,message,
     el("div",{class:"hand-heading"},handCount,viewArt),hand);
-  const own=el("section",{class:"match-own","aria-label":"Your deck and base"},cowboyDeck.node,
-    el("div",{class:"base-badge friendly"},el("span",{class:"match-side"},"COWBOYS"),el("strong",{},"The Saloon"),cowboyOrbs,cowboyBase));
+  const own=el("section",{class:"match-own","aria-label":"Your deck and The Saloon"},cowboyDeck.node,cowboyBase);
   const phaseRound=el("small"),phaseLabel=el("strong");
   buttons.endPhase.replaceChildren(phaseRound,phaseLabel);
   const phaseControl=el("div",{class:"match-buttons phase-control"},buttons.endPhase);
@@ -179,7 +167,7 @@ export function mountCards(root, handlers = {}) {
   const resultTitle = el("h2"), resultText = el("p");
   const resultRestart = el("button", {type: "button", "data-action": "restart"}, "Restart");
   const result = el("section", {class: "match-result", "aria-label": "Match result", hidden: true},
-    el("div", {class: "match-panel"}, resultTitle, resultText, resultRestart));
+    resultTitle, resultText, resultRestart);
 
   root.replaceChildren(top,own,lanes,phaseControl,bottom,viewer,result);
 
@@ -367,23 +355,17 @@ export function mountCards(root, handlers = {}) {
     if (wizardHand.childElementCount !== held) wizardHand.replaceChildren(...Array.from({length: held}, back));
     wizardHand.setAttribute("aria-label", `Wizard hand: ${cards(model.wizard.handCount)}`);
     setText(wizardBase, `Base ${shown(model.wizard.baseOrbs)}/5`);
-    wizardOrbs.replaceChildren(orbRow(model.wizard.baseOrbs,"wizard"));
     const newDraw = model.draw && model.draw.key !== drawKey ? model.draw : null;
     const drawOrigin = newDraw ? cowboyDeck.top().getBoundingClientRect() : null;
     cowboyDeck.set(model.cowboy.deckCount);
     setText(cowboyBase, `Base ${shown(model.cowboy.baseOrbs)}/5`);
 
-    cowboyOrbs.replaceChildren(orbRow(model.cowboy.baseOrbs,"cowboy"));
     setText(handCount,"Your hand · "+model.cowboy.handCount);
     setText(phaseRound,"ROUND "+model.round);
     setText(phaseLabel,model.status==="cpu_turn"?"Wizards":model.status==="playing"?"Resolving":"End turn");
     const selected=model.cowboy.hand.find(card=>card.selected);
     selectionPanel.hidden=!selected||!model.buttons.cancel;
-    if(selected) {
-      setText(selectedName,selected.name);
-      setText(selectedStats,describeCard(selected).replace(selected.name+", ",""));
-      buttons.confirm.textContent=selected.kind==="spell"?"Cast":"Summon";
-    }
+    if (selected) buttons.confirm.textContent = selected.kind === "spell" ? "Cast" : "Summon";
     setText(prompt, model.prompt);
     setText(message, model.message);
     message.hidden = !model.message || (selected && model.status!=="error");

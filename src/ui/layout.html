@@ -6,21 +6,23 @@
 <title>Cowboys vs. Wizards | Board Duel</title>
 <link rel="icon" href="data:,">
 <style>
-:root{color-scheme:dark;font-family:"Instrument Sans",system-ui,sans-serif;color:#f4e9d9;background:#211923;--gold:#eab979;--violet:#dfadef}
+:root{color-scheme:dark;font-family:"Instrument Sans",system-ui,sans-serif;color:#f4e9d9;background:#211923;--gold:#eab979;--violet:#dfadef;--hud-shadow:0 1px 2px #160c09,0 0 6px #160c09}
 *{box-sizing:border-box}body{margin:0}button{font:inherit;cursor:pointer}[hidden]{display:none!important}
 #arena{position:relative;isolation:isolate;width:100%;height:100dvh;min-height:450px;overflow:hidden;background:#211923}
 #stage{position:absolute;inset:0}#stage canvas{display:block;width:100%;height:100%}
-header{position:absolute;z-index:1;inset:0 0 auto;display:flex;justify-content:space-between;gap:16px;align-items:flex-start;padding:clamp(17px,2.7vw,36px);background:linear-gradient(#17101bd6,transparent);pointer-events:none}
+header{position:absolute;z-index:1;inset:0 0 auto;display:flex;justify-content:space-between;gap:16px;align-items:flex-start;padding:clamp(17px,2.7vw,36px);pointer-events:none}
 h1{margin:0;color:#fff0dd;font:600 clamp(27px,3.5vw,50px)/1 "Cormorant Garamond",Georgia,serif;letter-spacing:-.045em;text-shadow:0 2px 18px #140a16}
 .tools{display:flex;gap:8px;pointer-events:auto}
-button{min-height:38px;border:1px solid #e8b98b59;border-radius:7px;background:#2d2330ee;color:#fff0df;padding:8px 12px;font-size:13px;font-weight:650;white-space:nowrap}
-button:hover{border-color:#e9c095;background:#3d2b3b}button:focus-visible{outline:3px solid #ffdfaf;outline-offset:3px}button:disabled{opacity:.55;cursor:default}
-button[aria-pressed=true]{border-color:#d6a774;background:#473047}
+button{min-height:38px;border:0;background:none;color:#fff0df;padding:8px 12px;font-size:13px;font-weight:650;white-space:nowrap;text-shadow:var(--hud-shadow)}
+button:not(:disabled):hover{text-decoration:underline;text-underline-offset:3px}
+button:focus-visible{outline:3px solid #ffdfaf;outline-offset:3px}
+button:disabled{opacity:.55;cursor:default}
+button[aria-pressed=true]{color:#ffe0a4}
 #boot{position:absolute;inset:0;display:grid;place-content:center;text-align:center;color:#efd9e8;z-index:2}
 #fallback{position:absolute;inset:75px 0 0;display:grid;justify-items:center;align-content:center;gap:9px}
 #fallback video{width:min(100%,1280px);max-height:calc(100dvh - 118px);object-fit:contain}
 #fallback p{margin:0;padding:0 12px;text-align:center;color:#dfc9df;font-size:13px}
-#controls{position:absolute;inset:auto 0 0;padding:13px 16px clamp(12px,2.3dvh,24px);background:linear-gradient(transparent,#19111be8 53%);}
+#controls{position:absolute;inset:auto 0 0;padding:13px 16px clamp(12px,2.3dvh,24px);text-shadow:var(--hud-shadow)}
 #status{min-height:19px;margin:0 auto 9px;text-align:center;color:#f6e6d5;font-size:13px}
 #combatants{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:437px;margin:0 auto 10px}
 .fighter{color:var(--gold);display:grid;grid-template-columns:1fr auto;align-items:center;gap:4px 8px;font-size:13px;font-weight:700}
@@ -28,9 +30,9 @@ button[aria-pressed=true]{border-color:#d6a774;background:#473047}
 meter{width:100%;height:6px;grid-column:1/-1;background:#ffffff17;border:0}
 meter::-webkit-meter-bar{background:#ffffff17;border:0}meter::-webkit-meter-optimum-value{background:currentColor}
 .moves{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
-.action{min-width:120px;min-height:39px;text-align:left}.action kbd{margin-left:8px;opacity:.66;font-family:"IBM Plex Mono",monospace;font-size:10px}
-#fire{border-color:#c8925a;color:#ffd4a5}#cast{border-color:#a073b7;color:#eabef7}
-#watch{background:#edd0aa;color:#2a1d24;border-color:#f0d9bd}#watch:hover{background:#fae0bf}
+.action{min-width:120px;min-height:39px;text-align:center}.action kbd{margin-left:8px;opacity:.66;font-family:"IBM Plex Mono",monospace;font-size:10px}
+#fire{color:#ffd4a5}#cast{color:#eabef7}
+#watch{color:#ffe5b6}
 @media(max-width:650px){header{padding:14px;gap:7px}h1{font-size:clamp(20px,5vw,34px)}.tools{gap:4px}.tools button{padding:7px;font-size:10px}.moves{gap:5px}.action{min-width:0;padding:9px;font-size:12px}.action kbd{display:none}#combatants{gap:15px}}
 /* Mode switch: the card match (default) or the attack demo. It sits left of the demo tools. */
 #modes{margin-left:auto}
