@@ -165,3 +165,13 @@ Kiro references for the planned work are [steering](https://kiro.dev/docs/steeri
 ### 2026-11-15 — Combined demo verification
 
 Codex integrated Fable’s final Wizard and Sheriff with Kiro’s presentation work and verified build `b6d0f5f` in Chrome. All eight replay steps passed with zero console errors. The summoned card landed 0.082 CSS pixels from the selected tile center. The 19-test custom-agent hook output and final browser receipt are retained in `docs/evidence/`. See [combined demo evidence](evidence/combined-demo.md).
+
+### 2026-11-15 — Reviewed card fronts and summon timing
+
+Fable rendered the six approved illustrations in their reviewed gold frames from the approval sheet. The art commit is `fbbf739` and its [texture note](evidence/fable-card-front-textures.md) records the source, sizes and legibility correction.
+
+Kiro CLI's `duel-presenter` agent wired the eight full faces into the hand, draw and summon flights, and the public card catalog (`99a4682`). A follow-up used the renderer's existing summon impact cue to time the card flight after any tributes leave (`720a2c2`). The SessionStart hook passed 19 focused tests. Codex combined both branches, kept the easing inside the flight segments, and added the browser checks for the catalog and landing.
+
+Lucca Cerf's [BIPX cast code](https://github.com/luccacerfz/BIPX/blob/main/src/assets/hero-skill-motion.js) links one accepted event to one gesture with an explicit impact time. Its [browser VFX check](https://github.com/luccacerfz/BIPX/blob/main/tools/verify-vfx.mjs) exercises actual casts and impacts. The summon change adapts that timing idea to our existing renderer.
+
+On `720a2c2`, 51 match tests passed and Chrome completed all eight gameplay steps with zero console errors. All eight catalog textures decoded and the viewer flipped to the original back. The illustrated Sheriff card reached the selected tile on the 350 ms landing cue, within 0.33 CSS pixels of its center. The replay also completed a Billy tribute summon, restarted during playback, and switched to and from the exchange demo.
