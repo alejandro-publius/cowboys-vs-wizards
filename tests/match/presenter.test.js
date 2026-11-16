@@ -543,3 +543,24 @@ test("a displayed state that differs from `to` at drain, or from `from` at start
   );
   assert.equal(log.drains, 0);
 });
+
+test("a draw identifies the new hand position when another copy is held", () => {
+  const scheduler = createScheduler();
+  const presenter = createPresenter({ scheduler, renderer: recordingRenderer(scheduler) });
+  const from = publicState(createMatch(0), "cowboy");
+  const to = structuredClone(from);
+  const { cowboy } = to.sides;
+  const cardId = cowboy.hand[0];
+  const handIndex = cowboy.hand.length;
+  cowboy.hand.push(cardId);
+  cowboy.handCount += 1;
+  cowboy.deckCount -= 1;
+
+  presenter.reset(from);
+  presenter.enqueue({ from, to, events: [{ type: "draw", side: "cowboy" }] });
+  assert.equal(presenter.drawing()?.cardId, cardId);
+  assert.equal(presenter.drawing()?.handIndex, handIndex);
+  scheduler.tick(scheduler.now() + presenter.drawing().ms);
+  assert.equal(presenter.drawing(), null);
+  assert.equal(presenter.busy(), false);
+});

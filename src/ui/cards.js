@@ -38,6 +38,7 @@ function pile(name) {
   const node = el("div", {class: "match-pile", role: "img"}, back(), back(), back(), count);
   return {
     node,
+    top: () => node.children[Number(node.dataset.layers ?? 1) - 1],
     set(n) {
       setText(count, shown(n));
       node.setAttribute("aria-label", `${name}: ${cards(n)}`);
@@ -125,10 +126,17 @@ export function mountCards(root, handlers = {}) {
 
   root.replaceChildren(top, bottom, result);
 
-  // The one transient card animation: a copy of the confirmed troop card
-  // flying from its hand position to the chosen lane's indicator.
+  // Transient card animations: a copy of the confirmed troop card flying from
+  // its hand position to the chosen lane's indicator, and a drawn Cowboy card
+  // flying from the deck pile to its hand position while the Presenter plays
+  // the draw (model.draw).
   let model = null;
   let flight = null; // {cardId, node, animation}
+  let drawFlight = null; // {key, handIndex, node, animation, turn}
+  let drawKey = null; // model.draw.key of the latest draw seen, so each draw flies once
+
+  const moving = (cardId, index) => cardId === flight?.cardId || index === drawFlight?.handIndex;
+  const reducedMotion = () => typeof root.animate !== "function" || matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   function clearFlight() {
     if (!flight) return;
@@ -136,7 +144,58 @@ export function mountCards(root, handlers = {}) {
     flight = null;
     animation?.cancel();
     node.remove();
-    for (const card of hand.querySelectorAll(".in-flight")) card.classList.remove("in-flight");
+    for (const card of hand.querySelectorAll(".in-flight")) {
+      if (card !== hand.children[drawFlight?.handIndex]) card.classList.remove("in-flight");
+    }
+  }
+
+  function clearDraw() {
+    if (!drawFlight) return;
+    const {handIndex, node, animation, turn} = drawFlight;
+    drawFlight = null;
+    animation.cancel();
+    turn.cancel();
+    node.remove();
+    const target = hand.children[handIndex];
+    if (target && !moving(target.dataset.cardId, handIndex)) target.classList.remove("in-flight");
+  }
+
+  // Flies a card back from the deck pile to the drawn card's rendered place
+  // in the hand, turning over halfway into a copy of that card's face. It
+  // lands a little before the Presenter's pause ends, so the card has settled
+  // before the next event; a draw that ends earlier cancels it in render().
+  function launchDraw({key, handIndex, ms}, from) {
+    clearDraw();
+    const target = hand.children[handIndex];
+    if (!target || reducedMotion() || ms <= 50) return;
+    const overflow = target.getBoundingClientRect().right - hand.getBoundingClientRect().right;
+    if (overflow > 0) hand.scrollLeft += overflow;
+    const box = target.getBoundingClientRect();
+    const width = target.offsetWidth, height = target.offsetHeight;
+    if (!from.width || !from.height || !width || !height) return;
+    const left = box.left + box.width / 2 - width / 2, top = box.top + box.height / 2 - height / 2;
+    const face = Array.from(target.childNodes, (child) => child.cloneNode(true));
+    const node = el("div", {class: "card-front card-flight card-draw", "aria-hidden": "true"}, ...face, back());
+    Object.assign(node.style, {left: `${left}px`, top: `${top}px`, width: `${width}px`, height: `${height}px`});
+    root.append(node);
+    const dx = from.left + from.width / 2 - (box.left + box.width / 2);
+    const dy = from.top + from.height / 2 - (box.top + box.height / 2);
+    const scale = from.height / height;
+    const lift = (scale + 1) / 2 * 1.08;
+    const timing = {duration: ms - 50, easing: "cubic-bezier(.3,.6,.3,1)", fill: "both"};
+    // The turn: the card narrows to an edge at the midpoint, where the back
+    // gives way to the face.
+    const animation = node.animate([
+      {transform: `translate(${dx}px,${dy}px) scale(${from.width / width},${scale})`},
+      {transform: `translate(${dx * 0.4}px,${dy * 0.4 - 16}px) scale(0.04,${lift})`, offset: 0.5},
+      {transform: "translate(0,0) scale(1)"},
+    ], timing);
+    const turn = node.lastChild.animate([{opacity: 1}, {opacity: 1, offset: 0.5}, {opacity: 0, offset: 0.5}, {opacity: 0}], timing);
+    drawFlight = {key, handIndex, node, animation, turn};
+    target.classList.add("in-flight");
+    animation.onfinish = () => {
+      if (drawFlight?.node === node) clearDraw();
+    };
   }
 
   // Geometry for a confirm that can summon a troop, read before the click is
@@ -153,7 +212,7 @@ export function mountCards(root, handlers = {}) {
   }
 
   function launch({cardId, source, from, to}) {
-    if (typeof root.animate !== "function" || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (reducedMotion()) return;
     if (!from.width || !from.height || !to.width) return;
     clearFlight();
     const node = el("div", {class: "card-front card-flight", "aria-hidden": "true"}, ...Array.from(source.childNodes, (child) => child.cloneNode(true)));
@@ -186,12 +245,14 @@ export function mountCards(root, handlers = {}) {
       if (geometry && outcome?.ok && model.status !== "error") launch(geometry);
     } else if (ACTIONS[action]) {
       if (action === "restart" || action === "cancel") clearFlight();
+      if (action === "restart") clearDraw();
       call(ACTIONS[action]);
     }
   });
   seedForm.addEventListener("submit", (event) => {
     event.preventDefault();
     clearFlight();
+    clearDraw();
     call("onReplaySeed", seedInput.value.trim());
   });
 
@@ -199,6 +260,9 @@ export function mountCards(root, handlers = {}) {
     model = next;
     // Idle (mode switch), error, a refusal message or another match end the flight.
     if (flight && (model.status === "idle" || model.status === "error" || model.message || model.round === null)) clearFlight();
+    // A draw flight lasts only while the Presenter plays that draw: restart,
+    // mode switch, error and the end of its pause all end it.
+    if (drawFlight && model.draw?.key !== drawFlight.key) clearDraw();
     root.dataset.status = model.status;
     setText(round, model.round === null ? "No round" : `Round ${model.round}`);
     setText(phase, model.phase);
@@ -210,6 +274,8 @@ export function mountCards(root, handlers = {}) {
     if (wizardHand.childElementCount !== held) wizardHand.replaceChildren(...Array.from({length: held}, back));
     wizardHand.setAttribute("aria-label", `Wizard hand: ${cards(model.wizard.handCount)}`);
     setText(wizardBase, `Base ${shown(model.wizard.baseOrbs)}/5`);
+    const newDraw = model.draw && model.draw.key !== drawKey ? model.draw : null;
+    const drawOrigin = newDraw ? cowboyDeck.top().getBoundingClientRect() : null;
     cowboyDeck.set(model.cowboy.deckCount);
     setText(cowboyBase, `Base ${shown(model.cowboy.baseOrbs)}/5`);
 
@@ -222,8 +288,13 @@ export function mountCards(root, handlers = {}) {
       slotButton("wizard", lane, wizard, model.slots.wizard.includes(lane), false),
       slotButton("cowboy", lane, cowboy, model.slots.cowboy.includes(lane), model.tributes.includes(lane)),
     ]));
-    hand.replaceChildren(...model.cowboy.hand.map((card) => cardButton(card, model.buttons.hand, card.cardId === flight?.cardId)));
+    hand.replaceChildren(...model.cowboy.hand.map((card, index) => cardButton(card, model.buttons.hand, moving(card.cardId, index))));
     if (refocus) root.querySelector(refocus)?.focus();
+    // Launched after the hand is rebuilt, so it aims at the new card's place.
+    if (newDraw) {
+      drawKey = newDraw.key;
+      launchDraw(newDraw, drawOrigin);
+    }
 
     for (const [name, button] of Object.entries(buttons)) button.disabled = !model.buttons[name];
     restart.disabled = resultRestart.disabled = !model.buttons.restart;

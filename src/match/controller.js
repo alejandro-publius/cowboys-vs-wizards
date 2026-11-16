@@ -267,8 +267,13 @@ export function createController({
     displayed: () => presenter.displayed(),
     selection: () => selection,
     // Options for the current selection; act on them only while accepting_input.
-    // Also carries the chosen tile (`slot`, or null) so the UI can animate the summon.
-    options: () => (state === null ? null : { ...selectionOptions(selection, view()), slot: selection.slot ?? null }),
+    // Also carries the chosen tile (`slot`, or null) so the UI can animate the
+    // summon, and the Presenter's drawing() (`draw`, or null) so it can fly a
+    // drawn Cowboy card from the deck to the hand during the draw's pause.
+    options: () =>
+      state === null
+        ? null
+        : { ...selectionOptions(selection, view()), slot: selection.slot ?? null, draw: presenter.drawing() },
     seed: () => seed,
     seedPinned: () => seedPinned,
     message: () => message,
