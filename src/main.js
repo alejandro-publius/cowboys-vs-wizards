@@ -1,4 +1,6 @@
 import * as T from "three";
+import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
+import {addPerimeter, loadGroundTexture} from "./render/perimeter.js";
 import {createDuel,loadAssets,timings} from "./render/scene.js";
 import {createMatchBoard} from "./render/match-board.js";
 import {withCues} from "./render/cues.js";
@@ -62,13 +64,20 @@ async function launch(){
   renderer.toneMappingExposure=1.08;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.35));
   // The models are parsed once and shared by the attack demo and the card match.
-  const models=await loadAssets(JSON.parse(get("models").textContent));
+  const source=JSON.parse(get("models").textContent);
+  const models=await loadAssets(source);
   const duel=await createDuel(models);
   const scheduler=createScheduler();
   const board=await createMatchBoard({models,scheduler});
+  const corners=await Promise.all(["graveyard-corner","ghost-town-corner"].map(async name=>{
+    const bytes=Uint8Array.from(atob(source[name]),char=>char.charCodeAt(0));
+    return [name,(await new GLTFLoader().parseAsync(bytes.buffer,"")).scene];
+  }));
+  addPerimeter(board.scene,Object.fromEntries(corners),await loadGroundTexture());
   get("models").remove();
   const stage=get("stage");
   stage.append(renderer.domElement);
+  let overlay=null;
   function size(){
     const width=Math.max(1,stage.clientWidth),height=Math.max(1,stage.clientHeight);
     renderer.setSize(width,height,false);
@@ -76,6 +85,7 @@ async function launch(){
     duel.camera.fov=width/height<1?59:40;
     duel.camera.updateProjectionMatrix();
     board.resize(width,height);
+    overlay?.layout();
   }
   new ResizeObserver(size).observe(stage);
   size();
@@ -131,7 +141,26 @@ async function launch(){
       seed:controller.seed(),seedPinned:controller.seedPinned(),message:controller.message()}));
     board.highlight(state==="accepting_input"&&options?{cowboy:options.ownSlots,wizard:options.enemySlots}:{});
   }
-  const overlay=mountCards(get("match"),{
+  function projectPoint(point) {
+    const box=renderer.domElement.getBoundingClientRect();
+    board.camera.updateMatrixWorld();
+    const p=point.project(board.camera);
+    return {x:box.left+(p.x+1)*box.width/2,y:box.top+(1-p.y)*box.height/2};
+  }
+  overlay=mountCards(get("match"),{
+    slotTarget:(side,slot)=>{
+      const tile=board.stage.tiles[(side==="wizard"?3:0)+slot];
+      if(!tile)return null;
+      const corners=[-1.08,1.08].flatMap(x=>[-.915,.915].map(z=>projectPoint(new T.Vector3(tile.x+x,tile.top,tile.z+z))));
+      const left=Math.min(...corners.map(p=>p.x)),top=Math.min(...corners.map(p=>p.y));
+      return {left,top,width:Math.max(...corners.map(p=>p.x))-left,height:Math.max(...corners.map(p=>p.y))-top};
+    },
+    deckTarget:side=>{
+      const [x,z]=side==="cowboy"?[4.85,3.75]:[-4.85,-3.75];
+      const p=projectPoint(new T.Vector3(x,board.stage.deck+.12,z));
+      const width=Math.max(42,Math.min(78,renderer.domElement.clientWidth*.05));
+      return {left:p.x-width/2,top:p.y-width*.7,width,height:width*1.4};
+    },
     onCard:cardId=>controller.input({type:"card",cardId}),
     onSlot:(side,slot)=>controller.input({type:"slot",side,slot}),
     onConfirm:()=>controller.input({type:"confirm"}),
@@ -170,7 +199,7 @@ async function launch(){
     if(hit)controller.input({type:"slot",side:hit.side,slot:hit.slot});
   });
   document.addEventListener("keydown",event=>{
-    if(appMode==="match"&&event.key==="Escape")controller.input({type:"cancel"});
+    if(appMode==="match"&&event.key==="Escape"&&!document.querySelector("dialog[open]"))controller.input({type:"cancel"});
   });
   function setMode(next){
     if(next===appMode)return;
@@ -178,6 +207,8 @@ async function launch(){
     if(appMode==="demo")resetDemo();
     appMode=next;
     const match=next==="match";
+    get("arena").classList.toggle("is-match",match);
+    size();
     get("match").hidden=!match;
     get("controls").hidden=match;get("tools").hidden=match;
     get("mode").textContent=match?"Attack demo":"Card match";

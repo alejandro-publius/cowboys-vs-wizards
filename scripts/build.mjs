@@ -10,10 +10,13 @@ const base64 = async name => (await readFile(path(name))).toString("base64");
 const files = (await readdir(path("assets/models/"))).filter(file => file.endsWith(".glb"));
 const assetMap = Object.fromEntries(await Promise.all(files.map(async file=>[file.slice(0,-4),await base64("assets/models/"+file)])));
 const compiled=await build({absWorkingDir:root,entryPoints:["src/main.js"],bundle:true,write:false,
-  platform:"browser",target:"es2022",minify:true,legalComments:"inline"});
+  platform:"browser",target:"es2022",loader:{".webp":"dataurl"},minify:true,legalComments:"inline"});
 const script=compiled.outputFiles[0].text.replace(/<\/script/gi,"<\\/script");
 const notices=await Promise.all([utf8("node_modules/three/LICENSE"),utf8("node_modules/@dimforge/rapier3d-compat/LICENSE")]);
-const html=(await utf8("src/ui/layout.html")).replace("@@ASSETS@@",JSON.stringify(assetMap))
+const artNames=["billy-card","wizard-card","sheriff","billy"];
+const art=Object.fromEntries(await Promise.all(artNames.map(async name=>[name,"data:image/webp;base64,"+await base64("assets/cards/"+name+".webp")])));
+const visualCss=(await utf8("src/ui/match.css")).replace(/@@ART:([a-z-]+)@@/g,(_,name)=>art[name]);
+const html=(await utf8("src/ui/layout.html")).replace("@@MATCHSTYLE@@",()=>visualCss).replace("@@ASSETS@@",JSON.stringify(assetMap))
   .replace("@@POSTER@@",await base64("assets/media/board.jpg"))
   .replace("@@VIDEO@@",await base64("assets/media/replay.mp4"))
   .replace("@@CARDBACK@@",await base64("assets/cards/card-back.png"))

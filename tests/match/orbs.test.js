@@ -104,8 +104,15 @@ test("Cowboy slot i stands on stage.tiles[i] and Wizard slot i on stage.tiles[3 
   const duel = await createDuel(models);
   const tiles = (stage) => stage.tiles.map(({ faction, x, z, top }) => ({ faction, x, z, top }));
   assert.deepEqual(tiles(board.stage), tiles(duel.stage));
-  assert.deepEqual(board.camera.matrixWorld.elements, duel.camera.matrixWorld.elements, "the demo's board camera");
-  assert.deepEqual(board.camera.projectionMatrix.elements, duel.camera.projectionMatrix.elements);
+  assert.equal(duel.camera.isPerspectiveCamera, true, "exchange camera stays independent");
+  assert.equal(board.camera.isOrthographicCamera, true, "match restores the playtest view");
+  for (const [width,height] of [[1440,666],[390,646]]) {
+    board.resize(width,height);
+    for (const tile of board.stage.tiles) {
+      const p = new T.Vector3(tile.x,tile.top,tile.z).project(board.camera);
+      assert.ok(Math.abs(p.x)<1 && Math.abs(p.y)<1, "every lane stays in view after resize");
+    }
+  }
 });
 
 test("Billy and Wizard pieces hold the rigged models; the three cards without a model are labelled temporary tokens", async () => {

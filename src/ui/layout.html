@@ -33,55 +33,7 @@ meter::-webkit-meter-bar{background:#ffffff17;border:0}meter::-webkit-meter-opti
 @media(max-width:650px){header{padding:14px;gap:7px}h1{font-size:clamp(20px,5vw,34px)}.tools{gap:4px}.tools button{padding:7px;font-size:10px}.moves{gap:5px}.action{min-width:0;padding:9px;font-size:12px}.action kbd{display:none}#combatants{gap:15px}}
 /* Mode switch: the card match (default) or the attack demo. It sits left of the demo tools. */
 #modes{margin-left:auto}
-/* Orb Duel overlay. Card fronts are temporary text cards; the card back is the approved import. */
-#match{position:absolute;inset:0;z-index:0;pointer-events:none;font-size:13px;--card-back:url("data:image/png;base64,@@CARDBACK@@")}
-.match-panel{pointer-events:auto;background:#19111bd9;border:1px solid #e8b98b40;border-radius:9px;padding:8px 11px;box-shadow:0 6px 24px #0007}
-.match-top{position:absolute;top:calc(clamp(17px,2.7vw,36px) + clamp(27px,3.5vw,50px) + 12px);left:clamp(12px,2.7vw,36px);display:grid;gap:7px;justify-items:start;max-width:calc(100% - 24px)}
-.match-details p{margin:0 0 5px;color:#fff0dd;font-weight:650}
-.match-line{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
-.match-muted{color:#cdb8c9;font-size:11px}.match-details code{font-family:"IBM Plex Mono",monospace;color:var(--gold)}
-.match-seed{display:flex;gap:5px}
-.match-seed input{width:10ch;min-height:32px;border:1px solid #e8b98b59;border-radius:7px;background:#120c14;color:#fff0df;padding:4px 8px;font:inherit;font-size:12px}
-.match-seed input:focus-visible{outline:3px solid #ffdfaf;outline-offset:2px}
-#match .match-line button{min-height:32px;padding:5px 10px;font-size:12px}
-.match-opponent{display:flex;gap:12px;align-items:center;color:var(--violet)}.match-side,.match-base{font-weight:700;white-space:nowrap}
-.card-back{display:inline-block;width:30px;aspect-ratio:530/742;background:var(--card-back) center/contain no-repeat;filter:drop-shadow(0 1px 2px #000b)}
-.match-backs{display:flex;min-width:30px;min-height:42px}.match-backs .card-back+.card-back{margin-left:-17px}
-.match-pile{position:relative;display:inline-grid;place-items:center;width:34px}.match-pile .card-back{width:34px;grid-area:1/1}.match-pile.empty .card-back{opacity:.3}
-.match-pile .card-back:nth-child(2),.match-pile .card-back:nth-child(3){display:none}
-.match-pile[data-layers="2"] .card-back:nth-child(2),.match-pile[data-layers="3"] .card-back:nth-child(2),.match-pile[data-layers="3"] .card-back:nth-child(3){display:inline-block}
-.match-pile .card-back:nth-child(1){transform:translate(-3px,3px)}.match-pile .card-back:nth-child(3){transform:translate(3px,-3px)}
-.match-pile[data-layers="1"] .card-back:nth-child(1){transform:none}
-.match-count{position:absolute;bottom:-5px;right:-9px;min-width:20px;padding:1px 5px;border-radius:9px;background:#120c14;border:1px solid #e8b98b66;color:#fff0dd;font-size:11px;font-weight:700;text-align:center}
-.match-bottom{position:absolute;inset:auto 0 0;display:grid;gap:6px;justify-items:center;padding:28px 14px clamp(10px,2.2dvh,22px);background:linear-gradient(transparent,#19111bed 34%)}
-.match-prompt,.match-message{margin:0;text-align:center;min-height:18px}.match-prompt{color:#f6e6d5}.match-message{color:#ffd4a5;font-weight:650}
-.match-row{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:center;max-width:100%}
-.match-lanes,.match-hand,.match-own,.match-buttons{pointer-events:auto}
-.match-lanes{display:grid;grid-auto-flow:column;grid-template-rows:auto auto;grid-auto-columns:minmax(0,118px);gap:4px}
-#match .match-slot{min-height:30px;padding:4px 8px;font-size:11px;font-weight:600;text-align:left;overflow:hidden;text-overflow:ellipsis;border-color:#e8b98b45;color:var(--gold)}
-#match .match-slot[data-side=wizard]{border-color:#a073b766;color:var(--violet)}
-#match .match-slot:disabled{opacity:.88}#match .match-slot:not(:disabled){box-shadow:0 0 0 2px #ffd38a99;background:#3d2b3b}
-#match .match-slot[aria-pressed=true]{box-shadow:0 0 0 2px #ffdfaf;background:#5a3b37}
-.match-hand{display:flex;gap:7px;overflow-x:auto;max-width:100%;padding:22px 6px 8px}
-#match .card-front{flex:none;width:94px;min-height:114px;display:grid;align-content:start;gap:3px;padding:8px;border:1px solid #eab97973;border-radius:8px;background:linear-gradient(160deg,#35283a,#241a27);text-align:left;white-space:normal;line-height:1.2;box-shadow:0 1px 0 #ffffff14 inset,0 2px 3px #0008,0 7px 12px #0005;transform-origin:50% 100%;transition:transform .16s ease-out,box-shadow .16s ease-out,border-color .16s}
-#match .card-front:nth-child(odd){transform:rotate(-1deg)}#match .card-front:nth-child(even){transform:rotate(1deg)}
-#match .card-front:not(:disabled):hover{transform:translateY(-5px) rotate(0);border-color:#eab979b3}
-#match .card-front[aria-pressed=true]{border-color:var(--gold);background:linear-gradient(160deg,#4a3239,#2f2029);transform:translateY(-16px) scale(1.06) rotate(0);box-shadow:0 0 0 2px #eab97966,0 14px 20px #000a;z-index:1}
-#match .card-front:disabled{opacity:.72}
-#match .card-front.in-flight{visibility:hidden}
-#match .card-flight{position:fixed;z-index:5;margin:0;pointer-events:none;transform-origin:50% 50%;box-shadow:0 12px 24px #000a;border-color:var(--gold)}
-#match .card-draw{transition:none}#match .card-draw .card-back{position:absolute;inset:-1px;width:auto;aspect-ratio:auto;border-radius:8px;background:var(--card-back) center/contain no-repeat,#19111b}
-@media(prefers-reduced-motion:reduce){#match .card-front{transition:none}}
-.card-name{color:#fff0dd;font-size:13px;font-weight:700}.card-tier{color:var(--gold);font-size:11px}.card-stats{color:#e7d6e4;font-size:11px}
-.card-temp{margin-top:4px;color:#bfa9b9;font-size:8.5px;letter-spacing:.05em;text-transform:uppercase}
-.match-own{display:flex;gap:14px;align-items:center;color:var(--gold)}
-.match-buttons{display:grid;grid-template-columns:auto auto;gap:5px}#match .match-buttons button{min-height:34px;padding:6px 11px;font-size:12px}
-#match [data-action=end-phase]:not(:disabled){border-color:#c8925a;color:#ffd4a5}
-.match-result{position:absolute;inset:0;display:grid;place-items:center;background:#140b16a6;pointer-events:auto}
-.match-result .match-panel{display:grid;justify-items:center;gap:10px;padding:22px 34px;text-align:center}
-.match-result h2{margin:0;color:#fff0dd;font:600 clamp(42px,7vw,82px)/1 "Cormorant Garamond",Georgia,serif;letter-spacing:-.03em}
-.match-result[data-outcome=win] h2{color:var(--gold)}.match-result[data-outcome=loss] h2{color:var(--violet)}.match-result p{margin:0;color:#e7d6e4}
-@media(max-width:650px){.match-top{top:calc(38px + clamp(20px,5vw,34px));left:10px}.match-panel{padding:6px 8px}#match .card-front{width:80px;min-height:100px;padding:6px}.match-lanes{grid-auto-columns:minmax(0,96px)}.match-bottom{padding:20px 8px 10px}}
+@@MATCHSTYLE@@
 </style>
 </head>
 <body>

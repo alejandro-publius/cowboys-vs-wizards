@@ -22,6 +22,7 @@
 //     targetPoint(target), animate(ms, step, done), at(ms, fn)
 // Cue methods return their times in ms from the call (CUES).
 import * as T from "three";
+import {matchCamera, resizeMatchCamera} from "./match-camera.js";
 import {CARDS, SIDES} from "../game/cards.js";
 import {SLOT_COUNT} from "../game/state.js";
 import {attachPistol, createBoardScene, drawKeys, motion, v} from "./scene.js";
@@ -151,7 +152,8 @@ function tokenModel(card, side) {
 
 export async function createMatchBoard({models, scheduler, makeLabel = makeTextLabel} = {}) {
   if (!models || !scheduler) throw new TypeError("createMatchBoard needs models and a scheduler");
-  const {scene, camera, stage, light} = await createBoardScene(models);
+  const {scene, stage, light} = await createBoardScene(models);
+  const camera = matchCamera();
   const group = new T.Group();
   group.name = "match-pieces";
   const effects = new T.Group();
@@ -510,11 +512,8 @@ export async function createMatchBoard({models, scheduler, makeLabel = makeTextL
     return null;
   }
 
-  // Same rule as the demo camera in src/main.js.
   function resize(width, height) {
-    camera.aspect = Math.max(1, width) / Math.max(1, height);
-    camera.fov = camera.aspect < 1 ? 59 : 40;
-    camera.updateProjectionMatrix();
+    resizeMatchCamera(camera, width, height);
   }
 
   // Moves the camera in front of one tile, low enough to see the model's face.

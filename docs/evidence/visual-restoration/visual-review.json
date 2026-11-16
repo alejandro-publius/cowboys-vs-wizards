@@ -1,0 +1,27 @@
+{
+  "flags": [],
+  "steps": [],
+  "consoleErrors": [],
+  "warnings": [],
+  "screenshots": [
+    "table.png",
+    "wizard-card.png"
+  ],
+  "chrome": "Chrome/157.0.8103.52",
+  "checks": {
+    "noTemporaryText": true,
+    "hasBillyArt": true,
+    "closedMenu": true,
+    "hiddenHeading": true,
+    "artDialog": true,
+    "wizardArt": true,
+    "flip": true,
+    "escapePreservesSelection": true,
+    "menuOpens": true,
+    "wideLayout": true,
+    "reducedMotion": true
+  },
+  "pass": true,
+  "page_sha256": "0aea092fafc076e57aa465cb12e5990e617b55e5f6d369bc0ec2ab4912e3ff30",
+  "recorded_at": "2026-11-16T06:50:48.606690+00:00"
+}

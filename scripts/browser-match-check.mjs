@@ -17,6 +17,7 @@ import os from "node:os";
 import path from "node:path";
 import {fileURLToPath, pathToFileURL} from "node:url";
 import * as T from "three";
+import {matchCamera, resizeMatchCamera} from "../src/render/match-camera.js";
 import {CARDS} from "../src/game/cards.js";
 import {legalActions} from "../src/game/legal.js";
 import {createMatch} from "../src/game/state.js";
@@ -73,15 +74,15 @@ function chooseSeed() {
 // Screen points (CSS px) of the Cowboy tile centres, projected with the
 // match board's camera rules at the page size, for the canvas pick.
 async function cowboyTilePoints() {
-  const {camera, stage} = await createBoardScene(await localModels());
-  camera.aspect = WIDTH / HEIGHT;
-  camera.fov = camera.aspect < 1 ? 59 : 40;
-  camera.updateProjectionMatrix();
+  const {stage} = await createBoardScene(await localModels());
+  const camera=matchCamera();
+  const stageHeight=HEIGHT-Math.min(248,Math.max(208,HEIGHT*.26));
+  resizeMatchCamera(camera,WIDTH,stageHeight);
   camera.updateMatrixWorld(true);
   return [0, 1, 2].map((slot) => {
     const tile = stage.tiles[slot];
     const p = new T.Vector3(tile.x, tile.top, tile.z).project(camera);
-    return {slot, x: Math.round((p.x + 1) / 2 * WIDTH), y: Math.round((1 - p.y) / 2 * HEIGHT)};
+    return {slot, x: Math.round((p.x + 1) / 2 * WIDTH), y: Math.round((1 - p.y) / 2 * stageHeight)};
   });
 }
 
