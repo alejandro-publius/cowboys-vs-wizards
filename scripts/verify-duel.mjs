@@ -34,5 +34,5 @@ run(process.execPath, ["--test", ...files]);
 
 if (args.includes("--browser")) {
   run(process.execPath, ["scripts/build.mjs"]);
-  run(process.execPath, ["scripts/browser-match-check.mjs", "--seed", "0", "--out-dir", ".artifacts/kiro/replay"]);
+  run(process.execPath, ["scripts/browser-match-check.mjs", "--seed", "0", "--summary", "--out-dir", ".artifacts/kiro/replay"]);
 }

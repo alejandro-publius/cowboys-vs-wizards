@@ -1,12 +1,10 @@
 {
-  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
   "mcpServers": {
     "orb-duel-review": {
       "command": "node",
       "args": [
         ".kiro/powers/orb-duel-review/server.mjs"
-      ],
-      "type": "stdio"
+      ]
     }
   }
 }

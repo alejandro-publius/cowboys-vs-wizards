@@ -6,13 +6,13 @@
       "type": "step",
       "id": "verify-duel",
       "agent": "wf-coder",
-      "prompt": "From the project root run `git rev-parse --short HEAD`, then `node scripts/verify-duel.mjs --browser` once. This step owns verification commands and the ignored outputs in .artifacts/kiro/replay only; edit no source files. Report the revision, the exit status, and the final `ℹ tests`, `ℹ pass` and `ℹ fail` counts printed by the Node suites. Read .artifacts/kiro/replay/browser-run.json and report the observed step count out of 8, the console error count, the built page SHA-256, and the absolute paths of that receipt and its screenshots. Signal success only if the command exits zero, all eight steps are observed, and there are zero console errors. Otherwise signal error with the first failing test or browser step exactly as printed."
+      "prompt": "Run exactly `node scripts/verify-duel.mjs --browser` as one shell call from the project root. Use its standard output and exit status for the test totals, Chrome step count, console errors, revision, build hash and receipt path. The command emits these directly. Signal success only if the check exits zero. On failure give the first failing test or browser step. This step owns verification only."
     },
     {
       "type": "step",
       "id": "report",
       "agent": "wf-coder",
-      "prompt": "The verification results are below.\n{{previous.output}}\nWrite a concise report to .artifacts/kiro/replay/report.md containing only values from those results: revision, command, exit status, test pass/fail counts, browser steps observed out of 8, console error count, page SHA-256, and the receipt path. Make no claim about appearance, clarity or fun, and mark anything not present in the results as pending. Edit no other file. Signal success with the report path."
+      "prompt": "Here is the completed verification result.\n{{previous.output}}\nWrite .artifacts/kiro/replay/report.md through the file-writing tool. Include the exact revision, command, exit status, Node test counts, observed Chrome checks, console errors, built page SHA-256, and receipt path from the result. Mark missing checks pending. Use this file only. Signal completion with its path."
     }
   ]
 }

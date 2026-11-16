@@ -19,7 +19,15 @@
           "git diff*",
           "git log*",
           "node --check *",
-          "node --test *"
+          "node --test *",
+          "node scripts/verify-duel.mjs --browser"
+        ],
+        "effect": "allow"
+      },
+      {
+        "capability": "fs_write",
+        "match": [
+          ".artifacts/kiro/replay/report.md"
         ],
         "effect": "allow"
       }

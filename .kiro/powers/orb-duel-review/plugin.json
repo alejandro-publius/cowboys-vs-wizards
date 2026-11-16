@@ -8,12 +8,7 @@
   },
   "keywords": [
     "orb duel replay review",
-    "orb duel",
-    "chrome replay receipt",
-    "replay evidence",
-    "build hash check",
     "cowboys vs wizards"
   ],
-  "mcpServers": "./mcp.json",
   "skills": "./skills"
 }
