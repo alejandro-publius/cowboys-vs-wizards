@@ -1,3 +1,4 @@
+import {perimeterModelNames} from "./render/model-assets.js";
 import * as T from "three";
 import {addPerimeter, loadGroundTexture} from "./render/perimeter.js";
 import {createDuel,loadAssets,timings} from "./render/scene.js";
@@ -69,7 +70,7 @@ async function launch(){
   const source=JSON.parse(get("models").textContent);
   const [models,corners,ground]=await Promise.all([
     loadAssets(source),
-    loadAssets(source,["graveyard-corner","ghost-town-corner"]),
+    loadAssets(source,perimeterModelNames),
     loadGroundTexture()
   ]);
   // The exchange scene (and Rapier) is created on first demand and then reused.

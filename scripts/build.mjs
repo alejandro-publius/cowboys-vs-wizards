@@ -1,7 +1,8 @@
 import {build} from "esbuild";
-import {mkdir,readFile,readdir,writeFile} from "node:fs/promises";
+import {mkdir,readFile,writeFile} from "node:fs/promises";
 import {createHash} from "node:crypto";
 import {fileURLToPath} from "node:url";
+import {arenaModelNames,perimeterModelNames} from "../src/render/model-assets.js";
 
 const rootUrl = new URL("../", import.meta.url);
 const root = fileURLToPath(rootUrl);
@@ -10,7 +11,7 @@ const utf8 = name => readFile(path(name),"utf8");
 const base64 = async name => (await readFile(path(name))).toString("base64");
 const web = process.argv.includes("--web");
 const outDir = web ? "dist/web/" : "dist/";
-const files = (await readdir(path("assets/models/"))).filter(file => file.endsWith(".glb"));
+const files = [...arenaModelNames,...perimeterModelNames].sort().map(name => name+".glb");
 // --web: copy a file next to index.html under a content-hashed name and return its relative URL.
 if (web) await mkdir(path(outDir+"assets/"),{recursive:true});
 const copyAsset = async name => {

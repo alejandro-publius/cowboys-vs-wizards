@@ -37,10 +37,9 @@ export function makeBot(kind, seed, side) {
   };
 }
 
-// Plays `seed` to its result. Bots only ever receive publicState for their own
-// side. Throws if a bot's action is rejected or the step bound is reached.
-export function playMatch(seed, bots) {
-  const opening = createMatch(seed);
+// Plays the seeded deal, or an explicit opening in a paired experiment.
+// Bots only receive their own public view. Rejected actions fail the run.
+export function playMatch(seed, bots, opening = createMatch(seed)) {
   let state = opening;
   const log = [];
   while (!state.result) {
