@@ -4,7 +4,7 @@ Prepared by Codex on November 14, 2026, Pacific time, from the user's Lucca Cerf
 
 ## Reference and limits
 
-Source: [Lucca Cerf's character-factory-skills](https://github.com/luccacerfz/character-factory-skills), commit `2db5685a73b9089b703f8f9529cb7ac68f898f04`, MIT. Seven upstream documents are retained in `references/lucca-character-factory/` with the original license and source map. They are reference documents, not an installed executable pipeline.
+Source: [Lucca Cerf's character-factory-skills](https://github.com/luccacerfz/character-factory-skills), commit `2db5685a73b9089b703f8f9529cb7ac68f898f04`, MIT. Seven upstream documents are retained in `docs/references/lucca-character-factory/` with the original license and source map. They are reference documents, not an installed executable pipeline.
 
 The upstream Python tools, shell scripts and Unity C# importer are private and absent. Its commands cannot run here unchanged. Use its rigging, timing, contact and visual-review methods with our existing Three.js/GLB renderer. Keep the original art and approved board/card direction. Avoid a Unity migration or importing the full reference collection into every Kiro prompt.
 
@@ -12,7 +12,28 @@ The upstream Python tools, shell scripts and Unity C# importer are private and a
 
 See `evidence/asset-rig-inventory.json`. The optimized Billy and Wizard and their original Downloads exports have zero glTF skins, zero joint lists and zero embedded animation clips. The Sheriff original is also static. Existing `src/render/rig.js` supplies procedural deformation, so this finding does not mean the demo cannot move; it means we do not yet have exported skeletal animation suitable for the upstream pipeline. Blender 5.2.0 LTS is installed (version command verified); the upstream guide targets 4.5, so script/API compatibility requires checking. Its MCP connection has not been verified.
 
-## Order
+## Next asset pass
+
+Seed 60 reproduces a real center-lane clash between Mounted Billy and the
+Dragon. In Chrome the rider summoned with five orbs, moved through
+Singularity and finished his attack before retiring. The current exports have
+a single textured static mesh each. Use the existing suite of board contact and
+orb checks as the import baseline. See [the replay route](morning-handoff.md).
+
+1. Export the Skeleton to replace the last troop token. Compare front, side
+   and board-scale silhouettes against its approved illustration.
+2. For Mounted Billy’s animated attack, prepare a skinned horse and rider,
+   with explicit hoof contacts and a separate gun attachment. The current
+   export is joined and fitted for board placement.
+3. For the Dragon, validate wing and neck deformation in the exchange pose
+   first. Export one idle and one attack with a named impact frame before
+   building the other clips.
+
+Reuse the pinned Character Factory notes for contacts and timing. For the
+next import, apply the fixed-view comparison from [Blender Game Skills](https://github.com/majidmanzarpour/blender-game-skills)
+and attach the asset hash to the browser review, as in [Reference Asset Compiler](https://github.com/raydeStar/reference-asset-compiler).
+
+## Original animation plan
 
 1. Finish the headless card engine, legal actions and combat-event contract using the active assignments in `fable-tasks.md`. `kiro-task-01.md` remains the rule reference; attribute implementation to the actual agent.
 2. Audit the wizard's actual rest mesh and staff first. Inspect front/side and hand close-ups, identify whether the staff can be separated cleanly, and measure arm/hand landmarks. Do not guess a hand position from the posed bounding box. Record whether the existing model can be rigged or requires a new empty-hand export plus separate staff. This audit must name a concrete asset request if blocked.

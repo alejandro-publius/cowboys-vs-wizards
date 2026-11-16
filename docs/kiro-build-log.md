@@ -175,3 +175,15 @@ Kiro CLI's `duel-presenter` agent wired the eight full faces into the hand, draw
 Lucca Cerf's [BIPX cast code](https://github.com/luccacerfz/BIPX/blob/main/src/assets/hero-skill-motion.js) links one accepted event to one gesture with an explicit impact time. Its [browser VFX check](https://github.com/luccacerfz/BIPX/blob/main/tools/verify-vfx.mjs) exercises actual casts and impacts. The summon change adapts that timing idea to our existing renderer.
 
 On `720a2c2`, 51 match tests passed and Chrome completed all eight gameplay steps with zero console errors. All eight catalog textures decoded and the viewer flipped to the original back. The illustrated Sheriff card reached the selected tile on the 350 ms landing cue, within 0.33 CSS pixels of its center. The replay also completed a Billy tribute summon, restarted during playback, and switched to and from the exchange demo.
+
+### 2026-11-16 — Faster startup, replay review and Mounted Billy
+
+Kiro CLI’s `duel-presenter` agent updated the match boot, replay tools,
+presentation steering and Mounted Billy integration in isolated worktrees.
+Kiro ran both steps of the saved replay Workflow. The local review Power loaded
+and its workspace MCP validated the matching build and rejected a stale one.
+Codex integrated the changes, optimized the user’s Tripo export, and ran the
+browser and performance comparisons. The first playable frame reached 686 ms
+median versus 1,109 ms on the same Mac before the mounted import. The optional
+static web build passed the same eight seeded browser steps as the standalone
+build. [Replay evidence](evidence/kiro-overnight.md) · [Kiro write-up](kiro-brag-sheet.md)

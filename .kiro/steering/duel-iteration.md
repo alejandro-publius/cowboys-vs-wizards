@@ -10,19 +10,16 @@ README.md has the build command and check table.
 
 ## Contracts to keep
 
-- Engine: `src/game/` decides outcomes and has no DOM, rendering or model
-  imports. Presentation shows the engine's `before` and `after` values and
-  never computes damage.
-- Public views: the UI, presenter and CPU read `publicState` for their side
-  only. The Wizard hand shows card backs.
-- Accepted actions: the controller applies one action once. Input during
-  playback or the CPU turn reaches no engine call. Timers, animations and CPU
-  requests carry the match epoch, so a restart cancels them.
-- Art: eight card faces in `assets/cards/` map one-to-one to `CARDS` names.
-  The deck back is `card-back.png`. Do not edit approved art or the original
-  attack exchange (`?mode=demo`) for a presentation change.
-- Models: GLBs are static exports. Mounted Billy and Skeleton are temporary
-  tokens until models exist. Do not present them as finished.
+- The engine owns outcomes. Keep DOM, rendering and asset imports out of
+  `src/game/`. Present the engine's before and after values at impact.
+- The UI, presenter and CPU read the public view for their side. The opponent's
+  hand shows card backs.
+- Apply each action once. The match epoch governs timers, animations and CPU
+  requests. Include a cancellation check when changing those interactions.
+- Reuse the eight approved fronts and the deck back when changing playback or
+  inputs. Verify the original exchange at `?mode=demo` after a mode change.
+- Dragon and Mounted Billy are fitted static models. Skeleton is the remaining
+  temporary troop token.
 
 ## Iterate cheaply
 
