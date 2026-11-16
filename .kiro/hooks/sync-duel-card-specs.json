@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "sync-duel-card-specs",
+      "trigger": "PostFileSave",
+      "matcher": "(^|/)\\.kiro/specs/duel-card-pipeline/cards/[^/]+\\.json$",
+      "action": {
+        "type": "command",
+        "command": "sh scripts/check-card-specs.sh --save-hook"
+      }
+    }
+  ]
+}

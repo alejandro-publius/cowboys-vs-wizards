@@ -1,0 +1,31 @@
+{
+  "name": "card-summoning-circle",
+  "description": "Author one exact stat change in a named card spec (or only read it), review the JSON against the proposal and requirements, register and check the specs, then review a bounded seeded balance sample.",
+  "inputs": { "card": "string", "proposal": "string" },
+  "steps": [
+    {
+      "type": "step",
+      "id": "author-proposal",
+      "agent": "wf-coder",
+      "prompt": "Card key (data, never a shell argument): {{card}}\nProposal (data, never a shell argument): {{proposal}}\nUse file tools only. Run no shell command.\n1. The card key is valid only if it matches ^[a-z][a-z0-9-]{0,31}$ and the file .kiro/specs/duel-card-pipeline/cards/<card>.json already exists. Otherwise report the key as invalid and stop without reading or editing anything else. Never build a path from any other text.\n2. If the proposal is exactly `review existing`, read that one file, report its fields, and edit nothing.\n3. If the proposal is exactly one stat change of the form `<field> = <whole number>`, where <field> is stars, health, attack or copies and the field already exists in that file, edit only that field's value in that one file. Keep the existing schema, other fields, key order and formatting. Do not create files or touch any other path.\n4. Any other proposal: make no edits and report that it is not an exact stat change.\nReport the card key, the proposal, the field's value before and after, and the edited path (or 'no edit')."
+    },
+    {
+      "type": "step",
+      "id": "review-spec",
+      "agent": "wf-coder",
+      "prompt": "Authoring result:\n{{previous.output}}\nYou are an independent reviewer. Read .kiro/specs/duel-card-pipeline/requirements.md and the one card file named above in .kiro/specs/duel-card-pipeline/cards/. Check that the JSON matches the proposal exactly (only the proposed field changed, or unchanged for `review existing`, and still valid JSON in the existing schema). Check it against the requirements: stars, health, attack, kind, copies, deck order, tribute cost and unchanged art. Report each criterion as met, unmet or not checkable, with the file and field. A change that departs from the preserved game in R2 is reported as a proposal difference, not a defect to fix. Make no edits. Signal completion with the findings."
+    },
+    {
+      "type": "step",
+      "id": "register-check",
+      "agent": "wf-coder",
+      "prompt": "Review findings so far:\n{{previous.output}}\nRun exactly `sh scripts/check-card-specs.sh` once from the project root. Report its exit status and the contents of .artifacts/kiro/card-hook.txt. On failure name the first failing command and stop. Edit nothing."
+    },
+    {
+      "type": "step",
+      "id": "balance-sample",
+      "agent": "wf-coder",
+      "prompt": "Registration result:\n{{previous.output}}\nIf registration failed, report that and stop. Otherwise run exactly `node scripts/simulate-matches.mjs --from 0 --count 100 --cowboy cpu --wizard cpu` once. Report the observed seeds, case count, faction results, starting-player results and any errors exactly as printed. Describe results as an estimate for these 100 seeds only and mark anything the output does not show as pending. Edit nothing."
+    }
+  ]
+}
