@@ -16,6 +16,8 @@
 
 12. **Crew browser playtest.** Crew used its managed browser to play Sheriff in lane 1 and advance the opening round. Its screenshot showed boxed developer labels over the Skeleton tokens. Codex removed those labels and verified the next build in Chrome. [Browser playtest evidence](evidence/kiro-submission-preflight.md#kiro-crew-browser-playtest)
 
+13. **GitHub Pages release.** Kiro CLI drafted the deployment workflow, which runs the duel tests and records the HTML hash before publishing. Codex verified the published hash and replayed both public routes in Chrome. [Live release evidence](evidence/kiro-submission-preflight.md#live-release) · [Deployment workflow](../.github/workflows/pages.yml)
+
 ## Evidence to show
 
 | Screen | What the judge sees |

@@ -4,7 +4,9 @@ A haunted Western browser card duel. Play the Cowboys against the Wizard CPU ove
 
 ## Play
 
-Use Node.js 22.18 or later and a WebGL 2 browser. Install dependencies with `npm ci`, then build.
+[Play Cowboys vs. Wizards in your browser](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Seed 0 opening](https://alejandro-publius.github.io/cowboys-vs-wizards/?seed=0) · [Seed 60 showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/?seed=60)
+
+For a local build, use Node.js 22.18 or later and a WebGL 2 browser. Install dependencies with `npm ci`, then build.
 
 ```sh
 npm run build

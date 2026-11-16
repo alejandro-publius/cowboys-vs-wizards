@@ -1,6 +1,6 @@
 # Cowboys vs. Wizards morning handoff
 
-Build the game from the repository root and open the standalone HTML with `?seed=0` appended. [Build instructions](../README.md#play)
+[Play the public release](https://alejandro-publius.github.io/cowboys-vs-wizards/) or open the local build with `?seed=0`. [Build instructions](../README.md#play) · [Release verification](evidence/kiro-submission-preflight.md#live-release)
 
 ```sh
 node scripts/verify-duel.mjs
@@ -40,6 +40,6 @@ Make the central lane clash the payoff of a short haunted-Western duel. Open on 
 1. Get one new player through selecting a card, summoning and ending a turn from the opening screen. Watch where they hesitate. Use the two-tribute summon and Singularity relocation to test the next level of understanding.
 2. Finish the Skeleton export next. The Dragon and Mounted Billy are fitted, textured Tripo models. They still need articulated clips for wing motion and a convincing mounted attack. Measure the feet or hooves and any grip from the exported mesh at the board scale before animating.
 3. Use Fable’s paired opening-hand experiment to decide whether to guarantee a free opener. Under the current deals, the side without a free opener had 1 win in 126 tracked side-results. With the swap it had 59. The new paired simulation reduced the first-seat win-rate gap from 29.6 to 18.4 points with an extra opening card for the second seat. Try the free-opener and extra-card candidates in human games before choosing. [Simulation evidence](evidence/kiro-overnight.md#opening-experiment)
-4. Publish one tested release with the appropriate open-source license, the Kiro write-up, a functional judge link and a public YouTube demo under three minutes. Put the same release hash in the recording and the replay receipt. [Official rules](https://kiroween.devpost.com/rules)
+4. Upload the short demo to YouTube as a public video and add its URL to the existing Devpost submission. The game, MIT-licensed repository and Kiro write-up are published. [Official rules](https://kiroween.devpost.com/rules)
 
 Borrow the front and side comparisons and contact checks from [Lucca’s Character Factory](https://github.com/luccacerfz/character-factory-skills) and [Blender Game Skills](https://github.com/majidmanzarpour/blender-game-skills). Use a paired asset and browser receipt as in [Reference Asset Compiler](https://github.com/raydeStar/reference-asset-compiler). The game pipeline uses the existing Three.js loader and the per-action cues.

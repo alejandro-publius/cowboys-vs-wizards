@@ -46,6 +46,18 @@ Fable 5.2 reviewed the clean candidate at `66b6cb9`. It verified the MIT license
 
 Chrome 157 replayed the static build at 1440 × 900. Seed 0 observed 8 of 8 checks and seed 60 observed 4 of 4 checks, with zero console errors. Both receipts cover HTML SHA-256 `0295185db7b77700ae249bdfd2898fe396529a79d00e767dff6ac68459b31b92`. The documentation and hook changes also rebuilt to that same hash.
 
+## Live release
+
+Kiro CLI 3.3.0 drafted the GitHub Pages workflow in its own worktree. Codex reviewed the action versions and permissions, configured Pages, and published the tested build at `9326453`. The [deployment run](https://github.com/alejandro-publius/cowboys-vs-wizards/actions/runs/43939606327) passed all 107 Node tests and recorded HTML SHA-256 `978e44753eb98dd2713b785fd43b91d9d58ab8cc17c211911e24df80b521697d`.
+
+Chrome 157 replayed the release from GitHub Pages at 1440 × 900. Seed 0 passed 8 of 8 checks. Seed 60 passed 4 of 4 checks. Both reported zero console errors, and the served HTML matched the hash recorded in GitHub Actions. [Opening duel](https://alejandro-publius.github.io/cowboys-vs-wizards/?seed=0) · [Mounted Billy showcase](https://alejandro-publius.github.io/cowboys-vs-wizards/?seed=60) · [Deployment workflow](../../.github/workflows/pages.yml)
+
+## Illustrated cards in motion
+
+While recording the demo, Claude Fable 5.2 found cream rectangles on the summon and draw animations. Both moving cards copied the illustration and paper layers from the hand. The copies needed the same depth and corner radius as the hand, so Codex applied those values to both. A Chrome frame captured during the Sheriff summon shows the original illustration in flight.
+
+The opening replay now checks that the illustrated face is in front of the paper, as well as checking its landing position. The change at `5b69ac7` passed 107 Node tests and the opening replay passed 8 of 8 checks with zero console errors. The updated web HTML SHA-256 is `62944140752eee187b2af23425d494d0eefc27b27b2096ccee9c1eb4d6c6e371`. The two recordings use that web build. [Replay check](../../scripts/browser-match-check.mjs)
+
 ## Clash property check
 
 Codex ran Kiro’s **Property 3: Clash completeness** in a copy of the presenter. Its normal run passed across seeds 0–99 and covered 741 clashes and 2,734 attacks, including 539 attacks by troops defeated in the same clash. A deliberate edit in the copy suppressed those attacks’ animation calls. The same property failed on seed 0 with two animations for three damage events. The committed presenter passed the clean preflight. [Property test](../../tests/match/presenter.test.js)
@@ -58,6 +70,6 @@ Codex ran Kiro’s **Property 3: Clash completeness** in a copy of the presenter
 | Technological implementation | Kiro’s Requirements-First spec, seeded presenter properties, replay Workflow and build-hash review have executed receipts. The property check above exercises an omitted attack. | Capture the actual Kiro run beside the playable release. |
 | Design | Illustrated cards carry into the 3D arena. Summons, orbs, clash and the graveyard show what each action did. | Capture a full round and the resulting board from the released build. |
 | Innovation and idea | A two-tribute Western gunfighter survives a wizard’s lane displacement long enough to fire in a simultaneous clash. Seed 60 reproduces the combination. | Use the faceoff and impact to show why choosing a lane matters. |
-| Presentation | The opening match and showdown are scripted and reproducible on one static build. | Replay the public URL, capture the resulting build hash and record the public YouTube demo under three minutes. |
+| Presentation | Both routes passed on GitHub Pages. The served HTML matched the deployment hash. | Publish the recorded demo on YouTube and add the link to the entry. |
 
-The current receipts cover local Chrome. The functional public URL, public GitHub release with a detectable license and the published demo are submission items. [Official rules](https://kiroween.devpost.com/rules)
+The public game and MIT-licensed source are available. The entry still needs the published demo URL. [Official rules](https://kiroween.devpost.com/rules)

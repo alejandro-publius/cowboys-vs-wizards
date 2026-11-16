@@ -26,6 +26,9 @@ The closest references are [Duskline’s 3D playtests](https://builder.aws.com/c
 4. **Approval improvements, November 10.** Keep the feature scope and command permissions small. If routine confirmations still interrupt the run, Kiro’s Approve for me mode can review those prompts. [Approve for me](https://kiro.dev/blog/introducing-approve-for-me/)
 5. **Kiro Crew’s live browser review, November 5.** It can show an agent’s browser actions live and lets you take over. Use it for the review step if you already have it set up. The IDE Workflow tab covers the core recording with one app. [Crew changelog](https://kiro.dev/changelog/crew/)
 
+6. **CLI 3.3.0 and Crew’s live browser.** We exercised the compaction hooks, resumed the CLI session with its receipt, and used Crew’s own Chromium to observe the opening turn. The Registry lists Powers and MCP servers. The workspace’s own Power and MCP already cover the game’s replay and build hash. [CLI changelog](https://kiro.dev/changelog/cli/) · [Crew walkthrough](https://kiro.dev/videos/JjVbje4kAlY/) · [Registry](https://kiro.dev/registry/)
+7. **Model selection.** Kiro describes how Auto can escalate work to a stronger model within a session. For this release, we assigned the Pages workflow directly to Kiro CLI and the video and submission draft to Claude Fable 5.2. [Model cascade](https://kiro.dev/blog/model-cascade/)
+
 ## 2. What we applied on November 16
 
 - The replay Workflow uses a fresh, seeded Chrome run with an HTML hash. Kiro completed both steps. The second step used the first step’s results to write its report.
