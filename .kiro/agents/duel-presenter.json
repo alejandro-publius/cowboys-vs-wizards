@@ -42,6 +42,22 @@
         "type": "command",
         "command": "sh scripts/check-match-ui.sh"
       }
+    },
+    {
+      "name": "Record the duel revision before compaction",
+      "trigger": "PreCompact",
+      "action": {
+        "type": "command",
+        "command": "node scripts/duel-compaction.mjs before"
+      }
+    },
+    {
+      "name": "Restore the duel replay plan after compaction",
+      "trigger": "PostCompact",
+      "action": {
+        "type": "command",
+        "command": "node scripts/duel-compaction.mjs after"
+      }
     }
   ]
 }
