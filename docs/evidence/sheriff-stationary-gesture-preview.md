@@ -1,8 +1,8 @@
 # Sheriff stationary gesture preview
-Prepared November 16, 2026. Local preview only; user visual review pending.
+Prepared November 16, 2026. Local preview only; user approved the visible standing motion on November 16, 2026.
 
 ## Why this candidate
-The user rejected the prior standing idle because it looked still. The source idle head motion spans only about 0.43 degrees from its first sample. This candidate uses the existing Mixamo headShake gesture, with a roughly 34.81-degree head excursion and visible arm movement. It is a discrete head-turn/head-shake gesture, not an approved full idle behavior system. Do not rename the source or claim user acceptance.
+The user rejected the prior standing idle because it looked still. The source idle head motion spans only about 0.43 degrees from its first sample. This candidate uses the existing Mixamo headShake gesture, with a roughly 34.81-degree head excursion and visible arm movement. The user approved this discrete head-turn/head-shake gesture with "perfect!!!". This approves the shown clip; it does not establish a full idle behavior system or live-game integration. Keep the source name unchanged.
 
 ## Source and scope
 - Character: unchanged user Tripo Sheriff at assets/models/sheriff.glb.
@@ -26,4 +26,4 @@ Reproduce:
 3. node scripts/build-sheriff-board-preview.mjs tmp/sourced-motion/sheriff-mixamo-headShake-preview.glb .artifacts/sheriff-standing-head-turn-preview
 4. node scripts/record-sheriff-board-preview.mjs --out-dir .artifacts/sheriff-standing-head-turn-preview --close-only
 
-Public game, live match animation states and deployment are unchanged. The approved walk is retained separately. Prior subtle idle is rejected as insufficiently visible; this gesture is a new candidate.
+Public game, live match animation states and deployment are unchanged. The approved walk is retained separately. Prior subtle idle is rejected as insufficiently visible; this gesture is the user-approved standing reference.
