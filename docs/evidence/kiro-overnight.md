@@ -40,3 +40,45 @@ Each row uses three cache-disabled navigations per variant, interleaved on the s
 The first comparison retains the same art and measures the lazy scene and decoding changes together. The HTTP comparison serves the two builds from the same static server. The standalone HTML is about 49.9 MB. The web HTML is 2.8 MB and loads its models and images from content-hashed files. These are local browser measurements with the stated conditions.
 
 The mounted export went from 68,739,708 to 3,286,616 bytes and from 1,981,198 to 61,966 triangles. Its three maps are 1024 × 1024. The board checks place its hooves on the tile, align it toward the Wizards and confirm its five life orbs sit above the mesh. The export is static. The next animation pass needs a skinned horse and rider for articulated motion.
+
+## Release candidate replay
+
+The scoped replay Workflow passed both steps on `ed234b0`. The standalone
+build and the static web page each completed eight Chrome checks, with zero
+console errors. The standalone run also passed 104 Node tests. In an explicit
+WebGL-disabled check, both delivery paths loaded the full 6.16-second fallback
+recording.
+
+Kiro then activated the review Power and called the MCP once for each
+delivery path. Both receipts matched the corresponding built page.
+
+| Target | Seed | Steps | Console errors | SHA-256 |
+| --- | --- | --- | --- | --- |
+| Standalone | 0 | 8 | 0 | `2415ff06a88626946604bd73e856171e1d9314e7d464bc065b228bb805e80a8f` |
+| Static web | 0 | 8 | 0 | `e77d68508f2dc8f570f9d4053774662b31ae1a9def04a45120183593016ead6a` |
+
+The saved Workflow runs one exact verification command and writes one report.
+The Mac’s Kiro workspace has an exact `fs_read` approval for the verification
+worker’s current directory, added in the second run. The agent profile scopes
+the verification command and report path.
+
+## Opening experiment
+
+Kiro wrote an isolated paired simulation with the current draft rules and CPU.
+Codex ran it across 1,000 deals with each faction taking each first seat.
+The candidate gave the second player one extra opening card. Card conservation,
+unique ownership and action legality checks all passed across 4,000 complete
+matches.
+
+| Each variant used 2,000 matches | Current deal | One extra second-seat card |
+| --- | --- | --- |
+| Starting seat wins | 1,207 | 1,083 |
+| Second seat wins | 616 | 716 |
+| Draws | 177 | 201 |
+| Mean rounds | 7.277 | 7.574 |
+
+The gap between first- and second-seat win rates fell from 29.6 to 18.4
+percentage points. This is a tuning candidate under the current bot. The
+production rules still use four opening cards each. The local experiment and
+full output are in `.artifacts/kiro/analysis/`. Compare that candidate with
+Fable’s guaranteed-free-opener experiment during playtests.
