@@ -1,0 +1,18 @@
+{
+  "name": "orb-duel-replay",
+  "description": "Run the Orb Duel presenter tests, then replay seed 0 in Chrome on the same revision.",
+  "steps": [
+    {
+      "type": "step",
+      "id": "presenter-tests",
+      "agent": "wf-coder",
+      "prompt": "Run `git rev-parse --short HEAD` and `node --test tests/match/presenter.test.js` from the project root. Report the revision and the exact test pass and fail counts. This step owns verification commands only. Signal success with those results when the tests pass, or error with the first failing assertion."
+    },
+    {
+      "type": "step",
+      "id": "chrome-replay",
+      "agent": "wf-coder",
+      "prompt": "The presenter test result is below. Confirm your project is on that same revision before replaying the match.\n{{previous.output}}\nBuild the game once with `npm run build`. Run `node scripts/browser-match-check.mjs --seed 0 --out-dir <temporary-directory>` with a new directory created by `mktemp -d`.\nRead browser-run.json in that directory and report the observed step count out of 8, console error count, and built page SHA-256. Include the absolute paths of the receipt and its captured screenshots. Signal success only if the process exits zero, all eight steps are observed, and there are zero console errors. This step owns the generated build and temporary replay outputs."
+    }
+  ]
+}
