@@ -1,9 +1,10 @@
 // Orb Duel board view: the renderer interface src/match/presenter.js drives,
 // built on the createDuel stage from createBoardScene. Cowboy slot i stands on
 // stage.tiles[i] and Wizard slot i on stage.tiles[3 + i]. Billy and Wizard
-// cards use the rigged models in the demo's idle poses. Sheriff, Mounted
-// Billy, Skeleton and Dragon have no models yet, so they get labelled
-// temporary tokens. Each troop has a procedural orb row and each Base has five.
+// cards use the rigged models in the demo's idle poses, and the Sheriff uses
+// its own model (src/render/sheriff.js). Mounted Billy, Skeleton and Dragon
+// have no models yet, so they get labelled temporary tokens. Each troop has a
+// procedural orb row and each Base has five.
 //
 // The cues are basic placeholders (task 8 refines Billy and Wizard). All
 // motion runs through the injected epoch scheduler: scheduler.frame for
@@ -17,7 +18,7 @@
 //     summon({side, slot, cardId, health}), attack({attacker, target}),
 //     spell({spell, cardId, caster, target}), remove({side, slot}),
 //     move({side, from, to}), highlight({cowboy, wizard}), pick(ndcX, ndcY)
-//   helpers: resize(width, height), piece(side, slot), pieces(),
+//   helpers: resize(width, height), closeUp(side, slot, wide), piece(side, slot), pieces(),
 //     targetPoint(target), animate(ms, step, done), at(ms, fn)
 // Cue methods return their times in ms from the call (CUES).
 import * as T from "three";
@@ -26,6 +27,7 @@ import {SLOT_COUNT} from "../game/state.js";
 import {attachPistol, attachStaff, createBoardScene, drawKeys, motion, staffKeys, v} from "./scene.js";
 import {grip, pose, rigActor} from "./rig.js";
 import {createBaseOrbs, createTroopOrbs} from "./orbs.js";
+import {SHERIFF_HEIGHT, SHERIFF_LANDING, buildSheriff, idleSheriff, landSheriff} from "./sheriff.js";
 
 export const CUES = Object.freeze({
   summon: Object.freeze({impact: 350, end: 600}),
@@ -36,7 +38,7 @@ export const CUES = Object.freeze({
 });
 
 // Cards with a rigged model, and the heights the demo uses for them.
-const RIGGED = {Billy: {kind: "billy", height: 1.93}, Wizard: {kind: "wizard", height: 2.02}};
+const RIGGED = {Billy: {kind: "billy", height: 1.93}, Wizard: {kind: "wizard", height: 2.02}, Sheriff: {kind: "sheriff", height: SHERIFF_HEIGHT}};
 const FLASH = {cowboy: 0xffb95e, wizard: 0xc192ff};
 
 // Shared geometry and materials; never disposed.
@@ -228,10 +230,19 @@ export async function createMatchBoard({models, scheduler, makeLabel = makeTextL
     root.name = `${side}-piece-${slot}`;
     root.userData = {piece: true, side, slot, cardId};
     root.add(body);
-    const piece = {side, slot, cardId, name: card.name, kind: "token", temporary: false, root, body, height: 0,
+    const piece = {side, slot, cardId, name: card.name, kind: "token", temporary: false, acting: false, root, body, height: 0,
       actor: null, gun: null, holster: null, staff: null, token: null, label: null, orbs: null, hitbox: null, owned: []};
     const rigged = RIGGED[card.name];
-    if (rigged) {
+    if (rigged?.kind === "sheriff") {
+      Object.assign(piece, buildSheriff(models), rigged);
+      piece.owned.push(piece.actor.body.geometry, piece.actor.body.skeleton);
+      // Breathes whenever it is drawn and no cue is posing it. Idle keeps no
+      // scheduler entry, so it survives scheduler.advance() and never counts as pending.
+      piece.actor.body.onBeforeRender = () => {
+        if (!piece.acting) idleSheriff(piece, performance.now() / 1000);
+      };
+      body.add(piece.actor.root);
+    } else if (rigged) {
       const actor = rigActor(models[rigged.kind], rigged.kind, rigged.height);
       piece.owned.push(actor.body.geometry, actor.body.skeleton);
       if (rigged.kind === "billy") {
@@ -368,6 +379,18 @@ export async function createMatchBoard({models, scheduler, makeLabel = makeTextL
   // Drops in and scales up by impact; the Presenter shows the orbs at impact.
   function summon({side, slot, cardId}) {
     const piece = place(side, slot, cardId);
+    if (piece.kind === "sheriff") {
+      // Falls onto the tile, lands on bent knees at impact and straightens by end.
+      piece.acting = true;
+      animate(SHERIFF_LANDING.end, (u, ms) => {
+        const {height, scale} = landSheriff(piece, ms);
+        piece.body.position.y = height;
+        piece.body.scale.setScalar(scale);
+      }, () => {
+        piece.acting = false;
+      });
+      return {...SHERIFF_LANDING};
+    }
     const {impact, end} = CUES.summon;
     animate(end, (u, ms) => {
       piece.body.scale.setScalar(Math.max(.001, backOut(ms / impact)));
@@ -485,10 +508,25 @@ export async function createMatchBoard({models, scheduler, makeLabel = makeTextL
     camera.updateProjectionMatrix();
   }
 
+  // Moves the camera in front of one tile, low enough to see the model's face.
+  // `wide` views the whole lane from the side instead, so the attacker and
+  // its target are both in frame.
+  function closeUp(side, slot, wide = false) {
+    const tile = tilePoint(side, slot), toward = -Math.sign(tile.z);
+    if (wide) {
+      camera.position.set(tile.x + (slot === SLOT_COUNT - 1 ? -5.6 : 5.6), tile.y + 2.3, tile.z + toward * 2);
+      camera.lookAt(tile.x, tile.y + .75, tile.z + toward * 2);
+    } else {
+      camera.position.set(tile.x + 1.5, tile.y + 1.7, tile.z + toward * 3.3);
+      camera.lookAt(tile.x, tile.y + .78, tile.z);
+    }
+    camera.updateMatrixWorld(true);
+  }
+
   return {
     scene, camera, stage, light, effects, bases,
     reset, clear, setTroopOrbs, setBaseOrbs, summon, attack, spell, remove, move, highlight, pick,
-    resize,
+    resize, closeUp,
     piece: (side, slot) => slots[side]?.[slot] ?? null,
     pieces: () => [...SIDES.flatMap((side) => slots[side].filter(Boolean)), ...leaving],
     targetPoint,

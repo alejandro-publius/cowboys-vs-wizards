@@ -6,6 +6,8 @@
 //                  and aimed at the target, muzzle flash, tracer, impact sparks
 //   Wizard attack  a shortened demo staff raise (staffKeys) with the jewel
 //                  glowing, then a violet bolt from the jewel (impact 1.1 s, end 1.6 s)
+//   Sheriff attack its own draw, fire and recover (src/render/sheriff.js) with
+//                  the same muzzle flash, tracer and sparks (impact 1.04 s, end 1.85 s)
 //   token attack   the board's lunge
 //   Deadeye        the leftmost Billy's shot, or a tracer from the Saloon
 //   Singularity    a dark well with a violet ring at the target while the
@@ -26,6 +28,7 @@ import * as T from "three";
 import {SLOT_COUNT} from "../game/state.js";
 import {drawKeys, motion, staffKeys, timings, v} from "./scene.js";
 import {grip, pose} from "./rig.js";
+import {SHERIFF_SHOT, SHERIFF_YAW, drawSheriff, idleSheriff} from "./sheriff.js";
 
 const ease = (from, to, value) => T.MathUtils.smoothstep(value, from, to);
 const pulse = (t, from, peak, to) => ease(from, peak, t) * (1 - ease(peak, to, t));
@@ -40,6 +43,7 @@ const RELEASE = .9;
 
 export const CUE_TIMES = Object.freeze({
   billy: Object.freeze({impact: toMs(timings.impact), end: toMs(timings.fireEnd)}),
+  sheriff: Object.freeze({impact: toMs(SHERIFF_SHOT.impact), end: toMs(SHERIFF_SHOT.end)}),
   wizard: Object.freeze({impact: 1100, end: 1600}),
   saloon: Object.freeze({impact: toMs(SALOON_SHOT + timings.impact - timings.shot), end: 1000}),
   singularity: Object.freeze({impact: 800, end: 1200}),
@@ -242,26 +246,34 @@ export function withCues(board) {
     return null;
   }
 
-  // Billy draws and fires at `contact`, a world point.
-  function billyShot(piece, contact) {
+  // A piece with a revolver draws and fires at `contact`, a world point.
+  // `fired` is the cue second of its shot; the effects run on the demo's shot timeline.
+  function revolverShot(piece, contact, {yaw, times, fired, draw, rest}) {
     const fx = cueEffects(board);
     const shot = shotEffects(fx);
-    const turn = turnToward(piece, BILLY_YAW, contact);
+    const turn = turnToward(piece, yaw, contact);
     const muzzle = v(), quaternion = new T.Quaternion();
     let origin = null;
-    board.animate(CUE_TIMES.billy.end, (u, elapsed) => {
+    piece.acting = true;
+    board.animate(times.end, (u, elapsed) => {
       const t = elapsed / 1000;
-      drawAndFire(piece, t, turn, contact);
+      draw(piece, t, turn, contact);
       piece.gun.tip.getWorldPosition(muzzle);
       piece.gun.holder.getWorldQuaternion(quaternion);
-      if (origin === null && t >= timings.shot) origin = muzzle.clone();
-      shot(t, {muzzle, quaternion, origin: origin ?? muzzle, contact});
+      if (origin === null && t >= fired) origin = muzzle.clone();
+      shot(t + timings.shot - fired, {muzzle, quaternion, origin: origin ?? muzzle, contact});
     }, () => {
-      restBilly(piece);
+      rest(piece);
+      piece.acting = false;
       fx.dispose();
     });
-    return {...CUE_TIMES.billy};
+    return {...times};
   }
+  const billyShot = (piece, contact) => revolverShot(piece, contact,
+    {yaw: BILLY_YAW, times: CUE_TIMES.billy, fired: timings.shot, draw: drawAndFire, rest: restBilly});
+  // The Sheriff's own draw, fire and recover (src/render/sheriff.js).
+  const sheriffShot = (piece, contact) => revolverShot(piece, contact,
+    {yaw: SHERIFF_YAW, times: CUE_TIMES.sheriff, fired: SHERIFF_SHOT.shot, draw: drawSheriff, rest: (resting) => idleSheriff(resting, 0)});
 
   // Deadeye with no Billy on the board: the shot comes from the Saloon.
   function saloonShot(contact) {
@@ -365,6 +377,7 @@ export function withCues(board) {
   function attack(event) {
     const piece = board.piece(event.attacker.side, event.attacker.slot);
     if (piece?.kind === "billy") return billyShot(piece, board.targetPoint(event.target));
+    if (piece?.kind === "sheriff") return sheriffShot(piece, board.targetPoint(event.target));
     if (piece?.kind === "wizard") return staffBolt(piece, board.targetPoint(event.target));
     return board.attack(event);
   }

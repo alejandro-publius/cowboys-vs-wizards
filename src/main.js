@@ -143,6 +143,9 @@ async function launch(){
   });
   controller=createController({scheduler,renderer:matchView,onChange:showMatch});
   const params=new URLSearchParams(location.search);
+  // ?closeup=cowboy-0 (or cowboy-0-wide) views one tile from the front, to check a model.
+  const closeup=/^(cowboy|wizard)-([0-2])(-wide)?$/.exec(params.get("closeup")??"");
+  if(closeup)board.closeUp(closeup[1],Number(closeup[2]),Boolean(closeup[3]));
   function startMatch(){
     scheduler.tick(performance.now());
     if(!controller.start(params.get("seed")??undefined))controller.start();
