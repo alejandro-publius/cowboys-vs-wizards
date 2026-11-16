@@ -1,5 +1,7 @@
 # Fable work queue
 
+> **Historical task dispatch — not the current queue.** These assignments were prepared before the playable release. Engine, CPU, asset audit, and the UI now exist on `main`. Read [the dated status snapshot](PROJECT-STATUS.md) and inspect current code before assigning new work. Preserve this document for provenance; do not rerun its jobs blindly.
+
 Prepared by Codex at the user's request. Jobs below are not started. The existing
 demo is preserved on local main; folder cleanup is on codex/repo-layout.
 

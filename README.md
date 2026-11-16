@@ -1,6 +1,12 @@
 # Cowboys vs. Wizards
 
-A haunted Western browser card duel. Play the Cowboys against the Wizard CPU over three lanes. Choose illustrated cards from your hand, tribute troops to summon stronger ones, and watch life orbs disappear when attacks land.
+**A haunted-Western card duel where gunslingers, skeletal armies and dragons fight across three 3D lanes.** Choose illustrated cards, sacrifice troops to summon stronger allies, and watch life orbs fall as the Wizard CPU answers.
+
+**[Play now](https://alejandro-publius.github.io/cowboys-vs-wizards/)** · **[Watch the opening (seed 0)](https://alejandro-publius.github.io/cowboys-vs-wizards/?seed=0)** · **[Reach the Dragon showdown (seed 60)](https://alejandro-publius.github.io/cowboys-vs-wizards/?seed=60)** · **[Judge's 90-second guide](docs/JUDGE-GUIDE.md)**
+
+![Real browser capture of the Cowboys vs. Wizards 3D match](docs/evidence/combined-demo/result.png)
+
+*The illustrated card game is playable in a browser. The screenshots are captured from the actual game, not generated mockups.* 
 
 ## Play
 
@@ -29,6 +35,28 @@ Follow the tested seed 60 route to the Mounted Billy and Dragon clash. [Seed 60 
 
 The Chrome check on macOS writes the receipt and screenshots to `.artifacts/kiro/replay/` when invoked through `verify-duel.mjs`. The saved **orb-duel-replay** Workflow runs the same command. See the [Kiro write-up](docs/kiro-brag-sheet.md) for the Spec, hooks, tests, review Power and MCP evidence.
 
+## Architecture at a glance
+
+The rules engine decides which moves are legal and what damage happens; the renderer shows those decisions at the correct moment. This keeps gameplay reproducible while animated attacks can overlap.
+
+```mermaid
+flowchart LR
+    Player["Player: cards and lanes"] --> Select["Selection + controller"]
+    Select --> Engine["Seeded match engine"]
+    CPU["Wizard CPU"] -->|public game view| Engine
+    Engine -->|accepted actions and events| Presenter["Presenter + scheduler"]
+    Presenter --> Scene["3D characters, spells and orbs"]
+    Presenter --> Hand["Card hand + match UI"]
+```
+
+[Architecture and source ownership](docs/ARCHITECTURE.md) · [Current verified state and next priorities](docs/PROJECT-STATUS.md)
+
+## Built with Kiro
+
+Kiro's Requirements-First Orb Duel spec, custom agent, workspace steering, hooks, replay Workflow, and review Power/MCP are part of this repository—not a narrative added after the fact. The Kiro work is distinguished from Fable's match rules/CPU and Codex's integration and verification.
+
+[Follow the judge evidence trail](docs/JUDGE-GUIDE.md) · [Kiro usage and receipts](docs/kiro-brag-sheet.md) · [Actual build log](docs/kiro-build-log.md)
+
 ## Code map
 
 | Path | Owns |
@@ -42,7 +70,7 @@ The Chrome check on macOS writes the receipt and screenshots to `.artifacts/kiro
 | `scripts/`, `tests/` | Build, replay, simulation and verification |
 | `.kiro/`, `docs/` | Workspace guidance, requirements, research and evidence |
 
-Read [AGENTS.md](AGENTS.md) before editing. Work on one owned area in a separate worktree and run the affected check. The engine decides outcomes. The presenter renders the events and their before and after values.
+Contributing with an AI agent? Start with [AGENTS.md](AGENTS.md), then use the [task-specific file router](docs/AGENT-ROUTER.md) rather than scanning the whole repository. Work on one owned area in a separate worktree and run its affected check. The engine decides outcomes. The presenter renders the events and their before and after values.
 
 ## Assets and attribution
 
