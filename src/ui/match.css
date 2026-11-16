@@ -37,7 +37,8 @@
 .view-art {pointer-events:auto;border:0;background:transparent;min-height:24px;padding:3px 6px;font-size:10px;color:#e9c38e;text-decoration:underline;text-underline-offset:3px}
 .match-hand {pointer-events:none;display:flex;gap:18px;align-items:start;justify-content:safe center;overflow-x:auto;width:100%;padding:23px 18px 10px;scrollbar-width:thin;scrollbar-color:#63435b #251b26}
 .match-hand .card-stage {pointer-events:auto}
-.card-stage {--card-depth:8px;--card-radius:6px;position:relative;aspect-ratio:5/7;perspective:680px}
+.card-stage,.card-flight {--card-depth:8px;--card-radius:6px}
+.card-stage {position:relative;aspect-ratio:5/7;perspective:680px}
 .card-stage::before {content:"";position:absolute;inset:0;border-radius:var(--card-radius);pointer-events:none;background:#050207;opacity:var(--shadow-strength,.72);filter:blur(var(--shadow-blur,5px));transform:translate(var(--shadow-x,6px),var(--shadow-y,8px)) rotateX(var(--table-pitch,var(--pitch,0deg))) rotateY(var(--yaw,0deg)) rotateZ(var(--roll,0deg));transition:transform .23s,filter .23s,opacity .23s}
 .card-body {--half-depth:calc(var(--card-depth)/2);position:absolute;display:block;inset:0;pointer-events:none;transform-style:preserve-3d;transform:translateY(var(--lift,0px)) scale(var(--scale,1)) rotateX(var(--pitch,0deg)) rotateY(calc(var(--yaw,0deg) + var(--flip,0deg))) rotateZ(var(--roll,0deg));transition:transform .23s cubic-bezier(.2,.75,.25,1)}
 .card-face,.card-slice {position:absolute;display:block;inset:0;border-radius:var(--card-radius)}
