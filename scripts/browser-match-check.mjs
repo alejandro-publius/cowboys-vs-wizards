@@ -170,7 +170,8 @@ const SNAPSHOT = `(() => {
     details: text($(".match-details p", match)), seed: text($(".match-details code", match)),
     seedKind: text($(".match-details .match-muted", match)),
     prompt: text($(".match-prompt", match)), message: !message || message.hidden ? "" : text(message),
-    hand: $$(".match-hand .card-front", match).map((b) => ({cardId: b.dataset.cardId, name: text($(".card-name", b)),
+    hand: $$(".match-hand .card-front", match).map((b) => ({cardId: b.dataset.cardId, name: $(".front-face", b)?.dataset.unit ?? null,
+      hasArt: Boolean($(".front-face", b) && getComputedStyle($(".front-face", b)).backgroundImage.includes("data:image/webp;base64,")),
       pressed: b.getAttribute("aria-pressed") === "true", disabled: b.disabled})),
     lanes: $$(".match-slot", match).map((b) => ({side: b.dataset.side, slot: Number(b.dataset.slot), text: text(b),
       label: b.getAttribute("aria-label"), disabled: b.disabled, pressed: b.getAttribute("aria-pressed") === "true"})),
@@ -350,8 +351,10 @@ async function runOnce(seed, flags, tilePoints) {
     const fileHash = sha256(await readFile(path.join(root, "assets/cards/card-back.png")));
     step(2, "Hand shows 4 cards; deck count and card back present",
       s.hand.length === 4 && s.hand.every((card, i) => card.cardId === opening.sides.cowboy.hand[i])
+        && s.hand.every((card) => card.hasArt)
         && s.cowboyDeck === String(opening.sides.cowboy.deckCount) && s.cardBacks > 0 && backHash === fileHash,
       {hand: s.hand.map((card) => card.name), engineHand: opening.sides.cowboy.hand.map((id) => CARDS[id].name),
+        frontArtEmbeddedWebp: s.hand.map((card) => card.hasArt),
         cowboyDeck: s.cowboyDeck, engineDeckCount: opening.sides.cowboy.deckCount, wizardDeck: s.wizardDeck,
         wizardHandBacks: s.wizardHand, cardBackElements: s.cardBacks, bases: [s.cowboyBase, s.wizardBase],
         deckPileImageSha256: backHash, cardBackFileSha256: fileHash});

@@ -16,6 +16,9 @@ import {createCardBody, describeCard} from "./card-art.js";
 import {CARDS} from "../game/cards.js";
 
 const ACTIONS = {confirm: "onConfirm", cancel: "onCancel", skip: "onSkip", "end-phase": "onEndPhase", restart: "onRestart"};
+// Public catalog: the first copy of each of the eight card names.
+const catalog = Object.values(CARDS).filter((card, i, all) => all.findIndex((each) => each.name === card.name) === i);
+const catalogId = (card) => catalog.find((each) => each.name === card.name).id;
 
 function el(tag, attributes = {}, ...children) {
   const node = document.createElement(tag);
@@ -145,13 +148,14 @@ export function mountCards(root, handlers = {}) {
   const viewerNote=el("p",{class:"viewer-note"});
   const viewer=el("dialog",{class:"duel-dialog card-viewer","aria-label":"Card art"},
     el("div",{class:"dialog-heading"},viewerTitle,el("button",{type:"button","data-action":"close-art","aria-label":"Close card art"},"×")),
-    el("div",{class:"art-choices"},
-      el("button",{type:"button","data-action":"art-billy"},"Billy"),
-      el("button",{type:"button","data-action":"art-wizard"},"Wizard")),
+    el("div",{class:"art-choices"},...["cowboy","wizard"].flatMap(side=>[
+      el("b",{},side==="cowboy"?"Cowboys":"Wizards"),
+      ...catalog.filter(card=>card.side===side).map(card=>el("button",{type:"button","data-art":card.id,"aria-pressed":"false"},card.name))])),
     viewerCard,viewerNote,el("button",{type:"button","data-action":"flip-art"},"Flip card"));
   function showArt(card) {
     viewerCard.replaceChildren(createCardBody(card));
     viewerCard.classList.remove("is-flipped");
+    for(const choice of viewer.querySelectorAll("[data-art]"))choice.setAttribute("aria-pressed",String(choice.dataset.art===catalogId(card)));
     setText(viewerTitle,card.name);
     setText(viewerNote,describeCard(card));
     if(!viewer.open)viewer.showModal();
@@ -291,9 +295,10 @@ export function mountCards(root, handlers = {}) {
     if(action==="close-menu"){menu.close();return;}
     if(action==="close-art"){viewer.close();return;}
     if(action==="flip-art"){viewerCard.classList.toggle("is-flipped");return;}
-    if(action==="view-art"||action==="art-billy"||action==="art-wizard"){
+    if(button.dataset.art){showArt(CARDS[button.dataset.art]);return;}
+    if(action==="view-art"){
       const selected=model?.cowboy.hand.find(card=>card.selected);
-      showArt(action==="art-wizard"?CARDS["wizard-wizard-1"]:action==="art-billy"?CARDS["cowboy-billy-1"]:selected??CARDS["cowboy-billy-1"]);
+      showArt(selected??catalog[0]);
       return;
     }
     if (cardId) call("onCard", cardId);

@@ -1,8 +1,7 @@
 // Render data for the Orb Duel card overlay (src/ui/cards.js). Pure: it reads
 // the displayed Player_View, the selection options and the controller's UI
 // state, never the full Engine state. The Wizard side is counts only, so no
-// Wizard card identity can reach the overlay. Card fronts are plain text and
-// labelled temporary until the approved front design is imported.
+// Wizard card identity can reach the overlay.
 //
 // cardModel({displayed, options, status, seed, seedPinned, message}) takes
 // the controller's displayed(), options(), status(), seed(), seedPinned()
@@ -10,7 +9,6 @@
 import {CARDS} from "../game/cards.js";
 import {SLOT_COUNT} from "../game/state.js";
 
-export const TEMPORARY_FRONT = "Temporary card front";
 export const RESULT_LABELS = Object.freeze({win: "Victory", loss: "Defeat", draw: "Draw"});
 
 // Shown instead of the selection prompt while the controller takes no input.
@@ -39,7 +37,6 @@ function front(cardId, selected) {
     health: troop ? card.health : null,
     attack: troop ? card.attack : null,
     selected,
-    label: TEMPORARY_FRONT,
   };
 }
 

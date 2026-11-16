@@ -11,7 +11,7 @@ import { applyAction } from "../../src/game/actions.js";
 import { publicState } from "../../src/game/view.js";
 import { chooseAction } from "../../src/game/cpu.js";
 import { emptySelection, selectionOptions, selectionStep } from "../../src/match/selection.js";
-import { RESULT_LABELS, TEMPORARY_FRONT, cardModel } from "../../src/ui/card-model.js";
+import { RESULT_LABELS, cardModel } from "../../src/ui/card-model.js";
 
 const SEEDS = Array.from({ length: 100 }, (_, seed) => seed);
 const MAX_STEPS = 500;
@@ -49,7 +49,6 @@ function checkModel(model, { view, state, options, status, seed }) {
       health: data.health ?? null,
       attack: data.attack ?? null,
       selected: data.id === selected,
-      label: TEMPORARY_FRONT,
     });
   }
 
@@ -84,7 +83,7 @@ function checkModel(model, { view, state, options, status, seed }) {
   if (accepting) assert.equal(model.prompt, options?.prompt ?? "");
 }
 
-test("card model: counts, one front per held card, no Wizard card identity, temporary label, outcomes and seed (seeds 0-99)", (t) => {
+test("card model: counts, one front per held card, no Wizard card identity, outcomes and seed (seeds 0-99)", (t) => {
   const outcomes = { win: 0, loss: 0, draw: 0 };
   forEachSeed((seed) => {
     let state = createMatch(seed);
