@@ -11,9 +11,11 @@ import './load-local.mjs';
 
 const root=fileURLToPath(new URL('../',import.meta.url));
 const directory=path.resolve(process.argv[2]||path.join(root,'.artifacts/sourced-sheriff'));
-const bytes=fs.readFileSync(path.join(directory,'sheriff-mixamo-walk-preview.glb'));
+const motion=process.argv[3]||'walk';
+assert(['walk','idle'].includes(motion),'existing source clip required');
+const bytes=fs.readFileSync(path.join(directory,'sheriff-mixamo-'+motion+'-preview.glb'));
 const gltf=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');
-const clip=gltf.animations.find(c=>c.name==='Mixamo_walk_retargeted');
+const clip=gltf.animations.find(c=>c.name==='Mixamo_'+motion+'_retargeted');
 assert(clip&&clip.validate(),'valid imported clip required');
 const models=[clone(gltf.scene),clone(gltf.scene)];
 const meshes=models.map(model=>{let mesh;model.traverse(o=>{if(o.isSkinnedMesh)mesh=o;});assert(mesh,'skinned mesh required');return mesh;});
@@ -36,7 +38,7 @@ function sample(index,time){
  return {time,min:box.min.toArray(),max:box.max.toArray(),bones:mesh.skeleton.bones.map(b=>b.quaternion.toArray())};
 }
 const reference=sample(0,0.23);
-const samples=[0,0.16,0.32,0.48,0.64,0.8].map(time=>sample(0,time));
+const samples=Array.from({length:6},(_,i)=>sample(0,clip.duration*i/6));
 assert.notDeepEqual(samples[0].bones,samples[2].bones,'clip must produce motion');
 const otherBefore=sample(1,0.61);
 sample(0,0.9);
@@ -48,9 +50,9 @@ const report={
  threeVersion:T.REVISION,clip:clip.name,duration:clip.duration,
  bones:meshes[0].skeleton.bones.length,vertices:meshes[0].geometry.attributes.position.count,
  embeddedImages:gltf.parser.json.images?.length??0,
- checks:['GLB import','valid animation tracks','finite deformed vertices','visible joint motion','independent character instances','deterministic playback'],
+ checks:['GLB import','valid animation tracks','finite deformed vertices','non-static joint transforms','independent character instances','deterministic playback'],
  observedBounds:samples.map(({time,min,max})=>({time,min,max})),
  limitation:'Programmatic Three.js verification only. Browser rendering, in-game placement, foot contact, and live-game integration remain unchecked.'
 };
-fs.writeFileSync(path.join(directory,'three-verification.json'),JSON.stringify(report,null,2)+'\n');
+fs.writeFileSync(path.join(directory,'three-'+motion+'-verification.json'),JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify(report,null,2));

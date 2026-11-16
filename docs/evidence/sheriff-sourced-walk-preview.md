@@ -38,3 +38,7 @@ Reproduce with:
 - node scripts/record-sheriff-board-preview.mjs
 
 The clip is an on-board motion preview. It does not replace the public game, its combat reactions, or its movement rules.
+
+## Standing idle follow-up
+
+The user subsequently requested standing activity instead of walking in place on the board. See [the sourced idle preview](sheriff-sourced-idle-preview.md). Keep this approved walk as a separate motion reference; idle visual acceptance is pending.

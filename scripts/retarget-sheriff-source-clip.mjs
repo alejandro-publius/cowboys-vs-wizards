@@ -1,5 +1,5 @@
-// Retarget one existing Mixamo walk onto the existing Sheriff skinning rig.
-// Usage: node scripts/retarget-sheriff-source-clip.mjs DIRECTORY_CONTAINING_Xbot.glb
+// Retarget one existing Mixamo clip onto the existing Sheriff skinning rig.
+// Usage: node scripts/retarget-sheriff-source-clip.mjs DIRECTORY_CONTAINING_Xbot.glb [walk|idle]
 // Source and preview limits: docs/evidence/sheriff-sourced-walk-preview.md
 import fs from 'node:fs';
 import path from 'node:path';
@@ -10,6 +10,9 @@ import './load-local.mjs';
 import {rigActor} from '../src/render/rig.js';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const dir=path.resolve(process.argv[2] || path.join(root,'.artifacts/sourced-sheriff'));
+const motion=process.argv[3]||'walk';
+if(!['walk','idle'].includes(motion))throw Error('Choose an existing walk or idle clip');
+const outputName='sheriff-mixamo-'+motion+'-preview.glb';
 function readGLB(p){const b=fs.readFileSync(p);let o=12,g,bin;while(o<b.length){const n=b.readUInt32LE(o),t=b.readUInt32LE(o+4);if(t===0x4e4f534a)g=JSON.parse(b.subarray(o+8,o+8+n).toString());else if(t===0x004e4942)bin=b.subarray(o+8,o+8+n);o+=n+8;}return {b,g,bin};}
 async function load(p){const {b}=readGLB(p);return new GLTFLoader().parseAsync(b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength),'');}
 const sheriffPath=path.join(root,'assets/models/sheriff.glb');
@@ -26,8 +29,8 @@ const v=()=>new T.Vector3(),q=()=>new T.Quaternion();
 const rest=Object.fromEntries(Object.entries(tb).map(([name,b])=>{const s=sb[pairs[name]],sp=s.getWorldPosition(v()),tpos=b.getWorldPosition(v());let align=q();if(children[name]){const [tc,sc]=children[name];const td=tb[tc].getWorldPosition(v()).sub(tpos).normalize(),sd=sb[sc].getWorldPosition(v()).sub(sp).normalize();align.setFromUnitVectors(td,sd);}
 return [name,{local:b.position.clone(),world:tpos,sq:s.getWorldQuaternion(q()),align}];}));
 const sourceHip=sb.Hips.getWorldPosition(v()),scale=rest.hips.world.y/sourceHip.y;
-const sourceClip=source.animations.find(a=>a.name==='walk');
-if(!sourceClip)throw Error('missing sourced walk');
+const sourceClip=source.animations.find(a=>a.name===motion);
+if(!sourceClip)throw Error('missing sourced '+motion);
 const mixer=new T.AnimationMixer(source.scene);mixer.clipAction(sourceClip).play();
 const samples=Math.round(sourceClip.duration*30)+1,times=new Float32Array(samples),tracks=Object.fromEntries(Object.keys(tb).map(n=>[n,new Float32Array(samples*4)])),hips=new Float32Array(samples*3);
 mixer.setTime(0);source.scene.updateMatrixWorld(true);const firstHip=sb.Hips.getWorldPosition(v());
@@ -46,15 +49,15 @@ const packedPosition=new Float32Array(geom.attributes.position.count*3);for(let 
 prim.attributes.POSITION=accessor(packedPosition,'VEC3',5126,{min:geom.boundingBox.min.toArray(),max:geom.boundingBox.max.toArray()});
 prim.attributes.JOINTS_0=accessor(geom.attributes.skinIndex.array,'VEC4',5123);
 prim.attributes.WEIGHTS_0=accessor(geom.attributes.skinWeight.array,'VEC4',5126);
-g.nodes=[{name:'Sheriff sourced walking preview',mesh:meshIndex,skin:0},...actor.rig.bones.map(b=>({name:b.name,translation:b.position.toArray(),children:b.children.filter(c=>c.isBone).map(c=>actor.rig.bones.indexOf(c)+1)}))];
+g.nodes=[{name:'Sheriff sourced '+motion+' preview',mesh:meshIndex,skin:0},...actor.rig.bones.map(b=>({name:b.name,translation:b.position.toArray(),children:b.children.filter(c=>c.isBone).map(c=>actor.rig.bones.indexOf(c)+1)}))];
 g.scenes=[{nodes:[0,1]}];g.scene=0;
 const inverses=new Float32Array(actor.rig.bones.length*16);actor.body.skeleton.boneInverses.forEach((m,i)=>m.toArray(inverses,i*16));
 g.skins=[{inverseBindMatrices:accessor(inverses,'MAT4',5126),joints:actor.rig.bones.map((_,i)=>i+1),skeleton:1}];
 const ti=accessor(times,'SCALAR',5126,{min:[0],max:[times.at(-1)]}),samplers=[],channels=[];
 for(const [name,b]of Object.entries(tb)){const si=samplers.length;samplers.push({input:ti,output:accessor(tracks[name],'VEC4',5126),interpolation:'LINEAR'});channels.push({sampler:si,target:{node:actor.rig.bones.indexOf(b)+1,path:'rotation'}});}
 samplers.push({input:ti,output:accessor(hips,'VEC3',5126),interpolation:'LINEAR'});channels.push({sampler:samplers.length-1,target:{node:1,path:'translation'}});
-g.animations=[{name:'Mixamo_walk_retargeted',samplers,channels,extras:{source:'three.js r180 Xbot.glb',sourceClip:'walk',method:'source motion retargeted onto existing game rig; no hand-authored motion'}}];
+g.animations=[{name:'Mixamo_'+motion+'_retargeted',samplers,channels,extras:{source:'three.js r180 Xbot.glb',sourceClip:motion,method:'source motion retargeted onto existing game rig; no hand-authored motion'}}];
 g.buffers=[{byteLength:length}];g.asset.generator='Source-clip retarget preview; original Tripo Sheriff model';
 let jb=Buffer.from(JSON.stringify(g));jb=Buffer.concat([jb,Buffer.alloc((4-jb.length%4)%4,32)]);let bb=Buffer.concat(chunks);bb=Buffer.concat([bb,Buffer.alloc((4-bb.length%4)%4)]);const head=Buffer.alloc(12);head.writeUInt32LE(0x46546c67);head.writeUInt32LE(2,4);head.writeUInt32LE(12+8+jb.length+8+bb.length,8);const jh=Buffer.alloc(8),bh=Buffer.alloc(8);jh.writeUInt32LE(jb.length);jh.writeUInt32LE(0x4e4f534a,4);bh.writeUInt32LE(bb.length);bh.writeUInt32LE(0x004e4942,4);
-fs.writeFileSync(path.join(dir,'sheriff-mixamo-walk-preview.glb'),Buffer.concat([head,jh,jb,bh,bb]));
-console.log(JSON.stringify({sourceClip:sourceClip.name,duration:sourceClip.duration,samples,bones:actor.rig.bones.length,scale,output:'sheriff-mixamo-walk-preview.glb'}));
+fs.writeFileSync(path.join(dir,outputName),Buffer.concat([head,jh,jb,bh,bb]));
+console.log(JSON.stringify({sourceClip:sourceClip.name,duration:sourceClip.duration,samples,bones:actor.rig.bones.length,scale,output:outputName}));

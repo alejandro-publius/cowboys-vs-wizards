@@ -76,7 +76,8 @@ function connect(url) {
   });
 }
 
-const outDir=path.join(root,'.artifacts/sheriff-board-preview');
+const outArg=process.argv.indexOf('--out-dir');
+const outDir=path.resolve(outArg<0?path.join(root,'.artifacts/sheriff-board-preview'):process.argv[outArg+1]);
 await mkdir(outDir,{recursive:true});
 const probe=process.argv.includes('--probe');
 const chrome=await launchChrome(['--use-angle=swiftshader','--enable-unsafe-swiftshader']);
@@ -104,20 +105,22 @@ try{
   await sleep(250);
  }
  if(!ready)throw new Error('preview did not finish loading');
- const info=await evaluate('window.__approvedSheriffPreview.info');
+ const info=await evaluate('window.__sheriffMotionPreview.info');
+ const frameCount=Math.round(info.duration*30);
+ const views=process.argv.includes('--close-only')?['close']:['wide','close'];
  const samples=probe?[{t:0,view:'wide',name:'probe-wide.png'},{t:.24,view:'close',name:'probe-close.png'}]:
-  ['wide','close'].flatMap(view=>Array.from({length:29},(_,i)=>({t:i/30,view,name:view+'/'+String(i).padStart(3,'0')+'.png'})));
+  views.flatMap(view=>Array.from({length:frameCount},(_,i)=>({t:i/30,view,name:view+'/'+String(i).padStart(3,'0')+'.png'})));
  for(const name of ['wide','close'])await mkdir(path.join(outDir,name),{recursive:true});
  const evidence=[];
  for(let i=0;i<samples.length;i++){
   const {t,view,name}=samples[i];
-  const state=await evaluate('window.__approvedSheriffPreview.frame('+t+','+JSON.stringify(view)+')');
+  const state=await evaluate('window.__sheriffMotionPreview.frame('+t+','+JSON.stringify(view)+')');
   const {data}=await cdp.send('Page.captureScreenshot',{format:'png',fromSurface:true,captureBeyondViewport:false},sessionId);
   await writeFile(path.join(outDir,name),Buffer.from(data,'base64'));
   evidence.push(state);
   if(i%30===0)console.log('Captured '+i+'/'+samples.length);
  }
- const report={info,frames:samples.length,errors,sourceCycles:{wide:1,close:1},minBootClearance:Math.min(...evidence.flatMap(e=>e.footCheck.map(f=>f.gap))),
+ const report={info,frames:samples.length,errors,sourceCycles:Object.fromEntries(views.map(view=>[view,1])),minBootClearance:Math.min(...evidence.flatMap(e=>e.footCheck.map(f=>f.gap))),
   minSeatingOffset:Math.min(...evidence.map(e=>e.groundCorrection)),maxSeatingOffset:Math.max(...evidence.map(e=>e.groundCorrection)),
   scope:'Actual game board, perimeter, lighting and Three.js WebGL renderer. Isolated animation preview; no live-site or gameplay-trigger integration.'};
  await writeFile(path.join(outDir,probe?'probe.json':'recording.json'),JSON.stringify(report,null,2)+'\n');

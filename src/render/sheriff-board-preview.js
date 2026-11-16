@@ -7,7 +7,7 @@ import {createMatchBoard} from './match-board.js';
 import {createScheduler} from '../match/scheduler.js';
 import {SHERIFF_HEIGHT,SHERIFF_YAW} from './sheriff.js';
 
-// Isolated preview of the approved sourced clip, using the real board renderer.
+// Isolated preview of a sourced clip, using the real board renderer.
 // No authored motion or game rules are added here.
 async function main(){
  const renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true,powerPreference:'high-performance'});
@@ -15,19 +15,20 @@ async function main(){
  renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.08;
  renderer.setPixelRatio(1);renderer.setSize(1280,720);document.body.append(renderer.domElement);
  const input=JSON.parse(document.getElementById('preview-models').textContent);
- const [models,ground]=await Promise.all([loadAssets(input,[...arenaModelNames,...perimeterModelNames,'approved-sheriff']),loadGroundTexture()]);
+ const config=JSON.parse(document.getElementById('preview-config').textContent);
+ const [models,ground]=await Promise.all([loadAssets(input,[...arenaModelNames,...perimeterModelNames,'preview-sheriff']),loadGroundTexture()]);
  const board=await createMatchBoard({models,scheduler:createScheduler()});
  addPerimeter(board.scene,models,ground);board.resize(1280,720);
  const wide={position:board.camera.position.clone(),quaternion:board.camera.quaternion.clone()};
  const tile=board.stage.tiles[1];
- const actor=clone(models['approved-sheriff']);
+ const actor=clone(models['preview-sheriff']);
  actor.scale.setScalar(SHERIFF_HEIGHT);actor.rotation.y=SHERIFF_YAW;
  actor.position.set(tile.x,tile.top,tile.z);
  let mesh;actor.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}if(o.isSkinnedMesh){mesh=o;o.frustumCulled=false;}});
- if(!mesh)throw Error('Approved Sheriff must retain its skin');
+ if(!mesh)throw Error('Sheriff must retain its skin');
  board.scene.add(actor);
- const clip=models['approved-sheriff'].animations.find(c=>c.name==='Mixamo_walk_retargeted');
- if(!clip)throw Error('Approved walk missing');
+ const clip=models['preview-sheriff'].animations.find(c=>c.name===config.clipName);
+ if(!clip)throw Error('Requested source clip missing');
  const mixer=new T.AnimationMixer(actor);mixer.clipAction(clip).play();
  const position=mesh.geometry.attributes.position,boots=[];
  for(let i=0;i<position.count;i++)if(position.getY(i)<.13)boots.push({i,group:(position.getX(i)<0?0:2)+(position.getZ(i)<0?0:1)});
@@ -56,8 +57,8 @@ async function main(){
   return last;
  }
  frame(0);
- window.__approvedSheriffPreview={frame,info:{clip:clip.name,duration:clip.duration,height:SHERIFF_HEIGHT,renderer:'Three.js r'+T.REVISION,
-  source:'Approved Mixamo walk, applied to user Tripo Sheriff',ground:'Existing cowboy tile; per-frame root seating only'},get last(){return last;}};
+ window.__sheriffMotionPreview={frame,info:{clip:clip.name,duration:clip.duration,height:SHERIFF_HEIGHT,renderer:'Three.js r'+T.REVISION,
+  source:'Mixamo '+config.sourceClip+', applied to user Tripo Sheriff',ground:'Existing cowboy tile; per-frame root seating only'},get last(){return last;}};
  window.__previewReady=true;
  const start=performance.now();
  function loop(now){if(!window.__captureFrames)frame((now-start)/1000,'close');requestAnimationFrame(loop);}
