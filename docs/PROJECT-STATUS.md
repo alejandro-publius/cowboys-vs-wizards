@@ -1,6 +1,6 @@
 # Project status — observed November 16, 2026
 
-**Snapshot:** public `main` at `a403c71`, after navigation PR #8 and the optional opening-hand preview PR #9. This page summarizes tracked source and existing evidence. It is **not** a claim that these checks were rerun while preparing this documentation. Inspect current HEAD, the latest Actions run, and the actual rendered game when the branch changes.
+**Snapshot:** updated November 16, 2026, after merged navigation PR #8, optional opening-hand preview PR #9, Night Watch PR #11 and art-sourcing guidance PR #12. This page summarizes tracked source and existing evidence, not an always-current checkout or a claim that historical checks were rerun. Inspect the current `main` HEAD, the latest Actions run and the rendered game after any release change.
 
 ## Built and available
 
