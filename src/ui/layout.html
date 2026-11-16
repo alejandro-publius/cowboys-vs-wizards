@@ -47,7 +47,11 @@ meter::-webkit-meter-bar{background:#ffffff17;border:0}meter::-webkit-meter-opti
 .match-opponent{display:flex;gap:12px;align-items:center;color:var(--violet)}.match-side,.match-base{font-weight:700;white-space:nowrap}
 .card-back{display:inline-block;width:30px;aspect-ratio:530/742;background:var(--card-back) center/contain no-repeat;filter:drop-shadow(0 1px 2px #000b)}
 .match-backs{display:flex;min-width:30px;min-height:42px}.match-backs .card-back+.card-back{margin-left:-17px}
-.match-pile{position:relative;display:inline-grid;place-items:center}.match-pile .card-back{width:34px}.match-pile.empty .card-back{opacity:.3}
+.match-pile{position:relative;display:inline-grid;place-items:center;width:34px}.match-pile .card-back{width:34px;grid-area:1/1}.match-pile.empty .card-back{opacity:.3}
+.match-pile .card-back:nth-child(2),.match-pile .card-back:nth-child(3){display:none}
+.match-pile[data-layers="2"] .card-back:nth-child(2),.match-pile[data-layers="3"] .card-back:nth-child(2),.match-pile[data-layers="3"] .card-back:nth-child(3){display:inline-block}
+.match-pile .card-back:nth-child(1){transform:translate(-3px,3px)}.match-pile .card-back:nth-child(3){transform:translate(3px,-3px)}
+.match-pile[data-layers="1"] .card-back:nth-child(1){transform:none}
 .match-count{position:absolute;bottom:-5px;right:-9px;min-width:20px;padding:1px 5px;border-radius:9px;background:#120c14;border:1px solid #e8b98b66;color:#fff0dd;font-size:11px;font-weight:700;text-align:center}
 .match-bottom{position:absolute;inset:auto 0 0;display:grid;gap:6px;justify-items:center;padding:28px 14px clamp(10px,2.2dvh,22px);background:linear-gradient(transparent,#19111bed 34%)}
 .match-prompt,.match-message{margin:0;text-align:center;min-height:18px}.match-prompt{color:#f6e6d5}.match-message{color:#ffd4a5;font-weight:650}
@@ -58,10 +62,15 @@ meter::-webkit-meter-bar{background:#ffffff17;border:0}meter::-webkit-meter-opti
 #match .match-slot[data-side=wizard]{border-color:#a073b766;color:var(--violet)}
 #match .match-slot:disabled{opacity:.88}#match .match-slot:not(:disabled){box-shadow:0 0 0 2px #ffd38a99;background:#3d2b3b}
 #match .match-slot[aria-pressed=true]{box-shadow:0 0 0 2px #ffdfaf;background:#5a3b37}
-.match-hand{display:flex;gap:7px;overflow-x:auto;max-width:100%;padding:8px 2px 2px}
-#match .card-front{flex:none;width:94px;min-height:114px;display:grid;align-content:start;gap:3px;padding:8px;border:1px dashed #eab97999;border-radius:8px;background:#2a1f2cf2;text-align:left;white-space:normal;line-height:1.2}
-#match .card-front[aria-pressed=true]{border-style:solid;border-color:var(--gold);background:#3f2c33;transform:translateY(-6px);box-shadow:0 0 0 2px #eab97966}
+.match-hand{display:flex;gap:7px;overflow-x:auto;max-width:100%;padding:22px 6px 8px}
+#match .card-front{flex:none;width:94px;min-height:114px;display:grid;align-content:start;gap:3px;padding:8px;border:1px solid #eab97973;border-radius:8px;background:linear-gradient(160deg,#35283a,#241a27);text-align:left;white-space:normal;line-height:1.2;box-shadow:0 1px 0 #ffffff14 inset,0 2px 3px #0008,0 7px 12px #0005;transform-origin:50% 100%;transition:transform .16s ease-out,box-shadow .16s ease-out,border-color .16s}
+#match .card-front:nth-child(odd){transform:rotate(-1deg)}#match .card-front:nth-child(even){transform:rotate(1deg)}
+#match .card-front:not(:disabled):hover{transform:translateY(-5px) rotate(0);border-color:#eab979b3}
+#match .card-front[aria-pressed=true]{border-color:var(--gold);background:linear-gradient(160deg,#4a3239,#2f2029);transform:translateY(-16px) scale(1.06) rotate(0);box-shadow:0 0 0 2px #eab97966,0 14px 20px #000a;z-index:1}
 #match .card-front:disabled{opacity:.72}
+#match .card-front.in-flight{visibility:hidden}
+#match .card-flight{position:fixed;z-index:5;margin:0;pointer-events:none;transform-origin:50% 50%;box-shadow:0 12px 24px #000a;border-color:var(--gold)}
+@media(prefers-reduced-motion:reduce){#match .card-front{transition:none}}
 .card-name{color:#fff0dd;font-size:13px;font-weight:700}.card-tier{color:var(--gold);font-size:11px}.card-stats{color:#e7d6e4;font-size:11px}
 .card-temp{margin-top:4px;color:#bfa9b9;font-size:8.5px;letter-spacing:.05em;text-transform:uppercase}
 .match-own{display:flex;gap:14px;align-items:center;color:var(--gold)}

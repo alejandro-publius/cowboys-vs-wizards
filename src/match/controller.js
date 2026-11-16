@@ -245,8 +245,8 @@ export function createController({
     const step = selectionStep(selection, event, view(), { accepting: true, newActionId });
     selection = step.selection;
     message = step.message ?? null;
-    if (step.action) submit(step.action);
-    else notify();
+    if (step.action) return submit(step.action);
+    notify();
   }
 
   function endPhase() {
@@ -267,7 +267,8 @@ export function createController({
     displayed: () => presenter.displayed(),
     selection: () => selection,
     // Options for the current selection; act on them only while accepting_input.
-    options: () => (state === null ? null : selectionOptions(selection, view())),
+    // Also carries the chosen tile (`slot`, or null) so the UI can animate the summon.
+    options: () => (state === null ? null : { ...selectionOptions(selection, view()), slot: selection.slot ?? null }),
     seed: () => seed,
     seedPinned: () => seedPinned,
     message: () => message,
