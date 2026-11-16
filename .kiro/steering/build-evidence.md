@@ -4,6 +4,12 @@ inclusion: always
 
 # Build evidence
 
+Use the user’s Tripo exports or licensed finished assets and clips from
+their supplied GitHub repos. Work out any new visual design, asset or
+animation with the user before creating it. Follow the
+[sourcing rule in AGENTS.md](../../AGENTS.md) for Blender, renderer work,
+and delegated tasks.
+
 Maintain `docs/kiro-build-log.md` as the record of this project's development.
 
 Date entries in the user's timezone, America/Los_Angeles. Include the timezone when recording a time of day.

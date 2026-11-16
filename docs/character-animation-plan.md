@@ -2,6 +2,8 @@
 
 Prepared by Codex on November 14, 2026, Pacific time, from the user's Lucca Cerf reference. Proposed checks below are not passed results.
 
+Use the current [asset and animation sourcing rule](../AGENTS.md) for new work. The rig and clip authoring steps below record an earlier proposal.
+
 ## Reference and limits
 
 Source: [Lucca Cerf's character-factory-skills](https://github.com/luccacerfz/character-factory-skills), commit `2db5685a73b9089b703f8f9529cb7ac68f898f04`, MIT. Seven upstream documents are retained in `docs/references/lucca-character-factory/` with the original license and source map. They are reference documents, not an installed executable pipeline.
@@ -18,7 +20,7 @@ Kiro fitted the original Skeleton to the Wizard tile and authored attack clips f
 
 Seed 0 shows the Skeleton in the Wizard response. Seed 60 reproduces the Mounted Billy and Dragon clash. [Replay routes](morning-handoff.md)
 
-## Original animation plan
+## Historical animation proposal
 
 1. Finish the headless card engine, legal actions and combat-event contract using the active assignments in `fable-tasks.md`. `kiro-task-01.md` remains the rule reference; attribute implementation to the actual agent.
 2. Audit the wizard's actual rest mesh and staff first. Inspect front/side and hand close-ups, identify whether the staff can be separated cleanly, and measure arm/hand landmarks. Do not guess a hand position from the posed bounding box. Record whether the existing model can be rigged or requires a new empty-hand export plus separate staff. This audit must name a concrete asset request if blocked.
