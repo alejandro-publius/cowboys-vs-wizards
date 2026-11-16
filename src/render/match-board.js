@@ -1,8 +1,8 @@
 // Orb Duel board view: the renderer interface src/match/presenter.js drives,
 // built on the createDuel stage from createBoardScene. Cowboy slot i stands on
 // stage.tiles[i] and Wizard slot i on stage.tiles[3 + i]. Billy and Wizard
-// cards use the rigged models in the demo's idle poses, and the Sheriff uses
-// its own model (src/render/sheriff.js). Mounted Billy, Skeleton and Dragon
+// cards use the rigged models from the demo (the Wizard's motion is in
+// src/render/wizard.js), and the Sheriff uses its own model (src/render/sheriff.js). Mounted Billy, Skeleton and Dragon
 // have no models yet, so they get labelled temporary tokens. Each troop has a
 // procedural orb row and each Base has five.
 //
@@ -24,10 +24,11 @@
 import * as T from "three";
 import {CARDS, SIDES} from "../game/cards.js";
 import {SLOT_COUNT} from "../game/state.js";
-import {attachPistol, attachStaff, createBoardScene, drawKeys, motion, staffKeys, v} from "./scene.js";
+import {attachPistol, createBoardScene, drawKeys, motion, v} from "./scene.js";
 import {grip, pose, rigActor} from "./rig.js";
 import {createBaseOrbs, createTroopOrbs} from "./orbs.js";
 import {SHERIFF_HEIGHT, SHERIFF_LANDING, buildSheriff, idleSheriff, landSheriff} from "./sheriff.js";
+import {WIZARD_HEIGHT, buildWizard, idleWizard} from "./wizard.js";
 
 export const CUES = Object.freeze({
   summon: Object.freeze({impact: 350, end: 600}),
@@ -38,7 +39,7 @@ export const CUES = Object.freeze({
 });
 
 // Cards with a rigged model, and the heights the demo uses for them.
-const RIGGED = {Billy: {kind: "billy", height: 1.93}, Wizard: {kind: "wizard", height: 2.02}, Sheriff: {kind: "sheriff", height: SHERIFF_HEIGHT}};
+const RIGGED = {Billy: {kind: "billy", height: 1.93}, Wizard: {kind: "wizard", height: WIZARD_HEIGHT}, Sheriff: {kind: "sheriff", height: SHERIFF_HEIGHT}};
 const FLASH = {cowboy: 0xffb95e, wizard: 0xc192ff};
 
 // Shared geometry and materials; never disposed.
@@ -223,6 +224,19 @@ export async function createMatchBoard({models, scheduler, makeLabel = makeTextL
     });
   }
 
+  // Runs a piece's idle whenever it is drawn and no cue is posing it. Idle
+  // keeps no scheduler entry, so it survives scheduler.advance() and never
+  // counts as pending. Its clock restarts after each cue, so the idle begins
+  // in the pose the cue ended in.
+  function idles(piece, idle) {
+    let from = null;
+    piece.actor.body.onBeforeRender = () => {
+      const now = performance.now() / 1000;
+      if (piece.acting) from = null;
+      else idle(piece, now - (from ??= now));
+    };
+  }
+
   function build(side, slot, cardId) {
     const card = CARDS[cardId];
     if (card?.kind !== "troop" || card.side !== side) throw new TypeError(`"${cardId}" is not a ${side} troop card`);
@@ -236,36 +250,27 @@ export async function createMatchBoard({models, scheduler, makeLabel = makeTextL
     if (rigged?.kind === "sheriff") {
       Object.assign(piece, buildSheriff(models), rigged);
       piece.owned.push(piece.actor.body.geometry, piece.actor.body.skeleton);
-      // Breathes whenever it is drawn and no cue is posing it. Idle keeps no
-      // scheduler entry, so it survives scheduler.advance() and never counts as pending.
-      // The idle clock restarts after each cue, so the idle begins in the pose the cue ended in.
-      let idleFrom = null;
-      piece.actor.body.onBeforeRender = () => {
-        const now = performance.now() / 1000;
-        if (piece.acting) idleFrom = null;
-        else idleSheriff(piece, now - (idleFrom ??= now));
-      };
+      idles(piece, idleSheriff);
+      body.add(piece.actor.root);
+    } else if (rigged?.kind === "wizard") {
+      Object.assign(piece, buildWizard(models), rigged);
+      piece.owned.push(piece.actor.body.geometry, piece.actor.body.skeleton);
+      piece.staff.holder.traverse((node) => {
+        if (node.isMesh) piece.owned.push(node.geometry, node.material);
+      });
+      idles(piece, idleWizard);
       body.add(piece.actor.root);
     } else if (rigged) {
       const actor = rigActor(models[rigged.kind], rigged.kind, rigged.height);
       piece.owned.push(actor.body.geometry, actor.body.skeleton);
-      if (rigged.kind === "billy") {
-        // Faces the Wizards with the revolver holstered, as in the demo's idle pose.
-        actor.root.rotation.y = Math.PI;
-        piece.gun = attachPistol(actor, models.revolver);
-        pose(actor, {right: motion(drawKeys, .34, [-.13, .12, -.22])});
-        piece.holster = grip(actor, "right");
-        pose(actor, {});
-        piece.gun.holder.position.copy(piece.holster);
-        piece.gun.holder.rotation.set(1.38, -.15, .066);
-      } else {
-        piece.staff = attachStaff(actor);
-        pose(actor, {spine: [.008, 0, 0], left: {goal: v(...staffKeys[0][1]), bend: .79, roll: [-1.475, .06, -.14]}});
-        piece.staff.jewel.material.emissiveIntensity = .81;
-        piece.staff.holder.traverse((node) => {
-          if (node.isMesh) piece.owned.push(node.geometry, node.material);
-        });
-      }
+      // Billy faces the Wizards with the revolver holstered, as in the demo's idle pose.
+      actor.root.rotation.y = Math.PI;
+      piece.gun = attachPistol(actor, models.revolver);
+      pose(actor, {right: motion(drawKeys, .34, [-.13, .12, -.22])});
+      piece.holster = grip(actor, "right");
+      pose(actor, {});
+      piece.gun.holder.position.copy(piece.holster);
+      piece.gun.holder.rotation.set(1.38, -.15, .066);
       body.add(actor.root);
       Object.assign(piece, {kind: rigged.kind, actor, height: rigged.height});
     } else {
