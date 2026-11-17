@@ -94,4 +94,3 @@ These are research references rather than project completion receipts.
 - Official Kiro blog index and named articles retrieved November 16.
 - Existing committed `docs/kiroween-research-and-recording.md` and `docs/kiro-brag-sheet.md` provided by parent research.
 - No Kiro run, code change, installation, publishing, account configuration, or global permission change was performed by this research task.
-
