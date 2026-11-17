@@ -1,0 +1,97 @@
+{
+  "workflowId": "wf_30bc03349c699917",
+  "workflowName": "orb-duel-replay",
+  "status": "completed",
+  "inputs": {},
+  "artifacts": {},
+  "capturedOutputs": {
+    "verify-duel": "- Command: `node scripts/verify-duel.mjs --browser`\n- Exit status: 0\n- Node counts: 112 tests, 112 pass, 0 fail, 0 cancelled, 0 skipped, 0 todo, 0 suites.\n- Seed: 0\n- Revision: c24ff07 (Chrome/157.0.8103.52)\n- Observed Chrome steps: 8 of 8\n- Pending step IDs: none\n- Console errors: 0\n- SHA-256: b4e913df65d68a83d6c43541e764a0678ae5c71277aaf79530228692e84f3129\n- Receipt path: `.artifacts/kiro/replay/browser-run.json`",
+    "verify-showdown": "- Command: `node scripts/browser-match-check.mjs --showcase --summary --out-dir .artifacts/kiro/showcase`\n- Exit status: 0\n- Revision: c24ff07 (Chrome/157.0.8103.52)\n- Seed: 60\n- Observed steps: 4 of 4\n- Pending IDs: none\n- Console errors: 0\n- SHA-256: b4e913df65d68a83d6c43541e764a0678ae5c71277aaf79530228692e84f3129\n- Receipt path: `.artifacts/kiro/showcase/browser-run.json`\n- Hash match: yes. The seed-60 SHA-256 equals the seed-0 hash (b4e913df…f3129).\n- Result: pass. The exit status was 0 and the hashes match.\n\nI did not edit any source.",
+    "report": "I wrote the report to `.artifacts/kiro/replay/report.md`. I did not re-run either command. The report only restates the two step results you gave me.\n\n- **Seed 0:** `node scripts/verify-duel.mjs --browser` exited 0. It ran 112 Node tests with 112 passing, and it observed 8 of 8 Chrome steps with 0 console errors.\n- **Seed 60:** `node scripts/browser-match-check.mjs --showcase --summary --out-dir .artifacts/kiro/showcase` exited 0. It observed 4 of 4 steps with 0 console errors.\n- **Build hashes:** both runs report SHA-256 `b4e913df65d68a83d6c43541e764a0678ae5c71277aaf79530228692e84f3129`, so they match.\n- **Pending values:** none. Both steps reported every field.\n\nI signalled success to the parent step."
+  },
+  "root": {
+    "nodeId": "wf_30bc03349c699917",
+    "type": "sequence",
+    "status": "completed",
+    "children": [
+      {
+        "nodeId": "verify-duel",
+        "type": "step",
+        "status": "completed",
+        "agentName": "wf-coder",
+        "startedAt": "2026-11-16T20:52:06.059Z",
+        "sessionId": "sess_7fae2d6f-d6b9-41c2-82ad-2bcb4072a574",
+        "capturedOutput": "- Command: `node scripts/verify-duel.mjs --browser`\n- Exit status: 0\n- Node counts: 112 tests, 112 pass, 0 fail, 0 cancelled, 0 skipped, 0 todo, 0 suites.\n- Seed: 0\n- Revision: c24ff07 (Chrome/157.0.8103.52)\n- Observed Chrome steps: 8 of 8\n- Pending step IDs: none\n- Console errors: 0\n- SHA-256: b4e913df65d68a83d6c43541e764a0678ae5c71277aaf79530228692e84f3129\n- Receipt path: `.artifacts/kiro/replay/browser-run.json`",
+        "credits": [
+          {
+            "usage": 0.15876893747927032,
+            "unit": "credit",
+            "unitPlural": "credits"
+          }
+        ],
+        "endedAt": "2026-11-16T20:53:09.076Z"
+      },
+      {
+        "nodeId": "verify-showdown",
+        "type": "step",
+        "status": "completed",
+        "agentName": "wf-coder",
+        "startedAt": "2026-11-16T20:53:09.088Z",
+        "sessionId": "sess_363bf29b-38d3-4965-97ea-3470da19854b",
+        "completionSignal": "success",
+        "completionSignalSource": "send_message",
+        "capturedOutput": "- Command: `node scripts/browser-match-check.mjs --showcase --summary --out-dir .artifacts/kiro/showcase`\n- Exit status: 0\n- Revision: c24ff07 (Chrome/157.0.8103.52)\n- Seed: 60\n- Observed steps: 4 of 4\n- Pending IDs: none\n- Console errors: 0\n- SHA-256: b4e913df65d68a83d6c43541e764a0678ae5c71277aaf79530228692e84f3129\n- Receipt path: `.artifacts/kiro/showcase/browser-run.json`\n- Hash match: yes. The seed-60 SHA-256 equals the seed-0 hash (b4e913df…f3129).\n- Result: pass. The exit status was 0 and the hashes match.\n\nI did not edit any source.",
+        "credits": [
+          {
+            "usage": 0.17895722686567164,
+            "unit": "credit",
+            "unitPlural": "credits"
+          }
+        ],
+        "endedAt": "2026-11-16T20:54:08.712Z"
+      },
+      {
+        "nodeId": "report",
+        "type": "step",
+        "status": "completed",
+        "agentName": "wf-coder",
+        "startedAt": "2026-11-16T20:54:08.718Z",
+        "sessionId": "sess_fc296765-87a3-48b4-8251-555d3839e102",
+        "completionSignal": "success",
+        "completionSignalSource": "send_message",
+        "capturedOutput": "I wrote the report to `.artifacts/kiro/replay/report.md`. I did not re-run either command. The report only restates the two step results you gave me.\n\n- **Seed 0:** `node scripts/verify-duel.mjs --browser` exited 0. It ran 112 Node tests with 112 passing, and it observed 8 of 8 Chrome steps with 0 console errors.\n- **Seed 60:** `node scripts/browser-match-check.mjs --showcase --summary --out-dir .artifacts/kiro/showcase` exited 0. It observed 4 of 4 steps with 0 console errors.\n- **Build hashes:** both runs report SHA-256 `b4e913df65d68a83d6c43541e764a0678ae5c71277aaf79530228692e84f3129`, so they match.\n- **Pending values:** none. Both steps reported every field.\n\nI signalled success to the parent step.",
+        "credits": [
+          {
+            "usage": 0.2460774829187396,
+            "unit": "credit",
+            "unitPlural": "credits"
+          }
+        ],
+        "endedAt": "2026-11-16T20:54:20.809Z"
+      }
+    ],
+    "startedAt": "2026-11-16T20:52:06.057Z",
+    "endedAt": "2026-11-16T20:54:20.822Z"
+  },
+  "createdAt": "2026-11-16T20:52:06.016Z",
+  "planRevision": 0,
+  "parentSessionId": "sess_b32579c7-be55-4df4-bc0b-063858daacfc",
+  "runLabel": "orb-duel-replay-verification",
+  "originalUserMessages": [
+    "Use your actual run_workflow tool to run this updated saved workspace Workflow .kiro/workflows/orb-duel-replay.workflow.json. Wait for the three steps to finish and inspect the report. Verify that each table records the exact executed command and an observed exit status. Use only the existing scoped local verification and report operations. Log the workflow ID and stage outcomes. Do not edit source."
+  ],
+  "rootConversationId": "sess_b32579c7-be55-4df4-bc0b-063858daacfc",
+  "workspacePath": "<repo-root>/.worktrees/kiro-showdown-workflow",
+  "memoryConfig": {
+    "mode": "disabled",
+    "reflection": false
+  },
+  "memoryConfigSource": "explicit",
+  "backgroundExecution": false,
+  "sessionTools": {
+    "awareness": false,
+    "messaging": false,
+    "cloud": false
+  },
+  "parentModelId": "auto"
+}

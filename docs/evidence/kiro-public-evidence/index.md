@@ -21,9 +21,10 @@ A local script read the named files, kept an allowlist of fields and wrote JSON.
 
 ## Limits and missing receipts
 
-- **Missing:** the `wf_30bc03349c699917` workflow log and report. The project docs say they are on the Mac but name no path, so none was read.
-- **Missing:** the compaction log (`.artifacts/kiro/duel-compaction.jsonl`, receipt `861af78-1794855476196`). It was not at that path in this worktree or in the submission-preflight worktree's `.artifacts/kiro/`, so there is no compaction extract.
-- **Not read:** the seed-60 browser receipt for the Workflow rerun and the Crew preview reports.
+- **Recovered later (originals, 2026-11-16):** [05-recovered-originals.json](05-recovered-originals.json) lists the original run state, report, both browser receipts and the compaction log for `wf_30bc03349c699917`, the Crew balance preview receipt, the Night Watch duel test log and the e1e901d preflight receipts, with SHA-256 of the original bytes and exact path redactions. The files are in [originals/](originals/). Extracts 01 to 04 above are unchanged summaries and are not replaced by these.
+- **Still missing:** per-step Kiro CLI transcripts for `wf_30bc03349c699917`, the first pre-fix Workflow run, that run's Node test log, and Night Watch scheduled report `34eb6c4957b1`. Details in the manifest.
+- **Compaction:** `originals/duel-compaction.jsonl` has the `before` and `after` lines for receipt `861af78-1794855476196`. It does not contain the summary text or a transcript.
+- **Not copied:** screenshots and Crew preview per-variant reports.
 - Extract 02 takes the app and version from `docs/evidence/kiro-card-pipeline.md`. The receipt files record neither, and no date.
 - Extract 01's launch receipt was written at start, so its exit code comes from `exit-code.txt`. The receipt reports `uncommittedChanges: true`, and the smoke covers one seed-0 route only.
-- Original receipt and log files, screenshots, machine details and local paths are omitted.
+- In extracts 01 to 04, original receipt and log files, screenshots, machine details and local paths are omitted.

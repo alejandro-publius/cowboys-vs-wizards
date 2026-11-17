@@ -1,0 +1,172 @@
+{
+  "about": "Verbatim JSON text returned by the workspace MCP tool orb-duel-review/inspect_duel_replay in a Kiro session on 2026-11-16 (America/Los_Angeles). Only the screenshot paths are redacted to worktree labels. This is a fresh MCP inspection of historical replay evidence (seed 0 and seed 60 receipts from wf_30bc03349c699917, copied into this worktree's fixed paths). It is not a new browser run.",
+  "inputs": {
+    "receipt": "originals/wf_30bc03349c699917-seed0-browser-run.json (sha256 c44ca09b26864a42009c9854a2550a98eb4dccb27f8a3f6d47434a047062cfe4, unredacted)",
+    "showcaseReceipt": "sha256 51c43815578729c340be52b5caf5bd14d97a9cf3d2ef29f12f2a58064069cbb7, unredacted",
+    "matchedHtmlSha256": "b4e913df65d68a83d6c43541e764a0678ae5c71277aaf79530228692e84f3129",
+    "matchedHtmlBytes": 56423498,
+    "staleHtmlSha256": "a5e151f33b3a183a52ed911f2d24bee97786fe1d704a9cda5b98306feb818ae3",
+    "staleHtmlBytes": 56423520,
+    "staleMutation": "appended the 22 bytes \"\\n<!-- stale-check -->\\n\" to the copy at dist/cowboys-vs-wizards-board-duel.html, then restored the matched bytes and re-verified the hash"
+  },
+  "calls": [
+    {
+      "order": 1,
+      "arguments": {
+        "target": "standalone"
+      },
+      "state": "matched",
+      "result": {
+        "target": "standalone",
+        "receiptPath": ".artifacts/kiro/replay/browser-run.json",
+        "pagePath": "dist/cowboys-vs-wizards-board-duel.html",
+        "currentBuild": {
+          "bytes": 56423498,
+          "sha256": "b4e913df65d68a83d6c43541e764a0678ae5c71277aaf79530228692e84f3129"
+        },
+        "verdict": "pass",
+        "reasons": [],
+        "receipt": {
+          "date": "11/16/2026, 12:53:01 PM PST",
+          "commit": "c24ff07",
+          "uncommittedChanges": true,
+          "seed": 0,
+          "sha256": "b4e913df65d68a83d6c43541e764a0678ae5c71277aaf79530228692e84f3129",
+          "coversCurrentBuild": true,
+          "stepsObserved": 8,
+          "stepsRequired": 8,
+          "pendingSteps": [],
+          "consoleErrorCount": 0,
+          "screenshots": [
+            "<worktree:kiro-showdown-workflow>/.artifacts/kiro/replay/illustrated-hand.png",
+            "<worktree:kiro-showdown-workflow>/.artifacts/kiro/replay/summon-sheriff.png",
+            "<worktree:kiro-showdown-workflow>/.artifacts/kiro/replay/round-two.png",
+            "<worktree:kiro-showdown-workflow>/.artifacts/kiro/replay/result.png"
+          ]
+        }
+      }
+    },
+    {
+      "order": 2,
+      "arguments": {
+        "target": "showcase"
+      },
+      "state": "matched",
+      "result": {
+        "target": "showcase",
+        "receiptPath": ".artifacts/kiro/showcase/browser-run.json",
+        "pagePath": "dist/cowboys-vs-wizards-board-duel.html",
+        "currentBuild": {
+          "bytes": 56423498,
+          "sha256": "b4e913df65d68a83d6c43541e764a0678ae5c71277aaf79530228692e84f3129"
+        },
+        "verdict": "pass",
+        "reasons": [],
+        "receipt": {
+          "date": "11/16/2026, 12:53:58 PM PST",
+          "commit": "c24ff07",
+          "uncommittedChanges": true,
+          "seed": 60,
+          "sha256": "b4e913df65d68a83d6c43541e764a0678ae5c71277aaf79530228692e84f3129",
+          "companion": {
+            "target": "standalone",
+            "receiptPath": ".artifacts/kiro/replay/browser-run.json",
+            "sha256": "b4e913df65d68a83d6c43541e764a0678ae5c71277aaf79530228692e84f3129",
+            "sameBuild": true
+          },
+          "coversCurrentBuild": true,
+          "stepsObserved": 4,
+          "stepsRequired": 4,
+          "pendingSteps": [],
+          "consoleErrorCount": 0,
+          "screenshots": [
+            "<worktree:kiro-showdown-workflow>/.artifacts/kiro/showcase/seed-60-mounted-billy.png",
+            "<worktree:kiro-showdown-workflow>/.artifacts/kiro/showcase/seed-60-faceoff.png",
+            "<worktree:kiro-showdown-workflow>/.artifacts/kiro/showcase/seed-60-result.png"
+          ]
+        }
+      }
+    },
+    {
+      "order": 3,
+      "arguments": {
+        "target": "standalone"
+      },
+      "state": "stale (copied HTML + comment)",
+      "result": {
+        "target": "standalone",
+        "receiptPath": ".artifacts/kiro/replay/browser-run.json",
+        "pagePath": "dist/cowboys-vs-wizards-board-duel.html",
+        "currentBuild": {
+          "bytes": 56423520,
+          "sha256": "a5e151f33b3a183a52ed911f2d24bee97786fe1d704a9cda5b98306feb818ae3"
+        },
+        "verdict": "stale",
+        "reasons": [
+          "receipt hash differs from the current build (stale receipt)"
+        ],
+        "receipt": {
+          "date": "11/16/2026, 12:53:01 PM PST",
+          "commit": "c24ff07",
+          "uncommittedChanges": true,
+          "seed": 0,
+          "sha256": "b4e913df65d68a83d6c43541e764a0678ae5c71277aaf79530228692e84f3129",
+          "coversCurrentBuild": false,
+          "stepsObserved": 8,
+          "stepsRequired": 8,
+          "pendingSteps": [],
+          "consoleErrorCount": 0,
+          "screenshots": [
+            "<worktree:kiro-showdown-workflow>/.artifacts/kiro/replay/illustrated-hand.png",
+            "<worktree:kiro-showdown-workflow>/.artifacts/kiro/replay/summon-sheriff.png",
+            "<worktree:kiro-showdown-workflow>/.artifacts/kiro/replay/round-two.png",
+            "<worktree:kiro-showdown-workflow>/.artifacts/kiro/replay/result.png"
+          ]
+        }
+      }
+    },
+    {
+      "order": 4,
+      "arguments": {
+        "target": "showcase"
+      },
+      "state": "stale (copied HTML + comment)",
+      "result": {
+        "target": "showcase",
+        "receiptPath": ".artifacts/kiro/showcase/browser-run.json",
+        "pagePath": "dist/cowboys-vs-wizards-board-duel.html",
+        "currentBuild": {
+          "bytes": 56423520,
+          "sha256": "a5e151f33b3a183a52ed911f2d24bee97786fe1d704a9cda5b98306feb818ae3"
+        },
+        "verdict": "stale",
+        "reasons": [
+          "receipt hash differs from the current build (stale receipt)"
+        ],
+        "receipt": {
+          "date": "11/16/2026, 12:53:58 PM PST",
+          "commit": "c24ff07",
+          "uncommittedChanges": true,
+          "seed": 60,
+          "sha256": "b4e913df65d68a83d6c43541e764a0678ae5c71277aaf79530228692e84f3129",
+          "companion": {
+            "target": "standalone",
+            "receiptPath": ".artifacts/kiro/replay/browser-run.json",
+            "sha256": "b4e913df65d68a83d6c43541e764a0678ae5c71277aaf79530228692e84f3129",
+            "sameBuild": true
+          },
+          "coversCurrentBuild": false,
+          "stepsObserved": 4,
+          "stepsRequired": 4,
+          "pendingSteps": [],
+          "consoleErrorCount": 0,
+          "screenshots": [
+            "<worktree:kiro-showdown-workflow>/.artifacts/kiro/showcase/seed-60-mounted-billy.png",
+            "<worktree:kiro-showdown-workflow>/.artifacts/kiro/showcase/seed-60-faceoff.png",
+            "<worktree:kiro-showdown-workflow>/.artifacts/kiro/showcase/seed-60-result.png"
+          ]
+        }
+      }
+    }
+  ]
+}

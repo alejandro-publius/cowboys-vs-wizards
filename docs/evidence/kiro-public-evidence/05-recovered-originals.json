@@ -1,0 +1,210 @@
+{
+  "about": "Recovered historical Kiro receipts. Each file under originals/ is the original bytes with only the listed path redactions applied. Where redactions is a string, published bytes equal original bytes. Hashes are SHA-256.",
+  "recoveredBy": "Kiro (this session), 2026-11-16 America/Los_Angeles. Setup and the b7ab959 cherry-pick: Codex.",
+  "sourceLabels": "<worktree:NAME> means .worktrees/NAME under the project repo. <kiro-session-store> means the Kiro session directory that held wf_30bc03349c699917 (home path omitted).",
+  "files": [
+    {
+      "id": "wf-state",
+      "file": "originals/wf_30bc03349c699917-workflow-state.json",
+      "whatItIs": "Original Kiro workflow run state: step outputs, agent, timestamps, credits.",
+      "sourceLabel": "<kiro-session-store>/workflows/wf_30bc03349c699917/workflow-state.json",
+      "original": {
+        "sha256": "40fce3bee99c15197f028cd170849538ff62d5123b1eac25c5e37bcc9741249e",
+        "bytes": 6597
+      },
+      "published": {
+        "sha256": "3e649cfbc5adb3e06ed87805ac1e2da060ad5ccd0110f5273a58ac40972af08a",
+        "bytes": 6529
+      },
+      "redactions": {
+        "repo-root absolute path prefix": 1
+      }
+    },
+    {
+      "id": "wf-sessions",
+      "file": "originals/wf_30bc03349c699917-sessions.json",
+      "whatItIs": "Node-to-session map.",
+      "sourceLabel": "<kiro-session-store>/workflows/wf_30bc03349c699917/sessions.json",
+      "original": {
+        "sha256": "9cbe4f5191848cecbae3ad0f14df1daba329d4cdd4ca4bbc897830d927478789",
+        "bytes": 626
+      },
+      "published": {
+        "sha256": "9cbe4f5191848cecbae3ad0f14df1daba329d4cdd4ca4bbc897830d927478789",
+        "bytes": 626
+      },
+      "redactions": "none (published bytes equal original bytes)"
+    },
+    {
+      "id": "wf-definition",
+      "file": "originals/wf_30bc03349c699917-workflow-definition.json",
+      "whatItIs": "Workflow definition as run.",
+      "sourceLabel": "<kiro-session-store>/workflows/wf_30bc03349c699917/workflow-definition.json",
+      "original": {
+        "sha256": "b92bf4d5d14a4347fb3e0a94f61dadd6402dbb31c2f390f4a92c74771d547df3",
+        "bytes": 2191
+      },
+      "published": {
+        "sha256": "b92bf4d5d14a4347fb3e0a94f61dadd6402dbb31c2f390f4a92c74771d547df3",
+        "bytes": 2191
+      },
+      "redactions": "none (published bytes equal original bytes)"
+    },
+    {
+      "id": "wf-report",
+      "file": "originals/wf_30bc03349c699917-report.md",
+      "whatItIs": "Report written by the workflow's third step.",
+      "sourceLabel": "<worktree:kiro-showdown-workflow>/.artifacts/kiro/replay/report.md",
+      "original": {
+        "sha256": "7855ecff89e72650789a47b439ab2a75d6ad273b5d73bafd11d933cc2d7b27c9",
+        "bytes": 1290
+      },
+      "published": {
+        "sha256": "7855ecff89e72650789a47b439ab2a75d6ad273b5d73bafd11d933cc2d7b27c9",
+        "bytes": 1290
+      },
+      "redactions": "none (published bytes equal original bytes)"
+    },
+    {
+      "id": "wf-seed0",
+      "file": "originals/wf_30bc03349c699917-seed0-browser-run.json",
+      "whatItIs": "Seed-0 Chrome receipt from the workflow run.",
+      "sourceLabel": "<worktree:kiro-showdown-workflow>/.artifacts/kiro/replay/browser-run.json",
+      "original": {
+        "sha256": "c44ca09b26864a42009c9854a2550a98eb4dccb27f8a3f6d47434a047062cfe4",
+        "bytes": 11121
+      },
+      "published": {
+        "sha256": "73012a09d804ae252e41772d4b9bfa47b1ebebf1053f7f3b0421db9c619a06a0",
+        "bytes": 10721
+      },
+      "redactions": {
+        "worktree absolute path prefix": 5
+      }
+    },
+    {
+      "id": "wf-seed60",
+      "file": "originals/wf_30bc03349c699917-seed60-browser-run.json",
+      "whatItIs": "Seed-60 showcase Chrome receipt from the workflow run.",
+      "sourceLabel": "<worktree:kiro-showdown-workflow>/.artifacts/kiro/showcase/browser-run.json",
+      "original": {
+        "sha256": "51c43815578729c340be52b5caf5bd14d97a9cf3d2ef29f12f2a58064069cbb7",
+        "bytes": 3916
+      },
+      "published": {
+        "sha256": "6b92974740ffb1e0b8e09480a5dbd97ce8a06d2d55f84a0dd69bb282a4dfea91",
+        "bytes": 3596
+      },
+      "redactions": {
+        "worktree absolute path prefix": 4
+      }
+    },
+    {
+      "id": "compaction",
+      "file": "originals/duel-compaction.jsonl",
+      "whatItIs": "Compaction hook receipt log, two lines.",
+      "sourceLabel": "<worktree:kiro-continuity>/.artifacts/kiro/duel-compaction.jsonl",
+      "original": {
+        "sha256": "d4dc1d00d54c932bd84a0c94045beb926af8d6cabe6b6aba8342098ab77f171e",
+        "bytes": 174
+      },
+      "published": {
+        "sha256": "d4dc1d00d54c932bd84a0c94045beb926af8d6cabe6b6aba8342098ab77f171e",
+        "bytes": 174
+      },
+      "redactions": "none (published bytes equal original bytes)"
+    },
+    {
+      "id": "crew-receipt",
+      "file": "originals/crew-balance-receipt.json",
+      "whatItIs": "Crew balance preview receipt, seeds 0-999, baseline vs skeleton-health-4.",
+      "sourceLabel": "<worktree:submission-preflight>/.artifacts/kiro/crew-preview/crew-balance-receipt.json",
+      "original": {
+        "sha256": "b39113527bbeb6d08af8ff69a98d7c941844ea61eaff13fa9eca7df9c419839e",
+        "bytes": 498
+      },
+      "published": {
+        "sha256": "b39113527bbeb6d08af8ff69a98d7c941844ea61eaff13fa9eca7df9c419839e",
+        "bytes": 498
+      },
+      "redactions": "none (published bytes equal original bytes)"
+    },
+    {
+      "id": "crew-log",
+      "file": "originals/crew-balance-preview.log",
+      "whatItIs": "Crew preview run log.",
+      "sourceLabel": "<worktree:submission-preflight>/.artifacts/kiro/crew-preview/preview.log",
+      "original": {
+        "sha256": "163abae5b9c78c452d662c9bf1d33ad56145cd5e724de3540343679801116b48",
+        "bytes": 535
+      },
+      "published": {
+        "sha256": "163abae5b9c78c452d662c9bf1d33ad56145cd5e724de3540343679801116b48",
+        "bytes": 535
+      },
+      "redactions": "none (published bytes equal original bytes)"
+    },
+    {
+      "id": "nw-tests",
+      "file": "originals/night-watch-duel-tests.log",
+      "whatItIs": "Night Watch integration duel test log (107 tests).",
+      "sourceLabel": "<worktree:night-watch>/.artifacts/kiro/night-watch/duel-tests.log",
+      "original": {
+        "sha256": "25d57d033cd116bd67a9d629262d087f370c59d8725bd2d23d81e7edec24ec12",
+        "bytes": 11575
+      },
+      "published": {
+        "sha256": "25d57d033cd116bd67a9d629262d087f370c59d8725bd2d23d81e7edec24ec12",
+        "bytes": 11575
+      },
+      "redactions": "none (published bytes equal original bytes)"
+    },
+    {
+      "id": "pf-open",
+      "file": "originals/preflight-e1e901d-opening-browser-run.json",
+      "whatItIs": "Seed-0 receipt at e1e901d named by kiro-submission-preflight.md (HTML d28cf20a...).",
+      "sourceLabel": "<worktree:kiro-first-turn>/.artifacts/kiro/hand-overlay/final-opening/browser-run.json",
+      "original": {
+        "sha256": "3c21636ce435beb318a7ae838f30213fa26d194055252d48718acfa7f77d3e99",
+        "bytes": 10805
+      },
+      "published": {
+        "sha256": "fb5ca86fc520d106f3b914f8b595231100b3e9b242067d121358fda698c8eb45",
+        "bytes": 10565
+      },
+      "redactions": {
+        "worktree absolute path prefix": 3
+      }
+    },
+    {
+      "id": "pf-show",
+      "file": "originals/preflight-e1e901d-showcase-browser-run.json",
+      "whatItIs": "Seed-60 receipt at e1e901d named by kiro-submission-preflight.md.",
+      "sourceLabel": "<worktree:kiro-first-turn>/.artifacts/kiro/hand-overlay/final-showcase/browser-run.json",
+      "original": {
+        "sha256": "f737790c76d85de1a6861d9c4d02e78ca0771eb0df34104987f9b1d7091f01a5",
+        "bytes": 3807
+      },
+      "published": {
+        "sha256": "353b1d33be82eabb5aa2558a31171142e30344078a6c76b2c56ff21c7c652b38",
+        "bytes": 3567
+      },
+      "redactions": {
+        "worktree absolute path prefix": 3
+      }
+    }
+  ],
+  "stillMissing": [
+    "Per-step Kiro CLI transcripts for wf_30bc03349c699917 (sess_7fae2d6f-d6b9-41c2-82ad-2bcb4072a574, sess_363bf29b-38d3-4965-97ea-3470da19854b, sess_fc296765-87a3-48b4-8251-555d3839e102). The run directory holds only workflow-state.json, sessions.json, workflow-definition.json and checkpoint-cleanup.json; no transcript files were found there.",
+    "The first (pre-fix) Workflow run's log and report. Only the rerun wf_30bc03349c699917 was found.",
+    "The Node test log for the 112-test run. The count appears only in the captured step output in workflow-state.json.",
+    "Night Watch scheduled report 34eb6c4957b1. No file with that name was found under the night-watch worktree .artifacts (name search).",
+    "Night Watch Crew screenshots exist as PNG files in the night-watch worktree but were not copied (binary)."
+  ],
+  "limitations": [
+    "wf-seed0 and wf-seed60 report uncommittedChanges true at commit c24ff07 (the workflow definition and build log were modified in that worktree). They cover the built HTML with the listed SHA-256, not a clean commit.",
+    "pf-open and pf-show are the e1e901d receipts (HTML d28cf20a...) cited by kiro-submission-preflight.md, copied from the kiro-first-turn worktree. The preflight-card-pipeline receipts in the submission-preflight worktree are for commit 46592c7 and were not copied.",
+    "crew-balance-receipt.json is a compact summary. The fuller per-variant reports (baseline.json, skeleton-health-4.json) sit beside it in the submission-preflight worktree and were not copied.",
+    "The files do not show who typed which prompt. Attribution rests on workflow-state.json (agentName wf-coder, originalUserMessages) and the project evidence docs."
+  ]
+}
