@@ -1,0 +1,8791 @@
+{
+ "rulesVersion": "orb-duel-draft-1",
+ "blocks": [
+  {
+   "from": 0,
+   "count": 1000
+  },
+  {
+   "from": 1000,
+   "count": 1000
+  }
+ ],
+ "checks": [
+  {
+   "block": "0-999",
+   "baselineEqualsRealSimulate": true,
+   "real": {
+    "cowboy": {
+     "wins": 425,
+     "losses": 472,
+     "draws": 103
+    },
+    "wizard": {
+     "wins": 472,
+     "losses": 425,
+     "draws": 103
+    }
+   },
+   "shadow": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+   }
+  },
+  {
+   "block": "1000-1999",
+   "baselineEqualsRealSimulate": true,
+   "real": {
+    "cowboy": {
+     "wins": 424,
+     "losses": 475,
+     "draws": 101
+    },
+    "wizard": {
+     "wins": 475,
+     "losses": 424,
+     "draws": 101
+    }
+   },
+   "shadow": {
+    "cowboy": 424,
+    "wizard": 475,
+    "draw": 101
+   }
+  }
+ ],
+ "results": [
+  {
+   "block": "0-999",
+   "config": "baseline",
+   "n": 1000,
+   "wins": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+   },
+   "cowboyShare": 0.425,
+   "wizardShare": 0.472,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 270,
+     "wizard": 159
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 155,
+     "wizard": 313
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.819,
+   "actionsPerMatch": 31.99,
+   "setsPerMatch": 0,
+   "triggersPerMatch": 0,
+   "matchesWithTrigger": 0,
+   "attackHistOfTriggers": {
+    "1": 0,
+    "2": 0,
+    "3": 0
+   },
+   "meanTriggerRound": null,
+   "nominalDamagePreventedPerMatch": {
+    "X": null,
+    "Y": null
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0
+  },
+  {
+   "block": "0-999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 419,
+    "wizard": 468,
+    "draw": 113
+   },
+   "cowboyShare": 0.419,
+   "wizardShare": 0.468,
+   "drawShare": 0.113,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 222,
+     "wizard": 198
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 197,
+     "wizard": 270
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.785,
+   "actionsPerMatch": 33.92,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.999,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1562,
+    "2": 437,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.436,
+    "Y": 1.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 416,
+    "cowboyWinShareDelta": -0.006,
+    "cowboyWinShareDeltaCI95": [
+     -0.041,
+     0.029
+    ],
+    "cowboyMinusWizardDelta": -0.002
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 439,
+    "wizard": 460,
+    "draw": 101
+   },
+   "cowboyShare": 0.439,
+   "wizardShare": 0.46,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 247,
+     "wizard": 183
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 192,
+     "wizard": 277
+    }
+   },
+   "meanFinalRound": 7.37,
+   "baseDestroyedShare": 0.78,
+   "actionsPerMatch": 34.38,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.999,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1562,
+    "2": 437,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.436,
+    "Y": 1.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 355,
+    "cowboyWinShareDelta": 0.014,
+    "cowboyWinShareDeltaCI95": [
+     -0.018,
+     0.046
+    ],
+    "cowboyMinusWizardDelta": 0.026
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+   },
+   "cowboyShare": 0.425,
+   "wizardShare": 0.472,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 270,
+     "wizard": 159
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 155,
+     "wizard": 313
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.819,
+   "actionsPerMatch": 33.99,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.999,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1562,
+    "2": 437,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.436,
+    "Y": 1.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 419,
+    "wizard": 468,
+    "draw": 113
+   },
+   "cowboyShare": 0.419,
+   "wizardShare": 0.468,
+   "drawShare": 0.113,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 222,
+     "wizard": 198
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 197,
+     "wizard": 270
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.785,
+   "actionsPerMatch": 33.92,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.999,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1562,
+    "2": 437,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.436,
+    "Y": 1.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 416,
+    "cowboyWinShareDelta": -0.006,
+    "cowboyWinShareDeltaCI95": [
+     -0.041,
+     0.029
+    ],
+    "cowboyMinusWizardDelta": -0.002
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 439,
+    "wizard": 460,
+    "draw": 101
+   },
+   "cowboyShare": 0.439,
+   "wizardShare": 0.46,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 247,
+     "wizard": 183
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 192,
+     "wizard": 277
+    }
+   },
+   "meanFinalRound": 7.37,
+   "baseDestroyedShare": 0.78,
+   "actionsPerMatch": 34.38,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.999,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1562,
+    "2": 437,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.436,
+    "Y": 1.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 355,
+    "cowboyWinShareDelta": 0.014,
+    "cowboyWinShareDeltaCI95": [
+     -0.018,
+     0.046
+    ],
+    "cowboyMinusWizardDelta": 0.026
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+   },
+   "cowboyShare": 0.425,
+   "wizardShare": 0.472,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 270,
+     "wizard": 159
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 155,
+     "wizard": 313
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.819,
+   "actionsPerMatch": 33.99,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.999,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1562,
+    "2": 437,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.436,
+    "Y": 1.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 419,
+    "wizard": 468,
+    "draw": 113
+   },
+   "cowboyShare": 0.419,
+   "wizardShare": 0.468,
+   "drawShare": 0.113,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 222,
+     "wizard": 198
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 197,
+     "wizard": 270
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.785,
+   "actionsPerMatch": 33.92,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.999,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1562,
+    "2": 437,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.436,
+    "Y": 1.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 416,
+    "cowboyWinShareDelta": -0.006,
+    "cowboyWinShareDeltaCI95": [
+     -0.041,
+     0.029
+    ],
+    "cowboyMinusWizardDelta": -0.002
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 439,
+    "wizard": 460,
+    "draw": 101
+   },
+   "cowboyShare": 0.439,
+   "wizardShare": 0.46,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 247,
+     "wizard": 183
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 192,
+     "wizard": 277
+    }
+   },
+   "meanFinalRound": 7.37,
+   "baseDestroyedShare": 0.78,
+   "actionsPerMatch": 34.38,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.999,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1562,
+    "2": 437,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.436,
+    "Y": 1.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 355,
+    "cowboyWinShareDelta": 0.014,
+    "cowboyWinShareDeltaCI95": [
+     -0.018,
+     0.046
+    ],
+    "cowboyMinusWizardDelta": 0.026
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+   },
+   "cowboyShare": 0.425,
+   "wizardShare": 0.472,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 270,
+     "wizard": 159
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 155,
+     "wizard": 313
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.819,
+   "actionsPerMatch": 33.99,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.999,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1562,
+    "2": 437,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.436,
+    "Y": 1.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 419,
+    "wizard": 468,
+    "draw": 113
+   },
+   "cowboyShare": 0.419,
+   "wizardShare": 0.468,
+   "drawShare": 0.113,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 222,
+     "wizard": 198
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 197,
+     "wizard": 270
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.785,
+   "actionsPerMatch": 33.92,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.999,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1562,
+    "2": 437,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.436,
+    "Y": 1.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 416,
+    "cowboyWinShareDelta": -0.006,
+    "cowboyWinShareDeltaCI95": [
+     -0.041,
+     0.029
+    ],
+    "cowboyMinusWizardDelta": -0.002
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 439,
+    "wizard": 460,
+    "draw": 101
+   },
+   "cowboyShare": 0.439,
+   "wizardShare": 0.46,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 247,
+     "wizard": 183
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 192,
+     "wizard": 277
+    }
+   },
+   "meanFinalRound": 7.37,
+   "baseDestroyedShare": 0.78,
+   "actionsPerMatch": 34.38,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.999,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1562,
+    "2": 437,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.436,
+    "Y": 1.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 355,
+    "cowboyWinShareDelta": 0.014,
+    "cowboyWinShareDeltaCI95": [
+     -0.018,
+     0.046
+    ],
+    "cowboyMinusWizardDelta": 0.026
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+   },
+   "cowboyShare": 0.425,
+   "wizardShare": 0.472,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 270,
+     "wizard": 159
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 155,
+     "wizard": 313
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.819,
+   "actionsPerMatch": 33.99,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.999,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1562,
+    "2": 437,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.436,
+    "Y": 1.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 429,
+    "wizard": 487,
+    "draw": 84
+   },
+   "cowboyShare": 0.429,
+   "wizardShare": 0.487,
+   "drawShare": 0.084,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 268,
+     "wizard": 171
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 161,
+     "wizard": 316
+    }
+   },
+   "meanFinalRound": 7.64,
+   "baseDestroyedShare": 0.778,
+   "actionsPerMatch": 35.33,
+   "setsPerMatch": 1.926,
+   "triggersPerMatch": 1.858,
+   "matchesWithTrigger": 935,
+   "attackHistOfTriggers": {
+    "1": 324,
+    "2": 1422,
+    "3": 112
+   },
+   "meanTriggerRound": 5.29,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.504,
+    "Y": 1.858
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 45,
+   "sidesWithTrapNeverSet": 74,
+   "paired": {
+    "winnerChanged": 221,
+    "cowboyWinShareDelta": 0.004,
+    "cowboyWinShareDeltaCI95": [
+     -0.02,
+     0.028
+    ],
+    "cowboyMinusWizardDelta": -0.011
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 410,
+    "wizard": 488,
+    "draw": 102
+   },
+   "cowboyShare": 0.41,
+   "wizardShare": 0.488,
+   "drawShare": 0.102,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 258,
+     "wizard": 168
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 152,
+     "wizard": 320
+    }
+   },
+   "meanFinalRound": 7.47,
+   "baseDestroyedShare": 0.825,
+   "actionsPerMatch": 34.72,
+   "setsPerMatch": 1.926,
+   "triggersPerMatch": 1.858,
+   "matchesWithTrigger": 935,
+   "attackHistOfTriggers": {
+    "1": 353,
+    "2": 1399,
+    "3": 106
+   },
+   "meanTriggerRound": 5.29,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.469,
+    "Y": 1.858
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 45,
+   "sidesWithTrapNeverSet": 74,
+   "paired": {
+    "winnerChanged": 206,
+    "cowboyWinShareDelta": -0.015,
+    "cowboyWinShareDeltaCI95": [
+     -0.039,
+     0.009
+    ],
+    "cowboyMinusWizardDelta": -0.031
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+   },
+   "cowboyShare": 0.425,
+   "wizardShare": 0.472,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 270,
+     "wizard": 159
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 155,
+     "wizard": 313
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.819,
+   "actionsPerMatch": 33.92,
+   "setsPerMatch": 1.926,
+   "triggersPerMatch": 1.836,
+   "matchesWithTrigger": 935,
+   "attackHistOfTriggers": {
+    "1": 382,
+    "2": 1357,
+    "3": 97
+   },
+   "meanTriggerRound": 5.27,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.387,
+    "Y": 1.836
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 67,
+   "sidesWithTrapNeverSet": 74,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 427,
+    "wizard": 495,
+    "draw": 78
+   },
+   "cowboyShare": 0.427,
+   "wizardShare": 0.495,
+   "drawShare": 0.078,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 277,
+     "wizard": 165
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 150,
+     "wizard": 330
+    }
+   },
+   "meanFinalRound": 7.61,
+   "baseDestroyedShare": 0.788,
+   "actionsPerMatch": 35.22,
+   "setsPerMatch": 1.938,
+   "triggersPerMatch": 1.886,
+   "matchesWithTrigger": 943,
+   "attackHistOfTriggers": {
+    "1": 382,
+    "2": 1424,
+    "3": 80
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.47,
+    "Y": 1.886
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 469,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 26,
+   "sidesWithTrapNeverSet": 62,
+   "paired": {
+    "winnerChanged": 214,
+    "cowboyWinShareDelta": 0.002,
+    "cowboyWinShareDeltaCI95": [
+     -0.022,
+     0.026
+    ],
+    "cowboyMinusWizardDelta": -0.021
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 423,
+    "wizard": 486,
+    "draw": 91
+   },
+   "cowboyShare": 0.423,
+   "wizardShare": 0.486,
+   "drawShare": 0.091,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 267,
+     "wizard": 166
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 156,
+     "wizard": 320
+    }
+   },
+   "meanFinalRound": 7.46,
+   "baseDestroyedShare": 0.845,
+   "actionsPerMatch": 34.72,
+   "setsPerMatch": 1.938,
+   "triggersPerMatch": 1.886,
+   "matchesWithTrigger": 943,
+   "attackHistOfTriggers": {
+    "1": 382,
+    "2": 1424,
+    "3": 80
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.47,
+    "Y": 1.886
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 469,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 26,
+   "sidesWithTrapNeverSet": 62,
+   "paired": {
+    "winnerChanged": 210,
+    "cowboyWinShareDelta": -0.002,
+    "cowboyWinShareDeltaCI95": [
+     -0.026,
+     0.022
+    ],
+    "cowboyMinusWizardDelta": -0.016
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+   },
+   "cowboyShare": 0.425,
+   "wizardShare": 0.472,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 270,
+     "wizard": 159
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 155,
+     "wizard": 313
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.819,
+   "actionsPerMatch": 33.93,
+   "setsPerMatch": 1.938,
+   "triggersPerMatch": 1.886,
+   "matchesWithTrigger": 943,
+   "attackHistOfTriggers": {
+    "1": 382,
+    "2": 1424,
+    "3": 80
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.47,
+    "Y": 1.886
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 469,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 26,
+   "sidesWithTrapNeverSet": 62,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 431,
+    "wizard": 479,
+    "draw": 90
+   },
+   "cowboyShare": 0.431,
+   "wizardShare": 0.479,
+   "drawShare": 0.09,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 275,
+     "wizard": 163
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 156,
+     "wizard": 316
+    }
+   },
+   "meanFinalRound": 7.61,
+   "baseDestroyedShare": 0.777,
+   "actionsPerMatch": 35.15,
+   "setsPerMatch": 1.938,
+   "triggersPerMatch": 1.9,
+   "matchesWithTrigger": 950,
+   "attackHistOfTriggers": {
+    "1": 419,
+    "2": 1417,
+    "3": 64
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.445,
+    "Y": 1.9
+   },
+   "forgoneCastsPerMatch": 0.571,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 19,
+   "sidesWithTrapNeverSet": 62,
+   "paired": {
+    "winnerChanged": 263,
+    "cowboyWinShareDelta": 0.006,
+    "cowboyWinShareDeltaCI95": [
+     -0.02,
+     0.032
+    ],
+    "cowboyMinusWizardDelta": -0.001
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 426,
+    "wizard": 467,
+    "draw": 107
+   },
+   "cowboyShare": 0.426,
+   "wizardShare": 0.467,
+   "drawShare": 0.107,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 262,
+     "wizard": 164
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 164,
+     "wizard": 303
+    }
+   },
+   "meanFinalRound": 7.45,
+   "baseDestroyedShare": 0.829,
+   "actionsPerMatch": 34.63,
+   "setsPerMatch": 1.938,
+   "triggersPerMatch": 1.9,
+   "matchesWithTrigger": 950,
+   "attackHistOfTriggers": {
+    "1": 419,
+    "2": 1417,
+    "3": 64
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.445,
+    "Y": 1.9
+   },
+   "forgoneCastsPerMatch": 0.571,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 19,
+   "sidesWithTrapNeverSet": 62,
+   "paired": {
+    "winnerChanged": 248,
+    "cowboyWinShareDelta": 0.001,
+    "cowboyWinShareDeltaCI95": [
+     -0.026,
+     0.028
+    ],
+    "cowboyMinusWizardDelta": 0.006
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 410,
+    "wizard": 462,
+    "draw": 128
+   },
+   "cowboyShare": 0.41,
+   "wizardShare": 0.462,
+   "drawShare": 0.128,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 260,
+     "wizard": 160
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 150,
+     "wizard": 302
+    }
+   },
+   "meanFinalRound": 7.35,
+   "baseDestroyedShare": 0.81,
+   "actionsPerMatch": 34.09,
+   "setsPerMatch": 1.938,
+   "triggersPerMatch": 1.9,
+   "matchesWithTrigger": 950,
+   "attackHistOfTriggers": {
+    "1": 419,
+    "2": 1417,
+    "3": 64
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.445,
+    "Y": 1.9
+   },
+   "forgoneCastsPerMatch": 0.571,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 19,
+   "sidesWithTrapNeverSet": 62,
+   "paired": {
+    "winnerChanged": 96,
+    "cowboyWinShareDelta": -0.015,
+    "cowboyWinShareDeltaCI95": [
+     -0.031,
+     0.001
+    ],
+    "cowboyMinusWizardDelta": -0.005
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 427,
+    "wizard": 495,
+    "draw": 78
+   },
+   "cowboyShare": 0.427,
+   "wizardShare": 0.495,
+   "drawShare": 0.078,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 277,
+     "wizard": 165
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 150,
+     "wizard": 330
+    }
+   },
+   "meanFinalRound": 7.61,
+   "baseDestroyedShare": 0.788,
+   "actionsPerMatch": 35.22,
+   "setsPerMatch": 1.938,
+   "triggersPerMatch": 1.886,
+   "matchesWithTrigger": 943,
+   "attackHistOfTriggers": {
+    "1": 382,
+    "2": 1424,
+    "3": 80
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.47,
+    "Y": 1.886
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 469,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 26,
+   "sidesWithTrapNeverSet": 62,
+   "paired": {
+    "winnerChanged": 214,
+    "cowboyWinShareDelta": 0.002,
+    "cowboyWinShareDeltaCI95": [
+     -0.022,
+     0.026
+    ],
+    "cowboyMinusWizardDelta": -0.021
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 423,
+    "wizard": 486,
+    "draw": 91
+   },
+   "cowboyShare": 0.423,
+   "wizardShare": 0.486,
+   "drawShare": 0.091,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 267,
+     "wizard": 166
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 156,
+     "wizard": 320
+    }
+   },
+   "meanFinalRound": 7.46,
+   "baseDestroyedShare": 0.845,
+   "actionsPerMatch": 34.72,
+   "setsPerMatch": 1.938,
+   "triggersPerMatch": 1.886,
+   "matchesWithTrigger": 943,
+   "attackHistOfTriggers": {
+    "1": 382,
+    "2": 1424,
+    "3": 80
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.47,
+    "Y": 1.886
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 469,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 26,
+   "sidesWithTrapNeverSet": 62,
+   "paired": {
+    "winnerChanged": 210,
+    "cowboyWinShareDelta": -0.002,
+    "cowboyWinShareDeltaCI95": [
+     -0.026,
+     0.022
+    ],
+    "cowboyMinusWizardDelta": -0.016
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+   },
+   "cowboyShare": 0.425,
+   "wizardShare": 0.472,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 270,
+     "wizard": 159
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 155,
+     "wizard": 313
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.819,
+   "actionsPerMatch": 33.93,
+   "setsPerMatch": 1.938,
+   "triggersPerMatch": 1.886,
+   "matchesWithTrigger": 943,
+   "attackHistOfTriggers": {
+    "1": 382,
+    "2": 1424,
+    "3": 80
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.47,
+    "Y": 1.886
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 469,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 26,
+   "sidesWithTrapNeverSet": 62,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 631,
+    "wizard": 263,
+    "draw": 106
+   },
+   "cowboyShare": 0.631,
+   "wizardShare": 0.263,
+   "drawShare": 0.106,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 357,
+     "wizard": 87
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 274,
+     "wizard": 176
+    }
+   },
+   "meanFinalRound": 7.03,
+   "baseDestroyedShare": 0.848,
+   "actionsPerMatch": 31.76,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 787,
+    "2": 213,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.213,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 391,
+    "cowboyWinShareDelta": 0.206,
+    "cowboyWinShareDeltaCI95": [
+     0.174,
+     0.238
+    ],
+    "cowboyMinusWizardDelta": 0.415
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 621,
+    "wizard": 271,
+    "draw": 108
+   },
+   "cowboyShare": 0.621,
+   "wizardShare": 0.271,
+   "drawShare": 0.108,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 346,
+     "wizard": 95
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 275,
+     "wizard": 176
+    }
+   },
+   "meanFinalRound": 7.17,
+   "baseDestroyedShare": 0.82,
+   "actionsPerMatch": 32.42,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 787,
+    "2": 213,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.213,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 370,
+    "cowboyWinShareDelta": 0.196,
+    "cowboyWinShareDeltaCI95": [
+     0.165,
+     0.227
+    ],
+    "cowboyMinusWizardDelta": 0.397
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+   },
+   "cowboyShare": 0.425,
+   "wizardShare": 0.472,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 270,
+     "wizard": 159
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 155,
+     "wizard": 313
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.819,
+   "actionsPerMatch": 32.99,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 787,
+    "2": 213,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.213,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 631,
+    "wizard": 263,
+    "draw": 106
+   },
+   "cowboyShare": 0.631,
+   "wizardShare": 0.263,
+   "drawShare": 0.106,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 357,
+     "wizard": 87
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 274,
+     "wizard": 176
+    }
+   },
+   "meanFinalRound": 7.03,
+   "baseDestroyedShare": 0.848,
+   "actionsPerMatch": 31.76,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 787,
+    "2": 213,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.213,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 391,
+    "cowboyWinShareDelta": 0.206,
+    "cowboyWinShareDeltaCI95": [
+     0.174,
+     0.238
+    ],
+    "cowboyMinusWizardDelta": 0.415
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 621,
+    "wizard": 271,
+    "draw": 108
+   },
+   "cowboyShare": 0.621,
+   "wizardShare": 0.271,
+   "drawShare": 0.108,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 346,
+     "wizard": 95
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 275,
+     "wizard": 176
+    }
+   },
+   "meanFinalRound": 7.17,
+   "baseDestroyedShare": 0.82,
+   "actionsPerMatch": 32.42,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 787,
+    "2": 213,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.213,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 370,
+    "cowboyWinShareDelta": 0.196,
+    "cowboyWinShareDeltaCI95": [
+     0.165,
+     0.227
+    ],
+    "cowboyMinusWizardDelta": 0.397
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+   },
+   "cowboyShare": 0.425,
+   "wizardShare": 0.472,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 270,
+     "wizard": 159
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 155,
+     "wizard": 313
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.819,
+   "actionsPerMatch": 32.99,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 787,
+    "2": 213,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.213,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 631,
+    "wizard": 263,
+    "draw": 106
+   },
+   "cowboyShare": 0.631,
+   "wizardShare": 0.263,
+   "drawShare": 0.106,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 357,
+     "wizard": 87
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 274,
+     "wizard": 176
+    }
+   },
+   "meanFinalRound": 7.03,
+   "baseDestroyedShare": 0.848,
+   "actionsPerMatch": 31.76,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 787,
+    "2": 213,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.213,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 391,
+    "cowboyWinShareDelta": 0.206,
+    "cowboyWinShareDeltaCI95": [
+     0.174,
+     0.238
+    ],
+    "cowboyMinusWizardDelta": 0.415
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 621,
+    "wizard": 271,
+    "draw": 108
+   },
+   "cowboyShare": 0.621,
+   "wizardShare": 0.271,
+   "drawShare": 0.108,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 346,
+     "wizard": 95
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 275,
+     "wizard": 176
+    }
+   },
+   "meanFinalRound": 7.17,
+   "baseDestroyedShare": 0.82,
+   "actionsPerMatch": 32.42,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 787,
+    "2": 213,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.213,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 370,
+    "cowboyWinShareDelta": 0.196,
+    "cowboyWinShareDeltaCI95": [
+     0.165,
+     0.227
+    ],
+    "cowboyMinusWizardDelta": 0.397
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+   },
+   "cowboyShare": 0.425,
+   "wizardShare": 0.472,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 270,
+     "wizard": 159
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 155,
+     "wizard": 313
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.819,
+   "actionsPerMatch": 32.99,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 787,
+    "2": 213,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.213,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 631,
+    "wizard": 263,
+    "draw": 106
+   },
+   "cowboyShare": 0.631,
+   "wizardShare": 0.263,
+   "drawShare": 0.106,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 357,
+     "wizard": 87
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 274,
+     "wizard": 176
+    }
+   },
+   "meanFinalRound": 7.03,
+   "baseDestroyedShare": 0.848,
+   "actionsPerMatch": 31.76,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 787,
+    "2": 213,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.213,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 391,
+    "cowboyWinShareDelta": 0.206,
+    "cowboyWinShareDeltaCI95": [
+     0.174,
+     0.238
+    ],
+    "cowboyMinusWizardDelta": 0.415
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 621,
+    "wizard": 271,
+    "draw": 108
+   },
+   "cowboyShare": 0.621,
+   "wizardShare": 0.271,
+   "drawShare": 0.108,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 346,
+     "wizard": 95
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 275,
+     "wizard": 176
+    }
+   },
+   "meanFinalRound": 7.17,
+   "baseDestroyedShare": 0.82,
+   "actionsPerMatch": 32.42,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 787,
+    "2": 213,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.213,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 370,
+    "cowboyWinShareDelta": 0.196,
+    "cowboyWinShareDeltaCI95": [
+     0.165,
+     0.227
+    ],
+    "cowboyMinusWizardDelta": 0.397
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+   },
+   "cowboyShare": 0.425,
+   "wizardShare": 0.472,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 270,
+     "wizard": 159
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 155,
+     "wizard": 313
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.819,
+   "actionsPerMatch": 32.99,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 787,
+    "2": 213,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.213,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 567,
+    "wizard": 331,
+    "draw": 102
+   },
+   "cowboyShare": 0.567,
+   "wizardShare": 0.331,
+   "drawShare": 0.102,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 334,
+     "wizard": 107
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 233,
+     "wizard": 224
+    }
+   },
+   "meanFinalRound": 7.47,
+   "baseDestroyedShare": 0.811,
+   "actionsPerMatch": 33.63,
+   "setsPerMatch": 0.962,
+   "triggersPerMatch": 0.921,
+   "matchesWithTrigger": 921,
+   "attackHistOfTriggers": {
+    "1": 183,
+    "2": 683,
+    "3": 55
+   },
+   "meanTriggerRound": 5.26,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.714,
+    "Y": 0.921
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 41,
+   "sidesWithTrapNeverSet": 38,
+   "paired": {
+    "winnerChanged": 244,
+    "cowboyWinShareDelta": 0.142,
+    "cowboyWinShareDeltaCI95": [
+     0.118,
+     0.166
+    ],
+    "cowboyMinusWizardDelta": 0.283
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 503,
+    "wizard": 394,
+    "draw": 103
+   },
+   "cowboyShare": 0.503,
+   "wizardShare": 0.394,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 297,
+     "wizard": 134
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 206,
+     "wizard": 260
+    }
+   },
+   "meanFinalRound": 7.39,
+   "baseDestroyedShare": 0.829,
+   "actionsPerMatch": 33.36,
+   "setsPerMatch": 0.962,
+   "triggersPerMatch": 0.921,
+   "matchesWithTrigger": 921,
+   "attackHistOfTriggers": {
+    "1": 183,
+    "2": 683,
+    "3": 55
+   },
+   "meanTriggerRound": 5.26,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.714,
+    "Y": 0.921
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 41,
+   "sidesWithTrapNeverSet": 38,
+   "paired": {
+    "winnerChanged": 167,
+    "cowboyWinShareDelta": 0.078,
+    "cowboyWinShareDeltaCI95": [
+     0.058,
+     0.098
+    ],
+    "cowboyMinusWizardDelta": 0.156
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+   },
+   "cowboyShare": 0.425,
+   "wizardShare": 0.472,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 270,
+     "wizard": 159
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 155,
+     "wizard": 313
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.819,
+   "actionsPerMatch": 32.95,
+   "setsPerMatch": 0.962,
+   "triggersPerMatch": 0.921,
+   "matchesWithTrigger": 921,
+   "attackHistOfTriggers": {
+    "1": 183,
+    "2": 683,
+    "3": 55
+   },
+   "meanTriggerRound": 5.26,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.714,
+    "Y": 0.921
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 41,
+   "sidesWithTrapNeverSet": 38,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 576,
+    "wizard": 338,
+    "draw": 86
+   },
+   "cowboyShare": 0.576,
+   "wizardShare": 0.338,
+   "drawShare": 0.086,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 347,
+     "wizard": 98
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 229,
+     "wizard": 240
+    }
+   },
+   "meanFinalRound": 7.45,
+   "baseDestroyedShare": 0.823,
+   "actionsPerMatch": 33.54,
+   "setsPerMatch": 0.969,
+   "triggersPerMatch": 0.943,
+   "matchesWithTrigger": 943,
+   "attackHistOfTriggers": {
+    "1": 187,
+    "2": 713,
+    "3": 43
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.742,
+    "Y": 0.943
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 256,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 26,
+   "sidesWithTrapNeverSet": 31,
+   "paired": {
+    "winnerChanged": 247,
+    "cowboyWinShareDelta": 0.151,
+    "cowboyWinShareDeltaCI95": [
+     0.127,
+     0.175
+    ],
+    "cowboyMinusWizardDelta": 0.285
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 507,
+    "wizard": 399,
+    "draw": 94
+   },
+   "cowboyShare": 0.507,
+   "wizardShare": 0.399,
+   "drawShare": 0.094,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 302,
+     "wizard": 131
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 205,
+     "wizard": 268
+    }
+   },
+   "meanFinalRound": 7.38,
+   "baseDestroyedShare": 0.837,
+   "actionsPerMatch": 33.35,
+   "setsPerMatch": 0.969,
+   "triggersPerMatch": 0.943,
+   "matchesWithTrigger": 943,
+   "attackHistOfTriggers": {
+    "1": 187,
+    "2": 713,
+    "3": 43
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.742,
+    "Y": 0.943
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 256,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 26,
+   "sidesWithTrapNeverSet": 31,
+   "paired": {
+    "winnerChanged": 172,
+    "cowboyWinShareDelta": 0.082,
+    "cowboyWinShareDeltaCI95": [
+     0.061,
+     0.103
+    ],
+    "cowboyMinusWizardDelta": 0.155
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+   },
+   "cowboyShare": 0.425,
+   "wizardShare": 0.472,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 270,
+     "wizard": 159
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 155,
+     "wizard": 313
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.819,
+   "actionsPerMatch": 32.96,
+   "setsPerMatch": 0.969,
+   "triggersPerMatch": 0.943,
+   "matchesWithTrigger": 943,
+   "attackHistOfTriggers": {
+    "1": 187,
+    "2": 713,
+    "3": 43
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.742,
+    "Y": 0.943
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 256,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 26,
+   "sidesWithTrapNeverSet": 31,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 565,
+    "wizard": 345,
+    "draw": 90
+   },
+   "cowboyShare": 0.565,
+   "wizardShare": 0.345,
+   "drawShare": 0.09,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 339,
+     "wizard": 105
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 226,
+     "wizard": 240
+    }
+   },
+   "meanFinalRound": 7.46,
+   "baseDestroyedShare": 0.815,
+   "actionsPerMatch": 33.54,
+   "setsPerMatch": 0.969,
+   "triggersPerMatch": 0.946,
+   "matchesWithTrigger": 946,
+   "attackHistOfTriggers": {
+    "1": 182,
+    "2": 712,
+    "3": 52
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.762,
+    "Y": 0.946
+   },
+   "forgoneCastsPerMatch": 0.256,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 23,
+   "sidesWithTrapNeverSet": 31,
+   "paired": {
+    "winnerChanged": 262,
+    "cowboyWinShareDelta": 0.14,
+    "cowboyWinShareDeltaCI95": [
+     0.114,
+     0.166
+    ],
+    "cowboyMinusWizardDelta": 0.267
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 495,
+    "wizard": 401,
+    "draw": 104
+   },
+   "cowboyShare": 0.495,
+   "wizardShare": 0.401,
+   "drawShare": 0.104,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 298,
+     "wizard": 135
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 197,
+     "wizard": 266
+    }
+   },
+   "meanFinalRound": 7.4,
+   "baseDestroyedShare": 0.827,
+   "actionsPerMatch": 33.39,
+   "setsPerMatch": 0.969,
+   "triggersPerMatch": 0.946,
+   "matchesWithTrigger": 946,
+   "attackHistOfTriggers": {
+    "1": 182,
+    "2": 712,
+    "3": 52
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.762,
+    "Y": 0.946
+   },
+   "forgoneCastsPerMatch": 0.256,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 23,
+   "sidesWithTrapNeverSet": 31,
+   "paired": {
+    "winnerChanged": 203,
+    "cowboyWinShareDelta": 0.07,
+    "cowboyWinShareDeltaCI95": [
+     0.047,
+     0.093
+    ],
+    "cowboyMinusWizardDelta": 0.141
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 411,
+    "wizard": 480,
+    "draw": 109
+   },
+   "cowboyShare": 0.411,
+   "wizardShare": 0.48,
+   "drawShare": 0.109,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 265,
+     "wizard": 166
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 146,
+     "wizard": 314
+    }
+   },
+   "meanFinalRound": 7.31,
+   "baseDestroyedShare": 0.823,
+   "actionsPerMatch": 32.95,
+   "setsPerMatch": 0.969,
+   "triggersPerMatch": 0.946,
+   "matchesWithTrigger": 946,
+   "attackHistOfTriggers": {
+    "1": 182,
+    "2": 712,
+    "3": 52
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.762,
+    "Y": 0.946
+   },
+   "forgoneCastsPerMatch": 0.256,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 23,
+   "sidesWithTrapNeverSet": 31,
+   "paired": {
+    "winnerChanged": 45,
+    "cowboyWinShareDelta": -0.014,
+    "cowboyWinShareDeltaCI95": [
+     -0.025,
+     -0.003
+    ],
+    "cowboyMinusWizardDelta": -0.022
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 576,
+    "wizard": 338,
+    "draw": 86
+   },
+   "cowboyShare": 0.576,
+   "wizardShare": 0.338,
+   "drawShare": 0.086,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 347,
+     "wizard": 98
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 229,
+     "wizard": 240
+    }
+   },
+   "meanFinalRound": 7.45,
+   "baseDestroyedShare": 0.823,
+   "actionsPerMatch": 33.54,
+   "setsPerMatch": 0.969,
+   "triggersPerMatch": 0.943,
+   "matchesWithTrigger": 943,
+   "attackHistOfTriggers": {
+    "1": 187,
+    "2": 713,
+    "3": 43
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.742,
+    "Y": 0.943
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 256,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 26,
+   "sidesWithTrapNeverSet": 31,
+   "paired": {
+    "winnerChanged": 247,
+    "cowboyWinShareDelta": 0.151,
+    "cowboyWinShareDeltaCI95": [
+     0.127,
+     0.175
+    ],
+    "cowboyMinusWizardDelta": 0.285
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 507,
+    "wizard": 399,
+    "draw": 94
+   },
+   "cowboyShare": 0.507,
+   "wizardShare": 0.399,
+   "drawShare": 0.094,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 302,
+     "wizard": 131
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 205,
+     "wizard": 268
+    }
+   },
+   "meanFinalRound": 7.38,
+   "baseDestroyedShare": 0.837,
+   "actionsPerMatch": 33.35,
+   "setsPerMatch": 0.969,
+   "triggersPerMatch": 0.943,
+   "matchesWithTrigger": 943,
+   "attackHistOfTriggers": {
+    "1": 187,
+    "2": 713,
+    "3": 43
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.742,
+    "Y": 0.943
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 256,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 26,
+   "sidesWithTrapNeverSet": 31,
+   "paired": {
+    "winnerChanged": 172,
+    "cowboyWinShareDelta": 0.082,
+    "cowboyWinShareDeltaCI95": [
+     0.061,
+     0.103
+    ],
+    "cowboyMinusWizardDelta": 0.155
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+   },
+   "cowboyShare": 0.425,
+   "wizardShare": 0.472,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 270,
+     "wizard": 159
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 155,
+     "wizard": 313
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.819,
+   "actionsPerMatch": 32.96,
+   "setsPerMatch": 0.969,
+   "triggersPerMatch": 0.943,
+   "matchesWithTrigger": 943,
+   "attackHistOfTriggers": {
+    "1": 187,
+    "2": 713,
+    "3": 43
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.742,
+    "Y": 0.943
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 256,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 26,
+   "sidesWithTrapNeverSet": 31,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 251,
+    "wizard": 665,
+    "draw": 84
+   },
+   "cowboyShare": 0.251,
+   "wizardShare": 0.665,
+   "drawShare": 0.084,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 154,
+     "wizard": 285
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 97,
+     "wizard": 380
+    }
+   },
+   "meanFinalRound": 6.87,
+   "baseDestroyedShare": 0.864,
+   "actionsPerMatch": 31.13,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.999,
+   "matchesWithTrigger": 999,
+   "attackHistOfTriggers": {
+    "1": 775,
+    "2": 224,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.223,
+    "Y": 0.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 362,
+    "cowboyWinShareDelta": -0.174,
+    "cowboyWinShareDeltaCI95": [
+     -0.205,
+     -0.143
+    ],
+    "cowboyMinusWizardDelta": -0.367
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 270,
+    "wizard": 641,
+    "draw": 89
+   },
+   "cowboyShare": 0.27,
+   "wizardShare": 0.641,
+   "drawShare": 0.089,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 168,
+     "wizard": 265
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 102,
+     "wizard": 376
+    }
+   },
+   "meanFinalRound": 7.04,
+   "baseDestroyedShare": 0.844,
+   "actionsPerMatch": 31.94,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.999,
+   "matchesWithTrigger": 999,
+   "attackHistOfTriggers": {
+    "1": 775,
+    "2": 224,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.223,
+    "Y": 0.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 333,
+    "cowboyWinShareDelta": -0.155,
+    "cowboyWinShareDeltaCI95": [
+     -0.185,
+     -0.125
+    ],
+    "cowboyMinusWizardDelta": -0.324
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+   },
+   "cowboyShare": 0.425,
+   "wizardShare": 0.472,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 270,
+     "wizard": 159
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 155,
+     "wizard": 313
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.819,
+   "actionsPerMatch": 32.99,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.999,
+   "matchesWithTrigger": 999,
+   "attackHistOfTriggers": {
+    "1": 775,
+    "2": 224,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.223,
+    "Y": 0.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 251,
+    "wizard": 665,
+    "draw": 84
+   },
+   "cowboyShare": 0.251,
+   "wizardShare": 0.665,
+   "drawShare": 0.084,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 154,
+     "wizard": 285
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 97,
+     "wizard": 380
+    }
+   },
+   "meanFinalRound": 6.87,
+   "baseDestroyedShare": 0.864,
+   "actionsPerMatch": 31.13,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.999,
+   "matchesWithTrigger": 999,
+   "attackHistOfTriggers": {
+    "1": 775,
+    "2": 224,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.223,
+    "Y": 0.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 362,
+    "cowboyWinShareDelta": -0.174,
+    "cowboyWinShareDeltaCI95": [
+     -0.205,
+     -0.143
+    ],
+    "cowboyMinusWizardDelta": -0.367
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 270,
+    "wizard": 641,
+    "draw": 89
+   },
+   "cowboyShare": 0.27,
+   "wizardShare": 0.641,
+   "drawShare": 0.089,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 168,
+     "wizard": 265
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 102,
+     "wizard": 376
+    }
+   },
+   "meanFinalRound": 7.04,
+   "baseDestroyedShare": 0.844,
+   "actionsPerMatch": 31.94,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.999,
+   "matchesWithTrigger": 999,
+   "attackHistOfTriggers": {
+    "1": 775,
+    "2": 224,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.223,
+    "Y": 0.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 333,
+    "cowboyWinShareDelta": -0.155,
+    "cowboyWinShareDeltaCI95": [
+     -0.185,
+     -0.125
+    ],
+    "cowboyMinusWizardDelta": -0.324
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+   },
+   "cowboyShare": 0.425,
+   "wizardShare": 0.472,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 270,
+     "wizard": 159
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 155,
+     "wizard": 313
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.819,
+   "actionsPerMatch": 32.99,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.999,
+   "matchesWithTrigger": 999,
+   "attackHistOfTriggers": {
+    "1": 775,
+    "2": 224,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.223,
+    "Y": 0.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 251,
+    "wizard": 665,
+    "draw": 84
+   },
+   "cowboyShare": 0.251,
+   "wizardShare": 0.665,
+   "drawShare": 0.084,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 154,
+     "wizard": 285
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 97,
+     "wizard": 380
+    }
+   },
+   "meanFinalRound": 6.87,
+   "baseDestroyedShare": 0.864,
+   "actionsPerMatch": 31.13,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.999,
+   "matchesWithTrigger": 999,
+   "attackHistOfTriggers": {
+    "1": 775,
+    "2": 224,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.223,
+    "Y": 0.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 362,
+    "cowboyWinShareDelta": -0.174,
+    "cowboyWinShareDeltaCI95": [
+     -0.205,
+     -0.143
+    ],
+    "cowboyMinusWizardDelta": -0.367
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 270,
+    "wizard": 641,
+    "draw": 89
+   },
+   "cowboyShare": 0.27,
+   "wizardShare": 0.641,
+   "drawShare": 0.089,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 168,
+     "wizard": 265
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 102,
+     "wizard": 376
+    }
+   },
+   "meanFinalRound": 7.04,
+   "baseDestroyedShare": 0.844,
+   "actionsPerMatch": 31.94,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.999,
+   "matchesWithTrigger": 999,
+   "attackHistOfTriggers": {
+    "1": 775,
+    "2": 224,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.223,
+    "Y": 0.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 333,
+    "cowboyWinShareDelta": -0.155,
+    "cowboyWinShareDeltaCI95": [
+     -0.185,
+     -0.125
+    ],
+    "cowboyMinusWizardDelta": -0.324
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+   },
+   "cowboyShare": 0.425,
+   "wizardShare": 0.472,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 270,
+     "wizard": 159
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 155,
+     "wizard": 313
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.819,
+   "actionsPerMatch": 32.99,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.999,
+   "matchesWithTrigger": 999,
+   "attackHistOfTriggers": {
+    "1": 775,
+    "2": 224,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.223,
+    "Y": 0.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 251,
+    "wizard": 665,
+    "draw": 84
+   },
+   "cowboyShare": 0.251,
+   "wizardShare": 0.665,
+   "drawShare": 0.084,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 154,
+     "wizard": 285
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 97,
+     "wizard": 380
+    }
+   },
+   "meanFinalRound": 6.87,
+   "baseDestroyedShare": 0.864,
+   "actionsPerMatch": 31.13,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.999,
+   "matchesWithTrigger": 999,
+   "attackHistOfTriggers": {
+    "1": 775,
+    "2": 224,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.223,
+    "Y": 0.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 362,
+    "cowboyWinShareDelta": -0.174,
+    "cowboyWinShareDeltaCI95": [
+     -0.205,
+     -0.143
+    ],
+    "cowboyMinusWizardDelta": -0.367
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 270,
+    "wizard": 641,
+    "draw": 89
+   },
+   "cowboyShare": 0.27,
+   "wizardShare": 0.641,
+   "drawShare": 0.089,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 168,
+     "wizard": 265
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 102,
+     "wizard": 376
+    }
+   },
+   "meanFinalRound": 7.04,
+   "baseDestroyedShare": 0.844,
+   "actionsPerMatch": 31.94,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.999,
+   "matchesWithTrigger": 999,
+   "attackHistOfTriggers": {
+    "1": 775,
+    "2": 224,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.223,
+    "Y": 0.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 333,
+    "cowboyWinShareDelta": -0.155,
+    "cowboyWinShareDeltaCI95": [
+     -0.185,
+     -0.125
+    ],
+    "cowboyMinusWizardDelta": -0.324
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+   },
+   "cowboyShare": 0.425,
+   "wizardShare": 0.472,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 270,
+     "wizard": 159
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 155,
+     "wizard": 313
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.819,
+   "actionsPerMatch": 32.99,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.999,
+   "matchesWithTrigger": 999,
+   "attackHistOfTriggers": {
+    "1": 775,
+    "2": 224,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.223,
+    "Y": 0.999
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 1,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 285,
+    "wizard": 632,
+    "draw": 83
+   },
+   "cowboyShare": 0.285,
+   "wizardShare": 0.632,
+   "drawShare": 0.083,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 194,
+     "wizard": 239
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 91,
+     "wizard": 393
+    }
+   },
+   "meanFinalRound": 7.37,
+   "baseDestroyedShare": 0.827,
+   "actionsPerMatch": 33.26,
+   "setsPerMatch": 0.964,
+   "triggersPerMatch": 0.915,
+   "matchesWithTrigger": 915,
+   "attackHistOfTriggers": {
+    "1": 199,
+    "2": 674,
+    "3": 42
+   },
+   "meanTriggerRound": 5.28,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.673,
+    "Y": 0.915
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 49,
+   "sidesWithTrapNeverSet": 36,
+   "paired": {
+    "winnerChanged": 236,
+    "cowboyWinShareDelta": -0.14,
+    "cowboyWinShareDeltaCI95": [
+     -0.164,
+     -0.116
+    ],
+    "cowboyMinusWizardDelta": -0.3
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 333,
+    "wizard": 564,
+    "draw": 103
+   },
+   "cowboyShare": 0.333,
+   "wizardShare": 0.564,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 227,
+     "wizard": 206
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 106,
+     "wizard": 358
+    }
+   },
+   "meanFinalRound": 7.35,
+   "baseDestroyedShare": 0.84,
+   "actionsPerMatch": 33.22,
+   "setsPerMatch": 0.964,
+   "triggersPerMatch": 0.915,
+   "matchesWithTrigger": 915,
+   "attackHistOfTriggers": {
+    "1": 199,
+    "2": 674,
+    "3": 42
+   },
+   "meanTriggerRound": 5.28,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.673,
+    "Y": 0.915
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 49,
+   "sidesWithTrapNeverSet": 36,
+   "paired": {
+    "winnerChanged": 155,
+    "cowboyWinShareDelta": -0.092,
+    "cowboyWinShareDeltaCI95": [
+     -0.112,
+     -0.072
+    ],
+    "cowboyMinusWizardDelta": -0.184
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+   },
+   "cowboyShare": 0.425,
+   "wizardShare": 0.472,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 270,
+     "wizard": 159
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 155,
+     "wizard": 313
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.819,
+   "actionsPerMatch": 32.96,
+   "setsPerMatch": 0.964,
+   "triggersPerMatch": 0.915,
+   "matchesWithTrigger": 915,
+   "attackHistOfTriggers": {
+    "1": 199,
+    "2": 674,
+    "3": 42
+   },
+   "meanTriggerRound": 5.28,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.673,
+    "Y": 0.915
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 49,
+   "sidesWithTrapNeverSet": 36,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 287,
+    "wizard": 634,
+    "draw": 79
+   },
+   "cowboyShare": 0.287,
+   "wizardShare": 0.634,
+   "drawShare": 0.079,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 199,
+     "wizard": 237
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 88,
+     "wizard": 397
+    }
+   },
+   "meanFinalRound": 7.35,
+   "baseDestroyedShare": 0.847,
+   "actionsPerMatch": 33.17,
+   "setsPerMatch": 0.969,
+   "triggersPerMatch": 0.943,
+   "matchesWithTrigger": 943,
+   "attackHistOfTriggers": {
+    "1": 195,
+    "2": 711,
+    "3": 37
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.728,
+    "Y": 0.943
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 273,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 26,
+   "sidesWithTrapNeverSet": 31,
+   "paired": {
+    "winnerChanged": 242,
+    "cowboyWinShareDelta": -0.138,
+    "cowboyWinShareDeltaCI95": [
+     -0.162,
+     -0.114
+    ],
+    "cowboyMinusWizardDelta": -0.3
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 335,
+    "wizard": 564,
+    "draw": 101
+   },
+   "cowboyShare": 0.335,
+   "wizardShare": 0.564,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 229,
+     "wizard": 203
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 106,
+     "wizard": 361
+    }
+   },
+   "meanFinalRound": 7.34,
+   "baseDestroyedShare": 0.853,
+   "actionsPerMatch": 33.18,
+   "setsPerMatch": 0.969,
+   "triggersPerMatch": 0.943,
+   "matchesWithTrigger": 943,
+   "attackHistOfTriggers": {
+    "1": 195,
+    "2": 711,
+    "3": 37
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.728,
+    "Y": 0.943
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 273,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 26,
+   "sidesWithTrapNeverSet": 31,
+   "paired": {
+    "winnerChanged": 162,
+    "cowboyWinShareDelta": -0.09,
+    "cowboyWinShareDeltaCI95": [
+     -0.11,
+     -0.07
+    ],
+    "cowboyMinusWizardDelta": -0.182
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+   },
+   "cowboyShare": 0.425,
+   "wizardShare": 0.472,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 270,
+     "wizard": 159
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 155,
+     "wizard": 313
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.819,
+   "actionsPerMatch": 32.96,
+   "setsPerMatch": 0.969,
+   "triggersPerMatch": 0.943,
+   "matchesWithTrigger": 943,
+   "attackHistOfTriggers": {
+    "1": 195,
+    "2": 711,
+    "3": 37
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.728,
+    "Y": 0.943
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 273,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 26,
+   "sidesWithTrapNeverSet": 31,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 283,
+    "wizard": 625,
+    "draw": 92
+   },
+   "cowboyShare": 0.283,
+   "wizardShare": 0.625,
+   "drawShare": 0.092,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 194,
+     "wizard": 236
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 89,
+     "wizard": 389
+    }
+   },
+   "meanFinalRound": 7.38,
+   "baseDestroyedShare": 0.828,
+   "actionsPerMatch": 33.23,
+   "setsPerMatch": 0.969,
+   "triggersPerMatch": 0.946,
+   "matchesWithTrigger": 946,
+   "attackHistOfTriggers": {
+    "1": 188,
+    "2": 714,
+    "3": 44
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.748,
+    "Y": 0.946
+   },
+   "forgoneCastsPerMatch": 0.273,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 23,
+   "sidesWithTrapNeverSet": 31,
+   "paired": {
+    "winnerChanged": 263,
+    "cowboyWinShareDelta": -0.142,
+    "cowboyWinShareDeltaCI95": [
+     -0.167,
+     -0.117
+    ],
+    "cowboyMinusWizardDelta": -0.295
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 334,
+    "wizard": 550,
+    "draw": 116
+   },
+   "cowboyShare": 0.334,
+   "wizardShare": 0.55,
+   "drawShare": 0.116,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 228,
+     "wizard": 199
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 106,
+     "wizard": 351
+    }
+   },
+   "meanFinalRound": 7.36,
+   "baseDestroyedShare": 0.843,
+   "actionsPerMatch": 33.24,
+   "setsPerMatch": 0.969,
+   "triggersPerMatch": 0.946,
+   "matchesWithTrigger": 946,
+   "attackHistOfTriggers": {
+    "1": 188,
+    "2": 714,
+    "3": 44
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.748,
+    "Y": 0.946
+   },
+   "forgoneCastsPerMatch": 0.273,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 23,
+   "sidesWithTrapNeverSet": 31,
+   "paired": {
+    "winnerChanged": 190,
+    "cowboyWinShareDelta": -0.091,
+    "cowboyWinShareDeltaCI95": [
+     -0.113,
+     -0.069
+    ],
+    "cowboyMinusWizardDelta": -0.169
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 425,
+    "wizard": 451,
+    "draw": 124
+   },
+   "cowboyShare": 0.425,
+   "wizardShare": 0.451,
+   "drawShare": 0.124,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 264,
+     "wizard": 153
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 161,
+     "wizard": 298
+    }
+   },
+   "meanFinalRound": 7.33,
+   "baseDestroyedShare": 0.809,
+   "actionsPerMatch": 33.08,
+   "setsPerMatch": 0.969,
+   "triggersPerMatch": 0.946,
+   "matchesWithTrigger": 946,
+   "attackHistOfTriggers": {
+    "1": 188,
+    "2": 714,
+    "3": 44
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.748,
+    "Y": 0.946
+   },
+   "forgoneCastsPerMatch": 0.273,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 23,
+   "sidesWithTrapNeverSet": 31,
+   "paired": {
+    "winnerChanged": 58,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     -0.012,
+     0.012
+    ],
+    "cowboyMinusWizardDelta": 0.021
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 287,
+    "wizard": 634,
+    "draw": 79
+   },
+   "cowboyShare": 0.287,
+   "wizardShare": 0.634,
+   "drawShare": 0.079,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 199,
+     "wizard": 237
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 88,
+     "wizard": 397
+    }
+   },
+   "meanFinalRound": 7.35,
+   "baseDestroyedShare": 0.847,
+   "actionsPerMatch": 33.17,
+   "setsPerMatch": 0.969,
+   "triggersPerMatch": 0.943,
+   "matchesWithTrigger": 943,
+   "attackHistOfTriggers": {
+    "1": 195,
+    "2": 711,
+    "3": 37
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.728,
+    "Y": 0.943
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 273,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 26,
+   "sidesWithTrapNeverSet": 31,
+   "paired": {
+    "winnerChanged": 242,
+    "cowboyWinShareDelta": -0.138,
+    "cowboyWinShareDeltaCI95": [
+     -0.162,
+     -0.114
+    ],
+    "cowboyMinusWizardDelta": -0.3
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 335,
+    "wizard": 564,
+    "draw": 101
+   },
+   "cowboyShare": 0.335,
+   "wizardShare": 0.564,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 229,
+     "wizard": 203
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 106,
+     "wizard": 361
+    }
+   },
+   "meanFinalRound": 7.34,
+   "baseDestroyedShare": 0.853,
+   "actionsPerMatch": 33.18,
+   "setsPerMatch": 0.969,
+   "triggersPerMatch": 0.943,
+   "matchesWithTrigger": 943,
+   "attackHistOfTriggers": {
+    "1": 195,
+    "2": 711,
+    "3": 37
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.728,
+    "Y": 0.943
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 273,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 26,
+   "sidesWithTrapNeverSet": 31,
+   "paired": {
+    "winnerChanged": 162,
+    "cowboyWinShareDelta": -0.09,
+    "cowboyWinShareDeltaCI95": [
+     -0.11,
+     -0.07
+    ],
+    "cowboyMinusWizardDelta": -0.182
+   }
+  },
+  {
+   "block": "0-999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 425,
+    "wizard": 472,
+    "draw": 103
+   },
+   "cowboyShare": 0.425,
+   "wizardShare": 0.472,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 480,
+     "cowboy": 270,
+     "wizard": 159
+    },
+    "wizard": {
+     "matches": 520,
+     "cowboy": 155,
+     "wizard": 313
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.819,
+   "actionsPerMatch": 32.96,
+   "setsPerMatch": 0.969,
+   "triggersPerMatch": 0.943,
+   "matchesWithTrigger": 943,
+   "attackHistOfTriggers": {
+    "1": 195,
+    "2": 711,
+    "3": 37
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.728,
+    "Y": 0.943
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 273,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 26,
+   "sidesWithTrapNeverSet": 31,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "baseline",
+   "n": 1000,
+   "wins": {
+    "cowboy": 424,
+    "wizard": 475,
+    "draw": 101
+   },
+   "cowboyShare": 0.424,
+   "wizardShare": 0.475,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 276,
+     "wizard": 184
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 148,
+     "wizard": 291
+    }
+   },
+   "meanFinalRound": 7.28,
+   "baseDestroyedShare": 0.824,
+   "actionsPerMatch": 31.94,
+   "setsPerMatch": 0,
+   "triggersPerMatch": 0,
+   "matchesWithTrigger": 0,
+   "attackHistOfTriggers": {
+    "1": 0,
+    "2": 0,
+    "3": 0
+   },
+   "meanTriggerRound": null,
+   "nominalDamagePreventedPerMatch": {
+    "X": null,
+    "Y": null
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0
+  },
+  {
+   "block": "1000-1999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 417,
+    "wizard": 474,
+    "draw": 109
+   },
+   "cowboyShare": 0.417,
+   "wizardShare": 0.474,
+   "drawShare": 0.109,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 248,
+     "wizard": 203
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 169,
+     "wizard": 271
+    }
+   },
+   "meanFinalRound": 7.33,
+   "baseDestroyedShare": 0.793,
+   "actionsPerMatch": 34.12,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.998,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1571,
+    "2": 427,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.425,
+    "Y": 1.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 391,
+    "cowboyWinShareDelta": -0.007,
+    "cowboyWinShareDeltaCI95": [
+     -0.041,
+     0.027
+    ],
+    "cowboyMinusWizardDelta": -0.006
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 444,
+    "wizard": 461,
+    "draw": 95
+   },
+   "cowboyShare": 0.444,
+   "wizardShare": 0.461,
+   "drawShare": 0.095,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 280,
+     "wizard": 183
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 164,
+     "wizard": 278
+    }
+   },
+   "meanFinalRound": 7.33,
+   "baseDestroyedShare": 0.799,
+   "actionsPerMatch": 34.28,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.998,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1571,
+    "2": 427,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.425,
+    "Y": 1.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 363,
+    "cowboyWinShareDelta": 0.02,
+    "cowboyWinShareDeltaCI95": [
+     -0.012,
+     0.052
+    ],
+    "cowboyMinusWizardDelta": 0.034
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 424,
+    "wizard": 475,
+    "draw": 101
+   },
+   "cowboyShare": 0.424,
+   "wizardShare": 0.475,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 276,
+     "wizard": 184
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 148,
+     "wizard": 291
+    }
+   },
+   "meanFinalRound": 7.28,
+   "baseDestroyedShare": 0.824,
+   "actionsPerMatch": 33.94,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.998,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1571,
+    "2": 427,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.425,
+    "Y": 1.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 417,
+    "wizard": 474,
+    "draw": 109
+   },
+   "cowboyShare": 0.417,
+   "wizardShare": 0.474,
+   "drawShare": 0.109,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 248,
+     "wizard": 203
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 169,
+     "wizard": 271
+    }
+   },
+   "meanFinalRound": 7.33,
+   "baseDestroyedShare": 0.793,
+   "actionsPerMatch": 34.12,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.998,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1571,
+    "2": 427,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.425,
+    "Y": 1.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 391,
+    "cowboyWinShareDelta": -0.007,
+    "cowboyWinShareDeltaCI95": [
+     -0.041,
+     0.027
+    ],
+    "cowboyMinusWizardDelta": -0.006
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 444,
+    "wizard": 461,
+    "draw": 95
+   },
+   "cowboyShare": 0.444,
+   "wizardShare": 0.461,
+   "drawShare": 0.095,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 280,
+     "wizard": 183
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 164,
+     "wizard": 278
+    }
+   },
+   "meanFinalRound": 7.33,
+   "baseDestroyedShare": 0.799,
+   "actionsPerMatch": 34.28,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.998,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1571,
+    "2": 427,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.425,
+    "Y": 1.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 363,
+    "cowboyWinShareDelta": 0.02,
+    "cowboyWinShareDeltaCI95": [
+     -0.012,
+     0.052
+    ],
+    "cowboyMinusWizardDelta": 0.034
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 424,
+    "wizard": 475,
+    "draw": 101
+   },
+   "cowboyShare": 0.424,
+   "wizardShare": 0.475,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 276,
+     "wizard": 184
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 148,
+     "wizard": 291
+    }
+   },
+   "meanFinalRound": 7.28,
+   "baseDestroyedShare": 0.824,
+   "actionsPerMatch": 33.94,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.998,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1571,
+    "2": 427,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.425,
+    "Y": 1.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 417,
+    "wizard": 474,
+    "draw": 109
+   },
+   "cowboyShare": 0.417,
+   "wizardShare": 0.474,
+   "drawShare": 0.109,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 248,
+     "wizard": 203
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 169,
+     "wizard": 271
+    }
+   },
+   "meanFinalRound": 7.33,
+   "baseDestroyedShare": 0.793,
+   "actionsPerMatch": 34.12,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.998,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1571,
+    "2": 427,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.425,
+    "Y": 1.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 391,
+    "cowboyWinShareDelta": -0.007,
+    "cowboyWinShareDeltaCI95": [
+     -0.041,
+     0.027
+    ],
+    "cowboyMinusWizardDelta": -0.006
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 444,
+    "wizard": 461,
+    "draw": 95
+   },
+   "cowboyShare": 0.444,
+   "wizardShare": 0.461,
+   "drawShare": 0.095,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 280,
+     "wizard": 183
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 164,
+     "wizard": 278
+    }
+   },
+   "meanFinalRound": 7.33,
+   "baseDestroyedShare": 0.799,
+   "actionsPerMatch": 34.28,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.998,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1571,
+    "2": 427,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.425,
+    "Y": 1.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 363,
+    "cowboyWinShareDelta": 0.02,
+    "cowboyWinShareDeltaCI95": [
+     -0.012,
+     0.052
+    ],
+    "cowboyMinusWizardDelta": 0.034
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 424,
+    "wizard": 475,
+    "draw": 101
+   },
+   "cowboyShare": 0.424,
+   "wizardShare": 0.475,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 276,
+     "wizard": 184
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 148,
+     "wizard": 291
+    }
+   },
+   "meanFinalRound": 7.28,
+   "baseDestroyedShare": 0.824,
+   "actionsPerMatch": 33.94,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.998,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1571,
+    "2": 427,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.425,
+    "Y": 1.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 417,
+    "wizard": 474,
+    "draw": 109
+   },
+   "cowboyShare": 0.417,
+   "wizardShare": 0.474,
+   "drawShare": 0.109,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 248,
+     "wizard": 203
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 169,
+     "wizard": 271
+    }
+   },
+   "meanFinalRound": 7.33,
+   "baseDestroyedShare": 0.793,
+   "actionsPerMatch": 34.12,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.998,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1571,
+    "2": 427,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.425,
+    "Y": 1.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 391,
+    "cowboyWinShareDelta": -0.007,
+    "cowboyWinShareDeltaCI95": [
+     -0.041,
+     0.027
+    ],
+    "cowboyMinusWizardDelta": -0.006
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 444,
+    "wizard": 461,
+    "draw": 95
+   },
+   "cowboyShare": 0.444,
+   "wizardShare": 0.461,
+   "drawShare": 0.095,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 280,
+     "wizard": 183
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 164,
+     "wizard": 278
+    }
+   },
+   "meanFinalRound": 7.33,
+   "baseDestroyedShare": 0.799,
+   "actionsPerMatch": 34.28,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.998,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1571,
+    "2": 427,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.425,
+    "Y": 1.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 363,
+    "cowboyWinShareDelta": 0.02,
+    "cowboyWinShareDeltaCI95": [
+     -0.012,
+     0.052
+    ],
+    "cowboyMinusWizardDelta": 0.034
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 424,
+    "wizard": 475,
+    "draw": 101
+   },
+   "cowboyShare": 0.424,
+   "wizardShare": 0.475,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 276,
+     "wizard": 184
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 148,
+     "wizard": 291
+    }
+   },
+   "meanFinalRound": 7.28,
+   "baseDestroyedShare": 0.824,
+   "actionsPerMatch": 33.94,
+   "setsPerMatch": 2,
+   "triggersPerMatch": 1.998,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 1571,
+    "2": 427,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 2.425,
+    "Y": 1.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 428,
+    "wizard": 478,
+    "draw": 94
+   },
+   "cowboyShare": 0.428,
+   "wizardShare": 0.478,
+   "drawShare": 0.094,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 275,
+     "wizard": 179
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 153,
+     "wizard": 299
+    }
+   },
+   "meanFinalRound": 7.61,
+   "baseDestroyedShare": 0.78,
+   "actionsPerMatch": 35.22,
+   "setsPerMatch": 1.928,
+   "triggersPerMatch": 1.834,
+   "matchesWithTrigger": 930,
+   "attackHistOfTriggers": {
+    "1": 328,
+    "2": 1385,
+    "3": 121
+   },
+   "meanTriggerRound": 5.28,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.461,
+    "Y": 1.834
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 66,
+   "sidesWithTrapNeverSet": 72,
+   "paired": {
+    "winnerChanged": 223,
+    "cowboyWinShareDelta": 0.004,
+    "cowboyWinShareDeltaCI95": [
+     -0.02,
+     0.028
+    ],
+    "cowboyMinusWizardDelta": 0.001
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 418,
+    "wizard": 468,
+    "draw": 114
+   },
+   "cowboyShare": 0.418,
+   "wizardShare": 0.468,
+   "drawShare": 0.114,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 267,
+     "wizard": 179
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 151,
+     "wizard": 289
+    }
+   },
+   "meanFinalRound": 7.48,
+   "baseDestroyedShare": 0.81,
+   "actionsPerMatch": 34.78,
+   "setsPerMatch": 1.928,
+   "triggersPerMatch": 1.832,
+   "matchesWithTrigger": 930,
+   "attackHistOfTriggers": {
+    "1": 357,
+    "2": 1354,
+    "3": 121
+   },
+   "meanTriggerRound": 5.28,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.428,
+    "Y": 1.832
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 68,
+   "sidesWithTrapNeverSet": 72,
+   "paired": {
+    "winnerChanged": 196,
+    "cowboyWinShareDelta": -0.006,
+    "cowboyWinShareDeltaCI95": [
+     -0.028,
+     0.016
+    ],
+    "cowboyMinusWizardDelta": 0.001
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 424,
+    "wizard": 475,
+    "draw": 101
+   },
+   "cowboyShare": 0.424,
+   "wizardShare": 0.475,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 276,
+     "wizard": 184
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 148,
+     "wizard": 291
+    }
+   },
+   "meanFinalRound": 7.28,
+   "baseDestroyedShare": 0.824,
+   "actionsPerMatch": 33.87,
+   "setsPerMatch": 1.928,
+   "triggersPerMatch": 1.805,
+   "matchesWithTrigger": 930,
+   "attackHistOfTriggers": {
+    "1": 394,
+    "2": 1300,
+    "3": 111
+   },
+   "meanTriggerRound": 5.26,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.327,
+    "Y": 1.805
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 95,
+   "sidesWithTrapNeverSet": 72,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 447,
+    "wizard": 476,
+    "draw": 77
+   },
+   "cowboyShare": 0.447,
+   "wizardShare": 0.476,
+   "drawShare": 0.077,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 298,
+     "wizard": 173
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 149,
+     "wizard": 303
+    }
+   },
+   "meanFinalRound": 7.57,
+   "baseDestroyedShare": 0.801,
+   "actionsPerMatch": 35.09,
+   "setsPerMatch": 1.944,
+   "triggersPerMatch": 1.874,
+   "matchesWithTrigger": 937,
+   "attackHistOfTriggers": {
+    "1": 401,
+    "2": 1378,
+    "3": 95
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.442,
+    "Y": 1.874
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 462,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 35,
+   "sidesWithTrapNeverSet": 56,
+   "paired": {
+    "winnerChanged": 210,
+    "cowboyWinShareDelta": 0.023,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0.046
+    ],
+    "cowboyMinusWizardDelta": 0.022
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 433,
+    "wizard": 469,
+    "draw": 98
+   },
+   "cowboyShare": 0.433,
+   "wizardShare": 0.469,
+   "drawShare": 0.098,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 277,
+     "wizard": 179
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 156,
+     "wizard": 290
+    }
+   },
+   "meanFinalRound": 7.46,
+   "baseDestroyedShare": 0.822,
+   "actionsPerMatch": 34.7,
+   "setsPerMatch": 1.944,
+   "triggersPerMatch": 1.874,
+   "matchesWithTrigger": 937,
+   "attackHistOfTriggers": {
+    "1": 401,
+    "2": 1378,
+    "3": 95
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.442,
+    "Y": 1.874
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 462,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 35,
+   "sidesWithTrapNeverSet": 56,
+   "paired": {
+    "winnerChanged": 192,
+    "cowboyWinShareDelta": 0.009,
+    "cowboyWinShareDeltaCI95": [
+     -0.013,
+     0.031
+    ],
+    "cowboyMinusWizardDelta": 0.015
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 424,
+    "wizard": 475,
+    "draw": 101
+   },
+   "cowboyShare": 0.424,
+   "wizardShare": 0.475,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 276,
+     "wizard": 184
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 148,
+     "wizard": 291
+    }
+   },
+   "meanFinalRound": 7.28,
+   "baseDestroyedShare": 0.824,
+   "actionsPerMatch": 33.88,
+   "setsPerMatch": 1.944,
+   "triggersPerMatch": 1.874,
+   "matchesWithTrigger": 937,
+   "attackHistOfTriggers": {
+    "1": 401,
+    "2": 1378,
+    "3": 95
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.442,
+    "Y": 1.874
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 462,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 35,
+   "sidesWithTrapNeverSet": 56,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 439,
+    "wizard": 465,
+    "draw": 96
+   },
+   "cowboyShare": 0.439,
+   "wizardShare": 0.465,
+   "drawShare": 0.096,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 288,
+     "wizard": 165
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 151,
+     "wizard": 300
+    }
+   },
+   "meanFinalRound": 7.59,
+   "baseDestroyedShare": 0.774,
+   "actionsPerMatch": 35.12,
+   "setsPerMatch": 1.944,
+   "triggersPerMatch": 1.882,
+   "matchesWithTrigger": 941,
+   "attackHistOfTriggers": {
+    "1": 436,
+    "2": 1379,
+    "3": 67
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.395,
+    "Y": 1.882
+   },
+   "forgoneCastsPerMatch": 0.554,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 31,
+   "sidesWithTrapNeverSet": 56,
+   "paired": {
+    "winnerChanged": 260,
+    "cowboyWinShareDelta": 0.015,
+    "cowboyWinShareDeltaCI95": [
+     -0.011,
+     0.041
+    ],
+    "cowboyMinusWizardDelta": 0.025
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 428,
+    "wizard": 464,
+    "draw": 108
+   },
+   "cowboyShare": 0.428,
+   "wizardShare": 0.464,
+   "drawShare": 0.108,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 275,
+     "wizard": 171
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 153,
+     "wizard": 293
+    }
+   },
+   "meanFinalRound": 7.46,
+   "baseDestroyedShare": 0.819,
+   "actionsPerMatch": 34.68,
+   "setsPerMatch": 1.944,
+   "triggersPerMatch": 1.882,
+   "matchesWithTrigger": 941,
+   "attackHistOfTriggers": {
+    "1": 436,
+    "2": 1379,
+    "3": 67
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.395,
+    "Y": 1.882
+   },
+   "forgoneCastsPerMatch": 0.554,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 31,
+   "sidesWithTrapNeverSet": 56,
+   "paired": {
+    "winnerChanged": 229,
+    "cowboyWinShareDelta": 0.004,
+    "cowboyWinShareDeltaCI95": [
+     -0.02,
+     0.028
+    ],
+    "cowboyMinusWizardDelta": 0.015
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 413,
+    "wizard": 476,
+    "draw": 111
+   },
+   "cowboyShare": 0.413,
+   "wizardShare": 0.476,
+   "drawShare": 0.111,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 271,
+     "wizard": 184
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 142,
+     "wizard": 292
+    }
+   },
+   "meanFinalRound": 7.31,
+   "baseDestroyedShare": 0.825,
+   "actionsPerMatch": 33.94,
+   "setsPerMatch": 1.944,
+   "triggersPerMatch": 1.882,
+   "matchesWithTrigger": 941,
+   "attackHistOfTriggers": {
+    "1": 436,
+    "2": 1379,
+    "3": 67
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.395,
+    "Y": 1.882
+   },
+   "forgoneCastsPerMatch": 0.554,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 31,
+   "sidesWithTrapNeverSet": 56,
+   "paired": {
+    "winnerChanged": 87,
+    "cowboyWinShareDelta": -0.011,
+    "cowboyWinShareDeltaCI95": [
+     -0.026,
+     0.004
+    ],
+    "cowboyMinusWizardDelta": -0.012
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 447,
+    "wizard": 476,
+    "draw": 77
+   },
+   "cowboyShare": 0.447,
+   "wizardShare": 0.476,
+   "drawShare": 0.077,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 298,
+     "wizard": 173
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 149,
+     "wizard": 303
+    }
+   },
+   "meanFinalRound": 7.57,
+   "baseDestroyedShare": 0.801,
+   "actionsPerMatch": 35.09,
+   "setsPerMatch": 1.944,
+   "triggersPerMatch": 1.874,
+   "matchesWithTrigger": 937,
+   "attackHistOfTriggers": {
+    "1": 401,
+    "2": 1378,
+    "3": 95
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.442,
+    "Y": 1.874
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 462,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 35,
+   "sidesWithTrapNeverSet": 56,
+   "paired": {
+    "winnerChanged": 210,
+    "cowboyWinShareDelta": 0.023,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0.046
+    ],
+    "cowboyMinusWizardDelta": 0.022
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 433,
+    "wizard": 469,
+    "draw": 98
+   },
+   "cowboyShare": 0.433,
+   "wizardShare": 0.469,
+   "drawShare": 0.098,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 277,
+     "wizard": 179
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 156,
+     "wizard": 290
+    }
+   },
+   "meanFinalRound": 7.46,
+   "baseDestroyedShare": 0.822,
+   "actionsPerMatch": 34.7,
+   "setsPerMatch": 1.944,
+   "triggersPerMatch": 1.874,
+   "matchesWithTrigger": 937,
+   "attackHistOfTriggers": {
+    "1": 401,
+    "2": 1378,
+    "3": 95
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.442,
+    "Y": 1.874
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 462,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 35,
+   "sidesWithTrapNeverSet": 56,
+   "paired": {
+    "winnerChanged": 192,
+    "cowboyWinShareDelta": 0.009,
+    "cowboyWinShareDeltaCI95": [
+     -0.013,
+     0.031
+    ],
+    "cowboyMinusWizardDelta": 0.015
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "both",
+   "n": 1000,
+   "wins": {
+    "cowboy": 424,
+    "wizard": 475,
+    "draw": 101
+   },
+   "cowboyShare": 0.424,
+   "wizardShare": 0.475,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 276,
+     "wizard": 184
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 148,
+     "wizard": 291
+    }
+   },
+   "meanFinalRound": 7.28,
+   "baseDestroyedShare": 0.824,
+   "actionsPerMatch": 33.88,
+   "setsPerMatch": 1.944,
+   "triggersPerMatch": 1.874,
+   "matchesWithTrigger": 937,
+   "attackHistOfTriggers": {
+    "1": 401,
+    "2": 1378,
+    "3": 95
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 3.442,
+    "Y": 1.874
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 462,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 35,
+   "sidesWithTrapNeverSet": 56,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 631,
+    "wizard": 269,
+    "draw": 100
+   },
+   "cowboyShare": 0.631,
+   "wizardShare": 0.269,
+   "drawShare": 0.1,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 389,
+     "wizard": 87
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 242,
+     "wizard": 182
+    }
+   },
+   "meanFinalRound": 6.93,
+   "baseDestroyedShare": 0.87,
+   "actionsPerMatch": 31.37,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 778,
+    "2": 222,
+    "3": 0
+   },
+   "meanTriggerRound": 2,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.222,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 400,
+    "cowboyWinShareDelta": 0.207,
+    "cowboyWinShareDeltaCI95": [
+     0.174,
+     0.24
+    ],
+    "cowboyMinusWizardDelta": 0.413
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 603,
+    "wizard": 290,
+    "draw": 107
+   },
+   "cowboyShare": 0.603,
+   "wizardShare": 0.29,
+   "drawShare": 0.107,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 377,
+     "wizard": 95
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 226,
+     "wizard": 195
+    }
+   },
+   "meanFinalRound": 7.04,
+   "baseDestroyedShare": 0.843,
+   "actionsPerMatch": 31.89,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 778,
+    "2": 222,
+    "3": 0
+   },
+   "meanTriggerRound": 2,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.222,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 371,
+    "cowboyWinShareDelta": 0.179,
+    "cowboyWinShareDeltaCI95": [
+     0.147,
+     0.211
+    ],
+    "cowboyMinusWizardDelta": 0.364
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 424,
+    "wizard": 475,
+    "draw": 101
+   },
+   "cowboyShare": 0.424,
+   "wizardShare": 0.475,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 276,
+     "wizard": 184
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 148,
+     "wizard": 291
+    }
+   },
+   "meanFinalRound": 7.28,
+   "baseDestroyedShare": 0.824,
+   "actionsPerMatch": 32.94,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 778,
+    "2": 222,
+    "3": 0
+   },
+   "meanTriggerRound": 2,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.222,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 631,
+    "wizard": 269,
+    "draw": 100
+   },
+   "cowboyShare": 0.631,
+   "wizardShare": 0.269,
+   "drawShare": 0.1,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 389,
+     "wizard": 87
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 242,
+     "wizard": 182
+    }
+   },
+   "meanFinalRound": 6.93,
+   "baseDestroyedShare": 0.87,
+   "actionsPerMatch": 31.37,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 778,
+    "2": 222,
+    "3": 0
+   },
+   "meanTriggerRound": 2,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.222,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 400,
+    "cowboyWinShareDelta": 0.207,
+    "cowboyWinShareDeltaCI95": [
+     0.174,
+     0.24
+    ],
+    "cowboyMinusWizardDelta": 0.413
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 603,
+    "wizard": 290,
+    "draw": 107
+   },
+   "cowboyShare": 0.603,
+   "wizardShare": 0.29,
+   "drawShare": 0.107,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 377,
+     "wizard": 95
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 226,
+     "wizard": 195
+    }
+   },
+   "meanFinalRound": 7.04,
+   "baseDestroyedShare": 0.843,
+   "actionsPerMatch": 31.89,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 778,
+    "2": 222,
+    "3": 0
+   },
+   "meanTriggerRound": 2,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.222,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 371,
+    "cowboyWinShareDelta": 0.179,
+    "cowboyWinShareDeltaCI95": [
+     0.147,
+     0.211
+    ],
+    "cowboyMinusWizardDelta": 0.364
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 424,
+    "wizard": 475,
+    "draw": 101
+   },
+   "cowboyShare": 0.424,
+   "wizardShare": 0.475,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 276,
+     "wizard": 184
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 148,
+     "wizard": 291
+    }
+   },
+   "meanFinalRound": 7.28,
+   "baseDestroyedShare": 0.824,
+   "actionsPerMatch": 32.94,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 778,
+    "2": 222,
+    "3": 0
+   },
+   "meanTriggerRound": 2,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.222,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 631,
+    "wizard": 269,
+    "draw": 100
+   },
+   "cowboyShare": 0.631,
+   "wizardShare": 0.269,
+   "drawShare": 0.1,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 389,
+     "wizard": 87
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 242,
+     "wizard": 182
+    }
+   },
+   "meanFinalRound": 6.93,
+   "baseDestroyedShare": 0.87,
+   "actionsPerMatch": 31.37,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 778,
+    "2": 222,
+    "3": 0
+   },
+   "meanTriggerRound": 2,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.222,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 400,
+    "cowboyWinShareDelta": 0.207,
+    "cowboyWinShareDeltaCI95": [
+     0.174,
+     0.24
+    ],
+    "cowboyMinusWizardDelta": 0.413
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 603,
+    "wizard": 290,
+    "draw": 107
+   },
+   "cowboyShare": 0.603,
+   "wizardShare": 0.29,
+   "drawShare": 0.107,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 377,
+     "wizard": 95
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 226,
+     "wizard": 195
+    }
+   },
+   "meanFinalRound": 7.04,
+   "baseDestroyedShare": 0.843,
+   "actionsPerMatch": 31.89,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 778,
+    "2": 222,
+    "3": 0
+   },
+   "meanTriggerRound": 2,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.222,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 371,
+    "cowboyWinShareDelta": 0.179,
+    "cowboyWinShareDeltaCI95": [
+     0.147,
+     0.211
+    ],
+    "cowboyMinusWizardDelta": 0.364
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 424,
+    "wizard": 475,
+    "draw": 101
+   },
+   "cowboyShare": 0.424,
+   "wizardShare": 0.475,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 276,
+     "wizard": 184
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 148,
+     "wizard": 291
+    }
+   },
+   "meanFinalRound": 7.28,
+   "baseDestroyedShare": 0.824,
+   "actionsPerMatch": 32.94,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 778,
+    "2": 222,
+    "3": 0
+   },
+   "meanTriggerRound": 2,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.222,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 631,
+    "wizard": 269,
+    "draw": 100
+   },
+   "cowboyShare": 0.631,
+   "wizardShare": 0.269,
+   "drawShare": 0.1,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 389,
+     "wizard": 87
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 242,
+     "wizard": 182
+    }
+   },
+   "meanFinalRound": 6.93,
+   "baseDestroyedShare": 0.87,
+   "actionsPerMatch": 31.37,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 778,
+    "2": 222,
+    "3": 0
+   },
+   "meanTriggerRound": 2,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.222,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 400,
+    "cowboyWinShareDelta": 0.207,
+    "cowboyWinShareDeltaCI95": [
+     0.174,
+     0.24
+    ],
+    "cowboyMinusWizardDelta": 0.413
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 603,
+    "wizard": 290,
+    "draw": 107
+   },
+   "cowboyShare": 0.603,
+   "wizardShare": 0.29,
+   "drawShare": 0.107,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 377,
+     "wizard": 95
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 226,
+     "wizard": 195
+    }
+   },
+   "meanFinalRound": 7.04,
+   "baseDestroyedShare": 0.843,
+   "actionsPerMatch": 31.89,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 778,
+    "2": 222,
+    "3": 0
+   },
+   "meanTriggerRound": 2,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.222,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 371,
+    "cowboyWinShareDelta": 0.179,
+    "cowboyWinShareDeltaCI95": [
+     0.147,
+     0.211
+    ],
+    "cowboyMinusWizardDelta": 0.364
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 424,
+    "wizard": 475,
+    "draw": 101
+   },
+   "cowboyShare": 0.424,
+   "wizardShare": 0.475,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 276,
+     "wizard": 184
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 148,
+     "wizard": 291
+    }
+   },
+   "meanFinalRound": 7.28,
+   "baseDestroyedShare": 0.824,
+   "actionsPerMatch": 32.94,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 1,
+   "matchesWithTrigger": 1000,
+   "attackHistOfTriggers": {
+    "1": 778,
+    "2": 222,
+    "3": 0
+   },
+   "meanTriggerRound": 2,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.222,
+    "Y": 1
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 0,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 579,
+    "wizard": 321,
+    "draw": 100
+   },
+   "cowboyShare": 0.579,
+   "wizardShare": 0.321,
+   "drawShare": 0.1,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 356,
+     "wizard": 109
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 223,
+     "wizard": 212
+    }
+   },
+   "meanFinalRound": 7.4,
+   "baseDestroyedShare": 0.816,
+   "actionsPerMatch": 33.39,
+   "setsPerMatch": 0.961,
+   "triggersPerMatch": 0.901,
+   "matchesWithTrigger": 901,
+   "attackHistOfTriggers": {
+    "1": 196,
+    "2": 644,
+    "3": 61
+   },
+   "meanTriggerRound": 5.25,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.667,
+    "Y": 0.901
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 60,
+   "sidesWithTrapNeverSet": 39,
+   "paired": {
+    "winnerChanged": 222,
+    "cowboyWinShareDelta": 0.155,
+    "cowboyWinShareDeltaCI95": [
+     0.132,
+     0.178
+    ],
+    "cowboyMinusWizardDelta": 0.309
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 513,
+    "wizard": 371,
+    "draw": 116
+   },
+   "cowboyShare": 0.513,
+   "wizardShare": 0.371,
+   "drawShare": 0.116,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 319,
+     "wizard": 137
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 194,
+     "wizard": 234
+    }
+   },
+   "meanFinalRound": 7.38,
+   "baseDestroyedShare": 0.829,
+   "actionsPerMatch": 33.34,
+   "setsPerMatch": 0.961,
+   "triggersPerMatch": 0.901,
+   "matchesWithTrigger": 901,
+   "attackHistOfTriggers": {
+    "1": 196,
+    "2": 644,
+    "3": 61
+   },
+   "meanTriggerRound": 5.25,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.667,
+    "Y": 0.901
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 60,
+   "sidesWithTrapNeverSet": 39,
+   "paired": {
+    "winnerChanged": 158,
+    "cowboyWinShareDelta": 0.089,
+    "cowboyWinShareDeltaCI95": [
+     0.07,
+     0.108
+    ],
+    "cowboyMinusWizardDelta": 0.193
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 424,
+    "wizard": 475,
+    "draw": 101
+   },
+   "cowboyShare": 0.424,
+   "wizardShare": 0.475,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 276,
+     "wizard": 184
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 148,
+     "wizard": 291
+    }
+   },
+   "meanFinalRound": 7.28,
+   "baseDestroyedShare": 0.824,
+   "actionsPerMatch": 32.9,
+   "setsPerMatch": 0.961,
+   "triggersPerMatch": 0.901,
+   "matchesWithTrigger": 901,
+   "attackHistOfTriggers": {
+    "1": 196,
+    "2": 644,
+    "3": 61
+   },
+   "meanTriggerRound": 5.25,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.667,
+    "Y": 0.901
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 60,
+   "sidesWithTrapNeverSet": 39,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 584,
+    "wizard": 318,
+    "draw": 98
+   },
+   "cowboyShare": 0.584,
+   "wizardShare": 0.318,
+   "drawShare": 0.098,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 366,
+     "wizard": 105
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 218,
+     "wizard": 213
+    }
+   },
+   "meanFinalRound": 7.38,
+   "baseDestroyedShare": 0.807,
+   "actionsPerMatch": 33.33,
+   "setsPerMatch": 0.972,
+   "triggersPerMatch": 0.937,
+   "matchesWithTrigger": 937,
+   "attackHistOfTriggers": {
+    "1": 208,
+    "2": 682,
+    "3": 47
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.713,
+    "Y": 0.937
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 259,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 35,
+   "sidesWithTrapNeverSet": 28,
+   "paired": {
+    "winnerChanged": 235,
+    "cowboyWinShareDelta": 0.16,
+    "cowboyWinShareDeltaCI95": [
+     0.137,
+     0.183
+    ],
+    "cowboyMinusWizardDelta": 0.317
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 520,
+    "wizard": 377,
+    "draw": 103
+   },
+   "cowboyShare": 0.52,
+   "wizardShare": 0.377,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 325,
+     "wizard": 138
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 195,
+     "wizard": 239
+    }
+   },
+   "meanFinalRound": 7.36,
+   "baseDestroyedShare": 0.825,
+   "actionsPerMatch": 33.29,
+   "setsPerMatch": 0.972,
+   "triggersPerMatch": 0.937,
+   "matchesWithTrigger": 937,
+   "attackHistOfTriggers": {
+    "1": 208,
+    "2": 682,
+    "3": 47
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.713,
+    "Y": 0.937
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 259,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 35,
+   "sidesWithTrapNeverSet": 28,
+   "paired": {
+    "winnerChanged": 163,
+    "cowboyWinShareDelta": 0.096,
+    "cowboyWinShareDeltaCI95": [
+     0.077,
+     0.115
+    ],
+    "cowboyMinusWizardDelta": 0.194
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 424,
+    "wizard": 475,
+    "draw": 101
+   },
+   "cowboyShare": 0.424,
+   "wizardShare": 0.475,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 276,
+     "wizard": 184
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 148,
+     "wizard": 291
+    }
+   },
+   "meanFinalRound": 7.28,
+   "baseDestroyedShare": 0.824,
+   "actionsPerMatch": 32.91,
+   "setsPerMatch": 0.972,
+   "triggersPerMatch": 0.937,
+   "matchesWithTrigger": 937,
+   "attackHistOfTriggers": {
+    "1": 208,
+    "2": 682,
+    "3": 47
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.713,
+    "Y": 0.937
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 259,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 35,
+   "sidesWithTrapNeverSet": 28,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 583,
+    "wizard": 322,
+    "draw": 95
+   },
+   "cowboyShare": 0.583,
+   "wizardShare": 0.322,
+   "drawShare": 0.095,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 364,
+     "wizard": 107
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 219,
+     "wizard": 215
+    }
+   },
+   "meanFinalRound": 7.41,
+   "baseDestroyedShare": 0.81,
+   "actionsPerMatch": 33.35,
+   "setsPerMatch": 0.972,
+   "triggersPerMatch": 0.939,
+   "matchesWithTrigger": 939,
+   "attackHistOfTriggers": {
+    "1": 201,
+    "2": 688,
+    "3": 50
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.727,
+    "Y": 0.939
+   },
+   "forgoneCastsPerMatch": 0.259,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 33,
+   "sidesWithTrapNeverSet": 28,
+   "paired": {
+    "winnerChanged": 254,
+    "cowboyWinShareDelta": 0.159,
+    "cowboyWinShareDeltaCI95": [
+     0.134,
+     0.184
+    ],
+    "cowboyMinusWizardDelta": 0.312
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 512,
+    "wizard": 382,
+    "draw": 106
+   },
+   "cowboyShare": 0.512,
+   "wizardShare": 0.382,
+   "drawShare": 0.106,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 322,
+     "wizard": 141
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 190,
+     "wizard": 241
+    }
+   },
+   "meanFinalRound": 7.37,
+   "baseDestroyedShare": 0.829,
+   "actionsPerMatch": 33.24,
+   "setsPerMatch": 0.972,
+   "triggersPerMatch": 0.939,
+   "matchesWithTrigger": 939,
+   "attackHistOfTriggers": {
+    "1": 201,
+    "2": 688,
+    "3": 50
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.727,
+    "Y": 0.939
+   },
+   "forgoneCastsPerMatch": 0.259,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 33,
+   "sidesWithTrapNeverSet": 28,
+   "paired": {
+    "winnerChanged": 194,
+    "cowboyWinShareDelta": 0.088,
+    "cowboyWinShareDeltaCI95": [
+     0.066,
+     0.11
+    ],
+    "cowboyMinusWizardDelta": 0.181
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 414,
+    "wizard": 482,
+    "draw": 104
+   },
+   "cowboyShare": 0.414,
+   "wizardShare": 0.482,
+   "drawShare": 0.104,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 274,
+     "wizard": 185
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 140,
+     "wizard": 297
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.822,
+   "actionsPerMatch": 32.93,
+   "setsPerMatch": 0.972,
+   "triggersPerMatch": 0.939,
+   "matchesWithTrigger": 939,
+   "attackHistOfTriggers": {
+    "1": 201,
+    "2": 688,
+    "3": 50
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.727,
+    "Y": 0.939
+   },
+   "forgoneCastsPerMatch": 0.259,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 33,
+   "sidesWithTrapNeverSet": 28,
+   "paired": {
+    "winnerChanged": 47,
+    "cowboyWinShareDelta": -0.01,
+    "cowboyWinShareDeltaCI95": [
+     -0.021,
+     0.001
+    ],
+    "cowboyMinusWizardDelta": -0.017
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 584,
+    "wizard": 318,
+    "draw": 98
+   },
+   "cowboyShare": 0.584,
+   "wizardShare": 0.318,
+   "drawShare": 0.098,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 366,
+     "wizard": 105
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 218,
+     "wizard": 213
+    }
+   },
+   "meanFinalRound": 7.38,
+   "baseDestroyedShare": 0.807,
+   "actionsPerMatch": 33.33,
+   "setsPerMatch": 0.972,
+   "triggersPerMatch": 0.937,
+   "matchesWithTrigger": 937,
+   "attackHistOfTriggers": {
+    "1": 208,
+    "2": 682,
+    "3": 47
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.713,
+    "Y": 0.937
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 259,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 35,
+   "sidesWithTrapNeverSet": 28,
+   "paired": {
+    "winnerChanged": 235,
+    "cowboyWinShareDelta": 0.16,
+    "cowboyWinShareDeltaCI95": [
+     0.137,
+     0.183
+    ],
+    "cowboyMinusWizardDelta": 0.317
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 520,
+    "wizard": 377,
+    "draw": 103
+   },
+   "cowboyShare": 0.52,
+   "wizardShare": 0.377,
+   "drawShare": 0.103,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 325,
+     "wizard": 138
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 195,
+     "wizard": 239
+    }
+   },
+   "meanFinalRound": 7.36,
+   "baseDestroyedShare": 0.825,
+   "actionsPerMatch": 33.29,
+   "setsPerMatch": 0.972,
+   "triggersPerMatch": 0.937,
+   "matchesWithTrigger": 937,
+   "attackHistOfTriggers": {
+    "1": 208,
+    "2": 682,
+    "3": 47
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.713,
+    "Y": 0.937
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 259,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 35,
+   "sidesWithTrapNeverSet": 28,
+   "paired": {
+    "winnerChanged": 163,
+    "cowboyWinShareDelta": 0.096,
+    "cowboyWinShareDeltaCI95": [
+     0.077,
+     0.115
+    ],
+    "cowboyMinusWizardDelta": 0.194
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "cowboy",
+   "n": 1000,
+   "wins": {
+    "cowboy": 424,
+    "wizard": 475,
+    "draw": 101
+   },
+   "cowboyShare": 0.424,
+   "wizardShare": 0.475,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 276,
+     "wizard": 184
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 148,
+     "wizard": 291
+    }
+   },
+   "meanFinalRound": 7.28,
+   "baseDestroyedShare": 0.824,
+   "actionsPerMatch": 32.91,
+   "setsPerMatch": 0.972,
+   "triggersPerMatch": 0.937,
+   "matchesWithTrigger": 937,
+   "attackHistOfTriggers": {
+    "1": 208,
+    "2": 682,
+    "3": 47
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.713,
+    "Y": 0.937
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 259,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 35,
+   "sidesWithTrapNeverSet": 28,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 209,
+    "wizard": 690,
+    "draw": 101
+   },
+   "cowboyShare": 0.209,
+   "wizardShare": 0.69,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 129,
+     "wizard": 314
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 80,
+     "wizard": 376
+    }
+   },
+   "meanFinalRound": 6.81,
+   "baseDestroyedShare": 0.879,
+   "actionsPerMatch": 30.88,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.998,
+   "matchesWithTrigger": 998,
+   "attackHistOfTriggers": {
+    "1": 793,
+    "2": 205,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.203,
+    "Y": 0.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 376,
+    "cowboyWinShareDelta": -0.215,
+    "cowboyWinShareDeltaCI95": [
+     -0.245,
+     -0.185
+    ],
+    "cowboyMinusWizardDelta": -0.43
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 221,
+    "wizard": 680,
+    "draw": 99
+   },
+   "cowboyShare": 0.221,
+   "wizardShare": 0.68,
+   "drawShare": 0.099,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 139,
+     "wizard": 302
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 82,
+     "wizard": 378
+    }
+   },
+   "meanFinalRound": 6.92,
+   "baseDestroyedShare": 0.868,
+   "actionsPerMatch": 31.43,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.998,
+   "matchesWithTrigger": 998,
+   "attackHistOfTriggers": {
+    "1": 793,
+    "2": 205,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.203,
+    "Y": 0.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 352,
+    "cowboyWinShareDelta": -0.203,
+    "cowboyWinShareDeltaCI95": [
+     -0.232,
+     -0.174
+    ],
+    "cowboyMinusWizardDelta": -0.408
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 424,
+    "wizard": 475,
+    "draw": 101
+   },
+   "cowboyShare": 0.424,
+   "wizardShare": 0.475,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 276,
+     "wizard": 184
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 148,
+     "wizard": 291
+    }
+   },
+   "meanFinalRound": 7.28,
+   "baseDestroyedShare": 0.824,
+   "actionsPerMatch": 32.94,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.998,
+   "matchesWithTrigger": 998,
+   "attackHistOfTriggers": {
+    "1": 793,
+    "2": 205,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.203,
+    "Y": 0.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 209,
+    "wizard": 690,
+    "draw": 101
+   },
+   "cowboyShare": 0.209,
+   "wizardShare": 0.69,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 129,
+     "wizard": 314
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 80,
+     "wizard": 376
+    }
+   },
+   "meanFinalRound": 6.81,
+   "baseDestroyedShare": 0.879,
+   "actionsPerMatch": 30.88,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.998,
+   "matchesWithTrigger": 998,
+   "attackHistOfTriggers": {
+    "1": 793,
+    "2": 205,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.203,
+    "Y": 0.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 376,
+    "cowboyWinShareDelta": -0.215,
+    "cowboyWinShareDeltaCI95": [
+     -0.245,
+     -0.185
+    ],
+    "cowboyMinusWizardDelta": -0.43
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 221,
+    "wizard": 680,
+    "draw": 99
+   },
+   "cowboyShare": 0.221,
+   "wizardShare": 0.68,
+   "drawShare": 0.099,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 139,
+     "wizard": 302
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 82,
+     "wizard": 378
+    }
+   },
+   "meanFinalRound": 6.92,
+   "baseDestroyedShare": 0.868,
+   "actionsPerMatch": 31.43,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.998,
+   "matchesWithTrigger": 998,
+   "attackHistOfTriggers": {
+    "1": 793,
+    "2": 205,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.203,
+    "Y": 0.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 352,
+    "cowboyWinShareDelta": -0.203,
+    "cowboyWinShareDeltaCI95": [
+     -0.232,
+     -0.174
+    ],
+    "cowboyMinusWizardDelta": -0.408
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 424,
+    "wizard": 475,
+    "draw": 101
+   },
+   "cowboyShare": 0.424,
+   "wizardShare": 0.475,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 276,
+     "wizard": 184
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 148,
+     "wizard": 291
+    }
+   },
+   "meanFinalRound": 7.28,
+   "baseDestroyedShare": 0.824,
+   "actionsPerMatch": 32.94,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.998,
+   "matchesWithTrigger": 998,
+   "attackHistOfTriggers": {
+    "1": 793,
+    "2": 205,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.203,
+    "Y": 0.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 209,
+    "wizard": 690,
+    "draw": 101
+   },
+   "cowboyShare": 0.209,
+   "wizardShare": 0.69,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 129,
+     "wizard": 314
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 80,
+     "wizard": 376
+    }
+   },
+   "meanFinalRound": 6.81,
+   "baseDestroyedShare": 0.879,
+   "actionsPerMatch": 30.88,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.998,
+   "matchesWithTrigger": 998,
+   "attackHistOfTriggers": {
+    "1": 793,
+    "2": 205,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.203,
+    "Y": 0.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 376,
+    "cowboyWinShareDelta": -0.215,
+    "cowboyWinShareDeltaCI95": [
+     -0.245,
+     -0.185
+    ],
+    "cowboyMinusWizardDelta": -0.43
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 221,
+    "wizard": 680,
+    "draw": 99
+   },
+   "cowboyShare": 0.221,
+   "wizardShare": 0.68,
+   "drawShare": 0.099,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 139,
+     "wizard": 302
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 82,
+     "wizard": 378
+    }
+   },
+   "meanFinalRound": 6.92,
+   "baseDestroyedShare": 0.868,
+   "actionsPerMatch": 31.43,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.998,
+   "matchesWithTrigger": 998,
+   "attackHistOfTriggers": {
+    "1": 793,
+    "2": 205,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.203,
+    "Y": 0.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 352,
+    "cowboyWinShareDelta": -0.203,
+    "cowboyWinShareDeltaCI95": [
+     -0.232,
+     -0.174
+    ],
+    "cowboyMinusWizardDelta": -0.408
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 424,
+    "wizard": 475,
+    "draw": 101
+   },
+   "cowboyShare": 0.424,
+   "wizardShare": 0.475,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 276,
+     "wizard": 184
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 148,
+     "wizard": 291
+    }
+   },
+   "meanFinalRound": 7.28,
+   "baseDestroyedShare": 0.824,
+   "actionsPerMatch": 32.94,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.998,
+   "matchesWithTrigger": 998,
+   "attackHistOfTriggers": {
+    "1": 793,
+    "2": 205,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.203,
+    "Y": 0.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 209,
+    "wizard": 690,
+    "draw": 101
+   },
+   "cowboyShare": 0.209,
+   "wizardShare": 0.69,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 129,
+     "wizard": 314
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 80,
+     "wizard": 376
+    }
+   },
+   "meanFinalRound": 6.81,
+   "baseDestroyedShare": 0.879,
+   "actionsPerMatch": 30.88,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.998,
+   "matchesWithTrigger": 998,
+   "attackHistOfTriggers": {
+    "1": 793,
+    "2": 205,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.203,
+    "Y": 0.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 376,
+    "cowboyWinShareDelta": -0.215,
+    "cowboyWinShareDeltaCI95": [
+     -0.245,
+     -0.185
+    ],
+    "cowboyMinusWizardDelta": -0.43
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 221,
+    "wizard": 680,
+    "draw": 99
+   },
+   "cowboyShare": 0.221,
+   "wizardShare": 0.68,
+   "drawShare": 0.099,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 139,
+     "wizard": 302
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 82,
+     "wizard": 378
+    }
+   },
+   "meanFinalRound": 6.92,
+   "baseDestroyedShare": 0.868,
+   "actionsPerMatch": 31.43,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.998,
+   "matchesWithTrigger": 998,
+   "attackHistOfTriggers": {
+    "1": 793,
+    "2": 205,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.203,
+    "Y": 0.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 352,
+    "cowboyWinShareDelta": -0.203,
+    "cowboyWinShareDeltaCI95": [
+     -0.232,
+     -0.174
+    ],
+    "cowboyMinusWizardDelta": -0.408
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 1,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 424,
+    "wizard": 475,
+    "draw": 101
+   },
+   "cowboyShare": 0.424,
+   "wizardShare": 0.475,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 276,
+     "wizard": 184
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 148,
+     "wizard": 291
+    }
+   },
+   "meanFinalRound": 7.28,
+   "baseDestroyedShare": 0.824,
+   "actionsPerMatch": 32.94,
+   "setsPerMatch": 1,
+   "triggersPerMatch": 0.998,
+   "matchesWithTrigger": 998,
+   "attackHistOfTriggers": {
+    "1": 793,
+    "2": 205,
+    "3": 0
+   },
+   "meanTriggerRound": 2.01,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.203,
+    "Y": 0.998
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 2,
+   "sidesWithTrapNeverSet": 0,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 293,
+    "wizard": 625,
+    "draw": 82
+   },
+   "cowboyShare": 0.293,
+   "wizardShare": 0.625,
+   "drawShare": 0.082,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 201,
+     "wizard": 255
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 92,
+     "wizard": 370
+    }
+   },
+   "meanFinalRound": 7.36,
+   "baseDestroyedShare": 0.825,
+   "actionsPerMatch": 33.26,
+   "setsPerMatch": 0.967,
+   "triggersPerMatch": 0.904,
+   "matchesWithTrigger": 904,
+   "attackHistOfTriggers": {
+    "1": 198,
+    "2": 656,
+    "3": 50
+   },
+   "meanTriggerRound": 5.26,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.66,
+    "Y": 0.904
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 63,
+   "sidesWithTrapNeverSet": 33,
+   "paired": {
+    "winnerChanged": 217,
+    "cowboyWinShareDelta": -0.131,
+    "cowboyWinShareDeltaCI95": [
+     -0.154,
+     -0.108
+    ],
+    "cowboyMinusWizardDelta": -0.281
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 345,
+    "wizard": 562,
+    "draw": 93
+   },
+   "cowboyShare": 0.345,
+   "wizardShare": 0.562,
+   "drawShare": 0.093,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 233,
+     "wizard": 231
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 112,
+     "wizard": 331
+    }
+   },
+   "meanFinalRound": 7.32,
+   "baseDestroyedShare": 0.839,
+   "actionsPerMatch": 33.11,
+   "setsPerMatch": 0.967,
+   "triggersPerMatch": 0.904,
+   "matchesWithTrigger": 904,
+   "attackHistOfTriggers": {
+    "1": 198,
+    "2": 656,
+    "3": 50
+   },
+   "meanTriggerRound": 5.26,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.66,
+    "Y": 0.904
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 63,
+   "sidesWithTrapNeverSet": 33,
+   "paired": {
+    "winnerChanged": 140,
+    "cowboyWinShareDelta": -0.079,
+    "cowboyWinShareDeltaCI95": [
+     -0.097,
+     -0.061
+    ],
+    "cowboyMinusWizardDelta": -0.166
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 424,
+    "wizard": 475,
+    "draw": 101
+   },
+   "cowboyShare": 0.424,
+   "wizardShare": 0.475,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 276,
+     "wizard": 184
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 148,
+     "wizard": 291
+    }
+   },
+   "meanFinalRound": 7.28,
+   "baseDestroyedShare": 0.824,
+   "actionsPerMatch": 32.9,
+   "setsPerMatch": 0.967,
+   "triggersPerMatch": 0.904,
+   "matchesWithTrigger": 904,
+   "attackHistOfTriggers": {
+    "1": 198,
+    "2": 656,
+    "3": 50
+   },
+   "meanTriggerRound": 5.26,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.66,
+    "Y": 0.904
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 63,
+   "sidesWithTrapNeverSet": 33,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 296,
+    "wizard": 625,
+    "draw": 79
+   },
+   "cowboyShare": 0.296,
+   "wizardShare": 0.625,
+   "drawShare": 0.079,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 207,
+     "wizard": 249
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 89,
+     "wizard": 376
+    }
+   },
+   "meanFinalRound": 7.32,
+   "baseDestroyedShare": 0.833,
+   "actionsPerMatch": 33.09,
+   "setsPerMatch": 0.972,
+   "triggersPerMatch": 0.937,
+   "matchesWithTrigger": 937,
+   "attackHistOfTriggers": {
+    "1": 193,
+    "2": 696,
+    "3": 48
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.729,
+    "Y": 0.937
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 257,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 35,
+   "sidesWithTrapNeverSet": 28,
+   "paired": {
+    "winnerChanged": 216,
+    "cowboyWinShareDelta": -0.128,
+    "cowboyWinShareDeltaCI95": [
+     -0.15,
+     -0.106
+    ],
+    "cowboyMinusWizardDelta": -0.278
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 344,
+    "wizard": 564,
+    "draw": 92
+   },
+   "cowboyShare": 0.344,
+   "wizardShare": 0.564,
+   "drawShare": 0.092,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 234,
+     "wizard": 229
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 110,
+     "wizard": 335
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.851,
+   "actionsPerMatch": 33.03,
+   "setsPerMatch": 0.972,
+   "triggersPerMatch": 0.937,
+   "matchesWithTrigger": 937,
+   "attackHistOfTriggers": {
+    "1": 193,
+    "2": 696,
+    "3": 48
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.729,
+    "Y": 0.937
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 257,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 35,
+   "sidesWithTrapNeverSet": 28,
+   "paired": {
+    "winnerChanged": 144,
+    "cowboyWinShareDelta": -0.08,
+    "cowboyWinShareDeltaCI95": [
+     -0.099,
+     -0.061
+    ],
+    "cowboyMinusWizardDelta": -0.169
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "S",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 424,
+    "wizard": 475,
+    "draw": 101
+   },
+   "cowboyShare": 0.424,
+   "wizardShare": 0.475,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 276,
+     "wizard": 184
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 148,
+     "wizard": 291
+    }
+   },
+   "meanFinalRound": 7.28,
+   "baseDestroyedShare": 0.824,
+   "actionsPerMatch": 32.91,
+   "setsPerMatch": 0.972,
+   "triggersPerMatch": 0.937,
+   "matchesWithTrigger": 937,
+   "attackHistOfTriggers": {
+    "1": 193,
+    "2": 696,
+    "3": 48
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.729,
+    "Y": 0.937
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 257,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 35,
+   "sidesWithTrapNeverSet": 28,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "AX",
+   "action": "A",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 305,
+    "wizard": 614,
+    "draw": 81
+   },
+   "cowboyShare": 0.305,
+   "wizardShare": 0.614,
+   "drawShare": 0.081,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 213,
+     "wizard": 242
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 92,
+     "wizard": 372
+    }
+   },
+   "meanFinalRound": 7.36,
+   "baseDestroyedShare": 0.83,
+   "actionsPerMatch": 33.21,
+   "setsPerMatch": 0.972,
+   "triggersPerMatch": 0.939,
+   "matchesWithTrigger": 939,
+   "attackHistOfTriggers": {
+    "1": 180,
+    "2": 709,
+    "3": 50
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.748,
+    "Y": 0.939
+   },
+   "forgoneCastsPerMatch": 0.258,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 33,
+   "sidesWithTrapNeverSet": 28,
+   "paired": {
+    "winnerChanged": 234,
+    "cowboyWinShareDelta": -0.119,
+    "cowboyWinShareDeltaCI95": [
+     -0.143,
+     -0.095
+    ],
+    "cowboyMinusWizardDelta": -0.258
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "AY",
+   "action": "A",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 359,
+    "wizard": 547,
+    "draw": 94
+   },
+   "cowboyShare": 0.359,
+   "wizardShare": 0.547,
+   "drawShare": 0.094,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 245,
+     "wizard": 216
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 114,
+     "wizard": 331
+    }
+   },
+   "meanFinalRound": 7.33,
+   "baseDestroyedShare": 0.849,
+   "actionsPerMatch": 33.12,
+   "setsPerMatch": 0.972,
+   "triggersPerMatch": 0.939,
+   "matchesWithTrigger": 939,
+   "attackHistOfTriggers": {
+    "1": 180,
+    "2": 709,
+    "3": 50
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.748,
+    "Y": 0.939
+   },
+   "forgoneCastsPerMatch": 0.258,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 33,
+   "sidesWithTrapNeverSet": 28,
+   "paired": {
+    "winnerChanged": 172,
+    "cowboyWinShareDelta": -0.065,
+    "cowboyWinShareDeltaCI95": [
+     -0.086,
+     -0.044
+    ],
+    "cowboyMinusWizardDelta": -0.137
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "A-inert",
+   "action": "A",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 431,
+    "wizard": 468,
+    "draw": 101
+   },
+   "cowboyShare": 0.431,
+   "wizardShare": 0.468,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 285,
+     "wizard": 178
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 146,
+     "wizard": 290
+    }
+   },
+   "meanFinalRound": 7.29,
+   "baseDestroyedShare": 0.829,
+   "actionsPerMatch": 32.92,
+   "setsPerMatch": 0.972,
+   "triggersPerMatch": 0.939,
+   "matchesWithTrigger": 939,
+   "attackHistOfTriggers": {
+    "1": 180,
+    "2": 709,
+    "3": 50
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.748,
+    "Y": 0.939
+   },
+   "forgoneCastsPerMatch": 0.258,
+   "phasesWithSummonCastTrap": 0,
+   "maxActionsInOnePhase": 3,
+   "trapStillSetAtEnd": 33,
+   "sidesWithTrapNeverSet": 28,
+   "paired": {
+    "winnerChanged": 49,
+    "cowboyWinShareDelta": 0.007,
+    "cowboyWinShareDeltaCI95": [
+     -0.004,
+     0.018
+    ],
+    "cowboyMinusWizardDelta": 0.014
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BX",
+   "action": "B",
+   "effect": "X",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 296,
+    "wizard": 625,
+    "draw": 79
+   },
+   "cowboyShare": 0.296,
+   "wizardShare": 0.625,
+   "drawShare": 0.079,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 207,
+     "wizard": 249
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 89,
+     "wizard": 376
+    }
+   },
+   "meanFinalRound": 7.32,
+   "baseDestroyedShare": 0.833,
+   "actionsPerMatch": 33.09,
+   "setsPerMatch": 0.972,
+   "triggersPerMatch": 0.937,
+   "matchesWithTrigger": 937,
+   "attackHistOfTriggers": {
+    "1": 193,
+    "2": 696,
+    "3": 48
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.729,
+    "Y": 0.937
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 257,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 35,
+   "sidesWithTrapNeverSet": 28,
+   "paired": {
+    "winnerChanged": 216,
+    "cowboyWinShareDelta": -0.128,
+    "cowboyWinShareDeltaCI95": [
+     -0.15,
+     -0.106
+    ],
+    "cowboyMinusWizardDelta": -0.278
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "BY",
+   "action": "B",
+   "effect": "Y",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 344,
+    "wizard": 564,
+    "draw": 92
+   },
+   "cowboyShare": 0.344,
+   "wizardShare": 0.564,
+   "drawShare": 0.092,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 234,
+     "wizard": 229
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 110,
+     "wizard": 335
+    }
+   },
+   "meanFinalRound": 7.3,
+   "baseDestroyedShare": 0.851,
+   "actionsPerMatch": 33.03,
+   "setsPerMatch": 0.972,
+   "triggersPerMatch": 0.937,
+   "matchesWithTrigger": 937,
+   "attackHistOfTriggers": {
+    "1": 193,
+    "2": 696,
+    "3": 48
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.729,
+    "Y": 0.937
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 257,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 35,
+   "sidesWithTrapNeverSet": 28,
+   "paired": {
+    "winnerChanged": 144,
+    "cowboyWinShareDelta": -0.08,
+    "cowboyWinShareDeltaCI95": [
+     -0.099,
+     -0.061
+    ],
+    "cowboyMinusWizardDelta": -0.169
+   }
+  },
+  {
+   "block": "1000-1999",
+   "config": "B-inert",
+   "action": "B",
+   "effect": "inert",
+   "policy": "T",
+   "arrival": 4,
+   "holders": "wizard",
+   "n": 1000,
+   "wins": {
+    "cowboy": 424,
+    "wizard": 475,
+    "draw": 101
+   },
+   "cowboyShare": 0.424,
+   "wizardShare": 0.475,
+   "drawShare": 0.101,
+   "startWins": {
+    "cowboy": {
+     "matches": 508,
+     "cowboy": 276,
+     "wizard": 184
+    },
+    "wizard": {
+     "matches": 492,
+     "cowboy": 148,
+     "wizard": 291
+    }
+   },
+   "meanFinalRound": 7.28,
+   "baseDestroyedShare": 0.824,
+   "actionsPerMatch": 32.91,
+   "setsPerMatch": 0.972,
+   "triggersPerMatch": 0.937,
+   "matchesWithTrigger": 937,
+   "attackHistOfTriggers": {
+    "1": 193,
+    "2": 696,
+    "3": 48
+   },
+   "meanTriggerRound": 5,
+   "nominalDamagePreventedPerMatch": {
+    "X": 1.729,
+    "Y": 0.937
+   },
+   "forgoneCastsPerMatch": 0,
+   "phasesWithSummonCastTrap": 257,
+   "maxActionsInOnePhase": 4,
+   "trapStillSetAtEnd": 35,
+   "sidesWithTrapNeverSet": 28,
+   "paired": {
+    "winnerChanged": 0,
+    "cowboyWinShareDelta": 0,
+    "cowboyWinShareDeltaCI95": [
+     0,
+     0
+    ],
+    "cowboyMinusWizardDelta": 0
+   }
+  }
+ ]
+}
