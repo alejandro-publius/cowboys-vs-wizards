@@ -40,6 +40,7 @@ Follow the tested seed 60 route to the Mounted Billy and Dragon clash. [Seed 60 
 | The same tests, a fresh build and an eight-step Chrome replay | `node scripts/verify-duel.mjs --browser` |
 | Title menu, match start, WebGL 2 and one summon in WebKit, the Safari engine | `npx -y -p playwright-core@1.64.1 node scripts/browser-webkit-smoke.mjs http://127.0.0.1:PORT/` (serve `dist/web/` first; once: `npx -y playwright-core@1.64.1 install webkit`) |
 | Attack demo geometry, grip and event order | `npm run check` |
+| Which commit the live site is (after a Pages deploy) | `curl https://alejandro-publius.github.io/cowboys-vs-wizards/build.json`; CI compares it and the live `index.html` digest with the built release ([evidence](docs/evidence/kiro-build-identity.md)) |
 | A seeded rules trace | `node scripts/play-match.mjs --seed 60` |
 
 The Chrome check on macOS writes the receipt and screenshots to `.artifacts/kiro/replay/` when invoked through `verify-duel.mjs`. The saved **orb-duel-replay** Workflow runs the same command. See the [Kiro write-up](docs/kiro-brag-sheet.md) for the Spec, hooks, tests, review Power and MCP evidence.
