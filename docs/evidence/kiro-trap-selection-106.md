@@ -60,3 +60,10 @@ renderer/UI asset, deployment or human playtest was performed.
 
 Authorship is distinct: Kiro authored the code and tests, and the
 coordinator independently checked and added this evidence paragraph.
+
+## Coordinator review and independent reproduction (November 17)
+
+- Reviewed the complete local Kiro commit `3d01b2f` and four changed files against the exact owned-file scope; the new test-only catalog is injected, and default `CARDS`, original deck/card copy counts, visuals, renderer, 3D and released UI remain untouched. The two unrelated draft animation/art PRs remain excluded.
+- Independent rerun: `node --test tests/match/trap-selection.test.js tests/match/selection.test.js tests/match/controller.test.js tests/match/trap-controller.test.js` **29/29 pass**, `npm test` **306/306 Node pass**, **2/2 structural GLB checks**, `node scripts/check-links.mjs` **169 Markdown files, 611 relative links, 0 broken**, `git diff HEAD^ HEAD --check` clean, and no uncommitted worktree edits.
+- Exact Kiro launch version **3.4.0**. The CLI advertised `claude-opus-5.5` at **2.00x** and the coordinator launched V3 with `--model claude-opus-5.5`. The completed second-attempt JSONL stream emitted session usage **14.734586527363184 credits**, not account balance or a billing statement; no separate runtime-model field was found in the parsed metadata. This corrects the narrower worker note above about missing usage data. The first attempt was stopped cleanly before any code edits because unattended tool permission requests were denied. The successful retry used scoped per-invocation `--trust-tools=run_command`, not `--trust-all-tools`; two `fs_write` permission requests were denied, but Kiro completed the task and made its single scoped commit.
+- No browser, 3D appearance, human balance/playtest or production activation is inferred from these Node checks. Controller `options()` still reports an explicit development TypeError for an unregistered hand card, as covered by tests.
