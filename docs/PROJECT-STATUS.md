@@ -1,6 +1,8 @@
 # Project status — observed November 16, 2026
 
-**Snapshot:** November 16 closeout integration, published in PR #15 at `c5ef69b`, with game/UI frozen at `e9aeb06` and later evidence additions plus the separate Night Watch fix. [Deployed HTML identity](evidence/kiro-closeout-deployment.md) matches the reviewed build. [Active closeout ledger](kiro-closeout-queue.md) records finished work and service/human blockers. Historical checks below retain their original commits; inspect Pages and current main for deployment status.
+**Historical deployed snapshot:** November 16 closeout integration, published in PR #15 at `c5ef69b`, with game/UI frozen at `e9aeb06` and later evidence additions plus the separate Night Watch fix. [Deployed HTML identity](evidence/kiro-closeout-deployment.md) matches the reviewed build. [Active closeout ledger](kiro-closeout-queue.md) records finished work and service/human blockers. Historical checks below retain their original commits; inspect Pages and current main for deployment status.
+
+**Current notes (Nov 16, Pacific):** Runtime frozen at `e9aeb06` is historical. `c454398` changed How to Play text, and fresh browser verification of that build is pending, so current files are not all frozen or browser-verified. Installed Power is 1.1.0 (installed-only pass/pass, stale/stale on copied historical receipts, no new browser run: [receipt](evidence/kiro-power-package-fix.md)). Installed Night Watch is 0.1.2; basic Crew chat works, but human trust approval, UI capture and a real schedule remain blocked ([receipt](evidence/kiro-crew-repair.md)). Fable completed a 2:40 [demo script](submission/judge-demo-script.md) and a blank human playtest protocol. [Reconciliation](evidence/kiro-docs-reconciliation.md).
 
 ## Built and available
 
@@ -20,7 +22,7 @@
 
 ## Next valuable work (proposed, not shipped)
 
-1. **New-player clarity / public demo.** Observe a first-time player and publish the final assembled demo. [Real 43.67-second gameplay footage](evidence/gameplay-demo/seed60-599450a.mp4) is captured at `599450a`; new deck/Workflow footage and public YouTube upload remain separate. [Recording plan](kiroween-research-and-recording.md).
+1. **New-player clarity / public demo.** Run the blank [playtest protocol](submission/judge-demo-script.md#part-2-first-time-human-playtest-protocol) with a real first-time player and publish the final assembled demo. [Real 43.67-second gameplay footage](evidence/gameplay-demo/seed60-599450a.mp4) is captured at `599450a`; new deck/Workflow footage and public YouTube upload remain separate. [Recording plan](kiroween-research-and-recording.md).
 2. **Fire-reaction acting.** [Draft PR #10](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/10) contains the procedural Firebolt prototype. Release integration needs a Tripo or licensed GitHub clip selected by the user, the Firebolt card illustration, and a passing Chrome catalog review. Integrate the chosen clip at impact and review the before, impact and recovery frames.
 3. **Additional readable spell moments.** Use [Small Magic](https://patch.gg/play/blendi/small-magic) as a presentation reference. Choose one spell and agree on its visual direction with the user. Set rules, costs, targeting and acceptance tests before adding card mechanics. Connect the chosen effect to existing events where possible.
 4. **Art known limitations.** The Sheriff has a fused open gun hand and no holster on its original mesh; [measured integration note](evidence/fable-sheriff-integration.md). The selected Dragon wing root has known distortion under some frames; attempted smoothing made the silhouette worse, so the released rig was retained. [Comparison](evidence/dragon-wing-root-skinning.md).

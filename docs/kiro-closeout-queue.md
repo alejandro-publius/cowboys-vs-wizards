@@ -6,24 +6,24 @@ Observed November 16, 2026 (America/Los_Angeles). This is the active ledger, rep
 - Kiro: completed receipt recovery, Power reproduction and scoped Auto/Memory checks.
 - Kiro: completed file/asset audit and Night Watch export fix; Codex reviewed compatibility and publication.
 - Codex: integration/review, source register, submission packaging and this ledger.
-- Fable: stopped at its reported quota before tracked UI edits. Its original branch/receipt is preserved. The deck UI is now Kiro's implementation; do not attribute it to Fable.
+- Fable: the earlier deck-task quota stop is historical; the deck UI stays Kiro's implementation. Update Nov 16 (Pacific): the actual Fable model later authored `e65431c`, with Codex factual corrections in `b2c8936` (judge story, 2:40 [demo script](submission/judge-demo-script.md) and a blank first-time [human playtest protocol](submission/judge-demo-script.md#part-2-first-time-human-playtest-protocol), docs only). Not a current overall quota block.
 
 ## Accepted task ledger
 | ID | Deliverable | State / evidence | Dependency and next handoff |
 | --- | --- | --- | --- |
 | K01 | Integrate completed spec, custom-deck tests, initial evidence pack | Merged in PR #15 at c5ef69b; 9/9 focused tests pass; 128 distinct decks replay twice | Published; exact deployed HTML verified |
 | K02 | Original public receipts | 12 originals recovered and hashes independently verified; residual missing records listed | Integrated; exact residual missing files remain explicit |
-| K03 | Installed Power reproducibility | Reproduced installed procedure + workspace MCP pass/stale; older installed-copy limitation recorded | Installed digest/version + fresh activation + actual pass/stale outputs; workspace MCP fallback labelled |
+| K03 | Installed Power reproducibility | Installed 1.1.0 matches source; fresh installed-only Kiro sessions used bundled MCP and returned pass/pass then stale/stale | [Evidence](evidence/kiro-power-package-fix.md). Copied historical `e9aeb06` receipts, not a fresh browser run; supersedes the older installed-copy/workspace fallback limitation |
 | K04 | Large readable deck builder + independent QA | Kiro implementation complete; Codex corrected boxes/artwork assertion and passed desktop/phone +11 menu checks | 1280/390 widths, 180/150 card widths, 16px type, 44px controls, save/reload, keyboard; user visual approval separately |
 | K05 | Final release Workflow | Completed `wf_5bd13532f5142477`: 157 tests, 2 structure checks, 8/8 seed0 and 4/4 seed60, no console errors | [Actual state/receipts](evidence/kiro-closeout-release-check.md); [Live deployment hash verified](evidence/kiro-closeout-deployment.md) |
 | K06 | Fresh Crew browser review | Actual bounded Crew attempt timed out without a browser receipt or screenshot | [Inconclusive bounded run](evidence/kiro-closeout-crew-review.md); no browser availability or visual-review success claimed. Night Watch app policy is separate |
 | K07 | Safari and real mobile/WebGL | Safari remote-automation setting absent; iOS simulator unavailable; real-device service access not established | Actual device/account setup required; Chrome viewport alone is not iPhone testing |
-| K08 | Human onboarding and opener choice | Needs first-time player | Prepare short protocol, collect real observation; no agent posing as a human |
+| K08 | Human onboarding and opener choice | Needs first-time player | Fable's [protocol](submission/judge-demo-script.md#part-2-first-time-human-playtest-protocol) is prepared and blank; collect real observation; no agent posing as a human |
 | K09 | Final-build performance | Codex measured three current-build local loads: median input readiness 689ms; all startup checks passed | [Method/receipt](evidence/kiro-closeout-performance.md); not comparable to the old benchmark method |
 | K10 | Final demonstration / public YouTube | 58.73s preview assembled from current menu/deck/settings plus real seed60 gameplay; public YouTube pending | Final UI and Kiro proof; no fabricated video URL |
 | K11 | README / judge guide / Devpost reconciliation | Published README/judge guide plus reconciled Devpost draft | Actual Devpost form submission remains pending |
 | K12 | Public build-story blog | Draft ready at submission/build-story.md | Reviewed factual story + chosen publishing destination; mention Kiroween 2026 |
-| K13 | Night Watch separate app package | Published 0.1.2 at `8b6e03f`; six Python checks pass, Kiro 20-seed backend run passes | Installed 0.1.1 remains app-policy blocked; no fresh UI or active nightly schedule claim |
+| K13 | Night Watch separate app package | Published 0.1.2 at `8b6e03f`; six Python checks pass, Kiro 20-seed backend run passes | Installed app is now 0.1.2 and basic Crew chat returned `CREW_READY` ([receipt](evidence/kiro-crew-repair.md)); still blocked on human App Store trust approval, UI capture and a real schedule (gateway: 0 cron jobs). No unattended scheduled operation claimed |
 | K14 | Submission/bonus verification | Requirements checked; personal eligibility unresolved | User confirms current enrollment/team facts; final public URLs |
 | K15 | Approved asset provenance and remaining motion gaps | Kiro verified 16/16 originals and 43 asset records; provenance gaps stated | Preserve originals; require chosen Tripo/licensed clips for new fire reaction/Dragon changes |
 | K16 | Project hub organization | 20 release pointers repaired, 14 character/motion shortcuts added; 73/73 links resolve | Stable release advanced to c5ef69b and rebuilt; originals remain unchanged |
@@ -54,6 +54,10 @@ No new generated animation/poses, replacement illustrations, invented mechanics 
 
 [Source-to-task register](kiro-source-register.md) · [Kiro evidence map](kiro-brag-sheet.md) · [Current project status](PROJECT-STATUS.md)
 
-## Final frozen runtime verification
+## Historical frozen runtime verification
 
 Actual Kiro Workflow completed on `e9aeb06`. Subsequent integration changes are evidence/docs and the separate Night Watch package; no game source, art, build code or dependencies changed. Standalone HTML SHA-256: `a5d0c756077e89afa4f8a107c64e863a7d09cba48456f8229a8b42b4fa208bd2`. Web HTML SHA-256: `863ab8bd525cb2e78b0e73b529406b73c6a2381f982f2854e71340df79718e02`.
+
+## Current notes (November 16, 2026, Pacific; reconciliation)
+
+The frozen-runtime section above is historical. `c454398` later changed How to Play text in `src/ui/title-menu.js`, so not every current file matches `e9aeb06` or its browser receipts. Fresh browser verification of the new build is pending (coordinator). Details: [reconciliation receipt](evidence/kiro-docs-reconciliation.md).
