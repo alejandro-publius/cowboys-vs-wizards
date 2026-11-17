@@ -21,7 +21,7 @@ Use Kiro Crew 0.12.2 or later, Git, Python 3.9 or later, and Node 22.18 or later
 kirocrew app install "$PWD"
 ~~~
 
-In Crew’s App Store, find **Night Watch**, review its install source and enable it. If Crew asks for execution trust, choose **Trust this app alone**. Open **Night Watch** in Crew. Under **Settings**, enter the absolute path to a local Cowboys vs. Wizards checkout. Choose baseline and candidate branches, tags or commits that contain the playable engine. Use a fixed baseline and a working branch as the candidate to track new commits. Save the settings and choose **Run balance check**.
+In Crew’s Library, find **Night Watch**, review its install source and enable it. If Crew asks for execution trust, choose **Trust this app alone**. Open **Night Watch** in Crew. Under **Settings**, enter the absolute path to a local Cowboys vs. Wizards checkout. Choose baseline and candidate branches, tags or commits that contain the playable engine. Use a fixed baseline and a working branch as the candidate to track new commits. Save the settings and choose **Run balance check**.
 
 Night Watch resolves the refs to commits, runs the candidate's game-rule tests and replays the chosen seed range for both commits. It tests the committed code from the checkout on this computer. Reports show the exact revisions, seed range, outcome shifts and any card-spec changes. The app keeps the 20 latest reports.
 
@@ -41,4 +41,4 @@ Crew runs the scheduled command locally. It records a report in the same history
 python3 backend/server.py schedule --remove
 ~~~
 
-The app and job share the local Night Watch data directory. The checkout and its Git refs must remain accessible to the computer running Crew. The NIGHT_WATCH_NODE environment variable can select an absolute Node executable when the launcher uses a different PATH.
+The app and job share the local Night Watch data directory. Keep the computer and Crew running for scheduled checks. Reload Night Watch to load reports created by the schedule. The checkout and its Git refs must remain accessible to the computer running Crew. The scheduled command does not fetch remote refs; fetch the checkout when you want origin/main to reflect newer published commits. The NIGHT_WATCH_NODE environment variable can select an absolute Node executable when the launcher uses a different PATH.

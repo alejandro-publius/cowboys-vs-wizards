@@ -1,0 +1,37 @@
+{
+  "id": "aa2997cc6c88",
+  "at": "2026-11-17T05:06:03Z",
+  "source": "scheduled",
+  "firstSeed": 0,
+  "count": 1000,
+  "threshold": 10,
+  "state": "steady",
+  "message": "Faction results and first-seat growth stayed within the 10 pp alert threshold.",
+  "baseline": {
+    "ref": "b5cecc6272f53be450d51af62d9edfcd6319411b",
+    "commit": "b5cecc6272f53be450d51af62d9edfcd6319411b",
+    "counts": {
+      "cowboy": 425,
+      "wizard": 472,
+      "draw": 103,
+      "first": 583,
+      "second": 314
+    }
+  },
+  "candidate": {
+    "ref": "origin/main",
+    "commit": "848b87b74284a713e8786fa0298329c50f5442b3",
+    "counts": {
+      "cowboy": 425,
+      "wizard": 472,
+      "draw": 103,
+      "first": 583,
+      "second": 314
+    }
+  },
+  "rules": {
+    "state": "passed",
+    "tests": 65
+  },
+  "changes": []
+}

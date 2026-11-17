@@ -1,0 +1,11 @@
+{
+  "jobId": "30de99f4",
+  "name": "Night Watch",
+  "managedBy": "app:kiroween-night-watch/balance",
+  "cron": "0 2 * * *",
+  "timezone": "America/Los_Angeles",
+  "enabled": true,
+  "verification": "Triggered once through kirocrew cron trigger; persisted report aa2997cc6c88. Future clock-time execution not observed.",
+  "candidateRef": "origin/main",
+  "fetchesRemoteRefs": false
+}

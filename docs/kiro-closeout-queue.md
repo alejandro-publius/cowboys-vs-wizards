@@ -23,7 +23,7 @@ Observed November 16, 2026 (America/Los_Angeles). This is the active ledger, rep
 | K10 | Final demonstration / public YouTube | 58.73s preview assembled from current menu/deck/settings plus real seed60 gameplay; public YouTube pending | Final UI and Kiro proof; no fabricated video URL |
 | K11 | README / judge guide / Devpost reconciliation | Published README/judge guide plus reconciled Devpost draft | Actual Devpost form submission remains pending |
 | K12 | Public build-story blog | Draft ready at submission/build-story.md | Reviewed factual story + chosen publishing destination; mention Kiroween 2026 |
-| K13 | Night Watch separate app package | Published 0.1.2 at `8b6e03f`; six Python checks pass, Kiro 20-seed backend run passes | Installed app is now 0.1.2 and basic Crew chat returned `CREW_READY` ([receipt](evidence/kiro-crew-repair.md)); still blocked on human App Store trust approval, UI capture and a real schedule (gateway: 0 cron jobs). No unattended scheduled operation claimed |
+| K13 | Night Watch separate app package | User enabled installed 0.1.2; approved grants confirmed. Real manual and Crew-scheduled runs each passed 65 rule tests over 1,000 seeds per revision | [Activation and original reports](evidence/night-watch-activation.md); installed UI opened, but latest-report UI reload remains visually unverified |
 | K14 | Submission/bonus verification | Requirements checked; personal eligibility unresolved | User confirms current enrollment/team facts; final public URLs |
 | K15 | Approved asset provenance and remaining motion gaps | Kiro verified 16/16 originals and 43 asset records; provenance gaps stated | Preserve originals; require chosen Tripo/licensed clips for new fire reaction/Dragon changes |
 | K16 | Project hub organization | 20 release pointers repaired, 14 character/motion shortcuts added; 73/73 links resolve | Stable release advanced to c5ef69b and rebuilt; originals remain unchanged |
@@ -36,7 +36,7 @@ Observed November 16, 2026 (America/Los_Angeles). This is the active ledger, rep
 | --- | --- | --- |
 | K20 | Durable worker ledger and readiness review | This file and source register created; each future integration adds checked commands and actual receipts |
 | K21 | Original Summoning Circle lore/review loop | Completed native workflow wf_ecb54a0b1a3d2a92; cap 3 rounds, executed 1, approved with no findings; eight card files unchanged. [Evidence](evidence/kiro-lore-review-loop.md) |
-| K22 | Production Night Watch schedule / automatic issue filing | Only an isolated schedule and issue drafts are evidenced. Verify scheduling separately. No automatic public issue posting is enabled by this ledger |
+| K22 | Production Night Watch schedule / automatic issue filing | Enabled nightly at 2 a.m. America/Los_Angeles; actual Crew trigger saved report aa2997cc6c88 in shared history | [Schedule receipt](evidence/night-watch-activation.md); Mac/Crew must run, refs are local; future clock-time run not yet observed. Issue drafts only; no automatic public posting |
 | K23 | Full November 15 issue / exact supplied YouTube metadata | Unrecovered after source lookups; retained in source register without invented contents |
 | K24 | Cloud session continuity | Optional newly recovered follow-up, not a prior completed use. Existing authenticated setup needed; do not duplicate local work solely to claim a surface |
 
