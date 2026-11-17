@@ -140,7 +140,9 @@ function applyEndPhase(next, action, emit) {
   next.activeSide = next.startingSide;
   emit({ type: "round-start", round: next.round, startingSide: next.startingSide });
   for (const side of [next.startingSide, opponent(next.startingSide)]) {
-    next.allowances[side] = { summonUsed: false, castUsed: false };
+    next.allowances[side] = next.traps?.enabled
+      ? { summonUsed: false, castUsed: false, tactical: null }
+      : { summonUsed: false, castUsed: false };
     const own = next.sides[side];
     if (own.deck.length === 0) continue; // an empty deck just draws nothing
     own.hand.push(own.deck.shift());
