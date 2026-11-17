@@ -22,6 +22,27 @@ test("links: the parser finds links, images and definitions, and skips code", ()
   for (const skipped of ["https://example.com/a.md", "mailto:a@example.com", "#top"]) assert.equal(targetPath("docs/a.md", skipped), null);
 });
 
+test("links: destinations preserve parentheses and escaped punctuation", () => {
+  const found = linksIn(String.raw`[plan](plan(v2).md) ![map](images/map((old)).png "title") [escaped](plan\(v2\).md)` + "\n[ref]: plan(v2).md");
+  assert.deepEqual(found.map(({target}) => target), ["plan(v2).md", "images/map((old)).png", "plan(v2).md", "plan(v2).md"]);
+});
+
+test("links: code delimiter lengths do not hide real links or expose code examples", () => {
+  const cases = [
+    "    [example](missing.md)\n[real](README.md)",
+    "\t[example](missing.md)\n[real](README.md)",
+    "````markdown\n```\n[example](missing.md)\n````\n[real](README.md)",
+    "~~~~markdown\n~~~\n[example](missing.md)\n~~~~~\n[real](README.md)",
+    "``[example](missing.md)`` [real](README.md)",
+    "``one ` tick [example](missing.md)`` [real](README.md)",
+  ];
+  for (const markdown of cases) assert.deepEqual(linksIn(markdown).map(({target}) => target), ["README.md"], markdown);
+  assert.deepEqual(linksIn("an unmatched ` [real](README.md)").map(({target}) => target), ["README.md"]);
+  for (const markdown of ["Paragraph\n    [real](README.md)", "- List item\n\n    [real](README.md)", "- List item\n    - [real](README.md)"]) {
+    assert.deepEqual(linksIn(markdown).map(({target}) => target), ["README.md"], markdown);
+  }
+});
+
 test("links: every relative link and image in tracked Markdown points at something that exists", () => {
   const {files, links, broken} = checkLinks();
   assert.ok(files > 0 && links > 0, "found Markdown files and links to check");

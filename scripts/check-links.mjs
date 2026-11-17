@@ -14,24 +14,83 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 // [text](target), ![alt](target) and "[label]: target" definitions. A target
 // may be wrapped in <> and followed by a "title".
 // Matching from "](" also catches the outer link of [![image](a)](b).
-const INLINE = /\]\(\s*(<[^>]*>|[^)\s]+)/g;
-const DEFINITION = /^\s{0,3}\[[^\]]+\]:\s*(<[^>]*>|\S+)/;
+const INLINE = /\]\(\s*/g;
+const DEFINITION = /^ {0,3}\[[^\]]+\]:\s*/;
+
+// A destination may contain balanced parentheses, or escaped punctuation.
+// The outer ')' ends an inline link; it is not part of the destination.
+function destinationAt(line, start) {
+  let target = "", depth = 0;
+  const angle = line[start] === "<";
+  for (let i = start + Number(angle); i < line.length; i += 1) {
+    const char = line[i];
+    if (char === "\\" && /[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/.test(line[i + 1] ?? "")) {
+      target += line[++i];
+      continue;
+    }
+    if (angle) {
+      if (char === ">") return target;
+    } else {
+      if (/\s/.test(char) || (char === ")" && depth === 0)) return target;
+      if (char === "(") depth += 1;
+      if (char === ")") depth -= 1;
+    }
+    target += char;
+  }
+  return angle || depth !== 0 ? null : target;
+}
+
+// Code spans end at a run of exactly the same number of backticks.
+// A lone, unmatched run is ordinary text, not the rest of the line as code.
+function withoutCodeSpans(line) {
+  const runs = [...line.matchAll(/`+/g)];
+  let result = "", cursor = 0;
+  for (let i = 0; i < runs.length; i += 1) {
+    const start = runs[i];
+    const closing = runs.findIndex((run, j) => j > i && run[0].length === start[0].length);
+    if (closing < 0) continue;
+    const end = runs[closing].index + runs[closing][0].length;
+    result += line.slice(cursor, start.index) + " ".repeat(end - start.index);
+    cursor = end;
+    i = closing;
+  }
+  return result + line.slice(cursor);
+}
 
 export function linksIn(markdown) {
   const found = [];
   let fence = null;
+  let paragraph = false, indentedCode = false, listIndent = null;
   markdown.split("\n").forEach((text, index) => {
-    const mark = /^\s*(```|~~~)/.exec(text)?.[1];
-    if (mark && (fence === null || fence === mark)) {
-      fence = fence === null ? mark : null;
+    const mark = /^ {0,3}(`{3,}|~{3,})(.*)$/.exec(text);
+    if (fence !== null) {
+      if (mark && mark[1][0] === fence[0] && mark[1].length >= fence.length && /^\s*$/.test(mark[2])) {
+        fence = null;
+        paragraph = false;
+      }
       return;
     }
-    if (fence !== null) return;
-    const line = text.replace(/`[^`]*`/g, ""); // inline code is not a link
-    const targets = [...line.matchAll(INLINE)].map((match) => match[1]);
+    if (mark && (mark[1][0] !== "`" || !mark[2].includes("`"))) {
+      fence = mark[1];
+      return;
+    }
+    if (!text.trim()) {
+      paragraph = false;
+      return;
+    }
+    const indent = text.match(/^[ \t]*/)[0].replace(/\t/g, "    ").length;
+    const list = /^[ \t]*(?:[-+*]|\d+[.)])[ \t]+/.exec(text);
+    if (list) listIndent = list[0].replace(/\t/g, "    ").length;
+    else if (listIndent !== null && indent < listIndent) listIndent = null;
+    // Four-space list contents and paragraph continuations are still prose.
+    indentedCode = !list && indent >= (listIndent ?? 0) + 4 && (!paragraph || indentedCode);
+    if (indentedCode) return;
+    paragraph = true;
+    const line = withoutCodeSpans(text);
+    const targets = [...line.matchAll(INLINE)].map((match) => destinationAt(line, match.index + match[0].length));
     const definition = DEFINITION.exec(line);
-    if (definition) targets.push(definition[1]);
-    for (const target of targets) found.push({line: index + 1, target: target.replace(/^<|>$/g, "")});
+    if (definition) targets.push(destinationAt(line, definition[0].length));
+    for (const target of targets) if (target !== null) found.push({line: index + 1, target});
   });
   return found;
 }
