@@ -15,6 +15,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      html_sha256: ${{ steps.identity.outputs.html_sha256 }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -31,9 +33,14 @@ jobs:
 
       - run: npm run build -- --web
 
+      - name: Write dist/web/build.json
+        run: node scripts/write-build-identity.mjs --commit "$GITHUB_SHA"
+
       - name: Record SHA-256 of dist/web/index.html
+        id: identity
         run: |
           hash=$(sha256sum dist/web/index.html | cut -d' ' -f1)
+          echo "html_sha256=$hash" >> "$GITHUB_OUTPUT"
           echo "dist/web/index.html sha256: $hash"
           echo "dist/web/index.html sha256: \`$hash\`" >> "$GITHUB_STEP_SUMMARY"
 
@@ -52,6 +59,32 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  verify-live:
+    if: github.ref == 'refs/heads/main'
+    needs: [build, deploy]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Check the live site serves this commit and this index.html
+        env:
+          PAGE_URL: ${{ needs.deploy.outputs.page_url }}
+          EXPECTED_HTML_SHA256: ${{ needs.build.outputs.html_sha256 }}
+        run: >
+          node scripts/verify-build-identity.mjs
+          --url "$PAGE_URL" --commit "$GITHUB_SHA" --html-sha256 "$EXPECTED_HTML_SHA256"
+          --attempts 8 --delay-ms 5000 --timeout-ms 10000

@@ -1,5 +1,7 @@
 # How we used Kiro on Cowboys vs. Wizards: evidence map
 
+Actual CLI session credit metadata has now been recovered for ten dispatched jobs, including the contributor Workflow's separate session records. [Exact values, hashes and accounting limits](evidence/kiro-session-usage-20261116.md). This is selected session usage, not an account total or proof of model routing.
+
 ## November 16 parallel integration update
 
 [Combined review and published receipts](evidence/parallel-closeout-2200.md) distinguish Kiro execution, Rachel/Fable contributions and Codex corrections.
