@@ -1,6 +1,8 @@
 // The deck balance script on a tiny sample: same input, same bytes.
 import test from "node:test";
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import { DEFAULT_COUNTS, validateDeck } from "../../src/game/deck-builder.js";
 import { balance, sampleDecks } from "../../scripts/deck-balance.mjs";
 
@@ -24,4 +26,16 @@ test("deck balance: the sample is the starter plus distinct valid decks", () => 
   assert.deepEqual(sample[0], DEFAULT_COUNTS);
   assert.equal(new Set(sample.map((counts) => JSON.stringify(counts))).size, 201);
   for (const counts of sample) assert.equal(validateDeck(counts).ok, true);
+});
+
+
+test("deck balance CLI rejects a seed range whose endpoint would make the loop stall", () => {
+  const script = fileURLToPath(new URL("../../scripts/deck-balance.mjs", import.meta.url));
+  const run = spawnSync(process.execPath, [
+    script, "--from", "9007199254740991", "--count", "3", "--decks", "1",
+  ], { encoding: "utf8", timeout: 2000 });
+  assert.equal(run.error, undefined, "invalid input must exit instead of timing out");
+  assert.equal(run.status, 2);
+  assert.match(run.stderr, /usage: node scripts\/deck-balance\.mjs/);
+  assert.equal(run.stdout, "");
 });
