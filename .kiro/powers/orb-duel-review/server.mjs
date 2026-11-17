@@ -2,12 +2,25 @@
 // Orb Duel Chrome replay receipt and the board character GLBs. It reads only
 // fixed files under this repo: no arbitrary paths, writes, network, shell or database.
 import {createHash} from "node:crypto";
-import {readFileSync} from "node:fs";
+import {readFileSync, realpathSync} from "node:fs";
+import {join} from "node:path";
 import {createInterface} from "node:readline";
 import {fileURLToPath} from "node:url";
-import {parseGlb} from "../../../scripts/audit-assets.mjs";
+import {parseGlb} from "./glb.mjs";
 
-const root = fileURLToPath(new URL("../../../", import.meta.url));
+// Project binding: with PLUGIN_DATA set, only PLUGIN_DATA/project.json (written by setup.mjs)
+// names the project. Never inferred. Without PLUGIN_DATA (workspace MCP), the source checkout.
+let root = null;
+let unavailable = null;
+if (process.env.PLUGIN_DATA) {
+  try {
+    const bound = JSON.parse(readFileSync(join(process.env.PLUGIN_DATA, "project.json"), "utf8")).projectRoot;
+    if (typeof bound !== "string" || !bound) throw new Error("projectRoot missing");
+    root = realpathSync(bound) + "/";
+  } catch {
+    unavailable = "Orb Duel project is not bound: PLUGIN_DATA/project.json is absent or invalid. Run `node setup.mjs <projectRoot> <PLUGIN_DATA>` from the plugin folder.";
+  }
+} else root = fileURLToPath(new URL("../../../", import.meta.url));
 const TARGETS = {
   standalone: {receipt: ".artifacts/kiro/replay/browser-run.json", page: "dist/cowboys-vs-wizards-board-duel.html"},
   web: {receipt: ".artifacts/kiro/web-replay/browser-run.json", page: "dist/web/index.html"},
@@ -20,6 +33,7 @@ const REQUIRED_STEPS = 8;
 const CHARACTERS = Object.fromEntries(["billy", "mounted-billy", "sheriff", "wizard", "dragon", "skeleton"].map((name) => [name, `assets/models/${name}.glb`]));
 
 function readFixed(rel) {
+  if (!root) return {error: "unavailable"};
   try {
     return {bytes: readFileSync(root + rel)};
   } catch (error) {
@@ -28,6 +42,7 @@ function readFixed(rel) {
 }
 
 function inspect(target) {
+  if (unavailable) return {target, verdict: "unavailable", reasons: [unavailable]};
   const {receipt: RECEIPT, page: PAGE, steps: required = REQUIRED_STEPS, seed: requiredSeed, companion} = TARGETS[target];
   const out = {target, receiptPath: RECEIPT, pagePath: PAGE};
   const page = readFixed(PAGE);
@@ -101,6 +116,7 @@ function inspect(target) {
 
 // Identity and inventory of one character GLB, from the same parseGlb the audit script uses.
 function inspectCharacter(model) {
+  if (unavailable) return {isError: true, body: {model, error: unavailable}};
   const path = CHARACTERS[model];
   const file = readFixed(path);
   if (file.error) return {isError: true, body: {model, path, error: `model asset ${file.error}`}};
@@ -148,7 +164,7 @@ function handle(msg) {
       return reply(msg.id, {
         protocolVersion: msg.params?.protocolVersion ?? "2024-11-05",
         capabilities: {tools: {}},
-        serverInfo: {name: "orb-duel-review", version: "1.0.0"},
+        serverInfo: {name: "orb-duel-review", version: "1.1.0"},
       });
     case "ping":
       return reply(msg.id, {});

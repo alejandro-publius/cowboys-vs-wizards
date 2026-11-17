@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "orb-duel-review",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Independent, read-only review of the Cowboys vs. Wizards Chrome replay receipt against the current built page.",
   "author": {
     "name": "Cowboys vs. Wizards"
@@ -9,6 +9,5 @@
   "keywords": [
     "orb duel replay review",
     "cowboys vs wizards"
-  ],
-  "skills": "./skills"
+  ]
 }

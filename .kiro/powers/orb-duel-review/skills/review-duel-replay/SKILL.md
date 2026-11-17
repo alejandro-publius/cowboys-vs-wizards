@@ -20,3 +20,7 @@ Only `pass` supports the claim that the current build replayed cleanly in Chrome
 
 ## Character asset identity
 To identify the GLB behind a screenshot or replay, call `inspect_character_asset` with `{"model":"<name>"}`, where name is billy, mounted-billy, sheriff, wizard, dragon or skeleton. Accept no path. An unknown name is a protocol error; a missing or invalid file returns `isError` with the reason. Report `sha256`, `bytes`, `triangles` (or `unknown` with its reasons), skins, joints and clips from the output only. Review appearance, grip, deformation and contact using fixed-view Blender renders and the board-camera replay.
+
+## Install and binding (v1.1.0)
+The package is self-contained. Bind it to one project once: `node setup.mjs <projectRoot> <PLUGIN_DATA dir>` writes `PLUGIN_DATA/project.json`. With `PLUGIN_DATA` set and no valid binding, tools report the project as unavailable (verdict `unavailable`, or `isError` for assets); never infer a path. Without `PLUGIN_DATA` (workspace MCP) the source checkout is used.
+Installed, the MCP server is named `review`, so tool names may appear namespaced by the host (for example `review` plus the tool name). Use whichever form the tool list shows.
