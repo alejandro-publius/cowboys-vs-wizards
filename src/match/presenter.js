@@ -16,7 +16,18 @@
 //   move({ side, from, to }) -> { end }
 // Optional: clashReady(troops, ms) shows a pre-attack cue for ms on the
 // { side, slot } of every attacker in the damage events that follow a clash
-// pause; clashReady([], 0) ends it as the attacks start.
+// pause, past any trap-trigger events between them; ms then covers the clash
+// pause and those triggers' pauses. clashReady([], 0) ends it as the attacks
+// start.
+//
+// Traps (issue #99 T6, contract section 5): trap-set and trap-trigger are
+// timed pauses with no renderer call. trap-set copies the setter's trap zone,
+// hand, handCount and allowance from `to`; the opponent's `to` holds only the
+// face-down marker and no hand. trap-trigger clears the trap zone from `to`
+// and appends the revealed event.cardId to the owner's displayed discard; a
+// later defeat in the same clash copies the rest of the discard. enqueue
+// throws for an opponent's trap-set that still names a cardId: project the
+// events with publicEvents(events, to.viewer) first.
 //
 // drawing() is { key, side, cardId, handIndex, ms } during a visible draw's
 // pause, else null. handIndex identifies the appended card even when the hand
@@ -39,6 +50,8 @@ export const DEFAULT_PAUSES = Object.freeze({
   "round-start": 500,
   draw: 250,
   result: 300,
+  "trap-set": 150,
+  "trap-trigger": 400,
 });
 
 // Wait after a draw into a visible hand (the Cowboy's), in ms, unless
@@ -183,6 +196,14 @@ export function createPresenter({ scheduler, renderer, pauses = {}, onChange, on
       displayed.result = structuredClone(to.result);
       displayed.activeSide = to.activeSide;
     },
+    "trap-set": (event, to) => {
+      copySide(displayed, to, event.side, ["trap", "hand", "handCount"]);
+      displayed.allowances[event.side] = structuredClone(to.allowances[event.side]);
+    },
+    "trap-trigger": (event, to) => {
+      copySide(displayed, to, event.side, ["trap"]);
+      displayed.sides[event.side].discard.push(event.cardId);
+    },
   };
 
   function playPause(gen, event, next) {
@@ -201,15 +222,22 @@ export function createPresenter({ scheduler, renderer, pauses = {}, onChange, on
     if (event.type === "clash" && renderer.clashReady) {
       // The attackers come from the damage events playClash plays next,
       // including troops that a later event of the same clash defeats.
+      // Trap triggers play between the clash and its damage events.
+      const { events } = batch;
+      let first = next;
+      let wait = pause;
+      for (; first < events.length && events[first].type === "trap-trigger"; first++) {
+        wait += pauses["trap-trigger"] ?? DEFAULT_PAUSES["trap-trigger"];
+      }
       const troops = [];
-      for (let i = next; i < batch.events.length && batch.events[i].type === "damage"; i++) {
-        const { side, slot } = batch.events[i].attacker;
+      for (let i = first; i < events.length && events[i].type === "damage"; i++) {
+        const { side, slot } = events[i].attacker;
         if (Number.isInteger(slot) && !troops.some((each) => each.side === side && each.slot === slot)) {
           troops.push({ side, slot });
         }
       }
       if (troops.length > 0) {
-        renderer.clashReady(troops, pause);
+        renderer.clashReady(troops, wait);
         if (!live(gen)) return;
       }
     }
@@ -394,6 +422,9 @@ export function createPresenter({ scheduler, renderer, pauses = {}, onChange, on
       if (!Array.isArray(events)) throw new TypeError("enqueue needs { from, to, events } with an events array");
       for (const event of events) {
         if (!EVENT_TYPES.has(event?.type)) throw new Error(`Presenter: unsupported event type "${event?.type}"`);
+        if (event.type === "trap-set" && event.side !== to?.viewer && Object.hasOwn(event, "cardId")) {
+          throw new Error(`Presenter: the ${event.side} trap-set names its cardId to ${to?.viewer}; use publicEvents`);
+        }
       }
       queue.push(structuredClone({ from, to, events }));
       const gen = generation;
