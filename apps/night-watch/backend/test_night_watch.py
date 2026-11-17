@@ -4,7 +4,9 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import threading
 import unittest
+from http.client import HTTPConnection
 from pathlib import Path
 from unittest.mock import patch
 
@@ -101,6 +103,39 @@ class NightWatchTests(unittest.TestCase):
                 "test('legacy engine', () => assert.equal(turn, 1));\n"
             ),
         })
+
+
+class HostGuardTests(unittest.TestCase):
+    def request(self, port, host, path="/health", extra=None):
+        conn = HTTPConnection("127.0.0.1", port, timeout=5)
+        conn.putrequest("GET", path, skip_host=True, skip_accept_encoding=True)
+        if host is not None:
+            conn.putheader("Host", host)
+        for name, value in (extra or {}).items():
+            conn.putheader(name, value)
+        conn.endheaders()
+        status = conn.getresponse().status
+        conn.close()
+        return status
+
+    def test_host_guard_uses_actual_port(self):
+        with tempfile.TemporaryDirectory() as data, patch.dict(os.environ, {"NIGHT_WATCH_DATA_DIR": data}):
+            httpd = server.ThreadingHTTPServer(("127.0.0.1", 0), server.Handler)
+            thread = threading.Thread(target=httpd.serve_forever, daemon=True)
+            thread.start()
+            try:
+                port = httpd.server_address[1]
+                for host in ("127.0.0.1:%d" % port, "localhost:%d" % port):
+                    for path in ("/health", "/apps/" + server.APP_ID + "/api/health", "/api/state"):
+                        with self.subTest(host=host, path=path):
+                            self.assertEqual(self.request(port, host, path), 200)
+                for host in ("evil.domain", "evil.domain:%d" % port, "127.0.0.1:%d" % (port + 1), "127.0.0.1", None):
+                    with self.subTest(host=host):
+                        self.assertEqual(self.request(port, host), 403)
+                self.assertEqual(self.request(port, "evil.domain:%d" % port, extra={"X-Forwarded-Host": "localhost:%d" % port}), 403)
+            finally:
+                httpd.shutdown()
+                httpd.server_close()
 
 
 if __name__ == "__main__":
