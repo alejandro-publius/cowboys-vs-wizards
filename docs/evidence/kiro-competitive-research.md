@@ -28,7 +28,7 @@ Our own facts come from [README](../../README.md), [AGENTS.md](../../AGENTS.md),
 ## Limitations
 
 - **Six entries, not the field.** Nothing here ranks entries, estimates a score, or says anything about prize likelihood.
-- **Unverified:** `kiro-interactionkit` and `spookbnb`. The GitHub API returned "Not Found" for the bare names. I did not search for owners.
+- **Historical entry cross-check:** Kiro did not identify GitHub owners from bare names `kiro-interactionkit` and `spookbnb`. The coordinator subsequently checked that the public [InteractionKit](https://devpost.com/software/kiro-interactionkit) and [SpookBnB](https://devpost.com/software/spookbnb-when-dark-mode-gets-truly-dark) Devpost project pages exist; their source repos and award claims were not independently assessed here.
 - **I ran none of the games.** Descriptions are of each README and file tree, not of play. I did not check whether the sites work beyond an HTTP status, and I saw no video content.
 - **Official rules text not re-read.** The rules page answered 200 to a plain request, but [rules-check.md](../submission/rules-check.md) records that automated readers are blocked. Rule statements in the benchmark rely on that pasted-text record, dated November 16, 2026. Rules were marked updated that day, so they may have changed since.
 - **Commit counts** are capped at the first 100 per repository. Repository state can change after the snapshot.

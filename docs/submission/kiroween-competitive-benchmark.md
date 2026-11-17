@@ -2,7 +2,7 @@
 
 Written November 17, 2026 (America/Los_Angeles) by Kiro CLI 3.4 in an isolated worktree off `main` at `e214e8d`. Text-only. It changes no game source, art, test, or spec. Evidence and method: [kiro-competitive-research.md](../evidence/kiro-competitive-research.md).
 
-**Scope limit.** This reviews six public repositories, not the field. It makes no estimate of any score, ranking, or prize chance. Official rules: <https://kiroween.devpost.com/rules>. The page answered HTTP 200 to a plain request, but the rule quotations used here come from the pasted text recorded in [rules-check.md](rules-check.md), because the site is documented there as blocking automated readers. The two optional prior winners could not be located at the guessed addresses and are **unverified**.
+**Scope limit.** This reviews six public repositories, not the field. It makes no estimate of any score, ranking, or prize chance. Official rules: <https://kiroween.devpost.com/rules>. The page answered HTTP 200 to a plain request, but the rule quotations used here come from the pasted text recorded in [rules-check.md](rules-check.md), because the site is documented there as blocking automated readers. Kiro could not resolve the two optional 2025 references by bare GitHub repo name; that does not invalidate their Devpost submissions. The coordinator independently verified the public [InteractionKit](https://devpost.com/software/kiro-interactionkit) and [SpookBnB](https://devpost.com/software/spookbnb-when-dark-mode-gets-truly-dark) project pages. These are **historical design references**, not part of the six-repository 2026 sample.
 
 ## 1. Current shipped facts (ours)
 
@@ -11,7 +11,7 @@ Each fact below comes from the repository on `main` at `e214e8d`. See [README](.
 - Browser card duel: three lanes per side, tribute summons, one to five life orbs per living troop, a seeded rules engine in `src/game/`, a hidden-information CPU.
 - Public, free URL on GitHub Pages with `?seed=0` (opening) and `?seed=60` (Mounted Billy against the Dragon, simultaneous clash). A seed reproduces an opening only with the same deck.
 - Kiro work with receipts: Orb Duel Spec, steering, hooks, a custom agent, a saved Workflow, a review Power with MCP, and a build log that separates Kiro, Codex, and Fable work ([brag sheet](../kiro-brag-sheet.md)).
-- Unfinished, stated in our own documents: no human first-time playtest has been run ([judge script](judge-demo-script.md)); the demo video is unrecorded; Safari and phone review is pending; the player problem is labelled a hypothesis ([rules-check.md](rules-check.md)).
+- Unfinished, stated in our own documents: no human first-time playtest has been run ([judge script](judge-demo-script.md)); existing gameplay footage is recorded, but the **final narrated demo is not assembled and publicly uploaded**; Safari and real phone review is pending; the player problem is labelled a hypothesis ([rules-check.md](rules-check.md)).
 
 ## 2. What six public repositories show
 
@@ -26,7 +26,7 @@ Snapshot taken November 17, 2026. "Latest" is the newest commit on `main` at tha
 | [dismality/last-rites](https://github.com/dismality/last-rites) (`873c1b4`, 100+ commits) | First-person cemetery survival; light is a resource; fair, telegraphed scares | Dig by day, survive by night, five relics, five nights, three endings | Vercel site returned HTTP 200. The README still shows `YOUR-DEPLOY-URL` and `YOUR-VIDEO` placeholders | 65 `.kiro` files: six hooks, eight steering docs, an MCP config, a dated Kiro log that labels work done outside Kiro. 334 test-related files |
 | [LMH-gh/civkiro-1991-kiroween2026](https://github.com/LMH-gh/civkiro-1991-kiroween2026) (`bd1ef43`, 5 commits) | A spec-driven-development workbench, not a strategy game | Open the page and use a login shortcut the README provides | Pages site returned HTTP 200 | `.kiro` has 1 spec, 1 hook, 1 steering file in the tree, while the README lists more. Repository name and description say CivKiro; the README is titled NecroSpec Studio |
 
-Unverified: `kiro-interactionkit` and `spookbnb` (optional prior winners). The GitHub API returned "Not Found" for those bare names, and I did not guess owners.
+GitHub source repositories for the older InteractionKit and SpookBnB entries were not identified by Kiro. Their public Devpost project pages were independently verified by the coordinator, but they were not included in this 2026 GitHub sample.
 
 ## 3. Contrast with our three-lane seeded duel
 
@@ -44,7 +44,7 @@ Open items taken from our own documents, not from competitors:
 | Gap | Source |
 | --- | --- |
 | No observed human playtest | [judge script](judge-demo-script.md), [PROJECT-STATUS](../PROJECT-STATUS.md) |
-| Demo video unrecorded; Kiro UI shots (K1, K2) not captured | [judge script](judge-demo-script.md) |
+| Existing gameplay footage is recorded, but the final narrated video is unfinished/unpublished; the required Kiro UI shots (K1, K2) are not captured | [judge script](judge-demo-script.md) |
 | Write-up questions unanswered: compare apps, hooks' benefit, spec versus vibe coding, steering strategy, property-testing catches | [rules-check.md](rules-check.md) |
 | Third-party disclosure paragraph and trademark wording in the video | [rules-check.md](rules-check.md) |
 | First minute is rules-dense for a new player | proposal below; needs observation to confirm |
