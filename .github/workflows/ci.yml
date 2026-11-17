@@ -25,3 +25,12 @@ jobs:
       - run: npm ci
 
       - run: npm test
+
+      - run: npm run build -- --web
+
+      - name: Kiro review server tests
+        run: node --test .kiro/powers/orb-duel-review/test/server.test.mjs
+
+      - name: Night Watch unit tests
+        working-directory: apps/night-watch/backend
+        run: python3 -m unittest test_night_watch
