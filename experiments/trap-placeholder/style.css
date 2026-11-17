@@ -1,0 +1,14 @@
+/* Plain developer styling for the local trap placeholder lab (#108). Not game art. */
+body { font: 16px/1.4 system-ui, sans-serif; margin: 1rem auto; max-width: 60rem; padding: 0 1rem; color: #111; background: #fff; }
+.warning { border: 2px solid #8a5a00; background: #fff4d6; padding: 0.5rem 0.75rem; }
+section { margin-block: 1rem; }
+.side { border: 1px solid #888; padding: 0.5rem 0.75rem; }
+.lanes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+.lanes button { min-height: 4.5rem; text-align: left; white-space: pre-line; }
+.row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+button { font: inherit; padding: 0.35rem 0.6rem; }
+button[aria-pressed="true"] { outline: 3px solid #1a5fb4; }
+button:focus-visible, input:focus-visible { outline: 3px solid #1a5fb4; outline-offset: 2px; }
+#status { font-weight: 600; }
+#log { max-height: 18rem; overflow-y: auto; border: 1px solid #ccc; padding-block: 0.25rem; }
+#log[hidden] { display: none; }
