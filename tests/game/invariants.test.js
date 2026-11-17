@@ -3,7 +3,7 @@
 // invariants below are asserted after every step. No testing library is used.
 import test from "node:test";
 import assert from "node:assert/strict";
-import { CARDS, SIDES, opponent } from "../../src/game/cards.js";
+import { CARDS, DECKS, SIDES, opponent } from "../../src/game/cards.js";
 import { createMatch, BASE_ORBS, MAX_ROUNDS, SLOT_COUNT } from "../../src/game/state.js";
 import { applyAction } from "../../src/game/actions.js";
 import { legalActions } from "../../src/game/legal.js";
@@ -25,7 +25,7 @@ function picker(seed) {
 }
 
 function assertInvariants(state, label) {
-  // Card conservation: 24 distinct IDs, each in exactly one zone of its own side.
+  // Card conservation: the 24 selected default IDs, each in exactly one zone of its own side.
   const seen = [];
   for (const side of SIDES) {
     const { baseOrbs, deck, hand, board, discard } = state.sides[side];
@@ -46,7 +46,7 @@ function assertInvariants(state, label) {
     assert.equal(deck.length, MAX_ROUNDS - state.round, `${label}: ${side} deck size`);
   }
   assert.equal(seen.length, 24, label);
-  assert.deepEqual(seen.sort(), Object.keys(CARDS).sort(), label);
+  assert.deepEqual(seen.sort(), Object.values(DECKS).flat().sort(), label);
 
   assert.ok(Number.isInteger(state.round) && state.round >= 1 && state.round <= MAX_ROUNDS, `${label}: round ${state.round}`);
   const baseDown = SIDES.some((side) => state.sides[side].baseOrbs === 0);

@@ -34,9 +34,12 @@ const notices=await Promise.all([utf8("node_modules/three/LICENSE"),utf8("node_m
 const artNames=["sheriff-card","billy-card","mounted-billy-card","deadeye-card","skeleton-card","wizard-card","dragon-card","singularity-card"];
 const art=Object.fromEntries(await Promise.all(artNames.map(async name=>[name,web?await copyAsset("assets/cards/"+name+".webp"):"data:image/webp;base64,"+await base64("assets/cards/"+name+".webp")])));
 let css=await utf8("src/ui/match.css");
+const menuArt=web?await copyAsset("assets/menu/title-screen.webp"):"data:image/webp;base64,"+await base64("assets/menu/title-screen.webp");
+const menuCss=(await utf8("src/ui/title-menu.css")).replace(/@@ART:([a-z-]+)@@/g,(_,name)=>art[name]).replaceAll("@@MENUART@@",menuArt);
 if(web)css=css.replace("data:image/png;base64,@@CARDBACK@@",await copyAsset("assets/cards/card-back.png"));
 const visualCss=css.replace(/@@ART:([a-z-]+)@@/g,(_,name)=>art[name]);
 const html=(await utf8("src/ui/layout.html")).replace("@@MATCHSTYLE@@",()=>visualCss).replace("@@ASSETS@@",JSON.stringify(assetMap))
+  .replace("@@MENUSTYLE@@",()=>menuCss).replaceAll("@@MENUART@@",menuArt)
   .replace("@@POSTER@@",web?await copyAsset("assets/media/board.jpg"):"data:image/jpeg;base64,"+await base64("assets/media/board.jpg"))
   .replace("@@VIDEOURL@@",web?await copyAsset("assets/media/replay.mp4"):"")
   .replace("@@VIDEO@@",web?"":await base64("assets/media/replay.mp4"))

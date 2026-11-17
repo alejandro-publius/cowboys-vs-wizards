@@ -1,11 +1,12 @@
 # Project status — observed November 16, 2026
 
-**Snapshot:** updated November 16, 2026, after merged navigation PR #8, optional opening-hand preview PR #9, Night Watch PR #11 and art-sourcing guidance PR #12. This page summarizes tracked source and existing evidence, not an always-current checkout or a claim that historical checks were rerun. Inspect the current `main` HEAD, the latest Actions run and the rendered game after any release change.
+**Snapshot:** updated November 16, 2026, with the approved illustrated title-menu release built on Sheriff release `65ce1f1`. This page summarizes tracked source and existing evidence, not an always-current checkout or a claim that historical checks were rerun. Inspect the current `main` HEAD, the latest Actions run and the rendered game after any release change.
 
 ## Built and available
 
 | Area | State and proof |
 | --- | --- |
+| Illustrated main menu | User-approved pixel artwork, five functional entry points, saved preferences, actual achievement tracking, Cowboy deck builder and pause/resume. [Source and checks](evidence/approved-title-menu.md) |
 | Public browser game | [GitHub Pages](https://alejandro-publius.github.io/cowboys-vs-wizards/) with `?seed=0`, `?seed=60` and `?mode=demo`; [deployment workflow](../.github/workflows/pages.yml) |
 | Opt-in opening balance preview | Kiro's `?opening=both&first=wizard&seed=14` comparison is merged, but is **not** the default policy. [PR #9](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/9) · `tests/game/opening-policy.test.js`; 115 Node tests, 8/8 seed-0 Chrome and 4/4 seed-60 Chrome checks passed before merge. |
 | Rules and CPU | Seeded match, legal moves, tributes, Deadeye/Singularity, simultaneous clashes, hidden-information CPU in `src/game/`; tests in `tests/game/` |

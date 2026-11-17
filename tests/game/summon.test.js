@@ -4,7 +4,7 @@ import { CARDS, DECKS, SIDES, tributeCost } from "../../src/game/cards.js";
 import { createMatch } from "../../src/game/state.js";
 import { applyAction } from "../../src/game/actions.js";
 
-// Every card instance is in exactly one of deck, hand, board or discard,
+// Every selected default card is in exactly one of deck, hand, board or discard,
 // and only in its own side's zones.
 function assertConservation(state) {
   const seen = [];
@@ -14,7 +14,7 @@ function assertConservation(state) {
     for (const id of ids) assert.equal(CARDS[id]?.side, side, `${id} is in a ${side} zone`);
     seen.push(...ids);
   }
-  assert.deepEqual(seen.sort(), Object.keys(CARDS).sort());
+  assert.deepEqual(seen.sort(), Object.values(DECKS).flat().sort());
 }
 
 // Valid mid-match cowboy position: the named cards on the board (null = empty

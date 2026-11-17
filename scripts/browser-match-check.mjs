@@ -336,6 +336,8 @@ async function runOnce(seed, flags, tilePoints) {
     // Step 1: match mode loads, no fallback video, seed shown.
     const url = new URL(baseUrl);
     url.searchParams.set("seed", seed);
+    url.searchParams.set("mode", "match");
+    url.searchParams.set("deck", "starter");
     report.url = url.href;
     const loadStarted = Date.now();
     await send("Page.navigate", {url: url.href});

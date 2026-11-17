@@ -12,6 +12,7 @@
 | Task | Read first | Run first |
 | --- | --- | --- |
 | Rules, tribute, spells, CPU | `src/game/{actions,legal,clash,cpu}.js` as relevant; `docs/kiro-task-01.md` only when a rule is disputed | `node --test tests/game/<closest>.test.js` |
+| Main menu / settings / achievements / decks | `src/ui/title-menu.js`, `src/profile/player-profile.js`, `src/game/deck-builder.js`; integration in `src/main.js` | `node --test tests/game/{deck-builder,player-profile}.test.js`; `scripts/browser-menu-check.mjs` for UI |
 | Hand, cards, selection | `src/ui/cards.js`, `src/match/selection.js` | `node --test tests/match/selection.test.js` |
 | Match flow, impact timing, restart | `src/match/{controller,presenter,scheduler}.js` | `node --test tests/match/<closest>.test.js` |
 | Sheriff fire / reaction / weapon | `src/render/{sheriff,cues,match-board}.js`; `docs/evidence/fable-sheriff-integration.md` if relevant | `node --test tests/match/sheriff.test.js` |

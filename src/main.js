@@ -11,7 +11,29 @@ import {createController,FABLE_ENGINE} from "./match/controller.js";
 import {openingMatch,parseOpeningParams} from "./game/opening-policy.js";
 import {mountCards} from "./ui/cards.js";
 import {cardModel} from "./ui/card-model.js";
+import {mountTitleMenu} from "./ui/title-menu.js";
+import {createProfileStore} from "./profile/player-profile.js";
+import {createMatch} from "./game/state.js";
+import {deckIds,validateDeck} from "./game/deck-builder.js";
 const get=id=>document.getElementById(id);
+const profile=createProfileStore();
+let game=null,launching=null;
+function applyPreferences(settings){
+  document.documentElement.classList.toggle("reduce-card-motion",settings.reducedMotion);
+  game?.configure(settings);
+}
+const menu=mountTitleMenu(get("title-screen"),{
+  profile,
+  async onPlay(){
+    if(!game){
+      launching??=launch();
+      try{game=await launching;}finally{launching=null;}
+    }
+    menu.hide();get("arena").hidden=false;game.enter();
+  },
+  onSettings:applyPreferences
+});
+applyPreferences(profile.get().settings);
 const end={fire:timings.fireEnd,cast:timings.castEnd,exchange:timings.end};
 const cues={
   shot:"Billy fires.",
@@ -101,6 +123,7 @@ async function launch(){
   new ResizeObserver(size).observe(stage);
   size();
   let active=false,previous=0,ticks=0,context=null,enabled=false,frameId=0;
+  let pausedAt=null,pausedTotal=0,matchRun=0,pausedAnimations=[];
   const moves=[get("fire"),get("cast"),get("watch")],status=get("status");
   const useControls=playing=>{active=playing;for(const button of moves)button.disabled=playing;};
   const message=text=>{if(status.textContent!==text)status.textContent=text;};
@@ -114,13 +137,19 @@ async function launch(){
     duel.reset();ticks=0;useControls(false);refreshHealth(duel.state());
     message("Choose an attack or play the exchange.");
   }
-  get("sound").addEventListener("click",async()=>{
+  function configure(settings){
+    renderer.setPixelRatio(settings.performance==="low"?.85:Math.min(window.devicePixelRatio||1,1.35));
+    renderer.shadowMap.enabled=settings.performance!=="low";
+    enabled=settings.sound;
     const Audio=window.AudioContext||window.webkitAudioContext;
-    if(!Audio)return;
-    enabled=!enabled;
-    if(enabled){context??=new Audio();await context.resume();}
+    if(enabled&&Audio){context??=new Audio();context.resume().catch(()=>{});}
+    if(!Audio)enabled=false;
     get("sound").setAttribute("aria-pressed",String(enabled));
     get("sound").textContent=enabled?"Mute":"Sound";
+    size();
+  }
+  get("sound").addEventListener("click",()=>{
+    profile.updateSettings({sound:!enabled});applyPreferences(profile.get().settings);
   });
   get("camera").addEventListener("click",()=>{
     if(!duel)return;
@@ -133,7 +162,7 @@ async function launch(){
   get("cast").addEventListener("click",()=>start("cast"));
   get("watch").addEventListener("click",()=>start("exchange"));
   document.addEventListener("keydown",event=>{
-    if(appMode!=="demo"||get("controls").hidden||event.repeat||event.metaKey||event.altKey||event.ctrlKey)return;
+    if(pausedAt!==null||get("arena").hidden||appMode!=="demo"||get("controls").hidden||event.repeat||event.metaKey||event.altKey||event.ctrlKey)return;
     if(event.key==="1")start("fire");
     if(event.key==="2")start("cast");
     if(event.code==="Space"&&event.target===document.body){event.preventDefault();start("exchange");}
@@ -153,6 +182,7 @@ async function launch(){
   function showMatch(){
     if(!controller)return;
     const state=controller.status(),options=controller.options(),displayed=controller.displayed();
+    if(state==="terminal"&&displayed?.result)profile.record("match-complete",{matchId:matchRun,won:displayed.result.outcome==="win"});
     matchView.discards(displayed);
     overlay.render(cardModel({displayed,options,status:state,
       seed:controller.seed(),seedPinned:controller.seedPinned(),message:controller.message()}));
@@ -203,13 +233,29 @@ async function launch(){
   const params=new URLSearchParams(location.search);
   // ?opening=shipped|both[&first=cowboy|wizard] opts into the local opening A/B; otherwise the default engine runs.
   const opening=parseOpeningParams(params);
-  const engine=opening&&{...FABLE_ENGINE,createMatch:seed=>openingMatch(seed,opening.opening,opening.first)};
-  controller=createController({...(engine&&{engine}),scheduler,renderer:matchView,onChange:showMatch});
+  const engine={...FABLE_ENGINE,
+    createMatch(seed){
+      matchRun++;
+      const counts=params.get("deck")==="starter"?null:profile.get().deck;
+      const options=counts&&validateDeck(counts).ok?{cowboyDeck:deckIds(counts)}:{};
+      return opening?openingMatch(seed,opening.opening,opening.first,options):createMatch(seed,options);
+    },
+    applyAction(state,action){
+      const result=FABLE_ENGINE.applyAction(state,action);
+      if(result.ok&&action.side==="cowboy"){
+        const id=matchRun+":"+result.state.revision;
+        if(action.type==="summon")profile.record("summon",{id});
+        if(action.type==="cast")profile.record("spell",{id});
+      }
+      return result;
+    }
+  };
+  controller=createController({engine,scheduler,renderer:matchView,onChange:showMatch});
   // ?closeup=cowboy-0 (or cowboy-0-wide) views one tile from the front, to check a model.
   const closeup=/^(cowboy|wizard)-([0-2])(-wide)?$/.exec(params.get("closeup")??"");
   if(closeup)board.closeUp(closeup[1],Number(closeup[2]),Boolean(closeup[3]));
   function startMatch(){
-    scheduler.tick(performance.now());
+    scheduler.tick(performance.now()-pausedTotal);
     if(!controller.start(params.get("seed")??undefined))controller.start();
   }
   renderer.domElement.addEventListener("pointerdown",event=>{
@@ -219,7 +265,7 @@ async function launch(){
     if(hit)controller.input({type:"slot",side:hit.side,slot:hit.slot});
   });
   document.addEventListener("keydown",event=>{
-    if(appMode!=="match"||event.key!=="Escape"||event.repeat||event.defaultPrevented||event.isComposing)return;
+    if(pausedAt!==null||get("arena").hidden||appMode!=="match"||event.key!=="Escape"||event.repeat||event.defaultPrevented||event.isComposing)return;
     const target=event.target;
     if(document.querySelector("dialog[open]")||
       (target instanceof Element&&(target.closest("input,textarea,select")||target.isContentEditable)))return;
@@ -277,9 +323,11 @@ async function launch(){
   if(lost)return;
   get("boot").hidden=true;get("modes").hidden=false;
   setMode(bootDemo?"demo":"match");
+  pausedAt=performance.now();
   function frame(now){
+    if(pausedAt!==null){frameId=requestAnimationFrame(frame);return;}
     if(appMode==="match"){
-      try{scheduler.tick(now);}catch(error){console.error(error);}
+      try{scheduler.tick(now-pausedTotal);}catch(error){console.error(error);}
       renderer.render(board.scene,board.camera);
       frameId=requestAnimationFrame(frame);
       return;
@@ -304,5 +352,25 @@ async function launch(){
     frameId=requestAnimationFrame(frame);
   }
   frameId=requestAnimationFrame(frame);
+  get("home").addEventListener("click",()=>{
+    if(pausedAt===null)pausedAt=performance.now();
+    pausedAnimations=get("arena").getAnimations({subtree:true}).filter(animation=>animation.playState==="running");
+    for(const animation of pausedAnimations)animation.pause();
+    for(const dialog of document.querySelectorAll("dialog[open]"))dialog.close();
+    get("arena").hidden=true;
+    menu.show({resume:appMode==="match"&&controller.status()!=="terminal"});
+  });
+  return {
+    configure,
+    enter(){
+      if(pausedAt!==null){pausedTotal+=performance.now()-pausedAt;pausedAt=null;}
+      for(const animation of pausedAnimations)if(animation.effect?.target?.isConnected)animation.play();
+      pausedAnimations=[];
+      previous=0;configure(profile.get().settings);
+      if(appMode==="match"&&controller.status()==="terminal")startMatch();
+      size();get("home").focus();
+    }
+  };
 }
-launch().catch(error=>{console.error(error);recording();});
+// Explicit deep links retain the attack demo and direct-match workflows.
+if(["demo","match"].includes(new URLSearchParams(location.search).get("mode")))get("menu-play").click();

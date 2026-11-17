@@ -155,7 +155,7 @@ export function mountCards(root, handlers = {}) {
     if(!viewer.open)viewer.showModal();
   }
   viewerCard.addEventListener("pointermove",event=>{
-    if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+    if(document.documentElement.classList.contains("reduce-card-motion")||matchMedia("(prefers-reduced-motion: reduce)").matches)return;
     const r=viewerCard.getBoundingClientRect();
     viewerCard.style.setProperty("--yaw",((event.clientX-r.left)/r.width-.5)*28+"deg");
     viewerCard.style.setProperty("--pitch",(0.5-(event.clientY-r.top)/r.height)*18+"deg");
@@ -181,7 +181,7 @@ export function mountCards(root, handlers = {}) {
   let drawKey = null; // model.draw.key of the latest draw seen, so each draw flies once
 
   const moving = (cardId, index) => cardId === flight?.cardId || index === drawFlight?.handIndex;
-  const reducedMotion = () => typeof root.animate !== "function" || matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reducedMotion = () => document.documentElement.classList.contains("reduce-card-motion") || typeof root.animate !== "function" || matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   function clearFlight() {
     if (!flight) return;

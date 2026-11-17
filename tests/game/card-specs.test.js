@@ -18,13 +18,16 @@ test("generated card list matches the JSON specs in deck order", () => {
   assert.deepEqual(CARD_SPECS, SIDES.flatMap(sideSpecs));
 });
 
-test("registry and deck hold each spec's fields, copies and order", () => {
+test("registry holds available copies; default decks retain each spec's copies and order", () => {
+  const expectedRegistry = [];
   for (const side of SIDES) {
     const expectedDeck = [];
     for (const { type, order, copies, ...fields } of sideSpecs(side)) {
-      for (let copy = 1; copy <= copies; copy++) {
+      const availableCopies = side === "cowboy" ? 6 : copies;
+      for (let copy = 1; copy <= availableCopies; copy++) {
         const id = idOf({ type }, copy);
-        expectedDeck.push(id);
+        expectedRegistry.push(id);
+        if (copy <= copies) expectedDeck.push(id);
         assert.deepEqual(CARDS[id], { id, ...fields });
         assert.ok(Object.isFrozen(CARDS[id]), `${id} is frozen`);
       }
@@ -33,7 +36,8 @@ test("registry and deck hold each spec's fields, copies and order", () => {
     assert.deepEqual(DECKS[side], expectedDeck);
     assert.ok(Object.isFrozen(DECKS[side]));
   }
-  assert.equal(Object.keys(CARDS).length, 24);
+  assert.equal(expectedRegistry.length, 36);
+  assert.deepEqual(Object.keys(CARDS).sort(), expectedRegistry.sort());
   assert.ok(Object.isFrozen(CARDS) && Object.isFrozen(DECKS));
 });
 

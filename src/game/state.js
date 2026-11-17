@@ -1,4 +1,5 @@
 import { DECKS, SIDES } from "./cards.js";
+import { validateDeckIds } from "./deck-builder.js";
 
 export const SLOT_COUNT = 3;
 export const BASE_ORBS = 5;
@@ -29,16 +30,21 @@ function shuffle(ids, rng) {
   return { ids: out, rng };
 }
 
-// New match from an integer seed; calling it again with `state.seed` restarts
-// the same match. RNG draws happen in a fixed order: cowboy shuffle, wizard
+// New match from an integer seed and optional Cowboy deck. Restart custom
+// matches with the same seed and deck. RNG draws happen in a fixed order: cowboy shuffle, wizard
 // shuffle, starting side. Nothing after setup draws from the RNG. Index 0 of
 // a deck is its top.
-export function createMatch(seed) {
+export function createMatch(seed, { cowboyDeck } = {}) {
   if (!Number.isInteger(seed)) throw new TypeError("seed must be an integer");
+  if (cowboyDeck !== undefined) {
+    const result = validateDeckIds(cowboyDeck);
+    if (!result.ok) throw new TypeError(result.error);
+  }
   let rng = seed >>> 0;
   const sides = {};
   for (const side of SIDES) {
-    const shuffled = shuffle(DECKS[side], rng);
+    const ids = side === "cowboy" && cowboyDeck !== undefined ? cowboyDeck : DECKS[side];
+    const shuffled = shuffle(ids, rng);
     rng = shuffled.rng;
     sides[side] = {
       baseOrbs: BASE_ORBS,

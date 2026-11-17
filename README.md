@@ -2,15 +2,21 @@
 
 **A haunted-Western card duel where gunslingers, skeletal armies and dragons fight across three 3D lanes.** Choose illustrated cards, sacrifice troops to summon stronger allies, and watch life orbs fall as the Wizard CPU answers.
 
-**[Play now](https://alejandro-publius.github.io/cowboys-vs-wizards/)** · **[Watch the opening (seed 0)](https://alejandro-publius.github.io/cowboys-vs-wizards/?seed=0)** · **[Reach the Dragon showdown (seed 60)](https://alejandro-publius.github.io/cowboys-vs-wizards/?seed=60)** · **[Judge's 90-second guide](docs/JUDGE-GUIDE.md)**
+**[Play now](https://alejandro-publius.github.io/cowboys-vs-wizards/)** · **[Watch the opening (seed 0)](https://alejandro-publius.github.io/cowboys-vs-wizards/?mode=match&deck=starter&seed=0)** · **[Reach the Dragon showdown (seed 60)](https://alejandro-publius.github.io/cowboys-vs-wizards/?mode=match&deck=starter&seed=60)** · **[Judge's 90-second guide](docs/JUDGE-GUIDE.md)**
 
 ![Real browser capture of the Cowboys vs. Wizards 3D match](docs/evidence/combined-demo/result.png)
 
 *The illustrated card game is playable in a browser. The screenshots are captured from the actual game, not generated mockups.* 
 
+## Main menu
+
+![Approved illustrated main menu, used by the playable game](assets/menu/title-screen.webp)
+
+Play or resume a match, read the rules, save settings, view earned achievements, or build a 12-card Cowboy deck. Settings and progress stay in this browser. The approved title artwork is still; controls are native keyboard/touch buttons.
+
 ## Play
 
-[Play Cowboys vs. Wizards in your browser](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Seed 0 opening](https://alejandro-publius.github.io/cowboys-vs-wizards/?seed=0) · [Seed 60 showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/?seed=60)
+[Play Cowboys vs. Wizards in your browser](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Seed 0 opening](https://alejandro-publius.github.io/cowboys-vs-wizards/?mode=match&deck=starter&seed=0) · [Seed 60 showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/?mode=match&deck=starter&seed=60)
 
 For a local build, use Node.js 22.18 or later and a WebGL 2 browser. Install dependencies with `npm ci`, then build.
 
@@ -18,7 +24,7 @@ For a local build, use Node.js 22.18 or later and a WebGL 2 browser. Install dep
 npm run build
 ```
 
-Open `dist/cowboys-vs-wizards-board-duel.html`. The single file includes the models, card art and fallback recording. Use `?seed=0` for a repeatable opening with a free Sheriff summon. The seed can also be entered in the game menu. Choose **Attack demo** or append `?mode=demo` for the original Billy and Wizard exchange.
+Open `dist/cowboys-vs-wizards-board-duel.html`. The single file includes the models, card art and fallback recording. The title menu opens first. Use `?mode=match&deck=starter&seed=0` for the repeatable starter opening with a free Sheriff summon; ordinary matches use the saved deck. A seed reproduces an opening only with the same deck. The seed can also be entered in the game menu. Choose **Attack demo** or append `?mode=demo` for the original Billy and Wizard exchange.
 
 For a static website, run `npm run build -- --web` and serve the entire `dist/web/` directory. It contains an `index.html` and content-hashed assets. Relative URLs allow hosting under a subdirectory.
 
@@ -28,6 +34,7 @@ Follow the tested seed 60 route to the Mounted Billy and Dragon clash. [Seed 60 
 
 | What you need | Command |
 | --- | --- |
+| Title screen, settings, custom deck and pause/resume in Chrome | `node scripts/browser-menu-check.mjs http://127.0.0.1:PORT/?seed=0` (serve `dist/web/` first) |
 | Game, presenter and asset tests | `node scripts/verify-duel.mjs` |
 | The same tests, a fresh build and an eight-step Chrome replay | `node scripts/verify-duel.mjs --browser` |
 | Attack demo geometry, grip and event order | `npm run check` |
