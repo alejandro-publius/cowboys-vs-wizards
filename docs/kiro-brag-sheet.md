@@ -17,6 +17,8 @@ The historical feature map below retains its original dates and limits. New clos
 | Night Watch bug fix | Kiro found the missing profile export, added a regression and passed a 20-seed backend check. Codex made profiles optional for older baselines; six Python tests pass. [Evidence](evidence/night-watch-profile-export-fix.md) | Installed Crew app remains policy-blocked; backend success is not GUI success |
 | Auto / continuity | Actual Default/Auto settings and 0.6441 credits for the initial useful turn recorded. Original compaction JSONL recovered. [Evidence](evidence/kiro-continuity-usage.md) | Fresh V3 session exposed no Memory tool; no retrieval or internal-model routing claim |
 
+The [fresh Crew browser attempt](evidence/kiro-closeout-crew-review.md) reached its deadline without a browser result. It is recorded as inconclusive, separate from the successful Workflow and Codex UI checks.
+
 [Active queue and ownership](kiro-closeout-queue.md) · [Recovered research sources](kiro-source-register.md) · [Build-story draft](submission/build-story.md) · [Submission packet](submission/devpost-packet.md)
 
 

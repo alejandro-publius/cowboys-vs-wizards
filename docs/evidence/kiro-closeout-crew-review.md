@@ -1,6 +1,6 @@
 # Final Kiro Crew browser review: bounded attempt, no review result
 
-Recorded by Codex on 2026-11-17 UTC from the original launcher receipt and stderr. This is **not a successful Crew visual review**.
+Recorded by Codex on November 16, 2026 (America/Los_Angeles; November 17 UTC) from the original launcher receipt and stderr. This is **not a successful Crew visual review**.
 
 ## Actual invocation
 

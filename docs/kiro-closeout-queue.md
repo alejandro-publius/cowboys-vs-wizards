@@ -2,7 +2,7 @@
 Observed November 16, 2026 (America/Los_Angeles). This is the active ledger, replacing old dispatch lists as a work locator. A checked item means reviewed output exists; publishing, user approval and live services are separate states. The user authorized the full research-derived backlog on this date. Keep one owner per path and transfer a completed task to the next dependency without rerunning old work.
 
 ## Current ownership
-- Kiro: completed readable deck UI, final replay Workflow and existing-card lore review; independent Crew review is bounded separately.
+- Kiro: completed readable deck UI, final replay Workflow and existing-card lore review. The separate Crew review reached its cap without a browser result; no worker is left waiting.
 - Kiro: completed receipt recovery, Power reproduction and scoped Auto/Memory checks.
 - Kiro: completed file/asset audit and Night Watch export fix; Codex reviewed compatibility and publication.
 - Codex: integration/review, source register, submission packaging and this ledger.
@@ -16,7 +16,7 @@ Observed November 16, 2026 (America/Los_Angeles). This is the active ledger, rep
 | K03 | Installed Power reproducibility | Reproduced installed procedure + workspace MCP pass/stale; older installed-copy limitation recorded | Installed digest/version + fresh activation + actual pass/stale outputs; workspace MCP fallback labelled |
 | K04 | Large readable deck builder + independent QA | Kiro implementation complete; Codex corrected boxes/artwork assertion and passed desktop/phone +11 menu checks | 1280/390 widths, 180/150 card widths, 16px type, 44px controls, save/reload, keyboard; user visual approval separately |
 | K05 | Final release Workflow | Completed `wf_5bd13532f5142477`: 157 tests, 2 structure checks, 8/8 seed0 and 4/4 seed60, no console errors | [Actual state/receipts](evidence/kiro-closeout-release-check.md); [Live deployment hash verified](evidence/kiro-closeout-deployment.md) |
-| K06 | Fresh Crew browser review | Bounded independent game review queued; Night Watch app policy is a separate issue | Review same frozen UI independently; no claim until real Crew receipt |
+| K06 | Fresh Crew browser review | Actual bounded Crew attempt timed out without a browser receipt or screenshot | [Inconclusive bounded run](evidence/kiro-closeout-crew-review.md); no browser availability or visual-review success claimed. Night Watch app policy is separate |
 | K07 | Safari and real mobile/WebGL | Safari remote-automation setting absent; iOS simulator unavailable; real-device service access not established | Actual device/account setup required; Chrome viewport alone is not iPhone testing |
 | K08 | Human onboarding and opener choice | Needs first-time player | Prepare short protocol, collect real observation; no agent posing as a human |
 | K09 | Final-build performance | Codex measured three current-build local loads: median input readiness 689ms; all startup checks passed | [Method/receipt](evidence/kiro-closeout-performance.md); not comparable to the old benchmark method |
