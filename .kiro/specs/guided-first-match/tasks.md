@@ -8,3 +8,4 @@
 - [x] 6. Prompt equality check without the parameter (GF-7) — done (GF-7 test + browser prompt comparison)
 - [x] 7. `node scripts/verify-duel.mjs` (GF-9) — done, 193 Node tests passed
 - [ ] 8. Browser and screen-reader check of three lines in place (GF-6). Pending human/browser. — browser run done for 4 states; screen-reader check NOT done (pending human)
+- [x] 9. Correction pass: idle tips visible via `guideShown` (card-model.js, cards.js), neutral wording, `scripts/browser-guide-check.mjs` against a `965bd70` build, 6 screenshots, verify-duel exit 0. Screen-reader and human checks remain NOT done.

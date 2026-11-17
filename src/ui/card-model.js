@@ -77,6 +77,8 @@ export function cardModel({displayed = null, options = null, status = "idle", se
     prompt: accepting || status === "submitting"
       ? (options?.prompt ?? "") + (accepting && guide ? ` ${guide}` : "")
       : WAITING[status] ?? "",
+    // True only when a ?guide=1 line is part of the prompt, so the overlay keeps the prompt visible.
+    guideShown: accepting && Boolean(guide),
     message: message ?? "",
     clashLog,
     lanes: Array.from({length: SLOT_COUNT}, (_, lane) => ({

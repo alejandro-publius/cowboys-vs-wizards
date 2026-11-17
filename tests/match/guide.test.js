@@ -78,16 +78,16 @@ const lines = (seen) => seen.map((s) => s.line);
 test("GF-1: lines cover choose card, lane, confirm, end phase, first clash result and tribute summon in order", () => {
   const seen = walk(route);
   assert.deepEqual(lines(seen).slice(0, 8), [
-    "Choose a glowing card in your hand to summon a troop or cast a spell, or end your phase.",
-    "Pick one of your open lanes (lane 1, lane 2, lane 3) for Sheriff.",
-    "Confirm to summon Sheriff, or cancel to choose again.",
-    "You have no playable card, so end your phase to start the clash.",
+    "Glowing cards in your hand can be played as a troop or a spell.",
+    "Lit tiles you can use for Sheriff: lane 1, lane 2, lane 3.",
+    "Summon plays Sheriff as chosen; Cancel returns to your hand.",
+    "You have no playable card; ending your phase finishes your part of the round, and the clash follows once both sides have moved.",
     "The round 1 clash: Your Sheriff in lane 1 hit the Skeleton: 3 → 2 orbs (and 1 more event).",
-    "Choose 1 of your troops to sacrifice for Billy, then pick a lane.",
-    "Pick one of your open lanes (lane 1, lane 2, lane 3) for Billy.",
-    "Confirm to summon Billy, or cancel to choose again.",
+    "Billy needs 1 friendly troop sacrificed; lit tiles hold your troops.",
+    "Lit tiles you can use for Billy: lane 1, lane 2, lane 3.",
+    "Summon plays Billy as chosen; Cancel returns to your hand.",
   ]);
-  assert.equal(lines(seen)[8], "You have already summoned this round, so cast a spell or end your phase.");
+  assert.equal(lines(seen)[8], "You have already summoned this round; a spell is still possible.");
 });
 
 test("GF-1: the tribute line is offered at the idle step when a tribute card is playable and none was summoned", () => {
@@ -97,20 +97,21 @@ test("GF-1: the tribute line is offered at the idle step when a tribute card is 
   const { view, options, progress } = round2[0];
   const spent = structuredClone(view);
   spent.allowances.cowboy.castUsed = true;
-  assert.match(guideLine({ view: spent, options, progress }), /^Billy is playable and costs 1 friendly troop to sacrifice, so choose it for your first tribute summon\.$/);
+  assert.match(guideLine({ view: spent, options, progress }), /^Billy is playable; its \d stars mean sacrificing 1 friendly troop when you summon it\.$/);
 });
 
 test("GF-2: each line is one sentence in game vocabulary and true for the board", () => {
-  const vocabulary = text("src/ui/title-menu.js") + text("src/match/selection.js") + text("src/match/clash-log.js");
+  const vocabulary = text("src/ui/title-menu.js") + text("src/match/selection.js") + text("src/match/clash-log.js") + text("src/ui/cards.js");
   const seen = walk(route).filter((s) => s.view.round <= 2);
   for (const { line, view, options } of seen) {
     assert.ok(line, "a line at every step of rounds 1 and 2");
     assert.equal((line.match(/[.!?]/g) ?? []).length, 1, line);
     assert.ok(line.endsWith("."), line);
-    for (const term of ["glowing card", "sacrifice", "lane", "Confirm", "end your phase", "clash", "cancel"]) {
+    for (const term of ["glowing card", "sacrifice", "lane", "lit tile", "end your phase", "clash"]) {
       if (line.includes(term)) assert.ok(vocabulary.includes(term) || vocabulary.toLowerCase().includes(term.toLowerCase()), term);
     }
     if (options.step === "slot") assert.ok(line.includes(options.ownSlots.map((s) => `lane ${s + 1}`).join(", ")));
+    assert.ok(!/open lane|first tribute|start the clash/.test(line), line);
     if (options.cardId) assert.ok(view.sides.cowboy.hand.includes(options.cardId) && line.includes(CARDS[options.cardId].name));
   }
   const clash = seen.find((s) => s.view.round === 2 && s.step === "idle").line;
@@ -139,7 +140,7 @@ test("GF-3: a fresh progress record (restart) gives the opening line again", () 
   const used = trackGuide(guideProgress(), [{ type: "summon", side: "cowboy", cardId: "x", slot: 0, tributes: [0] }]);
   assert.equal(used.tributeSummoned, true);
   assert.equal(guideProgress().tributeSummoned, false);
-  assert.ok(guideLine({ view, options, progress: guideProgress() }).startsWith("Choose a glowing card"));
+  assert.ok(guideLine({ view, options, progress: guideProgress() }).startsWith("Glowing cards"));
 });
 
 test("GF-4: the line does not change with the Wizard hand or deck and names no hidden card", () => {
@@ -153,7 +154,7 @@ test("GF-4: the line does not change with the Wizard hand or deck and names no h
     const view = publicState(s, "cowboy");
     const options = selectionOptions(emptySelection, view);
     const line = guideLine({ view, options, progress: guideProgress() });
-    assert.equal(line, "Choose a glowing card in your hand to summon a troop or cast a spell, or end your phase.");
+    assert.equal(line, "Glowing cards in your hand can be played as a troop or a spell.");
     for (const name of names) assert.ok(!line.includes(name), `${name} in "${line}"`);
   }
   for (const { line } of walk(route).filter((s) => s.view.round <= 2)) for (const name of ["Wizard", "Dragon", "Singularity"]) assert.ok(!line.includes(name), line);

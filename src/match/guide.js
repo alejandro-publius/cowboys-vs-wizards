@@ -40,12 +40,12 @@ function idleLine(view, options, progress) {
     const tribute = playable.find((id) => CARDS[id].kind === "troop" && tributeCost(CARDS[id].stars) > 0);
     if (tribute) {
       const cost = tributeCost(CARDS[tribute].stars);
-      return `${CARDS[tribute].name} is playable and costs ${plural(cost, "friendly troop")} to sacrifice, so choose it for your first tribute summon.`;
+      return `${CARDS[tribute].name} is playable; its ${CARDS[tribute].stars} stars mean sacrificing ${plural(cost, "friendly troop")} when you summon it.`;
     }
   }
-  if (playable.length === 0) return "You have no playable card, so end your phase to start the clash.";
-  if (summonUsed) return "You have already summoned this round, so cast a spell or end your phase.";
-  return "Choose a glowing card in your hand to summon a troop or cast a spell, or end your phase.";
+  if (playable.length === 0) return "You have no playable card; ending your phase finishes your part of the round, and the clash follows once both sides have moved.";
+  if (summonUsed) return "You have already summoned this round; a spell is still possible.";
+  return "Glowing cards in your hand can be played as a troop or a spell.";
 }
 
 export function guideLine({ view, options, progress }) {
@@ -55,15 +55,15 @@ export function guideLine({ view, options, progress }) {
   const card = CARDS[options.cardId];
   switch (options.step) {
     case "tribute":
-      return `Choose ${tributeCost(card.stars)} of your troops to sacrifice for ${card.name}, then pick a lane.`;
+      return `${card.name} needs ${plural(tributeCost(card.stars), "friendly troop")} sacrificed; lit tiles hold your troops.`;
     case "slot":
-      return `Pick one of your open lanes (${lanes(options.ownSlots)}) for ${card.name}.`;
+      return `Lit tiles you can use for ${card.name}: ${lanes(options.ownSlots)}.`;
     case "target":
-      return `Choose an enemy troop to hit with ${card.name} (${lanes(options.enemySlots)}).`;
+      return `Lit enemy tiles ${card.name} can hit: ${lanes(options.enemySlots)}.`;
     case "destination":
-      return `Pick an empty enemy lane (${lanes(options.enemySlots)}) to move the target to${options.canSkip ? ", or skip" : ""}.`;
+      return `Lit enemy tiles the target can move to: ${lanes(options.enemySlots)}${options.canSkip ? "; you may skip the move" : ""}.`;
     case "confirm":
-      return `Confirm to ${card.kind === "spell" ? "cast" : "summon"} ${card.name}, or cancel to choose again.`;
+      return `${card.kind === "spell" ? "Cast" : "Summon"} plays ${card.name} as chosen; Cancel returns to your hand.`;
     default:
       return null;
   }
