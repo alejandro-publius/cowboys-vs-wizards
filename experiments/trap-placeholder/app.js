@@ -8,6 +8,7 @@ import { createScheduler } from "../../src/match/scheduler.js";
 import { MAX_ROUNDS, SLOT_COUNT } from "../../src/game/state.js";
 import { VIEWER, cardName, commandList, createLabSession, eventLine, trapText } from "./lab.js";
 import { SCENARIO_LABELS } from "./scenarios.js";
+import { createPlaytestReport, reportFileName } from "./playtest-report.js";
 
 const ENEMY = "wizard";
 const $ = (id) => document.getElementById(id);
@@ -194,6 +195,40 @@ $("cancel").addEventListener("click", act(() => controller().input({ type: "canc
 $("end-phase").addEventListener("click", act(() => controller().endPhase()));
 $("show-log").addEventListener("change", () => renderLog());
 addEventListener("pagehide", () => session.leave());
+
+// Issue #118: local playtest report. Built only on an explicit export click
+// from the current session's public data and the typed notes; downloaded as
+// a Blob, never sent or stored. Notes are never cleared automatically.
+const NOTE_INPUTS = { spellVersusTrap: "note-spell-trap", armingClarity: "note-arming", pacing: "note-pacing", freeform: "note-freeform" };
+function currentReport() {
+  const c = controller();
+  const notes = Object.fromEntries(Object.entries(NOTE_INPUTS).map(([field, id]) => [field, $(id).value]));
+  return createPlaytestReport({
+    ...session.settings(),
+    seed: c.seed(),
+    seedPinned: c.seedPinned(),
+    status: c.status(),
+    view: c.view(),
+    events: events(),
+    cards: session.lab().cards,
+    notes,
+    includeEvents: $("export-events").checked,
+  });
+}
+$("export-report").addEventListener("click", () => {
+  const report = currentReport();
+  const url = URL.createObjectURL(new Blob([JSON.stringify(report, null, 2) + "\n"], { type: "application/json" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = reportFileName(report);
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+  $("export-status").textContent = `Downloaded ${link.download} (${report.metrics.publicEvents} public events${report.match ? "" : ", no current match"}).`;
+});
+$("clear-notes").addEventListener("click", () => {
+  for (const id of Object.values(NOTE_INPUTS)) $(id).value = "";
+  $("export-status").textContent = "Notes cleared.";
+});
 
 function loop(now) {
   scheduler.tick(now);

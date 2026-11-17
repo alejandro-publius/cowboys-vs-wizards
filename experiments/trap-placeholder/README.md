@@ -1,4 +1,4 @@
-# Trap placeholder lab (issues #108 and #116)
+# Trap placeholder lab (issues #108, #116 and #118)
 
 **Experimental, synthetic, local only.** This is a developer lab for the frozen A + X trap prototype. It is not released UI, not gameplay art and not linked from the game. Traps stay off in the shipped game (`createMatch(seed)` with no `traps` option). In the default FIXTURE scenario each side gets one anonymous test-fixture trap in its opening hand, defined only in [lab.js](lab.js). The fixture is not a card, deck entry, copy count or balance result. There are no models, animation, audio or art. The page uses plain native buttons and text. Nobody has reviewed it for accessibility.
 
@@ -54,6 +54,30 @@ node --test tests/experiments/trap-placeholder-keyboard.test.js
 
 This drives installed Google Chrome over the DevTools protocol on a 127.0.0.1 server it starts itself. It skips when Chrome is not at the default macOS path.
 
+## Playtest report (issue #118)
+
+Below the event log is an optional "Playtest report" section with four native labelled text boxes: spell versus trap (was the choice clear, did it matter), one-round arming clarity, pacing and match length, and other feedback. All four start empty and nothing fills them in. The page asks for no name or contact detail; do not type personal information.
+
+Only the "Export current playtest report" button builds a report. It calls the pure `createPlaytestReport()` in [playtest-report.js](playtest-report.js) and downloads `trap-playtest-<scenario>-<cpu>-seed-<seed>.json` through a local Blob URL. There is no automatic export, analytics, network request, cookie or local or session storage. The file name and report hold no date, time or path.
+
+The report, schema `cowboys-vs-wizards/trap-placeholder-playtest-report` version 1, rebuilds every field from an allowlist and copies no input object whole:
+
+- `source: "synthetic-developer-lab"` and a disclaimer; the active `scenario` and `wizardCpu`; the pinned numeric `seed`.
+- `match`: status, round, active side and result from the Cowboy's public view only.
+- `metrics`: counts of `trap-set`, `trap-trigger`, `spell` and `phase-end` per side and `round-start`, from the Cowboy-projected `events()` only. They are tallies, not evidence that a choice was clear or meaningful.
+- `publicEvents` (when "Include the public event list" is ticked, the default): the same events with only their known public fields and known card IDs, capped at 500. A Wizard `trap-set` never carries a card ID. A `trap-trigger` carries the sprung trap's ID, because the engine reveals a trap publicly when it springs (`src/game/view.js`), so a Wizard trap's ID can appear from that event on, never before.
+- `humanNotes`: exactly the typed text of the four boxes, control and bidi characters removed, trimmed, at most 1000 characters each; empty strings when nothing was typed.
+
+Nothing else leaves the controller: no engine state, Wizard hand, deck order, rng, face-down Wizard trap ID or timestamp.
+
+Session and notes: the match data is always the current session. A Start with changed settings, a Restart or a new seed starts the event log again, so the next export holds only the new match; after Leave there is no current match and the export has `match: null`, `seed: null` and no events. A refused seed keeps the match and its data. The notes are never cleared automatically: they stay as typed through Start, Restart, Leave and a refused seed, so nothing typed is lost, and the export pairs them with whatever match is shown at that moment. Press "Clear notes" to empty them; reloading the page also empties them.
+
+```sh
+node --test tests/experiments/trap-placeholder-report.test.js
+```
+
+Node checks of the builder on real matches (seeds 0 and 60, all four scenarios) and hostile input, plus a Chrome smoke of the real button (skipped when Chrome is not at the default macOS path). No human playtest has been run with this page.
+
 ## Data boundary
 
 The DOM reads only `controller.view()`, `displayed()`, `options()`, `status()` and `message()`, and the event log stores `publicEvents(events, "cowboy")`. Full engine state stays inside the controller. The renderer is a no-op placeholder that returns fixed durations. It satisfies the Presenter interface and is not animation evidence.
@@ -67,4 +91,4 @@ node --test tests/experiments/trap-placeholder-scenarios.test.js
 
 The scenario test also runs a Chrome smoke of BASE, T1 and T2 (skipped when Chrome is not at the default macOS path). It sets the selects by script with a change event, not by keyboard.
 
-Evidence: [docs/evidence/kiro-trap-placeholder-108.md](../../docs/evidence/kiro-trap-placeholder-108.md), [docs/evidence/kiro-trap-keyboard-110.md](../../docs/evidence/kiro-trap-keyboard-110.md) and [docs/evidence/kiro-trap-scenario-selector-116.md](../../docs/evidence/kiro-trap-scenario-selector-116.md).
+Evidence: [docs/evidence/kiro-trap-placeholder-108.md](../../docs/evidence/kiro-trap-placeholder-108.md), [docs/evidence/kiro-trap-keyboard-110.md](../../docs/evidence/kiro-trap-keyboard-110.md), [docs/evidence/kiro-trap-scenario-selector-116.md](../../docs/evidence/kiro-trap-scenario-selector-116.md) and [docs/evidence/kiro-trap-playtest-report-118.md](../../docs/evidence/kiro-trap-playtest-report-118.md).
