@@ -1,10 +1,10 @@
 # Approved Sheriff idle in the match (Kiro runtime integration)
-November 16, 2026, America/Los_Angeles. Branch `kiro/approved-sheriff-idle`, from 849ecce. This worker receipt began as a local handoff with only numerical checks and a build. Codex subsequently reviewed the actual match and integrated the change into draft PR #13; see the coordinator review below. Not merged or deployed.
+November 16, 2026, America/Los_Angeles. Branch `kiro/approved-sheriff-idle`, from 849ecce. This worker receipt began as a local handoff with only numerical checks and a build. Codex subsequently reviewed the actual match and integrated the change into [PR #13](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/13); see the coordinator review below. This receipt describes the original handoff; [subsequent transition smoothing](sheriff-transition-blend.md) supersedes its abrupt-cut limitation.
 
 ## Credits
 - Art: the user's Tripo Sheriff, `assets/models/sheriff.glb`, unchanged (geometry, material and rig).
 - Motion: Mixamo headShake, from three.js r180 `Xbot.glb`. Adobe/Mixamo terms apply, not the three.js MIT code license. Sources and terms are in `assets/animations/sheriff-headShake.SOURCE.json`.
-- Retarget and standing preview: Codex (`codex-sourced-motion-preview`, [preview evidence](../../../codex-sourced-motion-preview/docs/evidence/sheriff-stationary-gesture-preview.md) in that worktree). The user approved the visible standing gesture with "perfect!!!". Approved file SHA-256 `d9d2ea2e0dc4808f3b220bae0e21440a5109de0e87e82845e93abc6bd1655c99`, 3,891,912 bytes, clip `Mixamo_headShake_retargeted`, 2.566666603 s.
+- Retarget and standing preview: Codex (`codex-sourced-motion-preview`, [tracked source record](../../assets/animations/sheriff-headShake.SOURCE.json)). The user approved the visible standing gesture with "perfect!!!". Approved file SHA-256 `d9d2ea2e0dc4808f3b220bae0e21440a5109de0e87e82845e93abc6bd1655c99`, 3,891,912 bytes, clip `Mixamo_headShake_retargeted`, 2.566666603 s.
 - Kiro: only the runtime integration and checks below. Kiro did not create, retarget or edit any curve.
 
 ## What changed

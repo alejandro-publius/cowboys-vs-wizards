@@ -11,3 +11,5 @@ Checks:
 - The web build before the delayed-tick guard passed all eight seeded browser steps with zero console errors. The guard has its own focused regression test; final release verification is recorded separately.
 
 Authorship: Mixamo supplied the source motion; Codex retargeted the previously user-approved preview and implemented this runtime blending. Kiro integrated the original sourced idle and its lifecycle checks. The user's artistic approval remains the authority.
+
+Final pre-merge code: 136/136 Node tests, both animated GLB structural checks, web build and diff checks passed. Final web HTML SHA-256: `201b62a71617a4b30ed83ad5c3c82ddab5ac991bf16cfd088be64992f0739494`.
