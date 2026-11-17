@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; connect-src 'none'; img-src 'none'; style-src 'none'; form-action 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Trap lab report comparator (local developer tool)</title>
+</head>
+<body>
+<p role="note"><strong>Experimental, synthetic, local only.</strong>
+Compares one T1 and one BASE report exported from the trap placeholder lab with the same seed and Wizard CPU.
+The chosen files are read in this browser only. Nothing is uploaded or stored. The counts are public
+Cowboy-view event tallies, not human playtest evidence, balance or a win rate. Serve over loopback HTTP
+(see README.md), not file://.</p>
+
+<h1>Trap lab report comparator</h1>
+
+<form id="compare-form">
+  <p>
+    <label for="first-file">First report (T1 or BASE)</label>
+    <input id="first-file" type="file" accept=".json,application/json">
+  </p>
+  <p>
+    <label for="second-file">Second report (the other scenario)</label>
+    <input id="second-file" type="file" accept=".json,application/json">
+  </p>
+  <p>
+    <input id="include-notes" type="checkbox">
+    <label for="include-notes">Show the typed notes from both reports (off by default)</label>
+  </p>
+  <p><button id="compare" type="submit">Compare reports</button></p>
+</form>
+
+<p id="status" role="status" aria-live="polite">Choose two report files, then press Compare reports.</p>
+<p id="error" role="alert" hidden></p>
+
+<section id="result" aria-labelledby="result-heading" hidden>
+  <h2 id="result-heading">Comparison</h2>
+  <ul id="summary"></ul>
+  <h3>Match status</h3>
+  <table id="match-table">
+    <caption>Match status per scenario (outcome from the Cowboy view)</caption>
+    <thead><tr><th scope="col">Scenario</th><th scope="col">Status</th><th scope="col">Round</th><th scope="col">Outcome</th><th scope="col">Reason</th><th scope="col">Ending round</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <h3>Public event counts</h3>
+  <table id="count-table">
+    <caption>Public Cowboy-view event counts from each report's metrics</caption>
+    <thead><tr></tr></thead>
+    <tbody></tbody>
+  </table>
+  <h3>Metric limits</h3>
+  <table id="limit-table">
+    <caption>Exporter limits per report</caption>
+    <thead><tr><th scope="col">Scenario</th><th scope="col">Events truncated</th><th scope="col">Events dropped</th><th scope="col">Event list in report</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <h3>Warnings</h3>
+  <ul id="warnings"></ul>
+  <section id="notes" aria-labelledby="notes-heading" hidden>
+    <h3 id="notes-heading">Notes as stored (not interpreted)</h3>
+    <div id="notes-body"></div>
+  </section>
+</section>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
