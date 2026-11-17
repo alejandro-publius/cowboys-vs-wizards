@@ -1,0 +1,220 @@
+{
+  "baseSeed": 45274,
+  "properties": [
+    {
+      "id": "BP-DECK",
+      "reqs": [
+        "R1.1",
+        "R1.6",
+        "R1.7",
+        "R1.8",
+        "R11.1",
+        "deck-rules"
+      ],
+      "cases": 103,
+      "categories": {
+        "custom-deck-played-to-result": 103,
+        "one-sheriff-minimum": 33,
+        "outside:duplicate-id": 103,
+        "outside:eleven-cards": 103,
+        "outside:foreign-card": 103,
+        "outside:no-sheriff": 33,
+        "outside:seventh-copy": 88,
+        "outside:thirteen-cards": 103,
+        "sheriff-minimum-and-copy-cap": 18,
+        "six-copy-cap": 88
+      },
+      "declaredButUnexercised": []
+    },
+    {
+      "id": "BP-TRIBUTE",
+      "reqs": [
+        "R3.1",
+        "R3.2",
+        "R3.3",
+        "R3.4",
+        "R3.5",
+        "R3.6",
+        "R1.6"
+      ],
+      "cases": 120,
+      "categories": {
+        "both-boards-full": 27,
+        "cost-1-into-vacated-slot": 69,
+        "cost-2-into-vacated-slot": 63,
+        "full-board:cowboy": 60,
+        "full-board:wizard": 60,
+        "non-vacated-slot-rejected": 100,
+        "zero-cost-blocked-on-full-board": 73
+      },
+      "declaredButUnexercised": []
+    },
+    {
+      "id": "BP-REJECT",
+      "reqs": [
+        "R3.2",
+        "R3.4",
+        "R3.7",
+        "R3.8",
+        "R6.2",
+        "R6.4",
+        "R6.7",
+        "R8.3",
+        "R8.4",
+        "R8.6",
+        "R10.4"
+      ],
+      "cases": 150,
+      "categories": {
+        "reject:cast-a-troop": 102,
+        "reject:destination-for-a-defeated-target": 7,
+        "reject:destination-is-the-target-slot": 22,
+        "reject:destination-occupied": 11,
+        "reject:destination-on-non-relocating-spell": 15,
+        "reject:destination-past-the-end": 22,
+        "reject:destination-two-slots-away": 21,
+        "reject:duplicate-action-id": 145,
+        "reject:empty-action-id": 145,
+        "reject:second-cast": 14,
+        "reject:second-summon": 44,
+        "reject:spell-card-unknown": 114,
+        "reject:spell-target-empty-slot": 56,
+        "reject:spell-target-not-a-slot-number": 61,
+        "reject:spell-target-out-of-range": 61,
+        "reject:stale-after-intervening-action": 66,
+        "reject:stale-revision-ahead": 145,
+        "reject:stale-revision-behind": 145,
+        "reject:summon-a-spell": 40,
+        "reject:summon-after-spell": 17,
+        "reject:summon-card-in-deck": 71,
+        "reject:summon-card-in-discard": 32,
+        "reject:summon-card-unknown": 73,
+        "reject:summon-foreign-card": 71,
+        "reject:summon-into-unvacated-slot": 33,
+        "reject:summon-slot-not-integer": 53,
+        "reject:summon-slot-out-of-range": 53,
+        "reject:terminal-match": 145,
+        "reject:tribute-duplicate-slot": 35,
+        "reject:tribute-empty-slot": 24,
+        "reject:tribute-foreign-troop-slot": 33,
+        "reject:tribute-not-a-list": 64,
+        "reject:tribute-not-a-slot-number": 64,
+        "reject:tribute-out-of-range": 64,
+        "reject:tribute-overpaid": 33,
+        "reject:tribute-underpaid": 50,
+        "reject:unknown-action-type": 145,
+        "reject:wrong-side": 145,
+        "rejections-leave-no-trace": 145,
+        "state:constructed": 75,
+        "state:reachable": 70
+      },
+      "declaredButUnexercised": []
+    },
+    {
+      "id": "BP-SPELL",
+      "reqs": [
+        "R8.1",
+        "R8.2",
+        "R8.3",
+        "R8.4",
+        "R8.5",
+        "R8.6",
+        "R6.2",
+        "R1.6"
+      ],
+      "cases": 200,
+      "categories": {
+        "bad-destination-rejected": 94,
+        "caster-board-empty": 67,
+        "caster-board-occupied": 133,
+        "one-orb-target-deadeye-kill": 91,
+        "one-orb-target-singularity-kill": 90,
+        "one-orb-target-with-destination-rejected": 181,
+        "second-cast-rejected": 38,
+        "spell-without-target-rejected": 130,
+        "survivor-relocated-to-adjacent-empty-slot": 17,
+        "two-plus-orb-target-chipped": 94
+      },
+      "declaredButUnexercised": []
+    },
+    {
+      "id": "BP-CLASH",
+      "reqs": [
+        "R7.1",
+        "R7.2",
+        "R7.3",
+        "R7.4",
+        "R7.5",
+        "R7.6",
+        "R10.1",
+        "R10.2",
+        "R10.3",
+        "R10.4",
+        "R5.8"
+      ],
+      "cases": 400,
+      "categories": {
+        "base-clamped-at-zero": 88,
+        "base-exactly-zero": 120,
+        "both-bases-zero-draw": 29,
+        "clash-completes-after-first-base-falls": 171,
+        "defeated-attacker-still-attacks": 283,
+        "lane-mirror-equal": 400,
+        "match-continues": 74,
+        "mutual-lane-defeat": 181,
+        "no-troops-clash": 29,
+        "one-base-zero-loss": 171,
+        "overkill-absorbed-no-base-spill": 211,
+        "round-limit-decided": 27,
+        "round-limit-tie": 99,
+        "unopposed-attack-hits-base": 286
+      },
+      "declaredButUnexercised": []
+    },
+    {
+      "id": "BP-REPLAY",
+      "reqs": [
+        "R11.3",
+        "R6.7",
+        "R3.7",
+        "R1.6",
+        "R1.7"
+      ],
+      "cases": 80,
+      "categories": {
+        "log-replayed-identically": 80,
+        "played-to-result": 80,
+        "rejected-action-interleaved": 68,
+        "start:constructed": 40,
+        "start:reachable": 40
+      },
+      "declaredButUnexercised": []
+    },
+    {
+      "id": "BP-CPU",
+      "reqs": [
+        "R9.1",
+        "R9.2",
+        "R9.4",
+        "R9.5"
+      ],
+      "cases": 150,
+      "categories": {
+        "boundary-custom-deck": 111,
+        "cpu-board-full": 18,
+        "cpu-side:cowboy": 64,
+        "cpu-side:wizard": 70,
+        "enemy-deck-order-differs": 133,
+        "enemy-hand-differs-by-card-name": 121,
+        "enemy-holds-spell": 71,
+        "level:easy": 134,
+        "level:hard": 134,
+        "level:normal": 134,
+        "own-deck-order-differs": 130,
+        "state:constructed": 75,
+        "state:reachable": 59
+      },
+      "declaredButUnexercised": []
+    }
+  ]
+}
