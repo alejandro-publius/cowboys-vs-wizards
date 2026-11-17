@@ -55,6 +55,14 @@
 .front-face[data-unit="Singularity"] {--face-art:var(--singularity-card)}
 .card-reverse {background:var(--card-back) center/cover no-repeat;transform:rotateY(180deg) translateZ(var(--half-depth))}
 .card-slice {background:linear-gradient(#8a6549,#c9a878 55%,#f0d9aa);transform:translateZ(calc(var(--card-depth)*var(--z)))}
+/* Playwright WebKit 27.2 paints the layers of a preserve-3d card in stacking order and ignores backface-visibility,
+   so the edge slices and the reverse covered the front. Stack them explicitly (Chrome still sorts by depth), and in
+   the art viewer show only the side that faces the player. Visibility is transitioned so both sides stay drawn mid-flip. */
+.card-slice {z-index:0}
+.card-reverse {z-index:1}
+.front-face {z-index:2}
+.card-face {transition:visibility .23s}
+.card-preview.is-flipped .front-face,.card-preview:not(.is-flipped) .card-reverse {visibility:hidden}
 #match .card-front {--table-pitch:24deg;--pitch:var(--table-pitch);--yaw:calc(var(--fan,0)*2deg - 5deg);--roll:calc(var(--fan,0)*2.5deg);flex:0 0 var(--hand-card-width);width:var(--hand-card-width);padding:0;border:0;border-radius:var(--card-radius);background:none;min-height:0;text-align:left;white-space:normal;touch-action:manipulation}
 #match .card-front:not(:disabled):hover,#match .card-front:focus-visible {--pitch:10deg;--lift:-6px;--shadow-y:13px;--shadow-blur:8px;--sheen:60%;z-index:2}
 #match .card-front[aria-pressed=true] {--pitch:4deg;--yaw:-6deg;--roll:0deg;--lift:-14px;--scale:1.06;--sheen:60%;--shadow-x:13px;--shadow-y:24px;--shadow-blur:12px;--shadow-strength:.5;z-index:3}
