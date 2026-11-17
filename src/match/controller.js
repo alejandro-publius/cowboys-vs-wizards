@@ -33,6 +33,7 @@
 import { createMatch } from "../game/state.js";
 import { applyAction } from "../game/actions.js";
 import { legalActions } from "../game/legal.js";
+import { CARDS } from "../game/cards.js";
 import { publicEvents, publicState } from "../game/view.js";
 import { chooseAction } from "../game/cpu.js";
 import { createPresenter } from "./presenter.js";
@@ -87,8 +88,16 @@ export function createController({
   randomSeed = randomUint32,
   cpuDelay = 600,
   onChange,
+  // Test-only seam (issue #106): the catalog selection.js uses for the human's
+  // hand. It must hold every CARDS entry unchanged; tests add a fixture trap
+  // card here and pass the same catalog to their injected engine. main.js
+  // passes nothing, so the shipped CARDS is used.
+  cards = CARDS,
 } = {}) {
   if (!scheduler || !renderer) throw new TypeError("createController needs a scheduler and a renderer");
+  if (cards !== CARDS && Object.keys(CARDS).some((id) => cards?.[id] !== CARDS[id])) {
+    throw new TypeError("createController cards must hold every CARDS entry unchanged");
+  }
   if (!Number.isFinite(cpuDelay) || cpuDelay < 0) {
     throw new RangeError(`cpuDelay must be a finite number >= 0, got ${cpuDelay}`);
   }
@@ -245,7 +254,7 @@ export function createController({
   // A hand, slot, skip, confirm or cancel click.
   function input(event) {
     if (status !== "accepting_input") return;
-    const step = selectionStep(selection, event, view(), { accepting: true, newActionId });
+    const step = selectionStep(selection, event, view(), { accepting: true, newActionId, cards });
     selection = step.selection;
     message = step.message ?? null;
     if (step.action) return submit(step.action);
@@ -276,7 +285,7 @@ export function createController({
     options: () =>
       state === null
         ? null
-        : { ...selectionOptions(selection, view()), slot: selection.slot ?? null, draw: presenter.drawing() },
+        : { ...selectionOptions(selection, view(), { cards }), slot: selection.slot ?? null, draw: presenter.drawing() },
     seed: () => seed,
     seedPinned: () => seedPinned,
     message: () => message,

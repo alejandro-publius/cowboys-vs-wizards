@@ -7,11 +7,18 @@
 // Steps: idle, tribute, slot, target, destination, confirm.
 //   troop: idle -> tribute (cost > 0) -> slot -> confirm
 //   spell: idle -> target -> destination (only with a relocation entry) -> confirm
+//   trap:  idle -> confirm (a set-trap entry; trap matches only)
 // Inputs: { type: "card", cardId } | { type: "slot", side, slot } |
 //         { type: "confirm" } | { type: "cancel" } | { type: "skip" }
 // Neither `view` nor `selection` is ever mutated; selections are frozen.
+//
+// `options.cards` (default CARDS) is the card catalog for kind and name
+// lookups and is passed to legalActions, as in applyAction. Only tests pass
+// another one (CARDS plus a fixture trap card, issue #106); the shipped
+// catalog has no trap card. Only the viewer's own hand is looked up.
 import { CARDS, opponent, tributeCost } from "../game/cards.js";
 import { legalActions } from "../game/legal.js";
+import { MAX_ROUNDS } from "../game/state.js";
 
 export const emptySelection = Object.freeze({ step: "idle" });
 
@@ -26,20 +33,39 @@ function selection(fields) {
   return Object.freeze(copy);
 }
 
+// The viewer's legal entries. A hand card missing from the catalog is a
+// development error, reported by its ID instead of a lookup TypeError.
+function legalFor(view, cards) {
+  const missing = view.sides[view.viewer].hand?.find((cardId) => cards[cardId] === undefined);
+  if (missing !== undefined) throw new TypeError(`Card ${missing} is in the hand but not in the card catalog`);
+  return legalActions(view, view.viewer, { cards });
+}
+
 // Legal entries for one card; [] outside the viewer's phase.
-const entriesFor = (view, cardId) => legalActions(view, view.viewer).filter((action) => action.cardId === cardId);
+const entriesFor = (view, cardId, cards) => legalFor(view, cards).filter((action) => action.cardId === cardId);
 
 // The legal entry a "confirm" selection stands for.
 function matches(entry, chosen) {
   if (entry.type === "summon") return entry.slot === chosen.slot && sameSlots(entry.tributes, chosen.tributes ?? []);
+  if (entry.type === "set-trap") return chosen.trap === true;
   return entry.type === "spell" && entry.target === chosen.target && entry.destination === chosen.destination;
 }
 
 // Why a hand card has no legal entry. The shortfall comes first (Req 4.2),
 // then the blocking allowance, then the board.
+// Trap texts are the contract section 3 strings, in its order; `tactical`
+// exists only on trap matches, so default matches keep their texts.
 function blockedReason(view, card) {
-  const { summonUsed, castUsed } = view.allowances[view.viewer];
+  const { summonUsed, castUsed, tactical } = view.allowances[view.viewer];
+  if (card.kind === "trap") {
+    if (view.traps?.enabled !== true) return "Traps are not in this match.";
+    if (view.round === MAX_ROUNDS) return "Too late: a trap set in the last round can never spring.";
+    if (view.sides[view.viewer].trap != null) return "Your trap zone already holds a trap.";
+    if (castUsed) return "You already cast a spell this round. A trap uses the same action.";
+    return `${card.name} cannot be set now.`;
+  }
   if (card.kind === "spell") {
+    if (castUsed && tactical === "trap") return "You set a trap this round. A spell uses the same action.";
     if (castUsed) return "You have already cast a spell this round.";
     if (view.sides[opponent(view.viewer)].board.every((troop) => troop === null)) {
       return `${card.name} has no target: the enemy has no troops on the board.`;
@@ -51,27 +77,30 @@ function blockedReason(view, card) {
   const cost = tributeCost(card.stars);
   if (troops < cost) return `${card.name} needs ${plural(cost, "tribute troop")}; you have ${troops} on the board.`;
   if (summonUsed) return "You have already summoned this round.";
+  if (castUsed && tactical === "trap") return "You set a trap this round, so you cannot summon. Summon first next time.";
   if (castUsed) return "A spell was cast this round, and summons must come first.";
   if (cost === 0 && troops === board.length) return `No open tile for ${card.name}.`;
   return `${card.name} cannot be summoned now.`;
 }
 
-function clickCard(current, cardId, view) {
+function clickCard(current, cardId, view, cards) {
   if (current.cardId !== undefined && current.cardId === cardId) return { selection: emptySelection };
   if (!view.sides[view.viewer].hand.includes(cardId)) return { selection: current, message: "That card is not in your hand." };
-  const card = CARDS[cardId];
-  if (entriesFor(view, cardId).length === 0) return { selection: emptySelection, message: blockedReason(view, card) };
+  const entries = entriesFor(view, cardId, cards);
+  const card = cards[cardId];
+  if (entries.length === 0) return { selection: emptySelection, message: blockedReason(view, card) };
+  if (card.kind === "trap") return { selection: selection({ step: "confirm", cardId, trap: true }) };
   if (card.kind === "spell") return { selection: selection({ step: "target", cardId }) };
   const step = tributeCost(card.stars) > 0 ? "tribute" : "slot";
   return { selection: selection({ step, cardId, tributes: [] }) };
 }
 
-function clickSlot(current, { side, slot }, view) {
+function clickSlot(current, { side, slot }, view, cards) {
   if (current.step === "idle") return { selection: current, message: "Choose a card first." };
   if (current.step === "confirm") return { selection: current, message: "Confirm or cancel." };
   const own = side === view.viewer;
   const enemy = side === opponent(view.viewer);
-  const entries = entriesFor(view, current.cardId);
+  const entries = entriesFor(view, current.cardId, cards);
 
   if (current.step === "tribute") {
     const picks = current.tributes.includes(slot)
@@ -80,7 +109,7 @@ function clickSlot(current, { side, slot }, view) {
     if (!own || !entries.some((entry) => isSubset(picks, entry.tributes))) {
       return { selection: current, message: "Choose one of your own troops to sacrifice." };
     }
-    const done = picks.length === tributeCost(CARDS[current.cardId].stars);
+    const done = picks.length === tributeCost(cards[current.cardId].stars);
     return { selection: selection({ step: done ? "slot" : "tribute", cardId: current.cardId, tributes: picks }) };
   }
 
@@ -107,18 +136,18 @@ function clickSlot(current, { side, slot }, view) {
   return { selection: selection({ ...current, step: "confirm", destination: slot }) };
 }
 
-function skip(current, view) {
+function skip(current, view, cards) {
   if (current.step !== "destination") return { selection: current };
-  const plain = entriesFor(view, current.cardId).some(
+  const plain = entriesFor(view, current.cardId, cards).some(
     (entry) => entry.target === current.target && entry.destination === undefined,
   );
   if (!plain) return { selection: current, message: "Choose a destination." };
   return { selection: selection({ step: "confirm", cardId: current.cardId, target: current.target }) };
 }
 
-function confirm(current, view, newActionId) {
+function confirm(current, view, newActionId, cards) {
   if (current.step !== "confirm") return { selection: current };
-  const found = entriesFor(view, current.cardId).filter((entry) => matches(entry, current));
+  const found = entriesFor(view, current.cardId, cards).filter((entry) => matches(entry, current));
   if (found.length !== 1) return { selection: emptySelection, message: "That move is no longer legal. Choose again." };
   return { selection: emptySelection, action: { ...structuredClone(found[0]), actionId: newActionId() } };
 }
@@ -128,17 +157,17 @@ function confirm(current, view, newActionId) {
 // entry plus `actionId: newActionId()`. Input is ignored (the same selection
 // object comes back) unless the caller is accepting input and it is the
 // viewer's phase of a match that is not over.
-export function selectionStep(current, input, view, { accepting = false, newActionId } = {}) {
+export function selectionStep(current, input, view, { accepting = false, newActionId, cards = CARDS } = {}) {
   if (!accepting || view.result || view.activeSide !== view.viewer) return { selection: current };
   switch (input?.type) {
     case "card":
-      return clickCard(current, input.cardId, view);
+      return clickCard(current, input.cardId, view, cards);
     case "slot":
-      return clickSlot(current, input, view);
+      return clickSlot(current, input, view, cards);
     case "skip":
-      return skip(current, view);
+      return skip(current, view, cards);
     case "confirm":
-      return confirm(current, view, newActionId);
+      return confirm(current, view, newActionId, cards);
     case "cancel":
       return { selection: emptySelection };
     default:
@@ -154,8 +183,8 @@ function idlePrompt(view, hasPlayableCards) {
 
 // What the overlay may offer for the current step: clickable own and enemy
 // slots, the chosen tributes, button flags and a short prompt.
-export function selectionOptions(current, view) {
-  const actions = legalActions(view, view.viewer);
+export function selectionOptions(current, view, { cards = CARDS } = {}) {
+  const actions = legalFor(view, cards);
   const playableCardIds = [...new Set(actions.map((action) => action.cardId).filter(Boolean))];
   const options = {
     playableCardIds,
@@ -174,7 +203,7 @@ export function selectionOptions(current, view) {
     return options;
   }
 
-  const card = CARDS[current.cardId];
+  const card = cards[current.cardId];
   const entries = actions.filter((action) => action.cardId === current.cardId);
   switch (current.step) {
     case "tribute": {
@@ -205,7 +234,9 @@ export function selectionOptions(current, view) {
     }
     case "confirm":
       options.canConfirm = entries.some((entry) => matches(entry, current));
-      options.prompt = `Confirm ${card.name}, or cancel.`;
+      options.prompt = current.trap
+        ? `Set ${card.name} face-down, or cancel. It springs from next round.`
+        : `Confirm ${card.name}, or cancel.`;
       break;
   }
   return options;
