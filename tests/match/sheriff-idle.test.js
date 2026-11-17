@@ -14,7 +14,7 @@ import {publicState} from "../../src/game/view.js";
 import {createScheduler} from "../../src/match/scheduler.js";
 import {createMatchBoard} from "../../src/render/match-board.js";
 import {withCues} from "../../src/render/cues.js";
-import {SHERIFF_LANDING, SHERIFF_SHOT, drawSheriff} from "../../src/render/sheriff.js";
+import {SHERIFF_LANDING, SHERIFF_SHOT, SHERIFF_BLEND_SECONDS, drawSheriff, idleSheriff, restSheriff} from "../../src/render/sheriff.js";
 
 const models = await localModels();
 const idOf = (name) => Object.values(CARDS).find((card) => card.name === name).id;
@@ -135,7 +135,7 @@ test("two Sheriffs play independently and stay seated on their tiles", async () 
   }
 });
 
-test("a cue never inherits source hips or rotations", async () => {
+test("the source blends continuously into a cue and clears before the gun is drawn", async () => {
   const {board} = await setup([SHERIFF(), SHERIFF(), null], [{cardId: idOf("Skeleton"), health: 3}, null, null]);
   const [played, fresh] = [board.piece("cowboy", 0), board.piece("cowboy", 1)];
   const aim = board.targetPoint({kind: "troop", side: "wizard", slot: 0});
@@ -143,7 +143,14 @@ test("a cue never inherits source hips or rotations", async () => {
   clock.seconds = 6.2; frame(played);
   assert.equal(played.idle.playing, true);
   assert.ok(Math.abs(played.actor.rig.pelvis.position.y - played.actor.rig.spec.pelvis[1]) > 1e-4 || played.actor.root.position.y > 1e-4 || played.actor.rig.pelvis.quaternion.angleTo(new T.Quaternion()) > 1e-3, "the source moved the hips");
-  for (const t of [0, .3, SHERIFF_SHOT.shot, SHERIFF_SHOT.end]) {
+  const before = channels(played), beforeLift = played.actor.root.position.y;
+  drawSheriff(played, 0, 0, aim);
+  assert.ok(apart(channels(played), before) < 1e-9, "the first cue frame preserves the displayed pose");
+  assert.equal(played.actor.root.position.y, beforeLift);
+  drawSheriff(played, .0001, 0, aim);
+  assert.ok(apart(channels(played), before) < .001, "no jump just after ownership changes");
+  assert.ok(SHERIFF_BLEND_SECONDS < SHERIFF_SHOT.grab, "the blend ends before the gun is handled");
+  for (const t of [SHERIFF_SHOT.grab, .3, SHERIFF_SHOT.shot, SHERIFF_SHOT.end]) {
     drawSheriff(played, t, 0, aim);
     drawSheriff(fresh, t, 0, aim);
     for (const [index, bone] of played.actor.rig.bones.entries()) assert.ok(apart(bone.matrix.elements, fresh.actor.rig.bones[index].matrix.elements) < 1e-9, `${bone.name} at ${t}`);
@@ -152,6 +159,23 @@ test("a cue never inherits source hips or rotations", async () => {
   assert.equal(played.idle.playing, false);
   frame(played); // acting is false: the idle resumes from its first frame
   assert.equal(played.idle.playing, true);
+});
+
+test("returning to the approved idle preserves the cue endpoint, then reaches the unmodified clip", async () => {
+  const {board} = await setup([SHERIFF(), SHERIFF(), null]);
+  const [piece, reference] = [board.piece("cowboy", 0), board.piece("cowboy", 1)];
+  restSheriff(piece);
+  const before = channels(piece), lift = piece.actor.root.position.y;
+  idleSheriff(piece, 0);
+  assert.ok(apart(channels(piece), before) < 1e-9, "idle starts at the displayed cue endpoint");
+  assert.equal(piece.actor.root.position.y, lift);
+  idleSheriff(piece, .0001);
+  assert.ok(apart(channels(piece), before) < .001, "the first idle advance stays continuous");
+  idleSheriff(piece, .3);
+  idleSheriff(reference, .3);
+  assert.ok(apart(channels(piece), channels(reference)) < 1e-9, "after blending, the original clip is unchanged");
+  assert.equal(piece.idleBlendIn, null);
+  board.clear();
 });
 
 test("attack and summon suppress the idle, which resumes afterwards from the first frame", async () => {
@@ -187,6 +211,25 @@ test("attack and summon suppress the idle, which resumes afterwards from the fir
   clock.seconds = 8; frame(piece);
   assert.equal(piece.idle.playing, true);
   assert.equal(later.pending(), 0);
+});
+
+test("an attack completed between renders still blends back from its endpoint", async () => {
+  const {board, scheduler} = await setup([SHERIFF(), null, null], [{cardId: idOf("Skeleton"), health: 3}, null, null]);
+  const piece = board.piece("cowboy", 0);
+  clock.seconds = 5; frame(piece);
+  clock.seconds = 6.2; frame(piece);
+  const cue = withCues(board).attack({attacker: {side: "cowboy", slot: 0}, target: {kind: "troop", side: "wizard", slot: 0}});
+  // No render callback observes the attack; one delayed scheduler tick drains the cue.
+  scheduler.tick(cue.end + 1000);
+  const endpoint = channels(piece);
+  assert.equal(piece.acting, false);
+  clock.seconds = 20; frame(piece);
+  assert.equal(piece.idle.seconds, 0, "the old idle clock must not skip the re-entry blend");
+  assert.ok(apart(channels(piece), endpoint) < 1e-9, "the resumed frame preserves the cue endpoint");
+  clock.seconds = 20.3; frame(piece);
+  assert.ok(apart(channels(piece), endpoint) > .01, "the approved idle advances after the blend");
+  assert.equal(scheduler.pending(), 0);
+  board.clear();
 });
 
 test("losing an orb holds the rest pose for a bounded time, then the idle resumes", async () => {

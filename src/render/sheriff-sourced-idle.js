@@ -16,7 +16,7 @@ export function createSheriffIdle(actor) {
   const {rig, root} = actor, bones = rig.bones;
   const mixer = new T.AnimationMixer(root), clip = makeClip(), action = mixer.clipAction(clip);
   const bind = rig.spec.pelvis;
-  let playing = false, seconds = null;
+  let playing = false, initialized = false, seconds = null;
 
   // Clip pose at `time` (it repeats every SHERIFF_IDLE_DURATION).
   function play(time) {
@@ -24,6 +24,7 @@ export function createSheriffIdle(actor) {
       action.reset().play();
       playing = true;
     }
+    initialized = true;
     mixer.setTime(time);
     seconds = time;
   }
@@ -33,11 +34,17 @@ export function createSheriffIdle(actor) {
   function release() {
     if (!playing) return;
     action.stop();
+    resetPose();
+    playing = false;
+    seconds = null;
+  }
+
+  // A blend may leave source channels in the displayed pose after playback stops.
+  // Restore those channels before evaluating the next frame of an existing cue.
+  function resetPose() {
     for (const bone of bones) bone.quaternion.identity();
     rig.pelvis.position.fromArray(bind);
     root.position.y = 0;
-    playing = false;
-    seconds = null;
   }
 
   function dispose() {
@@ -47,5 +54,5 @@ export function createSheriffIdle(actor) {
     mixer.uncacheClip(clip);
   }
 
-  return {play, release, dispose, get playing() {return playing;}, get seconds() {return seconds;}, clip};
+  return {play, release, resetPose, dispose, get initialized() {return initialized;}, get playing() {return playing;}, get seconds() {return seconds;}, clip};
 }

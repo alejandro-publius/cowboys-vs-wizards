@@ -239,6 +239,9 @@ export async function createMatchBoard({models, scheduler} = {}) {
         from = null;
       } else {
         held = false;
+        // A whole cue may complete between renders (for example in a background tab).
+        // Re-entry still starts its blend at zero even if no render saw piece.acting.
+        if (!piece.idle.playing) from = null;
         const now = performance.now() / 1000;
         idleSheriff(piece, now - (from ??= now));
       }

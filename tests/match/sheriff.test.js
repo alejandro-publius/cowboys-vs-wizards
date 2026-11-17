@@ -167,11 +167,12 @@ test("reference targets: poses join within 1 mm, planted boots do not drift, not
   // Every cue starts in the pose the idle is in, and ends in the pose the idle starts from.
   restSheriff(sheriff);
   const rest = snapshot(), planted = soles(sheriff);
-  // A cue starts in the rest pose, also when the approved idle was playing before it.
+  // A cue starts at the displayed idle pose, then blends into the existing draw.
   idleSheriff(sheriff, 1.3);
-  assert.ok(apart(snapshot(), rest) > .01, "the approved idle moves");
+  const displayedIdle = snapshot();
+  assert.ok(apart(displayedIdle, rest) > .01, "the approved idle moves");
   drawSheriff(sheriff, 0, 0, aim);
-  assert.ok(apart(snapshot(), rest) < .001, `draw start is ${apart(snapshot(), rest)} from rest`);
+  assert.ok(apart(snapshot(), displayedIdle) < .001, `draw start jumps ${apart(snapshot(), displayedIdle)} from idle`);
   drawSheriff(sheriff, SHERIFF_SHOT.end, 0, aim);
   assert.ok(apart(snapshot(), rest) < .001, `draw end is ${apart(snapshot(), rest)} from rest`);
   landSheriff(sheriff, SHERIFF_LANDING.end);
