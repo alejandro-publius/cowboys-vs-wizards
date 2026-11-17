@@ -30,10 +30,17 @@ These rules are tracked repository files (`AGENTS.md`, `.kiro/steering/`). They 
 - Nothing was listed, created, updated or retrieved, and no setting was changed.
 - This does not show Memory is disabled globally. No fresh-session Memory retrieval was tested.
 
+### V3 follow-up (fresh session, explicit `--v3`, session-only)
+
+- A new, non-resumed session was started with `--v3` for this check. This engine choice was session-only: no global setting or permission changed, and the default model stayed Auto with no model override.
+- Observed in the session stream: the tool catalogue contained no Memory tool. The only related tool was the generic `knowledge` index/search tool, a different feature. Its schema was loaded and it was not invoked.
+- Result: **blocked, Memory tool absent.** No retrieval and no store was attempted. No repository-scoped memory was created, so no title or id exists. Steering recall (`AGENTS.md` sourcing rule) was not substituted for Memory. Retrieval remains untested.
+
 ## Compaction
 
 - **Documented historical check:** `docs/evidence/kiro-submission-preflight.md#kiro-compaction-check` records a November 16 run by Codex of `kiro-cli chat --v3 --trust-workspace --agent duel-presenter` on `861af78`. It states that `/compact` was invoked after four turns, `PreCompact` logged the Git revision, and `PostCompact` returned the replay plan with receipt `861af78-1794855476196`. In a resumed Kiro CLI 3.3.0 session, Kiro named seed 0 (opening) and seed 60 (Mounted Billy showdown) and quoted the receipt. The brag sheet cites the same receipt.
-- **Independent review of the raw receipt: pending.** The hook writes `.artifacts/kiro/duel-compaction.jsonl`. Codex checked two known locations (main root and source-preview worktree) and the file was absent in both. Nothing else was searched. This leaves the raw log uncorroborated. It does not show the run failed or never happened.
+- **Raw receipt recovered (correction).** Codex later recovered and read the original JSONL at commit `4321ba40156a8b49e35602dbb23ed562dc8d9d85`, path `docs/evidence/kiro-public-evidence/originals/duel-compaction.jsonl` ([immutable blob](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/4321ba40156a8b49e35602dbb23ed562dc8d9d85/docs/evidence/kiro-public-evidence/originals/duel-compaction.jsonl); the same relative path will work once the root integrates). SHA-256 of the local read-only copy: `d4dc1d00d54c932bd84a0c94045beb926af8d6cabe6b6aba8342098ab77f171e`. It holds a before entry (revision `861af78`, id `861af78-1794855463527`, `hasSummary` false) and an after entry (revision `861af78`, id `861af78-1794855476196`, `hasSummary` true). This corroborates the raw hook phases. The JSONL does not prove the contents of the resumed answer; the preflight note documents those.
+- The earlier "absent" finding applied only to the two local artifact locations first checked (main root and source-preview worktree). It was not evidence that the original was missing.
 - This session did not compact and did not reproduce the historical run. Reading steering is not a compaction demonstration.
 
 ## Observed session metadata (Codex-captured; see receipt)
@@ -46,11 +53,11 @@ These rules are tracked repository files (`AGENTS.md`, `.kiro/steering/`). They 
 | Saved settings | `chat.defaultModel`, `chat.defaultAgent`, `chat.agentEngine`: each returned "No value associated" (exit 1). These are config observations, not proof of what was selected. |
 | Usage | Four `meteringUsage` entries in the initial completed turn: 0.09177051990049752, 0.100722235986733, 0.30381755953565504, 0.14779139966832502. Sum 0.6441017150912106 credits (displayed 0.6441). |
 
-The credit figure is session-turn usage as reported in the stream. It is not an account balance or settled bill, and it excludes this finalization turn. No `/usage` or account/billing query was run.
+The credit figure is session-turn usage as reported in the stream. It is not an account balance or settled bill, and it covers the initial turn only (measured under V2) and excludes later turns including the V3 check. No `/usage` or account/billing query was run.
 
 ## Remaining blockers
 
-- Raw compaction JSONL not found at the two checked locations. Historical check stays documented, not independently reviewed.
-- Fresh-session Memory retrieval is untested and would need a V3 session.
+- Resumed-answer contents from the historical compaction run rest on the preflight note, not on the JSONL.
+- Memory retrieval is untested: the V3 session exposed no Memory tool.
 - Internal serving model identity is not exposed.
 - Raw `.artifacts/kiro-continuity-usage/` logs stay ignored and local. The receipt lists their SHA-256 digests.
