@@ -1,0 +1,390 @@
+{
+  "url": "http://127.0.0.1:51869/index.html?seed=0",
+  "viewport": [
+    1440,
+    810
+  ],
+  "steps": [
+    {
+      "action": "match ready after Enter on #menu-play (initial focus set by script)",
+      "status": "accepting_input",
+      "active": {
+        "tag": "BUTTON",
+        "id": "home",
+        "name": "Main menu",
+        "disabled": false,
+        "visible": true,
+        "inMatch": false,
+        "usable": false
+      }
+    },
+    {
+      "action": "Tab x7 to .match-hand [data-card-id][data-playable]:enabled",
+      "status": "accepting_input",
+      "active": {
+        "tag": "BUTTON",
+        "name": "Sheriff, 2 stars, 1 attack, 3 life orbs, free summon, playable now",
+        "cardId": "cowboy-sheriff-5",
+        "pressed": "false",
+        "disabled": false,
+        "visible": true,
+        "inMatch": true,
+        "usable": true
+      },
+      "stops": [
+        "Attack demo",
+        "Open duel menu",
+        "ROUND 1End turn",
+        "Card art",
+        "Mounted Billy, 7 stars, 3 attack, 5 life orbs, 2 tribute",
+        "Deadeye, spell: remove one enemy orb.",
+        "Sheriff, 2 stars, 1 attack, 3 life orbs, free summon, playable now"
+      ]
+    },
+    {
+      "action": "Enter on playable card",
+      "status": "accepting_input",
+      "active": {
+        "tag": "BUTTON",
+        "name": "Sheriff, 2 stars, 1 attack, 3 life orbs, free summon, playable now",
+        "cardId": "cowboy-sheriff-5",
+        "pressed": "true",
+        "disabled": false,
+        "visible": true,
+        "inMatch": true,
+        "usable": true
+      }
+    },
+    {
+      "action": "Shift+Tab x6 to .match-slot[data-side=\"cowboy\"]:enabled",
+      "status": "accepting_input",
+      "active": {
+        "tag": "BUTTON",
+        "name": "Your lane 3: empty",
+        "side": "cowboy",
+        "slot": "2",
+        "disabled": false,
+        "visible": true,
+        "inMatch": true,
+        "usable": true
+      },
+      "stops": [
+        "Deadeye, spell: remove one enemy orb.",
+        "Mounted Billy, 7 stars, 3 attack, 5 life orbs, 2 tribute",
+        "Card art",
+        "Cancel",
+        "ROUND 1End turn",
+        "Your lane 3: empty"
+      ]
+    },
+    {
+      "action": "Enter on legal lane",
+      "status": "accepting_input",
+      "active": {
+        "tag": "BUTTON",
+        "name": "Summon",
+        "action": "confirm",
+        "disabled": false,
+        "visible": true,
+        "inMatch": true,
+        "usable": true
+      }
+    },
+    {
+      "action": "Tab x1 to [data-action=\"cancel\"]:enabled",
+      "status": "accepting_input",
+      "active": {
+        "tag": "BUTTON",
+        "name": "Cancel",
+        "action": "cancel",
+        "disabled": false,
+        "visible": true,
+        "inMatch": true,
+        "usable": true
+      },
+      "stops": [
+        "Cancel"
+      ]
+    },
+    {
+      "action": "Enter on Cancel",
+      "status": "accepting_input",
+      "active": {
+        "tag": "BUTTON",
+        "name": "Sheriff, 2 stars, 1 attack, 3 life orbs, free summon, playable now",
+        "cardId": "cowboy-sheriff-5",
+        "pressed": "false",
+        "disabled": false,
+        "visible": true,
+        "inMatch": true,
+        "usable": true
+      }
+    },
+    {
+      "action": "Tab x0 to .match-hand [data-card-id][data-playable]:enabled",
+      "status": "accepting_input",
+      "active": {
+        "tag": "BUTTON",
+        "name": "Sheriff, 2 stars, 1 attack, 3 life orbs, free summon, playable now",
+        "cardId": "cowboy-sheriff-5",
+        "pressed": "false",
+        "disabled": false,
+        "visible": true,
+        "inMatch": true,
+        "usable": true
+      },
+      "stops": []
+    },
+    {
+      "action": "Enter on playable card",
+      "status": "accepting_input",
+      "active": {
+        "tag": "BUTTON",
+        "name": "Sheriff, 2 stars, 1 attack, 3 life orbs, free summon, playable now",
+        "cardId": "cowboy-sheriff-5",
+        "pressed": "true",
+        "disabled": false,
+        "visible": true,
+        "inMatch": true,
+        "usable": true
+      }
+    },
+    {
+      "action": "Shift+Tab x6 to .match-slot[data-side=\"cowboy\"]:enabled",
+      "status": "accepting_input",
+      "active": {
+        "tag": "BUTTON",
+        "name": "Your lane 3: empty",
+        "side": "cowboy",
+        "slot": "2",
+        "disabled": false,
+        "visible": true,
+        "inMatch": true,
+        "usable": true
+      },
+      "stops": [
+        "Deadeye, spell: remove one enemy orb.",
+        "Mounted Billy, 7 stars, 3 attack, 5 life orbs, 2 tribute",
+        "Card art",
+        "Cancel",
+        "ROUND 1End turn",
+        "Your lane 3: empty"
+      ]
+    },
+    {
+      "action": "Enter on legal lane",
+      "status": "accepting_input",
+      "active": {
+        "tag": "BUTTON",
+        "name": "Summon",
+        "action": "confirm",
+        "disabled": false,
+        "visible": true,
+        "inMatch": true,
+        "usable": true
+      }
+    },
+    {
+      "action": "Tab x0 to [data-action=\"confirm\"]:enabled",
+      "status": "accepting_input",
+      "active": {
+        "tag": "BUTTON",
+        "name": "Summon",
+        "action": "confirm",
+        "disabled": false,
+        "visible": true,
+        "inMatch": true,
+        "usable": true
+      },
+      "stops": []
+    },
+    {
+      "action": "Enter on Confirm",
+      "status": "playing",
+      "active": {
+        "tag": "BODY",
+        "usable": false
+      }
+    },
+    {
+      "action": "input accepted again after Confirm",
+      "status": "accepting_input",
+      "active": {
+        "tag": "BUTTON",
+        "name": "Mounted Billy, 7 stars, 3 attack, 5 life orbs, 2 tribute",
+        "cardId": "cowboy-mounted-billy-1",
+        "pressed": "false",
+        "disabled": false,
+        "visible": true,
+        "inMatch": true,
+        "usable": true
+      }
+    },
+    {
+      "action": "Shift+Tab x3 to [data-action=\"menu\"]",
+      "status": "accepting_input",
+      "active": {
+        "tag": "BUTTON",
+        "name": "Open duel menu",
+        "action": "menu",
+        "disabled": false,
+        "visible": true,
+        "inMatch": true,
+        "usable": true
+      },
+      "stops": [
+        "Card art",
+        "ROUND 1End turn",
+        "Open duel menu"
+      ]
+    },
+    {
+      "action": "Enter on Open duel menu",
+      "status": "accepting_input",
+      "active": {
+        "tag": "BUTTON",
+        "name": "Close menu",
+        "action": "close-menu",
+        "disabled": false,
+        "visible": true,
+        "inMatch": true,
+        "usable": true
+      }
+    },
+    {
+      "action": "Escape in duel menu",
+      "status": "accepting_input",
+      "active": {
+        "tag": "BUTTON",
+        "name": "Open duel menu",
+        "action": "menu",
+        "disabled": false,
+        "visible": true,
+        "inMatch": true,
+        "usable": true
+      }
+    }
+  ],
+  "checks": [
+    {
+      "name": "Tab reaches a playable hand card with a spoken name",
+      "passed": true,
+      "detail": {
+        "tag": "BUTTON",
+        "name": "Sheriff, 2 stars, 1 attack, 3 life orbs, free summon, playable now",
+        "cardId": "cowboy-sheriff-5",
+        "pressed": "false",
+        "disabled": false,
+        "visible": true,
+        "inMatch": true,
+        "usable": true
+      }
+    },
+    {
+      "name": "Selecting a card keeps focus on it after the hand is rebuilt",
+      "passed": true,
+      "detail": {
+        "tag": "BUTTON",
+        "name": "Sheriff, 2 stars, 1 attack, 3 life orbs, free summon, playable now",
+        "cardId": "cowboy-sheriff-5",
+        "pressed": "true",
+        "disabled": false,
+        "visible": true,
+        "inMatch": true,
+        "usable": true
+      }
+    },
+    {
+      "name": "Shift+Tab reaches a legal lane with a spoken name",
+      "passed": true,
+      "detail": {
+        "tag": "BUTTON",
+        "name": "Your lane 3: empty",
+        "side": "cowboy",
+        "slot": "2",
+        "disabled": false,
+        "visible": true,
+        "inMatch": true,
+        "usable": true
+      }
+    },
+    {
+      "name": "After choosing a lane, focus is on a usable board control",
+      "passed": true,
+      "detail": {
+        "tag": "BUTTON",
+        "name": "Summon",
+        "action": "confirm",
+        "disabled": false,
+        "visible": true,
+        "inMatch": true,
+        "usable": true
+      }
+    },
+    {
+      "name": "After Cancel, focus is on a usable board control",
+      "passed": true,
+      "detail": {
+        "tag": "BUTTON",
+        "name": "Sheriff, 2 stars, 1 attack, 3 life orbs, free summon, playable now",
+        "cardId": "cowboy-sheriff-5",
+        "pressed": "false",
+        "disabled": false,
+        "visible": true,
+        "inMatch": true,
+        "usable": true
+      }
+    },
+    {
+      "name": "After Confirm, once input returns, focus is on a usable board control",
+      "passed": true,
+      "detail": {
+        "tag": "BUTTON",
+        "name": "Mounted Billy, 7 stars, 3 attack, 5 life orbs, 2 tribute",
+        "cardId": "cowboy-mounted-billy-1",
+        "pressed": "false",
+        "disabled": false,
+        "visible": true,
+        "inMatch": true,
+        "usable": true
+      }
+    },
+    {
+      "name": "Enter opens the duel menu and moves focus inside it",
+      "passed": true,
+      "detail": {
+        "tag": "BUTTON",
+        "name": "Close menu",
+        "action": "close-menu",
+        "disabled": false,
+        "visible": true,
+        "inMatch": true,
+        "usable": true
+      }
+    },
+    {
+      "name": "Escape closes the duel menu and returns focus to its opener",
+      "passed": true,
+      "detail": {
+        "tag": "BUTTON",
+        "name": "Open duel menu",
+        "action": "menu",
+        "disabled": false,
+        "visible": true,
+        "inMatch": true,
+        "usable": true
+      }
+    },
+    {
+      "name": "No page errors",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "lane-chosen.png",
+    "after-cancel.png",
+    "after-confirm.png"
+  ]
+}

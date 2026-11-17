@@ -12,7 +12,7 @@
 
 ## Demo script and playtest protocol
 
-[2:40 judge demo script and first-time playtest protocol](submission/judge-demo-script.md), written by Fable (`e65431c`) and fact-checked by Codex (`b2c8936`). The script is unrecorded and untimed aloud. The protocol is blank: no human has run it, and no player feedback exists yet. How to Play text changed in `c454398`; fresh browser verification of that build is pending.
+[2:40 judge demo script and first-time playtest protocol](submission/judge-demo-script.md), written by Fable (`e65431c`) and fact-checked by Codex (`b2c8936`). The script is unrecorded and untimed aloud. The protocol is blank: no human has run it, and no player feedback exists yet. How to Play text changed in `c454398`; the combined candidate now passes 11 menu and 9 keyboard checks ([web evidence](evidence/final-polish-web.md)).
 
 ## Menu, decks and current evidence
 

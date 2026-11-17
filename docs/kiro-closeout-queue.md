@@ -6,7 +6,7 @@ Observed November 16, 2026 (America/Los_Angeles). This is the active ledger, rep
 - Kiro: completed receipt recovery, Power reproduction and scoped Auto/Memory checks.
 - Kiro: completed file/asset audit and Night Watch export fix; Codex reviewed compatibility and publication.
 - Codex: integration/review, source register, submission packaging and this ledger.
-- Fable: the earlier deck-task quota stop is historical; the deck UI stays Kiro's implementation. Update Nov 16 (Pacific): the actual Fable model later authored `e65431c`, with Codex factual corrections in `b2c8936` (judge story, 2:40 [demo script](submission/judge-demo-script.md) and a blank first-time [human playtest protocol](submission/judge-demo-script.md#part-2-first-time-human-playtest-protocol), docs only). Not a current overall quota block.
+- Fable: completed the judge script/protocol and repaired keyboard focus after lane selection, Cancel and summons. Combined candidate passes 9/9 keyboard checks; [execution details](evidence/fable-board-accessibility.md). Earlier deck-quota stop remains historical; the deck UI is Kiro’s implementation.
 
 ## Accepted task ledger
 | ID | Deliverable | State / evidence | Dependency and next handoff |
@@ -60,4 +60,4 @@ Actual Kiro Workflow completed on `e9aeb06`. Subsequent integration changes are 
 
 ## Current notes (November 16, 2026, Pacific; reconciliation)
 
-The frozen-runtime section above is historical. `c454398` later changed How to Play text in `src/ui/title-menu.js`, so not every current file matches `e9aeb06` or its browser receipts. Fresh browser verification of the new build is pending (coordinator). Details: [reconciliation receipt](evidence/kiro-docs-reconciliation.md).
+The frozen-runtime section above is historical. `c454398` later changed How to Play text in `src/ui/title-menu.js`, so not every current file matches `e9aeb06` or its browser receipts. Combined candidate 02b1bf8 passes 11 menu and 9 keyboard checks ([web evidence](evidence/final-polish-web.md)). Details: [reconciliation receipt](evidence/kiro-docs-reconciliation.md).

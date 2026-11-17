@@ -1,0 +1,144 @@
+{
+  "url": "http://127.0.0.1:51869/index.html?seed=0",
+  "checks": [
+    {
+      "name": "Approved artwork and five native hit targets",
+      "passed": true,
+      "detail": [
+        {
+          "id": "menu-play",
+          "hit": true,
+          "width": 215.875,
+          "height": 64.796875
+        },
+        {
+          "id": "menu-how",
+          "hit": true,
+          "width": 287.84375,
+          "height": 60.734375
+        },
+        {
+          "id": "menu-settings",
+          "hit": true,
+          "width": 172.703125,
+          "height": 129.59375
+        },
+        {
+          "id": "menu-deck",
+          "hit": true,
+          "width": 187.09375,
+          "height": 137.6875
+        },
+        {
+          "id": "menu-achievements",
+          "hit": true,
+          "width": 215.875,
+          "height": 129.59375
+        }
+      ]
+    },
+    {
+      "name": "Keyboard navigation, How to Play, Escape focus restoration",
+      "passed": true
+    },
+    {
+      "name": "Achievements start locked",
+      "passed": true
+    },
+    {
+      "name": "Deck counts validate and save",
+      "passed": true,
+      "detail": {
+        "cowboy-sheriff": 6,
+        "cowboy-billy": 2,
+        "cowboy-mounted-billy": 2,
+        "cowboy-deadeye": 2
+      }
+    },
+    {
+      "name": "All four deck card illustrations decode",
+      "passed": true
+    },
+    {
+      "name": "Saving a deck unlocks only its achievement",
+      "passed": true
+    },
+    {
+      "name": "Settings and deck survive reload",
+      "passed": true
+    },
+    {
+      "name": "Play uses the saved deck in the actual seeded engine",
+      "passed": true,
+      "detail": [
+        "cowboy-mounted-billy-2",
+        "cowboy-deadeye-1",
+        "cowboy-sheriff-5",
+        "cowboy-mounted-billy-1"
+      ]
+    },
+    {
+      "name": "A real summon earns First Summon exactly once",
+      "passed": true
+    },
+    {
+      "name": "Mid-clash menu pause and resume preserve the match",
+      "passed": true
+    },
+    {
+      "name": "Portrait controls are readable, touch-sized, without horizontal overflow",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "buttons": [
+          {
+            "id": "menu-play",
+            "h": 54,
+            "w": 354
+          },
+          {
+            "id": "menu-how",
+            "h": 54,
+            "w": 172
+          },
+          {
+            "id": "menu-settings",
+            "h": 54,
+            "w": 172
+          },
+          {
+            "id": "menu-deck",
+            "h": 54,
+            "w": 172
+          },
+          {
+            "id": "menu-achievements",
+            "h": 54,
+            "w": 172
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "title-desktop.png",
+    "how-desktop.png",
+    "how-mobile.png",
+    "settings.png",
+    "deck-builder.png",
+    "achievements.png",
+    "title-mobile.png"
+  ],
+  "howToPlay": {
+    "pageWidth": 390,
+    "viewport": 390,
+    "horizontalOverflow": false,
+    "contentScrollHeight": 940,
+    "contentClientHeight": 940,
+    "pageScrollHeight": 1118,
+    "pageClientHeight": 1118,
+    "text": "16px",
+    "bodyOverflow": "visible"
+  }
+}
