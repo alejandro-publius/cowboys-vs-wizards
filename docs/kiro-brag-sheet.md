@@ -1,5 +1,21 @@
 # How we used Kiro on Cowboys vs. Wizards: evidence map
 
+## November 16 closeout update
+
+The historical feature map below retains its original dates and limits. New closeout evidence is recorded separately:
+
+| Work | Actual contribution and evidence | Remaining limit |
+| --- | --- | --- |
+| Custom decks | Kiro wrote the 128-deck deterministic simulation; Codex reviewed and reran 9/9 focused tests. [Receipt](evidence/kiro-custom-deck-simulation.md) | Correctness coverage, not human balance |
+| Readable deck workbench | Kiro wrote the EARS spec and UI implementation after Fable's quota stop. Codex removed unrequested boxes, corrected an artwork-size assertion and verified 187px desktop/162px phone artwork plus 11 menu checks. [Evidence](evidence/kiro-readable-deck-workbench.md) | User visual approval and real-device checks separate |
+| Original receipts | Kiro recovered 12 originals including Workflow state/report/definition, seed0/60 receipts and compaction JSONL. Codex verified original/published hashes and corrected attribution. [Index](evidence/kiro-public-evidence/index.md) | Some transcripts and one Night Watch report remain missing |
+| Power reproduction | Kiro loaded installed 1.0.0 procedure and invoked workspace MCP on matched historical inputs: pass/pass, then stale/stale after modifying a copy. [Evidence](evidence/kiro-power-reproduction.md) | Installed Power is older than tracked; actual server was workspace MCP; no current browser run claimed |
+| File/asset closeout | Kiro verified 16 original GLB hashes and created a 43-record inventory; repaired the existing file hub. [Evidence](evidence/kiro-project-assets-closeout.md) | No new art/motion; some download/licence metadata missing |
+| Crew package | Codex extracted the existing Kiro/Codex Night Watch app into a [separate public repository](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch); standalone 4/4 Python tests and UI parse passed | Packaging is not a new live Crew run |
+
+[Active queue and ownership](kiro-closeout-queue.md) · [Recovered research sources](kiro-source-register.md) · [Build-story draft](submission/build-story.md) · [Submission packet](submission/devpost-packet.md)
+
+
 **Dated snapshot, November 16, 2026 (America/Los_Angeles), from source commit `e7cddfd`.** This page maps each Kiro claim to a tracked file, a recorded run and its limits. It does not say what is deployed now, and it re-ran nothing. Test counts (104, 107, 112, 115, 134) are historical counts from the commit each receipt names.
 
 **Status words.** *Run*: an executed receipt exists. *Integrated*: the output ships in the game or its build. *Configured*: tracked, with no run receipt of its own. *Optional*: outside the game. `git ls-files .kiro` on this snapshot lists 26 tracked files: `agents/` (1), `hooks/` (1), `powers/orb-duel-review/` (3), `settings/mcp.json`, `specs/duel-card-pipeline/` (11), `specs/orb-duel/` (5), `steering/` (2) and `workflows/` (2).
@@ -38,7 +54,7 @@ Official rules: [Kiroween](https://kiroween.devpost.com/rules). Release checks: 
 | Workflow receipt | Revision, observed browser checks and HTML SHA-256. |
 | MCP response | `pass` for the matching build and `stale` for an older build with the same receipt. |
 
-## Largest evidence gaps found
+## Historical evidence gaps at the original snapshot
 
 1. **The Kiro runs cannot be inspected from the repository.** Of the Workflow runs, compaction logs, `browser-run.json` receipts and CLI transcripts that this page cites, only `kiro-ui-hook.txt`, a few `docs/evidence/**/browser-run.json` files and the IDE's `tasks.meta.json` are tracked. The rest sit in `.artifacts/` on the Mac, and `.artifacts/` is untracked. Commit authorship cannot fill the gap, because every commit has the same author. Needed: a compact tracked folder of the actual run outputs for each claim (the `wf_30bc03349c699917` log and report, the compaction JSONL, and the save-hook and seed-60 receipts). Redact secrets only. The smoke `browser-run.json` is a candidate.
 2. **No published demo link is in the tracked docs.** [`PROJECT-STATUS.md`](PROJECT-STATUS.md) and the [preflight](evidence/kiro-submission-preflight.md#evidence-for-judging) still list the YouTube demo as needed, and no tracked README or judge guide links one. Needed: the real public video URL, added to the README and the judge guide after it is published.

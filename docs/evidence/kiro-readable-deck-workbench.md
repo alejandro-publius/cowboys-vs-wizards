@@ -29,3 +29,8 @@ Asserted at 1280x800 and 390x844 (Chrome headless, CDP): tile width at least 180
 - Only Chrome headless on macOS; no Safari/Firefox or real-touch device run. No screen-reader test.
 - Arrow-key navigation inside the card grid was not added; Tab/Enter works.
 - Wizard101 reference was used only for the collection-plus-deck organization.
+
+## Codex integration review correction
+The Kiro prototype added opaque bordered panels despite the approved no-box direction. Codex removed those panel/card backgrounds, kept existing artwork and palette, and corrected the browser assertion to measure the actual .deck-art width instead of its outer button. Codex also corrected Deadeye wording: the engine permits a spell before a summon, but casting prevents a later summon that turn. No rules changed.
+
+The corrected web build passed the focused browser check at 1280x800 and 390x844: actual card art 187px and 162px; workbench text at least 16px; controls at least 44px; no horizontal overflow. Save/reload, invalid-save blocking, card selection and keyboard return passed. Existing menu check: 11/11, no errors. Card images were decoded before capture. [Desktop](deck-workbench/desktop-1280x800-default.png) · [Phone](deck-workbench/phone-390x844-default.png) · [Measurements](deck-workbench/measurements.json). These corrections and checks are Codex work. User visual approval remains pending.

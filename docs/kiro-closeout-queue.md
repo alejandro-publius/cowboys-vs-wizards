@@ -12,21 +12,21 @@ Observed November 16, 2026 (America/Los_Angeles). This is the active ledger, rep
 | ID | Deliverable | State / evidence | Dependency and next handoff |
 | --- | --- | --- | --- |
 | K01 | Integrate completed spec, custom-deck tests, initial evidence pack | Reviewed together on closeout integration branch; 9/9 focused tests pass; 128 distinct decks replay twice | Publish reviewed integration |
-| K02 | Original public receipts | Kiro running; initial pack explicitly contains structured extracts | Recover originals or document exact missing files, then integrate |
-| K03 | Installed Power reproducibility | Kiro running | Installed digest/version + fresh activation + actual pass/stale outputs; workspace MCP fallback labelled |
-| K04 | Large readable deck builder + independent QA | Kiro implementing from approved brief; spec finished in ee601b4 | 1280/390 widths, 180/150 card widths, 16px type, 44px controls, save/reload, keyboard; user visual approval separately |
+| K02 | Original public receipts | 12 originals recovered and hashes independently verified; residual missing records listed | Recover originals or document exact missing files, then integrate |
+| K03 | Installed Power reproducibility | Reproduced installed procedure + workspace MCP pass/stale; older installed-copy limitation recorded | Installed digest/version + fresh activation + actual pass/stale outputs; workspace MCP fallback labelled |
+| K04 | Large readable deck builder + independent QA | Kiro implementation complete; Codex corrected boxes/artwork assertion and passed desktop/phone +11 menu checks | 1280/390 widths, 180/150 card widths, 16px type, 44px controls, save/reload, keyboard; user visual approval separately |
 | K05 | Final release Workflow | Queued | Freeze integrated UI; run opening/showdown + hash, then review deployed artifact |
 | K06 | Fresh Crew browser review | Queued | Review same frozen UI independently; no claim until real Crew receipt |
-| K07 | Safari and real mobile/WebGL | Access check pending | Existing Mac Safari if automation available; real-device/browser account needed; Chrome viewport alone is not iPhone testing |
+| K07 | Safari and real mobile/WebGL | Safari remote-automation setting absent; iOS simulator unavailable; real-device service access not established | Actual device/account setup required; Chrome viewport alone is not iPhone testing |
 | K08 | Human onboarding and opener choice | Needs first-time player | Prepare short protocol, collect real observation; no agent posing as a human |
 | K09 | Final-build performance | Queued | Frozen UI and same measurement method; historical 1109-to-686ms stays historical |
-| K10 | Final demonstration / public YouTube | Recording route prepared, actual final recording/public URL pending | Final UI and Kiro proof; no fabricated video URL |
-| K11 | README / judge guide / Devpost reconciliation | In preparation | Current release claims, links and ownership; publish after final verification |
-| K12 | Public build-story blog | Draft preparation | Reviewed factual story + chosen publishing destination; mention Kiroween 2026 |
-| K13 | Night Watch separate app package | Existing app; Codex reran 4/4 tests and UI syntax check | Reproducible standalone repo + install/source details; live Crew schedule separately |
+| K10 | Final demonstration / public YouTube | 43.67s real seed60 gameplay captured at main599450a; final assembly/YouTube pending | Final UI and Kiro proof; no fabricated video URL |
+| K11 | README / judge guide / Devpost reconciliation | Drafts prepared and current-source navigation updated | Current release claims, links and ownership; publish after final verification |
+| K12 | Public build-story blog | Draft ready at submission/build-story.md | Reviewed factual story + chosen publishing destination; mention Kiroween 2026 |
+| K13 | Night Watch separate app package | Separate public cowboys-vs-wizards-night-watch repo published at c00b95d; 4/4 standalone tests and UI parse pass | Reproducible standalone repo + install/source details; live Crew schedule separately |
 | K14 | Submission/bonus verification | Requirements checked; personal eligibility unresolved | User confirms current enrollment/team facts; final public URLs |
-| K15 | Approved asset provenance and remaining motion gaps | Kiro asset audit running | Preserve originals; require chosen Tripo/licensed clips for new fire reaction/Dragon changes |
-| K16 | Project hub organization | Existing hub found; obsolete pointers identified | Verify original Billy/horse, Dragon, Skeleton; retarget stable released checkout and index |
+| K15 | Approved asset provenance and remaining motion gaps | Kiro verified 16/16 originals and 43 asset records; provenance gaps stated | Preserve originals; require chosen Tripo/licensed clips for new fire reaction/Dragon changes |
+| K16 | Project hub organization | 20 release pointers repaired,14 character/motion shortcuts added; stablecheckout built | Verify original Billy/horse, Dragon, Skeleton; retarget stable released checkout and index |
 | K17 | Actual Auto/model/credit evidence | Queued with a useful task | Record visible mode and actual reported usage; don't infer cascade or estimate credits |
 | K18 | Fresh-session Memory demonstration | Not demonstrated | Scoped correction only; tracked steering remains authoritative; no broad config change for show |
 | K19 | Workflow step-tree recording | Queued | Record actual run/transcript as part of K10 |

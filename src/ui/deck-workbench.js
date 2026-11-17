@@ -10,7 +10,7 @@ const element = (tag, text, attrs = {}) => {
 const costOf = card => card.kind === 'spell' ? 'Spell · no tribute' : card.stars < 5 ? 'Free summon' : card.stars < 7 ? '1 tribute' : '2 tributes';
 const statsOf = card => card.kind === 'spell' ? 'Removes 1 enemy orb' : `${card.attack} attack · ${card.health} life`;
 const ruleOf = card => card.kind === 'spell'
-  ? 'Spell. Play it after your summon to remove 1 life orb from an enemy troop.'
+  ? 'Remove 1 life orb from an enemy troop. Summon first if you want to do both this turn.'
   : card.stars < 5
     ? `Troop with ${card.attack} attack and ${card.health} life. Summon it free, with no tribute.`
     : `Troop with ${card.attack} attack and ${card.health} life. Summon it by choosing ${card.stars < 7 ? '1 friendly troop' : '2 friendly troops'} as tribute first.`;

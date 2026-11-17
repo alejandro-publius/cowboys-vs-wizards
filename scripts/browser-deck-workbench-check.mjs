@@ -33,13 +33,13 @@ try{
   await until(`document.querySelector('#title-screen')?.dataset.ready==='true'&&document.querySelector('.title-art')?.complete`);
   await click('#menu-deck');
   await until(`document.querySelectorAll('.deck-choice').length===4`);
-  await sleep(500);
+  await ev(`Promise.all([...document.querySelectorAll('.deck-art')].map(n=>{let src=getComputedStyle(n).backgroundImage.slice(4,-1).trim();if([34,39].includes(src.charCodeAt(0)))src=src.slice(1,-1);const image=new Image();image.src=src;return image.decode()}))`);
   const m=await ev(`(()=>{const r=n=>n.getBoundingClientRect();const cards=[...document.querySelectorAll('.deck-choice')].map(n=>Math.round(r(n).width));
    const art=[...document.querySelectorAll('.deck-art')].map(n=>Math.round(r(n).width));
    const small=[...document.querySelectorAll('.wb-panel *, .deck-choice *')].filter(n=>n.childElementCount===0&&n.textContent.trim()&&parseFloat(getComputedStyle(n).fontSize)<16).map(n=>n.textContent+':'+getComputedStyle(n).fontSize);
    const targets=[...document.querySelectorAll('.deck-row .step,#save-deck')].map(n=>[Math.round(r(n).width),Math.round(r(n).height)]);
    return{cards,art,small,targets,overflow:document.documentElement.scrollWidth-innerWidth,body:document.body.scrollWidth-innerWidth,page:document.querySelector('.menu-page').scrollWidth-innerWidth,focus:document.activeElement.id}})()`);
-  assert(m.cards.every(c=>c>=minCard),label+" cards "+m.cards);assert.deepEqual(m.small,[],label+" text under 16px");
+  assert(m.art.every(c=>c>=minCard),label+" card art "+m.art);assert.deepEqual(m.small,[],label+" text under 16px");
   assert(m.targets.every(([a,b])=>a>=44&&b>=44),label+" targets "+JSON.stringify(m.targets));assert(m.overflow<=0&&m.page<=0,label+" overflow");assert.equal(m.focus,'menu-back');
   await shot(label+"-default");
   // select Mounted Billy: details readable
