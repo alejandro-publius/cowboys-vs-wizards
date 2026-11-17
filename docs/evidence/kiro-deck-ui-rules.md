@@ -10,3 +10,6 @@ Checks run:
 - `npm run build`: built `dist/cowboys-vs-wizards-board-duel.html`.
 
 Not run: `scripts/browser-deck-workbench-check.mjs` (browser check) and any visual comparison. Identical rendering is therefore not verified in a browser.
+
+## Coordinator browser check — November 17 (not Kiro)
+After the Kiro commit, Codex ran `npm run build -- --web` and `node scripts/browser-deck-workbench-check.mjs http://127.0.0.1:19172/ .artifacts/deck-ui-browser` against the locally served static build. Exit 0. The existing Chrome script checked the workbench at desktop 1280×800 and mobile-emulated 390×844, including art decode/size, minimum readable text/controls, zero overflow, select/add/remove/save/reload, keyboard focus and Escape behavior. The screenshot files/log are in ignored local `.artifacts/deck-ui-browser/`; this **is not** a real iPhone/Safari or human visual approval. No renderer or asset files changed.
