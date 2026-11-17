@@ -1,0 +1,24 @@
+{
+  "clip": "Pistol_Shoot",
+  "outputClip": "Pistol_Shoot_retargeted_billy",
+  "durationSeconds": 0.6333333253860474,
+  "keys": 20,
+  "tracks": 17,
+  "clipDataSha256": "41140d4f53eb9d363d6b267f1bd6f692372b8ca5da568f7cf07e086f4cb095a4",
+  "upstream": {
+    "pack": "Universal Animation Library [Standard] (free, 45 animations)",
+    "author": "Quaternius",
+    "page": "https://quaternius.itch.io/universal-animation-library",
+    "uploaded": "2026-06-16 (itch.io upload 17958403, 'Universal Animation Library[Standard].zip')",
+    "archiveSha256": "cc73fc4e495b82958207316596317a3f40b9fa38065bde1027937452da537724",
+    "archiveBytes": 15904933,
+    "file": "Universal Animation Library[Standard]/Unreal-Godot/UAL1_Standard.glb",
+    "fileSha256": "69591853d817488edaa8fd9bf8fc1d821eaeaf789f8627b3cd23b41c4ed67997",
+    "license": "CC0 1.0 Universal (public domain dedication); copy in LICENSE-quaternius-ual-standard.txt",
+    "licenseFileSha256": "6d01f55c6e4c49a2c9963e147e561945ae2c83958c8ca667d90a6bffdbfac061",
+    "authoredBy": "Quaternius (upstream); not authored by Kiro, not Tripo, not Mixamo"
+  },
+  "conversion": "scripts/animation-pilot/retarget-billy.mjs (unchanged from the idle pass): same bind-space conversion, pelvis scale 0.4937. No curve authored or smoothed; keys are the source's 30 fps keys. Playback in the v3 preview is retimed globally to 0.5x (scripts/animation-pilot/billy-pilot-shoot.js); the data file is not retimed.",
+  "art": "User's Tripo Billy, assets/models/billy.glb, unchanged",
+  "status": "preview only; not approved, not wired into production"
+}

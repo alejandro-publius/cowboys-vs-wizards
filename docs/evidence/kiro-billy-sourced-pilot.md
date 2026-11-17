@@ -73,3 +73,41 @@ Trigger: coordinator review of v1 frame f0045 (hands empty, revolver at the hip,
 Codex inspected idle frame f0045 and impact frame f0176. The gun is now visibly held and boot placement improved. The supporting hand still misses the grip, and the existing attack begins by moving the gun toward the hip. This remains an unapproved preview; do not merge it as a finished animation or apply it across the roster. The on-screen caption distinguishes the CC0 idle from the existing procedural attack.
 
 The next bounded step is to preview the pack's existing Pistol_Shoot clip with this idle, preserving source keys and using only retargeting, rigid attachment, ground seating and blending. No new authored poses or curves. Production integration follows a satisfactory visual review.
+
+## v3 preview: sourced idle -> Pistol_Shoot -> idle (Kiro CLI 3.4.0, 2026-11-16, America/Los_Angeles; preview only, not approved)
+
+Watch: [billy-sourced-preview-v3.mp4](animation-pilots/billy-sourced-preview-v3.mp4) (13.5 s, 1280x720, 30 fps, 405 frames, sha-256 `61bfaad8cf02ce7d5a7e841ff5b1eb836b46ba1c229948c34bc183c9b0aca646`). Frames at 2.0 s (idle), 3.87 s (Billy A mid-shoot), 8.33 s (Billy B shoot, board view): [billy-sourced-preview-v3-frames.jpg](animation-pilots/billy-sourced-preview-v3-frames.jpg). Receipt: [billy-sourced-preview-v3.json](animation-pilots/billy-sourced-preview-v3.json). v2 video, image and receipt are unchanged.
+
+**Sources.** `Pistol_Shoot` exists in `UAL1_Standard.glb` (sha-256 `69591853...7ed67997`, checked again before and after the run). Retargeted with the unchanged `retarget-billy.mjs` into `assets/animations/pilots/billy/billy-pistol-shoot.json` (20 keys, 0.633 s, sha `41140d4f...5a4`) with `billy-pistol-shoot.SOURCE.json`. `billy-pistol-idle.json` is unchanged (sha `005518e2...bba3`), `assets/models/billy.glb` unchanged (`80266b71...1241`), `src/**` untouched.
+
+**What the preview does.** Each Billy has its own `AnimationMixer` (`scripts/animation-pilot/billy-pilot-shoot.js`). Idle loops, then a 0.18 s crossfade into `Pistol_Shoot` played at 0.5x (one global time scale, 1.267 s), then a 0.18 s crossfade back to the idle. Billy A shoots at 3.53 s and is shown in the closeup pane (existing `closeUp` camera, zoom 5.2). Billy B shoots at 8.03 s and is visible in the board-camera pane. The existing procedural attack cue is not used for the shot. On-screen labels name `Pistol_Idle_Loop` or `Pistol_Shoot` (0.5x, crossfade weights) per Billy.
+Only allowed operations: bind-space retarget, boot-sole grounding (lowest boot vertex +3 mm, as v2), 0.18 s crossfades, one playback rate, and a rigid revolver attachment. The gun follows the right hand's existing grip point with the hand bone's rotation times one constant offset, chosen once from key 0 of the shoot clip so the barrel points along the actor's forward axis. No key, pose, finger, muzzle flash or procedural motion was added. There is no shot effect, so nothing visibly leaves the barrel and the Wizard does not react.
+
+**Checks (one run, `check-billy-run-v3.mjs` on `.artifacts/billy-pilot/run-output-v3.txt`).**
+- Console: 0 problems and 0 page errors over 405 frames.
+- Fire events at page clock 3.5333 s (A) and 8.0333 s (B); 37 non-idle frames each. Each Billy's mixer ran independently (different fire times and idle phases).
+- Gun to right-hand grip point: 0 in every frame of both Billys (rigid). The gun no longer travels from chest to hip.
+- Soles: lowest boot vertex 0.003 m above the tile in every frame; root lift constant at -0.0146.
+- Muzzle travel during the shot: at most 0.0995 board units (about 5% of Billy's 1.93 height). The source clip is a small recoil.
+- Teardown: before clear, 2 mixers each with 2 actions and 17 bindings, scheduler pending 0. The existing cue was started to create timers (pending 2). After `board.clear()`: pieces 3 -> 0, both mixers disposed (actions 0, bindings 0), pending 0, and still 0 after ticking 3 s. A stale-epoch callback ran 0 times (pending 1 -> 0 after `scheduler.advance()`).
+- These numbers support measured conditions only. They do not approve appearance.
+
+**Visual review (mine, closeup crops of f0100, f0116, f0126 and an 8-frame contact sheet; not user approval).**
+- Fixed: the gun stays at chest height through the whole shot, so the v2 chest-to-hip move is gone. Crossfades read continuous in the sampled frames.
+- Still wrong, left hand: the left palm stays 0.21 to 0.23 board units from the gun's grip point throughout idle and shoot, so the supporting hand does not wrap the gun. It sits beside the body of the revolver. This follows from the source pose, a taller Quaternius character with different arm proportions, applied to Billy's rigid hands.
+- Still wrong, right hand: the rig has no finger bones and the Tripo hand mesh is a fixed shape, so the gun rests in front of the hand rather than being gripped. The rigid constant orientation is a single guess for all frames.
+- Weak shot: the clip's recoil is small (muzzle moves about 10 cm) and with no flash the shot reads as a slight lift of the gun. At 0.5x it is readable but slow.
+- Billy is small in the board pane, so the grip is only judgeable in the closeup.
+- Conclusion: the sourced attack is continuous and keeps the gun in the hand, but under the current rigid hands it does not look like a coherent two-handed grip. Fixing it needs either finger or hand-pose work or a different source clip, both outside this task's allowed operations. I stopped here and made no correction pass.
+
+**Commands (repo root).**
+```
+node scripts/animation-pilot/retarget-billy.mjs "<unzipped>/Unreal-Godot/UAL1_Standard.glb" Pistol_Shoot assets/animations/pilots/billy/billy-pistol-shoot.json
+node scripts/animation-pilot/build-billy-preview-v3.mjs
+(cd .artifacts/billy-pilot/preview-v3 && python3 -m http.server 48193 --bind 127.0.0.1) &
+npx -y @playwright/cli@latest open --browser=chrome
+npx -y @playwright/cli@latest run-code --filename=scripts/animation-pilot/capture-billy-preview-v3.js > .artifacts/billy-pilot/run-output-v3.txt
+ffmpeg -y -framerate 30 -i .artifacts/billy-pilot/frames-v3/f%04d.png -c:v libx264 -pix_fmt yuv420p -crf 24 docs/evidence/animation-pilots/billy-sourced-preview-v3.mp4
+node scripts/animation-pilot/check-billy-run-v3.mjs .artifacts/billy-pilot/run-output-v3.txt
+```
+Port 48180 was already in use by another process, so v3 used 48193. The Kiro hook on tracked doc saves is not evidenced by this note; the hook result, if any, is separate. Production wiring and user/coordinator review remain pending.

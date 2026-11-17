@@ -1,0 +1,22 @@
+{
+  "source_commit": "d0b171c (parent); v3 commit follows",
+  "duration_seconds": 13.5,
+  "width": 1280,
+  "height": 720,
+  "fps": 30,
+  "frames": 405,
+  "sha256": "61bfaad8cf02ce7d5a7e841ff5b1eb836b46ba1c229948c34bc183c9b0aca646",
+  "source_clips": [
+    "Quaternius UAL Standard Pistol_Idle_Loop (CC0)",
+    "Quaternius UAL Standard Pistol_Shoot (CC0), 0.5x playback"
+  ],
+  "source_glb_sha256": "69591853d817488edaa8fd9bf8fc1d821eaeaf789f8627b3cd23b41c4ed67997",
+  "shoot_data_sha256": "41140d4f53eb9d363d6b267f1bd6f692372b8ca5da568f7cf07e086f4cb095a4",
+  "idle_data_sha256": "005518e2f40a4fed1028fa33dcb21df12d3af3b140d0d5cdad8a1ba12eb9bba3",
+  "attack": "sourced Pistol_Shoot; existing procedural cues.js attack not used for the shot",
+  "console_problems": 0,
+  "page_errors": 0,
+  "teardown": "mixers disposed (actions 0, bindings 0), pieces 3 -> 0, scheduler pending 0 after clear and after tick, stale callbacks run 0",
+  "approval": "pending; preview only",
+  "production_src_changes": false
+}
