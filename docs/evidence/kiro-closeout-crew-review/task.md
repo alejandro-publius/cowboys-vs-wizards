@@ -1,0 +1,10 @@
+# Final frozen game browser review — one bounded Kiro Crew run
+You are actual Kiro Crew. Review only the already served frozen game at http://127.0.0.1:8774/ once.
+Read AGENTS.md. You own docs/evidence/kiro-closeout-crew-review.md and docs/evidence/kiro-closeout-crew-review/ only. No runtime, assets, global settings, app enable/trust, installation, schedule or account changes. Do not rerun tests or replays. Do not merge or push.
+
+Runtime commit e9aeb063abb947c7fc9447595d9143bd04d71ac0. Expected served web HTML SHA256 863ab8bd525cb2e78b0e73b529406b73c6a2381f982f2854e71340df79718e02. Existing reviewer has completed rules, seed0/60 and menu tests; this task is separate actual Crew visual review, not replacement evidence.
+
+1. Identify whether this actual Crew session has an existing browser/computer tool. If available, use it directly for one brief local preview review: open menu, deck builder, check readable cards against existing art, and return/start game for one screenshot. One desktop viewport is enough. Preserve screenshots with actual tool attribution and note actions truly performed.
+2. If browser tools are absent, unavailable or need permission/policy changes, stop that path. Record exact narrower blocker and available tool names without credentials. Do NOT use shell Playwright, headless Chrome or external browser to pretend Crew-browser review. Do not infer global browser disabled from the separately disabled Night Watch app.
+3. Write a concise factual evidence note and compact JSON receipt with agent/version, session/run identifier if available, timestamp, browser tool name, URL, runtime commit, actual outcomes and limitations. Never invent screenshot checks, motion observations or source hash binding. Never publish account balances, tokens or private settings.
+4. Never delete .artifacts or launcher/logs, never git clean. Commit only owned inspected public evidence if a result exists, otherwise state blocker and stop. Stop within five minutes. Do not wait on other workers.

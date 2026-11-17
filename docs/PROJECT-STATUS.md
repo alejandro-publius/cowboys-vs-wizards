@@ -1,6 +1,6 @@
 # Project status — observed November 16, 2026
 
-**Snapshot:** November 16 closeout integration, with game/UI frozen at `e9aeb06` and later evidence-only additions plus the separate Night Watch fix. [Active closeout ledger](kiro-closeout-queue.md) records finished work and service/human blockers. Historical checks below retain their original commits; inspect Pages and current main for deployment status.
+**Snapshot:** November 16 closeout integration, published in PR #15 at `c5ef69b`, with game/UI frozen at `e9aeb06` and later evidence additions plus the separate Night Watch fix. [Deployed HTML identity](evidence/kiro-closeout-deployment.md) matches the reviewed build. [Active closeout ledger](kiro-closeout-queue.md) records finished work and service/human blockers. Historical checks below retain their original commits; inspect Pages and current main for deployment status.
 
 ## Built and available
 

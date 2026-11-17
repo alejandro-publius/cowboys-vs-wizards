@@ -1,0 +1,30 @@
+{
+  "workflow": "card-summoning-lore-review",
+  "workflowId": "wf_ecb54a0b1a3d2a92",
+  "runLabel": "lore-review-loop-k21",
+  "finalStatus": "completed",
+  "base": "e9aeb063abb947c7fc9447595d9143bd04d71ac0",
+  "launch": "native run_workflow by workflowPath (definition validated at launch; no separate validate command was exposed)",
+  "configured": {"maxIterations": 3, "onMaxIterations": "abort", "stopCondition": "fileCheck .artifacts/kiro-lore-review-loop/verdict.json $.approved == true"},
+  "executed": {"rounds": 1, "revisionRounds": 0, "iterationNodes": ["lore-review-loop#0"]},
+  "steps": [
+    {"id": "author-catalog-summary", "agent": "wf-coder", "role": "catalog-summary author (workflow step role)", "status": "completed"},
+    {"id": "lore-reviewer", "agent": "wf-coder", "role": "lore reviewer (workflow step role, not an installed custom agent)", "status": "completed", "verdict": {"approved": true, "findings": 0, "corrections": 0}}
+  ],
+  "sha256": {
+    "verdict.json": "552a48262fabd5bb8d4c78ad7ffaf4ff73efe04cbec473ab10baebebfa990cf9",
+    "summary.md": "760090d1d30dde851d6fb208e23b9a1ac6334aaa1b8fce3be6ab2a52950ec0df",
+    "run-stream.jsonl (ignored original, not committed)": "b5258384b1fa745f3c5b1ba62d1fe3fb6122e48341c5bbe5251284a935de76e7",
+    "card-summoning-circle.workflow.json (unchanged)": "2ce6548504a6929866b65cfcdd485691c9a27b4163f67abd7e96a7d64efe4a56"
+  },
+  "cardFileSha256BeforeAndAfter": {
+    "cowboy-billy": "b930b1f329846e03895daaa109d788e4ae142d383eacc675c66a5307827c08c7",
+    "cowboy-deadeye": "de940186c3c847e836cd37fa080d7b5d11aa2f6e10212e973f6c4a514925a78d",
+    "cowboy-mounted-billy": "9ea47a5b8976253db072cbb92bc9e20ad37658318065dc0978c725a5d2bd0581",
+    "cowboy-sheriff": "bee0d0d456ab6663025799dca7d1097af64c57f328d24e5ff91eb739b8d23ae0",
+    "wizard-dragon": "6532728e6677f3cd04f597b63b896ea253443669446ab16f6c2df3a5980030db",
+    "wizard-singularity": "f221ebe0476da68dd5491e7227c04efa45057e4afb7ff1636e9a47c097b23e89",
+    "wizard-skeleton": "d94926041266c6b254ca5c35d433a4385ec2389696ac153f489e64f07cd3fa04",
+    "wizard-wizard": "854da5dae9e9ef5123a0e94419a547a75edbe40dfd2948f5955c4834aa153625"
+  }
+}

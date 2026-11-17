@@ -1,0 +1,34 @@
+{
+  "name": "card-summoning-lore-review",
+  "description": "Bounded lore/theme review of the eight existing Orb Duel card specs. A catalog-summary author and a separate lore-reviewer step loop at most 3 times and stop at the first approval. Read-only for game content.",
+  "inputs": {},
+  "steps": [
+    {
+      "type": "repeat",
+      "id": "lore-review-loop",
+      "maxIterations": 3,
+      "onMaxIterations": "abort",
+      "stopCondition": {
+        "fileCheck": {
+          "path": ".artifacts/kiro-lore-review-loop/verdict.json",
+          "jsonPath": "$.approved",
+          "value": true
+        }
+      },
+      "steps": [
+        {
+          "type": "step",
+          "id": "author-catalog-summary",
+          "agent": "wf-coder",
+          "prompt": "Role: catalog-summary author (a workflow step role, not an installed custom agent). Use file tools only; run no shell command.\nRead the eight card files .kiro/specs/duel-card-pipeline/cards/{cowboy-sheriff,cowboy-billy,cowboy-mounted-billy,cowboy-deadeye,wizard-skeleton,wizard-wizard,wizard-dragon,wizard-singularity}.json and, only as needed to describe rules correctly, .kiro/specs/duel-card-pipeline/requirements.md and src/game/cards.js.\nIf .artifacts/kiro-lore-review-loop/verdict.json exists, read it: it holds the reviewer's actual feedback from the previous pass; address only its real findings.\nWrite or revise ONLY the file .artifacts/kiro-lore-review-loop/summary.md: for each of the eight cards, its name, faction, and fields exactly as the file states them, plus one restrained sentence on how the name and faction fit the haunted-Western theme. Invent no backstory, mechanics, stats or art claims. The cards have no prose backstory; state that as a limitation.\nEdit no other file. Never edit card specs, rules, source or art. Finish with a one-paragraph report of what you wrote."
+        },
+        {
+          "type": "step",
+          "id": "lore-reviewer",
+          "agent": "wf-coder",
+          "prompt": "Role: lore reviewer (a workflow step role, separate from the author, not an installed custom agent). Use file tools only; run no shell command.\nAuthor report:\n{{previous.output}}\nIndependently read the eight actual card files .kiro/specs/duel-card-pipeline/cards/{cowboy-sheriff,cowboy-billy,cowboy-mounted-billy,cowboy-deadeye,wizard-skeleton,wizard-wizard,wizard-dragon,wizard-singularity}.json and .artifacts/kiro-lore-review-loop/summary.md; consult requirements.md and src/game/cards.js only as needed. Check that the summary matches the files and that the theme descriptions are accurate and restrained. Flag ONLY real contradictions between the summary and the files, or between names/faction/theme and the rules. Missing prose backstory is a limitation, not a defect. Do not reject merely to exercise the loop.\nWrite ONLY .artifacts/kiro-lore-review-loop/verdict.json as JSON: {\"approved\": true|false, \"findings\": [strings, empty if approved], \"corrections\": [strings, factual corrections for the summary only], \"limitations\": [strings]}. Edit no other file; never edit card specs, rules, source or art. Finish with a one-paragraph report of the verdict."
+        }
+      ]
+    }
+  ]
+}
