@@ -1,0 +1,8808 @@
+{
+  "rulesVersion": "orb-duel-draft-1",
+  "bots": {
+    "cowboy": "cpu",
+    "wizard": "cpu"
+  },
+  "wizardDeck": "default",
+  "perspective": "cowboy",
+  "deckKey": "Sheriff/Billy/Mounted Billy/Deadeye",
+  "sample": {
+    "seed": 57036,
+    "validDecks": 203,
+    "decks": 201,
+    "includesStarter": true
+  },
+  "seeds": {
+    "from": 0,
+    "to": 199,
+    "count": 200
+  },
+  "startsPerSeed": [
+    "cowboy",
+    "wizard"
+  ],
+  "matchesPerDeck": 400,
+  "matches": 80400,
+  "stepBound": 54,
+  "overall": {
+    "matches": 80400,
+    "wins": 9349,
+    "losses": 68361,
+    "draws": 2690,
+    "winRate": 0.1163,
+    "lossRate": 0.8503,
+    "drawRate": 0.0335
+  },
+  "byStartingSide": {
+    "cowboy": {
+      "matches": 40200,
+      "wins": 5940,
+      "losses": 32602,
+      "draws": 1658,
+      "winRate": 0.1478,
+      "lossRate": 0.811,
+      "drawRate": 0.0412
+    },
+    "wizard": {
+      "matches": 40200,
+      "wins": 3409,
+      "losses": 35759,
+      "draws": 1032,
+      "winRate": 0.0848,
+      "lossRate": 0.8895,
+      "drawRate": 0.0257
+    }
+  },
+  "starterDeck": {
+    "deck": "6/3/1/2",
+    "starter": true,
+    "cards": {
+      "Sheriff": 6,
+      "Billy": 3,
+      "Mounted Billy": 1,
+      "Deadeye": 2
+    },
+    "matches": 400,
+    "wins": 191,
+    "losses": 175,
+    "draws": 34,
+    "winRate": 0.4775,
+    "lossRate": 0.4375,
+    "drawRate": 0.085,
+    "meanActions": 31.86,
+    "byStartingSide": {
+      "cowboy": {
+        "matches": 200,
+        "wins": 123,
+        "losses": 62,
+        "draws": 15,
+        "winRate": 0.615,
+        "lossRate": 0.31,
+        "drawRate": 0.075
+      },
+      "wizard": {
+        "matches": 200,
+        "wins": 68,
+        "losses": 113,
+        "draws": 19,
+        "winRate": 0.34,
+        "lossRate": 0.565,
+        "drawRate": 0.095
+      }
+    }
+  },
+  "starterRank": 4,
+  "best": [
+    {
+      "deck": "6/3/0/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 3,
+        "Mounted Billy": 0,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 235,
+      "losses": 128,
+      "draws": 37,
+      "winRate": 0.5875,
+      "lossRate": 0.32,
+      "drawRate": 0.0925,
+      "meanActions": 32.63,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 147,
+          "losses": 34,
+          "draws": 19,
+          "winRate": 0.735,
+          "lossRate": 0.17,
+          "drawRate": 0.095
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 88,
+          "losses": 94,
+          "draws": 18,
+          "winRate": 0.44,
+          "lossRate": 0.47,
+          "drawRate": 0.09
+        }
+      }
+    },
+    {
+      "deck": "6/4/0/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 4,
+        "Mounted Billy": 0,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 209,
+      "losses": 157,
+      "draws": 34,
+      "winRate": 0.5225,
+      "lossRate": 0.3925,
+      "drawRate": 0.085,
+      "meanActions": 32.01,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 134,
+          "losses": 48,
+          "draws": 18,
+          "winRate": 0.67,
+          "lossRate": 0.24,
+          "drawRate": 0.09
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 75,
+          "losses": 109,
+          "draws": 16,
+          "winRate": 0.375,
+          "lossRate": 0.545,
+          "drawRate": 0.08
+        }
+      }
+    },
+    {
+      "deck": "6/2/0/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 2,
+        "Mounted Billy": 0,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 195,
+      "losses": 164,
+      "draws": 41,
+      "winRate": 0.4875,
+      "lossRate": 0.41,
+      "drawRate": 0.1025,
+      "meanActions": 32.57,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 118,
+          "losses": 59,
+          "draws": 23,
+          "winRate": 0.59,
+          "lossRate": 0.295,
+          "drawRate": 0.115
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 77,
+          "losses": 105,
+          "draws": 18,
+          "winRate": 0.385,
+          "lossRate": 0.525,
+          "drawRate": 0.09
+        }
+      }
+    },
+    {
+      "deck": "6/3/1/2",
+      "starter": true,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 3,
+        "Mounted Billy": 1,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 191,
+      "losses": 175,
+      "draws": 34,
+      "winRate": 0.4775,
+      "lossRate": 0.4375,
+      "drawRate": 0.085,
+      "meanActions": 31.86,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 123,
+          "losses": 62,
+          "draws": 15,
+          "winRate": 0.615,
+          "lossRate": 0.31,
+          "drawRate": 0.075
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 68,
+          "losses": 113,
+          "draws": 19,
+          "winRate": 0.34,
+          "lossRate": 0.565,
+          "drawRate": 0.095
+        }
+      }
+    },
+    {
+      "deck": "5/4/0/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 4,
+        "Mounted Billy": 0,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 188,
+      "losses": 176,
+      "draws": 36,
+      "winRate": 0.47,
+      "lossRate": 0.44,
+      "drawRate": 0.09,
+      "meanActions": 30.38,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 123,
+          "losses": 62,
+          "draws": 15,
+          "winRate": 0.615,
+          "lossRate": 0.31,
+          "drawRate": 0.075
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 65,
+          "losses": 114,
+          "draws": 21,
+          "winRate": 0.325,
+          "lossRate": 0.57,
+          "drawRate": 0.105
+        }
+      }
+    },
+    {
+      "deck": "6/2/1/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 2,
+        "Mounted Billy": 1,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 187,
+      "losses": 174,
+      "draws": 39,
+      "winRate": 0.4675,
+      "lossRate": 0.435,
+      "drawRate": 0.0975,
+      "meanActions": 31.88,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 112,
+          "losses": 64,
+          "draws": 24,
+          "winRate": 0.56,
+          "lossRate": 0.32,
+          "drawRate": 0.12
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 75,
+          "losses": 110,
+          "draws": 15,
+          "winRate": 0.375,
+          "lossRate": 0.55,
+          "drawRate": 0.075
+        }
+      }
+    },
+    {
+      "deck": "5/5/0/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 5,
+        "Mounted Billy": 0,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 166,
+      "losses": 198,
+      "draws": 36,
+      "winRate": 0.415,
+      "lossRate": 0.495,
+      "drawRate": 0.09,
+      "meanActions": 29.72,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 110,
+          "losses": 70,
+          "draws": 20,
+          "winRate": 0.55,
+          "lossRate": 0.35,
+          "drawRate": 0.1
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 56,
+          "losses": 128,
+          "draws": 16,
+          "winRate": 0.28,
+          "lossRate": 0.64,
+          "drawRate": 0.08
+        }
+      }
+    },
+    {
+      "deck": "5/3/0/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 3,
+        "Mounted Billy": 0,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 163,
+      "losses": 207,
+      "draws": 30,
+      "winRate": 0.4075,
+      "lossRate": 0.5175,
+      "drawRate": 0.075,
+      "meanActions": 30.21,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 111,
+          "losses": 74,
+          "draws": 15,
+          "winRate": 0.555,
+          "lossRate": 0.37,
+          "drawRate": 0.075
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 52,
+          "losses": 133,
+          "draws": 15,
+          "winRate": 0.26,
+          "lossRate": 0.665,
+          "drawRate": 0.075
+        }
+      }
+    },
+    {
+      "deck": "5/4/1/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 4,
+        "Mounted Billy": 1,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 161,
+      "losses": 203,
+      "draws": 36,
+      "winRate": 0.4025,
+      "lossRate": 0.5075,
+      "drawRate": 0.09,
+      "meanActions": 29.45,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 107,
+          "losses": 74,
+          "draws": 19,
+          "winRate": 0.535,
+          "lossRate": 0.37,
+          "drawRate": 0.095
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 54,
+          "losses": 129,
+          "draws": 17,
+          "winRate": 0.27,
+          "lossRate": 0.645,
+          "drawRate": 0.085
+        }
+      }
+    },
+    {
+      "deck": "6/5/0/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 5,
+        "Mounted Billy": 0,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 160,
+      "losses": 203,
+      "draws": 37,
+      "winRate": 0.4,
+      "lossRate": 0.5075,
+      "drawRate": 0.0925,
+      "meanActions": 31.23,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 118,
+          "losses": 61,
+          "draws": 21,
+          "winRate": 0.59,
+          "lossRate": 0.305,
+          "drawRate": 0.105
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 42,
+          "losses": 142,
+          "draws": 16,
+          "winRate": 0.21,
+          "lossRate": 0.71,
+          "drawRate": 0.08
+        }
+      }
+    }
+  ],
+  "worst": [
+    {
+      "deck": "2/0/6/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 0,
+        "Mounted Billy": 6,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 0,
+      "losses": 400,
+      "draws": 0,
+      "winRate": 0,
+      "lossRate": 1,
+      "drawRate": 0,
+      "meanActions": 13.92,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "1/1/6/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 1,
+        "Mounted Billy": 6,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 0,
+      "losses": 400,
+      "draws": 0,
+      "winRate": 0,
+      "lossRate": 1,
+      "drawRate": 0,
+      "meanActions": 11.76,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "1/1/5/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 1,
+        "Mounted Billy": 5,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 0,
+      "losses": 400,
+      "draws": 0,
+      "winRate": 0,
+      "lossRate": 1,
+      "drawRate": 0,
+      "meanActions": 11.77,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "1/1/4/6",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 1,
+        "Mounted Billy": 4,
+        "Deadeye": 6
+      },
+      "matches": 400,
+      "wins": 0,
+      "losses": 400,
+      "draws": 0,
+      "winRate": 0,
+      "lossRate": 1,
+      "drawRate": 0,
+      "meanActions": 11.77,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "1/0/6/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 0,
+        "Mounted Billy": 6,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 0,
+      "losses": 400,
+      "draws": 0,
+      "winRate": 0,
+      "lossRate": 1,
+      "drawRate": 0,
+      "meanActions": 11.38,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "1/0/5/6",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 0,
+        "Mounted Billy": 5,
+        "Deadeye": 6
+      },
+      "matches": 400,
+      "wins": 0,
+      "losses": 400,
+      "draws": 0,
+      "winRate": 0,
+      "lossRate": 1,
+      "drawRate": 0,
+      "meanActions": 11.39,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "2/0/5/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 0,
+        "Mounted Billy": 5,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 1,
+      "losses": 399,
+      "draws": 0,
+      "winRate": 0.0025,
+      "lossRate": 0.9975,
+      "drawRate": 0,
+      "meanActions": 13.91,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 1,
+          "losses": 199,
+          "draws": 0,
+          "winRate": 0.005,
+          "lossRate": 0.995,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "2/0/4/6",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 0,
+        "Mounted Billy": 4,
+        "Deadeye": 6
+      },
+      "matches": 400,
+      "wins": 1,
+      "losses": 399,
+      "draws": 0,
+      "winRate": 0.0025,
+      "lossRate": 0.9975,
+      "drawRate": 0,
+      "meanActions": 13.89,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 1,
+          "losses": 199,
+          "draws": 0,
+          "winRate": 0.005,
+          "lossRate": 0.995,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "1/2/6/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 2,
+        "Mounted Billy": 6,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 1,
+      "losses": 399,
+      "draws": 0,
+      "winRate": 0.0025,
+      "lossRate": 0.9975,
+      "drawRate": 0,
+      "meanActions": 12.01,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 1,
+          "losses": 199,
+          "draws": 0,
+          "winRate": 0.005,
+          "lossRate": 0.995,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "1/2/5/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 2,
+        "Mounted Billy": 5,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 1,
+      "losses": 399,
+      "draws": 0,
+      "winRate": 0.0025,
+      "lossRate": 0.9975,
+      "drawRate": 0,
+      "meanActions": 12.03,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 1,
+          "losses": 199,
+          "draws": 0,
+          "winRate": 0.005,
+          "lossRate": 0.995,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        }
+      }
+    }
+  ],
+  "byCopies": {
+    "Sheriff": {
+      "1": {
+        "decks": 32,
+        "matches": 12800,
+        "wins": 141,
+        "losses": 12631,
+        "draws": 28,
+        "winRate": 0.011,
+        "lossRate": 0.9868,
+        "drawRate": 0.0022
+      },
+      "2": {
+        "decks": 36,
+        "matches": 14400,
+        "wins": 321,
+        "losses": 13896,
+        "draws": 183,
+        "winRate": 0.0223,
+        "lossRate": 0.965,
+        "drawRate": 0.0127
+      },
+      "3": {
+        "decks": 37,
+        "matches": 14800,
+        "wins": 1166,
+        "losses": 13333,
+        "draws": 301,
+        "winRate": 0.0788,
+        "lossRate": 0.9009,
+        "drawRate": 0.0203
+      },
+      "4": {
+        "decks": 36,
+        "matches": 14400,
+        "wins": 1939,
+        "losses": 11938,
+        "draws": 523,
+        "winRate": 0.1347,
+        "lossRate": 0.829,
+        "drawRate": 0.0363
+      },
+      "5": {
+        "decks": 32,
+        "matches": 12800,
+        "wins": 2772,
+        "losses": 9294,
+        "draws": 734,
+        "winRate": 0.2166,
+        "lossRate": 0.7261,
+        "drawRate": 0.0573
+      },
+      "6": {
+        "decks": 28,
+        "matches": 11200,
+        "wins": 3010,
+        "losses": 7269,
+        "draws": 921,
+        "winRate": 0.2687,
+        "lossRate": 0.649,
+        "drawRate": 0.0822
+      }
+    },
+    "Billy": {
+      "0": {
+        "decks": 27,
+        "matches": 10800,
+        "wins": 947,
+        "losses": 9598,
+        "draws": 255,
+        "winRate": 0.0877,
+        "lossRate": 0.8887,
+        "drawRate": 0.0236
+      },
+      "1": {
+        "decks": 31,
+        "matches": 12400,
+        "wins": 1309,
+        "losses": 10710,
+        "draws": 381,
+        "winRate": 0.1056,
+        "lossRate": 0.8637,
+        "drawRate": 0.0307
+      },
+      "2": {
+        "decks": 32,
+        "matches": 12800,
+        "wins": 1664,
+        "losses": 10689,
+        "draws": 447,
+        "winRate": 0.13,
+        "lossRate": 0.8351,
+        "drawRate": 0.0349
+      },
+      "3": {
+        "decks": 33,
+        "matches": 13200,
+        "wins": 1814,
+        "losses": 10905,
+        "draws": 481,
+        "winRate": 0.1374,
+        "lossRate": 0.8261,
+        "drawRate": 0.0364
+      },
+      "4": {
+        "decks": 30,
+        "matches": 12000,
+        "wins": 1587,
+        "losses": 9974,
+        "draws": 439,
+        "winRate": 0.1323,
+        "lossRate": 0.8312,
+        "drawRate": 0.0366
+      },
+      "5": {
+        "decks": 27,
+        "matches": 10800,
+        "wins": 1251,
+        "losses": 9156,
+        "draws": 393,
+        "winRate": 0.1158,
+        "lossRate": 0.8478,
+        "drawRate": 0.0364
+      },
+      "6": {
+        "decks": 21,
+        "matches": 8400,
+        "wins": 777,
+        "losses": 7329,
+        "draws": 294,
+        "winRate": 0.0925,
+        "lossRate": 0.8725,
+        "drawRate": 0.035
+      }
+    },
+    "Mounted Billy": {
+      "0": {
+        "decks": 27,
+        "matches": 10800,
+        "wins": 2664,
+        "losses": 7543,
+        "draws": 593,
+        "winRate": 0.2467,
+        "lossRate": 0.6984,
+        "drawRate": 0.0549
+      },
+      "1": {
+        "decks": 31,
+        "matches": 12400,
+        "wins": 2371,
+        "losses": 9390,
+        "draws": 639,
+        "winRate": 0.1912,
+        "lossRate": 0.7573,
+        "drawRate": 0.0515
+      },
+      "2": {
+        "decks": 33,
+        "matches": 13200,
+        "wins": 1835,
+        "losses": 10795,
+        "draws": 570,
+        "winRate": 0.139,
+        "lossRate": 0.8178,
+        "drawRate": 0.0432
+      },
+      "3": {
+        "decks": 31,
+        "matches": 12400,
+        "wins": 1168,
+        "losses": 10801,
+        "draws": 431,
+        "winRate": 0.0942,
+        "lossRate": 0.871,
+        "drawRate": 0.0348
+      },
+      "4": {
+        "decks": 31,
+        "matches": 12400,
+        "wins": 701,
+        "losses": 11426,
+        "draws": 273,
+        "winRate": 0.0565,
+        "lossRate": 0.9215,
+        "drawRate": 0.022
+      },
+      "5": {
+        "decks": 27,
+        "matches": 10800,
+        "wins": 402,
+        "losses": 10265,
+        "draws": 133,
+        "winRate": 0.0372,
+        "lossRate": 0.9505,
+        "drawRate": 0.0123
+      },
+      "6": {
+        "decks": 21,
+        "matches": 8400,
+        "wins": 208,
+        "losses": 8141,
+        "draws": 51,
+        "winRate": 0.0248,
+        "lossRate": 0.9692,
+        "drawRate": 0.0061
+      }
+    },
+    "Deadeye": {
+      "0": {
+        "decks": 26,
+        "matches": 10400,
+        "wins": 815,
+        "losses": 9130,
+        "draws": 455,
+        "winRate": 0.0784,
+        "lossRate": 0.8779,
+        "drawRate": 0.0437
+      },
+      "1": {
+        "decks": 31,
+        "matches": 12400,
+        "wins": 1564,
+        "losses": 10317,
+        "draws": 519,
+        "winRate": 0.1261,
+        "lossRate": 0.832,
+        "drawRate": 0.0419
+      },
+      "2": {
+        "decks": 33,
+        "matches": 13200,
+        "wins": 2023,
+        "losses": 10667,
+        "draws": 510,
+        "winRate": 0.1533,
+        "lossRate": 0.8081,
+        "drawRate": 0.0386
+      },
+      "3": {
+        "decks": 33,
+        "matches": 13200,
+        "wins": 1995,
+        "losses": 10723,
+        "draws": 482,
+        "winRate": 0.1511,
+        "lossRate": 0.8123,
+        "drawRate": 0.0365
+      },
+      "4": {
+        "decks": 31,
+        "matches": 12400,
+        "wins": 1545,
+        "losses": 10498,
+        "draws": 357,
+        "winRate": 0.1246,
+        "lossRate": 0.8466,
+        "drawRate": 0.0288
+      },
+      "5": {
+        "decks": 27,
+        "matches": 10800,
+        "wins": 937,
+        "losses": 9605,
+        "draws": 258,
+        "winRate": 0.0868,
+        "lossRate": 0.8894,
+        "drawRate": 0.0239
+      },
+      "6": {
+        "decks": 20,
+        "matches": 8000,
+        "wins": 470,
+        "losses": 7421,
+        "draws": 109,
+        "winRate": 0.0587,
+        "lossRate": 0.9276,
+        "drawRate": 0.0136
+      }
+    }
+  },
+  "actionsPerMatch": {
+    "min": 8,
+    "max": 41,
+    "mean": 20.99
+  },
+  "endings": {
+    "round-limit": 3141,
+    "base-destroyed": 77259
+  },
+  "finalRound": {
+    "3": 16920,
+    "4": 17980,
+    "5": 14497,
+    "6": 11506,
+    "7": 7977,
+    "8": 5544,
+    "9": 5976
+  },
+  "matchesWithCard": {
+    "Sheriff": 69552,
+    "Billy": 48768,
+    "Mounted Billy": 10558,
+    "Deadeye": 38943,
+    "Skeleton": 80400,
+    "Wizard": 64239,
+    "Dragon": 7572,
+    "Singularity": 52092
+  },
+  "decks": [
+    {
+      "deck": "6/3/0/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 3,
+        "Mounted Billy": 0,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 235,
+      "losses": 128,
+      "draws": 37,
+      "winRate": 0.5875,
+      "lossRate": 0.32,
+      "drawRate": 0.0925,
+      "meanActions": 32.63,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 147,
+          "losses": 34,
+          "draws": 19,
+          "winRate": 0.735,
+          "lossRate": 0.17,
+          "drawRate": 0.095
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 88,
+          "losses": 94,
+          "draws": 18,
+          "winRate": 0.44,
+          "lossRate": 0.47,
+          "drawRate": 0.09
+        }
+      }
+    },
+    {
+      "deck": "6/4/0/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 4,
+        "Mounted Billy": 0,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 209,
+      "losses": 157,
+      "draws": 34,
+      "winRate": 0.5225,
+      "lossRate": 0.3925,
+      "drawRate": 0.085,
+      "meanActions": 32.01,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 134,
+          "losses": 48,
+          "draws": 18,
+          "winRate": 0.67,
+          "lossRate": 0.24,
+          "drawRate": 0.09
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 75,
+          "losses": 109,
+          "draws": 16,
+          "winRate": 0.375,
+          "lossRate": 0.545,
+          "drawRate": 0.08
+        }
+      }
+    },
+    {
+      "deck": "6/2/0/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 2,
+        "Mounted Billy": 0,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 195,
+      "losses": 164,
+      "draws": 41,
+      "winRate": 0.4875,
+      "lossRate": 0.41,
+      "drawRate": 0.1025,
+      "meanActions": 32.57,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 118,
+          "losses": 59,
+          "draws": 23,
+          "winRate": 0.59,
+          "lossRate": 0.295,
+          "drawRate": 0.115
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 77,
+          "losses": 105,
+          "draws": 18,
+          "winRate": 0.385,
+          "lossRate": 0.525,
+          "drawRate": 0.09
+        }
+      }
+    },
+    {
+      "deck": "6/3/1/2",
+      "starter": true,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 3,
+        "Mounted Billy": 1,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 191,
+      "losses": 175,
+      "draws": 34,
+      "winRate": 0.4775,
+      "lossRate": 0.4375,
+      "drawRate": 0.085,
+      "meanActions": 31.86,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 123,
+          "losses": 62,
+          "draws": 15,
+          "winRate": 0.615,
+          "lossRate": 0.31,
+          "drawRate": 0.075
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 68,
+          "losses": 113,
+          "draws": 19,
+          "winRate": 0.34,
+          "lossRate": 0.565,
+          "drawRate": 0.095
+        }
+      }
+    },
+    {
+      "deck": "5/4/0/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 4,
+        "Mounted Billy": 0,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 188,
+      "losses": 176,
+      "draws": 36,
+      "winRate": 0.47,
+      "lossRate": 0.44,
+      "drawRate": 0.09,
+      "meanActions": 30.38,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 123,
+          "losses": 62,
+          "draws": 15,
+          "winRate": 0.615,
+          "lossRate": 0.31,
+          "drawRate": 0.075
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 65,
+          "losses": 114,
+          "draws": 21,
+          "winRate": 0.325,
+          "lossRate": 0.57,
+          "drawRate": 0.105
+        }
+      }
+    },
+    {
+      "deck": "6/2/1/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 2,
+        "Mounted Billy": 1,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 187,
+      "losses": 174,
+      "draws": 39,
+      "winRate": 0.4675,
+      "lossRate": 0.435,
+      "drawRate": 0.0975,
+      "meanActions": 31.88,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 112,
+          "losses": 64,
+          "draws": 24,
+          "winRate": 0.56,
+          "lossRate": 0.32,
+          "drawRate": 0.12
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 75,
+          "losses": 110,
+          "draws": 15,
+          "winRate": 0.375,
+          "lossRate": 0.55,
+          "drawRate": 0.075
+        }
+      }
+    },
+    {
+      "deck": "5/5/0/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 5,
+        "Mounted Billy": 0,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 166,
+      "losses": 198,
+      "draws": 36,
+      "winRate": 0.415,
+      "lossRate": 0.495,
+      "drawRate": 0.09,
+      "meanActions": 29.72,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 110,
+          "losses": 70,
+          "draws": 20,
+          "winRate": 0.55,
+          "lossRate": 0.35,
+          "drawRate": 0.1
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 56,
+          "losses": 128,
+          "draws": 16,
+          "winRate": 0.28,
+          "lossRate": 0.64,
+          "drawRate": 0.08
+        }
+      }
+    },
+    {
+      "deck": "5/3/0/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 3,
+        "Mounted Billy": 0,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 163,
+      "losses": 207,
+      "draws": 30,
+      "winRate": 0.4075,
+      "lossRate": 0.5175,
+      "drawRate": 0.075,
+      "meanActions": 30.21,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 111,
+          "losses": 74,
+          "draws": 15,
+          "winRate": 0.555,
+          "lossRate": 0.37,
+          "drawRate": 0.075
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 52,
+          "losses": 133,
+          "draws": 15,
+          "winRate": 0.26,
+          "lossRate": 0.665,
+          "drawRate": 0.075
+        }
+      }
+    },
+    {
+      "deck": "5/4/1/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 4,
+        "Mounted Billy": 1,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 161,
+      "losses": 203,
+      "draws": 36,
+      "winRate": 0.4025,
+      "lossRate": 0.5075,
+      "drawRate": 0.09,
+      "meanActions": 29.45,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 107,
+          "losses": 74,
+          "draws": 19,
+          "winRate": 0.535,
+          "lossRate": 0.37,
+          "drawRate": 0.095
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 54,
+          "losses": 129,
+          "draws": 17,
+          "winRate": 0.27,
+          "lossRate": 0.645,
+          "drawRate": 0.085
+        }
+      }
+    },
+    {
+      "deck": "6/5/0/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 5,
+        "Mounted Billy": 0,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 160,
+      "losses": 203,
+      "draws": 37,
+      "winRate": 0.4,
+      "lossRate": 0.5075,
+      "drawRate": 0.0925,
+      "meanActions": 31.23,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 118,
+          "losses": 61,
+          "draws": 21,
+          "winRate": 0.59,
+          "lossRate": 0.305,
+          "drawRate": 0.105
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 42,
+          "losses": 142,
+          "draws": 16,
+          "winRate": 0.21,
+          "lossRate": 0.71,
+          "drawRate": 0.08
+        }
+      }
+    },
+    {
+      "deck": "5/3/1/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 3,
+        "Mounted Billy": 1,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 154,
+      "losses": 216,
+      "draws": 30,
+      "winRate": 0.385,
+      "lossRate": 0.54,
+      "drawRate": 0.075,
+      "meanActions": 29.66,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 98,
+          "losses": 83,
+          "draws": 19,
+          "winRate": 0.49,
+          "lossRate": 0.415,
+          "drawRate": 0.095
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 56,
+          "losses": 133,
+          "draws": 11,
+          "winRate": 0.28,
+          "lossRate": 0.665,
+          "drawRate": 0.055
+        }
+      }
+    },
+    {
+      "deck": "6/1/1/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 1,
+        "Mounted Billy": 1,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 149,
+      "losses": 221,
+      "draws": 30,
+      "winRate": 0.3725,
+      "lossRate": 0.5525,
+      "drawRate": 0.075,
+      "meanActions": 30.05,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 88,
+          "losses": 95,
+          "draws": 17,
+          "winRate": 0.44,
+          "lossRate": 0.475,
+          "drawRate": 0.085
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 61,
+          "losses": 126,
+          "draws": 13,
+          "winRate": 0.305,
+          "lossRate": 0.63,
+          "drawRate": 0.065
+        }
+      }
+    },
+    {
+      "deck": "6/4/1/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 4,
+        "Mounted Billy": 1,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 144,
+      "losses": 214,
+      "draws": 42,
+      "winRate": 0.36,
+      "lossRate": 0.535,
+      "drawRate": 0.105,
+      "meanActions": 31.28,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 103,
+          "losses": 72,
+          "draws": 25,
+          "winRate": 0.515,
+          "lossRate": 0.36,
+          "drawRate": 0.125
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 41,
+          "losses": 142,
+          "draws": 17,
+          "winRate": 0.205,
+          "lossRate": 0.71,
+          "drawRate": 0.085
+        }
+      }
+    },
+    {
+      "deck": "6/2/2/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 2,
+        "Mounted Billy": 2,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 141,
+      "losses": 225,
+      "draws": 34,
+      "winRate": 0.3525,
+      "lossRate": 0.5625,
+      "drawRate": 0.085,
+      "meanActions": 31.27,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 90,
+          "losses": 94,
+          "draws": 16,
+          "winRate": 0.45,
+          "lossRate": 0.47,
+          "drawRate": 0.08
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 51,
+          "losses": 131,
+          "draws": 18,
+          "winRate": 0.255,
+          "lossRate": 0.655,
+          "drawRate": 0.09
+        }
+      }
+    },
+    {
+      "deck": "6/1/2/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 1,
+        "Mounted Billy": 2,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 136,
+      "losses": 226,
+      "draws": 38,
+      "winRate": 0.34,
+      "lossRate": 0.565,
+      "drawRate": 0.095,
+      "meanActions": 29.53,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 79,
+          "losses": 98,
+          "draws": 23,
+          "winRate": 0.395,
+          "lossRate": 0.49,
+          "drawRate": 0.115
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 57,
+          "losses": 128,
+          "draws": 15,
+          "winRate": 0.285,
+          "lossRate": 0.64,
+          "drawRate": 0.075
+        }
+      }
+    },
+    {
+      "deck": "5/2/1/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 2,
+        "Mounted Billy": 1,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 127,
+      "losses": 244,
+      "draws": 29,
+      "winRate": 0.3175,
+      "lossRate": 0.61,
+      "drawRate": 0.0725,
+      "meanActions": 28.61,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 85,
+          "losses": 97,
+          "draws": 18,
+          "winRate": 0.425,
+          "lossRate": 0.485,
+          "drawRate": 0.09
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 42,
+          "losses": 147,
+          "draws": 11,
+          "winRate": 0.21,
+          "lossRate": 0.735,
+          "drawRate": 0.055
+        }
+      }
+    },
+    {
+      "deck": "4/5/0/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 5,
+        "Mounted Billy": 0,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 127,
+      "losses": 254,
+      "draws": 19,
+      "winRate": 0.3175,
+      "lossRate": 0.635,
+      "drawRate": 0.0475,
+      "meanActions": 26.64,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 88,
+          "losses": 100,
+          "draws": 12,
+          "winRate": 0.44,
+          "lossRate": 0.5,
+          "drawRate": 0.06
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 39,
+          "losses": 154,
+          "draws": 7,
+          "winRate": 0.195,
+          "lossRate": 0.77,
+          "drawRate": 0.035
+        }
+      }
+    },
+    {
+      "deck": "6/3/2/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 3,
+        "Mounted Billy": 2,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 125,
+      "losses": 235,
+      "draws": 40,
+      "winRate": 0.3125,
+      "lossRate": 0.5875,
+      "drawRate": 0.1,
+      "meanActions": 31.27,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 88,
+          "losses": 86,
+          "draws": 26,
+          "winRate": 0.44,
+          "lossRate": 0.43,
+          "drawRate": 0.13
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 37,
+          "losses": 149,
+          "draws": 14,
+          "winRate": 0.185,
+          "lossRate": 0.745,
+          "drawRate": 0.07
+        }
+      }
+    },
+    {
+      "deck": "5/6/0/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 6,
+        "Mounted Billy": 0,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 125,
+      "losses": 244,
+      "draws": 31,
+      "winRate": 0.3125,
+      "lossRate": 0.61,
+      "drawRate": 0.0775,
+      "meanActions": 28.87,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 90,
+          "losses": 89,
+          "draws": 21,
+          "winRate": 0.45,
+          "lossRate": 0.445,
+          "drawRate": 0.105
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 35,
+          "losses": 155,
+          "draws": 10,
+          "winRate": 0.175,
+          "lossRate": 0.775,
+          "drawRate": 0.05
+        }
+      }
+    },
+    {
+      "deck": "5/3/2/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 3,
+        "Mounted Billy": 2,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 124,
+      "losses": 253,
+      "draws": 23,
+      "winRate": 0.31,
+      "lossRate": 0.6325,
+      "drawRate": 0.0575,
+      "meanActions": 28.63,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 82,
+          "losses": 106,
+          "draws": 12,
+          "winRate": 0.41,
+          "lossRate": 0.53,
+          "drawRate": 0.06
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 42,
+          "losses": 147,
+          "draws": 11,
+          "winRate": 0.21,
+          "lossRate": 0.735,
+          "drawRate": 0.055
+        }
+      }
+    },
+    {
+      "deck": "6/1/0/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 1,
+        "Mounted Billy": 0,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 119,
+      "losses": 246,
+      "draws": 35,
+      "winRate": 0.2975,
+      "lossRate": 0.615,
+      "drawRate": 0.0875,
+      "meanActions": 30.8,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 74,
+          "losses": 101,
+          "draws": 25,
+          "winRate": 0.37,
+          "lossRate": 0.505,
+          "drawRate": 0.125
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 45,
+          "losses": 145,
+          "draws": 10,
+          "winRate": 0.225,
+          "lossRate": 0.725,
+          "drawRate": 0.05
+        }
+      }
+    },
+    {
+      "deck": "5/2/0/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 2,
+        "Mounted Billy": 0,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 119,
+      "losses": 253,
+      "draws": 28,
+      "winRate": 0.2975,
+      "lossRate": 0.6325,
+      "drawRate": 0.07,
+      "meanActions": 29.06,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 78,
+          "losses": 102,
+          "draws": 20,
+          "winRate": 0.39,
+          "lossRate": 0.51,
+          "drawRate": 0.1
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 41,
+          "losses": 151,
+          "draws": 8,
+          "winRate": 0.205,
+          "lossRate": 0.755,
+          "drawRate": 0.04
+        }
+      }
+    },
+    {
+      "deck": "5/2/2/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 2,
+        "Mounted Billy": 2,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 115,
+      "losses": 257,
+      "draws": 28,
+      "winRate": 0.2875,
+      "lossRate": 0.6425,
+      "drawRate": 0.07,
+      "meanActions": 28.15,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 71,
+          "losses": 111,
+          "draws": 18,
+          "winRate": 0.355,
+          "lossRate": 0.555,
+          "drawRate": 0.09
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 44,
+          "losses": 146,
+          "draws": 10,
+          "winRate": 0.22,
+          "lossRate": 0.73,
+          "drawRate": 0.05
+        }
+      }
+    },
+    {
+      "deck": "4/6/0/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 6,
+        "Mounted Billy": 0,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 110,
+      "losses": 267,
+      "draws": 23,
+      "winRate": 0.275,
+      "lossRate": 0.6675,
+      "drawRate": 0.0575,
+      "meanActions": 26.29,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 77,
+          "losses": 109,
+          "draws": 14,
+          "winRate": 0.385,
+          "lossRate": 0.545,
+          "drawRate": 0.07
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 33,
+          "losses": 158,
+          "draws": 9,
+          "winRate": 0.165,
+          "lossRate": 0.79,
+          "drawRate": 0.045
+        }
+      }
+    },
+    {
+      "deck": "4/4/0/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 4,
+        "Mounted Billy": 0,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 109,
+      "losses": 273,
+      "draws": 18,
+      "winRate": 0.2725,
+      "lossRate": 0.6825,
+      "drawRate": 0.045,
+      "meanActions": 26.31,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 79,
+          "losses": 110,
+          "draws": 11,
+          "winRate": 0.395,
+          "lossRate": 0.55,
+          "drawRate": 0.055
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 30,
+          "losses": 163,
+          "draws": 7,
+          "winRate": 0.15,
+          "lossRate": 0.815,
+          "drawRate": 0.035
+        }
+      }
+    },
+    {
+      "deck": "4/5/1/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 5,
+        "Mounted Billy": 1,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 108,
+      "losses": 270,
+      "draws": 22,
+      "winRate": 0.27,
+      "lossRate": 0.675,
+      "drawRate": 0.055,
+      "meanActions": 26.15,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 78,
+          "losses": 109,
+          "draws": 13,
+          "winRate": 0.39,
+          "lossRate": 0.545,
+          "drawRate": 0.065
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 30,
+          "losses": 161,
+          "draws": 9,
+          "winRate": 0.15,
+          "lossRate": 0.805,
+          "drawRate": 0.045
+        }
+      }
+    },
+    {
+      "deck": "5/5/1/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 5,
+        "Mounted Billy": 1,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 106,
+      "losses": 260,
+      "draws": 34,
+      "winRate": 0.265,
+      "lossRate": 0.65,
+      "drawRate": 0.085,
+      "meanActions": 28.81,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 74,
+          "losses": 102,
+          "draws": 24,
+          "winRate": 0.37,
+          "lossRate": 0.51,
+          "drawRate": 0.12
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 32,
+          "losses": 158,
+          "draws": 10,
+          "winRate": 0.16,
+          "lossRate": 0.79,
+          "drawRate": 0.05
+        }
+      }
+    },
+    {
+      "deck": "5/4/2/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 4,
+        "Mounted Billy": 2,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 102,
+      "losses": 264,
+      "draws": 34,
+      "winRate": 0.255,
+      "lossRate": 0.66,
+      "drawRate": 0.085,
+      "meanActions": 28.64,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 71,
+          "losses": 103,
+          "draws": 26,
+          "winRate": 0.355,
+          "lossRate": 0.515,
+          "drawRate": 0.13
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 31,
+          "losses": 161,
+          "draws": 8,
+          "winRate": 0.155,
+          "lossRate": 0.805,
+          "drawRate": 0.04
+        }
+      }
+    },
+    {
+      "deck": "6/0/2/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 0,
+        "Mounted Billy": 2,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 102,
+      "losses": 266,
+      "draws": 32,
+      "winRate": 0.255,
+      "lossRate": 0.665,
+      "drawRate": 0.08,
+      "meanActions": 26.97,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 57,
+          "losses": 125,
+          "draws": 18,
+          "winRate": 0.285,
+          "lossRate": 0.625,
+          "drawRate": 0.09
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 45,
+          "losses": 141,
+          "draws": 14,
+          "winRate": 0.225,
+          "lossRate": 0.705,
+          "drawRate": 0.07
+        }
+      }
+    },
+    {
+      "deck": "4/4/1/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 4,
+        "Mounted Billy": 1,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 97,
+      "losses": 278,
+      "draws": 25,
+      "winRate": 0.2425,
+      "lossRate": 0.695,
+      "drawRate": 0.0625,
+      "meanActions": 25.96,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 69,
+          "losses": 115,
+          "draws": 16,
+          "winRate": 0.345,
+          "lossRate": 0.575,
+          "drawRate": 0.08
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 28,
+          "losses": 163,
+          "draws": 9,
+          "winRate": 0.14,
+          "lossRate": 0.815,
+          "drawRate": 0.045
+        }
+      }
+    },
+    {
+      "deck": "5/1/2/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 1,
+        "Mounted Billy": 2,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 93,
+      "losses": 287,
+      "draws": 20,
+      "winRate": 0.2325,
+      "lossRate": 0.7175,
+      "drawRate": 0.05,
+      "meanActions": 25.49,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 59,
+          "losses": 130,
+          "draws": 11,
+          "winRate": 0.295,
+          "lossRate": 0.65,
+          "drawRate": 0.055
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 34,
+          "losses": 157,
+          "draws": 9,
+          "winRate": 0.17,
+          "lossRate": 0.785,
+          "drawRate": 0.045
+        }
+      }
+    },
+    {
+      "deck": "6/0/3/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 0,
+        "Mounted Billy": 3,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 92,
+      "losses": 274,
+      "draws": 34,
+      "winRate": 0.23,
+      "lossRate": 0.685,
+      "drawRate": 0.085,
+      "meanActions": 26.61,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 49,
+          "losses": 126,
+          "draws": 25,
+          "winRate": 0.245,
+          "lossRate": 0.63,
+          "drawRate": 0.125
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 43,
+          "losses": 148,
+          "draws": 9,
+          "winRate": 0.215,
+          "lossRate": 0.74,
+          "drawRate": 0.045
+        }
+      }
+    },
+    {
+      "deck": "6/0/1/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 0,
+        "Mounted Billy": 1,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 91,
+      "losses": 281,
+      "draws": 28,
+      "winRate": 0.2275,
+      "lossRate": 0.7025,
+      "drawRate": 0.07,
+      "meanActions": 27.12,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 49,
+          "losses": 132,
+          "draws": 19,
+          "winRate": 0.245,
+          "lossRate": 0.66,
+          "drawRate": 0.095
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 42,
+          "losses": 149,
+          "draws": 9,
+          "winRate": 0.21,
+          "lossRate": 0.745,
+          "drawRate": 0.045
+        }
+      }
+    },
+    {
+      "deck": "6/2/3/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 2,
+        "Mounted Billy": 3,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 89,
+      "losses": 282,
+      "draws": 29,
+      "winRate": 0.2225,
+      "lossRate": 0.705,
+      "drawRate": 0.0725,
+      "meanActions": 30.09,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 57,
+          "losses": 122,
+          "draws": 21,
+          "winRate": 0.285,
+          "lossRate": 0.61,
+          "drawRate": 0.105
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 32,
+          "losses": 160,
+          "draws": 8,
+          "winRate": 0.16,
+          "lossRate": 0.8,
+          "drawRate": 0.04
+        }
+      }
+    },
+    {
+      "deck": "5/1/1/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 1,
+        "Mounted Billy": 1,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 88,
+      "losses": 288,
+      "draws": 24,
+      "winRate": 0.22,
+      "lossRate": 0.72,
+      "drawRate": 0.06,
+      "meanActions": 25.84,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 56,
+          "losses": 132,
+          "draws": 12,
+          "winRate": 0.28,
+          "lossRate": 0.66,
+          "drawRate": 0.06
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 32,
+          "losses": 156,
+          "draws": 12,
+          "winRate": 0.16,
+          "lossRate": 0.78,
+          "drawRate": 0.06
+        }
+      }
+    },
+    {
+      "deck": "4/3/1/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 3,
+        "Mounted Billy": 1,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 87,
+      "losses": 297,
+      "draws": 16,
+      "winRate": 0.2175,
+      "lossRate": 0.7425,
+      "drawRate": 0.04,
+      "meanActions": 24.91,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 61,
+          "losses": 128,
+          "draws": 11,
+          "winRate": 0.305,
+          "lossRate": 0.64,
+          "drawRate": 0.055
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 26,
+          "losses": 169,
+          "draws": 5,
+          "winRate": 0.13,
+          "lossRate": 0.845,
+          "drawRate": 0.025
+        }
+      }
+    },
+    {
+      "deck": "5/2/3/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 2,
+        "Mounted Billy": 3,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 86,
+      "losses": 287,
+      "draws": 27,
+      "winRate": 0.215,
+      "lossRate": 0.7175,
+      "drawRate": 0.0675,
+      "meanActions": 27.18,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 51,
+          "losses": 131,
+          "draws": 18,
+          "winRate": 0.255,
+          "lossRate": 0.655,
+          "drawRate": 0.09
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 35,
+          "losses": 156,
+          "draws": 9,
+          "winRate": 0.175,
+          "lossRate": 0.78,
+          "drawRate": 0.045
+        }
+      }
+    },
+    {
+      "deck": "6/1/3/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 1,
+        "Mounted Billy": 3,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 84,
+      "losses": 277,
+      "draws": 39,
+      "winRate": 0.21,
+      "lossRate": 0.6925,
+      "drawRate": 0.0975,
+      "meanActions": 28.82,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 48,
+          "losses": 132,
+          "draws": 20,
+          "winRate": 0.24,
+          "lossRate": 0.66,
+          "drawRate": 0.1
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 36,
+          "losses": 145,
+          "draws": 19,
+          "winRate": 0.18,
+          "lossRate": 0.725,
+          "drawRate": 0.095
+        }
+      }
+    },
+    {
+      "deck": "4/4/2/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 4,
+        "Mounted Billy": 2,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 80,
+      "losses": 300,
+      "draws": 20,
+      "winRate": 0.2,
+      "lossRate": 0.75,
+      "drawRate": 0.05,
+      "meanActions": 25.38,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 58,
+          "losses": 128,
+          "draws": 14,
+          "winRate": 0.29,
+          "lossRate": 0.64,
+          "drawRate": 0.07
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 22,
+          "losses": 172,
+          "draws": 6,
+          "winRate": 0.11,
+          "lossRate": 0.86,
+          "drawRate": 0.03
+        }
+      }
+    },
+    {
+      "deck": "4/3/0/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 3,
+        "Mounted Billy": 0,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 80,
+      "losses": 304,
+      "draws": 16,
+      "winRate": 0.2,
+      "lossRate": 0.76,
+      "drawRate": 0.04,
+      "meanActions": 25.32,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 54,
+          "losses": 134,
+          "draws": 12,
+          "winRate": 0.27,
+          "lossRate": 0.67,
+          "drawRate": 0.06
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 26,
+          "losses": 170,
+          "draws": 4,
+          "winRate": 0.13,
+          "lossRate": 0.85,
+          "drawRate": 0.02
+        }
+      }
+    },
+    {
+      "deck": "5/1/3/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 1,
+        "Mounted Billy": 3,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 79,
+      "losses": 297,
+      "draws": 24,
+      "winRate": 0.1975,
+      "lossRate": 0.7425,
+      "drawRate": 0.06,
+      "meanActions": 25.18,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 45,
+          "losses": 140,
+          "draws": 15,
+          "winRate": 0.225,
+          "lossRate": 0.7,
+          "drawRate": 0.075
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 34,
+          "losses": 157,
+          "draws": 9,
+          "winRate": 0.17,
+          "lossRate": 0.785,
+          "drawRate": 0.045
+        }
+      }
+    },
+    {
+      "deck": "6/6/0/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 6,
+        "Mounted Billy": 0,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 76,
+      "losses": 269,
+      "draws": 55,
+      "winRate": 0.19,
+      "lossRate": 0.6725,
+      "drawRate": 0.1375,
+      "meanActions": 30.05,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 55,
+          "losses": 99,
+          "draws": 46,
+          "winRate": 0.275,
+          "lossRate": 0.495,
+          "drawRate": 0.23
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 21,
+          "losses": 170,
+          "draws": 9,
+          "winRate": 0.105,
+          "lossRate": 0.85,
+          "drawRate": 0.045
+        }
+      }
+    },
+    {
+      "deck": "5/3/3/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 3,
+        "Mounted Billy": 3,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 74,
+      "losses": 302,
+      "draws": 24,
+      "winRate": 0.185,
+      "lossRate": 0.755,
+      "drawRate": 0.06,
+      "meanActions": 27.54,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 48,
+          "losses": 135,
+          "draws": 17,
+          "winRate": 0.24,
+          "lossRate": 0.675,
+          "drawRate": 0.085
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 26,
+          "losses": 167,
+          "draws": 7,
+          "winRate": 0.13,
+          "lossRate": 0.835,
+          "drawRate": 0.035
+        }
+      }
+    },
+    {
+      "deck": "4/3/2/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 3,
+        "Mounted Billy": 2,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 74,
+      "losses": 305,
+      "draws": 21,
+      "winRate": 0.185,
+      "lossRate": 0.7625,
+      "drawRate": 0.0525,
+      "meanActions": 24.67,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 51,
+          "losses": 134,
+          "draws": 15,
+          "winRate": 0.255,
+          "lossRate": 0.67,
+          "drawRate": 0.075
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 23,
+          "losses": 171,
+          "draws": 6,
+          "winRate": 0.115,
+          "lossRate": 0.855,
+          "drawRate": 0.03
+        }
+      }
+    },
+    {
+      "deck": "6/5/1/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 5,
+        "Mounted Billy": 1,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 72,
+      "losses": 271,
+      "draws": 57,
+      "winRate": 0.18,
+      "lossRate": 0.6775,
+      "drawRate": 0.1425,
+      "meanActions": 29.9,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 51,
+          "losses": 101,
+          "draws": 48,
+          "winRate": 0.255,
+          "lossRate": 0.505,
+          "drawRate": 0.24
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 21,
+          "losses": 170,
+          "draws": 9,
+          "winRate": 0.105,
+          "lossRate": 0.85,
+          "drawRate": 0.045
+        }
+      }
+    },
+    {
+      "deck": "6/4/2/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 4,
+        "Mounted Billy": 2,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 70,
+      "losses": 281,
+      "draws": 49,
+      "winRate": 0.175,
+      "lossRate": 0.7025,
+      "drawRate": 0.1225,
+      "meanActions": 29.59,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 50,
+          "losses": 111,
+          "draws": 39,
+          "winRate": 0.25,
+          "lossRate": 0.555,
+          "drawRate": 0.195
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 20,
+          "losses": 170,
+          "draws": 10,
+          "winRate": 0.1,
+          "lossRate": 0.85,
+          "drawRate": 0.05
+        }
+      }
+    },
+    {
+      "deck": "4/6/1/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 6,
+        "Mounted Billy": 1,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 70,
+      "losses": 302,
+      "draws": 28,
+      "winRate": 0.175,
+      "lossRate": 0.755,
+      "drawRate": 0.07,
+      "meanActions": 25.15,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 52,
+          "losses": 126,
+          "draws": 22,
+          "winRate": 0.26,
+          "lossRate": 0.63,
+          "drawRate": 0.11
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 18,
+          "losses": 176,
+          "draws": 6,
+          "winRate": 0.09,
+          "lossRate": 0.88,
+          "drawRate": 0.03
+        }
+      }
+    },
+    {
+      "deck": "4/5/2/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 5,
+        "Mounted Billy": 2,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 68,
+      "losses": 307,
+      "draws": 25,
+      "winRate": 0.17,
+      "lossRate": 0.7675,
+      "drawRate": 0.0625,
+      "meanActions": 25.05,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 51,
+          "losses": 128,
+          "draws": 21,
+          "winRate": 0.255,
+          "lossRate": 0.64,
+          "drawRate": 0.105
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 17,
+          "losses": 179,
+          "draws": 4,
+          "winRate": 0.085,
+          "lossRate": 0.895,
+          "drawRate": 0.02
+        }
+      }
+    },
+    {
+      "deck": "3/6/0/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 6,
+        "Mounted Billy": 0,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 67,
+      "losses": 315,
+      "draws": 18,
+      "winRate": 0.1675,
+      "lossRate": 0.7875,
+      "drawRate": 0.045,
+      "meanActions": 23.5,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 42,
+          "losses": 146,
+          "draws": 12,
+          "winRate": 0.21,
+          "lossRate": 0.73,
+          "drawRate": 0.06
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 25,
+          "losses": 169,
+          "draws": 6,
+          "winRate": 0.125,
+          "lossRate": 0.845,
+          "drawRate": 0.03
+        }
+      }
+    },
+    {
+      "deck": "5/0/3/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 0,
+        "Mounted Billy": 3,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 67,
+      "losses": 319,
+      "draws": 14,
+      "winRate": 0.1675,
+      "lossRate": 0.7975,
+      "drawRate": 0.035,
+      "meanActions": 23.25,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 41,
+          "losses": 152,
+          "draws": 7,
+          "winRate": 0.205,
+          "lossRate": 0.76,
+          "drawRate": 0.035
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 26,
+          "losses": 167,
+          "draws": 7,
+          "winRate": 0.13,
+          "lossRate": 0.835,
+          "drawRate": 0.035
+        }
+      }
+    },
+    {
+      "deck": "5/0/2/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 0,
+        "Mounted Billy": 2,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 63,
+      "losses": 319,
+      "draws": 18,
+      "winRate": 0.1575,
+      "lossRate": 0.7975,
+      "drawRate": 0.045,
+      "meanActions": 23.39,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 35,
+          "losses": 156,
+          "draws": 9,
+          "winRate": 0.175,
+          "lossRate": 0.78,
+          "drawRate": 0.045
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 28,
+          "losses": 163,
+          "draws": 9,
+          "winRate": 0.14,
+          "lossRate": 0.815,
+          "drawRate": 0.045
+        }
+      }
+    },
+    {
+      "deck": "3/5/0/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 5,
+        "Mounted Billy": 0,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 62,
+      "losses": 319,
+      "draws": 19,
+      "winRate": 0.155,
+      "lossRate": 0.7975,
+      "drawRate": 0.0475,
+      "meanActions": 23.03,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 41,
+          "losses": 150,
+          "draws": 9,
+          "winRate": 0.205,
+          "lossRate": 0.75,
+          "drawRate": 0.045
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 21,
+          "losses": 169,
+          "draws": 10,
+          "winRate": 0.105,
+          "lossRate": 0.845,
+          "drawRate": 0.05
+        }
+      }
+    },
+    {
+      "deck": "4/2/2/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 2,
+        "Mounted Billy": 2,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 62,
+      "losses": 323,
+      "draws": 15,
+      "winRate": 0.155,
+      "lossRate": 0.8075,
+      "drawRate": 0.0375,
+      "meanActions": 23.02,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 38,
+          "losses": 153,
+          "draws": 9,
+          "winRate": 0.19,
+          "lossRate": 0.765,
+          "drawRate": 0.045
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 24,
+          "losses": 170,
+          "draws": 6,
+          "winRate": 0.12,
+          "lossRate": 0.85,
+          "drawRate": 0.03
+        }
+      }
+    },
+    {
+      "deck": "5/1/0/6",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 1,
+        "Mounted Billy": 0,
+        "Deadeye": 6
+      },
+      "matches": 400,
+      "wins": 62,
+      "losses": 327,
+      "draws": 11,
+      "winRate": 0.155,
+      "lossRate": 0.8175,
+      "drawRate": 0.0275,
+      "meanActions": 26.3,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 38,
+          "losses": 154,
+          "draws": 8,
+          "winRate": 0.19,
+          "lossRate": 0.77,
+          "drawRate": 0.04
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 24,
+          "losses": 173,
+          "draws": 3,
+          "winRate": 0.12,
+          "lossRate": 0.865,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "6/0/4/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 0,
+        "Mounted Billy": 4,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 59,
+      "losses": 317,
+      "draws": 24,
+      "winRate": 0.1475,
+      "lossRate": 0.7925,
+      "drawRate": 0.06,
+      "meanActions": 25.73,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 29,
+          "losses": 154,
+          "draws": 17,
+          "winRate": 0.145,
+          "lossRate": 0.77,
+          "drawRate": 0.085
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 30,
+          "losses": 163,
+          "draws": 7,
+          "winRate": 0.15,
+          "lossRate": 0.815,
+          "drawRate": 0.035
+        }
+      }
+    },
+    {
+      "deck": "6/3/3/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 3,
+        "Mounted Billy": 3,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 58,
+      "losses": 298,
+      "draws": 44,
+      "winRate": 0.145,
+      "lossRate": 0.745,
+      "drawRate": 0.11,
+      "meanActions": 29.45,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 39,
+          "losses": 127,
+          "draws": 34,
+          "winRate": 0.195,
+          "lossRate": 0.635,
+          "drawRate": 0.17
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 19,
+          "losses": 171,
+          "draws": 10,
+          "winRate": 0.095,
+          "lossRate": 0.855,
+          "drawRate": 0.05
+        }
+      }
+    },
+    {
+      "deck": "4/2/1/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 2,
+        "Mounted Billy": 1,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 58,
+      "losses": 327,
+      "draws": 15,
+      "winRate": 0.145,
+      "lossRate": 0.8175,
+      "drawRate": 0.0375,
+      "meanActions": 23.28,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 36,
+          "losses": 155,
+          "draws": 9,
+          "winRate": 0.18,
+          "lossRate": 0.775,
+          "drawRate": 0.045
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 22,
+          "losses": 172,
+          "draws": 6,
+          "winRate": 0.11,
+          "lossRate": 0.86,
+          "drawRate": 0.03
+        }
+      }
+    },
+    {
+      "deck": "4/3/3/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 3,
+        "Mounted Billy": 3,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 57,
+      "losses": 323,
+      "draws": 20,
+      "winRate": 0.1425,
+      "lossRate": 0.8075,
+      "drawRate": 0.05,
+      "meanActions": 24.15,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 41,
+          "losses": 146,
+          "draws": 13,
+          "winRate": 0.205,
+          "lossRate": 0.73,
+          "drawRate": 0.065
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 16,
+          "losses": 177,
+          "draws": 7,
+          "winRate": 0.08,
+          "lossRate": 0.885,
+          "drawRate": 0.035
+        }
+      }
+    },
+    {
+      "deck": "5/1/4/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 1,
+        "Mounted Billy": 4,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 57,
+      "losses": 325,
+      "draws": 18,
+      "winRate": 0.1425,
+      "lossRate": 0.8125,
+      "drawRate": 0.045,
+      "meanActions": 24.43,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 29,
+          "losses": 160,
+          "draws": 11,
+          "winRate": 0.145,
+          "lossRate": 0.8,
+          "drawRate": 0.055
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 28,
+          "losses": 165,
+          "draws": 7,
+          "winRate": 0.14,
+          "lossRate": 0.825,
+          "drawRate": 0.035
+        }
+      }
+    },
+    {
+      "deck": "6/0/0/6",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 0,
+        "Mounted Billy": 0,
+        "Deadeye": 6
+      },
+      "matches": 400,
+      "wins": 57,
+      "losses": 330,
+      "draws": 13,
+      "winRate": 0.1425,
+      "lossRate": 0.825,
+      "drawRate": 0.0325,
+      "meanActions": 27.19,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 33,
+          "losses": 161,
+          "draws": 6,
+          "winRate": 0.165,
+          "lossRate": 0.805,
+          "drawRate": 0.03
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 24,
+          "losses": 169,
+          "draws": 7,
+          "winRate": 0.12,
+          "lossRate": 0.845,
+          "drawRate": 0.035
+        }
+      }
+    },
+    {
+      "deck": "3/4/0/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 4,
+        "Mounted Billy": 0,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 57,
+      "losses": 331,
+      "draws": 12,
+      "winRate": 0.1425,
+      "lossRate": 0.8275,
+      "drawRate": 0.03,
+      "meanActions": 22.15,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 39,
+          "losses": 155,
+          "draws": 6,
+          "winRate": 0.195,
+          "lossRate": 0.775,
+          "drawRate": 0.03
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 18,
+          "losses": 176,
+          "draws": 6,
+          "winRate": 0.09,
+          "lossRate": 0.88,
+          "drawRate": 0.03
+        }
+      }
+    },
+    {
+      "deck": "3/5/1/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 5,
+        "Mounted Billy": 1,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 56,
+      "losses": 331,
+      "draws": 13,
+      "winRate": 0.14,
+      "lossRate": 0.8275,
+      "drawRate": 0.0325,
+      "meanActions": 22.8,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 35,
+          "losses": 157,
+          "draws": 8,
+          "winRate": 0.175,
+          "lossRate": 0.785,
+          "drawRate": 0.04
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 21,
+          "losses": 174,
+          "draws": 5,
+          "winRate": 0.105,
+          "lossRate": 0.87,
+          "drawRate": 0.025
+        }
+      }
+    },
+    {
+      "deck": "3/4/1/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 4,
+        "Mounted Billy": 1,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 55,
+      "losses": 335,
+      "draws": 10,
+      "winRate": 0.1375,
+      "lossRate": 0.8375,
+      "drawRate": 0.025,
+      "meanActions": 21.93,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 36,
+          "losses": 157,
+          "draws": 7,
+          "winRate": 0.18,
+          "lossRate": 0.785,
+          "drawRate": 0.035
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 19,
+          "losses": 178,
+          "draws": 3,
+          "winRate": 0.095,
+          "lossRate": 0.89,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "4/2/0/6",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 2,
+        "Mounted Billy": 0,
+        "Deadeye": 6
+      },
+      "matches": 400,
+      "wins": 55,
+      "losses": 335,
+      "draws": 10,
+      "winRate": 0.1375,
+      "lossRate": 0.8375,
+      "drawRate": 0.025,
+      "meanActions": 23.28,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 36,
+          "losses": 158,
+          "draws": 6,
+          "winRate": 0.18,
+          "lossRate": 0.79,
+          "drawRate": 0.03
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 19,
+          "losses": 177,
+          "draws": 4,
+          "winRate": 0.095,
+          "lossRate": 0.885,
+          "drawRate": 0.02
+        }
+      }
+    },
+    {
+      "deck": "3/6/1/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 6,
+        "Mounted Billy": 1,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 54,
+      "losses": 328,
+      "draws": 18,
+      "winRate": 0.135,
+      "lossRate": 0.82,
+      "drawRate": 0.045,
+      "meanActions": 22.98,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 37,
+          "losses": 153,
+          "draws": 10,
+          "winRate": 0.185,
+          "lossRate": 0.765,
+          "drawRate": 0.05
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 17,
+          "losses": 175,
+          "draws": 8,
+          "winRate": 0.085,
+          "lossRate": 0.875,
+          "drawRate": 0.04
+        }
+      }
+    },
+    {
+      "deck": "5/0/4/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 0,
+        "Mounted Billy": 4,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 54,
+      "losses": 333,
+      "draws": 13,
+      "winRate": 0.135,
+      "lossRate": 0.8325,
+      "drawRate": 0.0325,
+      "meanActions": 22.98,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 31,
+          "losses": 163,
+          "draws": 6,
+          "winRate": 0.155,
+          "lossRate": 0.815,
+          "drawRate": 0.03
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 23,
+          "losses": 170,
+          "draws": 7,
+          "winRate": 0.115,
+          "lossRate": 0.85,
+          "drawRate": 0.035
+        }
+      }
+    },
+    {
+      "deck": "5/6/1/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 6,
+        "Mounted Billy": 1,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 53,
+      "losses": 309,
+      "draws": 38,
+      "winRate": 0.1325,
+      "lossRate": 0.7725,
+      "drawRate": 0.095,
+      "meanActions": 27.49,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 36,
+          "losses": 135,
+          "draws": 29,
+          "winRate": 0.18,
+          "lossRate": 0.675,
+          "drawRate": 0.145
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 17,
+          "losses": 174,
+          "draws": 9,
+          "winRate": 0.085,
+          "lossRate": 0.87,
+          "drawRate": 0.045
+        }
+      }
+    },
+    {
+      "deck": "4/4/3/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 4,
+        "Mounted Billy": 3,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 52,
+      "losses": 327,
+      "draws": 21,
+      "winRate": 0.13,
+      "lossRate": 0.8175,
+      "drawRate": 0.0525,
+      "meanActions": 24.26,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 38,
+          "losses": 145,
+          "draws": 17,
+          "winRate": 0.19,
+          "lossRate": 0.725,
+          "drawRate": 0.085
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 14,
+          "losses": 182,
+          "draws": 4,
+          "winRate": 0.07,
+          "lossRate": 0.91,
+          "drawRate": 0.02
+        }
+      }
+    },
+    {
+      "deck": "5/2/4/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 2,
+        "Mounted Billy": 4,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 52,
+      "losses": 327,
+      "draws": 21,
+      "winRate": 0.13,
+      "lossRate": 0.8175,
+      "drawRate": 0.0525,
+      "meanActions": 25.81,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 32,
+          "losses": 153,
+          "draws": 15,
+          "winRate": 0.16,
+          "lossRate": 0.765,
+          "drawRate": 0.075
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 20,
+          "losses": 174,
+          "draws": 6,
+          "winRate": 0.1,
+          "lossRate": 0.87,
+          "drawRate": 0.03
+        }
+      }
+    },
+    {
+      "deck": "5/5/2/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 5,
+        "Mounted Billy": 2,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 50,
+      "losses": 314,
+      "draws": 36,
+      "winRate": 0.125,
+      "lossRate": 0.785,
+      "drawRate": 0.09,
+      "meanActions": 27.25,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 34,
+          "losses": 139,
+          "draws": 27,
+          "winRate": 0.17,
+          "lossRate": 0.695,
+          "drawRate": 0.135
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 16,
+          "losses": 175,
+          "draws": 9,
+          "winRate": 0.08,
+          "lossRate": 0.875,
+          "drawRate": 0.045
+        }
+      }
+    },
+    {
+      "deck": "4/2/3/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 2,
+        "Mounted Billy": 3,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 50,
+      "losses": 330,
+      "draws": 20,
+      "winRate": 0.125,
+      "lossRate": 0.825,
+      "drawRate": 0.05,
+      "meanActions": 22.69,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 31,
+          "losses": 157,
+          "draws": 12,
+          "winRate": 0.155,
+          "lossRate": 0.785,
+          "drawRate": 0.06
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 19,
+          "losses": 173,
+          "draws": 8,
+          "winRate": 0.095,
+          "lossRate": 0.865,
+          "drawRate": 0.04
+        }
+      }
+    },
+    {
+      "deck": "5/0/1/6",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 0,
+        "Mounted Billy": 1,
+        "Deadeye": 6
+      },
+      "matches": 400,
+      "wins": 50,
+      "losses": 338,
+      "draws": 12,
+      "winRate": 0.125,
+      "lossRate": 0.845,
+      "drawRate": 0.03,
+      "meanActions": 23.41,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 27,
+          "losses": 166,
+          "draws": 7,
+          "winRate": 0.135,
+          "lossRate": 0.83,
+          "drawRate": 0.035
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 23,
+          "losses": 172,
+          "draws": 5,
+          "winRate": 0.115,
+          "lossRate": 0.86,
+          "drawRate": 0.025
+        }
+      }
+    },
+    {
+      "deck": "6/1/4/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 1,
+        "Mounted Billy": 4,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 49,
+      "losses": 329,
+      "draws": 22,
+      "winRate": 0.1225,
+      "lossRate": 0.8225,
+      "drawRate": 0.055,
+      "meanActions": 27.2,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 28,
+          "losses": 156,
+          "draws": 16,
+          "winRate": 0.14,
+          "lossRate": 0.78,
+          "drawRate": 0.08
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 21,
+          "losses": 173,
+          "draws": 6,
+          "winRate": 0.105,
+          "lossRate": 0.865,
+          "drawRate": 0.03
+        }
+      }
+    },
+    {
+      "deck": "3/3/0/6",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 3,
+        "Mounted Billy": 0,
+        "Deadeye": 6
+      },
+      "matches": 400,
+      "wins": 47,
+      "losses": 344,
+      "draws": 9,
+      "winRate": 0.1175,
+      "lossRate": 0.86,
+      "drawRate": 0.0225,
+      "meanActions": 20.58,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 29,
+          "losses": 162,
+          "draws": 9,
+          "winRate": 0.145,
+          "lossRate": 0.81,
+          "drawRate": 0.045
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 18,
+          "losses": 182,
+          "draws": 0,
+          "winRate": 0.09,
+          "lossRate": 0.91,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "3/4/2/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 4,
+        "Mounted Billy": 2,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 46,
+      "losses": 342,
+      "draws": 12,
+      "winRate": 0.115,
+      "lossRate": 0.855,
+      "drawRate": 0.03,
+      "meanActions": 21.84,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 29,
+          "losses": 163,
+          "draws": 8,
+          "winRate": 0.145,
+          "lossRate": 0.815,
+          "drawRate": 0.04
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 17,
+          "losses": 179,
+          "draws": 4,
+          "winRate": 0.085,
+          "lossRate": 0.895,
+          "drawRate": 0.02
+        }
+      }
+    },
+    {
+      "deck": "3/5/2/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 5,
+        "Mounted Billy": 2,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 46,
+      "losses": 344,
+      "draws": 10,
+      "winRate": 0.115,
+      "lossRate": 0.86,
+      "drawRate": 0.025,
+      "meanActions": 22.35,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 30,
+          "losses": 164,
+          "draws": 6,
+          "winRate": 0.15,
+          "lossRate": 0.82,
+          "drawRate": 0.03
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 16,
+          "losses": 180,
+          "draws": 4,
+          "winRate": 0.08,
+          "lossRate": 0.9,
+          "drawRate": 0.02
+        }
+      }
+    },
+    {
+      "deck": "4/1/3/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 1,
+        "Mounted Billy": 3,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 45,
+      "losses": 343,
+      "draws": 12,
+      "winRate": 0.1125,
+      "lossRate": 0.8575,
+      "drawRate": 0.03,
+      "meanActions": 21.56,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 28,
+          "losses": 168,
+          "draws": 4,
+          "winRate": 0.14,
+          "lossRate": 0.84,
+          "drawRate": 0.02
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 17,
+          "losses": 175,
+          "draws": 8,
+          "winRate": 0.085,
+          "lossRate": 0.875,
+          "drawRate": 0.04
+        }
+      }
+    },
+    {
+      "deck": "3/3/1/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 3,
+        "Mounted Billy": 1,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 45,
+      "losses": 344,
+      "draws": 11,
+      "winRate": 0.1125,
+      "lossRate": 0.86,
+      "drawRate": 0.0275,
+      "meanActions": 20.64,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 27,
+          "losses": 165,
+          "draws": 8,
+          "winRate": 0.135,
+          "lossRate": 0.825,
+          "drawRate": 0.04
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 18,
+          "losses": 179,
+          "draws": 3,
+          "winRate": 0.09,
+          "lossRate": 0.895,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "3/3/2/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 3,
+        "Mounted Billy": 2,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 44,
+      "losses": 346,
+      "draws": 10,
+      "winRate": 0.11,
+      "lossRate": 0.865,
+      "drawRate": 0.025,
+      "meanActions": 20.43,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 26,
+          "losses": 168,
+          "draws": 6,
+          "winRate": 0.13,
+          "lossRate": 0.84,
+          "drawRate": 0.03
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 18,
+          "losses": 178,
+          "draws": 4,
+          "winRate": 0.09,
+          "lossRate": 0.89,
+          "drawRate": 0.02
+        }
+      }
+    },
+    {
+      "deck": "4/1/2/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 1,
+        "Mounted Billy": 2,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 43,
+      "losses": 345,
+      "draws": 12,
+      "winRate": 0.1075,
+      "lossRate": 0.8625,
+      "drawRate": 0.03,
+      "meanActions": 21.71,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 28,
+          "losses": 168,
+          "draws": 4,
+          "winRate": 0.14,
+          "lossRate": 0.84,
+          "drawRate": 0.02
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 15,
+          "losses": 177,
+          "draws": 8,
+          "winRate": 0.075,
+          "lossRate": 0.885,
+          "drawRate": 0.04
+        }
+      }
+    },
+    {
+      "deck": "4/1/1/6",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 1,
+        "Mounted Billy": 1,
+        "Deadeye": 6
+      },
+      "matches": 400,
+      "wins": 42,
+      "losses": 349,
+      "draws": 9,
+      "winRate": 0.105,
+      "lossRate": 0.8725,
+      "drawRate": 0.0225,
+      "meanActions": 21.65,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 27,
+          "losses": 170,
+          "draws": 3,
+          "winRate": 0.135,
+          "lossRate": 0.85,
+          "drawRate": 0.015
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 15,
+          "losses": 179,
+          "draws": 6,
+          "winRate": 0.075,
+          "lossRate": 0.895,
+          "drawRate": 0.03
+        }
+      }
+    },
+    {
+      "deck": "3/6/2/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 6,
+        "Mounted Billy": 2,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 40,
+      "losses": 348,
+      "draws": 12,
+      "winRate": 0.1,
+      "lossRate": 0.87,
+      "drawRate": 0.03,
+      "meanActions": 22.23,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 27,
+          "losses": 166,
+          "draws": 7,
+          "winRate": 0.135,
+          "lossRate": 0.83,
+          "drawRate": 0.035
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 13,
+          "losses": 182,
+          "draws": 5,
+          "winRate": 0.065,
+          "lossRate": 0.91,
+          "drawRate": 0.025
+        }
+      }
+    },
+    {
+      "deck": "5/1/5/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 1,
+        "Mounted Billy": 5,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 39,
+      "losses": 349,
+      "draws": 12,
+      "winRate": 0.0975,
+      "lossRate": 0.8725,
+      "drawRate": 0.03,
+      "meanActions": 23.24,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 21,
+          "losses": 171,
+          "draws": 8,
+          "winRate": 0.105,
+          "lossRate": 0.855,
+          "drawRate": 0.04
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 18,
+          "losses": 178,
+          "draws": 4,
+          "winRate": 0.09,
+          "lossRate": 0.89,
+          "drawRate": 0.02
+        }
+      }
+    },
+    {
+      "deck": "5/3/4/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 3,
+        "Mounted Billy": 4,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 38,
+      "losses": 345,
+      "draws": 17,
+      "winRate": 0.095,
+      "lossRate": 0.8625,
+      "drawRate": 0.0425,
+      "meanActions": 25.84,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 21,
+          "losses": 165,
+          "draws": 14,
+          "winRate": 0.105,
+          "lossRate": 0.825,
+          "drawRate": 0.07
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 17,
+          "losses": 180,
+          "draws": 3,
+          "winRate": 0.085,
+          "lossRate": 0.9,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "3/4/3/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 4,
+        "Mounted Billy": 3,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 38,
+      "losses": 355,
+      "draws": 7,
+      "winRate": 0.095,
+      "lossRate": 0.8875,
+      "drawRate": 0.0175,
+      "meanActions": 21.44,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 25,
+          "losses": 172,
+          "draws": 3,
+          "winRate": 0.125,
+          "lossRate": 0.86,
+          "drawRate": 0.015
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 13,
+          "losses": 183,
+          "draws": 4,
+          "winRate": 0.065,
+          "lossRate": 0.915,
+          "drawRate": 0.02
+        }
+      }
+    },
+    {
+      "deck": "5/0/5/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 0,
+        "Mounted Billy": 5,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 38,
+      "losses": 355,
+      "draws": 7,
+      "winRate": 0.095,
+      "lossRate": 0.8875,
+      "drawRate": 0.0175,
+      "meanActions": 21.96,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 19,
+          "losses": 177,
+          "draws": 4,
+          "winRate": 0.095,
+          "lossRate": 0.885,
+          "drawRate": 0.02
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 19,
+          "losses": 178,
+          "draws": 3,
+          "winRate": 0.095,
+          "lossRate": 0.89,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "6/2/4/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 2,
+        "Mounted Billy": 4,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 37,
+      "losses": 344,
+      "draws": 19,
+      "winRate": 0.0925,
+      "lossRate": 0.86,
+      "drawRate": 0.0475,
+      "meanActions": 27.85,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 21,
+          "losses": 166,
+          "draws": 13,
+          "winRate": 0.105,
+          "lossRate": 0.83,
+          "drawRate": 0.065
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 16,
+          "losses": 178,
+          "draws": 6,
+          "winRate": 0.08,
+          "lossRate": 0.89,
+          "drawRate": 0.03
+        }
+      }
+    },
+    {
+      "deck": "4/1/4/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 1,
+        "Mounted Billy": 4,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 37,
+      "losses": 352,
+      "draws": 11,
+      "winRate": 0.0925,
+      "lossRate": 0.88,
+      "drawRate": 0.0275,
+      "meanActions": 21.12,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 23,
+          "losses": 173,
+          "draws": 4,
+          "winRate": 0.115,
+          "lossRate": 0.865,
+          "drawRate": 0.02
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 14,
+          "losses": 179,
+          "draws": 7,
+          "winRate": 0.07,
+          "lossRate": 0.895,
+          "drawRate": 0.035
+        }
+      }
+    },
+    {
+      "deck": "4/5/3/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 5,
+        "Mounted Billy": 3,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 36,
+      "losses": 344,
+      "draws": 20,
+      "winRate": 0.09,
+      "lossRate": 0.86,
+      "drawRate": 0.05,
+      "meanActions": 24.07,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 24,
+          "losses": 164,
+          "draws": 12,
+          "winRate": 0.12,
+          "lossRate": 0.82,
+          "drawRate": 0.06
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 12,
+          "losses": 180,
+          "draws": 8,
+          "winRate": 0.06,
+          "lossRate": 0.9,
+          "drawRate": 0.04
+        }
+      }
+    },
+    {
+      "deck": "4/6/2/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 6,
+        "Mounted Billy": 2,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 36,
+      "losses": 344,
+      "draws": 20,
+      "winRate": 0.09,
+      "lossRate": 0.86,
+      "drawRate": 0.05,
+      "meanActions": 24.11,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 24,
+          "losses": 164,
+          "draws": 12,
+          "winRate": 0.12,
+          "lossRate": 0.82,
+          "drawRate": 0.06
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 12,
+          "losses": 180,
+          "draws": 8,
+          "winRate": 0.06,
+          "lossRate": 0.9,
+          "drawRate": 0.04
+        }
+      }
+    },
+    {
+      "deck": "4/2/4/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 2,
+        "Mounted Billy": 4,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 36,
+      "losses": 348,
+      "draws": 16,
+      "winRate": 0.09,
+      "lossRate": 0.87,
+      "drawRate": 0.04,
+      "meanActions": 22.16,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 24,
+          "losses": 168,
+          "draws": 8,
+          "winRate": 0.12,
+          "lossRate": 0.84,
+          "drawRate": 0.04
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 12,
+          "losses": 180,
+          "draws": 8,
+          "winRate": 0.06,
+          "lossRate": 0.9,
+          "drawRate": 0.04
+        }
+      }
+    },
+    {
+      "deck": "3/2/1/6",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 2,
+        "Mounted Billy": 1,
+        "Deadeye": 6
+      },
+      "matches": 400,
+      "wins": 36,
+      "losses": 359,
+      "draws": 5,
+      "winRate": 0.09,
+      "lossRate": 0.8975,
+      "drawRate": 0.0125,
+      "meanActions": 19.41,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 23,
+          "losses": 175,
+          "draws": 2,
+          "winRate": 0.115,
+          "lossRate": 0.875,
+          "drawRate": 0.01
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 13,
+          "losses": 184,
+          "draws": 3,
+          "winRate": 0.065,
+          "lossRate": 0.92,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "4/3/4/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 3,
+        "Mounted Billy": 4,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 35,
+      "losses": 343,
+      "draws": 22,
+      "winRate": 0.0875,
+      "lossRate": 0.8575,
+      "drawRate": 0.055,
+      "meanActions": 23.04,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 23,
+          "losses": 159,
+          "draws": 18,
+          "winRate": 0.115,
+          "lossRate": 0.795,
+          "drawRate": 0.09
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 12,
+          "losses": 184,
+          "draws": 4,
+          "winRate": 0.06,
+          "lossRate": 0.92,
+          "drawRate": 0.02
+        }
+      }
+    },
+    {
+      "deck": "6/0/5/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 0,
+        "Mounted Billy": 5,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 35,
+      "losses": 351,
+      "draws": 14,
+      "winRate": 0.0875,
+      "lossRate": 0.8775,
+      "drawRate": 0.035,
+      "meanActions": 24.36,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 17,
+          "losses": 173,
+          "draws": 10,
+          "winRate": 0.085,
+          "lossRate": 0.865,
+          "drawRate": 0.05
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 18,
+          "losses": 178,
+          "draws": 4,
+          "winRate": 0.09,
+          "lossRate": 0.89,
+          "drawRate": 0.02
+        }
+      }
+    },
+    {
+      "deck": "3/3/3/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 3,
+        "Mounted Billy": 3,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 33,
+      "losses": 355,
+      "draws": 12,
+      "winRate": 0.0825,
+      "lossRate": 0.8875,
+      "drawRate": 0.03,
+      "meanActions": 20.31,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 18,
+          "losses": 172,
+          "draws": 10,
+          "winRate": 0.09,
+          "lossRate": 0.86,
+          "drawRate": 0.05
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 15,
+          "losses": 183,
+          "draws": 2,
+          "winRate": 0.075,
+          "lossRate": 0.915,
+          "drawRate": 0.01
+        }
+      }
+    },
+    {
+      "deck": "3/5/3/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 5,
+        "Mounted Billy": 3,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 33,
+      "losses": 357,
+      "draws": 10,
+      "winRate": 0.0825,
+      "lossRate": 0.8925,
+      "drawRate": 0.025,
+      "meanActions": 21.57,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 20,
+          "losses": 173,
+          "draws": 7,
+          "winRate": 0.1,
+          "lossRate": 0.865,
+          "drawRate": 0.035
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 13,
+          "losses": 184,
+          "draws": 3,
+          "winRate": 0.065,
+          "lossRate": 0.92,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "4/0/2/6",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 0,
+        "Mounted Billy": 2,
+        "Deadeye": 6
+      },
+      "matches": 400,
+      "wins": 33,
+      "losses": 360,
+      "draws": 7,
+      "winRate": 0.0825,
+      "lossRate": 0.9,
+      "drawRate": 0.0175,
+      "meanActions": 19.45,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 21,
+          "losses": 177,
+          "draws": 2,
+          "winRate": 0.105,
+          "lossRate": 0.885,
+          "drawRate": 0.01
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 12,
+          "losses": 183,
+          "draws": 5,
+          "winRate": 0.06,
+          "lossRate": 0.915,
+          "drawRate": 0.025
+        }
+      }
+    },
+    {
+      "deck": "3/2/2/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 2,
+        "Mounted Billy": 2,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 31,
+      "losses": 361,
+      "draws": 8,
+      "winRate": 0.0775,
+      "lossRate": 0.9025,
+      "drawRate": 0.02,
+      "meanActions": 19.48,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 20,
+          "losses": 177,
+          "draws": 3,
+          "winRate": 0.1,
+          "lossRate": 0.885,
+          "drawRate": 0.015
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 11,
+          "losses": 184,
+          "draws": 5,
+          "winRate": 0.055,
+          "lossRate": 0.92,
+          "drawRate": 0.025
+        }
+      }
+    },
+    {
+      "deck": "4/0/5/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 0,
+        "Mounted Billy": 5,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 31,
+      "losses": 366,
+      "draws": 3,
+      "winRate": 0.0775,
+      "lossRate": 0.915,
+      "drawRate": 0.0075,
+      "meanActions": 19.03,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 18,
+          "losses": 182,
+          "draws": 0,
+          "winRate": 0.09,
+          "lossRate": 0.91,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 13,
+          "losses": 184,
+          "draws": 3,
+          "winRate": 0.065,
+          "lossRate": 0.92,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "3/6/3/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 6,
+        "Mounted Billy": 3,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 30,
+      "losses": 360,
+      "draws": 10,
+      "winRate": 0.075,
+      "lossRate": 0.9,
+      "drawRate": 0.025,
+      "meanActions": 21.31,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 19,
+          "losses": 176,
+          "draws": 5,
+          "winRate": 0.095,
+          "lossRate": 0.88,
+          "drawRate": 0.025
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 11,
+          "losses": 184,
+          "draws": 5,
+          "winRate": 0.055,
+          "lossRate": 0.92,
+          "drawRate": 0.025
+        }
+      }
+    },
+    {
+      "deck": "3/2/3/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 2,
+        "Mounted Billy": 3,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 30,
+      "losses": 364,
+      "draws": 6,
+      "winRate": 0.075,
+      "lossRate": 0.91,
+      "drawRate": 0.015,
+      "meanActions": 19.33,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 19,
+          "losses": 179,
+          "draws": 2,
+          "winRate": 0.095,
+          "lossRate": 0.895,
+          "drawRate": 0.01
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 11,
+          "losses": 185,
+          "draws": 4,
+          "winRate": 0.055,
+          "lossRate": 0.925,
+          "drawRate": 0.02
+        }
+      }
+    },
+    {
+      "deck": "4/0/3/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 0,
+        "Mounted Billy": 3,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 30,
+      "losses": 364,
+      "draws": 6,
+      "winRate": 0.075,
+      "lossRate": 0.91,
+      "drawRate": 0.015,
+      "meanActions": 19.54,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 20,
+          "losses": 178,
+          "draws": 2,
+          "winRate": 0.1,
+          "lossRate": 0.89,
+          "drawRate": 0.01
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 10,
+          "losses": 186,
+          "draws": 4,
+          "winRate": 0.05,
+          "lossRate": 0.93,
+          "drawRate": 0.02
+        }
+      }
+    },
+    {
+      "deck": "4/0/4/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 0,
+        "Mounted Billy": 4,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 30,
+      "losses": 366,
+      "draws": 4,
+      "winRate": 0.075,
+      "lossRate": 0.915,
+      "drawRate": 0.01,
+      "meanActions": 19.47,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 19,
+          "losses": 180,
+          "draws": 1,
+          "winRate": 0.095,
+          "lossRate": 0.9,
+          "drawRate": 0.005
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 11,
+          "losses": 186,
+          "draws": 3,
+          "winRate": 0.055,
+          "lossRate": 0.93,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "5/2/5/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 2,
+        "Mounted Billy": 5,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 29,
+      "losses": 359,
+      "draws": 12,
+      "winRate": 0.0725,
+      "lossRate": 0.8975,
+      "drawRate": 0.03,
+      "meanActions": 23.94,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 14,
+          "losses": 179,
+          "draws": 7,
+          "winRate": 0.07,
+          "lossRate": 0.895,
+          "drawRate": 0.035
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 15,
+          "losses": 180,
+          "draws": 5,
+          "winRate": 0.075,
+          "lossRate": 0.9,
+          "drawRate": 0.025
+        }
+      }
+    },
+    {
+      "deck": "3/3/4/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 3,
+        "Mounted Billy": 4,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 29,
+      "losses": 364,
+      "draws": 7,
+      "winRate": 0.0725,
+      "lossRate": 0.91,
+      "drawRate": 0.0175,
+      "meanActions": 19.88,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 16,
+          "losses": 180,
+          "draws": 4,
+          "winRate": 0.08,
+          "lossRate": 0.9,
+          "drawRate": 0.02
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 13,
+          "losses": 184,
+          "draws": 3,
+          "winRate": 0.065,
+          "lossRate": 0.92,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "6/1/5/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 1,
+        "Mounted Billy": 5,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 27,
+      "losses": 358,
+      "draws": 15,
+      "winRate": 0.0675,
+      "lossRate": 0.895,
+      "drawRate": 0.0375,
+      "meanActions": 25.05,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 15,
+          "losses": 175,
+          "draws": 10,
+          "winRate": 0.075,
+          "lossRate": 0.875,
+          "drawRate": 0.05
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 12,
+          "losses": 183,
+          "draws": 5,
+          "winRate": 0.06,
+          "lossRate": 0.915,
+          "drawRate": 0.025
+        }
+      }
+    },
+    {
+      "deck": "4/4/4/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 4,
+        "Mounted Billy": 4,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 27,
+      "losses": 359,
+      "draws": 14,
+      "winRate": 0.0675,
+      "lossRate": 0.8975,
+      "drawRate": 0.035,
+      "meanActions": 23.09,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 17,
+          "losses": 174,
+          "draws": 9,
+          "winRate": 0.085,
+          "lossRate": 0.87,
+          "drawRate": 0.045
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 10,
+          "losses": 185,
+          "draws": 5,
+          "winRate": 0.05,
+          "lossRate": 0.925,
+          "drawRate": 0.025
+        }
+      }
+    },
+    {
+      "deck": "3/5/4/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 5,
+        "Mounted Billy": 4,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 27,
+      "losses": 366,
+      "draws": 7,
+      "winRate": 0.0675,
+      "lossRate": 0.915,
+      "drawRate": 0.0175,
+      "meanActions": 20.56,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 16,
+          "losses": 179,
+          "draws": 5,
+          "winRate": 0.08,
+          "lossRate": 0.895,
+          "drawRate": 0.025
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 11,
+          "losses": 187,
+          "draws": 2,
+          "winRate": 0.055,
+          "lossRate": 0.935,
+          "drawRate": 0.01
+        }
+      }
+    },
+    {
+      "deck": "5/0/6/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 0,
+        "Mounted Billy": 6,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 27,
+      "losses": 367,
+      "draws": 6,
+      "winRate": 0.0675,
+      "lossRate": 0.9175,
+      "drawRate": 0.015,
+      "meanActions": 20.88,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 12,
+          "losses": 183,
+          "draws": 5,
+          "winRate": 0.06,
+          "lossRate": 0.915,
+          "drawRate": 0.025
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 15,
+          "losses": 184,
+          "draws": 1,
+          "winRate": 0.075,
+          "lossRate": 0.92,
+          "drawRate": 0.005
+        }
+      }
+    },
+    {
+      "deck": "4/1/5/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 1,
+        "Mounted Billy": 5,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 27,
+      "losses": 368,
+      "draws": 5,
+      "winRate": 0.0675,
+      "lossRate": 0.92,
+      "drawRate": 0.0125,
+      "meanActions": 20.29,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 17,
+          "losses": 182,
+          "draws": 1,
+          "winRate": 0.085,
+          "lossRate": 0.91,
+          "drawRate": 0.005
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 10,
+          "losses": 186,
+          "draws": 4,
+          "winRate": 0.05,
+          "lossRate": 0.93,
+          "drawRate": 0.02
+        }
+      }
+    },
+    {
+      "deck": "4/2/5/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 2,
+        "Mounted Billy": 5,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 25,
+      "losses": 364,
+      "draws": 11,
+      "winRate": 0.0625,
+      "lossRate": 0.91,
+      "drawRate": 0.0275,
+      "meanActions": 21.33,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 16,
+          "losses": 177,
+          "draws": 7,
+          "winRate": 0.08,
+          "lossRate": 0.885,
+          "drawRate": 0.035
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 9,
+          "losses": 187,
+          "draws": 4,
+          "winRate": 0.045,
+          "lossRate": 0.935,
+          "drawRate": 0.02
+        }
+      }
+    },
+    {
+      "deck": "3/4/4/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 4,
+        "Mounted Billy": 4,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 25,
+      "losses": 367,
+      "draws": 8,
+      "winRate": 0.0625,
+      "lossRate": 0.9175,
+      "drawRate": 0.02,
+      "meanActions": 20.66,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 16,
+          "losses": 180,
+          "draws": 4,
+          "winRate": 0.08,
+          "lossRate": 0.9,
+          "drawRate": 0.02
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 9,
+          "losses": 187,
+          "draws": 4,
+          "winRate": 0.045,
+          "lossRate": 0.935,
+          "drawRate": 0.02
+        }
+      }
+    },
+    {
+      "deck": "2/6/0/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 6,
+        "Mounted Billy": 0,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 24,
+      "losses": 369,
+      "draws": 7,
+      "winRate": 0.06,
+      "lossRate": 0.9225,
+      "drawRate": 0.0175,
+      "meanActions": 18.96,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 14,
+          "losses": 182,
+          "draws": 4,
+          "winRate": 0.07,
+          "lossRate": 0.91,
+          "drawRate": 0.02
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 10,
+          "losses": 187,
+          "draws": 3,
+          "winRate": 0.05,
+          "lossRate": 0.935,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "4/3/5/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 3,
+        "Mounted Billy": 5,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 23,
+      "losses": 369,
+      "draws": 8,
+      "winRate": 0.0575,
+      "lossRate": 0.9225,
+      "drawRate": 0.02,
+      "meanActions": 21.69,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 14,
+          "losses": 179,
+          "draws": 7,
+          "winRate": 0.07,
+          "lossRate": 0.895,
+          "drawRate": 0.035
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 9,
+          "losses": 190,
+          "draws": 1,
+          "winRate": 0.045,
+          "lossRate": 0.95,
+          "drawRate": 0.005
+        }
+      }
+    },
+    {
+      "deck": "3/4/5/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 4,
+        "Mounted Billy": 5,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 23,
+      "losses": 372,
+      "draws": 5,
+      "winRate": 0.0575,
+      "lossRate": 0.93,
+      "drawRate": 0.0125,
+      "meanActions": 19.62,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 14,
+          "losses": 183,
+          "draws": 3,
+          "winRate": 0.07,
+          "lossRate": 0.915,
+          "drawRate": 0.015
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 9,
+          "losses": 189,
+          "draws": 2,
+          "winRate": 0.045,
+          "lossRate": 0.945,
+          "drawRate": 0.01
+        }
+      }
+    },
+    {
+      "deck": "5/1/6/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 5,
+        "Billy": 1,
+        "Mounted Billy": 6,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 23,
+      "losses": 372,
+      "draws": 5,
+      "winRate": 0.0575,
+      "lossRate": 0.93,
+      "drawRate": 0.0125,
+      "meanActions": 21.38,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 11,
+          "losses": 185,
+          "draws": 4,
+          "winRate": 0.055,
+          "lossRate": 0.925,
+          "drawRate": 0.02
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 12,
+          "losses": 187,
+          "draws": 1,
+          "winRate": 0.06,
+          "lossRate": 0.935,
+          "drawRate": 0.005
+        }
+      }
+    },
+    {
+      "deck": "2/6/1/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 6,
+        "Mounted Billy": 1,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 22,
+      "losses": 372,
+      "draws": 6,
+      "winRate": 0.055,
+      "lossRate": 0.93,
+      "drawRate": 0.015,
+      "meanActions": 18.93,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 13,
+          "losses": 182,
+          "draws": 5,
+          "winRate": 0.065,
+          "lossRate": 0.91,
+          "drawRate": 0.025
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 9,
+          "losses": 190,
+          "draws": 1,
+          "winRate": 0.045,
+          "lossRate": 0.95,
+          "drawRate": 0.005
+        }
+      }
+    },
+    {
+      "deck": "3/2/4/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 2,
+        "Mounted Billy": 4,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 22,
+      "losses": 372,
+      "draws": 6,
+      "winRate": 0.055,
+      "lossRate": 0.93,
+      "drawRate": 0.015,
+      "meanActions": 19.18,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 14,
+          "losses": 185,
+          "draws": 1,
+          "winRate": 0.07,
+          "lossRate": 0.925,
+          "drawRate": 0.005
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 8,
+          "losses": 187,
+          "draws": 5,
+          "winRate": 0.04,
+          "lossRate": 0.935,
+          "drawRate": 0.025
+        }
+      }
+    },
+    {
+      "deck": "4/0/6/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 0,
+        "Mounted Billy": 6,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 22,
+      "losses": 375,
+      "draws": 3,
+      "winRate": 0.055,
+      "lossRate": 0.9375,
+      "drawRate": 0.0075,
+      "meanActions": 18.27,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 12,
+          "losses": 187,
+          "draws": 1,
+          "winRate": 0.06,
+          "lossRate": 0.935,
+          "drawRate": 0.005
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 10,
+          "losses": 188,
+          "draws": 2,
+          "winRate": 0.05,
+          "lossRate": 0.94,
+          "drawRate": 0.01
+        }
+      }
+    },
+    {
+      "deck": "2/5/0/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 5,
+        "Mounted Billy": 0,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 21,
+      "losses": 371,
+      "draws": 8,
+      "winRate": 0.0525,
+      "lossRate": 0.9275,
+      "drawRate": 0.02,
+      "meanActions": 18.32,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 13,
+          "losses": 182,
+          "draws": 5,
+          "winRate": 0.065,
+          "lossRate": 0.91,
+          "drawRate": 0.025
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 8,
+          "losses": 189,
+          "draws": 3,
+          "winRate": 0.04,
+          "lossRate": 0.945,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "6/0/6/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 6,
+        "Billy": 0,
+        "Mounted Billy": 6,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 21,
+      "losses": 373,
+      "draws": 6,
+      "winRate": 0.0525,
+      "lossRate": 0.9325,
+      "drawRate": 0.015,
+      "meanActions": 22.32,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 10,
+          "losses": 187,
+          "draws": 3,
+          "winRate": 0.05,
+          "lossRate": 0.935,
+          "drawRate": 0.015
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 11,
+          "losses": 186,
+          "draws": 3,
+          "winRate": 0.055,
+          "lossRate": 0.93,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "2/5/1/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 5,
+        "Mounted Billy": 1,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 20,
+      "losses": 371,
+      "draws": 9,
+      "winRate": 0.05,
+      "lossRate": 0.9275,
+      "drawRate": 0.0225,
+      "meanActions": 18.29,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 12,
+          "losses": 182,
+          "draws": 6,
+          "winRate": 0.06,
+          "lossRate": 0.91,
+          "drawRate": 0.03
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 8,
+          "losses": 189,
+          "draws": 3,
+          "winRate": 0.04,
+          "lossRate": 0.945,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "3/2/5/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 2,
+        "Mounted Billy": 5,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 20,
+      "losses": 376,
+      "draws": 4,
+      "winRate": 0.05,
+      "lossRate": 0.94,
+      "drawRate": 0.01,
+      "meanActions": 18.69,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 12,
+          "losses": 188,
+          "draws": 0,
+          "winRate": 0.06,
+          "lossRate": 0.94,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 8,
+          "losses": 188,
+          "draws": 4,
+          "winRate": 0.04,
+          "lossRate": 0.94,
+          "drawRate": 0.02
+        }
+      }
+    },
+    {
+      "deck": "3/1/2/6",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 1,
+        "Mounted Billy": 2,
+        "Deadeye": 6
+      },
+      "matches": 400,
+      "wins": 19,
+      "losses": 374,
+      "draws": 7,
+      "winRate": 0.0475,
+      "lossRate": 0.935,
+      "drawRate": 0.0175,
+      "meanActions": 17.84,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 11,
+          "losses": 185,
+          "draws": 4,
+          "winRate": 0.055,
+          "lossRate": 0.925,
+          "drawRate": 0.02
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 8,
+          "losses": 189,
+          "draws": 3,
+          "winRate": 0.04,
+          "lossRate": 0.945,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "3/3/5/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 3,
+        "Mounted Billy": 5,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 19,
+      "losses": 375,
+      "draws": 6,
+      "winRate": 0.0475,
+      "lossRate": 0.9375,
+      "drawRate": 0.015,
+      "meanActions": 19.27,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 11,
+          "losses": 186,
+          "draws": 3,
+          "winRate": 0.055,
+          "lossRate": 0.93,
+          "drawRate": 0.015
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 8,
+          "losses": 189,
+          "draws": 3,
+          "winRate": 0.04,
+          "lossRate": 0.945,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "4/1/6/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 1,
+        "Mounted Billy": 6,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 19,
+      "losses": 375,
+      "draws": 6,
+      "winRate": 0.0475,
+      "lossRate": 0.9375,
+      "drawRate": 0.015,
+      "meanActions": 19.38,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 11,
+          "losses": 187,
+          "draws": 2,
+          "winRate": 0.055,
+          "lossRate": 0.935,
+          "drawRate": 0.01
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 8,
+          "losses": 188,
+          "draws": 4,
+          "winRate": 0.04,
+          "lossRate": 0.94,
+          "drawRate": 0.02
+        }
+      }
+    },
+    {
+      "deck": "2/5/2/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 5,
+        "Mounted Billy": 2,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 18,
+      "losses": 375,
+      "draws": 7,
+      "winRate": 0.045,
+      "lossRate": 0.9375,
+      "drawRate": 0.0175,
+      "meanActions": 18.38,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 11,
+          "losses": 184,
+          "draws": 5,
+          "winRate": 0.055,
+          "lossRate": 0.92,
+          "drawRate": 0.025
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 7,
+          "losses": 191,
+          "draws": 2,
+          "winRate": 0.035,
+          "lossRate": 0.955,
+          "drawRate": 0.01
+        }
+      }
+    },
+    {
+      "deck": "3/1/3/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 1,
+        "Mounted Billy": 3,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 18,
+      "losses": 375,
+      "draws": 7,
+      "winRate": 0.045,
+      "lossRate": 0.9375,
+      "drawRate": 0.0175,
+      "meanActions": 17.8,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 11,
+          "losses": 184,
+          "draws": 5,
+          "winRate": 0.055,
+          "lossRate": 0.92,
+          "drawRate": 0.025
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 7,
+          "losses": 191,
+          "draws": 2,
+          "winRate": 0.035,
+          "lossRate": 0.955,
+          "drawRate": 0.01
+        }
+      }
+    },
+    {
+      "deck": "4/2/6/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 4,
+        "Billy": 2,
+        "Mounted Billy": 6,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 18,
+      "losses": 382,
+      "draws": 0,
+      "winRate": 0.045,
+      "lossRate": 0.955,
+      "drawRate": 0,
+      "meanActions": 20,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 10,
+          "losses": 190,
+          "draws": 0,
+          "winRate": 0.05,
+          "lossRate": 0.95,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 8,
+          "losses": 192,
+          "draws": 0,
+          "winRate": 0.04,
+          "lossRate": 0.96,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "3/3/6/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 3,
+        "Mounted Billy": 6,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 17,
+      "losses": 382,
+      "draws": 1,
+      "winRate": 0.0425,
+      "lossRate": 0.955,
+      "drawRate": 0.0025,
+      "meanActions": 18.4,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 10,
+          "losses": 190,
+          "draws": 0,
+          "winRate": 0.05,
+          "lossRate": 0.95,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 7,
+          "losses": 192,
+          "draws": 1,
+          "winRate": 0.035,
+          "lossRate": 0.96,
+          "drawRate": 0.005
+        }
+      }
+    },
+    {
+      "deck": "2/4/1/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 4,
+        "Mounted Billy": 1,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 16,
+      "losses": 375,
+      "draws": 9,
+      "winRate": 0.04,
+      "lossRate": 0.9375,
+      "drawRate": 0.0225,
+      "meanActions": 17.25,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 10,
+          "losses": 185,
+          "draws": 5,
+          "winRate": 0.05,
+          "lossRate": 0.925,
+          "drawRate": 0.025
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 6,
+          "losses": 190,
+          "draws": 4,
+          "winRate": 0.03,
+          "lossRate": 0.95,
+          "drawRate": 0.02
+        }
+      }
+    },
+    {
+      "deck": "3/1/4/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 1,
+        "Mounted Billy": 4,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 16,
+      "losses": 378,
+      "draws": 6,
+      "winRate": 0.04,
+      "lossRate": 0.945,
+      "drawRate": 0.015,
+      "meanActions": 17.7,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 9,
+          "losses": 187,
+          "draws": 4,
+          "winRate": 0.045,
+          "lossRate": 0.935,
+          "drawRate": 0.02
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 7,
+          "losses": 191,
+          "draws": 2,
+          "winRate": 0.035,
+          "lossRate": 0.955,
+          "drawRate": 0.01
+        }
+      }
+    },
+    {
+      "deck": "2/4/2/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 4,
+        "Mounted Billy": 2,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 15,
+      "losses": 376,
+      "draws": 9,
+      "winRate": 0.0375,
+      "lossRate": 0.94,
+      "drawRate": 0.0225,
+      "meanActions": 17.23,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 9,
+          "losses": 186,
+          "draws": 5,
+          "winRate": 0.045,
+          "lossRate": 0.93,
+          "drawRate": 0.025
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 6,
+          "losses": 190,
+          "draws": 4,
+          "winRate": 0.03,
+          "lossRate": 0.95,
+          "drawRate": 0.02
+        }
+      }
+    },
+    {
+      "deck": "2/4/0/6",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 4,
+        "Mounted Billy": 0,
+        "Deadeye": 6
+      },
+      "matches": 400,
+      "wins": 15,
+      "losses": 377,
+      "draws": 8,
+      "winRate": 0.0375,
+      "lossRate": 0.9425,
+      "drawRate": 0.02,
+      "meanActions": 17.26,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 8,
+          "losses": 187,
+          "draws": 5,
+          "winRate": 0.04,
+          "lossRate": 0.935,
+          "drawRate": 0.025
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 7,
+          "losses": 190,
+          "draws": 3,
+          "winRate": 0.035,
+          "lossRate": 0.95,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "2/6/2/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 6,
+        "Mounted Billy": 2,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 15,
+      "losses": 377,
+      "draws": 8,
+      "winRate": 0.0375,
+      "lossRate": 0.9425,
+      "drawRate": 0.02,
+      "meanActions": 18.69,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 9,
+          "losses": 184,
+          "draws": 7,
+          "winRate": 0.045,
+          "lossRate": 0.92,
+          "drawRate": 0.035
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 6,
+          "losses": 193,
+          "draws": 1,
+          "winRate": 0.03,
+          "lossRate": 0.965,
+          "drawRate": 0.005
+        }
+      }
+    },
+    {
+      "deck": "3/1/5/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 1,
+        "Mounted Billy": 5,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 13,
+      "losses": 382,
+      "draws": 5,
+      "winRate": 0.0325,
+      "lossRate": 0.955,
+      "drawRate": 0.0125,
+      "meanActions": 17.45,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 7,
+          "losses": 190,
+          "draws": 3,
+          "winRate": 0.035,
+          "lossRate": 0.95,
+          "drawRate": 0.015
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 6,
+          "losses": 192,
+          "draws": 2,
+          "winRate": 0.03,
+          "lossRate": 0.96,
+          "drawRate": 0.01
+        }
+      }
+    },
+    {
+      "deck": "3/2/6/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 2,
+        "Mounted Billy": 6,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 13,
+      "losses": 382,
+      "draws": 5,
+      "winRate": 0.0325,
+      "lossRate": 0.955,
+      "drawRate": 0.0125,
+      "meanActions": 17.98,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 8,
+          "losses": 192,
+          "draws": 0,
+          "winRate": 0.04,
+          "lossRate": 0.96,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 5,
+          "losses": 190,
+          "draws": 5,
+          "winRate": 0.025,
+          "lossRate": 0.95,
+          "drawRate": 0.025
+        }
+      }
+    },
+    {
+      "deck": "2/4/3/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 4,
+        "Mounted Billy": 3,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 12,
+      "losses": 379,
+      "draws": 9,
+      "winRate": 0.03,
+      "lossRate": 0.9475,
+      "drawRate": 0.0225,
+      "meanActions": 17.26,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 7,
+          "losses": 188,
+          "draws": 5,
+          "winRate": 0.035,
+          "lossRate": 0.94,
+          "drawRate": 0.025
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 5,
+          "losses": 191,
+          "draws": 4,
+          "winRate": 0.025,
+          "lossRate": 0.955,
+          "drawRate": 0.02
+        }
+      }
+    },
+    {
+      "deck": "2/5/3/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 5,
+        "Mounted Billy": 3,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 12,
+      "losses": 380,
+      "draws": 8,
+      "winRate": 0.03,
+      "lossRate": 0.95,
+      "drawRate": 0.02,
+      "meanActions": 18.1,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 7,
+          "losses": 187,
+          "draws": 6,
+          "winRate": 0.035,
+          "lossRate": 0.935,
+          "drawRate": 0.03
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 5,
+          "losses": 193,
+          "draws": 2,
+          "winRate": 0.025,
+          "lossRate": 0.965,
+          "drawRate": 0.01
+        }
+      }
+    },
+    {
+      "deck": "3/1/6/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 1,
+        "Mounted Billy": 6,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 12,
+      "losses": 384,
+      "draws": 4,
+      "winRate": 0.03,
+      "lossRate": 0.96,
+      "drawRate": 0.01,
+      "meanActions": 17.03,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 6,
+          "losses": 193,
+          "draws": 1,
+          "winRate": 0.03,
+          "lossRate": 0.965,
+          "drawRate": 0.005
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 6,
+          "losses": 191,
+          "draws": 3,
+          "winRate": 0.03,
+          "lossRate": 0.955,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "2/3/1/6",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 3,
+        "Mounted Billy": 1,
+        "Deadeye": 6
+      },
+      "matches": 400,
+      "wins": 11,
+      "losses": 382,
+      "draws": 7,
+      "winRate": 0.0275,
+      "lossRate": 0.955,
+      "drawRate": 0.0175,
+      "meanActions": 16.39,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 7,
+          "losses": 191,
+          "draws": 2,
+          "winRate": 0.035,
+          "lossRate": 0.955,
+          "drawRate": 0.01
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 4,
+          "losses": 191,
+          "draws": 5,
+          "winRate": 0.02,
+          "lossRate": 0.955,
+          "drawRate": 0.025
+        }
+      }
+    },
+    {
+      "deck": "3/0/3/6",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 0,
+        "Mounted Billy": 3,
+        "Deadeye": 6
+      },
+      "matches": 400,
+      "wins": 11,
+      "losses": 385,
+      "draws": 4,
+      "winRate": 0.0275,
+      "lossRate": 0.9625,
+      "drawRate": 0.01,
+      "meanActions": 16.39,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 7,
+          "losses": 189,
+          "draws": 4,
+          "winRate": 0.035,
+          "lossRate": 0.945,
+          "drawRate": 0.02
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 4,
+          "losses": 196,
+          "draws": 0,
+          "winRate": 0.02,
+          "lossRate": 0.98,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "3/0/4/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 0,
+        "Mounted Billy": 4,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 11,
+      "losses": 386,
+      "draws": 3,
+      "winRate": 0.0275,
+      "lossRate": 0.965,
+      "drawRate": 0.0075,
+      "meanActions": 16.43,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 7,
+          "losses": 190,
+          "draws": 3,
+          "winRate": 0.035,
+          "lossRate": 0.95,
+          "drawRate": 0.015
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 4,
+          "losses": 196,
+          "draws": 0,
+          "winRate": 0.02,
+          "lossRate": 0.98,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "3/0/6/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 0,
+        "Mounted Billy": 6,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 11,
+      "losses": 388,
+      "draws": 1,
+      "winRate": 0.0275,
+      "lossRate": 0.97,
+      "drawRate": 0.0025,
+      "meanActions": 16.22,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 5,
+          "losses": 194,
+          "draws": 1,
+          "winRate": 0.025,
+          "lossRate": 0.97,
+          "drawRate": 0.005
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 6,
+          "losses": 194,
+          "draws": 0,
+          "winRate": 0.03,
+          "lossRate": 0.97,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "2/3/2/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 3,
+        "Mounted Billy": 2,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 10,
+      "losses": 382,
+      "draws": 8,
+      "winRate": 0.025,
+      "lossRate": 0.955,
+      "drawRate": 0.02,
+      "meanActions": 16.43,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 7,
+          "losses": 191,
+          "draws": 2,
+          "winRate": 0.035,
+          "lossRate": 0.955,
+          "drawRate": 0.01
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 3,
+          "losses": 191,
+          "draws": 6,
+          "winRate": 0.015,
+          "lossRate": 0.955,
+          "drawRate": 0.03
+        }
+      }
+    },
+    {
+      "deck": "3/0/5/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 3,
+        "Billy": 0,
+        "Mounted Billy": 5,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 10,
+      "losses": 387,
+      "draws": 3,
+      "winRate": 0.025,
+      "lossRate": 0.9675,
+      "drawRate": 0.0075,
+      "meanActions": 16.42,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 5,
+          "losses": 192,
+          "draws": 3,
+          "winRate": 0.025,
+          "lossRate": 0.96,
+          "drawRate": 0.015
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 5,
+          "losses": 195,
+          "draws": 0,
+          "winRate": 0.025,
+          "lossRate": 0.975,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "2/2/2/6",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 2,
+        "Mounted Billy": 2,
+        "Deadeye": 6
+      },
+      "matches": 400,
+      "wins": 9,
+      "losses": 388,
+      "draws": 3,
+      "winRate": 0.0225,
+      "lossRate": 0.97,
+      "drawRate": 0.0075,
+      "meanActions": 15.47,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 7,
+          "losses": 193,
+          "draws": 0,
+          "winRate": 0.035,
+          "lossRate": 0.965,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 195,
+          "draws": 3,
+          "winRate": 0.01,
+          "lossRate": 0.975,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "2/4/4/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 4,
+        "Mounted Billy": 4,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 8,
+      "losses": 383,
+      "draws": 9,
+      "winRate": 0.02,
+      "lossRate": 0.9575,
+      "drawRate": 0.0225,
+      "meanActions": 17.04,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 4,
+          "losses": 190,
+          "draws": 6,
+          "winRate": 0.02,
+          "lossRate": 0.95,
+          "drawRate": 0.03
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 4,
+          "losses": 193,
+          "draws": 3,
+          "winRate": 0.02,
+          "lossRate": 0.965,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "2/3/3/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 3,
+        "Mounted Billy": 3,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 8,
+      "losses": 384,
+      "draws": 8,
+      "winRate": 0.02,
+      "lossRate": 0.96,
+      "drawRate": 0.02,
+      "meanActions": 16.44,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 5,
+          "losses": 193,
+          "draws": 2,
+          "winRate": 0.025,
+          "lossRate": 0.965,
+          "drawRate": 0.01
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 3,
+          "losses": 191,
+          "draws": 6,
+          "winRate": 0.015,
+          "lossRate": 0.955,
+          "drawRate": 0.03
+        }
+      }
+    },
+    {
+      "deck": "2/6/3/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 6,
+        "Mounted Billy": 3,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 8,
+      "losses": 386,
+      "draws": 6,
+      "winRate": 0.02,
+      "lossRate": 0.965,
+      "drawRate": 0.015,
+      "meanActions": 18.23,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 5,
+          "losses": 192,
+          "draws": 3,
+          "winRate": 0.025,
+          "lossRate": 0.96,
+          "drawRate": 0.015
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 3,
+          "losses": 194,
+          "draws": 3,
+          "winRate": 0.015,
+          "lossRate": 0.97,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "2/5/4/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 5,
+        "Mounted Billy": 4,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 8,
+      "losses": 388,
+      "draws": 4,
+      "winRate": 0.02,
+      "lossRate": 0.97,
+      "drawRate": 0.01,
+      "meanActions": 17.68,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 5,
+          "losses": 193,
+          "draws": 2,
+          "winRate": 0.025,
+          "lossRate": 0.965,
+          "drawRate": 0.01
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 3,
+          "losses": 195,
+          "draws": 2,
+          "winRate": 0.015,
+          "lossRate": 0.975,
+          "drawRate": 0.01
+        }
+      }
+    },
+    {
+      "deck": "1/5/0/6",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 5,
+        "Mounted Billy": 0,
+        "Deadeye": 6
+      },
+      "matches": 400,
+      "wins": 8,
+      "losses": 391,
+      "draws": 1,
+      "winRate": 0.02,
+      "lossRate": 0.9775,
+      "drawRate": 0.0025,
+      "meanActions": 13.17,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 3,
+          "losses": 196,
+          "draws": 1,
+          "winRate": 0.015,
+          "lossRate": 0.98,
+          "drawRate": 0.005
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 5,
+          "losses": 195,
+          "draws": 0,
+          "winRate": 0.025,
+          "lossRate": 0.975,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "1/5/1/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 5,
+        "Mounted Billy": 1,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 8,
+      "losses": 391,
+      "draws": 1,
+      "winRate": 0.02,
+      "lossRate": 0.9775,
+      "drawRate": 0.0025,
+      "meanActions": 13.17,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 3,
+          "losses": 196,
+          "draws": 1,
+          "winRate": 0.015,
+          "lossRate": 0.98,
+          "drawRate": 0.005
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 5,
+          "losses": 195,
+          "draws": 0,
+          "winRate": 0.025,
+          "lossRate": 0.975,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "1/5/2/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 5,
+        "Mounted Billy": 2,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 8,
+      "losses": 391,
+      "draws": 1,
+      "winRate": 0.02,
+      "lossRate": 0.9775,
+      "drawRate": 0.0025,
+      "meanActions": 13.17,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 3,
+          "losses": 196,
+          "draws": 1,
+          "winRate": 0.015,
+          "lossRate": 0.98,
+          "drawRate": 0.005
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 5,
+          "losses": 195,
+          "draws": 0,
+          "winRate": 0.025,
+          "lossRate": 0.975,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "1/5/3/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 5,
+        "Mounted Billy": 3,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 8,
+      "losses": 391,
+      "draws": 1,
+      "winRate": 0.02,
+      "lossRate": 0.9775,
+      "drawRate": 0.0025,
+      "meanActions": 13.15,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 3,
+          "losses": 196,
+          "draws": 1,
+          "winRate": 0.015,
+          "lossRate": 0.98,
+          "drawRate": 0.005
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 5,
+          "losses": 195,
+          "draws": 0,
+          "winRate": 0.025,
+          "lossRate": 0.975,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "1/5/4/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 5,
+        "Mounted Billy": 4,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 8,
+      "losses": 391,
+      "draws": 1,
+      "winRate": 0.02,
+      "lossRate": 0.9775,
+      "drawRate": 0.0025,
+      "meanActions": 13.14,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 3,
+          "losses": 196,
+          "draws": 1,
+          "winRate": 0.015,
+          "lossRate": 0.98,
+          "drawRate": 0.005
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 5,
+          "losses": 195,
+          "draws": 0,
+          "winRate": 0.025,
+          "lossRate": 0.975,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "1/6/0/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 6,
+        "Mounted Billy": 0,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 8,
+      "losses": 391,
+      "draws": 1,
+      "winRate": 0.02,
+      "lossRate": 0.9775,
+      "drawRate": 0.0025,
+      "meanActions": 13.73,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 3,
+          "losses": 196,
+          "draws": 1,
+          "winRate": 0.015,
+          "lossRate": 0.98,
+          "drawRate": 0.005
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 5,
+          "losses": 195,
+          "draws": 0,
+          "winRate": 0.025,
+          "lossRate": 0.975,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "1/6/1/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 6,
+        "Mounted Billy": 1,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 8,
+      "losses": 391,
+      "draws": 1,
+      "winRate": 0.02,
+      "lossRate": 0.9775,
+      "drawRate": 0.0025,
+      "meanActions": 13.73,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 3,
+          "losses": 196,
+          "draws": 1,
+          "winRate": 0.015,
+          "lossRate": 0.98,
+          "drawRate": 0.005
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 5,
+          "losses": 195,
+          "draws": 0,
+          "winRate": 0.025,
+          "lossRate": 0.975,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "1/6/2/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 6,
+        "Mounted Billy": 2,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 8,
+      "losses": 391,
+      "draws": 1,
+      "winRate": 0.02,
+      "lossRate": 0.9775,
+      "drawRate": 0.0025,
+      "meanActions": 13.71,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 3,
+          "losses": 196,
+          "draws": 1,
+          "winRate": 0.015,
+          "lossRate": 0.98,
+          "drawRate": 0.005
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 5,
+          "losses": 195,
+          "draws": 0,
+          "winRate": 0.025,
+          "lossRate": 0.975,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "1/6/3/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 6,
+        "Mounted Billy": 3,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 8,
+      "losses": 391,
+      "draws": 1,
+      "winRate": 0.02,
+      "lossRate": 0.9775,
+      "drawRate": 0.0025,
+      "meanActions": 13.69,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 3,
+          "losses": 196,
+          "draws": 1,
+          "winRate": 0.015,
+          "lossRate": 0.98,
+          "drawRate": 0.005
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 5,
+          "losses": 195,
+          "draws": 0,
+          "winRate": 0.025,
+          "lossRate": 0.975,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "2/3/4/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 3,
+        "Mounted Billy": 4,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 6,
+      "losses": 387,
+      "draws": 7,
+      "winRate": 0.015,
+      "lossRate": 0.9675,
+      "drawRate": 0.0175,
+      "meanActions": 16.43,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 4,
+          "losses": 194,
+          "draws": 2,
+          "winRate": 0.02,
+          "lossRate": 0.97,
+          "drawRate": 0.01
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 193,
+          "draws": 5,
+          "winRate": 0.01,
+          "lossRate": 0.965,
+          "drawRate": 0.025
+        }
+      }
+    },
+    {
+      "deck": "2/2/3/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 2,
+        "Mounted Billy": 3,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 6,
+      "losses": 389,
+      "draws": 5,
+      "winRate": 0.015,
+      "lossRate": 0.9725,
+      "drawRate": 0.0125,
+      "meanActions": 15.51,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 4,
+          "losses": 194,
+          "draws": 2,
+          "winRate": 0.02,
+          "lossRate": 0.97,
+          "drawRate": 0.01
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 195,
+          "draws": 3,
+          "winRate": 0.01,
+          "lossRate": 0.975,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "2/6/4/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 6,
+        "Mounted Billy": 4,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 6,
+      "losses": 389,
+      "draws": 5,
+      "winRate": 0.015,
+      "lossRate": 0.9725,
+      "drawRate": 0.0125,
+      "meanActions": 17.83,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 4,
+          "losses": 195,
+          "draws": 1,
+          "winRate": 0.02,
+          "lossRate": 0.975,
+          "drawRate": 0.005
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 194,
+          "draws": 4,
+          "winRate": 0.01,
+          "lossRate": 0.97,
+          "drawRate": 0.02
+        }
+      }
+    },
+    {
+      "deck": "2/5/5/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 5,
+        "Mounted Billy": 5,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 6,
+      "losses": 390,
+      "draws": 4,
+      "winRate": 0.015,
+      "lossRate": 0.975,
+      "drawRate": 0.01,
+      "meanActions": 17.18,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 4,
+          "losses": 195,
+          "draws": 1,
+          "winRate": 0.02,
+          "lossRate": 0.975,
+          "drawRate": 0.005
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 195,
+          "draws": 3,
+          "winRate": 0.01,
+          "lossRate": 0.975,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "2/4/5/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 4,
+        "Mounted Billy": 5,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 6,
+      "losses": 391,
+      "draws": 3,
+      "winRate": 0.015,
+      "lossRate": 0.9775,
+      "drawRate": 0.0075,
+      "meanActions": 16.74,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 3,
+          "losses": 196,
+          "draws": 1,
+          "winRate": 0.015,
+          "lossRate": 0.98,
+          "drawRate": 0.005
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 3,
+          "losses": 195,
+          "draws": 2,
+          "winRate": 0.015,
+          "lossRate": 0.975,
+          "drawRate": 0.01
+        }
+      }
+    },
+    {
+      "deck": "2/2/5/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 2,
+        "Mounted Billy": 5,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 5,
+      "losses": 392,
+      "draws": 3,
+      "winRate": 0.0125,
+      "lossRate": 0.98,
+      "drawRate": 0.0075,
+      "meanActions": 15.5,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 3,
+          "losses": 196,
+          "draws": 1,
+          "winRate": 0.015,
+          "lossRate": 0.98,
+          "drawRate": 0.005
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 196,
+          "draws": 2,
+          "winRate": 0.01,
+          "lossRate": 0.98,
+          "drawRate": 0.01
+        }
+      }
+    },
+    {
+      "deck": "1/6/4/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 6,
+        "Mounted Billy": 4,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 5,
+      "losses": 393,
+      "draws": 2,
+      "winRate": 0.0125,
+      "lossRate": 0.9825,
+      "drawRate": 0.005,
+      "meanActions": 13.61,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 198,
+          "draws": 0,
+          "winRate": 0.01,
+          "lossRate": 0.99,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 3,
+          "losses": 195,
+          "draws": 2,
+          "winRate": 0.015,
+          "lossRate": 0.975,
+          "drawRate": 0.01
+        }
+      }
+    },
+    {
+      "deck": "1/4/1/6",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 4,
+        "Mounted Billy": 1,
+        "Deadeye": 6
+      },
+      "matches": 400,
+      "wins": 5,
+      "losses": 394,
+      "draws": 1,
+      "winRate": 0.0125,
+      "lossRate": 0.985,
+      "drawRate": 0.0025,
+      "meanActions": 12.87,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 198,
+          "draws": 0,
+          "winRate": 0.01,
+          "lossRate": 0.99,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 3,
+          "losses": 196,
+          "draws": 1,
+          "winRate": 0.015,
+          "lossRate": 0.98,
+          "drawRate": 0.005
+        }
+      }
+    },
+    {
+      "deck": "1/4/2/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 4,
+        "Mounted Billy": 2,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 5,
+      "losses": 394,
+      "draws": 1,
+      "winRate": 0.0125,
+      "lossRate": 0.985,
+      "drawRate": 0.0025,
+      "meanActions": 12.87,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 198,
+          "draws": 0,
+          "winRate": 0.01,
+          "lossRate": 0.99,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 3,
+          "losses": 196,
+          "draws": 1,
+          "winRate": 0.015,
+          "lossRate": 0.98,
+          "drawRate": 0.005
+        }
+      }
+    },
+    {
+      "deck": "1/4/3/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 4,
+        "Mounted Billy": 3,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 5,
+      "losses": 394,
+      "draws": 1,
+      "winRate": 0.0125,
+      "lossRate": 0.985,
+      "drawRate": 0.0025,
+      "meanActions": 12.87,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 198,
+          "draws": 0,
+          "winRate": 0.01,
+          "lossRate": 0.99,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 3,
+          "losses": 196,
+          "draws": 1,
+          "winRate": 0.015,
+          "lossRate": 0.98,
+          "drawRate": 0.005
+        }
+      }
+    },
+    {
+      "deck": "1/4/4/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 4,
+        "Mounted Billy": 4,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 5,
+      "losses": 394,
+      "draws": 1,
+      "winRate": 0.0125,
+      "lossRate": 0.985,
+      "drawRate": 0.0025,
+      "meanActions": 12.84,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 198,
+          "draws": 0,
+          "winRate": 0.01,
+          "lossRate": 0.99,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 3,
+          "losses": 196,
+          "draws": 1,
+          "winRate": 0.015,
+          "lossRate": 0.98,
+          "drawRate": 0.005
+        }
+      }
+    },
+    {
+      "deck": "1/4/5/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 4,
+        "Mounted Billy": 5,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 5,
+      "losses": 394,
+      "draws": 1,
+      "winRate": 0.0125,
+      "lossRate": 0.985,
+      "drawRate": 0.0025,
+      "meanActions": 12.84,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 198,
+          "draws": 0,
+          "winRate": 0.01,
+          "lossRate": 0.99,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 3,
+          "losses": 196,
+          "draws": 1,
+          "winRate": 0.015,
+          "lossRate": 0.98,
+          "drawRate": 0.005
+        }
+      }
+    },
+    {
+      "deck": "1/5/5/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 5,
+        "Mounted Billy": 5,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 5,
+      "losses": 394,
+      "draws": 1,
+      "winRate": 0.0125,
+      "lossRate": 0.985,
+      "drawRate": 0.0025,
+      "meanActions": 13.09,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 198,
+          "draws": 0,
+          "winRate": 0.01,
+          "lossRate": 0.99,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 3,
+          "losses": 196,
+          "draws": 1,
+          "winRate": 0.015,
+          "lossRate": 0.98,
+          "drawRate": 0.005
+        }
+      }
+    },
+    {
+      "deck": "2/1/3/6",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 1,
+        "Mounted Billy": 3,
+        "Deadeye": 6
+      },
+      "matches": 400,
+      "wins": 5,
+      "losses": 394,
+      "draws": 1,
+      "winRate": 0.0125,
+      "lossRate": 0.985,
+      "drawRate": 0.0025,
+      "meanActions": 14.73,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 4,
+          "losses": 196,
+          "draws": 0,
+          "winRate": 0.02,
+          "lossRate": 0.98,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 1,
+          "losses": 198,
+          "draws": 1,
+          "winRate": 0.005,
+          "lossRate": 0.99,
+          "drawRate": 0.005
+        }
+      }
+    },
+    {
+      "deck": "2/3/5/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 3,
+        "Mounted Billy": 5,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 4,
+      "losses": 390,
+      "draws": 6,
+      "winRate": 0.01,
+      "lossRate": 0.975,
+      "drawRate": 0.015,
+      "meanActions": 16.19,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 196,
+          "draws": 2,
+          "winRate": 0.01,
+          "lossRate": 0.98,
+          "drawRate": 0.01
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 194,
+          "draws": 4,
+          "winRate": 0.01,
+          "lossRate": 0.97,
+          "drawRate": 0.02
+        }
+      }
+    },
+    {
+      "deck": "2/2/4/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 2,
+        "Mounted Billy": 4,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 4,
+      "losses": 392,
+      "draws": 4,
+      "winRate": 0.01,
+      "lossRate": 0.98,
+      "drawRate": 0.01,
+      "meanActions": 15.54,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 197,
+          "draws": 1,
+          "winRate": 0.01,
+          "lossRate": 0.985,
+          "drawRate": 0.005
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 195,
+          "draws": 3,
+          "winRate": 0.01,
+          "lossRate": 0.975,
+          "drawRate": 0.015
+        }
+      }
+    },
+    {
+      "deck": "2/2/6/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 2,
+        "Mounted Billy": 6,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 4,
+      "losses": 392,
+      "draws": 4,
+      "winRate": 0.01,
+      "lossRate": 0.98,
+      "drawRate": 0.01,
+      "meanActions": 15.23,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 196,
+          "draws": 2,
+          "winRate": 0.01,
+          "lossRate": 0.98,
+          "drawRate": 0.01
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 196,
+          "draws": 2,
+          "winRate": 0.01,
+          "lossRate": 0.98,
+          "drawRate": 0.01
+        }
+      }
+    },
+    {
+      "deck": "1/6/5/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 6,
+        "Mounted Billy": 5,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 4,
+      "losses": 393,
+      "draws": 3,
+      "winRate": 0.01,
+      "lossRate": 0.9825,
+      "drawRate": 0.0075,
+      "meanActions": 13.47,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 197,
+          "draws": 1,
+          "winRate": 0.01,
+          "lossRate": 0.985,
+          "drawRate": 0.005
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 196,
+          "draws": 2,
+          "winRate": 0.01,
+          "lossRate": 0.98,
+          "drawRate": 0.01
+        }
+      }
+    },
+    {
+      "deck": "2/4/6/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 4,
+        "Mounted Billy": 6,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 4,
+      "losses": 393,
+      "draws": 3,
+      "winRate": 0.01,
+      "lossRate": 0.9825,
+      "drawRate": 0.0075,
+      "meanActions": 16.32,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 197,
+          "draws": 1,
+          "winRate": 0.01,
+          "lossRate": 0.985,
+          "drawRate": 0.005
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 196,
+          "draws": 2,
+          "winRate": 0.01,
+          "lossRate": 0.98,
+          "drawRate": 0.01
+        }
+      }
+    },
+    {
+      "deck": "1/5/6/0",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 5,
+        "Mounted Billy": 6,
+        "Deadeye": 0
+      },
+      "matches": 400,
+      "wins": 4,
+      "losses": 394,
+      "draws": 2,
+      "winRate": 0.01,
+      "lossRate": 0.985,
+      "drawRate": 0.005,
+      "meanActions": 12.96,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 197,
+          "draws": 1,
+          "winRate": 0.01,
+          "lossRate": 0.985,
+          "drawRate": 0.005
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 197,
+          "draws": 1,
+          "winRate": 0.01,
+          "lossRate": 0.985,
+          "drawRate": 0.005
+        }
+      }
+    },
+    {
+      "deck": "1/3/2/6",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 3,
+        "Mounted Billy": 2,
+        "Deadeye": 6
+      },
+      "matches": 400,
+      "wins": 4,
+      "losses": 395,
+      "draws": 1,
+      "winRate": 0.01,
+      "lossRate": 0.9875,
+      "drawRate": 0.0025,
+      "meanActions": 12.4,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 198,
+          "draws": 0,
+          "winRate": 0.01,
+          "lossRate": 0.99,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 197,
+          "draws": 1,
+          "winRate": 0.01,
+          "lossRate": 0.985,
+          "drawRate": 0.005
+        }
+      }
+    },
+    {
+      "deck": "1/3/3/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 3,
+        "Mounted Billy": 3,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 4,
+      "losses": 395,
+      "draws": 1,
+      "winRate": 0.01,
+      "lossRate": 0.9875,
+      "drawRate": 0.0025,
+      "meanActions": 12.4,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 198,
+          "draws": 0,
+          "winRate": 0.01,
+          "lossRate": 0.99,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 197,
+          "draws": 1,
+          "winRate": 0.01,
+          "lossRate": 0.985,
+          "drawRate": 0.005
+        }
+      }
+    },
+    {
+      "deck": "1/3/4/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 3,
+        "Mounted Billy": 4,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 4,
+      "losses": 395,
+      "draws": 1,
+      "winRate": 0.01,
+      "lossRate": 0.9875,
+      "drawRate": 0.0025,
+      "meanActions": 12.4,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 198,
+          "draws": 0,
+          "winRate": 0.01,
+          "lossRate": 0.99,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 197,
+          "draws": 1,
+          "winRate": 0.01,
+          "lossRate": 0.985,
+          "drawRate": 0.005
+        }
+      }
+    },
+    {
+      "deck": "1/3/5/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 3,
+        "Mounted Billy": 5,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 4,
+      "losses": 395,
+      "draws": 1,
+      "winRate": 0.01,
+      "lossRate": 0.9875,
+      "drawRate": 0.0025,
+      "meanActions": 12.39,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 198,
+          "draws": 0,
+          "winRate": 0.01,
+          "lossRate": 0.99,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 197,
+          "draws": 1,
+          "winRate": 0.01,
+          "lossRate": 0.985,
+          "drawRate": 0.005
+        }
+      }
+    },
+    {
+      "deck": "1/3/6/2",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 3,
+        "Mounted Billy": 6,
+        "Deadeye": 2
+      },
+      "matches": 400,
+      "wins": 4,
+      "losses": 395,
+      "draws": 1,
+      "winRate": 0.01,
+      "lossRate": 0.9875,
+      "drawRate": 0.0025,
+      "meanActions": 12.36,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 198,
+          "draws": 0,
+          "winRate": 0.01,
+          "lossRate": 0.99,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 197,
+          "draws": 1,
+          "winRate": 0.01,
+          "lossRate": 0.985,
+          "drawRate": 0.005
+        }
+      }
+    },
+    {
+      "deck": "2/1/4/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 1,
+        "Mounted Billy": 4,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 4,
+      "losses": 395,
+      "draws": 1,
+      "winRate": 0.01,
+      "lossRate": 0.9875,
+      "drawRate": 0.0025,
+      "meanActions": 14.71,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 4,
+          "losses": 196,
+          "draws": 0,
+          "winRate": 0.02,
+          "lossRate": 0.98,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 199,
+          "draws": 1,
+          "winRate": 0,
+          "lossRate": 0.995,
+          "drawRate": 0.005
+        }
+      }
+    },
+    {
+      "deck": "2/3/6/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 3,
+        "Mounted Billy": 6,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 3,
+      "losses": 395,
+      "draws": 2,
+      "winRate": 0.0075,
+      "lossRate": 0.9875,
+      "drawRate": 0.005,
+      "meanActions": 15.86,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 1,
+          "losses": 199,
+          "draws": 0,
+          "winRate": 0.005,
+          "lossRate": 0.995,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 196,
+          "draws": 2,
+          "winRate": 0.01,
+          "lossRate": 0.98,
+          "drawRate": 0.01
+        }
+      }
+    },
+    {
+      "deck": "1/4/6/1",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 4,
+        "Mounted Billy": 6,
+        "Deadeye": 1
+      },
+      "matches": 400,
+      "wins": 3,
+      "losses": 396,
+      "draws": 1,
+      "winRate": 0.0075,
+      "lossRate": 0.99,
+      "drawRate": 0.0025,
+      "meanActions": 12.76,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 1,
+          "losses": 199,
+          "draws": 0,
+          "winRate": 0.005,
+          "lossRate": 0.995,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 197,
+          "draws": 1,
+          "winRate": 0.01,
+          "lossRate": 0.985,
+          "drawRate": 0.005
+        }
+      }
+    },
+    {
+      "deck": "2/1/5/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 1,
+        "Mounted Billy": 5,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 2,
+      "losses": 397,
+      "draws": 1,
+      "winRate": 0.005,
+      "lossRate": 0.9925,
+      "drawRate": 0.0025,
+      "meanActions": 14.73,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 198,
+          "draws": 0,
+          "winRate": 0.01,
+          "lossRate": 0.99,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 199,
+          "draws": 1,
+          "winRate": 0,
+          "lossRate": 0.995,
+          "drawRate": 0.005
+        }
+      }
+    },
+    {
+      "deck": "2/1/6/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 1,
+        "Mounted Billy": 6,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 2,
+      "losses": 397,
+      "draws": 1,
+      "winRate": 0.005,
+      "lossRate": 0.9925,
+      "drawRate": 0.0025,
+      "meanActions": 14.65,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 2,
+          "losses": 198,
+          "draws": 0,
+          "winRate": 0.01,
+          "lossRate": 0.99,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 199,
+          "draws": 1,
+          "winRate": 0,
+          "lossRate": 0.995,
+          "drawRate": 0.005
+        }
+      }
+    },
+    {
+      "deck": "1/2/4/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 2,
+        "Mounted Billy": 4,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 1,
+      "losses": 399,
+      "draws": 0,
+      "winRate": 0.0025,
+      "lossRate": 0.9975,
+      "drawRate": 0,
+      "meanActions": 12.04,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 1,
+          "losses": 199,
+          "draws": 0,
+          "winRate": 0.005,
+          "lossRate": 0.995,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "1/2/5/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 2,
+        "Mounted Billy": 5,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 1,
+      "losses": 399,
+      "draws": 0,
+      "winRate": 0.0025,
+      "lossRate": 0.9975,
+      "drawRate": 0,
+      "meanActions": 12.03,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 1,
+          "losses": 199,
+          "draws": 0,
+          "winRate": 0.005,
+          "lossRate": 0.995,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "1/2/6/3",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 2,
+        "Mounted Billy": 6,
+        "Deadeye": 3
+      },
+      "matches": 400,
+      "wins": 1,
+      "losses": 399,
+      "draws": 0,
+      "winRate": 0.0025,
+      "lossRate": 0.9975,
+      "drawRate": 0,
+      "meanActions": 12.01,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 1,
+          "losses": 199,
+          "draws": 0,
+          "winRate": 0.005,
+          "lossRate": 0.995,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "2/0/4/6",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 0,
+        "Mounted Billy": 4,
+        "Deadeye": 6
+      },
+      "matches": 400,
+      "wins": 1,
+      "losses": 399,
+      "draws": 0,
+      "winRate": 0.0025,
+      "lossRate": 0.9975,
+      "drawRate": 0,
+      "meanActions": 13.89,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 1,
+          "losses": 199,
+          "draws": 0,
+          "winRate": 0.005,
+          "lossRate": 0.995,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "2/0/5/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 0,
+        "Mounted Billy": 5,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 1,
+      "losses": 399,
+      "draws": 0,
+      "winRate": 0.0025,
+      "lossRate": 0.9975,
+      "drawRate": 0,
+      "meanActions": 13.91,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 1,
+          "losses": 199,
+          "draws": 0,
+          "winRate": 0.005,
+          "lossRate": 0.995,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "1/0/5/6",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 0,
+        "Mounted Billy": 5,
+        "Deadeye": 6
+      },
+      "matches": 400,
+      "wins": 0,
+      "losses": 400,
+      "draws": 0,
+      "winRate": 0,
+      "lossRate": 1,
+      "drawRate": 0,
+      "meanActions": 11.39,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "1/0/6/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 0,
+        "Mounted Billy": 6,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 0,
+      "losses": 400,
+      "draws": 0,
+      "winRate": 0,
+      "lossRate": 1,
+      "drawRate": 0,
+      "meanActions": 11.38,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "1/1/4/6",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 1,
+        "Mounted Billy": 4,
+        "Deadeye": 6
+      },
+      "matches": 400,
+      "wins": 0,
+      "losses": 400,
+      "draws": 0,
+      "winRate": 0,
+      "lossRate": 1,
+      "drawRate": 0,
+      "meanActions": 11.77,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "1/1/5/5",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 1,
+        "Mounted Billy": 5,
+        "Deadeye": 5
+      },
+      "matches": 400,
+      "wins": 0,
+      "losses": 400,
+      "draws": 0,
+      "winRate": 0,
+      "lossRate": 1,
+      "drawRate": 0,
+      "meanActions": 11.77,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "1/1/6/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 1,
+        "Billy": 1,
+        "Mounted Billy": 6,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 0,
+      "losses": 400,
+      "draws": 0,
+      "winRate": 0,
+      "lossRate": 1,
+      "drawRate": 0,
+      "meanActions": 11.76,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        }
+      }
+    },
+    {
+      "deck": "2/0/6/4",
+      "starter": false,
+      "cards": {
+        "Sheriff": 2,
+        "Billy": 0,
+        "Mounted Billy": 6,
+        "Deadeye": 4
+      },
+      "matches": 400,
+      "wins": 0,
+      "losses": 400,
+      "draws": 0,
+      "winRate": 0,
+      "lossRate": 1,
+      "drawRate": 0,
+      "meanActions": 13.92,
+      "byStartingSide": {
+        "cowboy": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        },
+        "wizard": {
+          "matches": 200,
+          "wins": 0,
+          "losses": 200,
+          "draws": 0,
+          "winRate": 0,
+          "lossRate": 1,
+          "drawRate": 0
+        }
+      }
+    }
+  ]
+}
