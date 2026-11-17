@@ -23,8 +23,8 @@ Trap card name, art, copy count, deck migration, tie-break (O1 to O3), the playe
 
 | Check | Result |
 |---|---|
-| `node scripts/check-links.mjs` | see the commit report; recorded after the run |
-| `git diff --check` | see the commit report; recorded after the run |
+| `node scripts/check-links.mjs` | Passed: 154 Markdown files, 547 relative links, 0 broken |
+| `git diff --check` | Passed, no output |
 | Tests named in the contract section 9 | PENDING. Named only. Not written, not run. |
 | Replays, simulations, browser | not run. No behavior changed. |
 
