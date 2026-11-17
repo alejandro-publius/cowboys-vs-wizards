@@ -55,3 +55,38 @@ What the tests check: bounded scan (limit above 10000 refused) and identical rep
 ## Remaining work
 
 `docs/kiro-build-log.md` was not updated because it is outside this task's owned paths; the coordinator owns that log. A human runs the six seeds (and optionally BASE pairs and the T2 example) in the local lab, writes notes after play and exports reports. The coordinator reviews, tests and gates on GitHub CI.
+
+## Independent coordinator verification (November 17, 2026)
+
+After Kiro-authored commit 4266db4 and the completed V3 session
+(runFinished), the coordinator independently inspected all six newly
+added files against issue #120, ran the actual generator and tests,
+and verified no modifications to existing code or documents.
+
+- Focused node --test experiments/trap-playtest-kit/seeds.test.js:
+  **11 of 11 pass, zero skipped**. This includes 12-card multiset,
+  same-seed BASE shuffle/starting side, no production catalog mutation,
+  first-draw round positions, round8/round9 trap gates and the
+  six-seed 3/3 starter balance.
+- node experiments/trap-playtest-kit/run.mjs regenerated the entire
+  committed seed-plan.md byte-for-byte. Both SHA-256 checksums:
+  b7f7d03f7b41da80f36815d2cf16f14f5517d594a5f1220a37a540b04c8da093.
+- npm test: **313/313 Node tests** plus 2/2 GLB structural checks,
+  which are not visual motion-quality proof.
+- node scripts/check-links.mjs: **180 Markdown files,
+  661 relative links and images, zero broken**.
+- git diff HEAD^ HEAD --check: **PASS**.
+- Verified exact base SHA abf63173432122313d18e2bf0ff94cc3a7f7b2a1.
+- Kiro CLI version 3.4.0 and availability of claude-opus-5.5
+  were verified at launch; the final session JSONL V3 metadata
+  selected claude-opus-5.5 and reported **14.267968802653398
+  session credits** (tool usage metadata, NOT an account invoice).
+  This coordinator-added receipt supplements the worker's note
+  about not observing usage in its own output.
+
+This evidence appendix was added by the coordinator, not Kiro.
+No person played the seed suite here and no test establishes that
+spell-vs-trap is clear or fun. The seeds are game-deal opportunities,
+not observed draws if a match terminates before a late round.
+No production card identities, copy counts, decks, UI, art, 3D,
+animation, sound, telemetry or public deployment changed.
