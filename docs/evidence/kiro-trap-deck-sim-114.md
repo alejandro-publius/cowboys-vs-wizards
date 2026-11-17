@@ -2,8 +2,8 @@
 
 Date: 2026-11-17, America/Los_Angeles. Agent: Kiro CLI 3.4 V3 in an isolated worktree on branch
 `kiro/trap-deck-sim-114`, based on main `ccd3cc9`. The session context names the model
-`claude-opus-5.5`. Kiro did not read CLI usage or credit metadata, so no model usage or credit
-figure is reported here. No external API, browser, human tester or account action was used.
+`claude-opus-5.5`. The coordinator inspected the completed Kiro V3 stream: session-selected model
+claude-opus-5.5 and 16.79520830613599 reported session credits (tool metadata, not an account invoice). No external API, browser, human tester or account action was used.
 
 Status: test-only analysis. `CARDS`, `DECKS`, card specs, `src/`, `tests/`, UI, renderer, assets
 and existing docs are unchanged. No production trap card, name, effect, copy count or deck
@@ -148,3 +148,37 @@ lasting and are not equal to the unconditional probabilities. Full table: result
 - Not run: B + X allowance, effect Y, mixed-level pairings, other deck variants, human playtests.
 - `docs/kiro-build-log.md` was not edited because this task's scope excludes existing docs; the
   coordinator owns that entry.
+
+
+## Independent coordinator review (November 17, 2026)
+
+After Kiro authored the five-file commit 237e8c3 and the Kiro V3
+runFinished event, the coordinator inspected the deterministic setup,
+CPU/legal action loop, invariant checks, exact spell-ID relabeling
+logic and matched-seed summary script. All source changes are confined
+to NEW experiment files and this evidence note; no production code.
+
+Independent reproduction from base
+ccd3cc984b4bf1698e0127ef2e4661477b50027a:
+
+- node --test experiments/trap-deck-sim/sim.test.js:
+  **6/6 pass** (12-card parity, seed0/60 replay, legal actions,
+  exact relabeling and fixture scope).
+- node experiments/trap-deck-sim/run.mjs:
+  printed the entire 3,600-match summary; a byte-for-byte diff
+  against the committed results.md was empty. Both SHA-256 files:
+  fc52411b39ffb533627a054cb1ae2356a3408b408e3b45a6d800e6a306e0e955.
+- npm test: **313/313 existing Node tests pass**, plus 2/2 GLB
+  structural checks (not visual animation quality).
+- node scripts/check-links.mjs: 175 Markdown files,
+  628 links, **0 broken**.
+- git diff HEAD^ HEAD --check: **pass**.
+- Kiro CLI 3.4.0 was observed at launch. The completed V3 stream
+  selected claude-opus-5.5 and reported session usage
+  **16.79520830613599 credits**. This is not an account invoice
+  or proof of human balancing.
+
+Coordinator authored this paragraph separately from the Kiro-authored
+simulation. Synthetic trap comparisons are test-only. No production
+card identity, count, deck replacement, gameplay activation, art,
+3D, animation or audio approval occurred.
