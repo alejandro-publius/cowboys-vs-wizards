@@ -21,7 +21,7 @@ We do not claim a new genre. Lane-based card duels exist. Three things can be ch
 3. **Reproducible artifact evidence.** Seeded matches replay the same route. A saved Kiro Workflow records the hash of the HTML it tested, and the reviewer returns `stale` when a receipt is paired with a different build.
 
 ## Inspiration and behavior
-We wanted card decisions to happen visibly in the arena: sacrifice troops for stronger allies, alter lanes with spells, and see both simultaneous attacks even when a troop falls. The current browser release includes a user-approved illustrated title, instructions, saved settings, local achievements, a twelve-card Cowboy deck builder and pause/resume. The reviewed closeout adds larger readable card art (187px desktop, 162px phone in Chrome checks), saved decks and keyboard controls. The closeout was published in PR #15; served HTML matches the reviewed build.
+We wanted card decisions to happen visibly in the arena: sacrifice troops for stronger allies, alter lanes with spells, and see both simultaneous attacks even when a troop falls. The current browser release includes a user-approved illustrated title, instructions, saved settings, local achievements, a twelve-card Cowboy deck builder and pause/resume. The reviewed closeout adds larger readable card art (187px desktop, 162px phone in Chrome checks), saved decks and keyboard controls. The deck closeout was published in PR #15 with its served HTML verified. The subsequent instruction-copy and keyboard review have separate release evidence; older receipts do not automatically cover later builds.
 
 ## Implementation and Kiro
 Plain JavaScript rules stay separate from Three.js presentation and Rapier scene behavior. Fable wrote the engine and CPU. Kiro wrote the presentation, specification and tooling: its Requirements-First spec guided match presentation and seeded checks. A custom agent, hooks, saved Workflows and a Review Power/MCP tie results to actual built HTML. Codex coordinated integration and independent checks. The user approved the art and motion; visuals come from original Tripo exports and approved sourced motion.
@@ -34,8 +34,8 @@ A convincing animation can misrepresent simultaneous attacks. Passing rules test
 ## Evidence
 - Playable seeded matches and CPU public-information boundary.
 - Tracked specifications and actual hook/Workflow receipts.
-- Matching-build pass and stale-build rejection.
-- Separate Night Watch Crew app for exact-commit comparison and issue drafts. As of this draft the backend fix is at 0.1.2, the installed app is blocked, and the latest Crew review attempt timed out. Do not describe Crew as currently working until its own evidence note says so.
+- Matching-build pass and stale-build rejection through the installed 1.1.0 Power and its bundled MCP, without workspace MCP. The proof used historical browser receipts and copied HTML; it is not a new browser replay. [Package proof](../evidence/kiro-power-package-fix.md).
+- Separate Night Watch Crew app for exact-commit comparison and issue drafts. The installed app is now 0.1.2, six backend checks pass, and a direct Crew connectivity check succeeded. Human app trust, live UI reporting and production scheduling remain pending; the earlier browser-review timeout is not resolved. [Repair evidence](../evidence/kiro-crew-repair.md).
 - Functional illustrated menu/player options.
 - Custom-deck regression: 128 distinct decks replayed twice; 2,199 first-pass actions; 1,419 CPU/public-view checks. Correctness coverage, not a human balance estimate.
 

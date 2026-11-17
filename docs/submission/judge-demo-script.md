@@ -33,7 +33,7 @@ Rules for every shot:
 | # | Time | Narration | Picture | Status |
 | --- | --- | --- | --- | --- |
 | 1 | 0:00–0:14 | Cowboys versus Wizards is a haunted-Western card duel that runs in a browser. You lead the Cowboys. The computer commands the Wizards. Break the enemy Base before yours falls. | A: illustrated title menu. | EXISTS |
-| 2 | 0:14–0:40 | We built it for people who play strategy and card games in a browser tab. Our hypothesis: those players want to see why a round went the way it did, not read it from a log. So you build a twelve-card deck, and each troop card becomes a piece standing in one of three lanes. | A: deck edit and save. Cut to B at "every card becomes a troop": opening Sheriff summons. | EXISTS (C preferred for the deck portion) |
+| 2 | 0:14–0:40 | We built it for people who play strategy and card games in a browser tab. Our hypothesis: those players want to see why a round went the way it did, not read it from a log. So you build a twelve-card deck, and each troop card becomes a piece standing in one of three lanes. | A: deck edit and save. Cut to B at "each troop card becomes a piece": opening Sheriff summons. | EXISTS (C preferred for the deck portion) |
 | 3 | 0:40–1:04 | This is seed sixty, a match anyone can replay. A Sheriff is free. Stronger troops cost sacrifices: one troop for Billy, two for Mounted Billy. Here both go, and Mounted Billy rides in with five life orbs. Then a Singularity spell pulls him into the center lane, face to face with the Dragon. Position just changed the fight. | B: tribute summons, Mounted Billy enters, Singularity moves him. Hold S on "face to face with the Dragon". | EXISTS (D preferred) |
 | 4 | 1:04–1:24 | Now the clash. Both attacks resolve together. Mounted Billy is defeated, and he still lands his hit: the Dragon drops from five orbs to two. Nothing here is a cutscene. The rules engine decided that outcome, and the arena shows both halves of it. | B: center-lane clash through the orb change, uncut. Let the hit land before "Nothing here is a cutscene". | EXISTS |
 | 5 | 1:24–1:54 | That is where Kiro earned its place. An animation can look right and tell the wrong story. A Requirements-First spec defined simultaneous attacks. A saved Kiro Workflow then ran the tests and replayed scripted routes in Chrome. Its saved run passed one hundred fifty-seven tests and twelve scripted browser checks against one frozen commit, and recorded the hash of the page it tested. | K1: the spec requirement briefly, then the actual Workflow run or report with counts, commit `e9aeb06` and hash readable. | NEEDED |
@@ -123,3 +123,7 @@ Fable read the How to Play text in `src/ui/title-menu.js` for this protocol and 
 - That an enemy spell can move a troop to another lane.
 
 Task 3 is written to show whether players work these out unaided. These are observations for the user to consider, not approved copy changes.
+
+### Subsequent onboarding correction
+
+Codex addressed the two copy gaps above in commit c454398 after the Fable review. How to Play now explains optional actions, casting with empty friendly lanes, Singularity, simultaneous damage even when one attacker falls, and the nine-round Base-orb tiebreak. These are existing rules, not new mechanics. The first-time human protocol remains unrun.

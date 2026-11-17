@@ -16,18 +16,18 @@ Kiro's Requirements-First Orb Duel specification separated requirements, design 
 A seeded property compares presentation cues with engine damage events. In a separate Codex mutation experiment, deliberately suppressing defeated attackers made that check fail at seed zero. This was a check of the test, not a production defect that Kiro discovered. Our tests are deterministic seeded loops; they do not include generated counterexamples or shrinking.
 
 ## Make the build identify itself
-The saved replay Workflow runs actual browser checks and records the HTML hash. The local Orb Duel Review Power supplies the review procedure, and the project MCP inspects the receipt. A matching page and receipt pass. Pairing the same clean receipt with an older page returns stale.
+The saved replay Workflow runs actual browser checks and records the HTML hash. The installed Orb Duel Review Power supplies the review procedure and now bundles its own MCP server to inspect the receipt. A matching page and receipt pass. Pairing the same clean receipt with an older page returns stale.
 
 The saved Workflow passed 157 tests and 12 scripted browser checks. That run belongs to frozen commit `e9aeb06`, and the figures describe that commit. Any later runtime change needs its own checks.
 
-Kiro authored the reviewer server and Power procedure. Codex authored the initial replay Workflow and configured the working workspace MCP connection; Kiro executed and refreshed the Workflow. Installed Power copies and workspace servers can differ, so our reproduction records those versions separately.
+Kiro authored the reviewer server and Power procedure. Codex authored the initial replay Workflow and configured the working workspace MCP connection; Kiro executed and refreshed the Workflow. The first reproduction exposed an outdated installed copy and a workspace-server dependency. Kiro repaired the package; Codex reviewed it and demonstrated actual installed-only pass and stale results against isolated copies of historical browser evidence. The Power is now version 1.1.0 with explicit project binding. [Installed-package evidence](../evidence/kiro-power-package-fix.md).
 
 ## Give automation a narrow job
 The duel-presenter agent loads focused guidance. A SessionStart hook runs named checks. A card-save hook regenerates the catalog after a specification changes. Compaction hooks preserve a receipt identifier.
 
 The Summoning Circle trial proposed a card change, reviewed its requirements, registered it and simulated matches. A four-orb Skeleton changed the simulated outcomes; it remained a proposal. The shipped Skeleton kept three orbs.
 
-Night Watch, our separate Crew app, compares committed game revisions using matching seeds, records failed checks and prepares GitHub issue drafts. Its reports describe the chosen CPU policies and seeds, not human-player balance. We distinguish a manual or isolated scheduled run from a continuously active service. As of this draft the installed Night Watch app is blocked and the latest Crew review attempt timed out; update this paragraph only from Night Watch's own evidence.
+Night Watch, our separate Crew app, compares committed game revisions using matching seeds, records failed checks and prepares GitHub issue drafts. Its reports describe the chosen CPU policies and seeds, not human-player balance. We distinguish a manual or isolated scheduled run from a continuously active service. The installed app is now updated to 0.1.2, with six backend checks passed and a successful basic Crew response. Human app trust, live dashboard execution and production scheduling remain pending. The earlier browser taskrunner timeout remains unresolved. [Installation and connectivity evidence](../evidence/kiro-crew-repair.md).
 
 ## Look at the actual screen
 An earlier Crew browser review found boxed developer labels over Skeleton pieces. Those labels were removed. Passing rules tests had not caught that presentation problem.
