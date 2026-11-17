@@ -118,11 +118,25 @@ def run_report(source):
 
 # ---------------------------------------------------------------- HTTP
 
+def host_allowed(host, port):
+    return host is not None and host.strip().lower() in ("127.0.0.1:%d" % port, "localhost:%d" % port)
+
+
 class Handler(BaseHTTPRequestHandler):
     server_version = "NightWatch"
 
     def log_message(self, fmt, *args):
         pass
+
+    def parse_request(self):
+        # Refuse DNS-rebinding style requests; X-Forwarded-Host is never consulted.
+        if not super().parse_request():
+            return False
+        if host_allowed(self.headers.get("Host"), self.server.server_address[1]):
+            return True
+        self.close_connection = True
+        self.send_json(403, {"error": "Host header must be 127.0.0.1 or localhost on the listening port."})
+        return False
 
     def send_json(self, status, body):
         data = json.dumps(body).encode("utf-8")
