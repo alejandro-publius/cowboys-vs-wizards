@@ -1,6 +1,6 @@
 # Trap placeholder lab (issue #108)
 
-Date: 2026-11-17 (America/Los_Angeles). Worker: Kiro (single worker). The coordinator launched this session with model `claude-opus-5.5`. The session emitted no client-version or credit metadata, so no credit figure is recorded here. Base: main `dedfbe9` (after #107). Branch: `kiro/trap-placeholder-108`. One local commit. Not pushed.
+Date: 2026-11-17 (America/Los_Angeles). Worker: Kiro (single worker). The coordinator launched this session with model `claude-opus-5.5`. CLI version 3.4.0 verified at launch; completed Kiro V3 JSONL session metadata selected claude-opus-5.5 and reported 15.545633508789384 session credits (tool metadata, not a billing invoice). Base: main `dedfbe9` (after #107). Branch: `kiro/trap-placeholder-108`. One local commit. Not pushed.
 
 ## Problem
 
@@ -58,3 +58,38 @@ The only non-200 HTTP response was `/favicon.ico` 404. These outcomes come from 
 
 - No screenshot, keyboard-only, screen-reader or human playtest was run. Native buttons are keyboard-operable by default, but nobody verified that here. Focus can drop while buttons are disabled during playback.
 - Fixture traps are synthetic. Trap card name, art, copy count, deck migration, UI copy and balance stay blocked on the user (contract section 10). Human and art gates stay blocked.
+
+
+## Independent coordinator review (same date)
+
+After the Kiro-authored commit e22cdb0 and its runFinished JSONL event,
+the coordinator verified the complete seven-file change against issue #108.
+Only new lab files, a new test file and this evidence note were changed;
+no shipped source, catalog, deck, CSS, 3D, build, CI or public entrypoint
+was changed.
+
+Independent checks on exact base dedfbe984f299f1f2f324866b6df8003e8b1eb3c:
+
+- node --test tests/experiments/trap-placeholder.test.js:
+  **7/7 passed**, including seeds 0 and 60 and redaction/restart.
+- npm test: **306/306 Node tests passed**, plus 2/2 GLB structural
+  checks (no animation-quality claim).
+- node scripts/check-links.mjs: **171 Markdown files, 613 relative links,
+  0 broken**.
+- git diff HEAD^ HEAD --check: **passed**.
+- Independent loopback Chrome --headless=new --dump-dom on a local
+  Python HTTP server displayed: Status accepting_input, seed 0,
+  round 1, Cowboy phase, and one Placeholder trap (test fixture)
+  hand button; no JS error text surfaced in Chrome stderr. A missing
+  /favicon.ico responded 404. This second smoke did NOT check
+  full click-through or accessibility; those were Kiro's separately
+  recorded browser checks above, not independently repeated here.
+
+Kiro CLI 3.4.0 was observed at invocation, and the runFinished V3
+stream contained selected-model metadata claude-opus-5.5 and usage
+15.545633508789384 credits. These are emitted usage observations
+only; no account balance or invoice was accessed.
+
+The coordinator authored this review section separately from Kiro's
+implementation. Synthetic wins and losses are not human balance.
+No release, deployment, public flag, new shipped card or art approval.
