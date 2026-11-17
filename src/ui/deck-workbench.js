@@ -1,19 +1,19 @@
-import {COWBOY_CATALOG, DEFAULT_COUNTS, validateDeck} from '../game/deck-builder.js';
+import {COWBOY_CATALOG, DECK_SIZE, DEFAULT_COUNTS, validateDeck} from '../game/deck-builder.js';
+import {MAX_COWBOY_COPIES, tributeCost} from '../game/cards.js';
 
-const MAX_COPIES = 6;
 const element = (tag, text, attrs = {}) => {
   const node = document.createElement(tag);
   if (text !== undefined) node.textContent = text;
   for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
   return node;
 };
-const costOf = card => card.kind === 'spell' ? 'Spell · no tribute' : card.stars < 5 ? 'Free summon' : card.stars < 7 ? '1 tribute' : '2 tributes';
+const costOf = card => card.kind === 'spell' ? 'Spell · no tribute' : tributeCost(card.stars) === 0 ? 'Free summon' : tributeCost(card.stars) === 1 ? '1 tribute' : '2 tributes';
 const statsOf = card => card.kind === 'spell' ? 'Removes 1 enemy orb' : `${card.attack} attack · ${card.health} life`;
 const ruleOf = card => card.kind === 'spell'
   ? 'Remove 1 life orb from an enemy troop. Summon first if you want to do both this turn.'
-  : card.stars < 5
+  : tributeCost(card.stars) === 0
     ? `Troop with ${card.attack} attack and ${card.health} life. Summon it free, with no tribute.`
-    : `Troop with ${card.attack} attack and ${card.health} life. Summon it by choosing ${card.stars < 7 ? '1 friendly troop' : '2 friendly troops'} as tribute first.`;
+    : `Troop with ${card.attack} attack and ${card.health} life. Summon it by choosing ${tributeCost(card.stars) === 1 ? '1 friendly troop' : '2 friendly troops'} as tribute first.`;
 
 // Collection + chosen-deck workbench. Uses the approved card art as CSS backgrounds
 // (.deck-art), the existing validation and profile.saveDeck; no new rules.
@@ -23,7 +23,7 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
   let selected = COWBOY_CATALOG[0].type;
   const count = type => counts[type] ?? 0;
 
-  content.append(element('p', 'Pick a card to read it. Build exactly 12 cards, up to 6 copies of each, with at least 1 Sheriff.', {class: 'menu-intro'}));
+  content.append(element('p', `Pick a card to read it. Build exactly ${DECK_SIZE} cards, up to ${MAX_COWBOY_COPIES} copies of each, with at least 1 Sheriff.`, {class: 'menu-intro'}));
   const layout = element('div', undefined, {class: 'workbench'});
   const collection = element('section', undefined, {class: 'wb-panel wb-collection', 'aria-labelledby': 'wb-collection-title'});
   collection.append(element('h3', 'Card collection', {id: 'wb-collection-title'}));
@@ -88,7 +88,7 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
 
   function refresh() {
     const result = validateDeck(counts);
-    total.textContent = `${result.total} / 12 cards`;
+    total.textContent = `${result.total} / ${DECK_SIZE} cards`;
     total.dataset.ready = String(result.ok);
     validation.textContent = result.ok ? 'Ready to save.' : result.error;
     validation.dataset.ok = String(result.ok);
@@ -102,14 +102,14 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
       r.row.dataset.selected = String(card.type === selected);
       r.row.dataset.empty = String(n === 0);
       r.minus.disabled = n === 0;
-      r.plus.disabled = n >= MAX_COPIES || result.total >= 12;
+      r.plus.disabled = n >= MAX_COWBOY_COPIES || result.total >= DECK_SIZE;
     }
     const card = COWBOY_CATALOG.find(c => c.type === selected), n = count(selected);
     detail.replaceChildren(
       element('h3', card.name),
       element('p', `${costOf(card)} · ${statsOf(card)}`, {class: 'detail-line'}),
       element('p', ruleOf(card), {class: 'detail-rule'}),
-      element('p', `${n} of up to ${MAX_COPIES} in your deck.`, {class: 'detail-line'}));
+      element('p', `${n} of up to ${MAX_COWBOY_COPIES} in your deck.`, {class: 'detail-line'}));
   }
   refresh();
 }
