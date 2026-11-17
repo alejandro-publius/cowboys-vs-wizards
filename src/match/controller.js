@@ -33,7 +33,7 @@
 import { createMatch } from "../game/state.js";
 import { applyAction } from "../game/actions.js";
 import { legalActions } from "../game/legal.js";
-import { publicState } from "../game/view.js";
+import { publicEvents, publicState } from "../game/view.js";
 import { chooseAction } from "../game/cpu.js";
 import { createPresenter } from "./presenter.js";
 import { emptySelection, selectionOptions, selectionStep } from "./selection.js";
@@ -177,7 +177,9 @@ export function createController({
     selection = emptySelection;
     message = null;
     status = "playing"; // before enqueue, because a synchronous drain may change it
-    presenter.enqueue({ from, to: view(), events: result.events });
+    // The Presenter gets the Cowboy's projection of the events: an enemy
+    // trap-set loses its cardId (contract section 6). Flag off, this is a copy.
+    presenter.enqueue({ from, to: view(), events: publicEvents(result.events, HUMAN) });
     return { ok: true };
   }
 
