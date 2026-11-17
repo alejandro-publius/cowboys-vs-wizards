@@ -24,9 +24,55 @@ We do not claim a new genre. Lane-based card duels exist. Three things can be ch
 We wanted card decisions to happen visibly in the arena: sacrifice troops for stronger allies, move troops between lanes with spells, and see both attacks of a clash even when a troop falls. The current browser release includes a user-approved illustrated title, instructions, saved settings, local achievements, a twelve-card Cowboy deck builder and pause/resume. The deck-builder closeout added larger, readable card art (187px on desktop and 162px at phone size in Chrome checks), saved decks and keyboard controls. It was published in PR #15, and the HTML the site serves was verified. The later changes to the instructions text and the keyboard review have their own release evidence; an older receipt does not cover a later build.
 
 ## Implementation and Kiro
-The rules are plain JavaScript and stay separate from the Three.js presentation and the Rapier scene behavior. Fable, the model used in our Claude Code sessions, wrote the rules engine and the computer opponent (the CPU). Kiro wrote the presentation, the specification and the tooling. Its Requirements-First spec guided the match presentation and the seeded checks. A custom agent, hooks, saved Workflows and a review Power (an installed Kiro package that supplies the review procedure and bundles an MCP server to inspect receipts) tie each result to the HTML that was actually built. Codex, the coding assistant coordinating the project, handled integration and independent checks. The user approved the art and motion; visuals come from original Tripo exports and approved sourced motion.
+The rules are plain JavaScript and stay separate from the Three.js presentation and the Rapier scene behavior. Fable, the model used in our Claude Code sessions, wrote the rules engine and the computer opponent (the CPU). Kiro wrote the presentation, the specification and the tooling. Its Requirements-First spec guided the match presentation and the seeded checks. A custom agent, hooks, saved Workflows and a review Power (an installed Kiro package that supplies the review procedure and bundles an MCP server to inspect receipts) tie each result to the HTML that was actually built. Codex, the coding assistant coordinating the project, handled integration and independent checks. The user approved the art and motion; visuals come from original Tripo exports and approved sourced motion. The section after this one takes the Kiro features one topic at a time.
 
 The saved Kiro Workflow passed 157 tests and 12 scripted browser checks. That run is historical and belongs to frozen commit `e9aeb06`; later changes to the game need their own checks. The run was not repeated for this document.
+
+## How Kiro was used, topic by topic
+Each topic names the file that shows the work and links one evidence note. Test counts and results belong to the commit their note names. [The full evidence map](../kiro-brag-sheet.md) has every run and its limits.
+
+### 1. Kiro apps: IDE, CLI, Web and Crew
+Three of the four were used. The Kiro IDE ran the Requirements-First spec session that planned and built the match presentation. Kiro CLI (3.3.0) did feature work, ran the hooks and Workflows, and imported the characters. Kiro Crew (0.12.2) ran a browser playtest and a balance preview, and runs the separate Night Watch app. **Kiro Web was not used.**
+- Shown by: [`.kiro/specs/orb-duel/tasks.meta.json`](../../.kiro/specs/orb-duel/tasks.meta.json), the IDE's own execution history.
+- Evidence: [build log](../kiro-build-log.md), which records the app each piece of work was performed in.
+
+### 2. Custom agents
+`duel-presenter` is a custom agent whose shell permissions are limited to the test and replay commands, and which loads `AGENTS.md` and the evidence steering file. It was used for the card landing-target fix: when the canvas has no size, a summoned card falls back to the lane button's position. The agent file shows the agent's scope, not the quality of its output. Both saved Workflows use `wf-coder`, an agent bundled with Kiro, not one defined in this repository.
+- Shown by: [`.kiro/agents/duel-presenter.json`](../../.kiro/agents/duel-presenter.json).
+- Evidence: [November 16 build evidence](../evidence/kiro-overnight.md#kiro-implementation-and-execution).
+
+### 3. Agent hooks
+Three kinds of hook have a recorded run. At session start, `duel-presenter` ran the 19 presenter, controller and card-model tests, and all 19 passed. A file-save hook regenerated the card catalog after a card's specification changed, in a trial that set Skeleton health from 3 to 4, and three registration tests passed. The `PreCompact` and `PostCompact` hooks wrote and restored a receipt ID. The save-hook run was in Kiro CLI in an isolated worktree; no Kiro IDE hook run is recorded.
+- Shown by: [`.kiro/hooks/sync-duel-card-specs.json`](../../.kiro/hooks/sync-duel-card-specs.json) and the hooks in [`duel-presenter.json`](../../.kiro/agents/duel-presenter.json).
+- Evidence: [session-start hook output](../evidence/kiro-ui-hook.txt).
+
+### 4. Spec-driven development
+The card match was built from a Requirements-First spec in the Kiro IDE: requirements, a design and 10 ordered tasks, all checked. The spec caught a real fault. Restarting with the same seed returns the engine to revision 0, so a stale scheduled action could look current; the controller now tags every timer and CPU request with a match epoch. Requirement 5.6, simultaneous clashes, became a tested property. A second spec covers the card pipeline and a third covers the deck builder's readability.
+- Shown by: [`.kiro/specs/orb-duel/`](../../.kiro/specs/orb-duel/requirements.md) (`requirements.md`, `design.md`, `tasks.md`) and [`tests/match/scheduler.test.js`](../../tests/match/scheduler.test.js).
+- Evidence: [the Spec row of the evidence map](../kiro-brag-sheet.md#feature-evidence).
+
+### 5. Steering documents
+Two steering files are tracked. `build-evidence.md` is always included and says how to record evidence; Codex wrote it. `duel-iteration.md`, added by Kiro, loads only for the match, render and interface code, the replay script and the card art. No recorded run isolates what a steering file changed, so we claim that steering shaped the work, not a measured effect.
+- Shown by: [`.kiro/steering/build-evidence.md`](../../.kiro/steering/build-evidence.md) and [`.kiro/steering/duel-iteration.md`](../../.kiro/steering/duel-iteration.md).
+- Evidence: [the Steering row of the evidence map](../kiro-brag-sheet.md#feature-evidence).
+
+### 6. MCP
+Kiro wrote an MCP server with two tools. `inspect_duel_replay` hashes the built HTML and compares it with a run's receipt: it returned `pass` for a matching build, `stale` for a receipt paired with older HTML, and `fail` for a wrong showcase seed. `inspect_character_asset` reports a model file's hash, triangles, joints and animation clips. The server checks hashes and receipt fields; it does not judge gameplay. Codex connected it through the workspace MCP settings.
+- Shown by: [`.kiro/powers/orb-duel-review/server.mjs`](../../.kiro/powers/orb-duel-review/server.mjs) and [`.kiro/settings/mcp.json`](../../.kiro/settings/mcp.json).
+- Evidence: [Power and MCP run](../evidence/kiro-overnight.md#power-and-mcp).
+
+### 7. Property-based testing
+Six properties run over seeds 0 to 99: selection never touches the engine, presenter fidelity, clash completeness, orb bounds, cancellation and the CPU's information limit. The recorded output covers 741 clashes and 2,734 attacks. In a one-time Codex experiment on a copy of the presenter, suppressing the animation for defeated attackers made the clash property fail at seed 0. These are seeded loops, not a property-testing library: there are no generators and no shrinking.
+- Shown by: [`tests/match/presenter.test.js`](../../tests/match/presenter.test.js), with `selection.test.js` and `controller.test.js` beside it.
+- Evidence: [clash property check](../evidence/kiro-submission-preflight.md#clash-property-check).
+
+### 8. Kiro powers
+The Orb Duel Review Power packages the review procedure together with the MCP server above. Version 1.1.0 is self-contained: in fresh Kiro sessions that used only the installed Power, it returned pass for matching receipts and stale for altered copies. Those inputs were copied historical browser receipts, not a new browser run. Kiro implemented the package; Codex reviewed and installed it.
+- Shown by: [`.kiro/powers/orb-duel-review/plugin.json`](../../.kiro/powers/orb-duel-review/plugin.json) and its procedure, [`SKILL.md`](../../.kiro/powers/orb-duel-review/skills/review-duel-replay/SKILL.md).
+- Evidence: [package proof](../evidence/kiro-power-package-fix.md).
+
+## Why this fits the Costume Contest
+The category asks for a haunting, polished interface whose spooky design improves how the app works. Here the haunted-Western dressing carries the game's information. Life orbs float above every troop and Base: each orb is one life, so a player reads health at a glance and sees it fall when a hit lands. A graveyard well beside each side's row draws in every tributed troop, defeated troop and spent spell, so the player sees where a card went and why it left the board. Each illustrated card shows its stars, which set its tribute cost, with its attack and life orbs. The Wizards' side is skeletons, a dragon and a gateway; the Cowboys' is a sheriff and a saloon, so the two sides and their Bases are told apart by look alone.
 
 ## Challenges and lessons
 An animation can look convincing and still misrepresent a simultaneous attack. Passing rules tests does not catch every visible defect: a Kiro Crew browser review found developer labels on screen, and they were removed. Rigging a generated mesh also has limits, so the original exports stay untouched and new motion must come from approved sources. Older test counts and timing improvements are quoted with the commit and date they were measured on.
