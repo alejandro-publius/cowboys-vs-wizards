@@ -36,3 +36,7 @@ Spell allowance versus separate `trapSet`, and full cancel versus one-damage war
 ## Checks
 
 `node scripts/check-links.mjs`: 150 Markdown files, 540 relative links and images, 0 broken. `git diff --check`: clean. Both run on the staged change.
+
+## Coordinator wording correction
+
+After Kiro's original commit, the coordinator corrected the optional one-damage variant's wording: it reduces the **same highest-attack enemy troop** selected by the existing spec, rather than an arbitrary "first hit". The effect strength remains undecided. No game, animation or asset code changed.

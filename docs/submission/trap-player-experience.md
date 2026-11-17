@@ -29,11 +29,11 @@ These are **undecided**. Both options are written out. Neither is approved. Owne
 
 | | B1. Full cancel (current spec R4) | B2. One-damage ward |
 |---|---|---|
-| Effect | The strongest enemy attacker's attack does nothing this clash | The first hit this clash on the setter's side loses 1 orb of damage |
-| Armed hint (setter only) | "Armed. Stops the strongest attacker." | "Armed. Softens the first hit by 1." |
-| Reveal line | "Trap sprung: {card} stopped {troop} in lane {n}." | "Trap sprung: {card} softened a hit on lane {n} by 1." |
+| Effect | The strongest enemy attacker's attack does nothing this clash | The strongest enemy attacker's attack deals 1 less damage this clash (minimum 0) |
+| Armed hint (setter only) | "Armed. Stops the strongest attacker." | "Armed. Weakens the strongest attacker by 1." |
+| Reveal line | "Trap sprung: {card} stopped {troop} in lane {n}." | "Trap sprung: {card} reduced {troop}'s attack in lane {n} by 1." |
 | Pro | Easy to read and to show: one attack visibly stops | Smaller swing, less chance of a stalled turn |
-| Con | A single trap can remove the biggest threat | The reveal is harder to see, since a hit still lands. Needs a rules change not in the spec (target and rounding are undefined) |
+| Con | A single trap can remove the biggest threat | The reveal is harder to see, since a hit may still land. The same highest-attack target is used; the visual/log handling of zero damage is not specified yet |
 | Event shape | Fits `trap-trigger` with `cancelled` (design section 4) | Needs a new field; not designed |
 
 Copy below is written for B1/A2 (the spec as written) with the alternatives in brackets. A change in either decision changes only these strings, not the flow.
@@ -49,7 +49,7 @@ Wording is plain, one idea per line. `{x}` is filled at run time.
 | 3 | **Set and confirm** | Zone chosen. A confirm and a cancel button appear, as for summons. | Confirm or Cancel | Prompt: "Set {name} face down? It works from next round, and stays hidden." Buttons: "Set trap", "Cancel". |
 | 4 | **Face-down, unarmed** (set round) | Own side: card shown with an "Not armed yet" tag. Enemy view: a face-down marker only. | None | Own: "Your trap: {name}, face down. Not armed until next round." Enemy sees: "Enemy trap: face down." |
 | 5 | **Armed** (next round start) | Tag changes to "Armed". Enemy marker unchanged. | None | Own: "Your trap is armed." Enemy: no new text. |
-| 6 | **Trigger** (a valid enemy attacker exists at the clash) | Clash log gains a line before damage lines. | None | "Trap sprung: {name} stopped {troop} in lane {n}." [B2: "softened a hit on lane {n} by 1."] |
+| 6 | **Trigger** (a valid enemy attacker exists at the clash) | Clash log gains a line before damage lines. | None | "Trap sprung: {name} stopped {troop} in lane {n}." [B2: "reduced {troop}'s attack in lane {n} by 1."] |
 | 7 | **Reveal and discard** | The card turns face up for both sides, then goes to the discard. Zone shows empty again. | None | "{name} revealed and discarded." Zone: "Your trap zone: empty." |
 | 8 | **Restart and replay** | New match: every zone empty, no trigger text from the old match. Same seed gives the same sequence. | Restart or seed link | "New match. Trap zones: empty." |
 
