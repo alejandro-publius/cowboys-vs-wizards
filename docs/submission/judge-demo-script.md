@@ -1,6 +1,6 @@
 # Judge demo script and first-time playtest protocol
 
-Prepared November 16, 2026 by Fable as a docs-only pass. This script has not been recorded or narrated, and the human protocol is unrun. Existing source footage is listed below; no final YouTube upload is claimed. Authorship and limits: [fable-judge-story.md](../evidence/fable-judge-story.md).
+Prepared November 16, 2026 by Fable as a docs-only pass. This script has not been recorded or narrated, and the human protocol is unrun. Existing source footage is listed below; no final YouTube upload is claimed. Authorship and limits: [fable-judge-story.md](../evidence/fable-judge-story.md). Every figure and game event in Part 1 was later checked against the receipts and a replay of seed 60: [fable-story-receipt-check.md](../evidence/fable-story-receipt-check.md).
 
 ## Part 1: Demo video
 
@@ -19,6 +19,7 @@ Prepared November 16, 2026 by Fable as a docs-only pass. This script has not bee
 | K2 | Screen recording of the actual Review Power/MCP result: `pass` for the matching page, `stale` for the same receipt with an older page. | NEEDED |
 | C | Longer capture of the current title menu, How to Play and deck workbench (about 40 s), same Chrome screencast method as A. | NEEDED, optional |
 | D | Seed 60 route re-captured on the current runtime with the round 5 pause before End turn, same method as B. | NEEDED, optional |
+| N | Screen recording of an actual Night Watch report in Kiro Crew, with the 1,000 seeds per revision and the 65 passing rule tests readable. Reload the page first so the report on screen is the current one; that reload has not been verified yet ([activation receipt](../evidence/night-watch-activation.md)). | NEEDED, only for optional segment 6b |
 | V | Recorded narration. | NEEDED |
 
 Rules for every shot:
@@ -34,22 +35,24 @@ Rules for every shot:
 | --- | --- | --- | --- | --- |
 | 1 | 0:00–0:14 | Cowboys versus Wizards is a haunted-Western card duel that runs in a browser. You lead the Cowboys. The computer commands the Wizards. Break the enemy Base before yours falls. | A: illustrated title menu. | EXISTS |
 | 2 | 0:14–0:40 | We built it for people who play strategy and card games in a browser tab. Our hypothesis: those players want to see why a round went the way it did, not read it from a log. So you build a twelve-card deck, and each troop card becomes a piece standing in one of three lanes. | A: deck edit and save. Cut to B at "each troop card becomes a piece": opening Sheriff summons. | EXISTS (C preferred for the deck portion) |
-| 3 | 0:40–1:04 | This is seed sixty, a match anyone can replay. A Sheriff is free. Stronger troops cost sacrifices: one troop for Billy, two for Mounted Billy. Here both go, and Mounted Billy rides in with five life orbs. Then a Singularity spell pulls him into the center lane, face to face with the Dragon. Position just changed the fight. | B: tribute summons, Mounted Billy enters, Singularity moves him. Hold S on "face to face with the Dragon". | EXISTS (D preferred) |
+| 3 | 0:40–1:04 | This is seed sixty, a match anyone can replay. A Sheriff is free. Stronger troops cost sacrifices: one troop for Billy, two for Mounted Billy. Here both go, and Mounted Billy rides in with five life orbs. A Singularity spell then pulls him into the center lane, where the Dragon soon faces him. Position just changed the fight. | B: tribute summons, Mounted Billy enters, Singularity moves him, the Dragon is summoned opposite. Hold S on "the Dragon soon faces him". | EXISTS (D preferred) |
 | 4 | 1:04–1:24 | Now the clash. Both attacks resolve together. Mounted Billy is defeated, and he still lands his hit: the Dragon drops from five orbs to two. Nothing here is a cutscene. The rules engine decided that outcome, and the arena shows both halves of it. | B: center-lane clash through the orb change, uncut. Let the hit land before "Nothing here is a cutscene". | EXISTS |
-| 5 | 1:24–1:54 | That is where Kiro earned its place. An animation can look right and tell the wrong story. A Requirements-First spec defined simultaneous attacks. A saved Kiro Workflow then ran the tests and replayed scripted routes in Chrome. Its saved run passed one hundred fifty-seven tests and twelve scripted browser checks against one frozen commit, and recorded the hash of the page it tested. | K1: the spec requirement briefly, then the actual Workflow run or report with counts, commit `e9aeb06` and hash readable. | NEEDED |
+| 5 | 1:24–1:54 | That is where Kiro earned its place. An animation can look right and tell the wrong story. A Requirements-First spec defined simultaneous attacks. A saved Kiro Workflow then ran the tests and replayed scripted routes in Chrome. Its saved run passed one hundred fifty-seven tests and twelve scripted browser checks against one frozen commit, and recorded the hash of the page it tested. | K1: the spec requirement briefly, then the actual Workflow run or report with counts, commit and hash readable: `02b1bf8` for the final run `wf_0572a745f5194cf1`, or `e9aeb06` if the earlier run `wf_5bd13532f5142477` is the one shown. | NEEDED |
 | 6 | 1:54–2:06 | A reviewer tool reads that receipt. Matching page: pass. Same receipt, older page: stale. The evidence names the build it belongs to. | K2: actual `pass` result, then actual `stale` result. | NEEDED |
+| 6b | optional, about 0:10 | Night Watch, a separate Kiro Crew app, replays a thousand seeded matches on two revisions and reports what changed. | N: the actual report in Crew. | NEEDED, optional |
 | 7 | 2:06–2:28 | What we have not done yet: watch first-time players. Automated checks show the rules hold, not that people enjoy them. Fable wrote the engine and CPU. Kiro wrote the presentation, spec and tooling. Codex integrated and verified. The art and motion were approved by a person. | Hold S, then A: settings. Plain text credits caption matching the narration. | EXISTS |
 | 8 | 2:28–2:40 | Cowboys versus Wizards. Play it in your browser. | A: title menu held. Plain caption with the game URL. | EXISTS |
 
-Words per segment (Codex word-boundary count, hyphenated words counted as one): 29, 55, 58, 44, 63, 22, 46, 8. Total 325.
+Words per segment (Codex word-boundary count, hyphenated words counted as one): 29, 55, 58, 44, 63, 22, 46, 8. Total 325. Segment 3 was reworded after that count and is still 58 words. Optional segment 6b is 19 words and is not in the total.
 
 ### Before recording
 
-1. **Check the numbers on screen.** Segment 5 says 157 tests and 12 scripted browser checks at `e9aeb06`. Codex verified those figures against [the final saved Workflow receipt](../evidence/kiro-closeout-release-check.md) during this review. Still read them off the actual saved report while capturing K1. If the report shows different numbers, change the narration to match it.
+1. **Check the numbers on screen.** Segment 5 says 157 tests and 12 scripted browser checks against one frozen commit. Two saved Workflow runs have those same counts: the final one, `wf_0572a745f5194cf1` on `02b1bf8` ([receipt](../evidence/kiro-final-polish-verification.md)), and an earlier one, `wf_5bd13532f5142477` on `e9aeb06` ([receipt](../evidence/kiro-closeout-release-check.md)). Show the final run if you can, and make the commit on screen match the report on screen. Still read the figures off the actual saved report while capturing K1. If the report shows different numbers, change the narration to match it.
 2. **Find the in and out points.** This pass did not view the videos, so the table names clip content and gives no timecodes inside A or B.
 3. **Plan for the footage shortfall.** Segments 1–4 and 7–8 need about 118 s of game picture. A and B together run 58.73 s. With existing footage only, the edit depends on holding real frames and reusing the title menu. Captures C and D remove that dependence, and D also puts the gameplay on the current runtime.
 4. **Keep the pass and the stale result real.** If K2 cannot be captured, cut segment 6 and end segment 5 on the Workflow report. The video then runs about 2:28 with 303 words.
-5. **Upload last.** No public YouTube link exists. Do not put a placeholder in the Devpost form.
+5. **Decide on Night Watch.** Optional segment 6b adds about 10 seconds, for 2:50 and 344 words, still under the 3:00 limit. Use it only with real footage N. Its line claims a report, not an unattended nightly run: the 2 a.m. job is registered, and no clock-time run has been observed.
+6. **Upload last.** No public YouTube link exists. Do not put a placeholder in the Devpost form.
 
 ## Part 2: First-time human playtest protocol
 

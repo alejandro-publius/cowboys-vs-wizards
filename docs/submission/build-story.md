@@ -4,9 +4,9 @@ Draft for a third-party blog, prepared November 16, 2026. Review against the fin
 
 Cowboys vs. Wizards is a browser card duel across three 3D lanes. A free Sheriff can hold a lane. Stronger troops cost sacrifices, called tributes. Each troop and each Base has life orbs, and each orb is one life. When the two sides clash, attacks resolve together, even if an attacker is defeated during the exchange.
 
-We built it for people who play strategy and card games in a browser. Our hypothesis is that these players often cannot see why a round went the way it did, because the result arrives as changed numbers or a log line. So we put the decision on the board. Where a troop stands decides what it fights, and both halves of a clash play out in the arena. This is a hypothesis. No first-time player has been observed yet, and lane-based card duels are not a new genre.
+We built it for people who play strategy and card games in a browser. Our hypothesis is that these players often cannot see why a round went the way it did, because the result arrives as changed numbers or a log line. So we put the decision on the board. Where a troop stands decides what it fights, and both halves of a clash play out in the arena. We have not tested the hypothesis: no first-time player has been observed yet. Lane-based card duels are also not a new genre.
 
-What we can show is narrower: positional three-lane decisions, simultaneous outcomes you can watch, and evidence that names the build it was produced from. The clearest example is the match that starts from seed 60. (A seed is a number that makes a match repeatable.) Two tribute summons bring in Mounted Billy with five life orbs, a Singularity spell pulls him into the Dragon's lane, and in the clash he is defeated and still takes the Dragon from five orbs to two.
+What we can show is narrower: positional three-lane decisions, simultaneous outcomes you can watch, and evidence that names the build it was produced from. The clearest example is the match that starts from seed 60. (A seed is a number that makes a match repeatable.) Two tribute summons bring in Mounted Billy with five life orbs. A Singularity spell pulls him into the center lane, and the Wizards summon the Dragon opposite him. In the clash he is defeated and still takes the Dragon from five orbs to two.
 
 That exchange became a useful reason to use Kiro: an animation can look convincing and still tell the wrong story about what the rules decided.
 
@@ -18,7 +18,7 @@ One seeded test compares what the presentation shows with the damage events the 
 ## Make the build identify itself
 The saved replay Workflow runs actual browser checks and writes a receipt: a record of the run that includes the hash (a fingerprint) of the HTML it tested. The Orb Duel Review Power, a package installed into Kiro, supplies the review procedure and now bundles its own MCP server to inspect the receipt. A page and a receipt that match pass. Pairing the same clean receipt with an older page returns `stale`.
 
-The saved Workflow passed 157 tests and 12 scripted browser checks. That run belongs to frozen commit `e9aeb06`, and the figures describe that commit. Any later change to the game needs its own checks.
+On its final run the saved Workflow passed 157 tests and 12 scripted browser checks: eight steps of the seed 0 opening and four of the seed 60 showdown, with no console errors. That run belongs to frozen commit `02b1bf8`, and the figures describe that commit; an earlier run on `e9aeb06` gave the same counts. Any later change to the game needs its own checks. [Final run evidence](../evidence/kiro-final-polish-verification.md).
 
 Kiro wrote the reviewer server and the Power's procedure. Codex wrote the first replay Workflow and set up the working workspace MCP connection; Kiro ran and refreshed the Workflow. The first attempt to reproduce the review exposed two problems: the installed copy of the Power was out of date, and it depended on the workspace's server. Kiro repaired the package. Codex reviewed it and showed that the installed Power alone returns actual pass and stale results, using isolated copies of historical browser evidence. The Power is now version 1.1.0 with explicit project binding. [Installed-package evidence](../evidence/kiro-power-package-fix.md).
 
@@ -32,9 +32,11 @@ Night Watch, our separate Kiro Crew app, compares committed game revisions using
 ## Look at the actual screen
 An earlier Crew browser review found boxed developer labels over Skeleton pieces. Those labels were removed. Passing rules tests had not caught that presentation problem.
 
+It happened again with a different engine. A scripted check in Playwright's WebKit build, the engine behind Safari, saw all seven of its steps, from the title menu to a summoned troop, while every card in the hand was drawn as a blank rectangle. The defect was found by looking at the screenshot. It is recorded as an open finding, and it has not been confirmed in Safari itself. [WebKit evidence](../evidence/webkit-smoke.md).
+
 The current game uses user-approved cards and title artwork. The Sheriff uses approved, sourced Mixamo idle motion. Original Tripo exports are preserved separately from optimized runtime models. Older attack motions still have known limitations; new motion must come from approved exports or licensed sources.
 
-The deck-builder acceptance criteria name readable card art, typed rules, touch-sized controls, saved counts and no sideways overflow on a phone-sized viewport. Human visual approval remains separate from numerical checks.
+The deck-builder acceptance criteria name readable card art, rules written as page text of at least 16px, touch-sized controls, saved counts and no sideways overflow on a phone-sized viewport. Human visual approval remains separate from numerical checks.
 
 ## Keep the evidence small and useful
 We keep long research notes and transcripts out of the instructions that every AI session loads. A short routing document tells each worker which files it owns and which check to run first. A ledger records who owns each task, how it is accepted and what is handed off next.
