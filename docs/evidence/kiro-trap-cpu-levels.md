@@ -3,7 +3,7 @@
 Date: 2026-11-17 (America/Los_Angeles). Base: `main` at be0d587. Branch
 `kiro/trap-cpu-levels-112`. Work done by Kiro (Kiro CLI 3.4.0 per
 `kiro-cli --version`; model claude-opus-5.5 as reported by the session
-context). The session emitted no credit or usage figures, so none are recorded.
+context). The completed Kiro V3 session selected claude-opus-5.5 and reported 12.181434755555555 session credits (tool metadata, not a billing invoice).
 Headless rules work only: no renderer, `src/match`, card, deck, package, CSS,
 3D, script or CI change. Trap names, counts, deck migration and public UI stay
 owner-blocked.
@@ -97,3 +97,26 @@ No browser run: pure engine change.
 
 Production trap cards, counts, deck migration and UI remain owner-blocked.
 The fixture numbers say nothing about win rates or balance of a real trap.
+
+
+## Independent coordinator verification (November 17, 2026)
+
+After the Kiro-authored commit 8fc2619 and the runFinished session
+event, the coordinator independently reviewed the bounded three-file diff
+and ran:
+
+- Focused CPU, trap CPU, and new level tests: 29/29 Node tests pass.
+- Full npm test: 313/313 Node tests pass; 2/2 GLB structure checks
+  pass (not proof of visual animation quality).
+- Documentation link checker: 173 Markdown files, 621 relative links
+  and images, zero broken.
+- git diff HEAD^ HEAD --check: pass.
+- Kiro CLI version 3.4.0 confirmed, explicit requested model
+  claude-opus-5.5; final V3 JSONL selected claude-opus-5.5 and
+  reported 12.181434755555555 credits of session usage metadata.
+- Base SHA: be0d58765f101a612aee93e3d6351b439f26b3a7.
+
+The coordinator added this evidence note separately. Kiro authored the
+CPU code/test change. All fixture counts are artificial, do not measure
+the balance of a real trap card, and do not approve production decks,
+cards, art, 3D, animation, audio or public activation.
