@@ -29,7 +29,7 @@ import * as T from "three";
 import {SLOT_COUNT} from "../game/state.js";
 import {drawKeys, motion, timings, v} from "./scene.js";
 import {grip, pose} from "./rig.js";
-import {SHERIFF_SHOT, SHERIFF_YAW, drawSheriff, idleSheriff} from "./sheriff.js";
+import {SHERIFF_SHOT, SHERIFF_YAW, drawSheriff, restSheriff} from "./sheriff.js";
 import {WIZARD_CAST, castWizard, idleWizard} from "./wizard.js";
 
 const ease = (from, to, value) => T.MathUtils.smoothstep(value, from, to);
@@ -242,7 +242,7 @@ export function withCues(board) {
     {yaw: BILLY_YAW, times: CUE_TIMES.billy, fired: timings.shot, draw: drawAndFire, rest: restBilly});
   // The Sheriff's own draw, fire and recover (src/render/sheriff.js).
   const sheriffShot = (piece, contact) => revolverShot(piece, contact,
-    {yaw: SHERIFF_YAW, times: CUE_TIMES.sheriff, fired: SHERIFF_SHOT.shot, draw: drawSheriff, rest: (resting) => idleSheriff(resting, 0)});
+    {yaw: SHERIFF_YAW, times: CUE_TIMES.sheriff, fired: SHERIFF_SHOT.shot, draw: drawSheriff, rest: restSheriff});
 
   // Deadeye with no Billy on the board: the shot comes from the Saloon.
   function saloonShot(contact) {

@@ -2,6 +2,20 @@
 
 The November 16 build gives us one reproducible path from card selection to a 3D clash. Use the game, the requirements and the replay reviewer as evidence in the recording.
 
+## Official Devpost re-check — November 16
+
+The [current rules](https://kiroween.devpost.com/rules) weight all five criteria equally at 20% each. Design and Presentation therefore account for 40%; judges may assess the submitted materials without playing. Our highest-value next work is a clear, polished match and a short end-to-end recording, backed by the actual Kiro receipts.
+
+| Opportunity | Verified condition | Project decision |
+| --- | --- | --- |
+| Student bonus | $1,500 plus one year of Pro Max per category; every teammate must currently be a student. | Check current enrollment and team details; do not infer eligibility from Berkeley affiliation alone. |
+| Blog bonus | 2,000 credits for the top 100 qualifying entries with a public third-party Kiro build post mentioning Kiroween 2026. | Adapt the verified brag sheet into a useful build story, keeping actual authorship and observed limitations. Publishing is a separate task. |
+| Crew bonus | $1,000; considered among the top 50 eligible entries, with a separate Crew app repository submission. | Night Watch already exists. Check the required repository/submission format before expanding the app. CLI delegation alone is not this bonus. |
+
+The deadline remains **December 4, 2 p.m. Pacific**. Confirm the public app, public GitHub license, tracked root `.kiro/`, Kiro write-up and public YouTube demo before submission. [Overview](https://kiroween.devpost.com/) · [Resources](https://kiroween.devpost.com/resources)
+
+Keep the game pitch concrete: a browser card duel with readable tactical consequences. A first-time-player session can test that claim. Do not manufacture usage statistics or a social-impact story. Prioritize the completed game over extra speculative spells, more motion experiments or features added solely to list another Kiro tool.
+
 ## 1. Research from September 30 through November 15
 
 Kiroween 2026 opened October 30 and closes December 4 at 2 p.m. Pacific. I read six full issues of the AWS Builder Center Kiro Weekly Reading List and retrieved the November 15 preview. I also checked Kiro’s community hub, developer blog, docs, and release notes. [Devpost rules](https://kiroween.devpost.com/rules) · [Kiro community](https://kiro.dev/community/) · [Developer blog](https://kiro.dev/blog/) · [Changelog](https://kiro.dev/changelog/)

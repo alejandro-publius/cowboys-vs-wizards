@@ -1,11 +1,13 @@
 // The Sheriff piece: assets/models/sheriff.glb (a static Tripo mesh) on the
 // procedural rig in rig.js, holding the shared revolver. Everything here is a
 // pure pose function of time; match-board.js and cues.js decide when to call
-// them. Seconds are cue seconds, points are in the rig frame (height 1, feet
+// them. The standing idle is the user-approved sourced clip (sheriff-sourced-idle.js); the
+// draw and landing below are the existing procedural cues. Seconds are cue seconds, points are in the rig frame (height 1, feet
 // at y = 0, facing +z) unless a comment says otherwise.
 import * as T from "three";
 import {attachPistol, v} from "./scene.js";
 import {grip, pose, rigActor} from "./rig.js";
+import {createSheriffIdle} from "./sheriff-sourced-idle.js";
 
 const ease = (from, to, value) => T.MathUtils.smoothstep(value, from, to);
 const pulse = (t, from, peak, to) => ease(from, peak, t) * (1 - ease(peak, to, t));
@@ -16,6 +18,8 @@ const X = v(1, 0, 0), FORWARD = v(0, 0, 1);
 export const SHERIFF_HEIGHT = 1.62;
 // Turned to face the Wizards, like Billy.
 export const SHERIFF_YAW = Math.PI;
+// Runtime crossfade only; the approved clip and existing draw keys stay unchanged.
+export const SHERIFF_BLEND_SECONDS = .18;
 // Draw, fire and recover: the shot leaves at `shot`, the target is hit at `impact`.
 // The shot falls within 0.8 s of the start, the reference's bound for a readable strike.
 export const SHERIFF_SHOT = Object.freeze({grab: .29, aimed: .68, shot: .8, impact: .89, holstered: 1.36, end: 1.58});
@@ -69,20 +73,79 @@ const breathing = (breath, sway) => ({
 });
 const plus = (a, b) => a.map((value, i) => value + b[i]);
 
-// Idle: slow breathing and a small sway. `seconds` counts from the moment the
-// idle began, so it starts in the rest pose every cue ends in.
-export function idleSheriff(piece, seconds) {
+// Snapshot the displayed pose at a change of owner. No new animation keys are generated.
+function rememberPose(actor) {
+  return {
+    rotations: actor.rig.bones.map(bone => bone.quaternion.clone()),
+    hips: actor.rig.pelvis.position.clone(),
+    position: actor.root.position.clone(),
+  };
+}
+
+// The target pose has already been evaluated by the source clip or the existing cue.
+function blendPose(actor, from, seconds) {
+  if (!from) return;
+  const remaining = 1 - ease(0, SHERIFF_BLEND_SECONDS, seconds);
+  actor.rig.bones.forEach((bone, i) => bone.quaternion.slerp(from.rotations[i], remaining));
+  actor.rig.pelvis.position.lerp(from.hips, remaining);
+  actor.root.position.lerp(from.position, remaining);
+  actor.root.updateMatrixWorld(true);
+}
+
+// The static rest pose every procedural cue starts from and ends in. It is also held,
+// briefly, while the Sheriff reacts to losing an orb.
+export function restSheriff(piece) {
   const {actor} = piece;
-  piece.breath = Math.sin(seconds * 1.9);
-  piece.sway = Math.sin(seconds * .83);
-  const idle = breathing(piece.breath, piece.sway);
+  piece.idle?.release();
+  piece.idle?.resetPose();
+  piece.idleBlendIn = piece.idleBlendOut = null;
   actor.root.rotation.y = SHERIFF_YAW;
   pose(actor, {
-    spine: idle.spine, chest: idle.chest, head: idle.head,
-    right: {goal: v(REST_WRIST[0] + idle.out, REST_WRIST[1] + idle.up, REST_WRIST[2]), bend: 0, roll: [0, 0, 0], follow: true},
-    left: {goal: v(-REST_WRIST[0] - idle.out, REST_WRIST[1] + idle.up, REST_WRIST[2]), bend: 0, roll: [0, 0, 0], follow: true},
+    right: {goal: v(...REST_WRIST), bend: 0, roll: [0, 0, 0], follow: true},
+    left: {goal: v(-REST_WRIST[0], REST_WRIST[1], REST_WRIST[2]), bend: 0, roll: [0, 0, 0], follow: true},
     legs: legs(actor, 0),
   });
+  holster(piece);
+}
+
+// The lowest skinned boot vertex of each boot quarter (heel and toe of each foot), found once
+// from the bind geometry. Seating uses the tile origin; the preview used a surface raycast.
+function bootVertices(actor) {
+  if (actor.boots) return actor.boots;
+  const position = actor.body.geometry.getAttribute("position"), boots = [[], [], [], []];
+  for (let i = 0; i < position.count; i++) {
+    if (position.getY(i) < .02) boots[(position.getX(i) < 0 ? 0 : 2) + (position.getZ(i) < 0 ? 0 : 1)].push(i);
+  }
+  return actor.boots = boots;
+}
+
+// Idle: the approved source clip at `seconds` since the idle began (it repeats). The clip moves
+// the hips, so the whole actor is lifted just enough that the lowest boot of each foot is on
+// the tile (the body's own origin); no source curve is changed.
+export function idleSheriff(piece, seconds) {
+  const {actor} = piece, point = new T.Vector3();
+  piece.idle ??= createSheriffIdle(actor);
+  if (!piece.idle.playing) {
+    piece.idleBlendIn = piece.idle.initialized ? rememberPose(actor) : null;
+    piece.idleBlendOut = null;
+  }
+  actor.root.rotation.y = SHERIFF_YAW;
+  actor.root.position.y = 0;
+  piece.idle.play(seconds);
+  if (piece.root) {
+    piece.root.updateMatrixWorld(true);
+    const ground = point.setFromMatrixPosition(actor.body.matrixWorld).y;
+    let lift = -Infinity;
+    for (const quarter of bootVertices(actor)) {
+      let lowest = Infinity;
+      for (const i of quarter) lowest = Math.min(lowest, actor.body.getVertexPosition(i, point).applyMatrix4(actor.body.matrixWorld).y);
+      lift = Math.max(lift, ground - lowest);
+    }
+    actor.root.position.y = lift + .003;
+  }
+  blendPose(actor, piece.idleBlendIn, seconds);
+  if (seconds >= SHERIFF_BLEND_SECONDS) piece.idleBlendIn = null;
+  actor.root.updateMatrixWorld(true);
   holster(piece);
 }
 
@@ -90,6 +153,9 @@ export function idleSheriff(piece, seconds) {
 // tile in world units and its scale; the caller applies them to the piece.
 export function landSheriff(piece, ms) {
   const {actor} = piece, {impact, end} = SHERIFF_LANDING;
+  piece.idle?.release();
+  piece.idle?.resetPose();
+  piece.idleBlendIn = piece.idleBlendOut = null;
   const fall = Math.min(1, ms / impact);
   const since = (ms - impact) / (end - impact);
   // Knees give on contact, then push back up to the rest pose.
@@ -114,6 +180,12 @@ export function landSheriff(piece, ms) {
 // target and aiming at `aim`, a world point.
 export function drawSheriff(piece, t, turn, aim) {
   const {actor, gun} = piece, {grab, aimed, shot, holstered, end} = SHERIFF_SHOT;
+  if (piece.idle?.playing) {
+    piece.idleBlendOut = rememberPose(actor);
+    piece.idleBlendIn = null;
+  }
+  piece.idle?.release();
+  if (piece.idleBlendOut) piece.idle.resetPose();
   const anticipate = pulse(t, .02, .26, .56), kick = pulse(t, shot, shot + .06, shot + .33);
   const level = ease(grab + .07, aimed, t) * (1 - ease(1.1, holstered, t));
   // Whatever the idle was doing when the cue began fades out over the first 0.2 s.
@@ -130,6 +202,8 @@ export function drawSheriff(piece, t, turn, aim) {
     left: {goal: v(-REST_WRIST[0] - idle.out - .05 * level + .02 * kick, REST_WRIST[1] + idle.up + .03 * anticipate + .02 * kick, REST_WRIST[2] - .09 * level), bend: .4 * level, roll: [0, 0, 0], follow: true},
     legs: legs(actor, .26 * anticipate + .1 * level - .05 * kick),
   });
+  blendPose(actor, piece.idleBlendOut, t);
+  if (t >= SHERIFF_BLEND_SECONDS) piece.idleBlendOut = null;
   holster(piece);
   if (t < grab || t > holstered) return;
   // Leaves the hip with the hand and is slid back in at the end.
@@ -149,6 +223,7 @@ export function buildSheriff(models) {
   actor.root.rotation.y = SHERIFF_YAW;
   const gun = attachPistol(actor, models.revolver, REVOLVER_SIZE);
   const piece = {actor, gun, holster: v(...HOLSTER)};
+  piece.idle = createSheriffIdle(actor);
   idleSheriff(piece, 0);
   return piece;
 }

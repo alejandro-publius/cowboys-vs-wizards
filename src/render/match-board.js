@@ -29,8 +29,12 @@ import {SLOT_COUNT} from "../game/state.js";
 import {attachPistol, createBoardScene, drawKeys, fit, motion, v} from "./scene.js";
 import {grip, pose, rigActor} from "./rig.js";
 import {createBaseOrbs, createTroopOrbs} from "./orbs.js";
-import {SHERIFF_HEIGHT, SHERIFF_LANDING, buildSheriff, idleSheriff, landSheriff} from "./sheriff.js";
+import {SHERIFF_HEIGHT, SHERIFF_LANDING, buildSheriff, idleSheriff, landSheriff, restSheriff} from "./sheriff.js";
 import {WIZARD_HEIGHT, buildWizard, idleWizard} from "./wizard.js";
+
+// How long a Sheriff holds the rest pose after losing an orb, so the idle does not shake
+// his head through the hit. It is the attack cue's impact time.
+const HIT_HOLD_MS = 400;
 
 export const CUES = Object.freeze({
   summon: Object.freeze({impact: 350, end: 600}),
@@ -217,6 +221,38 @@ export async function createMatchBoard({models, scheduler} = {}) {
     };
   }
 
+  // The Sheriff's idle is the approved sourced clip, played on this piece's own mixer. Attacks,
+  // the summon landing, a lost orb (HIT_HOLD_MS, read from the scheduler's clock so no timer is
+  // scheduled) and removal each take the pose; the clip restarts from its first frame when
+  // they end. A destroyed piece does nothing on a stale render callback.
+  function idlesSheriff(piece) {
+    let from = null, held = false;
+    piece.actor.body.onBeforeRender = () => {
+      if (piece.gone) return;
+      if (piece.acting) {
+        from = null;
+        held = false;
+        piece.idle.release();
+      } else if (scheduler.now() < piece.holdUntil) {
+        if (!held) restSheriff(piece);
+        held = true;
+        from = null;
+      } else {
+        held = false;
+        // A whole cue may complete between renders (for example in a background tab).
+        // Re-entry still starts its blend at zero even if no render saw piece.acting.
+        if (!piece.idle.playing) from = null;
+        const now = performance.now() / 1000;
+        idleSheriff(piece, now - (from ??= now));
+      }
+    };
+    piece.owned.push({dispose: () => {
+      piece.gone = true;
+      piece.actor.body.onBeforeRender = () => {};
+      piece.idle.dispose();
+    }});
+  }
+
   function build(side, slot, cardId) {
     const card = CARDS[cardId];
     if (card?.kind !== "troop" || card.side !== side) throw new TypeError(`"${cardId}" is not a ${side} troop card`);
@@ -224,13 +260,13 @@ export async function createMatchBoard({models, scheduler} = {}) {
     root.name = `${side}-piece-${slot}`;
     root.userData = {piece: true, side, slot, cardId};
     root.add(body);
-    const piece = {side, slot, cardId, name: card.name, kind: "token", temporary: false, acting: false, root, body, height: 0,
+    const piece = {side, slot, cardId, name: card.name, kind: "token", temporary: false, acting: false, gone: false, holdUntil: -Infinity, root, body, height: 0,
       actor: null, gun: null, holster: null, staff: null, token: null, orbs: null, hitbox: null, owned: []};
     const rigged = RIGGED[card.name];
     if (rigged?.kind === "sheriff") {
       Object.assign(piece, buildSheriff(models), rigged);
       piece.owned.push(piece.actor.body.geometry, piece.actor.body.skeleton);
-      idles(piece, idleSheriff);
+      idlesSheriff(piece);
       body.add(piece.actor.root);
     } else if (rigged?.kind === "wizard") {
       Object.assign(piece, buildWizard(models), rigged);
@@ -374,7 +410,9 @@ export async function createMatchBoard({models, scheduler} = {}) {
   }
 
   function setTroopOrbs(side, slot, n) {
-    occupant(side, slot, "for orbs").orbs.set(n);
+    const piece = occupant(side, slot, "for orbs");
+    if (piece.kind === "sheriff" && n < piece.orbs.count()) piece.holdUntil = scheduler.now() + HIT_HOLD_MS;
+    piece.orbs.set(n);
   }
 
   function setBaseOrbs(side, n) {
@@ -450,6 +488,7 @@ export async function createMatchBoard({models, scheduler} = {}) {
     slots[side][slot] = null;
     pickable.delete(piece.hitbox);
     leaving.add(piece);
+    piece.gone = true;
     const faded = new Map(); // original material -> transparent copy owned by the piece
     piece.root.traverse((node) => {
       if (!node.material || !node.visible) return;

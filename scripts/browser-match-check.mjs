@@ -2,8 +2,10 @@
 // (dist/cowboys-vs-wizards-board-duel.html). It speaks the DevTools protocol
 // over Node's built-in WebSocket, so it needs no extra dependency.
 //
-//   npm run build && node scripts/browser-match-check.mjs [--seed N] [--url URL] [--swiftshader] [--summary] [--out-dir PATH] [--showcase]
+//   npm run build && node scripts/browser-match-check.mjs [--seed N] [--url URL] [--swiftshader] [--summary] [--out-dir PATH] [--showcase] [--escape]
 //
+// --escape checks only the Escape key against the selection (no full match)
+// and writes to .artifacts/fable-escape-cancel/browser/ unless --out-dir is given.
 // --showcase plays the seed 60 Mounted Billy route instead of the eight steps
 // and writes to .artifacts/kiro/showcase/ unless --out-dir is given.
 //
@@ -52,8 +54,10 @@ if (args.includes("--out-dir") && (!outputPath || outputPath.startsWith("--"))) 
 // through real clicks, for recording. Its default output is ignored by git.
 const showcase = args.includes("--showcase");
 if (showcase && option("--seed") !== undefined && Number(option("--seed")) !== 60) throw new Error("--showcase always uses seed 60");
+const escapeOnly = args.includes("--escape");
+if (escapeOnly && showcase) throw new Error("--escape and --showcase are separate runs");
 const outDir = outputPath ? path.resolve(outputPath)
-  : path.join(root, showcase ? ".artifacts/kiro/showcase" : "docs/evidence/kiro-match-ui");
+  : path.join(root, escapeOnly ? ".artifacts/fable-escape-cancel/browser" : showcase ? ".artifacts/kiro/showcase" : "docs/evidence/kiro-match-ui");
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const shell = (command, list) => {
@@ -360,6 +364,58 @@ async function runOnce(seed, flags, tilePoints) {
       {status: s.status, fallbackHidden: s.fallbackHidden, demoControlsHidden: s.controlsHidden, demoToolsHidden: s.toolsHidden,
         modeButton: s.modeText, seedShown: `${s.seed} ${s.seedKind}`, details: s.details, prompt: s.prompt});
 
+    if (escapeOnly) {
+      // After every listener ran: did this Escape keydown get preventDefault()?
+      await evaluate(`window.__escape = []; window.addEventListener("keydown", (e) => { if (e.key === "Escape") __escape.push(e.defaultPrevented); })`);
+      const escape = async () => {
+        await key("Escape", "Escape", 27);
+        return {...await snapshot(), prevented: await evaluate("__escape.splice(0)"), dialog: await evaluate(`Boolean(document.querySelector("dialog[open]"))`)};
+      };
+      // The match as the page shows it; a cancel must leave all of it alone.
+      const match = (x) => JSON.stringify([x.details, x.seed, x.hand.map((card) => card.cardId), x.lanes.map((each) => each.text),
+        x.cowboyDeck, x.wizardDeck, x.wizardHand, x.cowboyBase, x.wizardBase]);
+      const chosen = (x) => x.hand.filter((card) => card.pressed).length;
+      const before = match(s), sheriff = cardSelector(s.hand.find((card) => card.name === "Sheriff").cardId);
+      const cancelled = (x) => x.prevented.join() === "true" && chosen(x) === 0 && !x.buttons.cancel && x.status === "accepting_input" && match(x) === before;
+      const untouched = (x) => x.prevented.join() === "false" && chosen(x) === 1 && x.buttons.cancel && !x.dialog && match(x) === before;
+      const checks = {};
+
+      await click(sheriff);
+      checks.cardSelected = chosen(await snapshot()) === 1;
+      checks.cardStepCancelled = cancelled(await escape());
+      const idle = await escape(); // nothing left to cancel
+      checks.idleEscapeIgnored = idle.prevented.join() === "false" && match(idle) === before;
+
+      await click(sheriff);
+      await click(laneSelector("cowboy", (await snapshot()).lanes.find((each) => each.side === "cowboy" && !each.disabled).slot));
+      checks.destinationChosen = (await snapshot()).buttons.confirm;
+      checks.destinationStepCancelled = cancelled(await escape()); // not summoned: the hand and lanes are as before
+
+      await click(sheriff);
+      await click("#match .arena-menu");
+      checks.menuOpened = await evaluate(`document.querySelector("#match .match-details").open`);
+      checks.menuEscapeKeepsSelection = untouched(await escape());
+      await click("#match .view-art");
+      checks.cardArtOpened = await evaluate(`document.querySelector("#match .card-viewer").open`);
+      checks.cardArtEscapeKeepsSelection = untouched(await escape());
+
+      await evaluate(`document.body.append(Object.assign(document.createElement("input"), {id: "escape-probe"})); document.getElementById("escape-probe").focus()`);
+      const typing = await escape();
+      await evaluate(`document.getElementById("escape-probe").remove()`);
+      checks.editableEscapeKeepsSelection = untouched(typing);
+
+      await click(action("cancel"));
+      checks.cancelButtonStillWorks = chosen(await snapshot()) === 0;
+
+      await click(action("end-phase"));
+      const playback = await escape();
+      checks.playbackEscapeIgnored = playback.status !== "accepting_input" && playback.prevented.join() === "false";
+      const round = Number(s.details.match(/\d+/)[0]);
+      s = await waitFor("the next Cowboy turn", (x) => x.status === "accepting_input" && x.details?.startsWith(`Round ${round + 1} `), 60000);
+      step(2, "Escape cancels a selection once and leaves dialogs, text entry and playback alone",
+        Object.values(checks).every(Boolean), {...checks, playbackStatus: playback.status, nextTurn: s.details});
+      return report;
+    }
     if (showcase) {
       // The legal Cowboy route for seed 60 comes from the engine's CPU bots;
       // every action is then made with real clicks on the page.
@@ -638,8 +694,8 @@ async function runOnce(seed, flags, tilePoints) {
 }
 
 const seed = showcase ? 60 : chooseSeed();
-const expectedSteps = showcase ? 4 : 8;
-const tilePoints = showcase ? [] : await cowboyTilePoints();
+const expectedSteps = escapeOnly ? 2 : showcase ? 4 : 8;
+const tilePoints = showcase || escapeOnly ? [] : await cowboyTilePoints();
 const attempts = [];
 let run = await runOnce(seed, args.includes("--swiftshader") ? SWIFTSHADER : [], tilePoints);
 if (run.webglFailed && !args.includes("--swiftshader")) {

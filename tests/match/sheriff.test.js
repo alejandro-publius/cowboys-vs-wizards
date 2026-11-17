@@ -13,7 +13,7 @@ import { createController } from "../../src/match/controller.js";
 import { createMatchBoard } from "../../src/render/match-board.js";
 import { CUE_TIMES, withCues } from "../../src/render/cues.js";
 import { grip } from "../../src/render/rig.js";
-import { SHERIFF_HEIGHT, SHERIFF_LANDING, SHERIFF_SHOT, drawSheriff, idleSheriff, landSheriff } from "../../src/render/sheriff.js";
+import { SHERIFF_HEIGHT, SHERIFF_LANDING, SHERIFF_SHOT, drawSheriff, idleSheriff, landSheriff, restSheriff } from "../../src/render/sheriff.js";
 
 const models = await localModels();
 const idOf = (name) => Object.values(CARDS).find((card) => card.name === name).id;
@@ -58,13 +58,21 @@ test("the Sheriff stands on its tile at board scale, facing the Wizards with the
   const tileSize = new T.Box3().setFromObject(tile.model).getSize(new T.Vector3());
   assert.ok(size.x < tileSize.x && size.z < tileSize.z, "fits on the tile");
 
-  for (const seconds of [0, .7, 1.9, 3.3]) {
+  // The approved clip moves the hips, so the actor is seated: the lowest boot of each foot is
+  // on the tile, none is under it, and both boots stay over the tile. (Fidelity to the source
+  // is in sheriff-idle.test.js.)
+  restSheriff(sheriff);
+  const restFeet = soles(sheriff);
+  for (const point of restFeet) assert.ok(Math.abs(point.y - tile.top) < .02, `rest sole at ${point.y}, tile at ${tile.top}`);
+  for (const seconds of [0, .7, 1.3, 1.9, 2.4]) {
     idleSheriff(sheriff, seconds);
     const feet = soles(sheriff);
     assert.ok(feet.length > 20);
-    for (const point of feet) assert.ok(Math.abs(point.y - tile.top) < .02, `sole at ${point.y}, tile at ${tile.top}, idle second ${seconds}`);
+    assert.ok(Math.min(...feet.map((point) => point.y)) > tile.top - .005, `a sole is under the tile at idle second ${seconds}`);
+    assert.ok(Math.min(...feet.map((point) => point.y)) < tile.top + .02, `no boot on the tile at idle second ${seconds}`);
     assert.ok(feet.every((point) => Math.abs(point.x - tile.x) < tileSize.x / 2 && Math.abs(point.z - tile.z) < tileSize.z / 2), "both boots are over the tile");
   }
+  restSheriff(sheriff);
   const gun = sheriff.gun.holder.position;
   assert.ok(gun.distanceTo(sheriff.holster) < 1e-9, "holstered");
   assert.ok(gun.x < -.15 && gun.x > -.25 && Math.abs(gun.y - .44) < .03, "at the right hip, belt height");
@@ -157,23 +165,23 @@ test("reference targets: poses join within 1 mm, planted boots do not drift, not
   };
 
   // Every cue starts in the pose the idle is in, and ends in the pose the idle starts from.
-  idleSheriff(sheriff, 0);
+  restSheriff(sheriff);
   const rest = snapshot(), planted = soles(sheriff);
-  idleSheriff(sheriff, 2.3);
-  const breathing = snapshot();
-  assert.ok(apart(breathing, rest) > .002, "the idle moves");
+  // A cue starts at the displayed idle pose, then blends into the existing draw.
+  idleSheriff(sheriff, 1.3);
+  const displayedIdle = snapshot();
+  assert.ok(apart(displayedIdle, rest) > .01, "the approved idle moves");
   drawSheriff(sheriff, 0, 0, aim);
-  assert.ok(apart(snapshot(), breathing) < .001, `draw start is ${apart(snapshot(), breathing)} from the idle pose`);
+  assert.ok(apart(snapshot(), displayedIdle) < .001, `draw start jumps ${apart(snapshot(), displayedIdle)} from idle`);
   drawSheriff(sheriff, SHERIFF_SHOT.end, 0, aim);
   assert.ok(apart(snapshot(), rest) < .001, `draw end is ${apart(snapshot(), rest)} from rest`);
   landSheriff(sheriff, SHERIFF_LANDING.end);
   assert.ok(apart(snapshot(), rest) < .001, `landing end is ${apart(snapshot(), rest)} from rest`);
 
-  // Planted boots and the floor, sampled at 60 per second through idle, landing and draw.
+  // Planted boots and the floor, sampled at 60 per second through landing and draw.
   const frames = [];
-  for (let s = 0; s <= 8; s += 1 / 60) frames.push(() => idleSheriff(sheriff, s));
   for (let ms = SHERIFF_LANDING.impact; ms <= SHERIFF_LANDING.end; ms += 1000 / 60) frames.push(() => landSheriff(sheriff, ms));
-  idleSheriff(sheriff, 0);
+  restSheriff(sheriff);
   for (let t = 0; t <= SHERIFF_SHOT.end; t += 1 / 60) frames.push(() => drawSheriff(sheriff, t, 0, aim));
   let drift = 0, under = 0;
   for (const frame of frames) {
@@ -195,7 +203,7 @@ test("reference targets: poses join within 1 mm, planted boots do not drift, not
   // Reading: the shot comes within 0.8 s, the muzzle travels at least 0.35 heights
   // from rest, and the chest leans at least 10 degrees at the shot.
   assert.ok(SHERIFF_SHOT.shot <= .8);
-  idleSheriff(sheriff, 0);
+  restSheriff(sheriff);
   sheriff.root.updateMatrixWorld(true);
   const muzzleAtRest = gun.tip.getWorldPosition(new T.Vector3());
   drawSheriff(sheriff, SHERIFF_SHOT.shot, 0, aim);

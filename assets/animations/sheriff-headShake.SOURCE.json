@@ -1,0 +1,21 @@
+{
+  "clip": "Mixamo_headShake_retargeted",
+  "durationSeconds": 2.566666603088379,
+  "keyframes": 78,
+  "tracks": 17,
+  "approvedGlb": {
+    "file": "sheriff-mixamo-headShake-preview.glb",
+    "bytes": 3891912,
+    "sha256": "d9d2ea2e0dc4808f3b220bae0e21440a5109de0e87e82845e93abc6bd1655c99"
+  },
+  "clipDataSha256": "de012cfb4cf95aa71db68a757d824b0ff1638fb1abcaf5e08aa47b96a5e7bd36",
+  "conversion": "glTF rotation/translation LINEAR samplers -> track names '<bone>.quaternion'/'<bone>.position'; Float32 values unchanged",
+  "motion": "Mixamo headShake, via three.js r180 Xbot.glb",
+  "motionSources": [
+    "https://raw.githubusercontent.com/mrdoob/three.js/r180/examples/models/gltf/Xbot.glb",
+    "https://threejs.org/examples/webgl_animation_skinning_additive_blending.html"
+  ],
+  "terms": "Adobe/Mixamo terms apply, not the three.js MIT code license: https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html",
+  "retarget": "Codex (codex-sourced-motion-preview); user approved the visible standing gesture with 'perfect!!!' on 2026-11-16",
+  "art": "User's Tripo Sheriff, assets/models/sheriff.glb, unchanged"
+}
