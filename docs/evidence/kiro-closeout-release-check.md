@@ -52,3 +52,9 @@ Source: `.worktrees/kiro-closeout-integration/.artifacts/kiro-closeout/` in the 
 - [receipts/](kiro-closeout-release-check/receipts): `seed-0-browser-run.json` (SHA-256 `bc032cc7…8bb0`, from `.artifacts/kiro/replay/browser-run.json`) and `seed-60-browser-run.json` (SHA-256 `42c82e5c…8241`, from `.artifacts/kiro/showcase/browser-run.json`), unchanged.
 - No path redaction was applied. Copies contain the local home path (`/Users/alexvintera/...`) and the machine model in receipt metadata. No credentials were seen.
 - Screenshots stay under ignored `.artifacts/kiro/{replay,showcase}/`. `dist/` is also ignored.
+
+## Coordinator verification
+
+Codex independently hashed the standalone HTML after the Kiro run: `a5d0c756077e89afa4f8a107c64e863a7d09cba48456f8229a8b42b4fa208bd2`, matching both receipts. Seven copied original files (four Workflow-state files, two browser receipts and the report) match their source bytes exactly. Six evidence JSON files parse; linked files exist. The small `web-build.log` was explicitly included after the generic log ignore rule omitted it from the worker commit.
+
+The browser receipt flag uses `Boolean(git status --porcelain)`, which includes untracked files. The worktree has an untracked `node_modules` symlink; the source/art/test/workflow paths have no diff from frozen `e9aeb06`. This explains why the flag is broader than a runtime-source modification check; the original flag remains unchanged. These inspections are Codex review, not additional Kiro browser runs.
