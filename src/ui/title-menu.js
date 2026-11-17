@@ -61,9 +61,10 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings}) {
     for(const text of [
       'Choose a glowing card, pick a lane, then confirm your summon.',
       'Sheriffs summon freely. Billy costs one friendly troop; Mounted Billy costs two. Choose those tribute troops before placing the new one.',
-      'Each round allows one summon, then one spell. Deadeye removes one life orb from an enemy troop.',
-      'End your turn when ready. The Wizards act, then opposing lanes clash. An unblocked troop attacks the enemy Base.',
-      'Each orb is one life. Both Bases start at five; if neither falls, the match resolves after nine rounds.'
+      'On your turn, summon up to one troop and cast up to one spell. Both are optional. Summon first if you want to do both.',
+      'Deadeye removes one life orb from an enemy troop, even when your lanes are empty. The Wizards’ Singularity removes an orb from one of your troops and can move the survivor to an empty lane.',
+      'End your turn when ready. The Wizards act, then opposing troops strike at the same time: both deal damage even if one falls. An unblocked troop attacks the enemy Base.',
+      'Each orb is one life. Both Bases start at five. After nine rounds, more Base orbs wins; equal Base orbs is a draw.'
     ])steps.append(element('li',text));
     content.append(steps,element('p','Escape cancels a card selection. Main menu pauses your match; Play resumes it. Restart begins a new match with your saved deck.',{class:'menu-hint'}));
   }
