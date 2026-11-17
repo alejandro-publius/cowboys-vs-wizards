@@ -1,4 +1,4 @@
-# Trap placeholder lab (issues #108, #116 and #118)
+# Trap placeholder lab (issues #108, #116, #118 and #122)
 
 **Experimental, synthetic, local only.** This is a developer lab for the frozen A + X trap prototype. It is not released UI, not gameplay art and not linked from the game. Traps stay off in the shipped game (`createMatch(seed)` with no `traps` option). In the default FIXTURE scenario each side gets one anonymous test-fixture trap in its opening hand, defined only in [lab.js](lab.js). The fixture is not a card, deck entry, copy count or balance result. There are no models, animation, audio or art. The page uses plain native buttons and text. Nobody has reviewed it for accessibility.
 
@@ -34,6 +34,23 @@ T1 and T2 relabel after the shuffle ([scenarios.js](scenarios.js)), so the seed,
 The Wizard CPU select (easy, normal, hard; default normal) picks `cpuFor(level)` from `src/game/cpu.js`. Normal is the unchanged `chooseAction` the lab used before. You always play the Cowboy.
 
 A Start with changed settings leaves the old controller (`controller.leave()` advances the scheduler epoch, so no queued CPU step, timer or playback survives), ignores any later callback from it, clears the log and starts a fresh controller. A refused seed keeps the current match. The status line names the active scenario, its real card count and the Wizard level.
+
+## Guided trial seeds (issue #122)
+
+Below the status line, a "Guided T1 trial" native select lists the six T1 categories A to F of the [#120 seed kit](../trap-playtest-kit/README.md) and the optional T2 double-trap example. The options are built at page load from `pickSeeds()` in the browser-safe [seeds.js](../trap-playtest-kit/seeds.js), so no seed is written in the page; the labels and the detail line use the kit's `CATEGORIES` text and the picked Cowboy positions. The page does not import the Node-only `run.mjs` or the #114 simulation. Nothing is chosen on load and FIXTURE stays the default scenario.
+
+- Choosing an option only updates the detail line under the select. No field or match changes.
+- "Prepare trial — does not start" writes the option's seed into the seed field, T1 (or T2 for the optional example) into Scenario and normal into Wizard CPU. It never calls Start, Restart or Leave and never moves focus. Its own status line says "Prepared ... Press Start.", and the lab status line keeps describing the match in progress and adds "Settings changed: they apply on Start." and "Seed field N applies on Start." until you press Start.
+- "Prepare paired BASE at current seed — does not start" reads the seed field as it is (a whole number from 0 to 4294967295, otherwise nothing is prepared), and sets Scenario to BASE and Wizard CPU to normal. It keeps that seed. It reminds you to export the T1 report first and to press Clear notes if you want empty notes; it never exports or clears anything itself.
+- An export always describes the active match (its seed, scenario and CPU level), not prepared fields that have not been started.
+
+The detail line describes only your (the Cowboy's) synthetic trap and spell positions. The Wizard's deck order and trap stay hidden. A position from 4 up is drawn only if the match is still going at that round: categories E and F need the match to reach round 8 or 9, so the late trap may never be drawn. Knowing the positions before play can change how someone plays. Nobody has played these trials yet; the picker collects no feedback.
+
+```sh
+node --test tests/experiments/trap-placeholder-seed-picker.test.js
+```
+
+Node checks of the picker data against the committed [seed-plan.md](../trap-playtest-kit/seed-plan.md) and of the page source, plus a Chrome loopback smoke with real CDP key presses (Tab, letter typeahead, Enter) and mouse clicks: category A to seed 55 T1 normal, paired BASE at 55, the optional T2 seed, and the exports after each (skipped when Chrome is not at the default macOS path).
 
 ## Controls
 
@@ -91,4 +108,4 @@ node --test tests/experiments/trap-placeholder-scenarios.test.js
 
 The scenario test also runs a Chrome smoke of BASE, T1 and T2 (skipped when Chrome is not at the default macOS path). It sets the selects by script with a change event, not by keyboard.
 
-Evidence: [docs/evidence/kiro-trap-placeholder-108.md](../../docs/evidence/kiro-trap-placeholder-108.md), [docs/evidence/kiro-trap-keyboard-110.md](../../docs/evidence/kiro-trap-keyboard-110.md), [docs/evidence/kiro-trap-scenario-selector-116.md](../../docs/evidence/kiro-trap-scenario-selector-116.md) and [docs/evidence/kiro-trap-playtest-report-118.md](../../docs/evidence/kiro-trap-playtest-report-118.md).
+Evidence: [docs/evidence/kiro-trap-placeholder-108.md](../../docs/evidence/kiro-trap-placeholder-108.md), [docs/evidence/kiro-trap-keyboard-110.md](../../docs/evidence/kiro-trap-keyboard-110.md), [docs/evidence/kiro-trap-scenario-selector-116.md](../../docs/evidence/kiro-trap-scenario-selector-116.md), [docs/evidence/kiro-trap-playtest-report-118.md](../../docs/evidence/kiro-trap-playtest-report-118.md) and [docs/evidence/kiro-trap-seed-picker-122.md](../../docs/evidence/kiro-trap-seed-picker-122.md).
