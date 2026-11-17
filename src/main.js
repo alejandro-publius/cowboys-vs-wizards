@@ -8,6 +8,7 @@ import {withClashReady} from "./render/clash-ready.js";
 import {withGraveyards} from "./render/graveyards.js";
 import {createScheduler} from "./match/scheduler.js";
 import {createController,FABLE_ENGINE} from "./match/controller.js";
+import {paceOptions} from "./match/pace.js";
 import {cpuFor} from "./game/cpu.js";
 import {clashLog} from "./match/clash-log.js";
 import {openingMatch,parseOpeningParams} from "./game/opening-policy.js";
@@ -271,7 +272,7 @@ async function launch(){
     }
   };
   // ?cpu=easy|hard previews a Wizard difficulty level; anything else is the normal opponent.
-  controller=createController({engine,scheduler,renderer:matchView,onChange:showMatch,chooseCpuAction:cpuFor(params.get("cpu"))});
+  controller=createController({engine,scheduler,renderer:matchView,onChange:showMatch,chooseCpuAction:cpuFor(params.get("cpu")),...paceOptions(params.get("pace"))});
   // ?closeup=cowboy-0 (or cowboy-0-wide) views one tile from the front, to check a model.
   const closeup=/^(cowboy|wizard)-([0-2])(-wide)?$/.exec(params.get("closeup")??"");
   if(closeup)board.closeUp(closeup[1],Number(closeup[2]),Boolean(closeup[3]));
