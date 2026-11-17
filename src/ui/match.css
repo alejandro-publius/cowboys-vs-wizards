@@ -76,6 +76,8 @@
 .selection-actions button {pointer-events:auto;font-size:12px;min-height:37px}
 .selection-actions [data-action=confirm]:not(:disabled) {color:#ffe0a4}
 .match-message {position:absolute;bottom:calc(100% + 12px);max-width:calc(100% - 32px);margin:0;color:#fff0d4;font-weight:650;text-align:center;text-shadow:var(--hud-shadow)}
+.match-clash-log {position:absolute;left:16px;bottom:14px;max-width:min(320px,calc(50% - 260px));color:#fff0d4;font-size:12px;line-height:1.4;text-shadow:var(--hud-shadow);pointer-events:none}
+.match-clash-log ul {margin:2px 0 0;padding:0;list-style:none}
 .duel-dialog {pointer-events:auto;color:var(--text);background:none;border:0;text-shadow:var(--hud-shadow);width:min(92vw,450px);max-height:90dvh;padding:22px}
 .duel-dialog::backdrop {background:#130c14ad}
 .dialog-heading {display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
@@ -107,5 +109,6 @@
  .phase-control {right:8px}.match-hand {gap:12px;padding-left:14px;padding-right:14px}
  .draft-face .card-name {font-size:12px}
  .hand-heading {width:94vw}
+ .match-clash-log {left:12px;top:60px;bottom:auto;max-width:46vw}
 }
 @media(prefers-reduced-motion:reduce) {.card-body,.card-stage::before {transition:none}}
