@@ -19,3 +19,7 @@ Date: 2026-11-16 (America/Los_Angeles, run about 18:03-18:05). Agent: Kiro (orch
 - The reviewer's own verdict says it compared the summary to the eight card files only and did not consult `requirements.md` or `src/game/cards.js`, so rule descriptions were not checked against runtime rules.
 - No art, balance, playtest, build or test claim. No game rules were improved. One approval is not evidence that rounds 2 or 3 would approve.
 - Original run log (`run-stream.jsonl`, ignored under `.artifacts/`) is not committed; its SHA256 is in the receipt. The artifact directory also held coordinator-created files (task, launcher, baseline hashes) that were left as found.
+
+## Coordinator receipt finalization
+
+After Kiro exited0, Codex replaced the in-progress log digest with the final immutable run-stream SHA256. Kiro authored and ran the workflow and wrote the review/evidence; Codex only finalized this receipt hash. No log was modified.
