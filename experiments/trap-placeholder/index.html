@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Trap placeholder lab (local developer tool)</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<p class="warning" role="note"><strong>Experimental, synthetic, local only.</strong>
+Developer lab for issue #108. Traps are off in the shipped game. Each side holds one anonymous
+test-fixture trap that is not a real card, deck entry or balance result. No art, models,
+animation or audio. Serve over loopback HTTP (see README.md), not file://.</p>
+
+<h1>Trap placeholder lab</h1>
+
+<section aria-labelledby="match-heading">
+  <h2 id="match-heading">Match</h2>
+  <form id="seed-form">
+    <label for="seed">Seed (0 to 4294967295)</label>
+    <input id="seed" name="seed" inputmode="numeric" pattern="[0-9]*" value="0" autocomplete="off">
+    <button type="submit">Start</button>
+    <button type="button" id="restart">Restart</button>
+    <button type="button" id="leave">Leave</button>
+  </form>
+  <div id="status" aria-live="polite"></div>
+</section>
+
+<section aria-labelledby="wizard-heading" class="side">
+  <h2 id="wizard-heading">Wizard (CPU)</h2>
+  <p id="wizard-info"></p>
+  <p id="wizard-trap"></p>
+  <div class="lanes" id="wizard-lanes"></div>
+</section>
+
+<section aria-labelledby="cowboy-heading" class="side">
+  <h2 id="cowboy-heading">Cowboy (you)</h2>
+  <p id="cowboy-info"></p>
+  <p id="cowboy-trap"></p>
+  <div class="lanes" id="cowboy-lanes"></div>
+  <h3>Hand</h3>
+  <div id="hand" class="row"></div>
+</section>
+
+<section aria-labelledby="actions-heading">
+  <h2 id="actions-heading">Actions</h2>
+  <p id="prompt"></p>
+  <div class="row">
+    <button type="button" id="confirm">Confirm</button>
+    <button type="button" id="skip">Skip move</button>
+    <button type="button" id="cancel">Cancel</button>
+    <button type="button" id="end-phase">End phase</button>
+  </div>
+  <h3>Developer command list (legal summons and spells)</h3>
+  <ul id="commands"></ul>
+</section>
+
+<section aria-labelledby="log-heading">
+  <h2 id="log-heading">Public event log (Cowboy view)</h2>
+  <label><input type="checkbox" id="show-log" checked> Show log</label>
+  <ol id="log" role="log"></ol>
+</section>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
