@@ -4,6 +4,8 @@
 
 **Current notes (Nov 16, Pacific):** Runtime frozen at `e9aeb06` is historical. `c454398` changed How to Play text, and the combined candidate 02b1bf8 now passes 11 menu and 9 keyboard checks ([web evidence](evidence/final-polish-web.md)). Installed Power is 1.1.0 (installed-only pass/pass, stale/stale on copied historical receipts, no new browser run: [receipt](evidence/kiro-power-package-fix.md)). Installed Night Watch is 0.1.2; basic Crew chat works, but human trust approval, UI capture and a real schedule remain blocked ([receipt](evidence/kiro-crew-repair.md)). Fable completed a 2:40 [demo script](submission/judge-demo-script.md) and a blank human playtest protocol. [Reconciliation](evidence/kiro-docs-reconciliation.md).
 
+**Final candidate verification:** Kiro native Workflow wf_0572a745f5194cf1 completed on 02b1bf8 in 179 seconds: 157 tests, two model-structure checks, 8/8 seed-0 and 4/4 seed-60 steps, zero console errors. [Original run evidence](evidence/kiro-final-polish-verification.md). Codex independently passed 11 menu and 9 keyboard checks on the web build. Publication is tracked in PR #17; this verification does not claim human or real-device testing.
+
 ## Built and available
 
 | Area | State and proof |
