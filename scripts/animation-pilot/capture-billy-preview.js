@@ -9,7 +9,7 @@
 //   ... run-code --filename=... > .artifacts/billy-pilot/run-output.txt
 // Frames are written under the directory `open` was run from.
 async page => {
-  const OUT = ".artifacts/billy-pilot/frames/";
+  const OUT = ".artifacts/billy-pilot/frames-v2/";
   const problems = [];
   page.on("pageerror", (error) => problems.push("pageerror: " + String(error)));
   page.on("console", (message) => {

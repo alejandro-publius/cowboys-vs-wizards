@@ -58,7 +58,7 @@ function start() {
   scheduler.tick(clock * 1000);
   board.reset(view);
   [[0, 0], [2, SECOND_PHASE]].forEach(([slot, phase]) => {
-    const piece = board.piece("cowboy", slot), idle = createBillyIdle(piece.actor);
+    const piece = board.piece("cowboy", slot), idle = createBillyIdle(piece.actor, piece.gun);
     const entry = {idle, origin: clock - phase, piece, lastClock: null};
     idles.set(piece, entry);
     // Same pattern as match-board idles(): runs when the body renders, skips while a cue poses it.
@@ -120,7 +120,7 @@ function sample() {
     const piece = board.piece("cowboy", slot);
     if (!piece) continue;
     const entry = idles.get(piece), pos = [0, 1].flatMap((i) => [ankleOf(piece, i).toArray(), wristOf(piece, i).toArray()]);
-    row.pieces[name] = {acting: piece.acting, idlePlaying: entry.idle.playing, idleSeconds: entry.idle.seconds, p: pos.flat(), yaw: piece.actor.root.rotation.y, lift: piece.actor.root.position.y};
+    row.pieces[name] = {acting: piece.acting, idlePlaying: entry.idle.playing, idleSeconds: entry.idle.seconds, p: pos.flat(), soles: entry.idle.soleClearances(), gun: piece.gun.holder.getWorldPosition(new T.Vector3()).toArray(), grip: wristOf(piece, 0).toArray(), yaw: piece.actor.root.rotation.y, lift: piece.actor.root.position.y};
   }
   log.frames.push(row);
 }
@@ -140,10 +140,25 @@ window.__pilot = {
   advance, board, log, idles, TOTAL, ATTACK_AT, IDLE: BILLY_IDLE_DURATION,
   // Clear the board, check what was released, and replay from clock 0 on the same page.
   teardown() {
-    const before = {pieces: board.pieces().length, mixers: [...idles.values()].map((e) => e.idle.disposed)};
+    // 1) Board-owned callbacks: start an attack (schedules cue timers), clear the board, run the clock past them.
+    const live = scheduler.pending();
+    attackNow();
+    const withCue = scheduler.pending();
+    const before = {pieces: board.pieces().length, mixers: [...idles.values()].map((e) => e.idle.disposed), pending: withCue, pendingBeforeCue: live};
     board.clear();
-    const after = {pieces: board.pieces().length, disposed: [...idles.values()].map((e) => e.idle.disposed), pending: scheduler.epoch()};
-    return {before, after};
+    const after = {pieces: board.pieces().length, disposed: [...idles.values()].map((e) => e.idle.disposed), pending: scheduler.pending()};
+    scheduler.tick(scheduler.now() + 3000);
+    const afterTick = {pieces: board.pieces().length, pending: scheduler.pending()};
+    // 2) Stale callback: a callback tied to the old scheduler epoch must not run after the epoch moves.
+    const stale = {ran: 0};
+    scheduler.after(10, () => {stale.ran++;});
+    const guarded = scheduler.guard(() => {stale.ran++;});
+    const pendingScheduled = scheduler.pending();
+    scheduler.advance();
+    const pendingAfterAdvance = scheduler.pending();
+    scheduler.tick(scheduler.now() + 1000);
+    guarded();
+    return {before, after, afterTick, stale: {pendingScheduled, pendingAfterAdvance, ranAfterClear: stale.ran}};
   },
   restart() {
     board.clear(); idles.clear(); clock = 0; attacked = false; log.frames.length = 0; log.events.length = 0;
