@@ -1,0 +1,97 @@
+{
+  "workflowId": "wf_0572a745f5194cf1",
+  "workflowName": "orb-duel-replay",
+  "status": "completed",
+  "inputs": {},
+  "artifacts": {},
+  "capturedOutputs": {
+    "verify-duel": "Command: `node scripts/verify-duel.mjs --browser`\nExit status: 0\n\nThe command passed and printed all the fields you asked for.\n\n- **Node tests:** 157 run, 157 pass, 0 fail, 0 cancelled, 0 skipped, 0 todo.\n- **Asset structure preflight:** 2 of 2 files passed (`dragon.glb`, `mounted-billy.glb`).\n- **Chrome replay:** Chrome/157.0.8103.52, seed 0, revision 02b1bf8.\n- **Observed Chrome steps:** 8 of 8.\n- **Pending step IDs:** none.\n- **Console errors:** 0.\n- **Build SHA-256:** `873a8962396263a4feb2dc382bdb3f464cdb203d0eb19f1cc153caa82a3e6eca`\n- **Receipt path:** `.artifacts/kiro/replay/browser-run.json`\n\nI made no source edits.",
+    "verify-showdown": "Command: `node scripts/browser-match-check.mjs --showcase --summary --out-dir .artifacts/kiro/showcase`\nExit status: 0\n\n- Chrome: Chrome/157.0.8103.52\n- Revision: 02b1bf8\n- Seed: 60\n- Observed steps: 4 of 4\n- Pending IDs: none\n- Console errors: 0\n- Build SHA-256: `873a8962396263a4feb2dc382bdb3f464cdb203d0eb19f1cc153caa82a3e6eca`\n- Receipt path: `.artifacts/kiro/showcase/browser-run.json`\n- Hash match: the seed-60 SHA-256 matches the seed-0 SHA-256 (`873a8962…6eca`).\n\nResult: pass. The exit status was 0 and the hashes match. I made no source edits.",
+    "report": "I wrote the report to `.artifacts/kiro/replay/report.md`. It has one table per run, and I made no other edits.\n\n- **Seed 0:** `node scripts/verify-duel.mjs --browser` exited 0. The run was at revision 02b1bf8, with 8 of 8 steps observed and 0 console errors. The receipt is `.artifacts/kiro/replay/browser-run.json`. The report uses this step's Node counts: 157 run, 157 pass, 0 fail.\n- **Seed 60:** `node scripts/browser-match-check.mjs --showcase --summary --out-dir .artifacts/kiro/showcase` exited 0. The run was at revision 02b1bf8, with 4 of 4 steps observed and 0 console errors. The receipt is `.artifacts/kiro/showcase/browser-run.json`.\n- **Build hashes:** Both runs report SHA-256 `873a8962396263a4feb2dc382bdb3f464cdb203d0eb19f1cc153caa82a3e6eca`, so both replays used the same built HTML.\n- **Pending:** The report marks Node test counts as pending for seed 60. The verify-showdown step did not report them."
+  },
+  "root": {
+    "nodeId": "wf_0572a745f5194cf1",
+    "type": "sequence",
+    "status": "completed",
+    "children": [
+      {
+        "nodeId": "verify-duel",
+        "type": "step",
+        "status": "completed",
+        "agentName": "wf-coder",
+        "startedAt": "2026-11-17T04:35:48.564Z",
+        "sessionId": "sess_97fe246e-f9e5-473a-877b-7e66a8ee0417",
+        "completionSignal": "success",
+        "completionSignalSource": "send_message",
+        "capturedOutput": "Command: `node scripts/verify-duel.mjs --browser`\nExit status: 0\n\nThe command passed and printed all the fields you asked for.\n\n- **Node tests:** 157 run, 157 pass, 0 fail, 0 cancelled, 0 skipped, 0 todo.\n- **Asset structure preflight:** 2 of 2 files passed (`dragon.glb`, `mounted-billy.glb`).\n- **Chrome replay:** Chrome/157.0.8103.52, seed 0, revision 02b1bf8.\n- **Observed Chrome steps:** 8 of 8.\n- **Pending step IDs:** none.\n- **Console errors:** 0.\n- **Build SHA-256:** `873a8962396263a4feb2dc382bdb3f464cdb203d0eb19f1cc153caa82a3e6eca`\n- **Receipt path:** `.artifacts/kiro/replay/browser-run.json`\n\nI made no source edits.",
+        "credits": [
+          {
+            "usage": 0.2964007791044776,
+            "unit": "credit",
+            "unitPlural": "credits"
+          }
+        ],
+        "endedAt": "2026-11-17T04:36:58.438Z"
+      },
+      {
+        "nodeId": "verify-showdown",
+        "type": "step",
+        "status": "completed",
+        "agentName": "wf-coder",
+        "startedAt": "2026-11-17T04:36:58.451Z",
+        "sessionId": "sess_9d65be38-0bf2-463c-bab4-5581265f51dc",
+        "capturedOutput": "Command: `node scripts/browser-match-check.mjs --showcase --summary --out-dir .artifacts/kiro/showcase`\nExit status: 0\n\n- Chrome: Chrome/157.0.8103.52\n- Revision: 02b1bf8\n- Seed: 60\n- Observed steps: 4 of 4\n- Pending IDs: none\n- Console errors: 0\n- Build SHA-256: `873a8962396263a4feb2dc382bdb3f464cdb203d0eb19f1cc153caa82a3e6eca`\n- Receipt path: `.artifacts/kiro/showcase/browser-run.json`\n- Hash match: the seed-60 SHA-256 matches the seed-0 SHA-256 (`873a8962…6eca`).\n\nResult: pass. The exit status was 0 and the hashes match. I made no source edits.",
+        "credits": [
+          {
+            "usage": 0.14282556898839135,
+            "unit": "credit",
+            "unitPlural": "credits"
+          }
+        ],
+        "endedAt": "2026-11-17T04:38:11.487Z"
+      },
+      {
+        "nodeId": "report",
+        "type": "step",
+        "status": "completed",
+        "agentName": "wf-coder",
+        "startedAt": "2026-11-17T04:38:11.493Z",
+        "sessionId": "sess_1c51ce9e-7d3d-498e-b66e-27687af5f504",
+        "completionSignal": "success",
+        "completionSignalSource": "send_message",
+        "capturedOutput": "I wrote the report to `.artifacts/kiro/replay/report.md`. It has one table per run, and I made no other edits.\n\n- **Seed 0:** `node scripts/verify-duel.mjs --browser` exited 0. The run was at revision 02b1bf8, with 8 of 8 steps observed and 0 console errors. The receipt is `.artifacts/kiro/replay/browser-run.json`. The report uses this step's Node counts: 157 run, 157 pass, 0 fail.\n- **Seed 60:** `node scripts/browser-match-check.mjs --showcase --summary --out-dir .artifacts/kiro/showcase` exited 0. The run was at revision 02b1bf8, with 4 of 4 steps observed and 0 console errors. The receipt is `.artifacts/kiro/showcase/browser-run.json`.\n- **Build hashes:** Both runs report SHA-256 `873a8962396263a4feb2dc382bdb3f464cdb203d0eb19f1cc153caa82a3e6eca`, so both replays used the same built HTML.\n- **Pending:** The report marks Node test counts as pending for seed 60. The verify-showdown step did not report them.",
+        "credits": [
+          {
+            "usage": 0.2542315310116086,
+            "unit": "credit",
+            "unitPlural": "credits"
+          }
+        ],
+        "endedAt": "2026-11-17T04:38:23.384Z"
+      }
+    ],
+    "startedAt": "2026-11-17T04:35:48.562Z",
+    "endedAt": "2026-11-17T04:38:23.387Z"
+  },
+  "createdAt": "2026-11-17T04:35:48.511Z",
+  "planRevision": 0,
+  "parentSessionId": "sess_c81e729c-3dee-4712-90aa-20bdb71ef58a",
+  "runLabel": "orb-duel-replay-final-polish",
+  "originalUserMessages": [
+    "Run ONE actual saved Kiro Workflow against frozen game HEAD 02b1bf8785f154dcee8e2a21293d6a455a3bf82e. You are in isolated branch kiro/final-polish-verification. No model override. Other agents own integration and web/menu review.\n\nRead AGENTS.md and .kiro/workflows/orb-duel-replay.workflow.json only as needed. Use Kiro's actual native run_workflow tool with workflowPath to run the saved orb-duel-replay recipe ONCE; label orb-duel-replay-final-polish. Do not reimplement the steps and call it a Workflow. Its three steps run node scripts/verify-duel.mjs --browser (157 expected Node tests, source asset structure preflight, standalone build, seed0 Chrome replay), then node scripts/browser-match-check.mjs --showcase --summary --out-dir .artifacts/kiro/showcase (seed60, same HTML), then its report.\n\nNo app, test, source, recipe, build script, model or asset edits. No web build; coordinator owns separate web/menu checks. No config, grant, backend or model changes. Do not read account usage/credentials. NEVER delete .artifacts or launch logs, git clean, or broad rm. Raw output stays ignored. Do not commit, push, deploy, or create any public artifacts: coordinator will collect and sanitize actual receipts.\n\nUse the native Workflow output as evidence. At the end report actual workflow ID, final status, exact session-store workflow-state path, step exits, Node count, seeds/steps/errors and HTML SHA256 if returned, report path. Never fabricate IDs or success. If workflow unavailable or a step fails, preserve output and stop without fallback reruns/source fixes. A missing field is pending. Do not repeatedly poll; use a normal blocking native run or a single wait if necessary. Finish within 4 minutes; launch watchdog is 5 minutes.\n"
+  ],
+  "rootConversationId": "sess_c81e729c-3dee-4712-90aa-20bdb71ef58a",
+  "workspacePath": "<WORKTREE>",
+  "memoryConfig": {
+    "mode": "disabled",
+    "reflection": false
+  },
+  "memoryConfigSource": "explicit",
+  "backgroundExecution": false,
+  "sessionTools": {
+    "awareness": false,
+    "messaging": false,
+    "cloud": false
+  },
+  "parentModelId": "auto"
+}

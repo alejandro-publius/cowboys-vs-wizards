@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "workflowId": "wf_0572a745f5194cf1",
+  "cleanup": {
+    "operationId": "93063bc7-276b-41a2-850e-478f6be3f22e",
+    "owner": {
+      "pid": 19552,
+      "instanceId": "3bdb23e2-3eb9-49a9-ac91-4c32a0c87899"
+    },
+    "phase": "settled",
+    "stateDigest": "b76fbace82079dd441fdce139636867b659fdc6914f29a88c1a6c2316bbd646b"
+  }
+}
