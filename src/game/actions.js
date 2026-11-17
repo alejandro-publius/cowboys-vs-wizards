@@ -1,15 +1,18 @@
 import { CARDS, SPELL_DAMAGE, opponent, tributeCost } from "./cards.js";
-import { SLOT_COUNT } from "./state.js";
+import { MAX_ROUNDS, SLOT_COUNT } from "./state.js";
 import { resolveClash, resultAfterClash } from "./clash.js";
 
 const isSlot = (slot) => Number.isInteger(slot) && slot >= 0 && slot < SLOT_COUNT;
+// On a trap match (issue #89/#90, A + X) the cast and the set share castUsed;
+// tactical records which one used it. Off, tactical is absent and this is false.
+const trapUsed = (state, side) => state.traps?.enabled === true && state.allowances[side].tactical === "trap";
 
 // Each *Rejection reads only and returns why the action cannot be applied, or
 // null when it is legal. The first failing check wins.
 function summonRejection(state, action) {
   const { summonUsed, castUsed } = state.allowances[action.side];
   if (summonUsed) return "summon-used";
-  if (castUsed) return "summon-after-spell";
+  if (castUsed) return trapUsed(state, action.side) ? "summon-after-trap" : "summon-after-spell";
 
   const { hand, board } = state.sides[action.side];
   if (!hand.includes(action.cardId)) return "card-not-in-hand";
@@ -35,7 +38,7 @@ function summonRejection(state, action) {
 }
 
 function spellRejection(state, action) {
-  if (state.allowances[action.side].castUsed) return "cast-used";
+  if (state.allowances[action.side].castUsed) return trapUsed(state, action.side) ? "cast-after-trap" : "cast-used";
   if (!state.sides[action.side].hand.includes(action.cardId)) return "card-not-in-hand";
   const card = CARDS[action.cardId];
   if (card?.kind !== "spell") return "not-a-spell";
@@ -55,9 +58,23 @@ function spellRejection(state, action) {
   return legalMove ? null : "invalid-destination";
 }
 
-const REJECTIONS = { summon: summonRejection, spell: spellRejection, "end-phase": () => null };
+// Contract section 3 order. `cards` is the lookup for the card kind; it is
+// CARDS unless a caller (only tests today) passes a catalog holding a trap
+// card, since the shipped catalog has none.
+function setTrapRejection(state, action, cards) {
+  if (state.traps?.enabled !== true) return "traps-disabled";
+  const own = state.sides[action.side];
+  if (!own.hand.includes(action.cardId)) return "card-not-in-hand";
+  if (cards[action.cardId]?.kind !== "trap") return "not-a-trap";
+  if (state.round === MAX_ROUNDS) return "trap-too-late";
+  if (own.trap !== null) return "trap-zone-full";
+  if (state.allowances[action.side].castUsed) return "trap-after-spell";
+  return null;
+}
 
-function rejection(state, action) {
+const REJECTIONS = { summon: summonRejection, spell: spellRejection, "set-trap": setTrapRejection, "end-phase": () => null };
+
+function rejection(state, action, cards) {
   if (state.result) return "match-over";
   if (action === null || typeof action !== "object" || !Object.hasOwn(REJECTIONS, action.type)) return "invalid-action";
   const { actionId } = action;
@@ -67,7 +84,7 @@ function rejection(state, action) {
   }
   if (action.revision !== state.revision) return "stale";
   if (action.side !== state.activeSide) return "wrong-side";
-  return REJECTIONS[action.type](state, action);
+  return REJECTIONS[action.type](state, action, cards);
 }
 
 // The apply* functions run only after validation, on the working copy.
@@ -93,6 +110,7 @@ function applySpell(next, action, emit) {
   own.hand.splice(own.hand.indexOf(action.cardId), 1);
   own.discard.push(action.cardId);
   next.allowances[action.side].castUsed = true;
+  if (next.traps?.enabled === true) next.allowances[action.side].tactical = "spell";
 
   const moved = action.destination != null;
   emit({
@@ -113,6 +131,17 @@ function applySpell(next, action, emit) {
     enemy.board[action.target] = null;
     enemy.board[action.destination] = troop;
   }
+}
+
+// Hand to own trap zone. No RNG draw. The event names the card; hiding it
+// from the opponent is the public view's job (T4).
+function applySetTrap(next, action, emit) {
+  const own = next.sides[action.side];
+  own.hand.splice(own.hand.indexOf(action.cardId), 1);
+  own.trap = { cardId: action.cardId, setRound: next.round };
+  next.allowances[action.side].castUsed = true;
+  next.allowances[action.side].tactical = "trap";
+  emit({ type: "trap-set", side: action.side, cardId: action.cardId });
 }
 
 // The first side's end hands the phase over. The second side's end runs the
@@ -151,7 +180,7 @@ function applyEndPhase(next, action, emit) {
   emit({ type: "phase-start", side: next.activeSide, round: next.round });
 }
 
-const APPLY = { summon: applySummon, spell: applySpell, "end-phase": applyEndPhase };
+const APPLY = { summon: applySummon, spell: applySpell, "set-trap": applySetTrap, "end-phase": applyEndPhase };
 
 // Apply one action to a match state. Never mutates `state`.
 //   accepted: { ok: true, state: <new state>, events: [...] }
@@ -159,11 +188,14 @@ const APPLY = { summon: applySummon, spell: applySpell, "end-phase": applyEndPha
 // Actions (all take `side`, `revision` and an optional `actionId` string):
 //   { type: "summon", cardId, slot, tributes }   tributes: own slots to sacrifice
 //   { type: "spell", cardId, target, destination? }   enemy slot indexes
+//   { type: "set-trap", cardId }   only on a match created with traps: true
 //   { type: "end-phase" }
+// `options.cards` replaces CARDS for the set-trap kind check only (tests use
+// it for a fixture trap card; the shipped catalog has no trap).
 // Every event carries `revision` (the revision the action was applied to; the
 // new state is one higher) and the action's `actionId` when it had one.
-export function applyAction(state, action) {
-  const reason = rejection(state, action);
+export function applyAction(state, action, { cards = CARDS } = {}) {
+  const reason = rejection(state, action, cards);
   if (reason) return { ok: false, reason, state };
 
   // Everything validated: change a copy, so the action is all-or-nothing.
