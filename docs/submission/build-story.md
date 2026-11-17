@@ -11,9 +11,9 @@ What we can show is narrower: positional three-lane decisions, simultaneous outc
 That exchange became a useful reason to use Kiro: an animation can look convincing and still tell the wrong story about what the rules decided.
 
 ## Start with a visible rule
-Kiro's Requirements-First Orb Duel specification separated requirements, design and implementation tasks. Fable wrote the pure JavaScript rules engine and CPU. Kiro implemented match selection, presentation and scheduling.
+Kiro's Requirements-First Orb Duel specification separated requirements, design and implementation tasks. Fable, the model used in our Claude Code sessions, wrote the pure JavaScript rules engine and CPU. Kiro implemented match selection, presentation and scheduling.
 
-One seeded test compares what the presentation shows with the damage events the engine produced. In a separate experiment, Codex deliberately introduced a fault that suppressed defeated attackers, and that test failed at seed zero. The experiment checked the test itself; it was not a production defect that Kiro discovered. Our tests loop over fixed seeds. They do not generate counterexamples or shrink them.
+One seeded test compares what the presentation shows with the damage events the engine produced. In a separate experiment, Codex, the coding assistant coordinating the project, deliberately introduced a fault that suppressed defeated attackers, and that test failed at seed zero. The experiment checked the test itself; it was not a production defect that Kiro discovered. Our tests loop over fixed seeds. They do not generate counterexamples or shrink them.
 
 ## Make the build identify itself
 The saved replay Workflow runs actual browser checks and writes a receipt: a record of the run that includes the hash (a fingerprint) of the HTML it tested. The Orb Duel Review Power, a package installed into Kiro, supplies the review procedure and now bundles its own MCP server to inspect the receipt. A page and a receipt that match pass. Pairing the same clean receipt with an older page returns `stale`.
@@ -27,7 +27,7 @@ The duel-presenter agent loads focused guidance. A SessionStart hook runs named 
 
 A trial of another Workflow, Summoning Circle, proposed a card change, reviewed its requirements, registered it and simulated matches. A four-orb Skeleton changed the simulated outcomes; it remained a proposal. The shipped Skeleton kept three orbs.
 
-Night Watch, our separate Kiro Crew app, compares committed game revisions using matching seeds, records failed checks and prepares GitHub issue drafts. Its reports describe the chosen CPU policies and seeds, not human-player balance. We distinguish a manual or isolated scheduled run from a continuously active service. The installed app is now version 0.1.2, six backend checks pass, and a basic Crew response succeeded. Three things remain pending: a person's trust approval of the app, running it from the live dashboard, and production scheduling. The earlier browser taskrunner timeout is also unresolved. [Installation and connectivity evidence](../evidence/kiro-crew-repair.md).
+Night Watch, our separate Kiro Crew app, compares committed game revisions using matching seeds, records failed checks and prepares GitHub issue drafts. Its reports describe the chosen CPU policies and seeds, not human-player balance. The user enabled version 0.1.2. A manual CLI run and an actual Crew scheduler trigger each saved a report with 65 passing rule tests and 1,000 seeds per revision. A nightly job is registered for 2 a.m. Pacific. It requires the Mac and Crew to be running and uses local Git refs without fetching remote updates. We have not visually verified the latest report after a UI reload or observed a future unattended clock-time run. The earlier browser taskrunner timeout is separate and unresolved. [Activation evidence](../evidence/night-watch-activation.md).
 
 ## Look at the actual screen
 An earlier Crew browser review found boxed developer labels over Skeleton pieces. Those labels were removed. Passing rules tests had not caught that presentation problem.
