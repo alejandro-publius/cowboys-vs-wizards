@@ -22,8 +22,17 @@
 // Ties go to the action listed first by legalActions (hand order, then slot).
 // The engine allows one summon and one cast per phase, so a phase is at most
 // summon, spell, end-phase.
+//
+// Trap matches only (view.traps.enabled, issue #95 T5, contract section 6):
+// between steps 1 and 2, if its own hand holds a trap card, its own zone is
+// empty, the round is before the last and a set-trap is legal, it sets the
+// first such trap (hand order) instead of casting. The set uses the phase's
+// one tactical action. It reads only its own hand and zone; the opponent's
+// face-down trap is never consulted. With traps off, or on with no trap in
+// hand, the choice is the one above, unchanged.
 import { CARDS, SPELL_DAMAGE, opponent } from "./cards.js";
 import { legalActions } from "./legal.js";
+import { MAX_ROUNDS } from "./state.js";
 
 const OWN_ORB = 5;
 const ENEMY_ORB = 4;
@@ -83,15 +92,30 @@ function best(view, actions, type, floor) {
   return pick;
 }
 
+// The trap-set step above, or null. Every condition reads the viewer's own side.
+function trapSet(view, actions, cards) {
+  if (view.traps?.enabled !== true || view.round >= MAX_ROUNDS) return null;
+  const own = view.sides[view.viewer];
+  if (own.trap !== null) return null;
+  return actions.find((action) => action.type === "set-trap" && own.hand.includes(action.cardId) && cards[action.cardId]?.kind === "trap") ?? null;
+}
+
 // `view` must be publicState(state, side) for the side to act. Returns one of
-// legalActions(view, view.viewer), or null when that list is empty (not this
-// side's phase, or the match is over).
-export function chooseAction(view) {
-  const actions = legalActions(view, view.viewer);
+// legalActions(view, view.viewer, { cards }), or null when that list is empty
+// (not this side's phase, or the match is over).
+// `options.cards` is passed to legalActions for kind lookups, as there; only
+// tests pass it, with a fixture trap card. Board troops are always scored from CARDS.
+export function chooseAction(view, { cards = CARDS } = {}) {
+  const actions = legalActions(view, view.viewer, { cards });
   if (actions.length === 0) return null;
   const end = actions.at(-1); // end-phase is always listed last
   const stay = score(view, end);
-  return best(view, actions, "summon", stay + 1) ?? best(view, actions, "spell", stay + SPELL_MIN_GAIN) ?? end;
+  return (
+    best(view, actions, "summon", stay + 1) ??
+    trapSet(view, actions, cards) ??
+    best(view, actions, "spell", stay + SPELL_MIN_GAIN) ??
+    end
+  );
 }
 
 // Difficulty levels, an opt-in preview (?cpu=easy|normal|hard). `normal` is
