@@ -65,3 +65,11 @@ Trigger: coordinator review of v1 frame f0045 (hands empty, revolver at the hip,
 - **Video.** `.artifacts/billy-pilot/billy-pilot-preview-v2.mp4`, 12.5 s, 1280x720, 30 fps, sha `56a91349...`, from `frames-v2/` (375 PNG) and `run-output-v2.txt` (0 console problems). The v1 video is kept unchanged as the before artifact (`billy-pilot-before-review.mp4` and `billy-pilot-preview.mp4`, sha `0662b594...`). Frames inspected by me: idle f0045, attack onset f0152, impact f0176, recovery f0215, at board camera (f0045, f0176) and closeup (all four).
 - **Still procedural:** the attack (5.03-6.61 s) remains the existing `cues.js` cue, labelled on screen. Only the idle is sourced.
 - **Remaining limitations:** left hand not on the grip; fixed grip orientation; gun hand-to-hip travel at attack onset; one foot's heel/toe up to 2.3 cm off the tile in the source pose; 3.5 mm tile penetration during the cue; Billy small on the board pane. Visual approval pending the coordinator or user. `capture-billy-preview.js` now writes `frames-v2/`.
+
+## Coordinator review and watchable preview
+
+[Watch Billy preview v2](animation-pilots/billy-sourced-preview-v2.mp4) — 12.5 seconds, 1280×720, 30fps. This is a real captured preview, not production gameplay with the new idle enabled.
+
+Codex inspected idle frame f0045 and impact frame f0176. The gun is now visibly held and boot placement improved. The supporting hand still misses the grip, and the existing attack begins by moving the gun toward the hip. This remains an unapproved preview; do not merge it as a finished animation or apply it across the roster. The on-screen caption distinguishes the CC0 idle from the existing procedural attack.
+
+The next bounded step is to preview the pack's existing Pistol_Shoot clip with this idle, preserving source keys and using only retargeting, rigid attachment, ground seating and blending. No new authored poses or curves. Production integration follows a satisfactory visual review.
