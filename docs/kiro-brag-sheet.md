@@ -1,5 +1,21 @@
 # How we used Kiro on Cowboys vs. Wizards: evidence map
 
+## November 16 parallel integration update
+
+[Combined review and published receipts](evidence/parallel-closeout-2200.md) distinguish Kiro execution, Rachel/Fable contributions and Codex corrections.
+
+| Kiro work | Observed result | Limit |
+| --- | --- | --- |
+| WebKit card-face repair (#43) | Baseline 0/6 to fixed 6/6; combined-build WebKit and Chromium checks each 6/6 | Desktop automation, not actual iPhone/Safari |
+| Preview contracts/properties (#44) | Three specs; 800 legal matches; dropped-hit mutant detected | Clash spec retrospective; seeded loops without shrinking. Codex repaired single-seed replay |
+| Native contributor-review Workflow (#45) | Four-step `wf_0b2ce64faf14a4aa` ran against frozen PR #40 with tests and browser evidence | Does not verify the final combined release |
+| Scoped steering (#46) | Three file-scoped documents committed | Configuration only; independent activation proof absent |
+| Documentation save hook (#46) | Actual CLI saves failed on a broken link and passed after removal, repeated after wrapper correction | CLI 3.4.0 V3; no IDE run or interactive error-UI claim |
+| Billy sourced-idle pilot (#49) | Quaternius CC0 clip retargeted; video and prop/sole correction produced on a separate branch | Preview only; left grip and old attack transition unresolved; no production rollout or roster approval |
+
+Rachel/Fable supplied the CPU preview, clash log, docs index and eight-topic write-up. Codex integrated them, corrected parser/hook/replay edge cases and independently checked the combined build. No new animation curves were authored in this pass.
+
+
 ## November 16 closeout update
 
 The historical feature map below retains its original dates and limits. New closeout evidence is recorded separately:

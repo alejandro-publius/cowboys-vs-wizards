@@ -1,0 +1,45 @@
+{
+  "reviewer": "Codex",
+  "redaction": "Only absolute worktree prefixes replaced with <PROJECT_ROOT>.",
+  "files": [
+    {
+      "file": "opening-seed0.json",
+      "original_sha256": "cc56bee1a6fc295a9281ced29931cb86b458037ca4117276d4a43c9bb9440c49",
+      "published_sha256": "f9f515a6f13c97dc81a510583561a662c19fa2a3632a81b767f80254c1c49881"
+    },
+    {
+      "file": "showdown-850.json",
+      "original_sha256": "57c1081b21325d08605bea694bd29d24ad6389e55fdf5fd8d72c819c3568e19d",
+      "published_sha256": "f0e2e629322178b43c3789528de8dd75afcd9e79685780e7a9d8fe2135e34e48"
+    },
+    {
+      "file": "faces-webkit.json",
+      "original_sha256": "76fd8b3b6a66a78682726f4e7a5783cbfec075a2e666d099b935d02e2bfb962c",
+      "published_sha256": "76fd8b3b6a66a78682726f4e7a5783cbfec075a2e666d099b935d02e2bfb962c"
+    },
+    {
+      "file": "faces-chromium.json",
+      "original_sha256": "28c175eab31d2ac7c530723b5c7a36224f52cb35b6c36457cdc20b4bdce7c9dc",
+      "published_sha256": "28c175eab31d2ac7c530723b5c7a36224f52cb35b6c36457cdc20b4bdce7c9dc"
+    },
+    {
+      "file": "verify-099847a.txt",
+      "original_sha256": "11fb504bc95408c705a5ea2e0e9cc1e741e71f186b07085f3d8af7a9f53f899e",
+      "published_sha256": "11fb504bc95408c705a5ea2e0e9cc1e741e71f186b07085f3d8af7a9f53f899e"
+    },
+    {
+      "file": "hook-and-links-a59aad6.txt",
+      "original_sha256": "1dec434503e8665f772d67e3abdeabf6a37908167e8e79b02f5c77a37f0e745b",
+      "published_sha256": "1dec434503e8665f772d67e3abdeabf6a37908167e8e79b02f5c77a37f0e745b"
+    },
+    {
+      "file": "hook-recheck.jsonl",
+      "original_sha256": "6abcb18c8e1b086af24dd283f40a271554f368c9e33fe9ff23d097a952b3650c",
+      "published_sha256": "6abcb18c8e1b086af24dd283f40a271554f368c9e33fe9ff23d097a952b3650c"
+    }
+  ],
+  "runtime_after_webkit_css": {
+    "dist/cowboys-vs-wizards-board-duel.html": "0e22a24faf2185b1bcd5d92fa00809e066e2300d05bee2b5f496dca993849fdc",
+    "dist/web/index.html": "ac0806f6bed48cbb2a32064bd89674c0c50245e379ca50e2d5dcaa57ffec8eb5"
+  }
+}

@@ -1,0 +1,232 @@
+{
+  "check": "Playwright chromium on a desktop; not Safari on an iPhone",
+  "date": "2026-11-17T06:14:14.477Z",
+  "url": "http://127.0.0.1:61184/?mode=match&deck=starter&seed=0",
+  "browser": {
+    "name": "chromium",
+    "version": "156.0.8078.4"
+  },
+  "viewport": "1440x900",
+  "blocker": null,
+  "states": [
+    {
+      "name": "opening hand",
+      "visible": true,
+      "screenshot": "01-opening-hand.png",
+      "cards": [
+        {
+          "label": "cowboy-mounted-billy-1",
+          "expect": "art",
+          "seen": [
+            122,
+            67,
+            49
+          ],
+          "d": {
+            "expected": 22,
+            "art": 22,
+            "back": 85,
+            "slice": 293
+          },
+          "visible": true
+        },
+        {
+          "label": "cowboy-deadeye-1",
+          "expect": "art",
+          "seen": [
+            127,
+            79,
+            68
+          ],
+          "d": {
+            "expected": 10,
+            "art": 10,
+            "back": 119,
+            "slice": 256
+          },
+          "visible": true
+        },
+        {
+          "label": "cowboy-sheriff-5",
+          "expect": "art",
+          "seen": [
+            104,
+            61,
+            44
+          ],
+          "d": {
+            "expected": 15,
+            "art": 15,
+            "back": 59,
+            "slice": 329
+          },
+          "visible": true
+        },
+        {
+          "label": "cowboy-billy-3",
+          "expect": "art",
+          "seen": [
+            137,
+            84,
+            68
+          ],
+          "d": {
+            "expected": 12,
+            "art": 12,
+            "back": 143,
+            "slice": 242
+          },
+          "visible": true
+        }
+      ]
+    },
+    {
+      "name": "hovered card",
+      "visible": true,
+      "screenshot": "02-hovered-card.png",
+      "cards": [
+        {
+          "label": "cowboy-sheriff-5",
+          "expect": "art",
+          "seen": [
+            104,
+            63,
+            46
+          ],
+          "d": {
+            "expected": 17,
+            "art": 17,
+            "back": 63,
+            "slice": 325
+          },
+          "visible": true
+        }
+      ]
+    },
+    {
+      "name": "selected card",
+      "visible": true,
+      "screenshot": "03-selected-card.png",
+      "cards": [
+        {
+          "label": "cowboy-sheriff-5",
+          "expect": "art",
+          "seen": [
+            96,
+            58,
+            44
+          ],
+          "d": {
+            "expected": 23,
+            "art": 23,
+            "back": 52,
+            "slice": 342
+          },
+          "visible": true
+        }
+      ]
+    },
+    {
+      "name": "hand after summon",
+      "visible": true,
+      "screenshot": "04-hand-after-summon.png",
+      "cards": [
+        {
+          "label": "cowboy-mounted-billy-1",
+          "expect": "art",
+          "seen": [
+            123,
+            67,
+            49
+          ],
+          "d": {
+            "expected": 23,
+            "art": 23,
+            "back": 86,
+            "slice": 293
+          },
+          "visible": true
+        },
+        {
+          "label": "cowboy-deadeye-1",
+          "expect": "art",
+          "seen": [
+            127,
+            78,
+            68
+          ],
+          "d": {
+            "expected": 10,
+            "art": 10,
+            "back": 119,
+            "slice": 256
+          },
+          "visible": true
+        },
+        {
+          "label": "cowboy-billy-3",
+          "expect": "art",
+          "seen": [
+            137,
+            83,
+            68
+          ],
+          "d": {
+            "expected": 11,
+            "art": 11,
+            "back": 142,
+            "slice": 242
+          },
+          "visible": true
+        }
+      ]
+    },
+    {
+      "name": "art viewer front",
+      "visible": true,
+      "screenshot": "05-art-viewer-front.png",
+      "cards": [
+        {
+          "label": "viewer",
+          "expect": "art",
+          "seen": [
+            106,
+            61,
+            44
+          ],
+          "d": {
+            "expected": 15,
+            "art": 15,
+            "back": 62,
+            "slice": 326
+          },
+          "visible": true
+        }
+      ]
+    },
+    {
+      "name": "art viewer flipped",
+      "visible": true,
+      "screenshot": "06-art-viewer-flipped.png",
+      "cards": [
+        {
+          "label": "viewer",
+          "expect": "back",
+          "seen": [
+            90,
+            51,
+            45
+          ],
+          "d": {
+            "expected": 15,
+            "art": 46,
+            "back": 15,
+            "slice": 357
+          },
+          "visible": true
+        }
+      ]
+    }
+  ],
+  "consoleErrors": []
+}

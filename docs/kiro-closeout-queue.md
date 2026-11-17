@@ -1,7 +1,10 @@
 # Kiro closeout queue
+
+Latest integration: [November 16 parallel review](evidence/parallel-closeout-2200.md). Current task ownership is in [GitHub #24](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/24); the earlier ledger below is retained as history. #43–46 have implementation/evidence; #49 is a preview, and #35 remains the next Rachel handoff after publication.
+
 Observed November 16, 2026 (America/Los_Angeles). This is the active ledger, replacing old dispatch lists as a work locator. A checked item means reviewed output exists; publishing, user approval and live services are separate states. The user authorized the full research-derived backlog on this date. Keep one owner per path and transfer a completed task to the next dependency without rerunning old work.
 
-## Current ownership
+## Historical ownership at the earlier closeout
 - Kiro: completed readable deck UI, final replay Workflow and existing-card lore review. The separate Crew review reached its cap without a browser result; no worker is left waiting.
 - Kiro: completed receipt recovery, Power reproduction and scoped Auto/Memory checks.
 - Kiro: completed file/asset audit and Night Watch export fix; Codex reviewed compatibility and publication.

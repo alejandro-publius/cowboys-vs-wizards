@@ -57,9 +57,8 @@ The sections above are historical proof for the old wrapper (candidate
   literal pathspecs; it resolves checkout aliases such as `/var` and
   `/private/var`; and it rejects files that resolve outside the checkout. The
   coordinator has five regression tests for this. I did not rerun them.
-- Session: `sess_88cb21c9-4565-49b1-a423-4535069dba51`. The task described
-  the client as Kiro CLI 3.4.0 V3; this session's own metadata reported
-  Kiro IDE. I did not verify the client independently.
+- Session: `sess_88cb21c9-4565-49b1-a423-4535069dba51`. Coordinator-verified launcher: Kiro CLI 3.4.0 V3. The stream session ID matches
+  the receipt; the model's self-description as IDE is not runtime provenance.
 - Failing save, 2026-11-17T06:21:54Z (UTC): `fs_write` added
   `[broken link](./intentional-missing-hook-recheck.md)`. Receipt status
   `failed`, `124 Markdown files, 397 relative links and images, 1 broken`.

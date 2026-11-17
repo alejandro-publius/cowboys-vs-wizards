@@ -1,0 +1,18 @@
+✔ doc hook: tracked Markdown filename with spaces runs the checker and propagates failure (199.925334ms)
+✔ doc hook: valid relative documentation path records success (190.826416ms)
+✔ doc hook: checkout aliases resolve without replacing a tracked symlink's name (356.44325ms)
+✔ doc hook: malformed, untracked, outside and irrelevant events skip without running (860.89ms)
+✔ doc hook: receipts bound checker output and redact the checkout path (217.587917ms)
+✔ links: the parser finds links, images and definitions, and skips code (2.5145ms)
+✔ links: destinations preserve parentheses and escaped punctuation (0.15ms)
+✔ links: code delimiter lengths do not hide real links or expose code examples (0.23ms)
+✔ links: every relative link and image in tracked Markdown points at something that exists (51.51775ms)
+✔ links: docs/README.md lists every file and folder directly in docs/ (18.480875ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1913.898917
