@@ -1,0 +1,11 @@
+{
+  "approved": true,
+  "findings": [],
+  "corrections": [],
+  "limitations": [
+    "The card files carry no prose backstory; the summary's theme remarks rest only on card names and faction.",
+    "The reviewer compared the summary against the eight card files only. requirements.md and src/game/cards.js were not consulted, so the summary was not checked against runtime rules.",
+    "The summary does not interpret stars or relocates beyond the file values, so what they mean in play is not reviewed.",
+    "This review does not cover art, balance or playtesting."
+  ]
+}
