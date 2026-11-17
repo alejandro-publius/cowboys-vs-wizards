@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "check-project-doc-links",
+      "trigger": "PostFileSave",
+      "matcher": "(^|/)docs/.+\\.md$",
+      "action": {
+        "type": "command",
+        "command": "node scripts/check-doc-links-hook.mjs"
+      }
+    }
+  ]
+}

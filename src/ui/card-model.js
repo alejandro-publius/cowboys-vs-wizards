@@ -5,7 +5,8 @@
 //
 // cardModel({displayed, options, status, seed, seedPinned, message}) takes
 // the controller's displayed(), options(), status(), seed(), seedPinned()
-// and message(); displayed and options may be null.
+// and message(); displayed and options may be null. clashLog is the opt-in
+// ?log=1 list from src/match/clash-log.js, or null when the preview is off.
 import {CARDS} from "../game/cards.js";
 import {SLOT_COUNT} from "../game/state.js";
 
@@ -47,7 +48,7 @@ function troopSummary(troop) {
   return {name: card.name, health: troop.health, max: card.health};
 }
 
-export function cardModel({displayed = null, options = null, status = "idle", seed = null, seedPinned = false, message = null} = {}) {
+export function cardModel({displayed = null, options = null, status = "idle", seed = null, seedPinned = false, message = null, clashLog = null} = {}) {
   const accepting = status === "accepting_input";
   const cowboy = displayed?.sides.cowboy ?? null;
   const wizard = displayed?.sides.wizard ?? null;
@@ -73,6 +74,7 @@ export function cardModel({displayed = null, options = null, status = "idle", se
     },
     prompt: accepting || status === "submitting" ? options?.prompt ?? "" : WAITING[status] ?? "",
     message: message ?? "",
+    clashLog,
     lanes: Array.from({length: SLOT_COUNT}, (_, lane) => ({
       lane,
       cowboy: troopSummary(cowboy?.board[lane]),

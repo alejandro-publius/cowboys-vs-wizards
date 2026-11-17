@@ -26,18 +26,18 @@ We wanted card decisions to happen visibly in the arena: sacrifice troops for st
 ## Implementation and Kiro
 The rules are plain JavaScript and stay separate from the Three.js presentation and the Rapier scene behavior. Fable, the model used in our Claude Code sessions, wrote the rules engine and the computer opponent (the CPU). Kiro wrote the presentation, the specification and the tooling. Its Requirements-First spec guided the match presentation and the seeded checks. A custom agent, hooks, saved Workflows and a review Power (an installed Kiro package that supplies the review procedure and bundles an MCP server to inspect receipts) tie each result to the HTML that was actually built. Codex, the coding assistant coordinating the project, handled integration and independent checks. The user approved the art and motion; visuals come from original Tripo exports and approved sourced motion. The section after this one takes the Kiro features one topic at a time.
 
-The saved Kiro Workflow passed 157 tests and 12 scripted browser checks. That run is historical and belongs to frozen commit `e9aeb06`; later changes to the game need their own checks. The run was not repeated for this document.
+Two historical saved Kiro Workflow runs each passed 157 tests and 12 scripted browser checks: `wf_5bd13532f5142477` on `e9aeb06` and `wf_0572a745f5194cf1` on `02b1bf8`. Match the filmed commit to its receipt. Later combined-build checks are recorded separately in the [integration review](../evidence/parallel-closeout-2200.md); this document did not rerun either Workflow.
 
 ## How Kiro was used, topic by topic
 Each topic names the file that shows the work and links one evidence note. Test counts and results belong to the commit their note names. [The full evidence map](../kiro-brag-sheet.md) has every run and its limits.
 
 ### 1. Kiro apps: IDE, CLI, Web and Crew
-Three of the four were used. The Kiro IDE ran the Requirements-First spec session that planned and built the match presentation. Kiro CLI (3.3.0) did feature work, ran the hooks and Workflows, and imported the characters. Kiro Crew (0.12.2) ran a browser playtest and a balance preview, and runs the separate Night Watch app. **Kiro Web was not used.**
+Three of the four were used. The Kiro IDE ran the Requirements-First spec session that planned and built the match presentation. Kiro CLI (3.3.0 historically; 3.4.0 V3 for the latest batch) did feature work, ran the hooks and Workflows, and imported the characters. Kiro Crew (0.12.2) ran a browser playtest and a balance preview, and runs the separate Night Watch app. **Kiro Web was not used.**
 - Shown by: [`.kiro/specs/orb-duel/tasks.meta.json`](../../.kiro/specs/orb-duel/tasks.meta.json), the IDE's own execution history.
 - Evidence: [build log](../kiro-build-log.md), which records the app each piece of work was performed in.
 
 ### 2. Custom agents
-`duel-presenter` is a custom agent whose shell permissions are limited to the test and replay commands, and which loads `AGENTS.md` and the evidence steering file. It was used for the card landing-target fix: when the canvas has no size, a summoned card falls back to the lane button's position. The agent file shows the agent's scope, not the quality of its output. Both saved Workflows use `wf-coder`, an agent bundled with Kiro, not one defined in this repository.
+`duel-presenter` is a custom agent whose shell permissions are limited to the test and replay commands, and which loads `AGENTS.md` and the evidence steering file. It was used for the card landing-target fix: when the canvas has no size, a summoned card falls back to the lane button's position. The agent file shows the agent's scope, not the quality of its output. The saved Workflows use `wf-coder`, an agent bundled with Kiro, not one defined in this repository.
 - Shown by: [`.kiro/agents/duel-presenter.json`](../../.kiro/agents/duel-presenter.json).
 - Evidence: [November 16 build evidence](../evidence/kiro-overnight.md#kiro-implementation-and-execution).
 
@@ -52,7 +52,7 @@ The card match was built from a Requirements-First spec in the Kiro IDE: require
 - Evidence: [the Spec row of the evidence map](../kiro-brag-sheet.md#feature-evidence).
 
 ### 5. Steering documents
-Two steering files are tracked. `build-evidence.md` is always included and says how to record evidence; Codex wrote it. `duel-iteration.md`, added by Kiro, loads only for the match, render and interface code, the replay script and the card art. No recorded run isolates what a steering file changed, so we claim that steering shaped the work, not a measured effect.
+Five steering files are tracked. The three new area files scope interface, rendering and rules guidance; their activation has not been independently observed. [Configuration evidence](../evidence/kiro-scoped-steering-hook.md). The two earlier files remain: `build-evidence.md` is always included and says how to record evidence; Codex wrote it. `duel-iteration.md`, added by Kiro, loads only for the match, render and interface code, the replay script and the card art. No recorded run isolates what a steering file changed, so we claim that steering shaped the work, not a measured effect.
 - Shown by: [`.kiro/steering/build-evidence.md`](../../.kiro/steering/build-evidence.md) and [`.kiro/steering/duel-iteration.md`](../../.kiro/steering/duel-iteration.md).
 - Evidence: [the Steering row of the evidence map](../kiro-brag-sheet.md#feature-evidence).
 

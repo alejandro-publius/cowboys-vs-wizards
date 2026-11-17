@@ -9,6 +9,7 @@ import {withGraveyards} from "./render/graveyards.js";
 import {createScheduler} from "./match/scheduler.js";
 import {createController,FABLE_ENGINE} from "./match/controller.js";
 import {cpuFor} from "./game/cpu.js";
+import {clashLog} from "./match/clash-log.js";
 import {openingMatch,parseOpeningParams} from "./game/opening-policy.js";
 import {mountCards} from "./ui/cards.js";
 import {cardModel} from "./ui/card-model.js";
@@ -172,6 +173,9 @@ async function launch(){
   // Orb Duel card match: the controller holds the Engine state and drives the
   // match board (with the Billy and Wizard cues) and the card overlay.
   let controller=null;
+  // ?log=1 opts into the clash log: a round's events become sentences, shown once its playback ends.
+  const logOn=new URLSearchParams(location.search).get("log")==="1";
+  let roundEvents=[],clashNext=logOn?{title:"",lines:[]}:null,clashShown=clashNext;
   // The graveyards react when the Presenter's displayed discard lists grow.
   const cued=withGraveyards(withClashReady(withCues(board)));
   // Starts the 3D summon, tells the overlay its cue, and returns the cue as is.
@@ -185,8 +189,10 @@ async function launch(){
     const state=controller.status(),options=controller.options(),displayed=controller.displayed();
     if(state==="terminal"&&displayed?.result)profile.record("match-complete",{matchId:matchRun,won:displayed.result.outcome==="win"});
     matchView.discards(displayed);
+    // Publish only after playback drains successfully; error/leave must not announce an unfinished clash.
+    if(["accepting_input","cpu_turn","terminal"].includes(state))clashShown=clashNext;
     overlay.render(cardModel({displayed,options,status:state,
-      seed:controller.seed(),seedPinned:controller.seedPinned(),message:controller.message()}));
+      seed:controller.seed(),seedPinned:controller.seedPinned(),message:controller.message(),clashLog:clashShown}));
     board.highlight(state==="accepting_input"&&options?{cowboy:options.ownSlots,wizard:options.enemySlots}:{});
   }
   function projectPoint(point) {
@@ -237,12 +243,18 @@ async function launch(){
   const engine={...FABLE_ENGINE,
     createMatch(seed){
       matchRun++;
+      if(logOn){roundEvents=[];clashNext=clashShown={title:"",lines:[]};}
       const counts=params.get("deck")==="starter"?null:profile.get().deck;
       const options=counts&&validateDeck(counts).ok?{cowboyDeck:deckIds(counts)}:{};
       return opening?openingMatch(seed,opening.opening,opening.first,options):createMatch(seed,options);
     },
     applyAction(state,action){
       const result=FABLE_ENGINE.applyAction(state,action);
+      if(logOn&&result.ok){
+        roundEvents.push(...result.events);
+        const log=clashLog(roundEvents);
+        if(log){clashNext=log;roundEvents=[];}
+      }
       if(result.ok&&action.side==="cowboy"){
         const id=matchRun+":"+result.state.revision;
         if(action.type==="summon")profile.record("summon",{id});

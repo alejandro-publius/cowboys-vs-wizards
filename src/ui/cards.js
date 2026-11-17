@@ -176,6 +176,9 @@ export function mountCards(root, handlers = {}) {
   // flying from the deck pile to its hand position while the Presenter plays
   // the draw (model.draw).
   let model = null;
+  // Opt-in clash log (?log=1): made on the first render that carries one, so
+  // the default page gains no element. A polite live region, latest clash only.
+  let clashLog = null; // {title, list, shown}
   let flight = null; // {cardId, node, animation}
   let drawFlight = null; // {key, handIndex, node, animation, turn}
   let drawKey = null; // model.draw.key of the latest draw seen, so each draw flies once
@@ -379,6 +382,18 @@ export function mountCards(root, handlers = {}) {
     for (const [name, button] of Object.entries(buttons)) button.disabled = !model.buttons[name];
     if (selected) buttons.confirm.textContent = selected.kind === "spell" ? "Cast" : "Summon";
     setText(prompt, model.prompt);
+    if (model.clashLog) {
+      if (!clashLog) {
+        clashLog = {title: el("strong"), list: el("ul"), shown: ""};
+        root.append(el("section", {class: "match-clash-log", role: "status", "aria-live": "polite", "aria-label": "Latest clash"}, clashLog.title, clashLog.list));
+      }
+      const shownNow = JSON.stringify(model.clashLog);
+      if (clashLog.shown !== shownNow) {
+        clashLog.shown = shownNow;
+        setText(clashLog.title, model.clashLog.title);
+        clashLog.list.replaceChildren(...model.clashLog.lines.map((line) => el("li", {}, line)));
+      }
+    }
     setText(message, model.message);
     message.hidden = !model.message || (selected && model.status!=="error");
 
