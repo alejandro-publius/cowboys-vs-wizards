@@ -54,6 +54,13 @@ if (args.includes("--out-dir") && (!outputPath || outputPath.startsWith("--"))) 
 // through real clicks, for recording. Its default output is ignored by git.
 const showcase = args.includes("--showcase");
 if (showcase && option("--seed") !== undefined && Number(option("--seed")) !== 60) throw new Error("--showcase always uses seed 60");
+// --pace default|fast is opt-in: "fast" adds ?pace=fast to the page URL, "default" adds nothing,
+// so unflagged runs load the same URL as before. --pace-measure records the monotonic
+// milliseconds from each delivered end-phase click to the first observed Cowboy
+// accepting_input state (showcase rounds and step 5). It does not change play.
+const pace = option("--pace");
+if (args.includes("--pace") && !["default", "fast"].includes(pace)) throw new Error("--pace needs default or fast");
+const paceMeasure = args.includes("--pace-measure");
 const escapeOnly = args.includes("--escape");
 if (escapeOnly && showcase) throw new Error("--escape and --showcase are separate runs");
 const outDir = outputPath ? path.resolve(outputPath)
@@ -214,6 +221,11 @@ async function runOnce(seed, flags, tilePoints) {
   const chrome = await launchChrome(flags);
   const cdp = await connect(chrome.url);
   const report = {flags, steps: [], consoleErrors: [], warnings: [], screenshots: []};
+  if (pace || paceMeasure) {
+    report.pace = {requested: pace ?? null, measure: paceMeasure, urlParam: pace === "fast" ? "pace=fast" : null,
+      note: "Elapsed values are single observations per round, not a benchmark; the page may ignore pace=fast."};
+    report.paceObservations = [];
+  }
   try {
     report.chrome = (await cdp.send("Browser.getVersion")).product;
     // The tab Chrome opened, so no second tab competes for visibility.
@@ -304,6 +316,18 @@ async function runOnce(seed, flags, tilePoints) {
     const cardSelector = (cardId) => `#match .match-hand [data-card-id="${cardId}"]`;
     const laneSelector = (side, slot) => `#match .match-slot[data-side="${side}"][data-slot="${slot}"]`;
     const action = (name) => `#match .match-buttons [data-action="${name}"]`;
+    // Pace timing: performance.now() is monotonic. The clock starts when the real
+    // CDP click has been delivered and stops when the poll first sees the state,
+    // so each value includes up to one 60 ms poll plus one snapshot evaluation.
+    const endPhaseClick = async () => {
+      await click(action("end-phase"));
+      return performance.now();
+    };
+    const notePace = (label, started, state) => {
+      if (!paceMeasure) return;
+      report.paceObservations.push({label, elapsedMs: Math.round((performance.now() - started) * 10) / 10,
+        observedStatus: state.status, observedDetails: state.details, reachedCowboyAcceptingInput: state.status === "accepting_input"});
+    };
 
     // Plays the first playable hand card through its steps, or ends the phase.
     async function playFirstPlayable() {
@@ -338,6 +362,7 @@ async function runOnce(seed, flags, tilePoints) {
     url.searchParams.set("seed", seed);
     url.searchParams.set("mode", "match");
     url.searchParams.set("deck", "starter");
+    if (pace === "fast") url.searchParams.set("pace", "fast");
     report.url = url.href;
     const loadStarted = Date.now();
     await send("Page.navigate", {url: url.href});
@@ -437,8 +462,9 @@ async function runOnce(seed, flags, tilePoints) {
           await screenshot("seed-60-faceoff.png");
         }
         if (each.type === "end-phase") {
-          await click(action("end-phase"));
+          const endedAt = await endPhaseClick();
           s = await waitFor(`round ${round + 1}`, (x) => x.status === "accepting_input" && x.details?.startsWith(`Round ${round + 1} `), 25000);
+          notePace(`showcase round ${round} end phase to round ${round + 1} Cowboy turn`, endedAt, s);
           if (round === 4) {
             must(lane(s, "cowboy", 1).text.startsWith("Mounted Billy ") && lane(s, "cowboy", 2).text === "Empty",
               "Singularity did not move Mounted Billy from lane 3 to lane 2", s);
@@ -599,9 +625,10 @@ async function runOnce(seed, flags, tilePoints) {
 
     // Step 5: end phase; the CPU acts and the clash plays.
     const before = s;
-    await click(action("end-phase"));
+    const endedAt = await endPhaseClick();
     const clashSeen = new Set();
     s = await settle("the CPU turn and the clash", clashSeen);
+    notePace("step 5 end phase to next Cowboy turn", endedAt, s);
     await screenshot("round-two.png");
     const changed = before.cowboyBase !== s.cowboyBase || before.wizardBase !== s.wizardBase || laneTexts(before) !== laneTexts(s);
     step(5, "End phase; the CPU acts and the clash changes orb or Base counts",
@@ -730,6 +757,7 @@ if (args.includes("--summary")) {
   console.log(`Chrome ${result.chrome} · revision ${result.commit ?? "unavailable"} · seed ${result.seed}`);
   console.log(`Build SHA-256 ${result.page.sha256}`);
   console.log(`Browser receipt ${path.relative(root, path.join(outDir, "browser-run.json"))}`);
+  for (const each of result.paceObservations ?? []) console.log(`pace ${result.pace.requested ?? "unflagged"} · ${each.label}: ${each.elapsedMs} ms (${each.observedStatus})`);
 } else console.log(JSON.stringify(result, null, 2));
 const pending = result.steps.filter((each) => each.state !== "observed").map((each) => each.id);
 console.log(`\nobserved ${result.steps.length - pending.length} of ${expectedSteps} steps; pending: ${pending.join(", ") || "none"}; console errors: ${result.consoleErrors.length}`);
