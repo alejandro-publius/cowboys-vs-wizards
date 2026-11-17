@@ -56,3 +56,42 @@ What the tests check: real T1 and BASE lab pairs for seeds 0, 9 and 55 at easy, 
 ## Remaining work
 
 `docs/kiro-build-log.md` was not updated because the coordinator owns it. A person plays a #120 or #122 seed in T1 and BASE, exports both reports and compares them. The coordinator reviews, tests and gates on GitHub CI.
+
+## Independent coordinator verification (November 17, 2026)
+
+The coordinator independently reviewed the Kiro worker's seven
+NEW-file-only commit 88f8218 and verified exact main base
+ad2b68e840a9d5f760c139a57d2f24cd6c9bd881, then
+ran:
+
+- node --test experiments/trap-playtest-compare/compare.test.js:
+  **13/13 pass, zero skipped**. This includes Chrome 157
+  loopback File API smoke selecting synthetic source-grounded
+  T1 and BASE reports. Exactly three browser requests, all
+  local loopback; no runtime errors. Tests cover terminal
+  result gating, incomplete/aborted pairs, matched seed and CPU,
+  missing/truncated event caveats, count allowlist, hostile
+  hidden-data sentinels, optional bounded/escaped notes,
+  CLI error handling and input immutability.
+- node --test tests/experiments/trap-placeholder-report.test.js:
+  **7/7 pass**, including the real Chrome local JSON exporter.
+- node --test experiments/trap-playtest-kit/seeds.test.js:
+  **11/11 pass**, deterministic real 12-card seed kit.
+- npm test: **313/313 Node tests** plus 2/2 existing
+  GLB structural checks (not visual animation quality).
+- node scripts/check-links.mjs:
+  **183 Markdown files, 681 relative links/images,
+  zero broken**.
+- git diff HEAD^ HEAD --check: **pass**.
+- Kiro CLI 3.4.0 and the explicitly advertised model were
+  checked at launch. The completed V3 session selected
+  **claude-opus-5.5** and reported **23.70397039933665**
+  session credits (usage metadata only, not an account invoice).
+  This appended coordinator receipt supplements the worker's
+  earlier 'usage unavailable' note.
+
+These independent checks do NOT constitute a real human
+playtest or balance verdict. Real-person notes have not been
+collected. No shipped cards/decks, published game, gameplay
+engine, sound, art, 3D, animation, asset, package, CI, deployment
+or user files changed.
