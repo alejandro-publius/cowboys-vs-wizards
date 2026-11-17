@@ -58,7 +58,7 @@ flowchart LR
     Presenter --> Hand["Card hand + match UI"]
 ```
 
-[Architecture and source ownership](docs/ARCHITECTURE.md) · [Current verified state and next priorities](docs/PROJECT-STATUS.md)
+[Architecture and source ownership](docs/ARCHITECTURE.md) · [Current verified state and next priorities](docs/PROJECT-STATUS.md) · [Index of all documents](docs/README.md)
 
 ## Built with Kiro
 
