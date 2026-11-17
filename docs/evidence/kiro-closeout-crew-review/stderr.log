@@ -1,0 +1,17 @@
+18:05:19 WARNING kiro_crew.acp.harness.kas: kas backend: installed kiro-cli 3.3.0 is newer than the releases the KAS tool-name tables were verified on (2.24.0, 2.24.1, 2.27.1); a renamed, added or absent built-in would mount or be governed under a name Crew does not know (kirocrew doctor reports the same; re-measure per test/fixtures/kas_builtin_tool_ids.json and append the release to its verified_kiro_cli_versions)
+18:05:19 WARNING kiro_crew.sandbox: SECURITY: cgroup v2 scope enforcement unavailable (not Linux); agent subprocess fork-bomb / memory-DoS ceilings are NOT enforced on this host. RLIMIT_NOFILE still applies. See docs/architecture/resource-protection.md.
+18:05:57 WARNING kiro_crew.acp.session_handle: pre-turn drain discarded 5 leftover frame(s) on this session; 0 of them were terminal-shaped responses — those frames reached no consumer
+18:06:00 WARNING kiro_crew.acp.session_handle: pre-turn drain discarded 8 leftover frame(s) on this session; 0 of them were terminal-shaped responses — those frames reached no consumer
+18:06:14 WARNING kiro_crew.acp.session_handle: pre-turn drain discarded 2 leftover frame(s) on this session; 0 of them were terminal-shaped responses — those frames reached no consumer
+18:08:28 WARNING kiro_crew.acp.session_handle: pre-turn drain discarded 2 leftover frame(s) on this session; 0 of them were terminal-shaped responses — those frames reached no consumer
+18:08:34 WARNING kiro_crew.acp.session_handle: pre-turn drain discarded 26 leftover frame(s) on this session; 0 of them were terminal-shaped responses — those frames reached no consumer
+18:08:57 WARNING kiro_crew.acp.session_handle: pre-turn drain discarded 3 leftover frame(s) on this session; 0 of them were terminal-shaped responses — those frames reached no consumer
+18:09:03 WARNING kiro_crew.acp.session_handle: pre-turn drain discarded 10 leftover frame(s) on this session; 0 of them were terminal-shaped responses — those frames reached no consumer
+18:09:11 WARNING kiro_crew.acp.session_handle: pre-turn drain discarded 2 leftover frame(s) on this session; 0 of them were terminal-shaped responses — those frames reached no consumer
+18:09:24 WARNING kiro_crew.acp.session_handle: pre-turn drain discarded 18 leftover frame(s) on this session; 0 of them were terminal-shaped responses — those frames reached no consumer
+18:09:27 WARNING kiro_crew.acp.session_handle: pre-turn drain discarded 2 leftover frame(s) on this session; 0 of them were terminal-shaped responses — those frames reached no consumer
+18:09:40 WARNING kiro_crew.acp.session_handle: pre-turn drain discarded 32 leftover frame(s) on this session; 0 of them were terminal-shaped responses — those frames reached no consumer
+18:09:57 WARNING kiro_crew.acp.session_handle: pre-turn drain discarded 5 leftover frame(s) on this session; 0 of them were terminal-shaped responses — those frames reached no consumer
+18:09:58 WARNING kiro_crew.acp.session_handle: pre-turn drain discarded 6 leftover frame(s) on this session; 0 of them were terminal-shaped responses — those frames reached no consumer
+18:10:26 WARNING kiro_crew.acp.session_handle: pre-turn drain discarded 4 leftover frame(s) on this session; 0 of them were terminal-shaped responses — those frames reached no consumer
+18:10:46 WARNING kiro_crew.taskrunner: Watchdog: global timeout reached (326s)
