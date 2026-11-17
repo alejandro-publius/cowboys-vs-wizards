@@ -9,6 +9,7 @@ import { MAX_ROUNDS, SLOT_COUNT } from "../../src/game/state.js";
 import { VIEWER, cardName, commandList, createLabSession, eventLine, trapText } from "./lab.js";
 import { SCENARIO_LABELS } from "./scenarios.js";
 import { createPlaytestReport, reportFileName } from "./playtest-report.js";
+import { CATEGORIES, pickSeeds } from "../trap-playtest-kit/seeds.js";
 
 const ENEMY = "wizard";
 const $ = (id) => document.getElementById(id);
@@ -128,7 +129,10 @@ function render() {
   const active = session.settings();
   const pick = wanted();
   const pending = pick.scenario !== active.scenario || pick.cpuLevel !== active.cpuLevel ? " Settings changed: they apply on Start." : "";
-  const variant = ` Scenario ${SCENARIO_LABELS[active.scenario]}. Wizard CPU: ${active.cpuLevel}.${pending}`;
+  // Issue #122: a seed typed or prepared in the field is pending too.
+  const typed = $("seed").value.trim();
+  const seedPending = view && status !== "idle" && validSeed(typed) && Number(typed) !== controller().seed() ? ` Seed field ${Number(typed)} applies on Start.` : "";
+  const variant = ` Scenario ${SCENARIO_LABELS[active.scenario]}. Wizard CPU: ${active.cpuLevel}.${pending}${seedPending}`;
   $("status").textContent = view && status !== "idle"
     ? `Status: ${status}. Seed ${controller().seed()}. Round ${view.round} of ${MAX_ROUNDS}. Phase: ${view.activeSide === VIEWER ? "Cowboy" : "Wizard"}.${result}${variant} ${controller().message() ?? ""}`
     : `Status: ${status}.${variant} ${controller().message() ?? "Enter a seed and start."}`;
@@ -187,8 +191,8 @@ $("seed-form").addEventListener("submit", (event) => {
 });
 $("restart").addEventListener("click", () => session.restart());
 $("leave").addEventListener("click", () => session.leave());
-// A changed select only updates the status note; the match is untouched until Start.
-for (const id of ["scenario", "cpu-level"]) $(id).addEventListener("change", () => render());
+// A changed select or seed field only updates the status note; the match is untouched until Start.
+for (const id of ["scenario", "cpu-level", "seed"]) $(id).addEventListener("change", () => render());
 $("confirm").addEventListener("click", act(() => controller().input({ type: "confirm" })));
 $("skip").addEventListener("click", act(() => controller().input({ type: "skip" })));
 $("cancel").addEventListener("click", act(() => controller().input({ type: "cancel" })));
@@ -228,6 +232,89 @@ $("export-report").addEventListener("click", () => {
 $("clear-notes").addEventListener("click", () => {
   for (const id of Object.values(NOTE_INPUTS)) $(id).value = "";
   $("export-status").textContent = "Notes cleared.";
+});
+
+// Issue #122: guided trial seeds. The options come from pickSeeds() in the
+// browser-safe #120 kit at load; no seed is written here. Choosing an option
+// only updates #trial-detail. The two Prepare buttons only write the seed,
+// scenario and CPU fields and redraw the status; they never call session.start,
+// restart or leave, never move focus, and never clear or export notes.
+// Only Cowboy positions are shown; the Wizard's order and trap stay hidden.
+// Same rule as the controller's seed parser (hoisted: render() uses it).
+function validSeed(text) {
+  return /^\d+$/.test(text) && Number(text) <= 4294967295;
+}
+const where = (position, round) => `position ${position} (${round === 1 ? "opening hand" : `drawn at round ${round} start if the match is still going`})`;
+const firstSide = (side) => (side === "cowboy" ? "Cowboy" : "Wizard");
+const trials = new Map();
+try {
+  const plan = pickSeeds();
+  for (const pick of plan.picks) {
+    const category = CATEGORIES.find((c) => c.id === pick.category);
+    if (pick.seed === null) {
+      trials.set(category.id, null);
+      continue;
+    }
+    const also = pick.matches.filter((id) => id !== category.id);
+    const late = pick.trapRound >= 8 ? ` Round ${pick.trapRound} is reached only if neither base falls first, so the trap may never be drawn.` : "";
+    trials.set(category.id, {
+      scenario: "T1",
+      seed: pick.seed,
+      label: `${category.id}: seed ${pick.seed}, ${firstSide(pick.startingSide)} first. ${category.meaning}`,
+      detail: `Category ${category.id} (${category.rule}). Seed ${pick.seed}, ${firstSide(pick.startingSide)} first. Your synthetic trap: ${where(pick.trap, pick.trapRound)}. Your spell: ${where(pick.spell, pick.spellRound)}.${also.length ? ` Also matches ${also.join(", ")}.` : ""}${late}`,
+    });
+  }
+  if (plan.t2) {
+    trials.set("T2", {
+      scenario: "T2",
+      seed: plan.t2.seed,
+      label: `T2 (optional, double trap): seed ${plan.t2.seed}, ${firstSide(plan.t2.startingSide)} first`,
+      detail: `Optional T2 example. Seed ${plan.t2.seed}, ${firstSide(plan.t2.startingSide)} first. Both your synthetic traps at positions ${plan.t2.traps.join(" and ")} (opening hand) and no spell. One trap zone per side, so this tests a duplicate trap, not a spell-or-trap choice.`,
+    });
+  }
+} catch (error) {
+  trials.clear();
+  $("trial-detail").textContent = `Guided trials unavailable: ${error.message}`;
+}
+for (const [value, trial] of trials) {
+  const option = document.createElement("option");
+  option.value = value;
+  option.textContent = trial ? trial.label : `${value}: no seed in the scanned range`;
+  option.disabled = !trial;
+  $("trial-pick").append(option);
+}
+$("trial-pick").addEventListener("change", () => {
+  const trial = trials.get($("trial-pick").value);
+  $("trial-detail").textContent = trial ? trial.detail : "Choosing a category changes nothing until you press Prepare.";
+});
+function prepare(fields, text) {
+  const before = { seed: $("seed").value.trim(), ...wanted() };
+  $("seed").value = fields.seed;
+  $("scenario").value = fields.scenario;
+  $("cpu-level").value = "normal";
+  const same = before.seed === fields.seed && before.scenario === fields.scenario && before.cpuLevel === "normal";
+  $("trial-status").textContent = `${text} Nothing started${controller().view() ? ": the current match is unchanged" : ""}.${same ? " The form already held these values." : ""} Press Start.`;
+  render();
+}
+$("prepare-trial").addEventListener("click", () => {
+  const value = $("trial-pick").value;
+  const trial = trials.get(value);
+  if (!trial) {
+    $("trial-status").textContent = "Choose a category first. Nothing prepared.";
+    return;
+  }
+  prepare({ seed: String(trial.seed), scenario: trial.scenario }, `Prepared ${value}: seed ${trial.seed}, scenario ${trial.scenario}, Wizard CPU normal.`);
+});
+$("prepare-base").addEventListener("click", () => {
+  const typed = $("seed").value.trim();
+  if (!validSeed(typed)) {
+    $("trial-status").textContent = `The seed field must hold a whole number from 0 to 4294967295. Nothing prepared.`;
+    return;
+  }
+  prepare(
+    { seed: typed, scenario: "BASE" },
+    `Prepared paired BASE: seed ${Number(typed)} (from the seed field), scenario BASE (traps off), Wizard CPU normal. If you just played T1 at this seed, export that report first, then press Clear notes if you want empty notes; neither happens for you.`,
+  );
 });
 
 function loop(now) {

@@ -9,7 +9,7 @@
 </head>
 <body>
 <p class="warning" role="note"><strong>Experimental, synthetic, local only.</strong>
-Developer lab for issues #108, #116 and #118. Traps are off in the shipped game. The default FIXTURE
+Developer lab for issues #108, #116, #118 and #122. Traps are off in the shipped game. The default FIXTURE
 scenario gives each side one extra anonymous test-fixture trap (13 cards). T1 and T2 relabel one or
 both spell copies as anonymous synthetic traps in a 12-card deck. None of these is a real card,
 deck entry or balance result. No art, models,
@@ -40,6 +40,22 @@ animation or audio. Serve over loopback HTTP (see README.md), not file://.</p>
     <button type="button" id="leave">Leave</button>
   </form>
   <div id="status" aria-live="polite"></div>
+  <fieldset id="trial">
+    <legend>Guided trial seeds (issue #122, developer only)</legend>
+    <p>Fills the form above from the issue #120 seed plan. It never starts, restarts or leaves a match: press Start
+    yourself. Only Cowboy card positions are described; the Wizard's deck stays hidden. Knowing them before play can
+    change how you play.</p>
+    <label for="trial-pick">Guided T1 trial</label>
+    <select id="trial-pick" autocomplete="off">
+      <option value="" selected>-- choose a category --</option>
+    </select>
+    <p id="trial-detail">Choosing a category changes nothing until you press Prepare.</p>
+    <div class="row">
+      <button type="button" id="prepare-trial">Prepare trial — does not start</button>
+      <button type="button" id="prepare-base">Prepare paired BASE at current seed — does not start</button>
+    </div>
+    <p id="trial-status" aria-live="polite"></p>
+  </fieldset>
 </section>
 
 <section aria-labelledby="wizard-heading" class="side">
