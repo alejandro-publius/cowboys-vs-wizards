@@ -30,7 +30,7 @@ Deck keys are written **Sheriff / Billy / Mounted Billy / Deadeye**. All results
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 6/3/1/2 (starter) | 400 | 191 | 175 | 34 | 47.8% | 43.8% | 8.5% |
 
-It ranks 4th of the 201 sampled decks. With 400 matches per deck, a win rate near 50% carries a sampling error of roughly ±5 percentage points (95%), so the top handful of decks are not reliably ordered.
+It ranks 4th of the 201 sampled decks in this fixed seed range. The two starting-side runs share each seed; no confidence interval or statistical significance test was calculated.
 
 ## All sampled decks together
 
@@ -136,7 +136,7 @@ Matches in which each card was played at least once, of 80,400: Sheriff 69,552; 
 
 1. **Under this bot, Sheriff count dominates.** Pooled win rate rises with every added Sheriff, from about 1% with one to about 27% with six. All ten best decks hold five or six Sheriffs; all ten worst hold one or two. The deck builder's only floor is one Sheriff.
 2. **More Mounted Billy goes with more losses under this bot.** Pooled win rate falls with every added copy, from about 25% with none to about 2.5% with six. Mounted Billy needs two tributes and this bot looks one clash ahead, so this may measure the bot more than the card.
-3. **The starter deck is among the strongest sampled decks, and no sampled deck clearly dominates it.** It ranks 4th of 201. The top deck, 6/3/0/3, won 58.8%, about 11 points above the starter.
+3. **The starter deck ranks fourth in this sample.** The top deck, 6/3/0/3, won 58.8%, about 11 percentage points above the starter. This describes the recorded matches; it does not establish the ordering on other seeds or with other players.
 4. **Acting first matters about as much as the deck does near the top.** The starter deck's win rate differs by 27.5 points between acting first and second. This matches the direction of the earlier natural-start runs.
 
 None of this is a recommendation to change a rule or a card. A person can plan a tribute chain that this bot does not, so the weak results for tribute-heavy decks in particular should not be read as how those decks play in human hands.
@@ -148,3 +148,7 @@ None of this is a recommendation to change a rule or a card. A person can plan a
 | `node --test tests/game/deck-balance.test.js` | 2 tests, 2 pass, about 0.09 s |
 | `node scripts/deck-balance.mjs --out …` twice, then `cmp` | byte-identical |
 | `node scripts/verify-duel.mjs` | 159 tests, 159 pass (the 157 existing and the 2 new); both model files pass the structure check |
+
+## Review corrections — Codex, November 16, 2026 Pacific
+
+Codex added a CLI guard rejecting a seed range with an unsafe exclusive endpoint after reproducing a non-terminating increment at 2^53. A subprocess regression now requires that input to exit with status 2 before its two-second timeout. The focused command above passes 3 of 3 tests after this correction. Codex also removed the unsupported confidence-margin and dominance claims. The original 80,400-match JSON and its SHA-256 above are unchanged; this review did not rerun the full experiment.
