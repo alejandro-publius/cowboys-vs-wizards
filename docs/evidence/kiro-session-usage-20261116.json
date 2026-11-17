@@ -1,0 +1,353 @@
+{
+  "scope": "Selected coordinator-dispatched CLI runs only; metadata recovered, no work rerun. Latest credits record per session; promptTurnSummaries is the same usage, not added. Not account balance/total or internal routing evidence.",
+  "runs": [
+    {
+      "job": "webkit-card-fix",
+      "source_run_sha256": "ff73e53a7daad9e1858055dad18b5a4d4d9b490f397b5159d2ceeab343ee489b",
+      "actor": "Kiro CLI",
+      "engine": "v3",
+      "version": "3.4.0",
+      "started_utc": "2026-11-17T05:37:01.380706+00:00",
+      "ended_utc": "2026-11-17T06:07:14.191883+00:00",
+      "commit": "961218e43dda66a4a3d2787128c7a689e23de6e5",
+      "credits_records": [
+        {
+          "session_id": "sess_1cdfe11f-da0a-4043-8c2f-b272c3d55449",
+          "line": 2072,
+          "credits": [
+            {
+              "usage": 10.695079011940296,
+              "unit": "credit",
+              "unitPlural": "credits"
+            }
+          ],
+          "source_line_sha256": "5290ec159c2920fda8f578f8e3f3f114c5f378bc3534ec679d4ba2713760ffa8"
+        }
+      ],
+      "run_finished": {
+        "sess_1cdfe11f-da0a-4043-8c2f-b272c3d55449": {
+          "status": "success",
+          "stop_reason": "end_turn"
+        }
+      }
+    },
+    {
+      "job": "preview-contracts",
+      "source_run_sha256": "a759c93ec10e5df0ed81747bf4b5a052a39f03ade0978cb710e29bf14f7fbd75",
+      "actor": "Kiro CLI",
+      "engine": "v3",
+      "version": "3.4.0",
+      "started_utc": "2026-11-17T05:37:01.380710+00:00",
+      "ended_utc": "2026-11-17T05:40:09.196936+00:00",
+      "commit": "d57b797322dd5a50aef8a3487fe79eeb9a0a0c46",
+      "credits_records": [
+        {
+          "session_id": "sess_11c681e3-f5f5-4cdd-bc74-ea32edea06f9",
+          "line": 905,
+          "credits": [
+            {
+              "usage": 4.427153379767827,
+              "unit": "credit",
+              "unitPlural": "credits"
+            }
+          ],
+          "source_line_sha256": "1f09bf882f0fb246afa41267e8d74bf2d69c6ccebacc541b272d1e922e6de967"
+        }
+      ],
+      "run_finished": {
+        "sess_11c681e3-f5f5-4cdd-bc74-ea32edea06f9": {
+          "status": "success",
+          "stop_reason": "end_turn"
+        }
+      }
+    },
+    {
+      "job": "contributor-review",
+      "source_run_sha256": "2924794156b6957c5051077e9f8857dc1871ff9c70be61a4b008cda7d4552544",
+      "actor": "Kiro CLI",
+      "engine": "v3",
+      "version": "3.4.0",
+      "started_utc": "2026-11-17T05:37:01.380721+00:00",
+      "ended_utc": "2026-11-17T05:47:33.519152+00:00",
+      "commit": "145c80ad52b4aac2470fef3f859fdf4069ed626e",
+      "credits_records": [
+        {
+          "session_id": "sess_61cda0a9-b7d0-48d8-8414-0d6609f2b44f",
+          "line": 2589,
+          "credits": [
+            {
+              "usage": 2.6114065414593695,
+              "unit": "credit",
+              "unitPlural": "credits"
+            }
+          ],
+          "source_line_sha256": "bef390ac1d96dc95578f60fa10067e879bf12d79fc6db50ee9d9024ef039fbc0"
+        },
+        {
+          "session_id": "sess_947e4c10-6215-413b-ba83-fd761bd89496",
+          "line": 1570,
+          "credits": [
+            {
+              "usage": 2.851534860862355,
+              "unit": "credit",
+              "unitPlural": "credits"
+            }
+          ],
+          "source_line_sha256": "d0703a52c43df6622a19ecf71473c57971bee2e6b73cd8a8a768503cbbc699ae"
+        },
+        {
+          "session_id": "sess_8a519a49-12d2-41c0-82e7-33690906cf08",
+          "line": 1782,
+          "credits": [
+            {
+              "usage": 0.5469911585406302,
+              "unit": "credit",
+              "unitPlural": "credits"
+            }
+          ],
+          "source_line_sha256": "f76b9ef44c2e22c5362c85fbfee5346ab560e4731a9f6d33615ea85bdd50e840"
+        },
+        {
+          "session_id": "sess_bea6ca1c-ded1-4dbd-b169-1d185ffdbf74",
+          "line": 2195,
+          "credits": [
+            {
+              "usage": 1.6720431411276948,
+              "unit": "credit",
+              "unitPlural": "credits"
+            }
+          ],
+          "source_line_sha256": "837f7deded1903b8204e7c4136dca3e79de25c5b8a530a0ad108ab97e3787a85"
+        },
+        {
+          "session_id": "sess_3eed29e3-4b4a-4733-841a-615205c4311d",
+          "line": 2326,
+          "credits": [
+            {
+              "usage": 0.43630808490878936,
+              "unit": "credit",
+              "unitPlural": "credits"
+            }
+          ],
+          "source_line_sha256": "4ccdbd8fd047f055cff69e223b6147e0f087893fa43e28b178b5da0ea5ccbca2"
+        }
+      ],
+      "run_finished": {
+        "sess_61cda0a9-b7d0-48d8-8414-0d6609f2b44f": {
+          "status": "success",
+          "stop_reason": "end_turn"
+        }
+      }
+    },
+    {
+      "job": "scoped-steering",
+      "source_run_sha256": "e9ec32d511c4430974198df71d311d49e6fafac2e31ff1612cb83c8bf05b0000",
+      "actor": "Kiro CLI",
+      "engine": "v3",
+      "version": "3.4.0",
+      "started_utc": "2026-11-17T05:47:34.547717+00:00",
+      "ended_utc": "2026-11-17T05:48:05.911343+00:00",
+      "commit": "740a85660dd0ed4940bbbcc846ebcd047ad2884e",
+      "credits_records": [
+        {
+          "session_id": "sess_273026cc-3337-4331-a361-98f716fef731",
+          "line": 208,
+          "credits": [
+            {
+              "usage": 0.5386821489220563,
+              "unit": "credit",
+              "unitPlural": "credits"
+            }
+          ],
+          "source_line_sha256": "df1e7c323b13b58fee5f75d22e0b4db526c3eda41a8f1dcff3a8febe981bfbb0"
+        }
+      ],
+      "run_finished": {
+        "sess_273026cc-3337-4331-a361-98f716fef731": {
+          "status": "success",
+          "stop_reason": "end_turn"
+        }
+      }
+    },
+    {
+      "job": "kiro-animation-pilot-20261116-2149",
+      "source_run_sha256": "77fc4b902bf86d971b2172434b9514aaf25897d453059d830df4f5582ed3b9c2",
+      "actor": "Kiro CLI",
+      "engine": "v3",
+      "version": "3.4.0",
+      "started_utc": "2026-11-17T05:48:59.802085+00:00",
+      "ended_utc": "2026-11-17T05:59:19.012876+00:00",
+      "commit": "a039d4efde85fc1b6e7dd6c2907b4788c348178d",
+      "credits_records": [
+        {
+          "session_id": "sess_3ddd2700-b7e5-4fff-86bd-84403119dc94",
+          "line": 3485,
+          "credits": [
+            {
+              "usage": 13.960612222222222,
+              "unit": "credit",
+              "unitPlural": "credits"
+            }
+          ],
+          "source_line_sha256": "f60e5393a6c6bbe02e1b6fc5845a5c8626b218f2ec16c4e5ab908424b5dd4b1d"
+        }
+      ],
+      "run_finished": {
+        "sess_3ddd2700-b7e5-4fff-86bd-84403119dc94": {
+          "status": "success",
+          "stop_reason": "end_turn"
+        }
+      }
+    },
+    {
+      "job": "kiro-billy-pilot-review-2210",
+      "source_run_sha256": "07f9bad20647e039aa1ba45044256a0af7f344724b4833311657b4d730a4b742",
+      "actor": "Kiro CLI",
+      "engine": "v3",
+      "version": "3.4.0",
+      "started_utc": "2026-11-17T06:03:33.602915+00:00",
+      "ended_utc": "2026-11-17T06:11:06.825411+00:00",
+      "commit": "9b2cafde540dc5ac79c38b66ad5c0dfd233f24f4",
+      "credits_records": [
+        {
+          "session_id": "sess_6598450e-c76a-41cc-a80d-1935ca3a6930",
+          "line": 1187,
+          "credits": [
+            {
+              "usage": 4.554267774129353,
+              "unit": "credit",
+              "unitPlural": "credits"
+            }
+          ],
+          "source_line_sha256": "ecf2f6b679cf28ff71111cf63ca0a4dac35238aca337fcf81e4932cac2c9b076"
+        }
+      ],
+      "run_finished": {
+        "sess_6598450e-c76a-41cc-a80d-1935ca3a6930": {
+          "status": "success",
+          "stop_reason": "end_turn"
+        }
+      }
+    },
+    {
+      "job": "kiro-docs-hook-2210",
+      "source_run_sha256": "35b39ea519942cf4b08dabca15e89e5e24051462e33d1a5f6cd258e4b08ecbad",
+      "actor": "Kiro CLI",
+      "engine": "v3",
+      "version": "3.4.0",
+      "started_utc": "2026-11-17T06:04:17.439938+00:00",
+      "ended_utc": "2026-11-17T06:05:28.466799+00:00",
+      "commit": "8174bed8e1653bc56bec9626c589bb10265de87f",
+      "credits_records": [
+        {
+          "session_id": "sess_afff8afb-fe19-499a-a869-11e72f45f791",
+          "line": 409,
+          "credits": [
+            {
+              "usage": 1.5125629059701493,
+              "unit": "credit",
+              "unitPlural": "credits"
+            }
+          ],
+          "source_line_sha256": "0747767fb5ee5c54a13753a7f8d314c3b8ca81f4a3af629ffe42723cd01cdbc2"
+        }
+      ],
+      "run_finished": {
+        "sess_afff8afb-fe19-499a-a869-11e72f45f791": {
+          "status": "success",
+          "stop_reason": "end_turn"
+        }
+      }
+    },
+    {
+      "job": "kiro-hook-recheck-2240",
+      "source_run_sha256": "2f7859e072f2660c51a528e0f680595237193b7d60d2f05efbb70abc66eb5ad1",
+      "actor": "Kiro CLI",
+      "engine": "v3",
+      "version": "3.4.0",
+      "started_utc": "2026-11-17T06:21:46.193345+00:00",
+      "ended_utc": "2026-11-17T06:22:15.843991+00:00",
+      "commit": "bb53ead7165e36800b180f860f2785649c451527",
+      "credits_records": [
+        {
+          "session_id": "sess_88cb21c9-4565-49b1-a423-4535069dba51",
+          "line": 256,
+          "credits": [
+            {
+              "usage": 0.7915621817578773,
+              "unit": "credit",
+              "unitPlural": "credits"
+            }
+          ],
+          "source_line_sha256": "28ec5031830e19975b258b8733883bf6b9b831fd2bff743ee1ca057c46f03af2"
+        }
+      ],
+      "run_finished": {
+        "sess_88cb21c9-4565-49b1-a423-4535069dba51": {
+          "status": "success",
+          "stop_reason": "end_turn"
+        }
+      }
+    },
+    {
+      "job": "kiro-billy-sourced-shot-2230",
+      "source_run_sha256": "1359249d88c55dbe14a2bd135d54ada4fc8e8eafc19f3bac570e5423fb94d06f",
+      "actor": "Kiro CLI",
+      "engine": "v3",
+      "version": "3.4.0",
+      "started_utc": "2026-11-17T06:27:24.431420+00:00",
+      "ended_utc": "2026-11-17T06:33:34.774696+00:00",
+      "commit": "32cfa69b666160657d65ae0003a946966229350a",
+      "credits_records": [
+        {
+          "session_id": "sess_38af3062-bfc0-4663-8e14-8c6b7651d7d9",
+          "line": 1598,
+          "credits": [
+            {
+              "usage": 7.541407389054726,
+              "unit": "credit",
+              "unitPlural": "credits"
+            }
+          ],
+          "source_line_sha256": "6d07f58a9368c7b83f96ee1f7c586ff3efb2113605783103e69996107170dac5"
+        }
+      ],
+      "run_finished": {
+        "sess_38af3062-bfc0-4663-8e14-8c6b7651d7d9": {
+          "status": "success",
+          "stop_reason": "end_turn"
+        }
+      }
+    },
+    {
+      "job": "kiro-guided-first-match-965bd709",
+      "source_run_sha256": "cf47ea1b58cbfb68a6ed0f95fa2773fbf0f5d9c269fb5856c946f3a1a225ab98",
+      "actor": "Kiro CLI",
+      "engine": "v3",
+      "version": "3.4.0",
+      "started_utc": "2026-11-17T06:53:50.664651+00:00",
+      "ended_utc": "2026-11-17T07:00:28.910642+00:00",
+      "commit": "48ecea9030134e0c59998b99d3615ac2bdda5ab9",
+      "credits_records": [
+        {
+          "session_id": "sess_52697639-86bd-4a3e-ad19-c17ff1073c71",
+          "line": 1744,
+          "credits": [
+            {
+              "usage": 8.243736603814261,
+              "unit": "credit",
+              "unitPlural": "credits"
+            }
+          ],
+          "source_line_sha256": "910e31ac1f892fe2ffbb2691c9d1a44eac6d191d47d4d349dbf8d4d11287bf7e"
+        }
+      ],
+      "run_finished": {
+        "sess_52697639-86bd-4a3e-ad19-c17ff1073c71": {
+          "status": "success",
+          "stop_reason": "end_turn"
+        }
+      }
+    }
+  ]
+}

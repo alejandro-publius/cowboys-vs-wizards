@@ -79,7 +79,7 @@ Each item gives the sources, the gap as it stands today, how to do it, who has t
 
 ### 9. Record credits and transcripts for each Kiro session
 - **Sources:** S9 (3.1.0 shows session credits in `/usage`, the status line and workflow step rows; 3.3.0 adds `/transcript` for the whole conversation); S39 (credits recorded per phase: 1.86 for the spec, 43.13 in total); S37 and S42 (usage measurement); S4 (Auto's model handoffs cannot be observed, so do not claim them).
-- **Gap today:** one usage figure is on record (0.6441 credits). The closeout receipt says "this run emitted no usage figures". The evidence map lists as a gap that the Kiro runs cannot be inspected from the repository.
+- **Current state:** the original 0.6441-credit trial remains historical. Codex recovered actual credit-unit metadata for ten later dispatched CLI jobs, with session IDs and source hashes ([receipt](../evidence/kiro-session-usage-20261116.md)). These observations are not an account total; Workflow parent/child accounting is not aggregated. Capture future sessions at completion rather than back-filling estimates.
 - **How:** at the end of each Kiro session, save `/usage` and `/transcript` beside the evidence note. Add a credits column to the build log from here on. Do not back-fill.
 - **Who:** the person running Kiro.
 - **Done when:** the sessions for #43 to #46 each have a figure or the words "not captured".
