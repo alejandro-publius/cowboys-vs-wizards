@@ -1,10 +1,10 @@
 # Requirements: Guided first match preview (issue #35)
 
-**Status: planned, not implemented.** Rachel owns `src/match/guide.js`, `tests/match/guide.test.js`, the card-model and cards change, and `src/main.js` wiring. Issue #35 tells Rachel not to create `.kiro/` files; this plan exists because Kiro CLI was assigned this folder in issue #44. All checks are pending implementation.
+**Status: implemented behind `?guide=1` (Kiro CLI 3.4.0 V3, from main 965bd70); not merged, not human-reviewed.** Ownership of `src/match/guide.js`, `tests/match/guide.test.js` and the card-model and `src/main.js` wiring moved from Rachel to this Kiro CLI run (transfer reported by the coordinator in GitHub #35). No `src/ui/cards.js` change was needed: the line rides in the existing `role="status"` prompt element. Results per ID are in `docs/evidence/kiro-guided-first-match.md`.
 
 Goal: opt-in `?guide=1` adds one short line of advice at each step of the first two rounds, in the existing prompt's place.
 
-| ID | Requirement | Executable check (pending) |
+| ID | Requirement | Executable check |
 | --- | --- | --- |
 | GF-1 | On `?mode=match&deck=starter&seed=0&guide=1` THE guide SHALL cover, in order: choose a card, choose a lane, confirm, end the phase, what the first clash did, the first summon that needs a sacrifice. | `tests/match/guide.test.js` walks the real seed 0 match through the selection states and asserts the ordered steps. |
 | GF-2 | EACH line SHALL be one sentence, use the game's own words (How to Play in `src/ui/title-menu.js`), and be true for the current board. | Per-line test against the real public view; vocabulary check against How to Play; one-sentence check. |

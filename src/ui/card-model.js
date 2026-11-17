@@ -7,6 +7,7 @@
 // the controller's displayed(), options(), status(), seed(), seedPinned()
 // and message(); displayed and options may be null. clashLog is the opt-in
 // ?log=1 list from src/match/clash-log.js, or null when the preview is off.
+// guide is the ?guide=1 sentence from src/match/guide.js, or null.
 import {CARDS} from "../game/cards.js";
 import {SLOT_COUNT} from "../game/state.js";
 
@@ -48,7 +49,7 @@ function troopSummary(troop) {
   return {name: card.name, health: troop.health, max: card.health};
 }
 
-export function cardModel({displayed = null, options = null, status = "idle", seed = null, seedPinned = false, message = null, clashLog = null} = {}) {
+export function cardModel({displayed = null, options = null, status = "idle", seed = null, seedPinned = false, message = null, clashLog = null, guide = null} = {}) {
   const accepting = status === "accepting_input";
   const cowboy = displayed?.sides.cowboy ?? null;
   const wizard = displayed?.sides.wizard ?? null;
@@ -72,7 +73,10 @@ export function cardModel({displayed = null, options = null, status = "idle", se
       handCount: wizard?.handCount ?? null,
       baseOrbs: wizard?.baseOrbs ?? null,
     },
-    prompt: accepting || status === "submitting" ? options?.prompt ?? "" : WAITING[status] ?? "",
+    // The opt-in ?guide=1 line (src/match/guide.js) follows the prompt in the same element.
+    prompt: accepting || status === "submitting"
+      ? (options?.prompt ?? "") + (accepting && guide ? ` ${guide}` : "")
+      : WAITING[status] ?? "",
     message: message ?? "",
     clashLog,
     lanes: Array.from({length: SLOT_COUNT}, (_, lane) => ({
