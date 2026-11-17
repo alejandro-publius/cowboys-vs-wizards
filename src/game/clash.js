@@ -5,12 +5,16 @@ import { MAX_ROUNDS, SLOT_COUNT } from "./state.js";
 // applyAction (it is changed in place). Every number a renderer needs is
 // computed here once and reported through `emit`.
 export function resolveClash(state, emit) {
+  // Traps read the board before any damage, so both sides' choices come from
+  // the same snapshot and a cancelled troop still blocks and takes damage.
+  const cancelled = state.traps?.enabled === true ? triggerTraps(state, emit) : [];
+
   // Snapshot first: a troop brought to zero during this clash still attacks.
   const attacks = [];
   for (let lane = 0; lane < SLOT_COUNT; lane++) {
     for (const side of SIDES) {
       const troop = state.sides[side].board[lane];
-      if (troop) attacks.push({ lane, side, cardId: troop.cardId, amount: CARDS[troop.cardId].attack });
+      if (troop && !cancelled.includes(`${side}:${lane}`)) attacks.push({ lane, side, cardId: troop.cardId, amount: CARDS[troop.cardId].attack });
     }
   }
 
@@ -47,6 +51,46 @@ export function resolveClash(state, emit) {
       emit({ type: "defeat", side, slot: lane, cardId: troop.cardId });
     }
   }
+}
+
+// Trap trigger (issue #92, T3; contract sections 2, 4, 5, effect X). Called
+// only on a trap match, before any damage. A trap is armed from the round
+// after it was set. An armed trap targets the enemy troop with the highest
+// printed attack (tie: lowest slot); with no enemy troop it stays set. Every
+// choice is made on the untouched board before any trap leaves its zone, so
+// the result does not depend on SIDES order. The trap card moves to its
+// owner's discard in this transition; there is no separate discard event.
+// Returns the cancelled attackers as "side:slot" keys.
+function triggerTraps(state, emit) {
+  const triggers = [];
+  for (const side of SIDES) {
+    const trap = state.sides[side].trap;
+    if (!trap || !(state.round > trap.setRound)) continue;
+    const enemySide = opponent(side);
+    let slot = -1;
+    state.sides[enemySide].board.forEach((troop, lane) => {
+      if (!troop) return;
+      const best = slot === -1 ? -Infinity : CARDS[state.sides[enemySide].board[slot].cardId].attack;
+      if (CARDS[troop.cardId].attack > best) slot = lane;
+    });
+    if (slot !== -1) triggers.push({ side, cardId: trap.cardId, enemySide, slot });
+  }
+
+  const cancelled = [];
+  for (const { side, cardId, enemySide, slot } of triggers) {
+    const target = state.sides[enemySide].board[slot];
+    state.sides[side].trap = null;
+    state.sides[side].discard.push(cardId);
+    cancelled.push(`${enemySide}:${slot}`);
+    emit({
+      type: "trap-trigger",
+      side,
+      cardId,
+      target: { side: enemySide, slot, cardId: target.cardId },
+      cancelled: CARDS[target.cardId].attack,
+    });
+  }
+  return cancelled;
 }
 
 // Result after a clash, or null when the match goes on. `winner` and `loser`
