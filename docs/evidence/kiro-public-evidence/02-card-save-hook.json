@@ -1,0 +1,52 @@
+{
+  "extractType": "structured extract (not the original file)",
+  "note": "Structured extract written by a documentation task from the named source files. Fields are an allowlist; it is not the original file, log or transcript.",
+  "claim": "A PostFileSave hook regenerated the card catalog after one Skeleton spec field changed, and the three registration tests passed with exit 0.",
+  "actualApp": "Kiro CLI 3.3.0 (isolated trial worktree; app and version from docs/evidence/kiro-card-pipeline.md, not from the receipt files)",
+  "run": {
+    "baseCommit": "36ecede",
+    "date": "not stated in the receipt files or the cited section",
+    "hook": ".kiro/hooks/sync-duel-card-specs.json",
+    "wrapper": "scripts/check-card-specs.sh"
+  },
+  "observed": {
+    "changedSpec": ".kiro/specs/duel-card-pipeline/cards/wizard-skeleton.json",
+    "field": "health",
+    "from": 3,
+    "to": 4,
+    "diffFilesTouched": [
+      ".kiro/specs/duel-card-pipeline/cards/wizard-skeleton.json",
+      "src/game/card-specs.generated.js"
+    ],
+    "generatedCatalogRewritten": true,
+    "registrationTests": {
+      "tests": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "overallExit": 0
+  },
+  "gameImpact": "The six runtime Skeleton cards showed health 4 in the trial. The change stayed a proposal; the shipped Skeleton keeps three orbs.",
+  "sources": [
+    {
+      "path": "submission-card-hook-check worktree: .artifacts/kiro/card-save-hook.txt",
+      "sha256": "cbd64c748d3aa2992488243a94065cf0a003b47929cc89e75a52f9c112cc4878",
+      "tracked": false
+    },
+    {
+      "path": "submission-card-hook-check worktree: .artifacts/kiro/card-save-trial.diff",
+      "sha256": "c9b026a47f532507c58ab34c3eea810e52d989f3ed88916cfd0803b1f44254fa",
+      "tracked": false
+    },
+    {
+      "path": "docs/evidence/kiro-card-pipeline.md (section: Card registration)",
+      "sha256": "bde174c03c84790599a9c5472a6feea2a0f4b701708de0f6ad84b70ae15a4ffe",
+      "tracked": true
+    }
+  ],
+  "redacted": [
+    "hook output reduced to counts and exit code",
+    "diff reduced to file names and the one changed value",
+    "card-hook-verifier.json (embeds a local absolute path) and Kiro session logs not copied"
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "extractType": "structured extract (not the original file)",
+  "note": "Structured extract written by a documentation task from the named source files. Fields are an allowlist; it is not the original file, log or transcript.",
+  "claim": "Kiro CLI ran one bounded build plus a seed-0 Chrome replay on the final combined Sheriff-idle code and the browser receipt recorded 8 of 8 observed steps with 0 console errors.",
+  "actualApp": "Kiro CLI (non-interactive chat session; ordinary CLI delegation, not Crew)",
+  "run": {
+    "startedUtc": "2026-11-17T00:15:19.617428+00:00",
+    "localTimeFromReceipt": "11/16/2026, 4:16:15 PM PST",
+    "branch": "kiro/sheriff-runtime-smoke",
+    "baseCommit": "e7cddfd",
+    "baseCommitFull": "e7cddfd516332ca2eb3851e32971ebb23ac34852",
+    "runnerExitCode": 0,
+    "receiptState": "started (written at launch; exit code taken from exit-code.txt)"
+  },
+  "observedCommands": [
+    "npm run build (exit 0 per run note)",
+    "node scripts/browser-match-check.mjs --seed 0 --summary --out-dir <smoke>/browser (exit 0, run once)"
+  ],
+  "result": {
+    "seed": 0,
+    "chrome": "Chrome/157.0.8103.52",
+    "viewport": [
+      1440,
+      900
+    ],
+    "pageFile": "dist/cowboys-vs-wizards-board-duel.html",
+    "pageBytes": 56550995,
+    "pageSha256": "ed353a3354b07d172c6c4cbf0b5115d0886c29951d09c7fb01e5564c27ac6702",
+    "uncommittedChanges": true,
+    "stepsObserved": 8,
+    "stepsTotal": 8,
+    "pending": [],
+    "flags": [],
+    "earlierAttempts": [],
+    "consoleErrors": 0,
+    "steps": [
+      {
+        "id": 1,
+        "title": "Match mode loads with no fallback video; seed shown",
+        "state": "observed"
+      },
+      {
+        "id": 2,
+        "title": "The hand and all eight catalog cards show illustrated faces and flip to the deck back",
+        "state": "observed"
+      },
+      {
+        "id": 3,
+        "title": "Select a card, then cancel (Cancel button, then Escape)",
+        "state": "observed"
+      },
+      {
+        "id": 4,
+        "title": "Select Sheriff, pick a lane, confirm; the troop and its orbs appear",
+        "state": "observed"
+      },
+      {
+        "id": 5,
+        "title": "End phase; the CPU acts and the clash changes orb or Base counts",
+        "state": "observed"
+      },
+      {
+        "id": 6,
+        "title": "Play until a result (first playable card, else end phase)",
+        "state": "observed"
+      },
+      {
+        "id": 7,
+        "title": "Restart during clash playback; the pinned seed restarts clean and stays clean",
+        "state": "observed"
+      },
+      {
+        "id": 8,
+        "title": "Switch to the demo and back",
+        "state": "observed"
+      }
+    ]
+  },
+  "notChecked": [
+    "134 Node tests",
+    "--escape and --showcase modes",
+    "Sheriff idle appearance",
+    "performance",
+    "web build",
+    "deployment"
+  ],
+  "sources": [
+    {
+      "path": ".artifacts/kiro-sheriff-runtime-smoke/browser/browser-run.json",
+      "sha256": "a6c2bbe463f8837dc5ba657ba08a35a71a93a5af9f239aeb962e5cc3fb481508",
+      "tracked": false
+    },
+    {
+      "path": ".artifacts/kiro-sheriff-runtime-smoke/receipt.json",
+      "sha256": "ebb52d8e30b6f1dd23d9c5a8efea5dd262c426a5bc098b6055604ffce041ec29",
+      "tracked": false
+    },
+    {
+      "path": ".artifacts/kiro-sheriff-runtime-smoke/exit-code.txt",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "tracked": false
+    }
+  ],
+  "publicCorroboration": "Run note: git show cd6b1ab:docs/evidence/kiro-sheriff-runtime-smoke.md (local commit of the Kiro worker branch, cited by docs/kiro-brag-sheet.md)",
+  "redacted": [
+    "machine model, memory, OS, WebGL strings, load time and fps",
+    "absolute local paths, file URL, screenshot paths",
+    "launch command arguments, task text, process IDs",
+    "per-step detail objects",
+    "run.log and browser.log not copied"
+  ]
+}

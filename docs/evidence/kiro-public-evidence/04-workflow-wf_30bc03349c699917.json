@@ -1,0 +1,50 @@
+{
+  "extractType": "structured extract of project evidence documents (the Workflow log and report themselves were not available)",
+  "note": "Structured extract written by a documentation task from the named source files. Fields are an allowlist; it is not the original file, log or transcript. Facts here are copied from the two tracked project documents named in sources; no raw run log was read.",
+  "claim": "Kiro CLI ran the saved three-step orb-duel-replay Workflow through run_workflow; rerun wf_30bc03349c699917 recorded both route commands and exit statuses, 112 Node tests, 8 opening checks and 4 showdown checks.",
+  "actualApp": "Kiro CLI 3.3.0 (run_workflow). The saved Workflow was authored by Codex; the report change after the first run was Codex.",
+  "run": {
+    "workflowId": "wf_30bc03349c699917",
+    "workflow": "orb-duel-replay",
+    "date": "2026-11-16",
+    "releaseReference": "50163ee",
+    "deploymentRun": "https://github.com/alejandro-publius/cowboys-vs-wizards/actions/runs/43954314805"
+  },
+  "observed": {
+    "nodeTests": 112,
+    "seed0Checks": "8 of 8",
+    "seed60Checks": "4 of 4",
+    "consoleErrors": 0,
+    "sameStandaloneHtmlForBothReceipts": true,
+    "staticWebReplay": {
+      "chrome": "157.0.8103.52",
+      "htmlSha256": "34a72d68d90e5bade1985a35a80586b054f92658a32f57d4282aaba5968dd0cc",
+      "seed0": "8 of 8",
+      "seed60": "4 of 4"
+    },
+    "mcpVerdicts": {
+      "realSeed0AndSeed60": "pass",
+      "wrongShowcaseSeed": "fail",
+      "changedBuild": "stale"
+    }
+  },
+  "gameImpact": "Seed 60: two tributes summon Mounted Billy with five orbs, then his attack drops the Dragon from five orbs to two.",
+  "sources": [
+    {
+      "path": "docs/evidence/kiro-workflow-replay.md",
+      "sha256": "c2a7d2a78897028a83a4ea2300be4bfce0c0a20bc37afb34dbd0bbd4efb671b1",
+      "tracked": true
+    },
+    {
+      "path": "docs/evidence/kiro-submission-preflight.md (section: Chrome replay on the static build)",
+      "sha256": "2229dc39de7c8711589463793ff8be09ce9f80bd71b127aaf6f7d064be369089",
+      "tracked": true
+    }
+  ],
+  "missingSources": [
+    "workflow log and report for wf_30bc03349c699917 (no exact path is named in the project docs; the doc says they are on the Mac)"
+  ],
+  "redacted": [
+    "no raw log content; counts, hashes and verdicts only"
+  ]
+}

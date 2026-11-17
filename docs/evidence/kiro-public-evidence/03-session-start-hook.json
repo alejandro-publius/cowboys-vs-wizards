@@ -1,0 +1,47 @@
+{
+  "extractType": "structured extract (not the original file)",
+  "note": "Structured extract written by a documentation task from the named source files. Fields are an allowlist; it is not the original file, log or transcript. The original is itself tracked, so the extract adds only a hash-linked summary.",
+  "claim": "The duel-presenter agent SessionStart hook ran the presenter, controller and card-model tests and 19 of 19 passed.",
+  "actualApp": "Kiro duel-presenter SessionStart check (header of the source file); agent file .kiro/agents/duel-presenter.json",
+  "run": {
+    "stampedUtc": "2026-11-16T06:30:14Z",
+    "pacific": "2026-11-15 10:30 p.m. (per docs/kiro-brag-sheet.md)",
+    "script": "scripts/check-match-ui.sh"
+  },
+  "observed": {
+    "node:test": {
+      "tests": 19,
+      "pass": 19,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "seededPropertyCoverage": {
+      "clashes": 741,
+      "attacks": 2734
+    },
+    "cowboyOutcomesSeeds0to99": {
+      "win": 50,
+      "loss": 35,
+      "draw": 15
+    },
+    "properties": [
+      "Property 2: Presenter fidelity ",
+      "Property 3: Clash completeness ",
+      "Property 4: Displayed health bounds ",
+      "Property 5: Cancellation ",
+      "Property 6: CPU information limit "
+    ]
+  },
+  "gameImpact": "Properties cover presenter fidelity, clash completeness, health-orb bounds, cancellation and the CPU information limit over seeds 0-99.",
+  "sources": [
+    {
+      "path": "docs/evidence/kiro-ui-hook.txt",
+      "sha256": "b09400dc4d1c47243f11bdc6cbcc5694f70f8be9969722e4d0835efa24ab4c19",
+      "tracked": true
+    }
+  ],
+  "redacted": [
+    "individual test timings and test titles omitted"
+  ]
+}
