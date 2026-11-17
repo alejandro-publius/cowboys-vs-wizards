@@ -2,42 +2,42 @@
 
 Draft for a third-party blog, prepared November 16, 2026. Review against the final release before publishing. This article is written as part of the **Kiroween 2026 hackathon**.
 
-Cowboys vs. Wizards is a browser card duel across three 3D lanes. A free Sheriff can hold a lane. Stronger troops cost sacrifices. When the two sides clash, attacks resolve together, even if an attacker is defeated during the exchange.
+Cowboys vs. Wizards is a browser card duel across three 3D lanes. A free Sheriff can hold a lane. Stronger troops cost sacrifices, called tributes. Each troop and each Base has life orbs, and each orb is one life. When the two sides clash, attacks resolve together, even if an attacker is defeated during the exchange.
 
 We built it for people who play strategy and card games in a browser. Our hypothesis is that these players often cannot see why a round went the way it did, because the result arrives as changed numbers or a log line. So we put the decision on the board. Where a troop stands decides what it fights, and both halves of a clash play out in the arena. This is a hypothesis. No first-time player has been observed yet, and lane-based card duels are not a new genre.
 
-What we can show is narrower: positional three-lane decisions, simultaneous outcomes you can watch, and evidence that names the build it was produced from. The clearest example is seed 60. Two tribute summons bring in Mounted Billy with five life orbs, a Singularity spell pulls him into the Dragon's lane, and in the clash he is defeated and still takes the Dragon from five orbs to two.
+What we can show is narrower: positional three-lane decisions, simultaneous outcomes you can watch, and evidence that names the build it was produced from. The clearest example is the match that starts from seed 60. (A seed is a number that makes a match repeatable.) Two tribute summons bring in Mounted Billy with five life orbs, a Singularity spell pulls him into the Dragon's lane, and in the clash he is defeated and still takes the Dragon from five orbs to two.
 
 That exchange became a useful reason to use Kiro: an animation can look convincing and still tell the wrong story about what the rules decided.
 
 ## Start with a visible rule
 Kiro's Requirements-First Orb Duel specification separated requirements, design and implementation tasks. Fable wrote the pure JavaScript rules engine and CPU. Kiro implemented match selection, presentation and scheduling.
 
-A seeded property compares presentation cues with engine damage events. In a separate Codex mutation experiment, deliberately suppressing defeated attackers made that check fail at seed zero. This was a check of the test, not a production defect that Kiro discovered. Our tests are deterministic seeded loops; they do not include generated counterexamples or shrinking.
+One seeded test compares what the presentation shows with the damage events the engine produced. In a separate experiment, Codex deliberately introduced a fault that suppressed defeated attackers, and that test failed at seed zero. The experiment checked the test itself; it was not a production defect that Kiro discovered. Our tests loop over fixed seeds. They do not generate counterexamples or shrink them.
 
 ## Make the build identify itself
-The saved replay Workflow runs actual browser checks and records the HTML hash. The installed Orb Duel Review Power supplies the review procedure and now bundles its own MCP server to inspect the receipt. A matching page and receipt pass. Pairing the same clean receipt with an older page returns stale.
+The saved replay Workflow runs actual browser checks and writes a receipt: a record of the run that includes the hash (a fingerprint) of the HTML it tested. The Orb Duel Review Power, a package installed into Kiro, supplies the review procedure and now bundles its own MCP server to inspect the receipt. A page and a receipt that match pass. Pairing the same clean receipt with an older page returns `stale`.
 
-The saved Workflow passed 157 tests and 12 scripted browser checks. That run belongs to frozen commit `e9aeb06`, and the figures describe that commit. Any later runtime change needs its own checks.
+The saved Workflow passed 157 tests and 12 scripted browser checks. That run belongs to frozen commit `e9aeb06`, and the figures describe that commit. Any later change to the game needs its own checks.
 
-Kiro authored the reviewer server and Power procedure. Codex authored the initial replay Workflow and configured the working workspace MCP connection; Kiro executed and refreshed the Workflow. The first reproduction exposed an outdated installed copy and a workspace-server dependency. Kiro repaired the package; Codex reviewed it and demonstrated actual installed-only pass and stale results against isolated copies of historical browser evidence. The Power is now version 1.1.0 with explicit project binding. [Installed-package evidence](../evidence/kiro-power-package-fix.md).
+Kiro wrote the reviewer server and the Power's procedure. Codex wrote the first replay Workflow and set up the working workspace MCP connection; Kiro ran and refreshed the Workflow. The first attempt to reproduce the review exposed two problems: the installed copy of the Power was out of date, and it depended on the workspace's server. Kiro repaired the package. Codex reviewed it and showed that the installed Power alone returns actual pass and stale results, using isolated copies of historical browser evidence. The Power is now version 1.1.0 with explicit project binding. [Installed-package evidence](../evidence/kiro-power-package-fix.md).
 
 ## Give automation a narrow job
-The duel-presenter agent loads focused guidance. A SessionStart hook runs named checks. A card-save hook regenerates the catalog after a specification changes. Compaction hooks preserve a receipt identifier.
+The duel-presenter agent loads focused guidance. A SessionStart hook runs named checks. A card-save hook regenerates the card catalog after a card specification changes. Compaction hooks preserve a receipt identifier.
 
-The Summoning Circle trial proposed a card change, reviewed its requirements, registered it and simulated matches. A four-orb Skeleton changed the simulated outcomes; it remained a proposal. The shipped Skeleton kept three orbs.
+A trial of another Workflow, Summoning Circle, proposed a card change, reviewed its requirements, registered it and simulated matches. A four-orb Skeleton changed the simulated outcomes; it remained a proposal. The shipped Skeleton kept three orbs.
 
-Night Watch, our separate Crew app, compares committed game revisions using matching seeds, records failed checks and prepares GitHub issue drafts. Its reports describe the chosen CPU policies and seeds, not human-player balance. We distinguish a manual or isolated scheduled run from a continuously active service. The installed app is now updated to 0.1.2, with six backend checks passed and a successful basic Crew response. Human app trust, live dashboard execution and production scheduling remain pending. The earlier browser taskrunner timeout remains unresolved. [Installation and connectivity evidence](../evidence/kiro-crew-repair.md).
+Night Watch, our separate Kiro Crew app, compares committed game revisions using matching seeds, records failed checks and prepares GitHub issue drafts. Its reports describe the chosen CPU policies and seeds, not human-player balance. We distinguish a manual or isolated scheduled run from a continuously active service. The installed app is now version 0.1.2, six backend checks pass, and a basic Crew response succeeded. Three things remain pending: a person's trust approval of the app, running it from the live dashboard, and production scheduling. The earlier browser taskrunner timeout is also unresolved. [Installation and connectivity evidence](../evidence/kiro-crew-repair.md).
 
 ## Look at the actual screen
 An earlier Crew browser review found boxed developer labels over Skeleton pieces. Those labels were removed. Passing rules tests had not caught that presentation problem.
 
-The current game uses user-approved cards and title artwork. Sheriff includes approved sourced Mixamo idle motion. Original Tripo exports are preserved separately from optimized runtime models. Older attack motions still have known limitations; new motion must come from approved exports or licensed sources.
+The current game uses user-approved cards and title artwork. The Sheriff uses approved, sourced Mixamo idle motion. Original Tripo exports are preserved separately from optimized runtime models. Older attack motions still have known limitations; new motion must come from approved exports or licensed sources.
 
 The deck-builder acceptance criteria name readable card art, typed rules, touch-sized controls, saved counts and no sideways overflow on a phone-sized viewport. Human visual approval remains separate from numerical checks.
 
 ## Keep the evidence small and useful
-We keep long research and transcripts out of always-loaded instructions. A short router identifies each worker's files and first check. A durable ledger records ownership, acceptance checks and the next handoff.
+We keep long research notes and transcripts out of the instructions that every AI session loads. A short routing document tells each worker which files it owns and which check to run first. A ledger records who owns each task, how it is accepted and what is handed off next.
 
 The most useful Kiro features produced observable consequences: a spec defined simultaneous attacks, a hook ran a real check, a Workflow reproduced a route, and a reviewer rejected stale evidence.
 
@@ -49,4 +49,12 @@ The recorded checks support the tested rule behavior and identify the reviewed b
 - [Kiro evidence](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/main/docs/kiro-brag-sheet.md)
 - [Night Watch](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch)
 
-The public demo link must be added after upload; none is claimed here. User: art direction and approval of art and motion. Fable: original engine and CPU, documented character work, and this judge-story text. Kiro: documented specification, presentation and tooling. Codex: coordination, integration, selected UI, retargeting and verification. Task receipts take precedence over this overview.
+The public demo link must be added after upload; none is claimed here.
+
+## Who did what
+- **User:** art direction and approval of art and motion.
+- **Fable:** original engine and CPU, documented character work, and this judge-story text.
+- **Kiro:** documented specification, presentation and tooling.
+- **Codex:** coordination, integration, selected UI, retargeting and verification.
+
+Where this overview and a task's receipt disagree, the receipt is correct.
