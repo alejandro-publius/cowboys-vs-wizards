@@ -1,0 +1,26 @@
+{
+  "name": "orb-duel-replay",
+  "description": "Run the local duel verification (Node suites, build, Chrome replay of seed 0), then the four-step seed-60 showdown on the same standalone build, and report the observed results.",
+  "inputs": {},
+  "steps": [
+    {
+      "type": "step",
+      "id": "verify-duel",
+      "agent": "wf-coder",
+      "prompt": "Run exactly `node scripts/verify-duel.mjs --browser` from the project root as one shell call. The final response must contain the literal Command and Exit status fields even when the command output does not print its own exit status. Then give the exact Node counts, seed 0, revision, observed Chrome steps, pending step IDs, console errors, SHA-256 and receipt path. Use the actual shell result. On failure state the first failure and the exit status. Do not edit source."
+    },
+    {
+      "type": "step",
+      "id": "verify-showdown",
+      "agent": "wf-coder",
+      "prompt": "Read the seed-0 result below.\n{{verify-duel.output}}\nIf the seed-0 command failed, report that this step was skipped. Otherwise run exactly `node scripts/browser-match-check.mjs --showcase --summary --out-dir .artifacts/kiro/showcase` against the existing standalone page. The final response must contain the literal Command and Exit status fields, revision, seed 60, the observed steps out of 4, pending IDs, console errors, SHA-256 and receipt path. State whether the seed-60 SHA-256 matches seed 0. A passing result requires exit 0 and a matching hash. Do not edit source."
+    },
+    {
+      "type": "step",
+      "id": "report",
+      "agent": "wf-coder",
+      "prompt": "Use the two original workflow step results directly.\nSeed 0.\n{{verify-duel.output}}\nSeed 60.\n{{verify-showdown.output}}\nWrite .artifacts/kiro/replay/report.md only. Give each run a table with Command, Exit status, revision, observed steps, console errors, build SHA-256 and receipt path. Include both commands verbatim and both observed exit statuses. Use the seed-0 Step result for its Node counts. Compare the two build hashes. Mark a missing value pending, and name which step omitted it. Signal completion with the report path."
+    }
+  ],
+  "planRevision": 0
+}

@@ -1,0 +1,29 @@
+{
+  "workflowId": "wf_0572a745f5194cf1",
+  "sessions": [
+    {
+      "nodeId": "verify-duel",
+      "nodePath": [
+        "wf_0572a745f5194cf1",
+        "verify-duel"
+      ],
+      "sessionId": "sess_97fe246e-f9e5-473a-877b-7e66a8ee0417"
+    },
+    {
+      "nodeId": "verify-showdown",
+      "nodePath": [
+        "wf_0572a745f5194cf1",
+        "verify-showdown"
+      ],
+      "sessionId": "sess_9d65be38-0bf2-463c-bab4-5581265f51dc"
+    },
+    {
+      "nodeId": "report",
+      "nodePath": [
+        "wf_0572a745f5194cf1",
+        "report"
+      ],
+      "sessionId": "sess_1c51ce9e-7d3d-498e-b66e-27687af5f504"
+    }
+  ]
+}

@@ -10,17 +10,21 @@
 4. **Inspect the required Kiro work:** [Orb Duel Spec](../.kiro/specs/orb-duel/requirements.md), [agent](../.kiro/agents/duel-presenter.json), [steering](../.kiro/steering/), [hooks](../.kiro/hooks/), [replay Workflow](../.kiro/workflows/orb-duel-replay.workflow.json), and [Power + MCP](../.kiro/powers/orb-duel-review/). [Proof of actual runs](kiro-brag-sheet.md).
 5. **Check verifiability:** [Release preflight](evidence/kiro-submission-preflight.md) links browser receipts, hashes, a property-based regression and the deployed build. The live release and historical receipts should be checked against the current commit when reviewing newer changes.
 
+## Demo script and playtest protocol
+
+[2:40 judge demo script and first-time playtest protocol](submission/judge-demo-script.md), written by Fable (`e65431c`) and fact-checked by Codex (`b2c8936`). The script is unrecorded and untimed aloud. The protocol is blank: no human has run it, and no player feedback exists yet. How to Play text changed in `c454398`; the combined candidate now passes 11 menu and 9 keyboard checks ([web evidence](evidence/final-polish-web.md)).
+
 ## Menu, decks and current evidence
 
 The illustrated main menu opens instructions, saved settings, achievements and the deck workbench. Build a twelve-card Cowboy deck with large illustrated choices, select a card to read its rules, adjust counts and save. [Readability checks](evidence/kiro-readable-deck-workbench.md) include desktop and phone-sized Chrome views; actual phone/Safari review is still pending.
 
-[Watch the menu and gameplay preview](evidence/gameplay-demo/menu-and-gameplay-preview.mp4) (58.73 seconds: current deck/menu, then real gameplay recorded at `599450a`). [Current closeout ledger](kiro-closeout-queue.md) distinguishes newly checked work, historical receipts and remaining blockers. [Night Watch source](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch) is a separate app; its backend checks and live Crew status are documented separately.
+[Watch the menu and gameplay preview](evidence/gameplay-demo/menu-and-gameplay-preview.mp4) (58.73 seconds: current deck/menu, then real gameplay recorded at `599450a`). [Current closeout ledger](kiro-closeout-queue.md) distinguishes newly checked work, historical receipts and remaining blockers. [Night Watch source](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch) is a separate app. Night Watch is installed at 0.1.2. Separately, the Crew relay answered a basic no-tool chat; Night Watch itself remains disabled pending human trust approval, so its UI report and real schedule remain unverified ([receipt](evidence/kiro-crew-repair.md)). No unattended scheduled operation is claimed.
 
 ## What is distinctive
 
 The haunted-Western visuals are attached to deterministic game rules. Cards become troops on a 3D board; legal tributes, positional spells, simultaneous damage and timed orb loss make the scene a playable duel rather than a prerecorded cinematic. Seeded routes reproduce the same meaningful showdown.
 
-The Kiro story is testable: a Requirements-First spec, scoped agent instructions and hooks, a saved replay Workflow, an MCP artifact reviewer that can reject stale builds, and evidence of an independent browser playtest finding a visual defect that unit tests missed. The repository attributes Kiro work separately from Fable and Codex instead of presenting every contribution as Kiro's.
+The Kiro story is testable: a Requirements-First spec, scoped agent instructions and hooks, a saved replay Workflow, an MCP artifact reviewer (installed Power 1.1.0 passed and rejected stale copied receipts, without a new browser run: [receipt](evidence/kiro-power-package-fix.md)) that can reject stale builds, and evidence of an independent browser playtest finding a visual defect that unit tests missed. The repository attributes Kiro work separately from Fable and Codex instead of presenting every contribution as Kiro's.
 
 ## Source and technical map
 

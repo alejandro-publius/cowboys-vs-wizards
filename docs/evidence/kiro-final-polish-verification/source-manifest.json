@@ -1,0 +1,63 @@
+{
+  "workflowId": "wf_0572a745f5194cf1",
+  "base": "02b1bf8785f154dcee8e2a21293d6a455a3bf82e",
+  "sanitization": "Only absolute worktree, project-root and home prefixes replaced by <WORKTREE>, <PROJECT_ROOT>, <HOME>. No JSON fields or result values removed; raw logs/screenshots not copied.",
+  "files": [
+    {
+      "file": "workflow-state.json",
+      "source": "<HOME>/.kiro/sessions/8b901dee0a04c479/workflows/wf_0572a745f5194cf1/workflow-state.json",
+      "sourceSha256": "c62532bd560ee664366a903c9cd898ea977565f879ae86f313a8285e22a19a18",
+      "savedSha256": "9acd8acabc844defe818b2d19728b456378327496dc12a39e55c523ce1bae27a",
+      "bytes": 8708
+    },
+    {
+      "file": "workflow-definition.json",
+      "source": "<HOME>/.kiro/sessions/8b901dee0a04c479/workflows/wf_0572a745f5194cf1/workflow-definition.json",
+      "sourceSha256": "b92bf4d5d14a4347fb3e0a94f61dadd6402dbb31c2f390f4a92c74771d547df3",
+      "savedSha256": "b92bf4d5d14a4347fb3e0a94f61dadd6402dbb31c2f390f4a92c74771d547df3",
+      "bytes": 2191
+    },
+    {
+      "file": "workflow-sessions.json",
+      "source": "<HOME>/.kiro/sessions/8b901dee0a04c479/workflows/wf_0572a745f5194cf1/sessions.json",
+      "sourceSha256": "0805da674e2dc56ee877f999ff88699bf6c952c11c87385cc059f1bfb5416352",
+      "savedSha256": "0805da674e2dc56ee877f999ff88699bf6c952c11c87385cc059f1bfb5416352",
+      "bytes": 626
+    },
+    {
+      "file": "checkpoint-cleanup.json",
+      "source": "<HOME>/.kiro/sessions/8b901dee0a04c479/workflows/wf_0572a745f5194cf1/checkpoint-cleanup.json",
+      "sourceSha256": "7e362392f0db16ad31edfea0ad1924b1722b23f3433c7da8b2876f5a6349a21f",
+      "savedSha256": "7e362392f0db16ad31edfea0ad1924b1722b23f3433c7da8b2876f5a6349a21f",
+      "bytes": 347
+    },
+    {
+      "file": "seed-0-browser-run.json",
+      "source": "<WORKTREE>/.artifacts/kiro/replay/browser-run.json",
+      "sourceSha256": "1108fb5287f4523f2df3302776ff2da48382d868165605eb42c237b784f2e7c4",
+      "savedSha256": "986ce45587a82c87e96134e3302a58bb86588c0f3c5edc3513f340f654c2c570",
+      "bytes": 10630
+    },
+    {
+      "file": "seed-60-browser-run.json",
+      "source": "<WORKTREE>/.artifacts/kiro/showcase/browser-run.json",
+      "sourceSha256": "915142fa0a3979c2e1a34af65deb76e6b1ad001e7ca9656409da263cc26d2a27",
+      "savedSha256": "29c319b4e2a82e6cf71b2c67de2fabd59983de662887d0ef20b94e6785c9a456",
+      "bytes": 3528
+    },
+    {
+      "file": "workflow-report.md",
+      "source": "<WORKTREE>/.artifacts/kiro/replay/report.md",
+      "sourceSha256": "b7d087d334470a01b177729298c1e8bb34ad02a895a4bb8fb1cc4c479f4070c6",
+      "savedSha256": "b7d087d334470a01b177729298c1e8bb34ad02a895a4bb8fb1cc4c479f4070c6",
+      "bytes": 1371
+    },
+    {
+      "file": "launcher-receipt.json",
+      "source": "<PROJECT_ROOT>/.artifacts/kiro-final-polish-verification-launch/receipt.json",
+      "sourceSha256": "543652b9bd9a0bab0d31ab226eb197711d65171b06003bf5b41ec0112a3679e4",
+      "savedSha256": "b99b4d640d22f70bf683b4b5a6422c875e0940d555d92ce632f50c5f1e53490c",
+      "bytes": 633
+    }
+  ]
+}

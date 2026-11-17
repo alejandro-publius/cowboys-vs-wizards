@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-16 America/Los_Angeles",
+  "commit": "02b1bf8785f154dcee8e2a21293d6a455a3bf82e",
+  "uncommittedChanges": false,
+  "page": {
+    "path": "dist/web/index.html",
+    "bytes": 2943392,
+    "sha256": "2350e260ff7bb5c800098d1f082862f53b448a1825ce2b5258a285d8b48d59af"
+  },
+  "menu": {
+    "checks": 11,
+    "errors": [],
+    "exit": 0
+  },
+  "keyboard": {
+    "exit": 0,
+    "checks": 9,
+    "errors": []
+  },
+  "receipts": {
+    "menu-run.json": "d3f65561141af05965011b93cbb69c446ce81859b6fb129d0f636cb37201f136",
+    "board-accessibility-run.json": "271b3d0c30650add8afb0b1a7fd744708d5b01ad76a667f38650038ed4c78122"
+  }
+}

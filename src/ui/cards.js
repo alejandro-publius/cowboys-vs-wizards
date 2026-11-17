@@ -179,6 +179,15 @@ export function mountCards(root, handlers = {}) {
   let flight = null; // {cardId, node, animation}
   let drawFlight = null; // {key, handIndex, node, animation, turn}
   let drawKey = null; // model.draw.key of the latest draw seen, so each draw flies once
+  // A render can take keyboard focus away: the chosen lane or the hand is
+  // disabled, the card leaves the hand, or Confirm/Cancel hide with their
+  // panel. `strayed` stays set until a usable control has focus again.
+  let strayed = false;
+  let lastCard = null; // cardId of the latest selected card, where Cancel returns focus
+  const stray = () => {
+    const active = document.activeElement;
+    return !active || active === document.body || active.disabled || Boolean(active.closest("[hidden]"));
+  };
 
   const moving = (cardId, index) => cardId === flight?.cardId || index === drawFlight?.handIndex;
   const reducedMotion = () => document.documentElement.classList.contains("reduce-card-motion") || typeof root.animate !== "function" || matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -364,7 +373,10 @@ export function mountCards(root, handlers = {}) {
     setText(phaseRound,"ROUND "+model.round);
     setText(phaseLabel,model.status==="cpu_turn"?"Wizards":model.status==="playing"?"Resolving":"End turn");
     const selected=model.cowboy.hand.find(card=>card.selected);
+    const inPanel = selectionPanel.contains(document.activeElement);
     selectionPanel.hidden=!selected||!model.buttons.cancel;
+    if (selected) lastCard = selected.cardId;
+    for (const [name, button] of Object.entries(buttons)) button.disabled = !model.buttons[name];
     if (selected) buttons.confirm.textContent = selected.kind === "spell" ? "Cast" : "Summon";
     setText(prompt, model.prompt);
     setText(message, model.message);
@@ -382,13 +394,21 @@ export function mountCards(root, handlers = {}) {
     }));
     layout();
     if (refocus) root.querySelector(refocus)?.focus();
+    // Focus lost from a board control goes to the next step: Confirm once the
+    // selection is complete, else the card just cancelled, the hand, End phase.
+    if (refocus || inPanel) strayed = true;
+    if (strayed && stray()) {
+      (!selectionPanel.hidden && model.buttons.confirm ? buttons.confirm
+        : hand.querySelector(`[data-card-id="${CSS.escape(lastCard ?? "")}"]:enabled`)
+          ?? hand.querySelector("button:enabled") ?? buttons.endPhase).focus();
+    }
+    strayed &&= stray();
     // Launched after the hand is rebuilt, so it aims at the new card's place.
     if (newDraw) {
       drawKey = newDraw.key;
       launchDraw(newDraw, drawOrigin);
     }
 
-    for (const [name, button] of Object.entries(buttons)) button.disabled = !model.buttons[name];
     restart.disabled = resultRestart.disabled = !model.buttons.restart;
     buttons.skip.hidden=!model.buttons.skip;
 
