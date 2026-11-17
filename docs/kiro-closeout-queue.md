@@ -15,11 +15,11 @@ Observed November 16, 2026 (America/Los_Angeles). This is the active ledger, rep
 | K02 | Original public receipts | 12 originals recovered and hashes independently verified; residual missing records listed | Recover originals or document exact missing files, then integrate |
 | K03 | Installed Power reproducibility | Reproduced installed procedure + workspace MCP pass/stale; older installed-copy limitation recorded | Installed digest/version + fresh activation + actual pass/stale outputs; workspace MCP fallback labelled |
 | K04 | Large readable deck builder + independent QA | Kiro implementation complete; Codex corrected boxes/artwork assertion and passed desktop/phone +11 menu checks | 1280/390 widths, 180/150 card widths, 16px type, 44px controls, save/reload, keyboard; user visual approval separately |
-| K05 | Final release Workflow | Running actual saved Workflow on frozen game `e9aeb06` | Freeze integrated UI; run opening/showdown + hash, then review deployed artifact |
+| K05 | Final release Workflow | Completed `wf_5bd13532f5142477`: 157 tests, 2 structure checks, 8/8 seed0 and 4/4 seed60, no console errors | [Actual state/receipts](evidence/kiro-closeout-release-check.md); deployed artifact verification follows merge |
 | K06 | Fresh Crew browser review | Bounded independent game review queued; Night Watch app policy is a separate issue | Review same frozen UI independently; no claim until real Crew receipt |
 | K07 | Safari and real mobile/WebGL | Safari remote-automation setting absent; iOS simulator unavailable; real-device service access not established | Actual device/account setup required; Chrome viewport alone is not iPhone testing |
 | K08 | Human onboarding and opener choice | Needs first-time player | Prepare short protocol, collect real observation; no agent posing as a human |
-| K09 | Final-build performance | Current-build measurement running; original benchmark script not recovered | Frozen UI and same measurement method; historical 1109-to-686ms stays historical |
+| K09 | Final-build performance | Codex measured three current-build local loads: median input readiness 689ms; all startup checks passed | [Method/receipt](evidence/kiro-closeout-performance.md); not comparable to the old benchmark method |
 | K10 | Final demonstration / public YouTube | 43.67s real seed60 gameplay captured at main599450a; final assembly/YouTube pending | Final UI and Kiro proof; no fabricated video URL |
 | K11 | README / judge guide / Devpost reconciliation | Drafts prepared and current-source navigation updated | Current release claims, links and ownership; publish after final verification |
 | K12 | Public build-story blog | Draft ready at submission/build-story.md | Reviewed factual story + chosen publishing destination; mention Kiroween 2026 |
@@ -29,7 +29,7 @@ Observed November 16, 2026 (America/Los_Angeles). This is the active ledger, rep
 | K16 | Project hub organization | 20 release pointers repaired, 14 character/motion shortcuts added; 73/73 links resolve | Advance stable release checkout after publication; originals remain unchanged |
 | K17 | Actual Auto/model/credit evidence | Observed Default/Auto; initial useful turn reported 0.6441 credits | Scoped turn usage only, not account totals or proof of internal routing |
 | K18 | Fresh-session Memory demonstration | Blocked: fresh V3 session exposes no Memory tool | No store/retrieval claimed; global configuration unchanged |
-| K19 | Workflow step-tree recording | Actual final saved Workflow running; receipts being captured | Public final video still needs Workflow footage/assembly |
+| K19 | Workflow step-tree recording | Actual step state, sessions, outputs and report captured | Final video still needs actual Workflow footage/assembly; JSON is not video |
 
 ## Additional gaps recovered from older source material
 | ID | Deliverable | State / decision |
@@ -53,3 +53,7 @@ Observed November 16, 2026 (America/Los_Angeles). This is the active ledger, rep
 No new generated animation/poses, replacement illustrations, invented mechanics or speculative dependencies. Preserve approved art. Multi-target Singularity, lasso damage, trap slots and agent-balanced random decks remain explicitly deferred. First-time human observations, current student eligibility, user visual approval, and unavailable service credentials cannot be manufactured.
 
 [Source-to-task register](kiro-source-register.md) · [Kiro evidence map](kiro-brag-sheet.md) · [Current project status](PROJECT-STATUS.md)
+
+## Final frozen runtime verification
+
+Actual Kiro Workflow completed on `e9aeb06`. Subsequent integration changes are evidence/docs and the separate Night Watch package; no game source, art, build code or dependencies changed. Standalone HTML SHA-256: `a5d0c756077e89afa4f8a107c64e863a7d09cba48456f8229a8b42b4fa208bd2`. Web HTML SHA-256: `863ab8bd525cb2e78b0e73b529406b73c6a2381f982f2854e71340df79718e02`.
