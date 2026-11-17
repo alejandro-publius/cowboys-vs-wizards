@@ -1,6 +1,6 @@
 # Sheriff runtime smoke (Kiro, 2026-11-16 America/Los_Angeles)
 
-Kiro ran one bounded smoke verification of the final combined code. It grants no new artistic approval and does not claim deployment. The Sheriff source retarget and visual review, and Fable's Escape implementation, remain their authors' work.
+Kiro ran one bounded smoke verification of the final combined code. It grants no new artistic approval and does not claim deployment. The Sheriff source retarget and visual review, and Fable and Codex's shared Escape implementation, remain their authors' work.
 
 - Base commit: `e7cddfd516332ca2eb3851e32971ebb23ac34852`, branch `kiro/sheriff-runtime-smoke`.
 - Build: `npm run build`, exit 0. `dist/cowboys-vs-wizards-board-duel.html` SHA-256 `ed353a3354b07d172c6c4cbf0b5115d0886c29951d09c7fb01e5564c27ac6702` (56,550,995 bytes). Log: `.artifacts/kiro-sheriff-runtime-smoke/build.log`.
