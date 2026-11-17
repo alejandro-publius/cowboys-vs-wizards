@@ -2,6 +2,12 @@
 
 Actual CLI session credit metadata has now been recovered for ten dispatched jobs, including the contributor Workflow's separate session records. [Exact values, hashes and accounting limits](evidence/kiro-session-usage-20261116.md). This is selected session usage, not an account total or proof of model routing.
 
+## November 16 guide and deployment follow-through
+
+- Kiro implemented and corrected the opt-in guided first match (#35). Its initial idle tips were hidden; the corrected browser check now proves visible opening/end-phase/first-clash tips, guide-off parity against the original build, stop/restart behavior and phone-sized layout measurements. [Exact evidence and limits](evidence/kiro-guided-first-match.md). No human playtest or screen-reader acceptance is claimed.
+- Kiro implemented the build identity manifest and post-deploy verification (#54, merged in #55). The real Pages run verified main commit `4c0723d` and the served HTML hash. [Deployment receipt](evidence/kiro-build-identity.md).
+- A larger Kiro batch [#56](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/56) is dispatched for boundary properties, failure reduction and requirement traceability. Dispatch is not completion. User preference: let it work and check on alternate prompts, with no continuous polling.
+
 ## November 16 parallel integration update
 
 [Combined review and published receipts](evidence/parallel-closeout-2200.md) distinguish Kiro execution, Rachel/Fable contributions and Codex corrections.
