@@ -37,14 +37,33 @@ meter::-webkit-meter-bar{background:#ffffff17;border:0}meter::-webkit-meter-opti
 /* Mode switch: the card match (default) or the attack demo. It sits left of the demo tools. */
 #modes{margin-left:auto}
 @@MATCHSTYLE@@
+@@MENUSTYLE@@
 </style>
 </head>
 <body>
-<main id="arena">
+<section id="title-screen" aria-label="Cowboys vs. Wizards main menu">
+  <div class="title-scene">
+    <img class="title-art" src="@@MENUART@@" width="1672" height="941" alt="">
+    <h1 class="sr-only">Cowboys vs. Wizards</h1>
+    <nav class="title-nav" aria-label="Main menu">
+      <button class="menu-hotspot" id="menu-play" type="button"><span>Play</span></button>
+      <button class="menu-hotspot" id="menu-how" type="button" data-menu-page="how"><span>How to Play</span></button>
+      <button class="menu-hotspot" id="menu-settings" type="button" data-menu-page="settings"><span>Settings</span></button>
+      <button class="menu-hotspot" id="menu-deck" type="button" data-menu-page="deck"><span>Build Deck</span></button>
+      <button class="menu-hotspot" id="menu-achievements" type="button" data-menu-page="achievements"><span>Achievements</span></button>
+    </nav>
+  </div>
+  <section class="menu-page" aria-labelledby="menu-page-title" hidden>
+    <div class="menu-page-header"><button id="menu-back" type="button">← Main menu</button><h2 id="menu-page-title"></h2></div>
+    <div class="menu-page-content"></div>
+  </section>
+  <p id="menu-notice" role="status" hidden></p>
+</section>
+<main id="arena" hidden>
   <div id="stage" aria-label="Three-dimensional Cowboys vs. Wizards board"></div>
   <header>
     <h1>Cowboys vs. Wizards</h1>
-    <div class="tools" id="modes" hidden><button id="mode" type="button">Attack demo</button></div>
+    <div class="tools" id="modes" hidden><button id="home" type="button">Main menu</button><button id="mode" type="button">Attack demo</button></div>
     <div class="tools" id="tools" hidden>
       <button id="camera" type="button" aria-pressed="true">Duel camera</button>
       <button id="sound" type="button" aria-pressed="false">Sound</button>

@@ -4,6 +4,7 @@
 import { CARD_SPECS } from "./card-specs.generated.js";
 
 export const SIDES = ["cowboy", "wizard"];
+export const MAX_COWBOY_COPIES = 6;
 // Health removed by either spell.
 export const SPELL_DAMAGE = 1;
 export const opponent = (side) => (side === SIDES[0] ? SIDES[1] : SIDES[0]);
@@ -11,9 +12,10 @@ export const opponent = (side) => (side === SIDES[0] ? SIDES[1] : SIDES[0]);
 // The card list is generated from .kiro/specs/duel-card-pipeline/cards/*.json
 // (node scripts/sync-card-specs.mjs). Edit the specs to change the catalog.
 
-// Every card instance that exists in a match, keyed by its unique ID
-// (for example "cowboy-mounted-billy-1"). State holds IDs only, so no
-// instance can be created or altered mid-match.
+// Available card instances, keyed by their unique ID
+// For example "cowboy-mounted-billy-1". State holds IDs only, so no
+// instance can be created or altered mid-match. A custom Cowboy deck selects
+// twelve IDs from this pool; DECKS retains the original default selections.
 export const CARDS = {};
 // Unshuffled 12-card deck of IDs per side.
 export const DECKS = {};
@@ -21,10 +23,11 @@ export const DECKS = {};
 for (const side of SIDES) {
   DECKS[side] = [];
   for (const { type, order, copies, ...card } of CARD_SPECS.filter((spec) => spec.side === side)) {
-    for (let copy = 1; copy <= copies; copy++) {
+    const available = side === "cowboy" ? MAX_COWBOY_COPIES : copies;
+    for (let copy = 1; copy <= available; copy++) {
       const id = `${type}-${copy}`;
       CARDS[id] = Object.freeze({ id, side, ...card });
-      DECKS[side].push(id);
+      if (copy <= copies) DECKS[side].push(id);
     }
   }
   Object.freeze(DECKS[side]);

@@ -33,8 +33,8 @@ export const VARIANTS = {
 };
 
 // createMatch(seed) with an optional forced first seat, then the variant.
-export function openingMatch(seed, variant, starter) {
-  const state = createMatch(seed);
+export function openingMatch(seed, variant, starter, options) {
+  const state = createMatch(seed, options);
   if (starter) state.startingSide = state.activeSide = starter;
   VARIANTS[variant](state);
   return state;

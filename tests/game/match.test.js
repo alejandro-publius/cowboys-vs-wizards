@@ -6,7 +6,7 @@ import { applyAction } from "../../src/game/actions.js";
 import { legalActions } from "../../src/game/legal.js";
 import { publicState } from "../../src/game/view.js";
 
-// Every card instance is in exactly one of deck, hand, board or discard,
+// Every selected default card is in exactly one of deck, hand, board or discard,
 // and only in its own side's zones.
 function assertConservation(state) {
   const seen = [];
@@ -16,7 +16,7 @@ function assertConservation(state) {
     for (const id of ids) assert.equal(CARDS[id]?.side, side, `${id} is in a ${side} zone`);
     seen.push(...ids);
   }
-  assert.deepEqual(seen.sort(), Object.keys(CARDS).sort());
+  assert.deepEqual(seen.sort(), Object.values(DECKS).flat().sort());
 }
 
 // Valid mid-match position. Per side: `board` slots are a card ID, a
