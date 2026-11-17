@@ -1,8 +1,8 @@
 # Resource checklist: what the 45 recovered sources say to do, ranked
 
-Prepared November 16, 2026 (Pacific) by Fable (Claude Fable 5.2, in a collaborator's Claude Code session). **This is a research and planning document. Nothing in it has been done by writing it, and no Kiro tool was run.** Each gap below was checked against `main` at `ead95f0`. Work that Kiro is doing right now in local worktrees (#43 to #46, #49) is not on `main`, so it is listed as in progress, not as a gap closed.
+Prepared November 16, 2026 (Pacific) by Fable (Claude Fable 5.2, in Rachel's Claude Code session), originally against `ead95f0`. Codex reconciled the completed work against `965bd709` after PR #52. **This is a research and planning document; writing it did not execute any proposal or Kiro tool.** Kiro #43–46 are now integrated, with their precise limits recorded below. Billy #49/#53 remains a preview; its sourced idle/shoot does not yet give a satisfactory grip. The [integration receipts](../evidence/parallel-closeout-2200.md) and [PR #52 CI](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/52) record 184 tests, two model-structure checks and the separate browser checks. Human, device, video and submission work remain open.
 
-The source numbers (S1 to S45) are the 45 entries of the recovered resource list; the links are in [the source register](../kiro-source-register.md). Open work lives in the GitHub issue list. If a line here is adopted, it should become an issue.
+The source labels S1–S45 are defined in the [reference legend](#reference-legend) below. Their retained URLs and provenance come from [the source register](../kiro-source-register.md), which does not use these IDs. Labels identify references, not implementation or verification evidence. Open work lives in the GitHub issue list; coordinate an owner before adopting another item.
 
 ## The five moves with the most leverage
 
@@ -32,26 +32,26 @@ Each item gives the sources, the gap as it stands today, how to do it, who has t
 - **Who:** a person. An agent must not stand in.
 - **Done when:** the results table has three rows and the "not run" lines are updated in the packet, the story and the script.
 
-### 3. Confirm the blank-card defect in real Safari, and fix it
+### 3. Verify the card-face fix in real Safari and on a phone
 - **Sources:** S40 (the reviewer used a real browser and listed what it had not verified: other browsers, mobile, Safari); S1 (the registry's BrowserStack Power runs on real devices).
-- **Gap today:** Playwright WebKit draws every hand card blank ([evidence](../evidence/webkit-smoke.md)). Not confirmed in Safari. The fix is assigned to Kiro in #43 and is not on `main`. No real phone has been tried ([#21](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/21)).
-- **How:** open the live game in Safari on a Mac and on an iPhone and look at the hand; one minute each. After #43 lands, rerun `scripts/browser-webkit-smoke.mjs`. BrowserStack would cover more devices but is a paid service, so it is an owner decision, not a default.
-- **Who:** a person for Safari and the phone; Kiro for the fix (already assigned).
+- **Current state:** Kiro #43's fix is merged. The earlier [blank-card finding](../evidence/webkit-smoke.md) is historical: the combined web build now passes 6/6 card-face states in WebKit and 6/6 in Chromium ([fix and limits](../evidence/kiro-webkit-card-fix.md)). Actual Safari and a real phone remain unverified ([#21](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/21)).
+- **How:** check the live hand, hover/selection, summon and viewer flip in actual Safari on a Mac and on an iPhone. Save the device/browser versions and observed results. The automated card-face regression already ran; repeat only after a relevant change or failure. BrowserStack is an optional paid path, not a default dependency.
+- **Who:** a person or available real-device session for Safari and the phone; Kiro's fix is complete.
 - **Done when:** `docs/evidence/human-device-check.md` exists and the WebKit check shows card faces.
 
 ### 4. Publish a build identity file with the site
 - **Sources:** S35 (nobu_13: verify the commit you deploy matches the one you reviewed), S19 (audit trail agents cannot edit), S22 (test deployed flows).
-- **Gap today:** `pages.yml` prints the SHA-256 of `dist/web/index.html` into the run summary, which only someone with repository access can find. `https://alejandro-publius.github.io/cowboys-vs-wizards/build.json` returns 404. A judge cannot tie the page in front of them to a commit.
+- **Gap today:** `pages.yml` prints the SHA-256 of `dist/web/index.html` into the run summary, in the public Actions run summary. `https://alejandro-publius.github.io/cowboys-vs-wizards/build.json` returns 404. A judge cannot tie the page in front of them to a commit.
 - **How:** in the `pages.yml` build job, after the web build, write `dist/web/build.json` with the commit, the build time and the SHA-256 of `index.html`. No change under `src/`. Then add a final job step that fetches the live `build.json` after deploy and fails if its commit is not the one just built.
 - **Who:** any agent; the coordinator owns `pages.yml`.
 - **Done when:** the live URL returns the commit of `main`, and the README's Verify table has a row for it.
 
 ### 5. Property-based tests with real generators and shrinking
 - **Sources:** S16 (Kiro extracts properties from EARS requirements, generates hundreds or thousands of cases and shrinks failures; listed as an IDE capability), S15 (boundary-focused generators; difference-test a simple model against the real code; reproduce every failure on unmodified code), S31 (Oshima: turn acceptance criteria into property tests).
-- **Gap today:** the six properties are loops over seeds 0 to 99. The write-up has to say "no generators and no shrinking" under a required topic. No test file cites a requirement number. #44 (Kiro, in progress) adds a generated clash-log suite.
+- **Current state:** the earlier six properties cover seeds 0–99. Kiro #44 now adds a dependency-free corpus of **800 legal matches**, from 200 seeds and four bot pairings, with replayable failures and no shrinking ([evidence](../evidence/kiro-preview-contracts.md)). Codex fixed single-seed replay's coverage-only assertion. This is already useful generated coverage; boundary-focused generation and shrinking remain optional improvements, not a reason to relabel the existing results.
 - **How:** in the Kiro IDE, open the `orb-duel` spec and run its optional property-test tasks so the tests come from the spec. Aim generators at the boundaries the seeded deals rarely reach: decks at the six-copy cap, one-Sheriff decks, full boards, a troop at one orb, a clash that empties both lanes. Good candidate properties: card conservation, orb bounds, replay determinism, and "no level of the CPU reads hidden information". Keep any shrunk failing case as a named regression.
-- **Who:** Kiro (IDE). An agent adding a property library by hand would not count toward the topic and needs a dependency decision.
-- **Done when:** topic 7 of the packet can drop its last sentence, with a receipt of one generated run.
+- **Who:** Kiro IDE or CLI; credit the tool that actually performs the work. A library is an implementation choice requiring a concrete benefit, not a prerequisite for honest Kiro attribution.
+- **Done when:** an actual run exercises the stated boundaries, and any claimed shrinking is demonstrated by a minimized failing case. Update topic 7 to match those receipts; retain every limitation still true.
 
 ### 6. A Kiro reviewer on every pull request
 - **Sources:** S41 (the full recipe), S22 (one review round, findings tiered by severity, reviewer from a different model family than the author), S14 (separate proposing from judging).
@@ -65,17 +65,17 @@ Each item gives the sources, the gap as it stands today, how to do it, who has t
 
 ### 7. Hooks that enforce a rule, each with a receipt of it firing
 - **Sources:** S9 (CLI 3.4.0, November 16: `PreToolUse` can rewrite or gate a tool call, and a new `PermissionRequest` hook can deny); S37 (controls enforced by tools); S19 (enforce permissions at the host, not in the prompt); S35 (test each hook on its own, because one loaded and never fired); S39 (disclose a hook that was never seen firing); S36 (run the full suite from a hook after each task).
-- **Gap today:** one workspace hook (`PostFileSave` on card specs) and three agent hooks (`SessionStart`, `PreCompact`, `PostCompact`). No `PreToolUse`, `PermissionRequest` or `Stop` hook. The project's strictest rules, "do not edit existing evidence files" and "preserve the original Tripo models", are enforced only by prose in `AGENTS.md`.
-- **How:** (a) a `PreToolUse` hook that denies a write to an existing file under `docs/evidence/` and to the original model files; (b) a `Stop` hook that runs `node scripts/verify-duel.mjs`; (c) a `PostFileSave` hook on Markdown that runs the link check, already queued as #46 behind #42. Trigger each one on purpose and keep its output.
+- **Current state:** two workspace save hooks now exist: card-spec registration and documentation links, alongside the three earlier agent hooks. Kiro #46's documentation hook failed on a deliberate broken link and passed after removal, repeated on the corrected wrapper ([actual receipts](../evidence/kiro-doc-link-hook.md)). Scoped write guards are a separate proposal; no `PreToolUse`, `PermissionRequest` or `Stop` execution is claimed.
+- **How:** the Markdown hook is complete. If useful, add a narrowly scoped guard for original models or immutable receipts and prove it refuses a disposable attempted edit. Preserve the coordinator's authorized correction path. Select checks by changed area; do not run the full suite after every documentation save. Confirm installed hook semantics before implementing another guard.
 - **Who:** Kiro.
 - **Done when:** each hook has a dated receipt, including one of the guard refusing a write.
 
-### 8. Steering: the three default files, and rules steering for `src/game/`
+### 8. Demonstrate the configured area steering
 - **Sources:** Kiro steering docs (S29: `product.md`, `tech.md`, `structure.md`; inclusion modes `always`, `fileMatch`, `manual`, `auto`); S33 (fileMatch steering for game rules; enforce rules with tests); S31 (keep steering short); S34 (one maintained master design).
-- **Gap today:** two steering files. `duel-iteration.md` is scoped to match, render and interface code. Nothing is scoped to `src/game/`, where the hardest rule lives (no DOM, rendering, filesystem or network). The three default files do not exist. #46 (in progress) adds area steering.
-- **How:** let Kiro generate the three defaults and trim them; add a `fileMatch` file for `src/game/**`. IDE 1.4.86 flags steering it could not fully use; check that nothing is flagged.
+- **Current state:** five steering files are tracked. Kiro #46 added `rules-area.md`, `rendering-area.md` and `interface-area.md`; the rules file covers the pure-game boundary. These are configured file scopes, not independent proof of native activation ([evidence](../evidence/kiro-scoped-steering-hook.md)).
+- **How:** use a bounded session on an owned task to capture native evidence of which configured steering is included, where the installed client exposes it. Avoid adding duplicate default files merely to increase the count. If the client does not expose inclusion, record that limit.
 - **Who:** Kiro.
-- **Done when:** topic 5 of the packet can name what loads for each area.
+- **Done when:** topic 5 names configured scopes separately from any actual activation receipt. Configuration alone must not be called observed loading.
 
 ### 9. Record credits and transcripts for each Kiro session
 - **Sources:** S9 (3.1.0 shows session credits in `/usage`, the status line and workflow step rows; 3.3.0 adds `/transcript` for the whole conversation); S39 (credits recorded per phase: 1.86 for the spec, 43.13 in total); S37 and S42 (usage measurement); S4 (Auto's model handoffs cannot be observed, so do not claim them).
@@ -86,7 +86,7 @@ Each item gives the sources, the gap as it stands today, how to do it, who has t
 
 ### 10. A Workflow with independent reviewers in parallel
 - **Sources:** S12 (`parallel` nodes, `semantic_reviewer`, `wf-design-reviewer`, `wf-review-aggregator`, `repeat` with a `fileCheck` stop condition, `validate_workflow` before launch); S11 (reviewers that never see the coder's reasoning); S22 (reviewers from a different model family); S34 (a fresh-session reviewer step).
-- **Gap today:** three saved Workflows. The replay Workflow is three `wf-coder` steps in sequence; the lore review uses `repeat`. None runs reviewers in parallel or merges their reports, and no step sets a different model for the reviewer.
+- **Current state:** four saved Workflow recipes are tracked. The new contributor-review Workflow actually ran on frozen PR #40 as `wf_0b2ce64faf14a4aa`, with four steps, tests and browser receipts ([evidence](../evidence/kiro-contributor-review-40.md)). This is not an automatic per-PR service or a final combined-release review. Independent parallel reviewers remain a separate optional proposal.
 - **How:** one recipe for a frozen pull request: tests and replay, then two reviewers in parallel (behaviour, and design against the spec), then the aggregator writing one report. Give the reviewers a different `modelId` from the author. Run `validate_workflow` first.
 - **Who:** Kiro.
 - **Done when:** one run's report is in `docs/evidence/` with the recipe in `.kiro/workflows/`.
@@ -109,14 +109,14 @@ Each item gives the sources, the gap as it stands today, how to do it, who has t
 
 ### 13. A permanent negative control for the checks
 - **Sources:** S36 (Necrolink: add a known-good control to test your checker), S14 (lock each fix in as a permanent assertion; audit the harness), S35 (confirm tests actually ran before trusting a pass).
-- **Gap today:** the experiment that proved the clash property catches a missing attack was run once, by hand, on a copy. Nothing in the suite would notice if that property stopped detecting anything. The WebKit check passed with blank cards.
-- **How:** a test that hands the clash property a presenter with one attack removed and expects it to fail. #43 is adding the equivalent for card faces.
+- **Current state:** the original missing-attack experiment and Kiro #44's dropped-hit mutation are recorded experiments, not permanent mutation tests. The old WebKit interaction smoke passed with blank cards; the newer card-face check detects that baseline as 0/6 and the fix as 6/6.
+- **How:** if the extra maintenance is worthwhile, preserve one small planted-fault check for clash completeness. The card-face baseline/fix comparison already exists in #43; do not repeat the original defect investigation.
 - **Done when:** the suite contains a check that is expected to catch a planted fault.
 
 ### 14. One readiness verdict: every expected check ran
 - **Sources:** S22 ("nothing failed" is not "everything ran"; cheap checks first; one verdict), S35 (GhostPR).
-- **Gap today:** `ci.yml` runs `npm test` and trusts its exit status. A test file that silently stopped being picked up would not turn anything red. The link check (#42) and the web build are not part of the pull request check.
-- **How:** have the test job assert a floor on the number of test files and tests, add the web build, and write a summary listing each expected check and whether it ran.
+- **Current state:** `ci.yml` runs `npm test`, which now includes documentation-link and hook regression tests. PR #52 passed 184 tests and two model-structure checks. The web build runs during Pages deployment but is not a separate PR check. An expected-check summary could make omissions more visible.
+- **How:** if needed, add the web build and an explicit summary of expected checks. Prefer checking meaningful suite discovery over an arbitrary count floor that becomes stale whenever tests are reorganized.
 - **Done when:** the job summary shows the list, and removing a test file turns it red.
 
 ### 15. Enforce the pure-rules boundary with a test
@@ -160,7 +160,7 @@ Each item gives the sources, the gap as it stands today, how to do it, who has t
 ### 21. One bounded Kiro Web task
 - **Sources:** S26 (label an issue `kiro`; it opens a pull request and never merges), S25 (`kiro-cli --cloud`).
 - **Gap today:** the packet says "Kiro Web was not used", which is true. Three of the four apps were.
-- **How:** only if there is a real small task for it, such as the sentence in `devpost-packet.md` that still names only the earlier Workflow run. Needs Kiro Web enabled on the account.
+- **How:** only for a useful unclaimed task with account access already available. The Devpost Workflow sentence was already corrected in #52; do not dispatch that completed edit again.
 - **Caution:** #37 says not to use a feature only to list it. Skip this unless the task is useful by itself.
 
 ### 22. A tracked sandbox configuration for unattended runs
@@ -191,3 +191,56 @@ Worth saying in the write-up, because the sources treat these as the hard parts:
 | Could not be read | S3 (YouTube link, contents never recovered), S37 (full November 15 issue never recovered), S42 (HTTP 403), S43 to S45 (Devpost pages return HTTP 403 to automated readers) | 6 |
 
 For S29 and S30 the pages read were the hooks, steering, Workflow authoring and spec correctness references and the guides index. For S43 to S45 this document relies on the project's own logged-in re-check of November 16 and on [#38](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/38); **a person should confirm every rule on the official page.** Pages were read through an automated summarizer, so a detail quoted from a source should be checked on the page before it is relied on. One such detail: `.kiroignore` (item 17) comes from a reading-list summary, not from Kiro's reference docs.
+
+
+## Reference legend
+
+These navigation labels refer to URLs already retained in the source register. Adding this legend did not reopen or verify their contents. S37 identifies the retained preview URL only; the full issue remains unrecovered. S29/S30 are navigation families, with the exact consulted subpages described in the coverage note above. The three Devpost URLs are distinguished here as rules, overview and resources.
+
+| ID | Retained source |
+| --- | --- |
+| S1 | [Registry](https://kiro.dev/registry/) |
+| S2 | [Videos](https://kiro.dev/videos/) |
+| S3 | [YouTube yTVWICb6ZI4](https://www.youtube.com/watch?v=yTVWICb6ZI4) |
+| S4 | [Model Cascade](https://kiro.dev/blog/model-cascade/) |
+| S5 | [Community](https://kiro.dev/community/) |
+| S6 | [Developer blog](https://kiro.dev/blog/) |
+| S7 | [Changelog](https://kiro.dev/changelog/) |
+| S8 | [IDE changelog](https://kiro.dev/changelog/ide/) |
+| S9 | [CLI changelog](https://kiro.dev/changelog/cli/) |
+| S10 | [Crew changelog](https://kiro.dev/changelog/crew/) |
+| S11 | [Introducing Workflows](https://kiro.dev/blog/introducing-workflows/) |
+| S12 | [Workflow authoring](https://kiro.dev/docs/workflows/authoring/) |
+| S13 | [CLI V3](https://kiro.dev/blog/cli-3/) |
+| S14 | [How Kiro fixes itself](https://kiro.dev/blog/how-kiro-fixes-itself/) |
+| S15 | [Harness properties in Lean](https://kiro.dev/blog/harness-properties-in-lean/) |
+| S16 | [Spec correctness](https://kiro.dev/docs/specs/correctness/) |
+| S17 | [Approve for me](https://kiro.dev/blog/introducing-approve-for-me/) |
+| S18 | [Crew walkthrough](https://kiro.dev/videos/JjVbje4kAlY/) |
+| S19 | [How we built a software factory with Kiro Crew](https://kiro.dev/blog/software-factory-1000-prs/) |
+| S20 | [Introducing Kiro Crew](https://kiro.dev/blog/introducing-kiro-crew/) |
+| S21 | [Introducing bots in Kiro Crew](https://kiro.dev/blog/crew-bots/) |
+| S22 | [Keeping a software factory stable](https://kiro.dev/blog/software-factory-stability/) |
+| S23 | [Introducing memory in Kiro IDE and CLI](https://kiro.dev/blog/memory-in-ide-cli/) |
+| S24 | [Local sandboxing](https://kiro.dev/blog/local-sandboxing/) |
+| S25 | [Close the laptop, keep the agent: cloud sessions](https://kiro.dev/blog/cloud-sessions/) |
+| S26 | [Technical debt with autonomous mode in Kiro Web](https://kiro.dev/blog/tackling-technical-debt-at-scale-with-autonomous-mode/) |
+| S27 | [Powers support Agent Plugins](https://kiro.dev/blog/powers-supports-plugins/) |
+| S28 | [Kiro Crew source](https://github.com/kirodotdev/KiroCrew) |
+| S29 | [Kiro Documentation](https://kiro.dev/docs/) |
+| S30 | [Kiro Guides](https://kiro.dev/docs/guides/) |
+| S31 | [October 4](https://builder.aws.com/content/3KF8lMm5mZQmBdkQFKNAFLblr0K/kiro-weekly-reading-list-4th-october-2026) |
+| S32 | [October 11](https://builder.aws.com/content/3KaOedJXz7X3bKtOp40VoesUTbj/kiro-weekly-reading-list-th-october) |
+| S33 | [October 18](https://builder.aws.com/content/3KsUwW0THpSz9UcaPkopKifzaju/kiro-weekly-reading-list-18th-october-2026) |
+| S34 | [October 25](https://builder.aws.com/content/3LCkjfJIloaNwsVPRBygBll5h8C/kiro-weekly-reading-list-25th-october-2026) |
+| S35 | [November 1](https://builder.aws.com/content/3LWfIgHmjUGOCCYX7sZXC0DJSn6/kiro-weekly-reading-list-1st-november-2026) |
+| S36 | [November 8](https://builder.aws.com/content/3LpdwaZwh9sTkbCk8cAXBezlKKR/kiro-weekly-reading-list-8th-november-2026) |
+| S37 | [November 15 preview](https://builder.aws.com/?trk=61b8af3d-aa07-438d-b99e-55cdb524dc02) |
+| S38 | [Duskline](https://builder.aws.com/content/3KCH1lCKDVDv4FJlPFdoAEb0vEX/building-duskline-from-an-idea-to-a-live-d-browser-game-with-kiro-and-antideploy) |
+| S39 | [VCR Party Host](https://dev.to/aiq_labs/bringing-back-the-vcr-board-game-with-kiro-a-spec-driven-build-from-the-command-line-2a6) |
+| S40 | [Kiroween Invitation browser review](https://builder.aws.com/content/3LpKUiMT9UXTjR58Q0hYLsvTSv3/green-tests-were-not-enough-what-kiro-crew-found-in-my-kiroween-project) |
+| S41 | [How To Review Pull Requests with Kiro CLI and GitHub Actions](https://dev.to/erikch/how-to-review-pull-requests-with-kiro-cli-and-github-actions-1b9b) |
+| S42 | [Measuring Kiro Adoption: Dashboards and Queries That Show Whether Your Team Is Using It Well](https://blog.davidmernst.com/measuring-kiro-adoption-dashboards-and-queries-that-show-whether-your-team-is-using-it-well-79ce22a2d6cc) |
+| S43 | [Rules](https://kiroween.devpost.com/rules) |
+| S44 | [overview](https://kiroween.devpost.com/) |
+| S45 | [resources](https://kiroween.devpost.com/resources) |
