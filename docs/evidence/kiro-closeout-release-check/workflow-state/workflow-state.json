@@ -1,0 +1,97 @@
+{
+  "workflowId": "wf_5bd13532f5142477",
+  "workflowName": "orb-duel-replay",
+  "status": "completed",
+  "inputs": {},
+  "artifacts": {},
+  "capturedOutputs": {
+    "verify-duel": "Command: `node scripts/verify-duel.mjs --browser` (project root, one shell call)\nExit status: 0\n\n- **Node tests:** 157 tests, 157 pass, 0 fail, 0 cancelled, 0 skipped, 0 todo. Duration was 4845.95 ms.\n- **Asset structural checks:** 2 of 2 files passed (`dragon.glb`, `mounted-billy.glb`). The check covers structure only, not motion quality.\n- **Build:** `dist/cowboys-vs-wizards-board-duel.html`.\n- **Chrome replay:**\n  - Chrome/157.0.8103.52.\n  - Seed 0.\n  - Revision e9aeb06.\n  - 8 of 8 steps observed.\n  - Pending step IDs: none.\n  - Console errors: 0.\n- **SHA-256:** `a5d0c756077e89afa4f8a107c64e863a7d09cba48456f8229a8b42b4fa208bd2`. This is the build SHA-256 that the replay printed for the standalone duel HTML. I did not hash it separately.\n- **Receipt path:** `.artifacts/kiro/replay/browser-run.json`\n\nI edited no source.",
+    "verify-showdown": "Seed 60 passed. The command exited 0 and the SHA-256 matches seed 0.\n\n- **Command:** `node scripts/browser-match-check.mjs --showcase --summary --out-dir .artifacts/kiro/showcase`\n- **Exit status:** 0\n- **Chrome:** Chrome/157.0.8103.52\n- **Revision:** e9aeb06\n- **Seed:** 60\n- **Observed steps:** 4 of 4\n- **Pending IDs:** none\n- **Console errors:** 0\n- **SHA-256:** `a5d0c756077e89afa4f8a107c64e863a7d09cba48456f8229a8b42b4fa208bd2`\n- **Hash match:** This is the same hash the seed-0 replay printed, so the two runs used the same standalone HTML. I did not hash the file separately.\n- **Receipt path:** `.artifacts/kiro/showcase/browser-run.json`\n\nI edited no source.",
+    "report": "I wrote the report to `.artifacts/kiro/replay/report.md`.\n\nBoth runs exited 0 on revision e9aeb06 with 0 console errors, and no values are pending. I only built the report from the two step results. I didn't run any checks or hash the file myself.\n\n| Run | Observed steps | Receipt path |\n|---|---|---|\n| Seed 0 (`node scripts/verify-duel.mjs --browser`) | 8 of 8 | `.artifacts/kiro/replay/browser-run.json` |\n| Seed 60 (`node scripts/browser-match-check.mjs --showcase --summary --out-dir .artifacts/kiro/showcase`) | 4 of 4 | `.artifacts/kiro/showcase/browser-run.json` |\n\n- **Node counts:** the seed-0 step reported 157 tests with 157 passing and 0 failing, cancelled or skipped.\n- **Hash comparison:** both runs printed the same build SHA-256, `a5d0c756077e89afa4f8a107c64e863a7d09cba48456f8229a8b42b4fa208bd2`. That means both used the same standalone duel HTML."
+  },
+  "root": {
+    "nodeId": "wf_5bd13532f5142477",
+    "type": "sequence",
+    "status": "completed",
+    "children": [
+      {
+        "nodeId": "verify-duel",
+        "type": "step",
+        "status": "completed",
+        "agentName": "wf-coder",
+        "startedAt": "2026-11-17T01:51:53.569Z",
+        "sessionId": "sess_0714cf00-fde5-43ef-aff4-5f95d002b778",
+        "capturedOutput": "Command: `node scripts/verify-duel.mjs --browser` (project root, one shell call)\nExit status: 0\n\n- **Node tests:** 157 tests, 157 pass, 0 fail, 0 cancelled, 0 skipped, 0 todo. Duration was 4845.95 ms.\n- **Asset structural checks:** 2 of 2 files passed (`dragon.glb`, `mounted-billy.glb`). The check covers structure only, not motion quality.\n- **Build:** `dist/cowboys-vs-wizards-board-duel.html`.\n- **Chrome replay:**\n  - Chrome/157.0.8103.52.\n  - Seed 0.\n  - Revision e9aeb06.\n  - 8 of 8 steps observed.\n  - Pending step IDs: none.\n  - Console errors: 0.\n- **SHA-256:** `a5d0c756077e89afa4f8a107c64e863a7d09cba48456f8229a8b42b4fa208bd2`. This is the build SHA-256 that the replay printed for the standalone duel HTML. I did not hash it separately.\n- **Receipt path:** `.artifacts/kiro/replay/browser-run.json`\n\nI edited no source.",
+        "credits": [
+          {
+            "usage": 0.1972706067993366,
+            "unit": "credit",
+            "unitPlural": "credits"
+          }
+        ],
+        "endedAt": "2026-11-17T01:52:59.308Z"
+      },
+      {
+        "nodeId": "verify-showdown",
+        "type": "step",
+        "status": "completed",
+        "agentName": "wf-coder",
+        "startedAt": "2026-11-17T01:52:59.321Z",
+        "sessionId": "sess_bf842489-5412-4115-aaed-6e36cd13b671",
+        "completionSignal": "success",
+        "completionSignalSource": "send_message",
+        "capturedOutput": "Seed 60 passed. The command exited 0 and the SHA-256 matches seed 0.\n\n- **Command:** `node scripts/browser-match-check.mjs --showcase --summary --out-dir .artifacts/kiro/showcase`\n- **Exit status:** 0\n- **Chrome:** Chrome/157.0.8103.52\n- **Revision:** e9aeb06\n- **Seed:** 60\n- **Observed steps:** 4 of 4\n- **Pending IDs:** none\n- **Console errors:** 0\n- **SHA-256:** `a5d0c756077e89afa4f8a107c64e863a7d09cba48456f8229a8b42b4fa208bd2`\n- **Hash match:** This is the same hash the seed-0 replay printed, so the two runs used the same standalone HTML. I did not hash the file separately.\n- **Receipt path:** `.artifacts/kiro/showcase/browser-run.json`\n\nI edited no source.",
+        "credits": [
+          {
+            "usage": 0.1966449349917081,
+            "unit": "credit",
+            "unitPlural": "credits"
+          }
+        ],
+        "endedAt": "2026-11-17T01:53:57.561Z"
+      },
+      {
+        "nodeId": "report",
+        "type": "step",
+        "status": "completed",
+        "agentName": "wf-coder",
+        "startedAt": "2026-11-17T01:53:57.574Z",
+        "sessionId": "sess_9f417649-1df7-4046-9de1-75ae00136526",
+        "completionSignal": "success",
+        "completionSignalSource": "send_message",
+        "capturedOutput": "I wrote the report to `.artifacts/kiro/replay/report.md`.\n\nBoth runs exited 0 on revision e9aeb06 with 0 console errors, and no values are pending. I only built the report from the two step results. I didn't run any checks or hash the file myself.\n\n| Run | Observed steps | Receipt path |\n|---|---|---|\n| Seed 0 (`node scripts/verify-duel.mjs --browser`) | 8 of 8 | `.artifacts/kiro/replay/browser-run.json` |\n| Seed 60 (`node scripts/browser-match-check.mjs --showcase --summary --out-dir .artifacts/kiro/showcase`) | 4 of 4 | `.artifacts/kiro/showcase/browser-run.json` |\n\n- **Node counts:** the seed-0 step reported 157 tests with 157 passing and 0 failing, cancelled or skipped.\n- **Hash comparison:** both runs printed the same build SHA-256, `a5d0c756077e89afa4f8a107c64e863a7d09cba48456f8229a8b42b4fa208bd2`. That means both used the same standalone duel HTML.",
+        "credits": [
+          {
+            "usage": 0.28324151741293535,
+            "unit": "credit",
+            "unitPlural": "credits"
+          }
+        ],
+        "endedAt": "2026-11-17T01:54:12.766Z"
+      }
+    ],
+    "startedAt": "2026-11-17T01:51:53.565Z",
+    "endedAt": "2026-11-17T01:54:12.771Z"
+  },
+  "createdAt": "2026-11-17T01:51:53.525Z",
+  "planRevision": 0,
+  "parentSessionId": "sess_1dbf591d-46a2-467e-86b3-19cd80af632d",
+  "runLabel": "orb-duel-replay-closeout-release-check",
+  "originalUserMessages": [
+    "Run ONE actual saved Kiro Workflow against frozen game HEAD e9aeb063abb947c7fc9447595d9143bd04d71ac0. Current branch kiro/closeout-release-check is isolated and based on that exact HEAD. You are actual Kiro CLI V3, not IDE. No model override requested. Other agents own UI, documentation integration and Night Watch.\n\nNEVER delete .artifacts, launchers, logs or receipts. Do not git clean or broad rm. Launcher lives outside your worktree and is read-only to you. Keep original evidence; no false completion claims.\n\nRead AGENTS.md and .kiro/workflows/orb-duel-replay.workflow.json only as needed. Use Kiro's actual saved Workflow tools to run orb-duel-replay ONCE. Do not reimplement its three steps and then call that a Workflow. Discover/load the saved workflow through Kiro tools if necessary. Its steps:\n1 node scripts/verify-duel.mjs --browser (Node suites, sourced asset structural checks, standalone build and seed0 Chrome replay)\n2 node scripts/browser-match-check.mjs --showcase --summary --out-dir .artifacts/kiro/showcase on the same HTML\n3 write its actual report.\nDo not edit any app/test/build/workflow source. If actualWorkflow unavailable, record blocker and a clearly-labelled direct command fallback only once; never fabricate WorkflowID.\n\nAfter the standaloneWorkflow, run node scripts/build.mjs --web once and hash dist/web/index.html. The coordinator has already passed11menuchecks and2readability viewports on the SAME frozen UI and does not want duplicate browserchecks. Look ONLY at the known integration worktree /Users/alexvintera/Documents/Codex/2026-11-14/new-chat/cowboys-vs-wizards-board/.worktrees/kiro-closeout-integration/.artifacts for menu/readability JSON receipts (filenames/directories first, no recursive repo dump). If those receipts have the same built HTML hash, cite them accurately as Codex checks and preserve compact evidence. If they lack hash binding, say so; do not rerun a second complete suite just to produce newattribution. This task's required new checks are actualsavedWorkflow and webbuild. CrewGUI review is blocked by disabled NightWatch app and403 on the localprofile from the precedingtask; skip extraCrew/headlessattempts.\n\nOWNED OUTPUT ONLY:\ndocs/evidence/kiro-closeout-release-check.md\ndocs/evidence/kiro-closeout-release-check/** (compact actual Workflow state/definition/stepoutputs/report + seed0/60 originalJSON receipts; screenshots remainignored)\nNo sharedbragsheet edits. Record exactWorkflowID/sessionID ifobserved, frozenbase, commands/exitstatuses, testcounts, revision/seedsteps,pendingIDs, consoleerrors, HTMLSHA256, original-sourceSHA and pathredactions. Identify actualtool/appforeachclaim. CopygenuineoriginalJSON, doNOTconvertdescriptiveparagraphs into pretendlogs. Preserve allrawACP/logs outsideworktree. CopyfreshWorkflow runstate from its exactknown sessionstore directory after toolreturns, notaccountscans. Record usageonlyifemitted bythisrun, noaccount /usage or billingchecks.\n\nOne run only. If failure occurs, preservefailure, identifyfirstblocker andSTOP withoutsourcefixes orloopreruns; coordinator ownsfixes. No build ofunrelatedNightWatch, no model/assets/animationschanges, noPR/push/merge/deploy.\nValidate newlywrittenJSON/links, commitexplicitowned paths only,andstop. Deadline10minutes; reportactualresult+commits+receiptpaths. Do not claimpublishedreleasebecausecoordinatorpublisheslater.\nCoordinator details: expected frozen web HTML SHA-256 is 863ab8bd525cb2e78b0e73b529406b73c6a2381f982f2854e71340df79718e02. Existing Codex11menu receipt is .worktrees/kiro-closeout-integration/.artifacts/kiro-closeout/menu-review/menu-run.json in rootrepo, with menu-review.log. Readability measurements are tracked docs/evidence/deck-workbench/measurements.json plus integration .artifacts/kiro-closeout/deck-review.log. Cite them if hash matches. Correction: NightWatch403 is only that app's execution policy, not proof Crew browser is globally disabled. A fresh Crew gameplay review is NOT run by this task; record not run, don't invent a global Crew blocker.\n"
+  ],
+  "rootConversationId": "sess_1dbf591d-46a2-467e-86b3-19cd80af632d",
+  "workspacePath": "/Users/alexvintera/Documents/Codex/2026-11-14/new-chat/cowboys-vs-wizards-board/.worktrees/kiro-final-release-check",
+  "memoryConfig": {
+    "mode": "disabled",
+    "reflection": false
+  },
+  "memoryConfigSource": "explicit",
+  "backgroundExecution": false,
+  "sessionTools": {
+    "awareness": false,
+    "messaging": false,
+    "cloud": false
+  },
+  "parentModelId": "auto"
+}
