@@ -2,9 +2,11 @@
 
 Date: 2026-11-17 (America/Los_Angeles). Base: `main` at 6f5f088, after T1 #91,
 T2 #93, T3 #96, T4 #98 and T5 #101. Branch `kiro/trap-presenter-99`. Work done
-by Kiro (Kiro CLI 3.4 as named in the task; model Claude Opus 5.5 as reported
-by the session context). The session emitted no credit or usage figures, so
-none are recorded here. Headless only: no 3D, model, sound, art, animation,
+by Kiro using Kiro CLI 3.4.0 (verified by CLI version output). The worker
+explicitly requested `claude-opus-5.5`; the stream selected-model metadata
+contains `claude-opus-5.5`. At `runFinished`, Kiro stream metadata reported
+12.003287369154226 session credits (metadata, not an account invoice).
+Headless only: no 3D, model, sound, art, animation,
 UI activation, renderer, controller, `src/game`, card, deck or CI change.
 
 ## Problem
@@ -96,3 +98,23 @@ Not run: renderer build, browser replay, playtest. T6 changes no rendered code.
 - Any visible trap cue (face-down card, reveal) needs a design agreed with the
   user and sourced assets before it is built.
 - `docs/kiro-build-log.md` entry is coordinator-owned.
+
+
+## Independent coordinator follow-up (November 17, 2026)
+
+After the Kiro-authored commit `af65974` and worker exit, the coordinator
+independently inspected the changed presenter, test and evidence files and ran:
+
+- `node --test tests/match/trap-presenter.test.js tests/match/presenter.test.js tests/match/pace.test.js`: **21 pass, 0 fail**.
+- `npm test`: **286 Node tests pass**, 2/2 structural animation-file checks (not visual quality).
+- `node scripts/check-links.mjs`: 166 Markdown files, 600 links, **0 broken**.
+- `git diff HEAD^ HEAD --check`: pass.
+- Remote `main` and worktree merge-base were both `6f5f088` at review time.
+- Kiro CLI `--version`: **3.4.0**; `chat --list-models` advertised
+  `claude-opus-5.5` at 2.00× credits.
+- The final Kiro V3 stream contained selected-model metadata
+  `claude-opus-5.5` and session credit usage **12.003287369154226 credits**.
+  These are Kiro-emitted observations, not estimated usage or billing.
+
+This coordinator documentation-only follow-up is separate from Kiro's
+code/test authoring. No browser, 3D, human playtest or published UI claim.
