@@ -1,0 +1,274 @@
+{
+ "label": "HARNESS VERIFICATION: disposable test mutant M1, not a production bug",
+ "mutant": "M1 (tests/helpers/boundary-properties/mutants.js): a two-tribute summon loses its second tribute card from the discard",
+ "property": "conservation: each card in exactly one zone of its side (R1.6, R3.6)",
+ "generator": "buildFixtureWith + random legal walk, seed = hashSeed(\"shrink-demo\", 1)",
+ "generatorIndex": 1,
+ "violationKind": "conservation",
+ "reducer": "greedy deletion to a fixpoint: actions, cards, troops; active side; base orbs to 5; troop health to 1",
+ "maxCandidates": 3000,
+ "evaluations": 58,
+ "budgetExhausted": false,
+ "original": {
+  "size": {
+   "actions": 7,
+   "cards": 24,
+   "troops": 5,
+   "total": 31
+  },
+  "mutantResult": {
+   "status": "violation",
+   "step": 6,
+   "kind": "conservation"
+  },
+  "originalEngineResult": {
+   "status": "pass"
+  },
+  "input": {
+   "state": {
+    "seed": 9110,
+    "revision": 38,
+    "rng": 3471317145,
+    "round": 6,
+    "startingSide": "cowboy",
+    "activeSide": "wizard",
+    "allowances": {
+     "cowboy": {
+      "summonUsed": false,
+      "castUsed": false
+     },
+     "wizard": {
+      "summonUsed": false,
+      "castUsed": false
+     }
+    },
+    "actionIds": [
+     "used-1"
+    ],
+    "result": null,
+    "sides": {
+     "cowboy": {
+      "baseOrbs": 2,
+      "deck": [
+       "cowboy-sheriff-1"
+      ],
+      "hand": [
+       "cowboy-mounted-billy-6",
+       "cowboy-mounted-billy-2",
+       "cowboy-mounted-billy-3",
+       "cowboy-mounted-billy-5",
+       "cowboy-sheriff-2"
+      ],
+      "board": [
+       {
+        "cardId": "cowboy-billy-3",
+        "health": 1
+       },
+       {
+        "cardId": "cowboy-mounted-billy-1",
+        "health": 3
+       },
+       {
+        "cardId": "cowboy-mounted-billy-4",
+        "health": 4
+       }
+      ],
+      "discard": [
+       "cowboy-billy-2",
+       "cowboy-billy-4",
+       "cowboy-billy-1"
+      ]
+     },
+     "wizard": {
+      "baseOrbs": 3,
+      "deck": [
+       "wizard-singularity-2",
+       "wizard-skeleton-6",
+       "wizard-skeleton-2",
+       "wizard-skeleton-1"
+      ],
+      "hand": [
+       "wizard-skeleton-5",
+       "wizard-wizard-2",
+       "wizard-wizard-1",
+       "wizard-singularity-1",
+       "wizard-dragon-1",
+       "wizard-wizard-3"
+      ],
+      "board": [
+       {
+        "cardId": "wizard-skeleton-4",
+        "health": 3
+       },
+       null,
+       {
+        "cardId": "wizard-skeleton-3",
+        "health": 1
+       }
+      ],
+      "discard": []
+     }
+    }
+   },
+   "actions": [
+    {
+     "type": "summon",
+     "side": "wizard",
+     "cardId": "wizard-skeleton-5",
+     "slot": 1,
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "side": "wizard",
+     "cardId": "wizard-singularity-1",
+     "target": 0
+    },
+    {
+     "type": "end-phase",
+     "side": "wizard"
+    },
+    {
+     "type": "summon",
+     "side": "wizard",
+     "cardId": "wizard-wizard-3",
+     "slot": 1,
+     "tributes": [
+      0
+     ]
+    },
+    {
+     "type": "spell",
+     "side": "wizard",
+     "cardId": "wizard-singularity-2",
+     "target": 1,
+     "destination": 0
+    },
+    {
+     "type": "end-phase",
+     "side": "wizard"
+    },
+    {
+     "type": "summon",
+     "side": "cowboy",
+     "cardId": "cowboy-mounted-billy-5",
+     "slot": 0,
+     "tributes": [
+      0,
+      2
+     ]
+    }
+   ]
+  }
+ },
+ "minimized": {
+  "size": {
+   "actions": 5,
+   "cards": 5,
+   "troops": 2,
+   "total": 10
+  },
+  "mutantResult": {
+   "status": "violation",
+   "step": 4,
+   "kind": "conservation"
+  },
+  "originalEngineResult": {
+   "status": "pass"
+  },
+  "input": {
+   "state": {
+    "seed": 9110,
+    "revision": 38,
+    "rng": 3471317145,
+    "round": 6,
+    "startingSide": "cowboy",
+    "activeSide": "wizard",
+    "allowances": {
+     "cowboy": {
+      "summonUsed": false,
+      "castUsed": false
+     },
+     "wizard": {
+      "summonUsed": false,
+      "castUsed": false
+     }
+    },
+    "actionIds": [
+     "used-1"
+    ],
+    "result": null,
+    "sides": {
+     "cowboy": {
+      "baseOrbs": 5,
+      "deck": [],
+      "hand": [
+       "cowboy-mounted-billy-5"
+      ],
+      "board": [
+       null,
+       {
+        "cardId": "cowboy-mounted-billy-1",
+        "health": 3
+       },
+       {
+        "cardId": "cowboy-mounted-billy-4",
+        "health": 1
+       }
+      ],
+      "discard": []
+     },
+     "wizard": {
+      "baseOrbs": 5,
+      "deck": [
+       "wizard-singularity-2"
+      ],
+      "hand": [
+       "wizard-skeleton-5"
+      ],
+      "board": [
+       null,
+       null,
+       null
+      ],
+      "discard": []
+     }
+    }
+   },
+   "actions": [
+    {
+     "type": "summon",
+     "side": "wizard",
+     "cardId": "wizard-skeleton-5",
+     "slot": 1,
+     "tributes": []
+    },
+    {
+     "type": "end-phase",
+     "side": "wizard"
+    },
+    {
+     "type": "spell",
+     "side": "wizard",
+     "cardId": "wizard-singularity-2",
+     "target": 1,
+     "destination": 0
+    },
+    {
+     "type": "end-phase",
+     "side": "wizard"
+    },
+    {
+     "type": "summon",
+     "side": "cowboy",
+     "cardId": "cowboy-mounted-billy-5",
+     "slot": 0,
+     "tributes": [
+      0,
+      2
+     ]
+    }
+   ]
+  }
+ }
+}
