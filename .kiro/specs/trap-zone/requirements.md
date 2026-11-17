@@ -10,9 +10,10 @@ Pokemon's few, predictable per-turn actions. No names, art, text or economies ar
 ## Glossary
 
 - Trap zone: one extra slot per side, separate from the three troop lanes.
-- Set: move a spell card from hand, face-down, into the trap zone.
+- Trap card: a dedicated card kind `trap` with its own unique ID. It is not a troop and not a spell.
+- Set: move a trap card from hand, face-down, into the trap zone.
 - Armed: a set trap that may trigger. Spent: triggered once, card moved to discard.
-- Flag: `createMatch(seed, { traps: true })`. Default is off.
+- Flag: `createMatch(seed, { traps: true })`. Default is off. The flag enables the zone and the `trap` kind; it adds no cards.
 
 ## Requirements
 
@@ -20,8 +21,9 @@ R1 One zone per side. Each side has exactly one trap zone. The three troop lanes
    summons and the 1-5 orb rule are unchanged. A second set while the zone is occupied is rejected.
 
 R2 Set action. `{ type: "set-trap", side, revision, cardId, actionId? }`. Legal only for the active
-   side, a spell in hand, empty zone, flag on, and `castUsed` false. A set consumes the side's
-   cast allowance for the round (so a set and a cast are exclusive, as summon-after-spell already is).
+   side, a card of kind `trap` in hand, empty zone, and flag on. Spells and troops are rejected
+   (`not-a-trap`). Setting uses its own once-per-round allowance `trapSet` (flag on only), so it does
+   not touch `summonUsed` or `castUsed`, and troop and spell rules are unchanged.
 
 R3 One-turn delay. A trap set in round N cannot trigger in round N. Recommended rule is
    interpretation A (see design.md): armed when `round > setRound`.
@@ -30,17 +32,20 @@ R4 One auto-trigger, defensive. At the start of a clash, an armed trap cancels t
    highest-attack enemy troop's attack for that clash (ties: lowest lane). It then goes to discard.
    No choice, no targeting input, no second effect.
 
-R5 Hidden from the opponent. The opponent's public view shows `{ faceDown: true, setRound }`
+R5 Hidden until triggered. The opponent's public view shows `{ faceDown: true, setRound }`
    and never the card ID until it triggers. The setter sees its own card ID. The `trap-set` event
    is redacted per viewer.
 
-R6 Card conservation. A card is in exactly one of: deck, hand, board, trap zone, discard.
-   Set: hand to zone. Trigger: zone to discard. Total card count per side is constant.
+R6 Card conservation. Every trap card has a unique ID and is in exactly one of: deck, hand, trap zone,
+   discard. Set: hand to zone. Trigger: zone to discard. Total card count per side is constant.
    Triggering never draws, shuffles or touches RNG.
 
-R7 No deck mechanic change. Deck sizes, `validateDeckIds`, shuffles and draw order are untouched.
-   Only existing spell cards may be set. No new card, art or stat is added. Open decision O1:
-   the set card's own spell effect is lost while set, which is the cost of the trap.
+R7 Dedicated trap kind, no content yet. Only cards of kind `trap` may be set; no existing spell is
+   converted or repurposed. This spec adds no card name, art, stat or copy count, and the default
+   decks, `validateDeckIds`, shuffles and draw order are unchanged. Trap cards enter play only through
+   a later, flag-gated card prototype and deck migration (see design.md section 8). Until that is
+   approved, flag-on matches have no trap cards and the zone stays empty; tests use a test-only
+   fixture card kind, not the shipped card table.
 
 R8 Determinism. Same seed, deck and action list give the same events with the flag on.
    With the flag off, state, events and replays are identical to 8ace1ce (seeds 0 and 60).
@@ -60,11 +65,15 @@ R12 Pacing (optional). A fast-play option shortens non-damage pauses only. Damag
 
 ## Out of scope
 
-Trap card art or models, more than one trap, offensive traps, trap draw/search, deck edits,
-retro build, balance claims, renderer changes (a face-down marker is a later, user-planned asset task).
+Naming or statting any trap card, trap card art or models, more than one zone, offensive traps, trap draw/search, deck edits,
+default deck changes, retro build, balance claims, renderer changes (a face-down marker is a later, user-planned asset task).
 
-## Open decisions for the owner
+## Decisions and open items
 
-O1 Any spell vs a dedicated trap card. This spec assumes any spell (no deck change).
-O2 Should a set consume the cast allowance (assumed yes, predictable and pace-friendly)?
-O3 Should the tie-break be lowest lane (assumed) or rule out ties by card order?
+D1 (resolved by the user) The zone is for dedicated trap cards. Converting any spell into a trap is
+   rejected: it makes every spell a hidden-defense option, removes the spell's own role, and gives no
+   reason to add a card type. It is kept only as a rejected shortcut in design.md.
+O1 Card prototype: name, copy count per deck, art and card copy need user approval before any work
+   (AGENTS.md sourcing rule). Pending.
+O2 Deck migration: which decks gain trap cards and whether `DECKS` sizes change. Pending, flag-gated.
+O3 Tie-break for equal attack: assumed lowest lane. Pending.

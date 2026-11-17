@@ -26,9 +26,13 @@ state for no observable difference today.
 
 ## 2. State (behind `traps` flag, default false)
 
+Card kind: a new `kind: "trap"` (unique card ID, no attack, health or tribute cost) beside `troop` and
+`spell`. The kind and zone exist only behind the flag; no trap card is defined in this spec.
+
 ```
 state.traps = { enabled: bool }                       // only when createMatch(..., { traps: true })
 sides[side].trap = null | { cardId, setRound }        // hidden zone; absent key when flag off
+allowances[side].trapSet = false                      // flag on only; reset each round-start
 ```
 When the flag is off, `trap` is not added and `traps` is not added, so `structuredClone(state)` and
 every existing replay are byte-identical to 8ace1ce. `RULES_VERSION` becomes `orb-duel-draft-1+traps`
@@ -40,12 +44,14 @@ Action: `{ type: "set-trap", side, revision, cardId, actionId? }`.
 
 Rejections, first failing wins, added to `REJECTIONS` in `actions.js` after the shared checks
 (`match-over`, `invalid-action`, `duplicate-action`, `stale`, `wrong-side`):
-`traps-disabled`, `cast-used`, `card-not-in-hand`, `not-a-spell`, `trap-zone-full`.
+`traps-disabled`, `trap-set-used`, `card-not-in-hand`, `not-a-trap` (spells and troops land here),
+`trap-zone-full`.
 
-Apply: remove card from hand, set `trap = { cardId, setRound: round }`, `allowances.castUsed = true`.
+Apply: remove card from hand, set `trap = { cardId, setRound: round }`, `allowances.trapSet = true`.
+`summonUsed`, `castUsed` and the summon and spell rejections are untouched.
 Event: `{ type: "trap-set", side, revision, actionId? , cardId }`. No RNG draw.
 
-`legal.js`: if flag on, `!castUsed`, zone empty, add one `set-trap` per distinct spell in hand, after
+`legal.js`: if flag on, `!trapSet`, zone empty, add one `set-trap` per distinct trap card in hand, after
 spells and before `end-phase`. Existing order (summons, spells, end-phase) is kept when the flag is off.
 
 ## 4. Trigger (in `resolveClash`, before the attack snapshot loop)
@@ -69,7 +75,7 @@ Because the `clash` event is emitted just before `resolveClash`, the order is `c
   matching how `draw` already hides the card. `trap-trigger` is public, since the card is revealed on use.
 - `discard` already public, so the spent card is visible then.
 - CPU: `chooseAction(publicState(state, "wizard"))` sees only its own trap. Rule sketch (no RNG):
-  set a trap if it holds a spell, is `castUsed` false and no spell has a legal target worth casting; left to a later task.
+  set a trap card whenever it holds one, the zone is empty and `trapSet` is false; no RNG. Final rule is a later task.
 
 ## 6. Presenter and restart
 
@@ -102,8 +108,22 @@ overrides, and the controller already takes `cpuDelay`, so this needs no new mec
 (arithmetic only, not measured): 350 + 250 + 200 + 130 + 150 + 70 = about 1150 ms per Cowboy-visible round
 plus 350 ms per CPU action. Needs a timed browser run to confirm.
 
-## 8. Risks
+## 8. Card prototype and deck migration (future, flag-gated, needs user approval)
 
-- A set card is not castable, so trap use costs tempo; fine for a first version, tune after playtest.
+Not part of this spec: trap card name, art, card copy, stats, copy count, and which `DECKS` gain it.
+Required before implementation: (1) user approves the design, art source and copy count (AGENTS.md
+sourcing rule); (2) a generated card spec under `.kiro/specs/duel-card-pipeline/cards/` with kind `trap`,
+then `sh scripts/check-card-specs.sh`; (3) a flagged deck variant, for example `DECKS_TRAPS`, leaving the
+default `DECKS` and `validateDeckIds` results unchanged; (4) a new `RULES_VERSION` and a fresh balance run.
+Until then trap tests use a fixture card injected by the test only.
+
+Rejected shortcut: let any spell be set face-down as a trap. It needs no new card, but it makes every
+spell a hidden-defense option, removes that spell's role, forces `legal.js` and balance reasoning to
+treat each spell twice, and does not match the request for a slot for trap cards. Not recommended.
+
+## 9. Risks
+
+- Trap cards cost a hand slot and a deck slot once added; tune after playtest.
+- Flag-on matches have no trap cards until the migration lands, so the zone is inert by default.
 - Flag-off parity is the main safety net. Never add a key to `state` when the flag is off.
 - `legalActions` consumers (CPU, UI, tests that pin action counts) must be checked with the flag on.

@@ -4,11 +4,11 @@ Author: Kiro CLI 3.4.0 V3. All items are PENDING; nothing here has been implemen
 Each task is one focused commit. Run the closest test first (`node --test tests/game/<file>`),
 then `node scripts/verify-duel.mjs` once at the end. No renderer build until T6.
 
-- [ ] T1 Flag and state (R1, R7, R8): add `traps` option to `createMatch`, `sides[*].trap`, `RULES_VERSION` suffix.
-      Test: flag-off `createMatch(0)` and `createMatch(60)` deep-equal the 8ace1ce state; flag-on adds only `trap: null`.
-- [ ] T2 `set-trap` action and `legal.js` (R2, R6): rejections `traps-disabled`, `cast-used`, `card-not-in-hand`,
-      `not-a-spell`, `trap-zone-full`, `stale`, `wrong-side`, `duplicate-action`, `match-over`.
-      Test: each rejection returns the same input state object; apply once; `castUsed` set; legal list matches `applyAction`.
+- [ ] T0 Owner gate (O1, O2): user approves trap card prototype, art source, copy count and deck migration. No later task creates card content without it.
+- [ ] T1 Flag and state (R1, R7, R8): add `traps` option to `createMatch`, `sides[*].trap`, `allowances[*].trapSet`, `trap` card kind, `RULES_VERSION` suffix. Test: flag-off `createMatch(0)` and `createMatch(60)` deep-equal the 8ace1ce state; flag-on adds only `trap: null` and `trapSet`.
+- [ ] T2 `set-trap` action and `legal.js` (R2, R6): rejections `traps-disabled`, `trap-set-used`, `card-not-in-hand`,
+      `not-a-trap` (spell and troop), `trap-zone-full`, `stale`, `wrong-side`, `duplicate-action`, `match-over`.
+      Test: each rejection returns the same input state object; apply once; `trapSet` set while `summonUsed` and `castUsed` stay unchanged; legal list matches `applyAction`.
 - [ ] T3 Clash trigger (R3, R4, R9): in `clash.js`, snapshot-based trigger and `trap-trigger` event.
       Tests: not armed in the set round (one-turn); armed next round; highest attack and lane tie-break;
       no target keeps trap; simultaneous traps on both sides give order-independent result; cancelled attacker emits no `damage`.
@@ -27,4 +27,4 @@ then `node scripts/verify-duel.mjs` once at the end. No renderer build until T6.
       with flag off, compared to a recorded 8ace1ce result; with flag on, record seeds, rules version, case count and results.
 - [ ] T10 Evidence: one entry in `docs/kiro-build-log.md` and a file under `docs/evidence/` (coordinator-owned, not this job).
 
-Blocked on owner: O1 to O3 in requirements.md; any trap marker art needs a plan with the user first (AGENTS.md sourcing rule).
+Blocked on owner: O1 to O3 in requirements.md (T0); trap card art, name and copy count, and any trap marker art needs a plan with the user first (AGENTS.md sourcing rule).

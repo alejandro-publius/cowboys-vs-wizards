@@ -12,7 +12,7 @@
 
 ## Decisions proposed
 
-- One trap zone per side, set from an existing spell in hand, spends the cast allowance, armed when
+- One trap zone per side for a dedicated `trap` card kind with unique IDs (user-directed correction; converting a spell is a rejected shortcut). Set uses its own `trapSet` allowance, armed when
   `round > setRound` (interpretation A, next round). Compared with B (next own action phase): same first
   trigger under the current two-phase round, A needs less state, so A is recommended for pace and simplicity.
 - One defensive auto-trigger at clash start cancels the strongest enemy attack, then the card is discarded.
@@ -41,6 +41,6 @@ latency or speed-up claim is made; the fast-play savings in design.md are arithm
 
 ## Blockers and open decisions
 
-Owner decisions O1 to O3 (any spell versus dedicated trap card, set spends cast, tie-break) in requirements.md.
+Owner items O1 to O3 in requirements.md: trap card prototype (name, copy count, art, copy), flag-gated deck migration, tie-break. No card content is specified or created here.
 Trap marker visuals require a plan with the user before any asset work. Design inspiration only from
 Yu-Gi-Oh (trap not usable the turn it is set) and Pokemon (few predictable per-turn actions); nothing imported.
