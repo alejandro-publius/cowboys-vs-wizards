@@ -16,13 +16,13 @@ main). Hook commit on top of it: see `git log` for this file.
 
 ## Observed
 
-- Client: Kiro IDE, session `sess_afff8afb-fe19-499a-a869-11e72f45f791`.
+- Client: actual Kiro CLI 3.4.0 V3, launched by the coordinator; session `sess_afff8afb-fe19-499a-a869-11e72f45f791`.
   The hook event on stdin carried that same `session_id`,
   `hook_event_name: "PostFileSave"`, the worktree `cwd` and the absolute
   `file_path` of this document. Environment had `KIRO_SESSION_ID`.
-- `kiro-cli --version` on this machine: `kiro-cli 3.4.0`. The event came from
-  the IDE session above, so this is the installed CLI version, not proof that
-  the CLI ran the hook.
+- `kiro-cli --version` on this machine: `kiro-cli 3.4.0`. The coordinator launcher receipt and stream log identify the same CLI
+  session. The worker initially called itself IDE; the launcher is the
+  authoritative attribution.
 - No new session was needed: the hook added in this session fired on the
   next save.
 - Failing save, 2026-11-17T06:04:43Z (UTC): `fs_write` added a fake link to
@@ -40,8 +40,8 @@ main). Hook commit on top of it: see `git log` for this file.
 
 ## Not shown
 
-- The hook was not run from the Kiro CLI.
-- Whether the hook's non-zero exit is surfaced to the user in the IDE UI was
+- No Kiro IDE run was performed.
+- Whether the hook's non-zero exit is surfaced to the user in an interactive UI was
   not observed; only the receipt records it.
 - Candidate checks (verify-duel, build) are the coordinator's report, not
   re-run here.
