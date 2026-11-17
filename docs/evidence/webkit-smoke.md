@@ -30,7 +30,7 @@ All seven scripted steps were seen. **The screenshots also show a defect the ste
 
 What was observed, and one experiment:
 
-- The card face's artwork is loaded: the front face's computed background is the card's image URL, and no request failed.
+- The card face's artwork is loaded: the front face's computed background is the card's image URL, and the page reported no console error. (The match-start screenshot, before any card is chosen, shows the same blank cards: [02](webkit-smoke/02-match-starts-with-seed-0.jpg).)
 - Each card is built from stacked layers placed in 3D: a front face, a reverse face turned 180 degrees, and seven thin "slice" layers that give the card its edge (`.card-body` with `transform-style: preserve-3d` in `src/ui/match.css`).
 - In this engine the layers appear to be painted in document order instead of by depth. The last slice, a plain tan gradient, covers the face.
 - Hiding the slices in the page (a one-off style injected for the experiment, not a change to the game) revealed the card **backs**, not the fronts. So the reverse face is also painted over the front, which fits the same reading: depth order and back-face hiding are not taking effect.
