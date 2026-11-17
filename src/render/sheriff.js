@@ -86,7 +86,7 @@ export function restSheriff(piece) {
 }
 
 // The lowest skinned boot vertex of each boot quarter (heel and toe of each foot), found once
-// from the bind geometry; the same quarters the approved preview seated.
+// from the bind geometry. Seating uses the tile origin; the preview used a surface raycast.
 function bootVertices(actor) {
   if (actor.boots) return actor.boots;
   const position = actor.body.geometry.getAttribute("position"), boots = [[], [], [], []];

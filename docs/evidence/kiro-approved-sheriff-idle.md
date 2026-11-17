@@ -10,7 +10,7 @@ November 16, 2026, America/Los_Angeles. Branch `kiro/approved-sheriff-idle`, fro
 ## What changed
 - `assets/animations/sheriff-headShake.json`: the 17 tracks (16 bone rotations, hips translation; 78 keys each) copied from the GLB accessors by `scripts/extract-approved-sheriff-clip.mjs`. Float32 times and values are unchanged (JSON doubles equal the Float32s exactly); only names (`sheriff_hips.quaternion`) and format changed. Translations are in the normalized height-1 rig the Sheriff already uses and are not scaled again. `.SOURCE.json` records the file SHA, name, duration, conversion, attribution and the clip data's own SHA-256 `de012cfb...bd36`.
 - `src/render/sheriff-sourced-idle.js`: one `AnimationMixer` and one fresh `AnimationClip` per Sheriff, rooted at that Sheriff's actor. `play(t)` samples the clip (it repeats), `release()` stops it and restores all 16 bone rotations to identity, the hips to the rig's bind position and the actor lift to 0, `dispose()` also uncaches the mixer.
-- `src/render/sheriff.js`: `idleSheriff` plays the approved clip; no sine motion remains in it. The actor is lifted by the amount that puts the lowest boot vertex of each of four boot quarters on the tile (+3 mm), the same seating as the approved preview; scale and facing are unchanged. New `restSheriff` is the old static rest pose (the former idle at second 0). `drawSheriff` and `landSheriff` call `release()` first and are otherwise unchanged, as are their curves and the gun grip.
+- `src/render/sheriff.js`: `idleSheriff` plays the approved clip; no sine motion remains in it. The actor is lifted by the amount that puts the lowest boot vertex of each of four boot quarters on the tile (+3 mm), seated against the tile origin using the lowest boot vertices (the preview instead raycast the tile surface with a broader foot-vertex selection); scale and facing are unchanged. New `restSheriff` is the old static rest pose (the former idle at second 0). `drawSheriff` and `landSheriff` call `release()` first and are otherwise unchanged, as are their curves and the gun grip.
 - `src/render/match-board.js`: `idlesSheriff` replaces the Sheriff's `idles(piece, idleSheriff)` only. Wizard, Billy and all other pieces are untouched.
 - `src/render/cues.js`: the Sheriff shot ends in `restSheriff` (it was `idleSheriff(piece, 0)`), so the cue still ends holstered in the rest pose.
 
@@ -40,3 +40,11 @@ No game rule, damage or engine code was touched; `src/main.js` and `rig.js` were
 - The head turns up to 42.5 degrees from the first frame (local quaternion angle); the source evidence quotes 34.81 degrees by another measure.
 - The seated lift keeps the lowest foot on the tile; the other boot may hover if the clip lifts it. The holstered revolver follows the hips' translation but not their rotation.
 - Idle plays only while the Sheriff is rendered (render callback, as before). The hit hold length is a judgment call, not a source value.
+
+## Coordinator review
+
+Codex reviewed the actual seed-0 match in Chrome after this commit. A 300-frame / 10-second capture shows the sourced idle, the existing revolver attack, orb loss and continuing match playback, with zero runtime exceptions. Source fidelity was independently checked: all 17 tracks and all 6,552 time/value scalars exactly match the approved GLB. No motion curves were authored during integration.
+
+The visible idle-to-attack pose change remains abrupt; this is a remaining polish item. The new seating uses the tile origin and boot vertices below 0.02 model units; the earlier approved preview raycast the tile surface and selected foot vertices below 0.13. These are not identical algorithms.
+
+Local capture receipt: `.artifacts/kiro-approved-sheriff-idle/visual/capture.json` in the Kiro worktree. The preview camera parameter produced the normal board view in this build; the shared close video is an explicit crop of that actual match recording.
