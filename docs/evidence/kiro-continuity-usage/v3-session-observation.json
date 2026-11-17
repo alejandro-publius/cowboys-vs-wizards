@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "kind": "sanitized_structured_extract",
+  "actual_app": "Kiro CLI3.3.0",
+  "base": "599450a27703fbdb8961d626c3e779512f54f29e",
+  "branch": "kiro/continuity-usage-evidence",
+  "source_commit_of_kiro_note": "a6b89ebc05f78c6a50b263c43276858dbb30c40b",
+  "engine": "v3",
+  "engine_selection": "explicit --v3 for this fresh session only",
+  "model_override": false,
+  "observed_current_config": {
+    "mode": {
+      "current_value": "vibe",
+      "display_name": "Default"
+    },
+    "model": {
+      "current_value": "auto",
+      "display_name": "auto"
+    }
+  },
+  "memory_context_breakdown_last": {
+    "tokens": 0,
+    "percent": 0
+  },
+  "memory_operation_result": {
+    "engine": "v3 (explicit --v3, session-only)",
+    "defaultModel": "auto, unchanged",
+    "freshSession": true,
+    "memoryToolExposed": false,
+    "observed": "Session tool catalogue has no Memory tool. Only the generic 'knowledge' index/search tool is present; its schema was loaded (not invoked) and it is a different feature.",
+    "operation": "none",
+    "blocker": "Memory tool absent in this session; per instructions, stopped and did not substitute knowledge tool or steering recall.",
+    "scope": "none",
+    "storedMemory": false,
+    "title": null,
+    "id": null,
+    "globalSettingsChanged": false
+  },
+  "memory_limit": "Agent reports no Memory tool exposed; no retrieval/store or global configuration query performed. Zero Memory context tokens corroborates none loaded, not the underlying global setting.",
+  "reported_metering_arrays": [],
+  "exit_code": 0,
+  "compaction_original": {
+    "commit": "4321ba40156a8b49e35602dbb23ed562dc8d9d85",
+    "path": "docs/evidence/kiro-public-evidence/originals/duel-compaction.jsonl",
+    "sha256": "d4dc1d00d54c932bd84a0c94045beb926af8d6cabe6b6aba8342098ab77f171e",
+    "records": [
+      {
+        "phase": "before",
+        "revision": "861af78",
+        "id": "861af78-1794855463527",
+        "hasSummary": false
+      },
+      {
+        "phase": "after",
+        "revision": "861af78",
+        "id": "861af78-1794855476196",
+        "hasSummary": true
+      }
+    ]
+  },
+  "source_digests": {
+    "v3-stream.jsonl": "9d7c19695adc9d6978b4a98d72b0d823780a82ef80c9be0561936fda0a4fb1e4",
+    "v3-receipt.json": "123a17ffd8c375ff2c786540dbfe107c167348a163b6fb853dd6d04b8781e7a1",
+    "v3-memory-result.json": "e62dcc5d533c0db8a3bf3400be0b6dd7cb572b0f72f4d47157f078bdec6631ea"
+  },
+  "redaction_notes": "Only current model/mode selection retained from config events; all alternative/global agent choices, personal paths, session identifiers, raw messages and commands omitted. Original ignored run logs retained. No balances or credentials queried.",
+  "attribution": "Kiro performed the fresh-session capability review and note correction; Codex extracted this structured receipt from actual events."
+}

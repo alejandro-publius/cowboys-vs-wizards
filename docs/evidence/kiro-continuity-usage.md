@@ -61,3 +61,7 @@ The credit figure is session-turn usage as reported in the stream. It is not an 
 - Memory retrieval is untested: the V3 session exposed no Memory tool.
 - Internal serving model identity is not exposed.
 - Raw `.artifacts/kiro-continuity-usage/` logs stay ignored and local. The receipt lists their SHA-256 digests.
+
+## V3 stream corroboration captured by Codex
+
+The [sanitized V3 receipt](kiro-continuity-usage/v3-session-observation.json) preserves the actual current model/mode configuration, zero Memory context tokens, process result and recovered compaction phases. The current values were {"mode": {"current_value": "vibe", "display_name": "Default"}, "model": {"current_value": "auto", "display_name": "auto"}}. Zero Memory tokens does not reveal whether global Memory is off. Kiro authored the capability review; Codex extracted this receipt after the turn completed.
