@@ -4,13 +4,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { CARDS, SIDES, opponent, tributeCost } from "../../src/game/cards.js";
 import { createMatch } from "../../src/game/state.js";
 import { applyAction } from "../../src/game/actions.js";
 import { legalActions } from "../../src/game/legal.js";
 import { publicState } from "../../src/game/view.js";
-import { chooseAction } from "../../src/game/cpu.js";
+import { CPU_LEVELS, chooseAction, cpuFor } from "../../src/game/cpu.js";
 import { MAX_STEPS, makeBot, playMatch } from "../../scripts/play-match.mjs";
 import { simulate } from "../../scripts/simulate-matches.mjs";
 
@@ -18,7 +19,7 @@ const SEEDS = Array.from({ length: 50 }, (_, seed) => seed); // 0-49, so 14, 27 
 const cpuBots = { cowboy: chooseAction, wizard: chooseAction };
 
 // The only way these tests hand a position to the CPU.
-const decide = (state, side) => chooseAction(publicState(state, side));
+const decide = (state, side, choose = chooseAction) => choose(publicState(state, side));
 
 // createMatch(0) with `side` to act and the given hand and boards (fixture, trusted by the engine).
 function position(side, { hand, board, enemyBoard = [null, null, null] }) {
@@ -125,7 +126,8 @@ function hiddenTwin(state, side) {
   return twin;
 }
 
-test("hidden information does not change the CPU's decision", () => {
+for (const level of CPU_LEVELS) test(`hidden information does not change the ${level} CPU's decision`, () => {
+  const choose = cpuFor(level);
   let points = 0;
   let handsDiffer = 0;
   for (const seed of SEEDS) {
@@ -141,14 +143,48 @@ test("hidden information does not change the CPU's decision", () => {
       if (names(twin.sides[enemy].hand).join() !== names(state.sides[enemy].hand).join()) handsDiffer += 1;
       assert.equal(twin.sides[enemy].hand.length, state.sides[enemy].hand.length);
 
-      const action = decide(state, side);
-      assert.deepEqual(decide(twin, side), action, `seed ${seed} revision ${state.revision}`);
+      const action = decide(state, side, choose);
+      assert.deepEqual(decide(twin, side, choose), action, `seed ${seed} revision ${state.revision}`);
       points += 1;
       state = applyAction(state, action).state;
     }
   }
   // Most decision points have an opponent hand that differs by card name, not only by ID.
   assert.ok(points > 1000 && handsDiffer > points / 2, `${handsDiffer} of ${points} points differ by name`);
+});
+
+test("normal is the opponent from before the levels existed, move for move, on seeds 0-199", () => {
+  for (const name of ["normal", "cpu", undefined, null, "", "HARD", "bogus"]) assert.equal(cpuFor(name), chooseAction, String(name));
+  // SHA-256 of every action of CPU-against-CPU matches on seeds 0-199, recorded on main at c65f49e before cpu.js gained levels.
+  const hash = createHash("sha256");
+  for (let seed = 0; seed < 200; seed++) {
+    const { log } = playMatch(seed, { cowboy: cpuFor("normal"), wizard: cpuFor("normal") });
+    hash.update(JSON.stringify(log.map(({ action }) => action)));
+  }
+  assert.equal(hash.digest("hex"), "bda3d1f8bd9c07fed672430fc82d23691c462d3067164624ce581ce68b371a82");
+});
+
+test("easy and hard choose legal actions, finish within the step bound and replay identically", () => {
+  for (const level of ["easy", "hard"]) {
+    const choose = cpuFor(level);
+    for (const seed of SEEDS) {
+      const wizard = (view) => {
+        const before = structuredClone(view);
+        const action = choose(view);
+        assert.deepEqual(view, before, `${level} seed ${seed}: view changed`);
+        assert.ok(legalActions(view, "wizard").some((each) => JSON.stringify(each) === JSON.stringify(action)), `${level} seed ${seed}: not legal`);
+        return action;
+      };
+      const first = playMatch(seed, { cowboy: chooseAction, wizard });
+      assert.ok(first.state.result && first.log.length <= MAX_STEPS, `${level} seed ${seed}`);
+      assert.deepEqual(playMatch(seed, { cowboy: chooseAction, wizard: choose }).log, first.log, `${level} seed ${seed}: replay differs`);
+    }
+    assert.equal(choose(publicState(createMatch(0), opponent(createMatch(0).activeSide))), null, `${level}: not its phase`);
+  }
+  // Easy never casts; hard is not the normal opponent under another name.
+  const actions = (level) => SEEDS.flatMap((seed) => playMatch(seed, { cowboy: chooseAction, wizard: cpuFor(level) }).log.filter(({ side }) => side === "wizard").map(({ action }) => action));
+  assert.equal(actions("easy").filter(({ type }) => type === "spell").length, 0);
+  assert.notDeepEqual(actions("hard"), actions("normal"));
 });
 
 test("the runner hands bots their own public view and nothing else", () => {

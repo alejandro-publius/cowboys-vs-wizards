@@ -1,6 +1,7 @@
 // Runs one seeded match between two bots and prints a compact trace built from
 // the engine's events. Usage:
-//   node scripts/play-match.mjs --seed 14 [--cowboy cpu|random] [--wizard cpu|random]
+//   node scripts/play-match.mjs --seed 14 [--cowboy cpu|random|easy|normal|hard] [--wizard ...]
+// "cpu" and "normal" are the same opponent; "easy" and "hard" are the preview levels in src/game/cpu.js.
 // Also exports the match runner used by scripts/simulate-matches.mjs.
 import { parseArgs } from "node:util";
 import { CARDS, SIDES } from "../src/game/cards.js";
@@ -8,11 +9,11 @@ import { createMatch, MAX_ROUNDS, RULES_VERSION } from "../src/game/state.js";
 import { applyAction } from "../src/game/actions.js";
 import { legalActions } from "../src/game/legal.js";
 import { publicState } from "../src/game/view.js";
-import { chooseAction } from "../src/game/cpu.js";
+import { cpuFor } from "../src/game/cpu.js";
 
 // Nine rounds, two sides, at most summon + spell + end-phase each.
 export const MAX_STEPS = MAX_ROUNDS * SIDES.length * 3;
-export const BOT_KINDS = ["cpu", "random"];
+export const BOT_KINDS = ["cpu", "random", "easy", "normal", "hard"];
 
 function mulberry32(seed) {
   let a = seed >>> 0;
@@ -29,7 +30,7 @@ function mulberry32(seed) {
 // "random" picks uniformly among legal actions with its own generator derived
 // from the match seed and the side, so a run is reproducible.
 export function makeBot(kind, seed, side) {
-  if (kind === "cpu") return chooseAction;
+  if (kind !== "random") return cpuFor(kind);
   const random = mulberry32((seed * 2 + SIDES.indexOf(side)) ^ 0x5eed);
   return (view) => {
     const actions = legalActions(view, view.viewer);
@@ -109,7 +110,7 @@ export function wholeNumber(text) {
 }
 
 if (import.meta.main) {
-  const usage = "usage: node scripts/play-match.mjs --seed <integer >= 0> [--cowboy cpu|random] [--wizard cpu|random]";
+  const usage = `usage: node scripts/play-match.mjs --seed <integer >= 0> [--cowboy ${BOT_KINDS.join("|")}] [--wizard ${BOT_KINDS.join("|")}]`;
   let values;
   try {
     ({ values } = parseArgs({

@@ -112,7 +112,7 @@ function summaryLines(report) {
 }
 
 if (import.meta.main) {
-  const usage = `usage: node scripts/simulate-matches.mjs [--from <integer >= 0>] [--count <1-${MAX_COUNT}>] [--cowboy cpu|random] [--wizard cpu|random] [--out <file>]`;
+  const usage = `usage: node scripts/simulate-matches.mjs [--from <integer >= 0>] [--count <1-${MAX_COUNT}>] [--cowboy ${BOT_KINDS.join("|")}] [--wizard ${BOT_KINDS.join("|")}] [--out <file>]`;
   let values;
   try {
     ({ values } = parseArgs({
