@@ -53,6 +53,9 @@ if (args.includes("--out-dir") && (!outputPath || outputPath.startsWith("--"))) 
 // --showcase replays the seed 60 Mounted Billy route (docs/morning-handoff.md)
 // through real clicks, for recording. Its default output is ignored by git.
 const showcase = args.includes("--showcase");
+// --startup-measure is opt-in: it adds report.startup (browser navigation/paint/resource
+// timings and whether the canvas and accepting_input were observed). It does not change play.
+const startupMeasure = args.includes("--startup-measure");
 if (showcase && option("--seed") !== undefined && Number(option("--seed")) !== 60) throw new Error("--showcase always uses seed 60");
 // --pace default|fast is opt-in: "fast" adds ?pace=fast to the page URL, "default" adds nothing,
 // so unflagged runs load the same URL as before. --pace-measure records the monotonic
@@ -374,6 +377,23 @@ async function runOnce(seed, flags, tilePoints) {
     }
     s = await waitFor("match mode to accept input", (x) => !x.matchHidden && x.status === "accepting_input", 30000);
     report.loadMs = Date.now() - loadStarted;
+    if (startupMeasure) {
+      const browser = await evaluate(`(() => {
+        const r = (n) => typeof n === "number" ? Math.round(n * 10) / 10 : null;
+        const nav = performance.getEntriesByType("navigation")[0];
+        const resources = performance.getEntriesByType("resource");
+        return {
+          navigation: nav ? {...Object.fromEntries(["startTime", "domInteractive", "domContentLoadedEventEnd", "loadEventStart", "loadEventEnd", "responseEnd", "duration"].map((k) => [k, r(nav[k])])),
+            transferSize: nav.transferSize, encodedBodySize: nav.encodedBodySize, decodedBodySize: nav.decodedBodySize} : null,
+          paint: performance.getEntriesByType("paint").map((e) => ({name: e.name, startTime: r(e.startTime)})),
+          resourceCount: resources.length,
+          resourceTransferBytes: resources.length ? resources.reduce((a, e) => a + (e.transferSize || 0), 0) : null,
+          canvasObserved: Boolean(document.querySelector("#stage canvas"))
+        };
+      })()`);
+      report.startup = {...browser, loadMs: report.loadMs, acceptingInputObserved: s.status === "accepting_input",
+        note: "Baseline only. loadMs is Date.now() from Page.navigate to the first observed accepting_input. Not evidence that scenery is a bottleneck."};
+    }
     report.webgl = await evaluate(`(() => {
       const canvas = document.querySelector("#stage canvas"), gl = canvas && canvas.getContext("webgl2");
       if (!gl) return {error: "no WebGL 2 context on the stage canvas"};
