@@ -52,3 +52,34 @@ Each run also checked the pending-settings note, the status after Start and afte
 - The leak check in Chrome stops after the first Wizard trap springs; the Node test checks each Wizard trap ID separately.
 - The keyboard behavior of the new selects is native and was not driven by key events. Nobody has tested the page with a screen reader or with human keyboard users. The status line is `aria-live="polite"` and now longer, so it may be verbose.
 - `docs/kiro-build-log.md` is coordinator-owned and was not edited.
+
+## Independent coordinator verification (2026-11-17)
+
+The coordinator reviewed the bounded seven-file diff separately from
+Kiro's authored commit 03b17f7, verified exact base
+eca06e3df6a42f057fce5201b251e974a22f91d0 and reran:
+
+- node --test tests/experiments/trap-placeholder-scenarios.test.js:
+  **8/8 pass, 0 skipped**. Actual Chrome headless 157 localhost smoke
+  exercises BASE/normal seed0, T1/easy seed60 and T2/hard seed0;
+  0 runtime errors; seed-0..199 deck parity verified against #114.
+- node --test tests/experiments/trap-placeholder.test.js:
+  **7/7 pass**.
+- node --test tests/experiments/trap-placeholder-keyboard.test.js:
+  **1/1 pass, 0 skipped**, real Chrome keyboard input, seeds 0/60.
+- npm test: **313/313 Node tests**, 2/2 existing GLB structural
+  checks, which do NOT establish visual motion quality.
+- node scripts/check-links.mjs: **176 Markdown files, 638 links,
+  0 broken**.
+- git diff HEAD^ HEAD --check: pass.
+- Kiro CLI 3.4.0 verified at invocation; the completed V3 JSONL
+  emitted runFinished, selected claude-opus-5.5 and reported
+  **18.89213352769486 session credits** (tool metadata, not an
+  account invoice). The worker's opening note about missing usage
+  describes what Kiro itself recorded before this separate review.
+
+The coordinator authored this appended evidence, not the
+Kiro implementation. No production catalog/deck/3D/animation/audio,
+art, app entry point, CI or deployment changes; user approval for
+production trap identity/copies and human/screen-reader validation
+remain separate.
