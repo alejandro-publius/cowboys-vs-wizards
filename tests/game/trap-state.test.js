@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { DECKS, SIDES } from "../../src/game/cards.js";
 import { createMatch, RULES_VERSION, TRAP_RULES_VERSION } from "../../src/game/state.js";
+import { applyAction } from "../../src/game/actions.js";
 
 // Issue #89, trap T1: feature-flagged state only. The fixtures below are the
 // createMatch(0) and createMatch(60) output of main 1c803bc, before the flag
@@ -60,7 +61,7 @@ function withTrapState(base) {
     out.sides[side].trap = null;
     out.allowances[side].tactical = null;
   }
-  out.traps = TRAP_RULES_VERSION;
+  out.traps = { enabled: true, rulesVersion: "orb-duel-draft-1+traps" };
   return out;
 }
 
@@ -86,14 +87,15 @@ test("traps flag off adds no key at any level and keeps RULES_VERSION", () => {
   }
 });
 
-test("traps flag on adds only trap: null, tactical: null and the trap version, no trapSet", () => {
-  assert.equal(TRAP_RULES_VERSION, "trap-ax-proto-1");
+test("traps flag on adds only trap: null, tactical: null and traps.enabled, no trapSet", () => {
+  assert.equal(TRAP_RULES_VERSION, "orb-duel-draft-1+traps");
   assert.notEqual(TRAP_RULES_VERSION, RULES_VERSION);
   for (const seed of [0, 60]) {
     const state = createMatch(seed, { traps: true });
     assert.deepEqual(state, withTrapState(BASELINE[seed]));
     assert.deepEqual(Object.keys(state), [...TOP_KEYS, "traps"]);
-    assert.equal(state.traps, "trap-ax-proto-1");
+    assert.deepEqual(state.traps, { enabled: true, rulesVersion: "orb-duel-draft-1+traps" });
+    assert.equal(state.traps?.enabled, true);
     for (const side of SIDES) {
       assert.deepEqual(Object.keys(state.sides[side]), [...SIDE_KEYS, "trap"]);
       assert.equal(state.sides[side].trap, null);
@@ -144,6 +146,40 @@ test("createMatch does not mutate its options, the custom deck or the default de
   assert.deepEqual(options, frozenCopy);
   assert.equal(options.cowboyDeck, cowboyDeck);
   assert.deepEqual(DECKS, decksBefore);
+});
+
+// Two end-phase actions through the real applyAction: the second ends round 1,
+// runs an empty clash and starts round 2 with fresh allowances.
+function playEmptyRound(state) {
+  for (let i = 0; i < 2; i++) {
+    const result = applyAction(state, { type: "end-phase", side: state.activeSide, revision: state.revision });
+    assert.equal(result.ok, true, result.reason);
+    state = result.state;
+  }
+  return state;
+}
+
+test("round start keeps tactical: null on flagged matches and adds nothing off", () => {
+  for (const seed of [0, 60]) {
+    const on = playEmptyRound(createMatch(seed, { traps: true }));
+    assert.equal(on.round, 2);
+    assert.equal(on.result, null);
+    assert.deepEqual(on.traps, { enabled: true, rulesVersion: "orb-duel-draft-1+traps" });
+    for (const side of SIDES) {
+      assert.deepEqual(on.allowances[side], { summonUsed: false, castUsed: false, tactical: null });
+      assert.equal(on.sides[side].trap, null);
+    }
+
+    const off = playEmptyRound(createMatch(seed));
+    assert.equal(off.round, 2);
+    assert.deepEqual(Object.keys(off), TOP_KEYS);
+    for (const side of SIDES) {
+      assert.deepEqual(off.allowances[side], { summonUsed: false, castUsed: false });
+      assert.deepEqual(Object.keys(off.sides[side]), SIDE_KEYS);
+    }
+    // Same draws and turn order with the flag on: only the T1 keys differ.
+    assert.deepEqual(on, withTrapState(off));
+  }
 });
 
 test("traps must be a boolean when given", () => {
