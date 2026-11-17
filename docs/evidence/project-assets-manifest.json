@@ -1,5 +1,7 @@
 {
- "recordedAt": "2026-11-16T17:50-08:00 (America/Los_Angeles)",
+ "recordedAt": "2026-11-17T01:37:10.203691+00:00",
+ "auditStartedAt": "2026-11-17T01:33:44.398541+00:00",
+ "timestampSource": "Kiro runner receipt; Codex replaced an unsupported clock time during review.",
  "by": "Kiro CLI",
  "repoCommit": "599450a",
  "hubRoot": "/Users/alexvintera/Documents/Kiroween/Cowboys vs. Wizards (hub-relative paths; repo paths relative to repo root)",

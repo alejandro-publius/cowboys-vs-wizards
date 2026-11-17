@@ -73,3 +73,7 @@ Created new items (nothing overwritten):
 - `START HERE.txt` still describes `Play offline.html` and `Web build` as working; they are broken until `current-release` is built. It was not edited.
 - Only `Downloads` and `Desktop` top-level names were scanned, with a name filter. Other folders were not audited.
 - No builds, tests or game runs were done for this documentation change.
+
+## Coordinator review
+
+Codex checked the recorded Kiro completion (exit 0, 2026-11-17T01:37:10.203691+00:00) and corrected the manifest timestamp to that receipt. The original manifest clock value was unsupported. No model or Kiro audit result changed. JSON parsing passed after this metadata correction.
