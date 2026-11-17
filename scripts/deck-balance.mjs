@@ -165,7 +165,8 @@ if (import.meta.main) {
     process.exit(2);
   }
   const [decks, from, count] = [values.decks, values.from, values.count].map(wholeNumber);
-  if (decks === null || from === null || count === null || decks < 1 || count < 1) {
+  // The exclusive endpoint must stay exact so seed++ cannot stall at 2^53.
+  if (decks === null || from === null || count === null || decks < 1 || count < 1 || !Number.isSafeInteger(from + count)) {
     console.error(usage);
     process.exit(2);
   }
