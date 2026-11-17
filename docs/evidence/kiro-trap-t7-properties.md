@@ -4,8 +4,8 @@ Date: 2026-11-17 (America/Los_Angeles). Base: `main` at ac000c1, after T1 to T6
 (#91, #93, #96, #98, #101, #102). Branch `kiro/trap-properties-100`. Work done
 by Kiro in a Kiro CLI session; the coordinator reports CLI 3.4.0 and that
 `--list-models` advertised `claude-opus-5.5`, and the session context names
-`claude-opus-5.5` as the current model. This session emitted no credit
-figure, so none is recorded. Headless tests only: no `src/`, renderer, card,
+`claude-opus-5.5` as the current model. The final Kiro V3 session stream reported **16.022394954892203 credits**
+(session metadata, not a billing invoice). Headless tests only: no `src/`, renderer, card,
 deck, config, CI or package change.
 
 ## Scope
@@ -122,3 +122,26 @@ faction balance with a real trap card.
 The trap card name, art, copy count and deck migration (O1, O2) are still
 blocked on the owner. Browser replays were not re-run: this change is
 tests and docs only.
+
+
+## Independent coordinator verification and authorship
+
+After the Kiro-authored e1261e3 commit and the worker's runFinished
+stream event, the coordinator inspected the new test file and evidence;
+the code checks conservation **by multiplicity**, so legitimate repeated
+card types are not incorrectly rejected.
+
+Independent commands rerun against base ac000c1:
+
+- node --test tests/game/trap-properties.test.js: **9/9 pass**.
+- npm test: **295/295 Node tests pass**, plus 2/2 GLB structural
+  checks (not animation quality).
+- node scripts/check-links.mjs: 167 Markdown files, 605 links,
+  **0 broken**.
+- git diff HEAD^ HEAD --check: **pass**.
+- Kiro V3 stream: runFinished, selected model claude-opus-5.5
+  and 16.022394954892203 reported session credits.
+- Remote main base: ac000c1821adf4d0ebc09329637892083d305e47.
+
+This coordinator evidence update is separate from Kiro's authored tests.
+No headless finding is a human balance or graphics/playability result.
