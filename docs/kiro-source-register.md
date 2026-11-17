@@ -1,6 +1,6 @@
 # Kiro source recovery and task register
 
-Research checkpoint: November 16, 2026 (America/Los_Angeles). Prepared by Codex from the visible project history, two currently read archived project files, the existing project research register, and official-source retrieval. This is a source/task map, not evidence that a Kiro task ran.
+Research checkpoint: November 16, 2026 (America/Los_Angeles). Prepared by Codex from the visible project history, two currently read archived project files, the existing project research register, and official-source retrieval. This is a source/task map, not evidence that a Kiro task ran. [The active task ledger](kiro-closeout-queue.md) records current execution results; the source-checkpoint descriptions below retain the discovery state.
 
 ## Scope and provenance
 
@@ -16,15 +16,15 @@ Research checkpoint: November 16, 2026 (America/Los_Angeles). Prepared by Codex 
 
 | Resource / exact URL | Provenance | Practical task | State at this checkpoint |
 | --- | --- | --- | --- |
-| [How we built a software factory with Kiro Crew](https://kiro.dev/blog/software-factory-1000-prs/) | Accepted historical research; original paste names title, URL resolved today | Keep a durable task ledger with owner, branch, acceptance checks, dependency, actual result and next handoff; use separate worktrees and evidence | Partly applied; root is consolidating the queue |
-| [Introducing Kiro Crew](https://kiro.dev/blog/introducing-kiro-crew/) | Accepted historical research; title recovered, URL resolved today | Finish the existing Night Watch app and its documented/reproducible handoffs | Prototype/runs exist; submission packaging remains |
+| [How we built a software factory with Kiro Crew](https://kiro.dev/blog/software-factory-1000-prs/) | Accepted historical research; original paste names title, URL resolved today | Keep a durable task ledger with owner, branch, acceptance checks, dependency, actual result and next handoff; use separate worktrees and evidence | Applied in the active 24-item queue, separate worktrees and review receipts |
+| [Introducing Kiro Crew](https://kiro.dev/blog/introducing-kiro-crew/) | Accepted historical research; title recovered, URL resolved today | Finish the existing Night Watch app and its documented/reproducible handoffs | Standalone package published; export regression fixed; installed app-policy blocker documented |
 | [Introducing bots in Kiro Crew](https://kiro.dev/blog/crew-bots/) | Related official follow-up to accepted Crew research; original URL provenance not recovered | A narrowly scoped review/balance Bot with durable notes and named ownership; export only if useful to existing Night Watch | Optional; no new Bot run claimed |
 | [Keeping a software factory stable](https://kiro.dev/blog/software-factory-stability/) | Newly recovered official follow-up, not confirmed user link | Use one complete review pass; block concrete bugs, avoid style churn; readiness means required checks actually ran, then test final deployed flows | Apply to current integration; no need to recreate enterprise infrastructure |
-| [Introducing memory in Kiro IDE and CLI](https://kiro.dev/blog/memory-in-ide-cli/) | Memory explicitly in accepted historical research; exact URL resolved today | Demonstrate a repository-scoped correction carried into a fresh session, retaining mandatory rules in tracked steering | Optional demonstration; no project receipt found |
+| [Introducing memory in Kiro IDE and CLI](https://kiro.dev/blog/memory-in-ide-cli/) | Memory explicitly in accepted historical research; exact URL resolved today | Demonstrate a repository-scoped correction carried into a fresh session, retaining mandatory rules in tracked steering | Fresh V3 check completed: no Memory tool exposed; no store/retrieval claimed |
 | [Local sandboxing](https://kiro.dev/blog/local-sandboxing/) | Sandbox explicitly in accepted historical research; exact URL resolved today | Preserve scoped permissions for unattended tasks; label earlier sandbox trial as a trial | Historical scratch trial only; do not widen global access for bragging |
 | [Close the laptop, keep the agent: cloud sessions](https://kiro.dev/blog/cloud-sessions/) | New official follow-up; not confirmed user-shared | A bounded background task that can resume across surfaces, only if existing account/tool setup supports it | Optional; no cloud session execution claimed |
 | [Technical debt with autonomous mode in Kiro Web](https://kiro.dev/blog/tackling-technical-debt-at-scale-with-autonomous-mode/) | New official follow-up; not confirmed user-shared | Use the existing repository-routing/cleanup work as a narrow task, with tests and review, if Web is useful | Optional; do not duplicate already completed repo organization |
-| [Powers support Agent Plugins](https://kiro.dev/blog/powers-supports-plugins/) | New official follow-up to accepted Registry/Power research | Reproduce Orb Duel Review installation with installed-copy digest and actual tool output | Open; actual Kiro reproduction worker assigned by root |
+| [Powers support Agent Plugins](https://kiro.dev/blog/powers-supports-plugins/) | New official follow-up to accepted Registry/Power research | Reproduce Orb Duel Review installation with installed-copy digest and actual tool output | Actual installed-procedure/workspace-MCP reproduction passed matched inputs and rejected stale copies; installed-version limitation recorded |
 | [Kiro Crew source](https://github.com/kirodotdev/KiroCrew) | Official source linked by software-factory article | Reference existing app SDK/architecture when packaging Night Watch; inspect targeted components only | Reference pool; installing/copying entire repository is not a task |
 
 ## Direct user links and existing research
@@ -55,10 +55,10 @@ Research checkpoint: November 16, 2026 (America/Los_Angeles). Prepared by Codex 
 | Issue / exact retained URL | Task application | Evidence state |
 | --- | --- | --- |
 | [October 4](https://builder.aws.com/content/3KF8lMm5mZQmBdkQFKNAFLblr0K/kiro-weekly-reading-list-4th-october-2026) | Real WebGL iteration, build hash, inputs and impact frames | Applied historically; final build needs fresh review |
-| [October 11](https://builder.aws.com/content/3KaOedJXz7X3bKtOp40VoesUTbj/kiro-weekly-reading-list-th-october) | Focused spec and agent roles | Applied; new deck acceptance pending |
-| [October 18](https://builder.aws.com/content/3KsUwW0THpSz9UcaPkopKifzaju/kiro-weekly-reading-list-18th-october-2026) | Scoped MCP and independent reviewer | Applied; installation reproduction pending |
+| [October 11](https://builder.aws.com/content/3KaOedJXz7X3bKtOp40VoesUTbj/kiro-weekly-reading-list-th-october) | Focused spec and agent roles | Applied; new deck numerical/interaction checks pass; human visual acceptance separate |
+| [October 18](https://builder.aws.com/content/3KsUwW0THpSz9UcaPkopKifzaju/kiro-weekly-reading-list-18th-october-2026) | Scoped MCP and independent reviewer | Applied; installed procedure/workspace MCP reproduction completed with version limitations |
 | [October 25](https://builder.aws.com/content/3LCkjfJIloaNwsVPRBygBll5h8C/kiro-weekly-reading-list-25th-october-2026) | Fresh session reviewing a frozen build | Applied historically; final candidate review pending |
-| [November 1](https://builder.aws.com/content/3LWfIgHmjUGOCCYX7sZXC0DJSn6/kiro-weekly-reading-list-1st-november-2026) | Real hook event, timing bugs, reviewed-vs-pushed artifact identity | Hook/build checks exist; raw receipt recovery remains |
+| [November 1](https://builder.aws.com/content/3LWfIgHmjUGOCCYX7sZXC0DJSn6/kiro-weekly-reading-list-1st-november-2026) | Real hook event, timing bugs, reviewed-vs-pushed artifact identity | Hook/build checks exist; 12 original receipts recovered; exact residual missing files documented |
 | [November 8](https://builder.aws.com/content/3LpdwaZwh9sTkbCk8cAXBezlKKR/kiro-weekly-reading-list-8th-november-2026) | Separate browser reviewer after tests; distinguish steering and memory | Historical Crew finding exists; updated menu/deck review pending |
 | [November 15 preview](https://builder.aws.com/?trk=61b8af3d-aa07-438d-b99e-55cdb524dc02) | Actual usage instrumentation and controls enforced by tools | Full article URL/body still unrecovered after both search engines and Builder Center homepage; preview only |
 
@@ -85,7 +85,7 @@ These are research references rather than project completion receipts.
 3. Reconcile the current Devpost draft after the new deck builder and sourced Sheriff release; preserve past receipts as dated historical measurements.
 4. Keep the original untested Summoning Circle proposal's lore checker / up-to-three review rounds separate from the later executed four-stage workflow. Do not claim the original richer proposal ran.
 5. Confirm whether the original Night Watch proposal's real nightly schedule and automatic GitHub issue creation were ever enabled. Existing evidence says an isolated schedule profile and issue drafts; those are narrower than a continuously active production bot.
-6. Maintain explicit unresolved-source entries for the user YouTube link and full November 15 issue. No additional user-original URL was reliably recovered from other chats in this child session.
+6. Maintain explicit unresolved-source entries for the user YouTube link and full November 15 issue. No additional user-original URL was reliably recovered from other chats in this child session. A final parent Personal Context lookup also returned unavailable; this is not an exhaustive all-chat claim.
 
 ## Read-only provenance used for this recovery
 
