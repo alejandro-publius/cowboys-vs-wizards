@@ -94,3 +94,14 @@ These are research references rather than project completion receipts.
 - Official Kiro blog index and named articles retrieved November 16.
 - Existing committed `docs/kiroween-research-and-recording.md` and `docs/kiro-brag-sheet.md` provided by parent research.
 - No Kiro run, code change, installation, publishing, account configuration, or global permission change was performed by this research task.
+
+## Resource recovery addendum — November 16, 2026, 9 p.m. Pacific
+
+A new cross-chat lookup recovered two titles associated with the November 15 reading list. Direct web searches now resolve the following author-published URLs; this does not recover the full weekly issue or prove its complete contents.
+
+- [How To Review Pull Requests with Kiro CLI and GitHub Actions](https://dev.to/erikch/how-to-review-pull-requests-with-kiro-cli-and-github-actions-1b9b) — Erik Hanchett's article, published November 11. Candidate for a bounded independent PR review; no GitHub Actions installation or automatic comment posting performed.
+- [Measuring Kiro Adoption: Dashboards and Queries That Show Whether Your Team Is Using It Well](https://blog.davidmernst.com/measuring-kiro-adoption-dashboards-and-queries-that-show-whether-your-team-is-using-it-well-79ce22a2d6cc) — recovered author article URL/title; no adoption dashboard implemented and no account-wide usage claim.
+
+The official Devpost resources page also links directly to [Kiro Documentation](https://kiro.dev/docs/) and [Kiro Guides](https://kiro.dev/docs/guides/). These are official navigation references, not newly completed project features.
+
+The full November 15 issue URL/body remains unrecovered. The exact user YouTube link still returned a throttled fetch and no reliable matching metadata. Earlier source-checkpoint statuses above are historical: Night Watch is now enabled and its real Crew schedule was triggered successfully; see [activation evidence](evidence/night-watch-activation.md) and the active task ledger.
