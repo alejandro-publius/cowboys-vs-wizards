@@ -40,3 +40,23 @@ No `CARDS`, deck, seed, renderer, CSS, asset, UI, CI, package or entry-point cha
 - The fixture is synthetic and says nothing about balance. Trap card content, deck migration and UI texts remain blocked on the user (O1-O3, contract section 10).
 - `tests/match/trap-controller.test.js` still carries the #104 comment that `options()` is left out of its snapshots; that file is outside this task.
 - `controller.options()` still throws when a hand card is missing from its catalog (now with the card ID); it does not set an error status.
+
+## Independent coordinator verification (November 17, 2026)
+
+After Kiro authored commit 3d01b2f and the worker process exited,
+the coordinator reviewed the two source changes and new tests and reran:
+
+- Focused 4 files (trap-selection, selection, controller, trap-controller): **29/29 Node tests pass**.
+- Full npm test: **306/306 Node tests pass**; 2/2 existing GLB *structure-only* checks pass (not evidence of motion quality).
+- Documentation: **169 Markdown files, 611 relative links and images, 0 broken**.
+- git diff HEAD^ HEAD --check: **pass**.
+- Reviewed base: dfade1ace3061cc29fa4015c35e971b5c7f6f719.
+
+The Kiro V3 launch requested the claude-opus-5.5 model and the installed
+CLI reported version 3.4.0. Session-selected model and credit usage
+metadata were not available in the saved worker evidence: do not infer
+them from the launch argument. No production trap card, deck migration,
+renderer/UI asset, deployment or human playtest was performed.
+
+Authorship is distinct: Kiro authored the code and tests, and the
+coordinator independently checked and added this evidence paragraph.
