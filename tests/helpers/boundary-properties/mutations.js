@@ -110,4 +110,3 @@ export function invalidActionCases(state, rng) {
   }
   return cases;
 }
-
