@@ -131,11 +131,20 @@ export function chooseAction(view, { cards = CARDS } = {}) {
 //   phase. And it weighs the enemy Base slightly above its own (5 against 4),
 //   where normal does the reverse. The weights were chosen on seeds 0-999;
 //   docs/evidence/cpu-difficulty.md reports other seeds.
+//
+// Every level takes the same optional `{ cards }` as chooseAction (issue
+// #112); only tests pass it, with fixture trap cards. On a trap match:
+// easy: chooseAction's choice with `cards`, so it sets a held trap exactly
+//   where normal would; a spell is still replaced by end-phase.
+// hard: its scoring never sees set-trap. When its pick is not a summon (a
+//   spell or end-phase) and normal's trap-set step applies, it sets that trap
+//   instead. A summon is kept; the next choice of the phase may then set.
+// Without a trap in hand, or with traps off, every level is unchanged.
 export const CPU_LEVELS = Object.freeze(["easy", "normal", "hard"]);
 
-function chooseEasy(view) {
-  const action = chooseAction(view);
-  return action?.type === "spell" ? legalActions(view, view.viewer).at(-1) : action;
+function chooseEasy(view, { cards = CARDS } = {}) {
+  const action = chooseAction(view, { cards });
+  return action?.type === "spell" ? legalActions(view, view.viewer, { cards }).at(-1) : action;
 }
 
 const HARD_OWN_ORB = 4;
@@ -192,28 +201,29 @@ function hardScore(view) {
   return total;
 }
 
-function chooseHard(view) {
-  const actions = legalActions(view, view.viewer);
+function chooseHard(view, { cards = CARDS } = {}) {
+  const actions = legalActions(view, view.viewer, { cards });
   if (actions.length === 0) return null;
   let pick = actions.at(-1);
   let top = hardScore(view);
   for (const action of actions) {
-    if (action.type === "end-phase") continue;
+    if (action.type === "end-phase" || action.type === "set-trap") continue;
     const next = viewAfter(view, action);
     let value = hardScore(next);
     if (action.type === "spell") value -= HARD_SPELL_COST;
     else {
-      for (const follow of legalActions(next, next.viewer)) {
+      for (const follow of legalActions(next, next.viewer, { cards })) {
         if (follow.type === "spell") value = Math.max(value, hardScore(viewAfter(next, follow)) - HARD_SPELL_COST);
       }
     }
     if (value > top) [pick, top] = [action, value];
   }
-  return pick;
+  return pick.type === "summon" ? pick : trapSet(view, actions, cards) ?? pick;
 }
 
 // The chooser for a level name. Anything that is not "easy" or "hard",
-// including a missing name, is the unchanged normal opponent.
+// including a missing name, is the unchanged normal opponent. Each chooser
+// is called as (view, { cards }?).
 export function cpuFor(level) {
   return level === "easy" ? chooseEasy : level === "hard" ? chooseHard : chooseAction;
 }
