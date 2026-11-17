@@ -25,6 +25,8 @@
 
 The table is a locator, not an instruction to read **every** listed file. The bracketed path group is shorthand, not a literal filesystem path.
 
+For current research-derived ownership and next handoffs, read [the active closeout queue](kiro-closeout-queue.md). Deep links live in [the source register](kiro-source-register.md); do not load it for unrelated code tasks.
+
 ## Context and provenance hygiene
 
 - Never paste the whole `docs/kiro-build-log.md`, archived PRs, full reference guides, huge screenshot trees or GLB files into context. Search for the relevant heading/identifier.

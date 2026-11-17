@@ -1,5 +1,5 @@
 import {ACHIEVEMENTS} from '../profile/player-profile.js';
-import {COWBOY_CATALOG, DEFAULT_COUNTS, validateDeck} from '../game/deck-builder.js';
+import {renderDeckWorkbench} from './deck-workbench.js';
 
 const $ = (root, selector) => root.querySelector(selector);
 function element(tag, text, attrs={}) {
@@ -16,9 +16,9 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings}) {
   const say=text=>{notice.textContent=text;notice.hidden=!text;};
   const savedMessage=text=>say(profile.isPersistent()?text:'Saved for this session only. Browser storage is unavailable.');
   const button=(text,fn,attrs={})=>{const b=element('button',text,{type:'button',...attrs});b.addEventListener('click',fn);return b;};
-  function home(){page.hidden=true;scene.hidden=false;say('');returnFocus.focus();}
+  function home(){page.hidden=true;page.classList.remove('deck-page');scene.hidden=false;say('');returnFocus.focus();}
   function open(title,opener){
-    returnFocus=opener;scene.hidden=true;page.hidden=false;heading.textContent=title;
+    page.classList.remove('deck-page');returnFocus=opener;scene.hidden=true;page.hidden=false;heading.textContent=title;
     content.replaceChildren();say('');$(root,'#menu-back').focus();
   }
   function settings(opener){
@@ -69,36 +69,8 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings}) {
   }
   function deck(opener){
     open('Build Deck',opener);
-    const stored=profile.get().deck;
-    let counts={...(stored&&validateDeck(stored).ok?stored:DEFAULT_COUNTS)};
-    content.append(element('p','Your Cowboy deck · 12 cards · up to 6 copies of each card · at least 1 Sheriff', {class:'menu-intro'}));
-    const grid=element('div',undefined,{class:'deck-grid'}),total=element('p','',{class:'deck-total',role:'status'});
-    const fields=[];
-    for(const card of COWBOY_CATALOG){
-      const item=element('article',undefined,{class:'deck-choice'});
-      const art=element('div',undefined,{class:'deck-art','data-card-type':card.type,role:'img','aria-label':card.name+' illustrated card'});
-      const details=card.kind==='spell'?'Spell · removes 1 enemy orb':`${card.attack} attack · ${card.health} life · ${card.stars<5?'free summon':card.stars<7?'1 tribute':'2 tributes'}`;
-      const quantity=element('output',String(counts[card.type]??0),{'aria-label':card.name+' copies'});
-      const minus=button('−',()=>change(-1),{'aria-label':'Remove '+card.name});
-      const plus=button('+',()=>change(1),{'aria-label':'Add '+card.name});
-      function change(delta){counts[card.type]=(counts[card.type]??0)+delta;refresh();}
-      const controls=element('div',undefined,{class:'deck-quantity'});controls.append(minus,quantity,plus);
-      item.append(art,element('h3',card.name),element('p',details),controls);grid.append(item);fields.push({card,quantity,minus,plus});
-    }
-    const save=button('Save deck',()=>{
-      const validation=validateDeck(counts);if(!validation.ok){say(validation.error);return;}
-      profile.saveDeck(counts);savedMessage('Deck saved. Your next match will use these cards.');
-    },{id:'save-deck'});
-    const reset=button('Restore starter deck',()=>{counts={...DEFAULT_COUNTS};refresh();say('Starter deck restored. Choose Save deck to keep it.');});
-    const actions=element('div',undefined,{class:'menu-actions'});actions.append(save,reset);
-    content.append(grid,total,actions);
-    function refresh(){
-      const validation=validateDeck(counts);
-      total.textContent=`${validation.total} / 12 cards${validation.ok?' · Ready to save':' · '+validation.error}`;
-      save.disabled=!validation.ok;
-      for(const {card,quantity,minus,plus} of fields){const n=counts[card.type]??0;quantity.textContent=n;minus.disabled=n===0;plus.disabled=n>=6||validation.total>=12;}
-    }
-    refresh();
+    page.classList.add('deck-page');
+    renderDeckWorkbench({content,profile,say,savedMessage,button});
   }
   const actions={settings,achievements,how,deck};
   for(const item of root.querySelectorAll('[data-menu-page]'))item.addEventListener('click',()=>actions[item.dataset.menuPage](item));

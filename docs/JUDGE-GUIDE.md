@@ -10,6 +10,12 @@
 4. **Inspect the required Kiro work:** [Orb Duel Spec](../.kiro/specs/orb-duel/requirements.md), [agent](../.kiro/agents/duel-presenter.json), [steering](../.kiro/steering/), [hooks](../.kiro/hooks/), [replay Workflow](../.kiro/workflows/orb-duel-replay.workflow.json), and [Power + MCP](../.kiro/powers/orb-duel-review/). [Proof of actual runs](kiro-brag-sheet.md).
 5. **Check verifiability:** [Release preflight](evidence/kiro-submission-preflight.md) links browser receipts, hashes, a property-based regression and the deployed build. The live release and historical receipts should be checked against the current commit when reviewing newer changes.
 
+## Menu, decks and current evidence
+
+The illustrated main menu opens instructions, saved settings, achievements and the deck workbench. Build a twelve-card Cowboy deck with large illustrated choices, select a card to read its rules, adjust counts and save. [Readability checks](evidence/kiro-readable-deck-workbench.md) include desktop and phone-sized Chrome views; actual phone/Safari review is still pending.
+
+[Watch the real seed60 gameplay clip](evidence/gameplay-demo/seed60-599450a.mp4) (43.67 seconds, recorded at release `599450a`). [Current closeout ledger](kiro-closeout-queue.md) distinguishes newly checked work, historical receipts and remaining blockers. [Night Watch source](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch) is a separate app; its backend checks and live Crew status are documented separately.
+
 ## What is distinctive
 
 The haunted-Western visuals are attached to deterministic game rules. Cards become troops on a 3D board; legal tributes, positional spells, simultaneous damage and timed orb loss make the scene a playable duel rather than a prerecorded cinematic. Seeded routes reproduce the same meaningful showdown.

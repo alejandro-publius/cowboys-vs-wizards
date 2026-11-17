@@ -1,0 +1,112 @@
+{
+  "date": "11/16/2026, 12:53:58 PM PST",
+  "commit": "c24ff07",
+  "uncommittedChanges": true,
+  "machine": {
+    "model": "MacBookPro17,1",
+    "cpu": "Apple M1",
+    "memoryGB": 16,
+    "macOS": "15.1.1",
+    "arch": "arm64",
+    "node": "v26.0.0"
+  },
+  "page": {
+    "file": "dist/cowboys-vs-wizards-board-duel.html",
+    "bytes": 56423498,
+    "sha256": "b4e913df65d68a83d6c43541e764a0678ae5c71277aaf79530228692e84f3129"
+  },
+  "viewport": [
+    1440,
+    900
+  ],
+  "seed": 60,
+  "openingHand": [
+    "Sheriff",
+    "Sheriff",
+    "Mounted Billy",
+    "Deadeye"
+  ],
+  "earlierAttempts": [],
+  "flags": [],
+  "steps": [
+    {
+      "id": 1,
+      "title": "Match mode loads with no fallback video; seed shown",
+      "state": "observed",
+      "detail": {
+        "status": "accepting_input",
+        "fallbackHidden": true,
+        "demoControlsHidden": true,
+        "demoToolsHidden": true,
+        "modeButton": "Attack demo",
+        "seedShown": "60 (pinned)",
+        "details": "Round 1 · Cowboy phase (you)",
+        "prompt": "Choose a glowing card, or end your phase."
+      }
+    },
+    {
+      "id": 2,
+      "title": "Mounted Billy enters lane 3 with five orbs after two tributes",
+      "state": "observed",
+      "detail": {
+        "tributes": [
+          1,
+          2
+        ],
+        "lanes": "wizard0:Skeleton 3/3 | cowboy0:Empty | wizard1:Skeleton 1/3 | cowboy1:Empty | wizard2:Empty | cowboy2:Mounted Billy 5/5"
+      }
+    },
+    {
+      "id": 3,
+      "title": "Singularity moves him to lane 2, facing the five-orb Dragon",
+      "state": "observed",
+      "detail": {
+        "singularity": "wizard0:Empty | cowboy0:Empty | wizard1:Dragon 5/5 | cowboy1:Mounted Billy 3/5 | wizard2:Empty | cowboy2:Empty",
+        "faceoff": "wizard0:Empty | cowboy0:Sheriff 3/3 | wizard1:Dragon 5/5 | cowboy1:Mounted Billy 3/5 | wizard2:Empty | cowboy2:Empty"
+      }
+    },
+    {
+      "id": 4,
+      "title": "After the clash the Dragon has two orbs and the rider is gone",
+      "state": "observed",
+      "detail": {
+        "afterClash": "wizard0:Empty | cowboy0:Sheriff 3/3 | wizard1:Dragon 2/5 | cowboy1:Empty | wizard2:Empty | cowboy2:Empty"
+      }
+    }
+  ],
+  "consoleErrors": [],
+  "warnings": {
+    "count": 0,
+    "first": []
+  },
+  "screenshots": [
+    "<worktree:kiro-showdown-workflow>/.artifacts/kiro/showcase/seed-60-mounted-billy.png",
+    "<worktree:kiro-showdown-workflow>/.artifacts/kiro/showcase/seed-60-faceoff.png",
+    "<worktree:kiro-showdown-workflow>/.artifacts/kiro/showcase/seed-60-result.png"
+  ],
+  "chrome": "Chrome/157.0.8103.52",
+  "url": "file://<worktree:kiro-showdown-workflow>/dist/cowboys-vs-wizards-board-duel.html?seed=60",
+  "loadMs": 3024,
+  "webgl": {
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "vendor": "Google Inc. (Apple)",
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1, Unspecified Version)",
+    "canvas": [
+      1440,
+      900
+    ]
+  },
+  "framesPerSecond": 30.3,
+  "showcase": {
+    "summon": {
+      "tributes": [
+        1,
+        2
+      ],
+      "lanes": "wizard0:Skeleton 3/3 | cowboy0:Empty | wizard1:Skeleton 1/3 | cowboy1:Empty | wizard2:Empty | cowboy2:Mounted Billy 5/5"
+    },
+    "singularity": "wizard0:Empty | cowboy0:Empty | wizard1:Dragon 5/5 | cowboy1:Mounted Billy 3/5 | wizard2:Empty | cowboy2:Empty",
+    "faceoff": "wizard0:Empty | cowboy0:Sheriff 3/3 | wizard1:Dragon 5/5 | cowboy1:Mounted Billy 3/5 | wizard2:Empty | cowboy2:Empty",
+    "afterClash": "wizard0:Empty | cowboy0:Sheriff 3/3 | wizard1:Dragon 2/5 | cowboy1:Empty | wizard2:Empty | cowboy2:Empty"
+  }
+}

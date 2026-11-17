@@ -1,0 +1,55 @@
+{
+  "observed_utc": "2026-11-17T02:02:50.110115+00:00",
+  "operator": "Codex",
+  "runtime_commit": "e9aeb063abb947c7fc9447595d9143bd04d71ac0",
+  "source_html_sha256": "863ab8bd525cb2e78b0e73b529406b73c6a2381f982f2854e71340df79718e02",
+  "html_bytes": 2942751,
+  "browser": "Chrome/157.0.8103.52",
+  "machine": {
+    "model": "MacBookPro17,1",
+    "cpu": "Apple M1",
+    "memoryGB": 16,
+    "macOS": "15.1.1",
+    "arch": "arm64",
+    "node": "v26.0.0"
+  },
+  "viewport": [
+    1440,
+    900
+  ],
+  "seed": 0,
+  "transport": "local HTTP, no network throttling",
+  "cache": "Network.setCacheDisabled true; fresh isolated Chrome profile per sample",
+  "samples": [
+    {
+      "sample": 1,
+      "navigation_to_input_ms": 750,
+      "navigation_to_observed_ready_frame_ms": 799.7,
+      "two_second_raf_hz": 60.7,
+      "console_errors": 0,
+      "exit_code": 0
+    },
+    {
+      "sample": 2,
+      "navigation_to_input_ms": 626,
+      "navigation_to_observed_ready_frame_ms": 679.8,
+      "two_second_raf_hz": 60.9,
+      "console_errors": 0,
+      "exit_code": 0
+    },
+    {
+      "sample": 3,
+      "navigation_to_input_ms": 689,
+      "navigation_to_observed_ready_frame_ms": 736.5,
+      "two_second_raf_hz": 60.6,
+      "console_errors": 0,
+      "exit_code": 0
+    }
+  ],
+  "median_navigation_to_input_ms": 689,
+  "median_navigation_to_observed_ready_frame_ms": 736.5,
+  "method": "Reused existing browser-match-check startup checks; polling accepting_input at60ms intervals, then next requestAnimationFrame. Stopped after boot, no full match replay.",
+  "historical_comparison": "Not like-for-like with historical1109-to686ms; old original benchmark script unavailable and runtime/art changed.",
+  "raw_receipts": ".artifacts/performance/sample-{1,2,3}/browser-run.json (untracked)",
+  "harness_sha256": "9ade91d12cda8c2f124fbe1a6772cb57d63b2bfde2b3c44c559c64593238b508"
+}

@@ -1,0 +1,467 @@
+{
+ "recordedAt": "2026-11-17T01:37:10.203691+00:00",
+ "auditStartedAt": "2026-11-17T01:33:44.398541+00:00",
+ "timestampSource": "Kiro runner receipt; Codex replaced an unsupported clock time during review.",
+ "by": "Kiro CLI",
+ "repoCommit": "599450a",
+ "hubRoot": "/Users/alexvintera/Documents/Kiroween/Cowboys vs. Wizards (hub-relative paths; repo paths relative to repo root)",
+ "note": "Hashes computed this session. Does not prove licenses. Skin/joint/clip counts read from GLB JSON chunk.",
+ "files": [
+  {
+   "path": "3D Models/Original GLBs/card back 3d model.glb",
+   "type": "glb",
+   "bytes": 70631380,
+   "sha256": "2fab5ebcb79a8a2a6dfcaec044453e122b5c4b6e010fa182325d00b83928d9cb",
+   "category": "original",
+   "provenance": "User's Tripo export (per hub File Moves.tsv and repo docs); license terms not recorded in repo",
+   "character": "unassigned/not used as a character in runtime",
+   "runtimeDerivative": null,
+   "skins": 0,
+   "animationClips": []
+  },
+  {
+   "path": "3D Models/Original GLBs/cowboy 3d model.glb",
+   "type": "glb",
+   "bytes": 63566204,
+   "sha256": "1614ef8eb4c4ea00279ca60a8c69398bd3d2aa03b0e7050954b74b3a9bebc08d",
+   "category": "original",
+   "provenance": "User's Tripo export (per hub File Moves.tsv and repo docs); license terms not recorded in repo",
+   "character": "Billy (pairing inferred from docs/evidence/asset-rig-inventory.json)",
+   "runtimeDerivative": "runtime billy.glb",
+   "skins": 0,
+   "animationClips": []
+  },
+  {
+   "path": "3D Models/Original GLBs/cowboy action figure 3d model.glb",
+   "type": "glb",
+   "bytes": 65832168,
+   "sha256": "50eb521855ac40a9be6bee99076eb4c5068e83f483b2ce7f86fc8af4aa2da6e4",
+   "category": "original",
+   "provenance": "User's Tripo export (per hub File Moves.tsv and repo docs); license terms not recorded in repo",
+   "character": "Sheriff",
+   "runtimeDerivative": "runtime sheriff.glb; stated in docs/evidence/sheriff-asset.md",
+   "skins": 0,
+   "animationClips": []
+  },
+  {
+   "path": "3D Models/Original GLBs/cowboy riding horse 3d model.glb",
+   "type": "glb",
+   "bytes": 68739708,
+   "sha256": "22a69b91eadc58881ef0bf09d8b37aa890bb458a8a9137e966d25dda00502acf",
+   "category": "original",
+   "provenance": "User's Tripo export (per hub File Moves.tsv and repo docs); license terms not recorded in repo",
+   "character": "Mounted Billy",
+   "runtimeDerivative": "runtime mounted-billy.glb",
+   "skins": 0,
+   "animationClips": []
+  },
+  {
+   "path": "3D Models/Original GLBs/decorative stone plaque 3d model.glb",
+   "type": "glb",
+   "bytes": 69943628,
+   "sha256": "2f003c6532dc32b2f8d50139da38e14433e3cbff61f37e6c0622d7a37fd79357",
+   "category": "original",
+   "provenance": "User's Tripo export (per hub File Moves.tsv and repo docs); license terms not recorded in repo",
+   "character": "unassigned/not used as a character in runtime",
+   "runtimeDerivative": null,
+   "skins": 0,
+   "animationClips": []
+  },
+  {
+   "path": "3D Models/Original GLBs/desert stone path 3d model.glb",
+   "type": "glb",
+   "bytes": 68058644,
+   "sha256": "3d88859d96253d22c6cdbb9221d45919800da33eafd3736dccbfa3abed2c0adf",
+   "category": "original",
+   "provenance": "User's Tripo export (per hub File Moves.tsv and repo docs); license terms not recorded in repo",
+   "character": "unassigned/not used as a character in runtime",
+   "runtimeDerivative": null,
+   "skins": 0,
+   "animationClips": []
+  },
+  {
+   "path": "3D Models/Original GLBs/fantasy ruin diorama 3d model.glb",
+   "type": "glb",
+   "bytes": 69704264,
+   "sha256": "4fa5c192683b923835594f1c8e259f501f9979ac778f9ee197f6f43236e82bd3",
+   "category": "original",
+   "provenance": "User's Tripo export (per hub File Moves.tsv and repo docs); license terms not recorded in repo",
+   "character": "unassigned/not used as a character in runtime",
+   "runtimeDerivative": null,
+   "skins": 0,
+   "animationClips": []
+  },
+  {
+   "path": "3D Models/Original GLBs/purple decorative plaque 3d model.glb",
+   "type": "glb",
+   "bytes": 69837288,
+   "sha256": "9ec3b9f1337318e7398afc0bb4037a82dcc73b5c20aebcd81c0a7633d3cf012a",
+   "category": "original",
+   "provenance": "User's Tripo export (per hub File Moves.tsv and repo docs); license terms not recorded in repo",
+   "character": "unassigned/not used as a character in runtime",
+   "runtimeDerivative": null,
+   "skins": 0,
+   "animationClips": []
+  },
+  {
+   "path": "3D Models/Original GLBs/purple dragon 3d model.glb",
+   "type": "glb",
+   "bytes": 69823740,
+   "sha256": "a251d332890193a0658cf4180d2c760eabdcb07ff6ac9e07a5846118f7a10407",
+   "category": "original",
+   "provenance": "User's Tripo export (per hub File Moves.tsv and repo docs); license terms not recorded in repo",
+   "character": "Dragon",
+   "runtimeDerivative": "runtime dragon.glb",
+   "skins": 0,
+   "animationClips": []
+  },
+  {
+   "path": "3D Models/Original GLBs/rustic stone board 3d model.glb",
+   "type": "glb",
+   "bytes": 67757052,
+   "sha256": "5e66f272aa056fe57e2dffe6e9662d60af0fcaad9322f9eaae5bab1fb1f37620",
+   "category": "original",
+   "provenance": "User's Tripo export (per hub File Moves.tsv and repo docs); license terms not recorded in repo",
+   "character": "unassigned/not used as a character in runtime",
+   "runtimeDerivative": null,
+   "skins": 0,
+   "animationClips": []
+  },
+  {
+   "path": "3D Models/Original GLBs/skeleton warrior 3d model.glb",
+   "type": "glb",
+   "bytes": 67733240,
+   "sha256": "c82288b67e7166d871906ab969e343b657b2fca630028411bb06e7b40bd52db0",
+   "category": "original",
+   "provenance": "User's Tripo export (per hub File Moves.tsv and repo docs); license terms not recorded in repo",
+   "character": "Skeleton",
+   "runtimeDerivative": "runtime skeleton.glb",
+   "skins": 0,
+   "animationClips": []
+  },
+  {
+   "path": "3D Models/Original GLBs/stone arch portal 3d model.glb",
+   "type": "glb",
+   "bytes": 65566936,
+   "sha256": "1081bd85680fa9fddb2226c9231805eb7f72b5c46bd5cc302015eafac8ac0ebe",
+   "category": "original",
+   "provenance": "User's Tripo export (per hub File Moves.tsv and repo docs); license terms not recorded in repo",
+   "character": "unassigned/not used as a character in runtime",
+   "runtimeDerivative": null,
+   "skins": 0,
+   "animationClips": []
+  },
+  {
+   "path": "3D Models/Original GLBs/vintage revolver 3d model.glb",
+   "type": "glb",
+   "bytes": 66378856,
+   "sha256": "e22148c84dc000aed05dd00a010ca198c32fe757452e0aa7e601c4e0806be764",
+   "category": "original",
+   "provenance": "User's Tripo export (per hub File Moves.tsv and repo docs); license terms not recorded in repo",
+   "character": "unassigned/not used as a character in runtime",
+   "runtimeDerivative": null,
+   "skins": 0,
+   "animationClips": []
+  },
+  {
+   "path": "3D Models/Original GLBs/western gunslinger 3d model.glb",
+   "type": "glb",
+   "bytes": 67603988,
+   "sha256": "b89f40bcb264999bf8622332b4c3d98476a4315bbcb0848bc2949027de827d0b",
+   "category": "original",
+   "provenance": "User's Tripo export (per hub File Moves.tsv and repo docs); license terms not recorded in repo",
+   "character": "unassigned/not used as a character in runtime",
+   "runtimeDerivative": null,
+   "skins": 0,
+   "animationClips": []
+  },
+  {
+   "path": "3D Models/Original GLBs/wizard figure 3d model.glb",
+   "type": "glb",
+   "bytes": 65636012,
+   "sha256": "2a3e7bbbffdc08a743162b77ecb3c4d76f4f973f023fc9399d1a7438849bce70",
+   "category": "original",
+   "provenance": "User's Tripo export (per hub File Moves.tsv and repo docs); license terms not recorded in repo",
+   "character": "Wizard (pairing inferred from asset-rig-inventory.json)",
+   "runtimeDerivative": "runtime wizard.glb",
+   "skins": 0,
+   "animationClips": []
+  },
+  {
+   "path": "3D Models/Original GLBs/wooden hut 3d model.glb",
+   "type": "glb",
+   "bytes": 64314720,
+   "sha256": "6ec14ab72b241107ae2453b5be4febceb09fd3743c4490d09e64af26fe4a869e",
+   "category": "original",
+   "provenance": "User's Tripo export (per hub File Moves.tsv and repo docs); license terms not recorded in repo",
+   "character": "unassigned/not used as a character in runtime",
+   "runtimeDerivative": null,
+   "skins": 0,
+   "animationClips": []
+  },
+  {
+   "path": "assets/models/billy.glb",
+   "type": "glb",
+   "bytes": 2531696,
+   "sha256": "80266b71c28280ed869a35afb3c0f64dfa2c2bc7a26b67a3ef1b88bcd9911241",
+   "category": "optimized-runtime",
+   "provenance": "Runtime model in repo",
+   "skins": 0,
+   "joints": 0,
+   "animationClips": []
+  },
+  {
+   "path": "assets/models/board.glb",
+   "type": "glb",
+   "bytes": 2988784,
+   "sha256": "b8b7dc4dd4bf6579b9d1e1723fc9e4e65ef33a6b7136e1b1ee84109f8486eeb8",
+   "category": "optimized-runtime",
+   "provenance": "Runtime model in repo",
+   "skins": 0,
+   "joints": 0,
+   "animationClips": []
+  },
+  {
+   "path": "assets/models/cowboy-tile.glb",
+   "type": "glb",
+   "bytes": 1023316,
+   "sha256": "3e1d4dcc9228d35c669b2ffbaa0b20a78e5ce68e2da04a7a795df3ca297b1045",
+   "category": "optimized-runtime",
+   "provenance": "Runtime model in repo",
+   "skins": 0,
+   "joints": 0,
+   "animationClips": []
+  },
+  {
+   "path": "assets/models/dragon.glb",
+   "type": "glb",
+   "bytes": 4776532,
+   "sha256": "8d17261b70cfb4b40811134113b363a5ce263ec5eacb72e5065f71013da3a3b0",
+   "category": "optimized-runtime",
+   "provenance": "Optimized from user's Tripo exports; dragon/mounted-billy carry Kiro-authored attack and idle clips",
+   "skins": 1,
+   "joints": 12,
+   "animationClips": [
+    "dragon_attack",
+    "dragon_idle"
+   ]
+  },
+  {
+   "path": "assets/models/gateway.glb",
+   "type": "glb",
+   "bytes": 1485068,
+   "sha256": "cc0d7d05125cc75cd59e093a6c4b216f27eb102f33de8d44eb84f838a6353e64",
+   "category": "optimized-runtime",
+   "provenance": "Runtime model in repo",
+   "skins": 0,
+   "joints": 0,
+   "animationClips": []
+  },
+  {
+   "path": "assets/models/ghost-town-corner.glb",
+   "type": "glb",
+   "bytes": 2891540,
+   "sha256": "d61fb8d593bfec70284bd78b9dc36a0be52bd26ed82a09658419986705e3bdc6",
+   "category": "optimized-runtime",
+   "provenance": "Runtime model in repo",
+   "skins": 0,
+   "joints": 0,
+   "animationClips": []
+  },
+  {
+   "path": "assets/models/graveyard-corner.glb",
+   "type": "glb",
+   "bytes": 3120356,
+   "sha256": "22045d43a0ebc1ec0e57d37e056b2b20cb9c397b671b9f132b9ec1c98301dc9d",
+   "category": "optimized-runtime",
+   "provenance": "Runtime model in repo",
+   "skins": 0,
+   "joints": 0,
+   "animationClips": []
+  },
+  {
+   "path": "assets/models/mounted-billy.glb",
+   "type": "glb",
+   "bytes": 4191200,
+   "sha256": "22ebf3bcd2c9b81e2a1ff2ece93ecaeb3abb28d47d9725f9b9a7df8e11bdc8f7",
+   "category": "optimized-runtime",
+   "provenance": "Optimized from user's Tripo exports; dragon/mounted-billy carry Kiro-authored attack and idle clips",
+   "skins": 1,
+   "joints": 11,
+   "animationClips": [
+    "mounted_attack",
+    "mounted_idle"
+   ]
+  },
+  {
+   "path": "assets/models/revolver.glb",
+   "type": "glb",
+   "bytes": 704192,
+   "sha256": "05ac471f84a5fb30a20a4fd3db724a41a14934229c6ac382c892991c6fb41706",
+   "category": "optimized-runtime",
+   "provenance": "Runtime model in repo",
+   "skins": 0,
+   "joints": 0,
+   "animationClips": []
+  },
+  {
+   "path": "assets/models/saloon.glb",
+   "type": "glb",
+   "bytes": 1864684,
+   "sha256": "b461246b40fe6488c2e18fd288afb965682fe3591048e4665e29bef75cb25ca0",
+   "category": "optimized-runtime",
+   "provenance": "Runtime model in repo",
+   "skins": 0,
+   "joints": 0,
+   "animationClips": []
+  },
+  {
+   "path": "assets/models/sheriff.glb",
+   "type": "glb",
+   "bytes": 2846292,
+   "sha256": "310e073016f4cdada5efa9509c422d697c3ab69928dd3f6b5e9d9cf7fbb263bf",
+   "category": "optimized-runtime",
+   "provenance": "Runtime model in repo",
+   "skins": 0,
+   "joints": 0,
+   "animationClips": []
+  },
+  {
+   "path": "assets/models/skeleton.glb",
+   "type": "glb",
+   "bytes": 3067712,
+   "sha256": "e0ecd8619a3d4e310bebfa56650f77c0a01c4fdd5827d70c9f6f7406cc62dc0a",
+   "category": "optimized-runtime",
+   "provenance": "Runtime model in repo",
+   "skins": 0,
+   "joints": 0,
+   "animationClips": []
+  },
+  {
+   "path": "assets/models/wizard-tile.glb",
+   "type": "glb",
+   "bytes": 989836,
+   "sha256": "e3a12808ec663c8baaa22078f144c1b651549f2a6a28b79dacae104016fa28c2",
+   "category": "optimized-runtime",
+   "provenance": "Runtime model in repo",
+   "skins": 0,
+   "joints": 0,
+   "animationClips": []
+  },
+  {
+   "path": "assets/models/wizard.glb",
+   "type": "glb",
+   "bytes": 2845456,
+   "sha256": "5c0299527f3bc889402616cebb6d3fcf722202a9afdbe249335c5a02258a65d5",
+   "category": "optimized-runtime",
+   "provenance": "Runtime model in repo",
+   "skins": 0,
+   "joints": 0,
+   "animationClips": []
+  },
+  {
+   "path": "assets/animations/sheriff-headShake.SOURCE.json",
+   "type": "json",
+   "bytes": 1122,
+   "sha256": "b76ee59916e8c6cf3684fc00e5f7e0168df0e6e0f038690fb588b3644160719b",
+   "category": "approved-source-motion",
+   "provenance": "Mixamo headShake via three.js r180 Xbot.glb; retarget by Codex; user approved visible gesture; Adobe/Mixamo terms apply (assets/animations/sheriff-headShake.SOURCE.json)"
+  },
+  {
+   "path": "assets/animations/sheriff-headShake.json",
+   "type": "json",
+   "bytes": 130749,
+   "sha256": "de012cfb4cf95aa71db68a757d824b0ff1638fb1abcaf5e08aa47b96a5e7bd36",
+   "category": "approved-source-motion",
+   "provenance": "Mixamo headShake via three.js r180 Xbot.glb; retarget by Codex; user approved visible gesture; Adobe/Mixamo terms apply (assets/animations/sheriff-headShake.SOURCE.json)"
+  },
+  {
+   "path": "Game/Animation previews/Sheriff stationary gesture/sheriff-mixamo-headShake-preview.glb",
+   "type": "glb",
+   "bytes": 3891912,
+   "sha256": "d9d2ea2e0dc4808f3b220bae0e21440a5109de0e87e82845e93abc6bd1655c99",
+   "category": "preview-motion-candidate",
+   "provenance": "Approved preview GLB; sha256 equals approvedGlb.sha256 in sheriff-headShake.SOURCE.json"
+  },
+  {
+   "path": "Game/Animation previews/Sheriff Mixamo idle/sheriff-mixamo-idle-preview.glb",
+   "type": "glb",
+   "bytes": 3891340,
+   "sha256": "f3205332f57987b582265848c180abe71409c86c1282e14fa975d2162770d591",
+   "category": "preview-motion-candidate",
+   "provenance": "Mixamo idle via Xbot.glb; earlier preview, superseded by headShake"
+  },
+  {
+   "path": "Game/Animation previews/Sheriff Mixamo walk/sheriff-mixamo-walk-preview.glb",
+   "type": "glb",
+   "bytes": 3878828,
+   "sha256": "35901e47e1fbece48fb9503e5672be87d99ecd6186847746f0c11b367983fdc8",
+   "category": "preview-motion-candidate",
+   "provenance": "Mixamo walk preview; user liked it but wanted no walking in place"
+  },
+  {
+   "path": "Game/Animation previews/Billy and Dragon restrained revision/billy-sourced-Pistol_Idle_Loop-steady-hands-preview.glb",
+   "type": "glb",
+   "bytes": 3485692,
+   "sha256": "09e62dd6716e291a0b8eea4e236f83b8908d45e7204e2bcbf666631d4d5d3ca4",
+   "category": "preview-motion-candidate",
+   "provenance": "Quaternius UAL1 Standard Pistol_Idle_Loop (CC0); pending user approval"
+  },
+  {
+   "path": "Game/Animation previews/Billy and Dragon restrained revision/dragon-quaternius-Yes-grounded-neck-preview.glb",
+   "type": "glb",
+   "bytes": 4773720,
+   "sha256": "f25c4ef352216bbaba344a3914f9baa1c4ad57d87640362e0057829b36d61b25",
+   "category": "preview-motion-candidate",
+   "provenance": "Quaternius Ultimate Monsters Dragon Yes (CC0 per README); rejected by user (fire-ring README)"
+  },
+  {
+   "path": "3D Models/Blender/Dragon.blend",
+   "type": "blend",
+   "bytes": 5102883,
+   "sha256": "fa9d9066d040e35adc6ee9118215ad3e5a8d4bd92e81b448f56cb1ed89eb0133",
+   "category": "editable-or-variant",
+   "provenance": "Kiro Blender rig of runtime dragon mesh; identical to Dragon work/dragon-rig.blend"
+  },
+  {
+   "path": "3D Models/Blender/Mounted Billy.blend",
+   "type": "blend",
+   "bytes": 4522143,
+   "sha256": "7a054f074cbb64d9293b4f671dafc18f1264ff1532c2ce2bca4fb4e9ee766005",
+   "category": "editable-or-variant",
+   "provenance": "Identical to Mounted Billy work/refined/mounted-billy-rig.blend (shipped revision)"
+  },
+  {
+   "path": "3D Models/Blender/Dragon work/dragon-rigged.glb",
+   "type": "glb",
+   "bytes": 4776532,
+   "sha256": "8d17261b70cfb4b40811134113b363a5ce263ec5eacb72e5065f71013da3a3b0",
+   "category": "editable-or-variant",
+   "provenance": "Identical to assets/models/dragon.glb"
+  },
+  {
+   "path": "3D Models/Blender/Mounted Billy work/mounted-billy-rigged.glb",
+   "type": "glb",
+   "bytes": 4191200,
+   "sha256": "d8cb43cbbb5f15a2a2a46844589d6209fdb070d36ff6a585ef12be17470745c7",
+   "category": "editable-or-variant",
+   "provenance": "FIRST candidate; failed hand-deformation gate; not the shipped file"
+  },
+  {
+   "path": "3D Models/Blender/Mounted Billy work/refined/mounted-billy-rigged.glb",
+   "type": "glb",
+   "bytes": 4191200,
+   "sha256": "22ebf3bcd2c9b81e2a1ff2ece93ecaeb3abb28d47d9725f9b9a7df8e11bdc8f7",
+   "category": "editable-or-variant",
+   "provenance": "Identical to assets/models/mounted-billy.glb"
+  },
+  {
+   "path": "Archive/Model Variants/mounted-billy 2.glb",
+   "type": "glb",
+   "bytes": 3286616,
+   "sha256": "926bac5ab3f5f5b3f0902163c1e2c67dd9e50c77871ffb83ecd1b5e2c4e60132",
+   "category": "editable-or-variant",
+   "provenance": "Untracked variant found in submission-preflight/assets/models; not shipped"
+  }
+ ]
+}

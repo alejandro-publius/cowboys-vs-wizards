@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "kind": "sanitized_structured_extract",
+  "task": "Repository continuity constraints and Memory capability review",
+  "date_utc": "2026-11-17T01:43:17.694440+00:00",
+  "base": "599450a27703fbdb8961d626c3e779512f54f29e",
+  "actual_app": "Kiro CLI 3.3.0",
+  "orchestrator": "Codex",
+  "branch": "kiro/continuity-usage-evidence",
+  "launch_flags": [
+    "chat",
+    "--output-format",
+    "stream-json",
+    "--trust-workspace",
+    "--trust-tools",
+    "fs_read,fs_write,execute_bash"
+  ],
+  "engine_reported": "v2",
+  "visible_catalog_default_model": "auto",
+  "model_override": false,
+  "engine_override": false,
+  "internal_serving_model": "not exposed; not inferred",
+  "status": "success",
+  "exit_code": 0,
+  "turn_duration_ms": 25867,
+  "reported_metering_entries": [
+    {
+      "value": 0.09177051990049752,
+      "unit": "credit",
+      "unitPlural": "credits"
+    },
+    {
+      "value": 0.100722235986733,
+      "unit": "credit",
+      "unitPlural": "credits"
+    },
+    {
+      "value": 0.30381755953565504,
+      "unit": "credit",
+      "unitPlural": "credits"
+    },
+    {
+      "value": 0.14779139966832502,
+      "unit": "credit",
+      "unitPlural": "credits"
+    }
+  ],
+  "sum_reported_credit_entries": 0.6441017150912106,
+  "metering_scope": "Initial completed useful task turn only; excludes finalization turn; not an account balance or independently settled bill.",
+  "memory_observation": "No Memory tool/config exposed in the V2 session. Official Memory docs require V3. Global Memory disabled state not inferred.",
+  "settings_observation": {
+    "chat.defaultModel": {
+      "exit_code": 1,
+      "output": "",
+      "error": "error: No value associated with chat.defaultModel"
+    },
+    "chat.defaultAgent": {
+      "exit_code": 1,
+      "output": "",
+      "error": "error: No value associated with chat.defaultAgent"
+    },
+    "chat.agentEngine": {
+      "exit_code": 1,
+      "output": "",
+      "error": "error: No value associated with chat.agentEngine"
+    },
+    "version": "kiro-cli 3.3.0"
+  },
+  "source_digests": {
+    "initial-stream.jsonl": "e130784357a6dd257917667a65e3b1c9a88fd587ca2ab1f481577b7a004b675d",
+    "initial-receipt.json": "5ed3206ab4a246182f4044111f56dbac553b226ce37e8eceba6738c89aedb694",
+    "settings-observed.json": "6d7fc16159b55205c1f5623ee1947c53eac50df7f0a4fb8b74b5aba0f148560e",
+    "model-catalog.json": "7279bf9d5c3f1a6dcccc69204fb750b7cbb827b20ed38025483a7ff4bb1558bd"
+  },
+  "sources_relative_to_worktree": [
+    ".artifacts/kiro-continuity-usage/initial-stream.jsonl",
+    ".artifacts/kiro-continuity-usage/initial-receipt.json",
+    ".artifacts/kiro-continuity-usage/settings-observed.json",
+    ".artifacts/kiro-continuity-usage/model-catalog.json"
+  ],
+  "redaction_notes": "Extract retains task, CLI engine/default model, metering and checks only. Omits personal absolute paths, session identifier, full prompts/tool output, full model catalog. No account/billing balances or credential stores queried. Original raw logs retained ignored locally.",
+  "official_references": [
+    "https://kiro.dev/docs/reference/cli-commands/",
+    "https://kiro.dev/docs/reference/slash-commands/",
+    "https://kiro.dev/docs/memory.md"
+  ]
+}
