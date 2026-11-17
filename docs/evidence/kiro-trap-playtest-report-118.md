@@ -48,3 +48,39 @@ Chrome smoke (headless Chrome 157.0.8103.79, 127.0.0.1 server started by the tes
 - The textareas and buttons are native and were driven by script and CDP mouse/text input, not by human keyboard or screen-reader users.
 - The Chrome smoke saw no Wizard trap spring; the after-trigger case is Node-only.
 - Counts are tallies under scripted play; they are not balance or choice-quality evidence.
+
+## Independent coordinator verification (November 17, 2026)
+
+After Kiro authored scoped commit df7efad and the completed runFinished
+V3 session event, the coordinator independently inspected the
+seven-file diff, private-data allowlist, and local-only export wiring,
+then reran these checks against base 69b79fed573067be1d3d3993602cf9d1c60e0d87:
+
+- node --test tests/experiments/trap-placeholder-report.test.js:
+  **7/7 pass, 0 skipped**, including actual Chrome 157 local Blob JSON
+  download, T1 seed 0, typed synthetic test note, valid redacted JSON,
+  no external requests or browser runtime exceptions, and export
+  before and after match end / leave.
+- node --test tests/experiments/trap-placeholder-scenarios.test.js:
+  **8/8 pass, 0 skipped** including real Chrome BASE/T1/T2 smoke.
+- node --test tests/experiments/trap-placeholder-keyboard.test.js:
+  **1/1 pass, 0 skipped** with real Chrome keyboard interactions.
+- node --test tests/experiments/trap-placeholder.test.js:
+  **7/7 pass**.
+- npm test: **313/313 Node tests pass** and 2/2 existing GLB
+  structural checks pass (not animation quality).
+- node scripts/check-links.mjs: **177 Markdown files, 647 relative
+  links, 0 broken**.
+- git diff HEAD^ HEAD --check: **pass**.
+- Kiro CLI version 3.4.0 was verified at launch. The final V3 stream
+  selected model claude-opus-5.5 and reported
+  **18.070479799668323 session credits** (emitted usage metadata,
+  not account billing). This coordinator-only verification supplements
+  the worker evidence above, which lacked that usage receipt.
+
+No real-person feedback was gathered by this task. Human notes are
+blank in the app until someone voluntarily types them. A publicly
+triggered trap identifier is intentionally revealable after trigger,
+but an unrevealed enemy trap identity and private state are excluded.
+No published UI, deck/card/art/model/animation/audio or external
+telemetry was changed or approved.
