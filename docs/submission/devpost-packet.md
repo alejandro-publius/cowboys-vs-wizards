@@ -37,7 +37,7 @@ Three of the four were used. The Kiro IDE ran the Requirements-First spec sessio
 - Evidence: [build log](../kiro-build-log.md), which records the app each piece of work was performed in.
 
 ### 2. Custom agents
-`duel-presenter` is a custom agent whose shell permissions are limited to the test and replay commands, and which loads `AGENTS.md` and the evidence steering file. It was used for the card landing-target fix: when the canvas has no size, a summoned card falls back to the lane button's position. The agent file shows the agent's scope, not the quality of its output. Both saved Workflows use `wf-coder`, an agent bundled with Kiro, not one defined in this repository.
+`duel-presenter` is a custom agent whose shell permissions are limited to the test and replay commands, and which loads `AGENTS.md` and the evidence steering file. It was used for the card landing-target fix: when the canvas has no size, a summoned card falls back to the lane button's position. The agent file shows the agent's scope, not the quality of its output. The saved Workflows use `wf-coder`, an agent bundled with Kiro, not one defined in this repository.
 - Shown by: [`.kiro/agents/duel-presenter.json`](../../.kiro/agents/duel-presenter.json).
 - Evidence: [November 16 build evidence](../evidence/kiro-overnight.md#kiro-implementation-and-execution).
 
