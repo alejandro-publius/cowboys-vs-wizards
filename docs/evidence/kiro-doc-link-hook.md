@@ -45,3 +45,27 @@ main). Hook commit on top of it: see `git log` for this file.
   not observed; only the receipt records it.
 - Candidate checks (verify-duel, build) are the coordinator's report, not
   re-run here.
+
+## Recheck with revised wrapper (a59aad6)
+
+The sections above are historical proof for the old wrapper (candidate
+099847a). They do not cover the revised wrapper.
+
+- Revised wrapper commit: `a59aad6` ("validate document hook events and
+  preserve checkout aliases"). The correction: the wrapper reads the structured
+  JSON event, so file paths containing spaces work; it checks tracking with Git
+  literal pathspecs; it resolves checkout aliases such as `/var` and
+  `/private/var`; and it rejects files that resolve outside the checkout. The
+  coordinator has five regression tests for this. I did not rerun them.
+- Session: `sess_88cb21c9-4565-49b1-a423-4535069dba51`. The task described
+  the client as Kiro CLI 3.4.0 V3; this session's own metadata reported
+  Kiro IDE. I did not verify the client independently.
+- Failing save, 2026-11-17T06:21:54Z (UTC): `fs_write` added
+  `[broken link](./intentional-missing-hook-recheck.md)`. Receipt status
+  `failed`, `124 Markdown files, 397 relative links and images, 1 broken`.
+- Passing save, 2026-11-17T06:21:59Z (UTC): `fs_write` removed the link.
+  Receipt status `passed`, `124 Markdown files, 396 relative links and images,
+  0 broken`.
+- Both receipts are in the ignored `.artifacts/doc-link-hook/receipts.jsonl`
+  (lines 1 and 2, `PostFileSave`, the session ID above). The write that saved
+  this section also triggers the hook and is not recorded here.
