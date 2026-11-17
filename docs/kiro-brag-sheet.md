@@ -11,7 +11,10 @@ The historical feature map below retains its original dates and limits. New clos
 | Original receipts | Kiro recovered 12 originals including Workflow state/report/definition, seed0/60 receipts and compaction JSONL. Codex verified original/published hashes and corrected attribution. [Index](evidence/kiro-public-evidence/index.md) | Some transcripts and one Night Watch report remain missing |
 | Power reproduction | Kiro loaded installed 1.0.0 procedure and invoked workspace MCP on matched historical inputs: pass/pass, then stale/stale after modifying a copy. [Evidence](evidence/kiro-power-reproduction.md) | Installed Power is older than tracked; actual server was workspace MCP; no current browser run claimed |
 | File/asset closeout | Kiro verified 16 original GLB hashes and created a 43-record inventory; repaired the existing file hub. [Evidence](evidence/kiro-project-assets-closeout.md) | No new art/motion; some download/licence metadata missing |
-| Crew package | Codex extracted the existing Kiro/Codex Night Watch app into a [separate public repository](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch); standalone 4/4 Python tests and UI parse passed | Packaging is not a new live Crew run |
+| Crew package | Codex extracted the existing Kiro/Codex Night Watch app into a [separate public repository](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch); standalone 4/4 Python tests and UI parse passed | Package updated to 0.1.2 with verified export fix; live Crew UI remains separate |
+
+| Night Watch bug fix | Kiro found the missing profile export, added a regression and passed a 20-seed backend check. Codex made profiles optional for older baselines; six Python tests pass. [Evidence](evidence/night-watch-profile-export-fix.md) | Installed Crew app remains policy-blocked; backend success is not GUI success |
+| Auto / continuity | Actual Default/Auto settings and 0.6441 credits for the initial useful turn recorded. Original compaction JSONL recovered. [Evidence](evidence/kiro-continuity-usage.md) | Fresh V3 session exposed no Memory tool; no retrieval or internal-model routing claim |
 
 [Active queue and ownership](kiro-closeout-queue.md) · [Recovered research sources](kiro-source-register.md) · [Build-story draft](submission/build-story.md) · [Submission packet](submission/devpost-packet.md)
 

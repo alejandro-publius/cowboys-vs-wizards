@@ -1,0 +1,47 @@
+{
+  "recorded_utc": "2026-11-17T01:42:37.669229+00:00",
+  "operator": "Codex",
+  "source_commit": "599450a27703fbdb8961d626c3e779512f54f29e",
+  "seed": 60,
+  "source_html_sha256": "604eb4a5f3928943551c0520a97bdeb037c287a45f55c50a4f59c221ac6de909",
+  "capture": {
+    "method": "Chrome DevTools Page.startScreencast",
+    "frames": 2513,
+    "durationSeconds": 43.64834117889404
+  },
+  "video": "seed60-599450a.mp4",
+  "video_sha256": "d02142d7ee265c9b683008ee893a7ea8ac945c3fcb55040f4877133c590c6f1b",
+  "media": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1440,
+        "height": 900,
+        "r_frame_rate": "30/1",
+        "nb_frames": "1310"
+      }
+    ],
+    "format": {
+      "duration": "43.666667",
+      "size": "5142611"
+    }
+  },
+  "browser_checks": {
+    "observed": 4,
+    "expected": 4,
+    "console_errors": 0
+  },
+  "method": "Isolated headless Chrome Page.startScreencast; actual existing showcase route and real clicks; timestamped frames encoded at normal speed,30fps H264. No source/scene/animation edits.",
+  "limits": [
+    "Silent gameplay footage only; no audio track",
+    "Main599450a, not pending new deck builder",
+    "Not a final edited submission demonstration or a public YouTube upload"
+  ],
+  "browser_receipt_source": ".artifacts/demo-recording/seed-60/browser-run.json (untracked, current-release checkout)",
+  "capture_script_sha256": "1333386037d09f3a8b096e02b994e89f0fde705614a67f61a5c8b06430fc0491",
+  "full_decode_exit_code": 0,
+  "thumbnail": "faceoff.png",
+  "thumbnail_sha256": "f6a7d2551bbf6db3780504dbb3d73783779099ed0eab770d2c464209d8af98d6"
+}

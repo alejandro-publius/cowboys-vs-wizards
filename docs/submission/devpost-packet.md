@@ -8,7 +8,7 @@ Cowboys vs. Wizards
 A haunted-Western card duel where gunslingers, skeletons and dragons clash across three 3D lanes. Build a Cowboy deck, sacrifice troops for stronger summons, and watch the Wizard CPU answer through attacks and life orbs.
 
 ## Inspiration and behavior
-We wanted card decisions to happen visibly in the arena: sacrifice troops for stronger allies, alter lanes with spells, and see both simultaneous attacks even when a troop falls. The current browser release includes a user-approved illustrated title, instructions, saved settings, local achievements, a twelve-card Cowboy deck builder and pause/resume. A more readable deck layout is being implemented separately; do not call it shipped until integrated.
+We wanted card decisions to happen visibly in the arena: sacrifice troops for stronger allies, alter lanes with spells, and see both simultaneous attacks even when a troop falls. The current browser release includes a user-approved illustrated title, instructions, saved settings, local achievements, a twelve-card Cowboy deck builder and pause/resume. The reviewed closeout adds larger readable card art (187px desktop, 162px phone in Chrome checks), saved decks and keyboard controls. Confirm the closeout deployment before describing this layout as live.
 
 ## Implementation and Kiro
 Plain JavaScript rules stay separate from Three.js presentation and Rapier scene behavior. Fable wrote the engine and CPU. Kiro's Requirements-First spec guided match presentation and seeded checks. A custom agent, hooks, saved Workflows and a Review Power/MCP tie results to actual built HTML. Codex coordinated integration and independent checks. User-approved art, original Tripo exports and approved sourced motion guide the visuals.
@@ -29,13 +29,14 @@ A convincing animation can misrepresent simultaneous attacks. Passing rules test
 - Source: https://github.com/alejandro-publius/cowboys-vs-wizards
 - Kiro: https://github.com/alejandro-publius/cowboys-vs-wizards/blob/main/docs/kiro-brag-sheet.md
 - Crew app: https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch
+- Gameplay source: [43.67-second real gameplay recording](../evidence/gameplay-demo/seed60-599450a.mp4), captured at the prior release `599450a`. It does not show the new deck page.
 - Public YouTube: PENDING. Do not submit a placeholder.
 - Third-party blog: PENDING. Review build-story.md.
 
 ## Category and bonus checks
 Costume Contest fits the current haunted-interface direction; confirm the form's selected category. Crew bonus has a separate app repository. Student eligibility requires current attendance and actual teammate details; school affiliation alone is insufficient. Blog bonus requires a public third-party post mentioning Kiroween 2026. Social bonus is optional; no social post has been sent by this task.
 Official rules: https://kiroween.devpost.com/rules
-Deadline:December 4, 2026 at 2 p.m. Pacific.
+Deadline: December 4, 2026 at 2 p.m. Pacific.
 
 ## First-time-player protocol
 Give a new player the public game without coaching. Ask them to start, summon one troop, explain a lost orb, return to the menu and change their deck. Record success, hesitation and their own words. An agent browser review is not a human observation. Decide opening policy only after real play evidence; preserve current default meanwhile.
