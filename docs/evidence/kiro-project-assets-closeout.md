@@ -1,6 +1,6 @@
 # Kiro project assets closeout
 
-Kiro CLI (Auto model), November 16, 2026, America/Los_Angeles, worktree `kiro/project-asset-index` from `origin/main` `599450a`. Codex found the existing hub and wrote the brief. Kiro did not create the earlier organization or any art. Navigation: [project-files.md](../project-files.md). Data: [project-assets-manifest.json](project-assets-manifest.json).
+Kiro CLI (default configuration; no model override requested), November 16, 2026, America/Los_Angeles, worktree `kiro/project-asset-index` from `origin/main` `599450a`. Codex found the existing hub and wrote the brief. Kiro did not create the earlier organization or any art. Navigation: [project-files.md](../project-files.md). Data: [project-assets-manifest.json](project-assets-manifest.json).
 
 ## What was inspected
 
@@ -77,3 +77,12 @@ Created new items (nothing overwritten):
 ## Coordinator review
 
 Codex checked the recorded Kiro completion (exit 0, 2026-11-17T01:37:10.203691+00:00) and corrected the manifest timestamp to that receipt. The original manifest clock value was unsupported. No model or Kiro audit result changed. JSON parsing passed after this metadata correction.
+
+
+## Post-build coordinator verification
+
+On November 16, 2026, at 5:49 p.m. Pacific (2026-11-17T01:49:50Z), Codex checked the hub again after the recording worker built the stable checkout. All **73 of 73 symlinks resolve**, including Game/Play offline.html and Game/Web build. The .worktrees/current-release checkout remained at 599450a27703fbdb8961d626c3e779512f54f29e; both dist/cowboys-vs-wizards-board-duel.html and dist/web/index.html exist. The earlier 71/73 count above remains the historical Kiro audit result, not the current state.
+
+Codex updated the hub's Asset inventory.txt and appended this current-release check to START HERE.txt, preserving previous-build links. Pre-edit text copies are in this task's untracked artifact folder. This was a post-build path check, not another asset hash audit or game test.
+
+The run receipt requests no model override, and the captured startup log does not identify the selected model. Therefore this receipt records **default CLI configuration**, not an observed Auto selection or cascade event.

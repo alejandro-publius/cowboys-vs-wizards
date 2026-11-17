@@ -58,7 +58,7 @@ Mounted Billy's top-level Blender work folder holds an earlier candidate that fa
 
 Hub shortcuts to code, models and docs now point to a stable detached checkout, `.worktrees/current-release`, at `599450a`. The root checkout is expected to advance this checkout after integration.
 
-- `Game/Play offline.html` and `Game/Web build` point to `current-release/dist`. That folder has **not been built**, so both links are broken until a build is made.
-- Until then, use `Game/Previous release offline.html`, `Game/Previous release Web build` (both the old `submission-preflight` build at `177bac8`), or `Play Cowboys vs. Wizards.webloc` (live site).
+- Game/Play offline.html and Game/Web build point to current-release/dist. Both builds exist; Codex verified these links and all 73 hub symlinks at 5:49 p.m. Pacific on November 16, 2026, after the recording worker built this checkout.
+- Game/Previous release offline.html and Game/Previous release Web build preserve the old submission-preflight build at 177bac8. Play Cowboys vs. Wizards.webloc opens the live site. The two current-build links were pending during the earlier Kiro audit; the post-build note in the evidence records their resolution.
 - Left on `submission-preflight` deliberately, because they are historical artifacts that do not exist in the stable checkout: `Kiro/Character release checks`, `Kiro/Skeleton release checks`, `Submission/Current demo captures and checks`, `Archive/Earlier Demo Videos/Demo before model import.mp4`.
 - Task, replay and branch links still point to their own worktrees.
