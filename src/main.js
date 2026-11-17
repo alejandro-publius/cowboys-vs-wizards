@@ -265,7 +265,7 @@ async function launch(){
       if(result.ok&&action.side==="cowboy"){
         const id=matchRun+":"+result.state.revision;
         if(action.type==="summon")profile.record("summon",{id});
-        if(action.type==="cast")profile.record("spell",{id});
+        if(action.type==="spell")profile.record("spell",{id});
       }
       return result;
     }

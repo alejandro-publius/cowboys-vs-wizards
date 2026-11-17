@@ -189,3 +189,29 @@ test('explicit deck-saved events unlock only Deck Builder without fictional stat
   assert.deepEqual(Object.keys(store.get().achievements), ['deck-builder']);
   assert.deepEqual(store.get().stats, { matches: 0, wins: 0, summons: 0, spells: 0 });
 });
+
+test('an accepted Cowboy spell action records progress and unlocks First Spell', async () => {
+  const { createMatch } = await import('../../src/game/state.js');
+  const { applyAction } = await import('../../src/game/actions.js');
+  const { readFile } = await import('node:fs/promises');
+  const state = createMatch(0);
+  const { cowboy, wizard } = state.sides;
+  const cardId = [...cowboy.hand, ...cowboy.deck].find((id) => id.startsWith('cowboy-deadeye'));
+  cowboy.deck = cowboy.deck.filter((id) => id !== cardId);
+  cowboy.hand = [cardId];
+  wizard.board[0] = { cardId: wizard.hand[0], health: 2 };
+  state.activeSide = 'cowboy';
+  const result = applyAction(state, { type: 'spell', side: 'cowboy', cardId, target: 0, revision: state.revision });
+  assert.equal(result.ok, true);
+  assert.equal(result.events[0].type, 'spell');
+
+  // src/main.js records on the action type the engine accepts ('spell', not 'cast').
+  const main = await readFile(new URL('../../src/main.js', import.meta.url), 'utf8');
+  assert.match(main, /action\.type==="spell"\)profile\.record\("spell"/);
+
+  const store = createProfileStore(null);
+  assert.equal(store.get().achievements['first-spell'], undefined);
+  store.record('spell', { id: `0:${result.state.revision}` });
+  assert.equal(store.get().stats.spells, 1);
+  assert.equal(typeof store.get().achievements['first-spell'], 'string');
+});
