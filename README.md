@@ -86,3 +86,5 @@ Contributing with an AI agent? Start with [AGENTS.md](AGENTS.md), then use the [
 Dragon and Mounted Billy play articulated Blender attack clips. Skeleton uses its fitted Tripo mesh with the duel’s summon, hit and defeat cues. Billy and Wizard use procedural rigs. Sheriff combines the approved sourced Mixamo idle with the existing procedural draw/fire sequence and runtime transition blending. See the [animation plan](docs/character-animation-plan.md) before adding clips or replacing an export.
 
 The build includes Three.js (MIT) and Rapier (Apache-2.0) notices. The pinned Lucca Cerf references and their MIT license are in [docs/references/lucca-character-factory](docs/references/lucca-character-factory). The [build log](docs/kiro-build-log.md) attributes work by Kiro, Fable, Codex, Tripo and the user.
+
+[Watch the 59-second menu and gameplay preview](docs/evidence/gameplay-demo/menu-and-gameplay-preview.mp4) · [Verified closeout deployment](docs/evidence/kiro-closeout-deployment.md)

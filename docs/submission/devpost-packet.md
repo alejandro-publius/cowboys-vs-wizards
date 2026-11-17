@@ -8,7 +8,7 @@ Cowboys vs. Wizards
 A haunted-Western card duel where gunslingers, skeletons and dragons clash across three 3D lanes. Build a Cowboy deck, sacrifice troops for stronger summons, and watch the Wizard CPU answer through attacks and life orbs.
 
 ## Inspiration and behavior
-We wanted card decisions to happen visibly in the arena: sacrifice troops for stronger allies, alter lanes with spells, and see both simultaneous attacks even when a troop falls. The current browser release includes a user-approved illustrated title, instructions, saved settings, local achievements, a twelve-card Cowboy deck builder and pause/resume. The reviewed closeout adds larger readable card art (187px desktop, 162px phone in Chrome checks), saved decks and keyboard controls. Confirm the closeout deployment before describing this layout as live.
+We wanted card decisions to happen visibly in the arena: sacrifice troops for stronger allies, alter lanes with spells, and see both simultaneous attacks even when a troop falls. The current browser release includes a user-approved illustrated title, instructions, saved settings, local achievements, a twelve-card Cowboy deck builder and pause/resume. The reviewed closeout adds larger readable card art (187px desktop, 162px phone in Chrome checks), saved decks and keyboard controls. The closeout was published in PR #15; served HTML matches the reviewed build.
 
 ## Implementation and Kiro
 Plain JavaScript rules stay separate from Three.js presentation and Rapier scene behavior. Fable wrote the engine and CPU. Kiro's Requirements-First spec guided match presentation and seeded checks. A custom agent, hooks, saved Workflows and a Review Power/MCP tie results to actual built HTML. Codex coordinated integration and independent checks. User-approved art, original Tripo exports and approved sourced motion guide the visuals.
@@ -29,6 +29,7 @@ A convincing animation can misrepresent simultaneous attacks. Passing rules test
 - Source: https://github.com/alejandro-publius/cowboys-vs-wizards
 - Kiro: https://github.com/alejandro-publius/cowboys-vs-wizards/blob/main/docs/kiro-brag-sheet.md
 - Crew app: https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch
+- Current preview: [58.73-second menu and gameplay video](../evidence/gameplay-demo/menu-and-gameplay-preview.mp4); source versions are recorded in its receipt. No narration or Workflow UI footage is claimed.
 - Gameplay source: [43.67-second real gameplay recording](../evidence/gameplay-demo/seed60-599450a.mp4), captured at the prior release `599450a`. It does not show the new deck page.
 - Public YouTube: PENDING. Do not submit a placeholder.
 - Third-party blog: PENDING. Review build-story.md.

@@ -14,7 +14,7 @@
 
 The illustrated main menu opens instructions, saved settings, achievements and the deck workbench. Build a twelve-card Cowboy deck with large illustrated choices, select a card to read its rules, adjust counts and save. [Readability checks](evidence/kiro-readable-deck-workbench.md) include desktop and phone-sized Chrome views; actual phone/Safari review is still pending.
 
-[Watch the real seed60 gameplay clip](evidence/gameplay-demo/seed60-599450a.mp4) (43.67 seconds, recorded at release `599450a`). [Current closeout ledger](kiro-closeout-queue.md) distinguishes newly checked work, historical receipts and remaining blockers. [Night Watch source](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch) is a separate app; its backend checks and live Crew status are documented separately.
+[Watch the menu and gameplay preview](evidence/gameplay-demo/menu-and-gameplay-preview.mp4) (58.73 seconds: current deck/menu, then real gameplay recorded at `599450a`). [Current closeout ledger](kiro-closeout-queue.md) distinguishes newly checked work, historical receipts and remaining blockers. [Night Watch source](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch) is a separate app; its backend checks and live Crew status are documented separately.
 
 ## What is distinctive
 

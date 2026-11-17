@@ -1,0 +1,70 @@
+{
+  "assembled_utc": "2026-11-17T02:06:13.477463+00:00",
+  "operator": "Codex",
+  "video": "menu-and-gameplay-preview.mp4",
+  "video_sha256": "119133e1e50d78b85fb22bced8253180cfbd2a0f60b6eefb130f16ddeb1d9335",
+  "media": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1440,
+        "height": 900,
+        "r_frame_rate": "30/1"
+      }
+    ],
+    "format": {
+      "duration": "58.733333",
+      "size": "7042824"
+    }
+  },
+  "segments": [
+    {
+      "name": "Current menu, deck edit/save, settings",
+      "runtime_commit": "e9aeb06",
+      "html_sha256": "863ab8bd525cb2e78b0e73b529406b73c6a2381f982f2854e71340df79718e02",
+      "capture": {
+        "frames": 39,
+        "durationSeconds": 15.02719497680664,
+        "method": "Chrome DevTools Page.startScreencast"
+      },
+      "checks": [
+        {
+          "name": "Actual deck edit and save",
+          "passed": true,
+          "detail": {
+            "cowboy-sheriff": 6,
+            "cowboy-billy": 2,
+            "cowboy-mounted-billy": 2,
+            "cowboy-deadeye": 2
+          }
+        },
+        {
+          "name": "Actual setting saved",
+          "passed": true,
+          "detail": {
+            "sound": false,
+            "reducedMotion": true,
+            "performance": "auto"
+          }
+        }
+      ],
+      "console_errors": []
+    },
+    {
+      "name": "Existing seed60 gameplay",
+      "runtime_commit": "599450a27703fbdb8961d626c3e779512f54f29e",
+      "receipt": "seed60-599450a.json",
+      "duration_seconds": 43.666667
+    }
+  ],
+  "limits": [
+    "Silent actual-browser footage, no generated or staged game frames",
+    "Current menu sequence and earlier gameplay are separate recordings; runtime versions explicitly identified",
+    "Does not yet include Kiro Workflow UI recording or narration",
+    "Not uploaded publicly to YouTube; not a final submission confirmation"
+  ],
+  "full_decode_exit_code": 0,
+  "recording_wrapper_retry": "Initial wrapper image-URL decoder failed before editing any deck; fixed once and retained failed local receipt. Successful v2 route is shown."
+}

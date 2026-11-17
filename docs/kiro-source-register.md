@@ -83,7 +83,7 @@ These are research references rather than project completion receipts.
 1. Add durable completion/handoff state to the active queue so a finished worker does not remain idle and handoffs survive compaction. This directly applies the recovered software-factory source.
 2. Give each integrated change a concise readiness record naming checks expected, checks actually executed, reviewers' substantive findings and their resolution. Do not count an unrun check as passed.
 3. Reconcile the current Devpost draft after the new deck builder and sourced Sheriff release; preserve past receipts as dated historical measurements.
-4. Keep the original untested Summoning Circle proposal's lore checker / up-to-three review rounds separate from the later executed four-stage workflow. Do not claim the original richer proposal ran.
+4. Keep the original untested Summoning Circle proposal's lore checker / up-to-three review rounds separate from the later executed four-stage workflow. A separate bounded lore-review recipe subsequently ran one approved round; the original four-stage recipe stayed unchanged. [Actual result](evidence/kiro-lore-review-loop.md).
 5. Confirm whether the original Night Watch proposal's real nightly schedule and automatic GitHub issue creation were ever enabled. Existing evidence says an isolated schedule profile and issue drafts; those are narrower than a continuously active production bot.
 6. Maintain explicit unresolved-source entries for the user YouTube link and full November 15 issue. No additional user-original URL was reliably recovered from other chats in this child session. A final parent Personal Context lookup also returned unavailable; this is not an exhaustive all-chat claim.
 
