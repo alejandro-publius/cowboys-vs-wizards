@@ -449,17 +449,20 @@ test("restart reuses a pinned seed and otherwise generates a new one", () => {
   assert.equal(h.controller.seed(), 8);
   assert.equal(h.controller.seedPinned(), false);
 
-  h.controller.start(-5);
+  h.controller.start(4294967295);
   h.controller.restart();
-  assert.deepEqual(h.log.seeds.slice(4), [-5, -5]);
+  assert.deepEqual(h.log.seeds.slice(4), [4294967295, 4294967295]);
+  assert.equal(h.controller.start("0"), true);
+  assert.equal(h.controller.start(60), true);
+  assert.deepEqual(h.log.seeds.slice(6), [0, 60]);
 });
 
 test("a seed that is not a whole number is refused before createMatch, leaving the match untouched", () => {
-  const BAD = ["1.5", "abc", 1.5, "1e3", "", 2 ** 53];
+  const BAD = ["1.5", "abc", 1.5, "1e3", "", 2 ** 53, -1, "-5", 4294967296, "4294967296", 2 ** 32 + 60, "-0x1"];
   const h = harness();
   for (const bad of BAD) {
     assert.equal(h.controller.start(bad), false, `${bad}`);
-    assert.equal(h.controller.message(), "Seed must be a whole number.");
+    assert.equal(h.controller.message(), "Seed must be a whole number from 0 to 4294967295.");
   }
   assert.deepEqual(h.log.seeds, []);
   assert.equal(h.controller.status(), "idle");
