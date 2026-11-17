@@ -26,6 +26,7 @@ To play or build the game, start at the [project README](../README.md). To work 
 | [kiroween-research-and-recording.md](kiroween-research-and-recording.md) | Record | November 16 notes on the hackathon rules and a plan for recording the demo video. |
 | [morning-handoff.md](morning-handoff.md) | Record | A handoff note from the November 16 build. It holds the seed 60 play-through that the project README links to. |
 | [project-files.md](project-files.md) | Record | Where the art and model files sit in the owner's own folder outside this repository, as of commit `599450a`. |
+| [requirement-test-map.md](requirement-test-map.md) | Current | Kiro-authored traceability map connecting Orb Duel acceptance criteria to tests, gaps and recorded property checks. |
 | [fable-tasks.md](fable-tasks.md) | Old task list | Jobs assigned to Fable before the playable release. All are done or replaced. |
 | [kiro-task-01.md](kiro-task-01.md) | Old task list | The first engine task written for Kiro. The task is done, but `AGENTS.md` still points here for the draft card numbers and known rule contradictions. |
 | [kiro-task-queue.md](kiro-task-queue.md) | Old task list | The early queue of Kiro tasks, replaced first by `fable-tasks.md` and then by the closeout queue. |
