@@ -1,8 +1,7 @@
 # Kiro evidence: trap deck copy counts and draw odds (issue #87)
 
 Date: 2026-11-17, America/Los_Angeles. Agent: Kiro CLI 3.4 V3, model claude-opus-5.5, in an
-isolated worktree on branch `kiro/trap-deck-odds-87`, based on main a327b1b. The session ran
-without credit or usage metering, so no credit figure is recorded. No paid API and no account action.
+isolated worktree on branch `kiro/trap-deck-odds-87`, based on main a327b1b. Kiro did not extract a credit figure while writing this note. A subsequent coordinator check of the same session's ignored stream JSONL found the selected model `claude-opus-5.5` and a final session credit reading of `8.103838534328357` credits. This is a session-level report, not an account balance or invoice. No paid third-party API or account action.
 
 ## Problem
 
