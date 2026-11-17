@@ -9,7 +9,7 @@
 </head>
 <body>
 <p class="warning" role="note"><strong>Experimental, synthetic, local only.</strong>
-Developer lab for issues #108 and #116. Traps are off in the shipped game. The default FIXTURE
+Developer lab for issues #108, #116 and #118. Traps are off in the shipped game. The default FIXTURE
 scenario gives each side one extra anonymous test-fixture trap (13 cards). T1 and T2 relabel one or
 both spell copies as anonymous synthetic traps in a 12-card deck. None of these is a real card,
 deck entry or balance result. No art, models,
@@ -75,6 +75,31 @@ animation or audio. Serve over loopback HTTP (see README.md), not file://.</p>
   <h2 id="log-heading">Public event log (Cowboy view)</h2>
   <label><input type="checkbox" id="show-log" checked> Show log</label>
   <ol id="log" role="log"></ol>
+</section>
+
+<section aria-labelledby="playtest-heading">
+  <h2 id="playtest-heading">Playtest report (optional, local only)</h2>
+  <p id="playtest-help">Every note is optional and starts empty. Do not type names, contact details or other personal
+  information. Nothing is sent or stored: the page makes no network request, cookie or local storage for this, and
+  only the export button below downloads a JSON file to this computer. Notes stay as typed when you Start, Restart
+  or Leave, so nothing is lost; press Clear notes to empty them. The export pairs the notes with the match shown now
+  (after Leave there is no match, so only the notes and settings are exported).</p>
+  <form id="playtest-form">
+    <p><label for="note-spell-trap">Spell versus trap: was the choice clear, and did it matter?</label><br>
+    <textarea id="note-spell-trap" name="spellVersusTrap" rows="3" cols="60" maxlength="1000" autocomplete="off"></textarea></p>
+    <p><label for="note-arming">One-round arming: was it clear when a trap could spring?</label><br>
+    <textarea id="note-arming" name="armingClarity" rows="3" cols="60" maxlength="1000" autocomplete="off"></textarea></p>
+    <p><label for="note-pacing">Pacing and match length</label><br>
+    <textarea id="note-pacing" name="pacing" rows="3" cols="60" maxlength="1000" autocomplete="off"></textarea></p>
+    <p><label for="note-freeform">Other feedback</label><br>
+    <textarea id="note-freeform" name="freeform" rows="3" cols="60" maxlength="1000" autocomplete="off"></textarea></p>
+    <p><label><input type="checkbox" id="export-events" checked> Include the public event list (Cowboy view)</label></p>
+    <div class="row">
+      <button type="button" id="export-report">Export current playtest report</button>
+      <button type="button" id="clear-notes">Clear notes</button>
+    </div>
+  </form>
+  <p id="export-status" aria-live="polite"></p>
 </section>
 
 <script type="module" src="app.js"></script>

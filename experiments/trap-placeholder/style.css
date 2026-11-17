@@ -8,7 +8,8 @@ section { margin-block: 1rem; }
 .row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 button { font: inherit; padding: 0.35rem 0.6rem; }
 button[aria-pressed="true"] { outline: 3px solid #1a5fb4; }
-button:focus-visible, input:focus-visible { outline: 3px solid #1a5fb4; outline-offset: 2px; }
+button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid #1a5fb4; outline-offset: 2px; }
 #status { font-weight: 600; }
 #log { max-height: 18rem; overflow-y: auto; border: 1px solid #ccc; padding-block: 0.25rem; }
 #log[hidden] { display: none; }
+textarea { font: inherit; max-width: 100%; }
