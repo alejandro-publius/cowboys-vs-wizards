@@ -24,7 +24,7 @@ test("catalog and defaults retain all existing stats and default ID order", () =
     "cowboy-sheriff": 6, "cowboy-billy": 3, "cowboy-mounted-billy": 1, "cowboy-deadeye": 2,
   });
   assert.deepEqual(DECKS.cowboy, DEFAULT_COWBOY_IDS);
-  assert.deepEqual(DECKS.wizard, []);
+  assert.deepEqual(DECKS.wizard, DEFAULT_WIZARD_IDS);
   assert.deepEqual(deckIds(DEFAULT_COUNTS), DEFAULT_COWBOY_IDS);
   assert(Object.isFrozen(COWBOY_CATALOG) && COWBOY_CATALOG.every(Object.isFrozen));
   assert(Object.isFrozen(DEFAULT_COUNTS));
