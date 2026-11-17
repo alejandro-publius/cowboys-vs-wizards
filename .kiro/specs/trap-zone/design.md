@@ -3,9 +3,10 @@
 Author: Kiro CLI 3.4.0 V3. Spec only. Files named below are where a later task would edit; none are edited now.
 Read for this design: `src/game/{state,actions,legal,view,clash}.js`, `src/match/{presenter,scheduler,controller}.js`.
 
-> Update (issue #85, base 769a4fc): the prototype is A + X (shared allowance), not the B + X this file was written
-> for. Sections 2, 3, 5 below describe the `trapSet` (B) variant. For A + X, use `allowances[side].tactical` and the
-> rejection order in `docs/submission/trap-prototype-contract.md`, which wins on any difference. B + X is retained.
+> Update (issue #85, base 769a4fc): the canonical prototype is **A + X**: trap setting shares the cast allowance
+> (`castUsed` plus `tactical`). B + X, the Kiro PR #84 study recommendation with a separate `trapSet` allowance, is kept only
+> as a rejected-for-now alternative in section 10. Nothing is shipped or implemented.
+> The letters A and B in section 1 below name delay interpretations and are unrelated to the allowance options A and B.
 
 ## 1. Delay interpretations
 
@@ -36,33 +37,31 @@ Card kind: a new `kind: "trap"` (unique card ID, no attack, health or tribute co
 ```
 state.traps = { enabled: bool }                       // only when createMatch(..., { traps: true })
 sides[side].trap = null | { cardId, setRound }        // hidden zone; absent key when flag off
-allowances[side].trapSet = false                      // B variant only; reset each round-start
-allowances[side].tactical = null                      // A variant: null | "spell" | "trap", reset each round-start
+allowances[side].tactical = null                      // flag on only: null | "spell" | "trap", reset each round-start
 ```
-When the flag is off, `trap` is not added and `traps` is not added, so `structuredClone(state)` and
-every existing replay are byte-identical to 8ace1ce. `RULES_VERSION` becomes `orb-duel-draft-1+traps`
-only when the flag is on.
+`castUsed` stays the single shared allowance for one spell or one trap. `tactical` records which one was used, so the
+rejection can name it. No `trapSet` key exists in the prototype. When the flag is off, `trap`, `traps` and `tactical` are
+not added, so `structuredClone(state)` and every existing replay are byte-identical to 8ace1ce. `RULES_VERSION`
+becomes `orb-duel-draft-1+traps` only when the flag is on.
 
-## 3. Action and events
+## 3. Action and events (A: shared allowance)
 
 Action: `{ type: "set-trap", side, revision, cardId, actionId? }`.
 
-A variant (prototype): `set-trap` sets `castUsed = true` and `tactical = "trap"`; order is `traps-disabled`,
-`card-not-in-hand`, `not-a-trap`, `trap-too-late` (round === `MAX_ROUNDS`), `trap-zone-full`, `trap-after-spell`;
-`summonRejection` returns `summon-after-trap` and `spellRejection` returns `cast-after-trap` when `tactical === "trap"`.
-Spell paths keep `summon-after-spell` and `cast-used`. Legal list adds `set-trap` only if `!castUsed`, zone empty, round < 9.
+Phase shape: optional summon, then at most one of one spell or one trap, then `end-phase`. Choosing a spell or a trap
+before summoning forfeits that round's summon (the summon is then rejected), so the UI tooltip warns first (contract section 3).
 
-B variant, as originally written. Rejections, first failing wins, added to `REJECTIONS` in `actions.js` after the shared checks
-(`match-over`, `invalid-action`, `duplicate-action`, `stale`, `wrong-side`):
-`traps-disabled`, `trap-set-used`, `card-not-in-hand`, `not-a-trap` (spells and troops land here),
-`trap-zone-full`.
+Rejections, first failing wins, after the shared checks (`match-over`, `invalid-action`, `duplicate-action`, `stale`,
+`wrong-side`): `traps-disabled`, `card-not-in-hand`, `not-a-trap` (spells and troops land here), `trap-too-late`
+(round === `MAX_ROUNDS`), `trap-zone-full`, `trap-after-spell` (`tactical === "spell"`).
+For existing actions, flag on only: `summonRejection` returns `summon-after-trap` and `spellRejection` returns
+`cast-after-trap` when `tactical === "trap"`. Spell paths keep `summon-after-spell` and `cast-used`.
 
-Apply: remove card from hand, set `trap = { cardId, setRound: round }`, `allowances.trapSet = true`.
-`summonUsed`, `castUsed` and the summon and spell rejections are untouched.
-Event: `{ type: "trap-set", side, revision, actionId? , cardId }`. No RNG draw.
+Apply: remove card from hand, set `trap = { cardId, setRound: round }`, `castUsed = true`, `tactical = "trap"`.
+`summonUsed` is untouched. Event: `{ type: "trap-set", side, revision, actionId?, cardId }`. No RNG draw.
 
-`legal.js`: if flag on, `!trapSet`, zone empty, add one `set-trap` per distinct trap card in hand, after
-spells and before `end-phase`. Existing order (summons, spells, end-phase) is kept when the flag is off.
+`legal.js`: if flag on, `!castUsed`, zone empty, `round < MAX_ROUNDS`, add one `set-trap` per distinct trap card in hand,
+after spells and before `end-phase`. Existing order (summons, spells, end-phase) is kept when the flag is off.
 
 ## 4. Trigger (in `resolveClash`, before the attack snapshot loop)
 
@@ -70,7 +69,7 @@ spells and before `end-phase`. Existing order (summons, spells, end-phase) is ke
    with the highest `CARDS[id].attack` on the pre-trigger board; tie to the lowest lane. No target means
    the trap stays set (no waste).
 2. Compute all triggers from that snapshot, then emit and apply together (R9): remove the target's
-   attack entry from `attacks`, move trap card to discard, set `trap = null`.
+   attack entry from `attacks`, move trap card to discard, set `trap = null`. The move to discard is part of this state transition; there is no standalone `discard` event for it.
 3. Event, emitted before the `clash` damage events: `{ type: "trap-trigger", side, cardId, target: { side, slot, cardId }, cancelled: attack }`.
    `damage` events for the cancelled attacker are not emitted. Impact order of the remaining damage is unchanged.
 
@@ -86,10 +85,12 @@ Because the `clash` event is emitted just before `resolveClash`, the order is `c
 - Opponent: `trap: { faceDown: true, setRound }` or null. `cardId` never appears.
 - Events to the opponent: `trap-set` is redacted to `{ type, side, revision, actionId }` (no `cardId`),
   matching how `draw` already hides the card. `trap-trigger` is public, since the card is revealed on use.
-- `discard` already public, so the spent card is visible then.
+- The spent card is revealed by `trap-trigger` (which carries `cardId`) and then appears in the public discard pile of `to`. No separate `discard` event is emitted for it.
 - Flag-on `allowances` of the opponent need not be exposed; `tactical` is shown only on the viewer's side.
-- CPU (A variant rule: summon first, then set a held trap if zone empty and round < 9, else cast, else end): `chooseAction(publicState(state, "wizard"))` sees only its own trap. Rule sketch (no RNG):
-  set a trap card whenever it holds one, the zone is empty and `trapSet` is false; no RNG. Final rule is a later task.
+- Flag-on `allowances` of the opponent need not be exposed; `tactical` is shown only on the viewer's side.
+- CPU: `chooseAction(publicState(state, "wizard"))` sees only its own trap. Rule sketch (no RNG): summon first if the
+  existing rule would; then, if it holds a trap card, the zone is empty, `round < MAX_ROUNDS` and `set-trap` is legal,
+  set it; otherwise cast as today; otherwise end. Final rule is a later task (T5).
 
 ## 6. Presenter and restart
 
@@ -141,3 +142,15 @@ treat each spell twice, and does not match the request for a slot for trap cards
 - Flag-on matches have no trap cards until the migration lands, so the zone is inert by default.
 - Flag-off parity is the main safety net. Never add a key to `state` when the flag is off.
 - `legalActions` consumers (CPU, UI, tests that pin action counts) must be checked with the flag on.
+
+## 10. Alternative B + X (rejected for now, kept for reversal)
+
+Kiro's PR #84 study recommended B + X because it is additive. The coordinator chose A + X for the first prototype for
+faster, strategically meaningful turns. B is not the prototype. If the reversal criteria in the contract (section 8) are met,
+B is a small change:
+- State: `allowances[side].trapSet = false`, reset each round-start. No `tactical` field.
+- Rejections after the shared checks: `traps-disabled`, `trap-set-used`, `card-not-in-hand`, `not-a-trap`, `trap-zone-full`
+  (and `trap-too-late`). `summonUsed` and `castUsed` and their rejections are untouched; no `summon-after-trap`, `cast-after-trap` or `trap-after-spell`.
+- Apply: set `trapSet = true`. A phase may hold summon, spell, trap and end (four actions).
+- `legal.js`: add `set-trap` when `!trapSet`, zone empty, `round < MAX_ROUNDS`.
+- Everything else (trigger, view, events, presenter, restart) is identical to A.

@@ -20,9 +20,9 @@ Tradeoff: A costs implementation touches in `actions.js` and `legal.js` (the sum
 
 1. One dedicated trap slot per side. Card kind `trap`, unique ID. No spell is converted. No trap card exists in the shipped card table.
 2. Phase order for the active side: summon (optional), then **at most one of** cast one spell **or** set one trap, then end phase. The cast and the set share one allowance, `castUsed`.
-3. Setting a trap blocks a later summon in the same phase, exactly as casting does.
+3. Setting a trap blocks a later summon in the same phase, exactly as casting does. The summon is optional, so a player may skip it, but choosing a spell or a trap before summoning forfeits that round's summon. The UI must say so before the click (tooltip below).
 4. A trap set in round N is armed from round N+1 (`round > setRound`). It is hidden from the opponent until it triggers.
-5. **X**: at the next eligible clash, an armed trap cancels the **attack** of the enemy troop with the highest attack (tie: lowest lane). The troop stays on the board, keeps its health and can be targeted normally. Only its damage for that clash is removed. The trap goes to discard. One use.
+5. **X**: at the next eligible clash, an armed trap cancels the **attack** of the enemy troop with the highest attack (tie: lowest lane). The troop stays on the board, keeps its health and can be targeted normally. Only its damage for that clash is removed. The trap card moves to discard as part of the `trap-trigger` state transition. One use.
 6. Eligible clash: an armed trap and at least one enemy troop on the pre-trigger board. With no enemy troop the trap stays set and is not spent.
 7. Both sides' traps evaluate the same pre-trigger snapshot. Neither can cancel the other. `trap-trigger` events precede all damage of that clash.
 8. Round 9 (`MAX_ROUNDS`): a set is useless (the match ends before round 10) and is rejected with `trap-too-late`. A trap set in an earlier round that is still armed in round 9 may still trigger.
@@ -53,11 +53,11 @@ Changed rejections for the existing actions, flag on only. Today a summon after 
 
 | Action | Condition | Reason | Player-facing text |
 |---|---|---|---|
-| `summon` | trap set earlier this round | `summon-after-trap` | "You set a trap this round. Summon before you set a trap." |
+| `summon` | trap set earlier this round | `summon-after-trap` | "You set a trap this round, so you cannot summon. Summon first next time." |
 | `cast` (spell) | trap set earlier this round | `cast-after-trap` | "You set a trap this round. A spell uses the same action." |
 | `set-trap` | spell cast earlier this round | `trap-after-spell` | see table above |
 
-To tell a spell from a trap in a shared `castUsed`, flag-on state adds `allowances[side].tactical = null | "spell" | "trap"`, reset each round-start, in place of a separate `trapSet` boolean. `castUsed` keeps its current meaning for flag-off code and tests. This is a design choice for the prototype, and the alternative is a second boolean. Existing reason strings `summon-after-spell` and `cast-used` are unchanged for spells.
+To tell a spell from a trap in a shared `castUsed`, flag-on state adds `allowances[side].tactical = null | "spell" | "trap"`, reset each round-start. There is no `trapSet` key in this prototype (a separate `trapSet` boolean belongs to B + X). `castUsed` keeps its current meaning for flag-off code and tests. Existing reason strings `summon-after-spell` and `cast-used` are unchanged for spells.
 
 Apply: remove the card from hand, set `trap = { cardId, setRound: round }`, `allowances[side].castUsed = true`, `tactical = "trap"`. No RNG draw.
 
@@ -70,7 +70,7 @@ Emitted inside `resolveClash` before any `damage` event, once per triggering sid
 `{ type: "trap-trigger", side, cardId, target: { side, slot, cardId }, cancelled: <attack value> }`
 
 - `side` is the trap owner. `target` is the enemy troop whose attack was cancelled. `cancelled` is its attack before cancellation.
-- Public to both viewers. The card is revealed at this event. A later `discard` already public.
+- Public to both viewers. The card is revealed at this event, and it is in the public discard pile of the resulting state. No standalone `discard` event is emitted for the trap card.
 - The cancelled attacker emits no `damage` event, so X produces no zero-damage event. (Study note: Y would emit a zero or reduced `damage`.)
 - The cancelled troop is not defeated by this, and is not exempt from damage taken in the same clash.
 - Highest attack is computed on the pre-trigger board using `CARDS[id].attack`. Tie: lowest lane index. A troop whose health is 0 or less after earlier effects is not on the board.
@@ -84,7 +84,7 @@ A trap set by the second actor in round N, with the opponent's clash following, 
 2. Round N clash: `clash`, then no `trap-trigger` (not armed: `setRound === round`), then `damage*`, `defeat*`.
 3. Round N+1: `round-start`, `draw` (per side), `phase-start`, actions, `phase-end`, and finally `clash`.
 4. Round N+1 clash: `clash`, `trap-trigger*` (SIDES order), `damage*` (minus cancelled attacks), `defeat*`, then `result` if the match ends.
-5. `discard` for the spent trap is emitted with or immediately after `trap-trigger`, before `damage`. The prototype task must pin one placement and test it.
+5. The spent trap moves to discard inside the `trap-trigger` transition. No separate `discard` event is added unless a later spec says so. The event sequence is therefore fixed: `clash`, `trap-trigger*`, `damage*`, `defeat*`, `result`.
 
 The viewer sees no event at the moment a trap becomes armed. Armed is derived: `setRound < round`. The setter's own view shows "armed from next round" until then (section 7).
 
@@ -117,6 +117,7 @@ Trap zone, opponent view: "Enemy trap: set" (no name) and, if set this round, no
 
 Action row:
 - "Set trap" (enabled only when legal). Disabled tooltip comes from the rejection text in section 3.
+- Before summoning, while a summon is still possible, the `Set trap` and `Cast` buttons carry a tooltip: "Setting a trap now forfeits this round's summon." (spell: "Casting now forfeits this round's summon."). Skipping the summon on purpose is allowed.
 - After a spell: "Set trap (blocked: you already cast this round)".
 - After a trap: "Cast spell (blocked: you set a trap this round)".
 
@@ -147,7 +148,7 @@ Names are for the later implementation tasks. This job ran only `node scripts/ch
 `tests/game/traps.test.js` (new, later):
 - `traps flag off: createMatch(0) and createMatch(60) equal the baseline state`
 - `set-trap: each rejection returns the same state object, in the section 3 order`
-- `set-trap after a summon is legal; summon after a set is rejected with summon-after-trap`
+- `set-trap after a summon is legal; summon after a set is rejected with summon-after-trap; a phase with no summon followed by a set is legal`
 - `cast after a set is rejected with cast-after-trap; set after a cast is rejected with trap-after-spell`
 - `set-trap in round 9 is rejected with trap-too-late and is absent from legalActions`
 - `trap set in round N does not trigger in round N and triggers in round N+1`

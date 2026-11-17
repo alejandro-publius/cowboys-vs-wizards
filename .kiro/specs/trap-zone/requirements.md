@@ -2,7 +2,7 @@
 
 Author: Kiro CLI 3.4.0 V3. Issue: alejandro-publius/cowboys-vs-wizards#60. Base: main 8ace1ce.
 Status: SPEC ONLY. No runtime code, art, dependency or deck change is part of this job.
-Update (issue #85, base 769a4fc): first experimental prototype is A + X, chosen by the coordinator. The Kiro study (PR #84) recommended B + X for easier integration; B + X and A + Y stay as alternatives. See `docs/submission/trap-prototype-contract.md`. Where R2, R3, R4, R5, R9 or R11 below differ from that contract, the contract wins.
+Update (issue #85, base 769a4fc): first experimental prototype is A + X, chosen by the coordinator. The Kiro study (PR #84) recommended B + X for easier integration; B + X and A + Y stay as alternatives. See `docs/submission/trap-prototype-contract.md`. The requirements below are written for A + X and agree with the contract; B + X is described only as an alternative.
 Scope: original Orb Duel (rules version `orb-duel-draft-1`), not the retro build.
 
 Design inspiration only: Yu-Gi-Oh's rule that a trap cannot act the turn it is set, and
@@ -63,14 +63,14 @@ R9 Simultaneous clash. If both sides have armed traps, each is evaluated against
 R10 Restart and epoch. A new match clears every trap. The scheduler epoch advance drops pending
     trigger presentation. A late callback from an older match never mutates the new one.
 
-R13 Round 9. A set in the last round can never spring and is rejected with `trap-too-late`. An already armed trap may
-    still trigger in round 9.
-
 R11 CPU. The CPU reads only its public view (own trap card ID, opponent `{ faceDown, setRound }`). It may set a trap with a deterministic rule (no RNG).
     It cannot see the opponent's card. Legal-action list for the CPU includes `set-trap` only when legal.
 
 R12 Pacing (optional). A fast-play option shortens non-damage pauses only. Damage and defeat
     event order, and the ordering of impacts, is unchanged. No latency is claimed as measured.
+
+R13 Round 9. A set in the last round can never spring and is rejected with `trap-too-late`. An already armed trap may
+    still trigger in round 9.
 
 ## Alternatives and reversal
 
