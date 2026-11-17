@@ -3,6 +3,10 @@
 Author: Kiro CLI 3.4.0 V3. Spec only. Files named below are where a later task would edit; none are edited now.
 Read for this design: `src/game/{state,actions,legal,view,clash}.js`, `src/match/{presenter,scheduler,controller}.js`.
 
+> Update (issue #85, base 769a4fc): the prototype is A + X (shared allowance), not the B + X this file was written
+> for. Sections 2, 3, 5 below describe the `trapSet` (B) variant. For A + X, use `allowances[side].tactical` and the
+> rejection order in `docs/submission/trap-prototype-contract.md`, which wins on any difference. B + X is retained.
+
 ## 1. Delay interpretations
 
 Current turn shape: each round has two action phases (`startingSide` first, then the other), then one
@@ -32,7 +36,8 @@ Card kind: a new `kind: "trap"` (unique card ID, no attack, health or tribute co
 ```
 state.traps = { enabled: bool }                       // only when createMatch(..., { traps: true })
 sides[side].trap = null | { cardId, setRound }        // hidden zone; absent key when flag off
-allowances[side].trapSet = false                      // flag on only; reset each round-start
+allowances[side].trapSet = false                      // B variant only; reset each round-start
+allowances[side].tactical = null                      // A variant: null | "spell" | "trap", reset each round-start
 ```
 When the flag is off, `trap` is not added and `traps` is not added, so `structuredClone(state)` and
 every existing replay are byte-identical to 8ace1ce. `RULES_VERSION` becomes `orb-duel-draft-1+traps`
@@ -42,7 +47,12 @@ only when the flag is on.
 
 Action: `{ type: "set-trap", side, revision, cardId, actionId? }`.
 
-Rejections, first failing wins, added to `REJECTIONS` in `actions.js` after the shared checks
+A variant (prototype): `set-trap` sets `castUsed = true` and `tactical = "trap"`; order is `traps-disabled`,
+`card-not-in-hand`, `not-a-trap`, `trap-too-late` (round === `MAX_ROUNDS`), `trap-zone-full`, `trap-after-spell`;
+`summonRejection` returns `summon-after-trap` and `spellRejection` returns `cast-after-trap` when `tactical === "trap"`.
+Spell paths keep `summon-after-spell` and `cast-used`. Legal list adds `set-trap` only if `!castUsed`, zone empty, round < 9.
+
+B variant, as originally written. Rejections, first failing wins, added to `REJECTIONS` in `actions.js` after the shared checks
 (`match-over`, `invalid-action`, `duplicate-action`, `stale`, `wrong-side`):
 `traps-disabled`, `trap-set-used`, `card-not-in-hand`, `not-a-trap` (spells and troops land here),
 `trap-zone-full`.
@@ -64,6 +74,9 @@ spells and before `end-phase`. Existing order (summons, spells, end-phase) is ke
 3. Event, emitted before the `clash` damage events: `{ type: "trap-trigger", side, cardId, target: { side, slot, cardId }, cancelled: attack }`.
    `damage` events for the cancelled attacker are not emitted. Impact order of the remaining damage is unchanged.
 
+The cancelled attack is removed, so no `damage` event exists for it (X). A reduced or zero `damage` event belongs to Y only.
+Next-turn ordering across rounds is in the contract section 5.
+
 Because the `clash` event is emitted just before `resolveClash`, the order is `clash`, `trap-trigger*`,
 `damage*`, `defeat*`. Presenter groups damage events, so `trap-trigger` plays as one pause-type event.
 
@@ -74,7 +87,8 @@ Because the `clash` event is emitted just before `resolveClash`, the order is `c
 - Events to the opponent: `trap-set` is redacted to `{ type, side, revision, actionId }` (no `cardId`),
   matching how `draw` already hides the card. `trap-trigger` is public, since the card is revealed on use.
 - `discard` already public, so the spent card is visible then.
-- CPU: `chooseAction(publicState(state, "wizard"))` sees only its own trap. Rule sketch (no RNG):
+- Flag-on `allowances` of the opponent need not be exposed; `tactical` is shown only on the viewer's side.
+- CPU (A variant rule: summon first, then set a held trap if zone empty and round < 9, else cast, else end): `chooseAction(publicState(state, "wizard"))` sees only its own trap. Rule sketch (no RNG):
   set a trap card whenever it holds one, the zone is empty and `trapSet` is false; no RNG. Final rule is a later task.
 
 ## 6. Presenter and restart
