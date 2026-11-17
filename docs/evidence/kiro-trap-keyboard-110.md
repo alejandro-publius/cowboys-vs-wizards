@@ -1,6 +1,6 @@
 # Trap placeholder lab: keyboard focus (issue #110)
 
-Date: 2026-11-17 (America/Los_Angeles). Worker: Kiro (single worker, Kiro IDE session reporting model `claude-opus-5.5`). The coordinator verified CLI 3.4.0 and the model at launch. No credit or usage metadata was emitted into this session, so none is recorded here. Base: main `a723a22` (PR #109 merged). One local commit. Not pushed.
+Date: 2026-11-17 (America/Los_Angeles). Worker: Kiro (single worker, Kiro IDE session reporting model `claude-opus-5.5`). The coordinator verified CLI 3.4.0 and the model at launch. The completed Kiro CLI V3 stream selected claude-opus-5.5 and reported 17.09867163150912 session credits (metadata, not an account invoice). Base: main `a723a22` (PR #109 merged). One local commit. Not pushed.
 
 ## Problem
 
@@ -58,3 +58,26 @@ Not exercised: the hand-card fallback (no hand card was playable at a restore po
 ## Limits
 
 Chrome automation only. This is not a screen reader test, a human keyboard test or a visual review. Remaining caveats are in the README: Cancel leaves focus on itself while disabled, and no restore happens after the match ends. Fixture traps stay synthetic; card identities, copy counts, art, models, animation and sound stay owner-blocked. `docs/kiro-build-log.md` is coordinator-owned and was not edited in this task.
+
+
+## Independent coordinator verification
+
+After the Kiro-authored commit a4de771 and runFinished, the
+coordinator independently inspected all four scoped files and reran:
+
+- Chrome keyboard test: 1/1 passed, using actual Chrome key events
+  across seeds 0 and 60 and 32 test assertions. Duration ~46 seconds.
+- Previous local placeholder tests: 7/7 passed.
+- Full npm test: 306/306 Node tests passed, plus 2/2 existing GLB
+  structural checks, not a visual-animation-quality result.
+- Documentation: 172 Markdown files, 617 links, 0 broken.
+- git diff HEAD^ HEAD --check: passed.
+- Base SHA checked: a723a224ef84698533abfa96ce2663f0f045e82e.
+- CLI version 3.4.0 verified at launch, model availability confirmed.
+  V3 JSONL selected claude-opus-5.5 and reported
+  17.09867163150912 session credits (not an invoice).
+
+The coordinator authored this follow-up separately from Kiro's code
+and tests. Chrome automation is not a human keyboard or screen-reader
+evaluation. Production UI/cards/decks/models/animation/art/audio and
+deployment/public flag remain unchanged.
