@@ -5,8 +5,8 @@
 // injected renderer.
 //
 // createController(...) returns:
-//   start(seed?)    undefined: generate a seed. A safe integer, as a number or
-//                   a string of digits with an optional minus: pin it. Anything
+//   start(seed?)    undefined: generate a seed. An integer 0..4294967295, as a
+//                   number or a string of digits: pin it. Anything
 //                   else sets message() and returns false, leaving the match as is.
 //   restart()       start() with the pinned seed, or with a newly generated one
 //   leave()         mode switch away: cancel everything, clear the renderer, status idle
@@ -40,7 +40,7 @@ import { emptySelection, selectionOptions, selectionStep } from "./selection.js"
 
 const HUMAN = "cowboy";
 const CPU = "wizard";
-const SEED_MESSAGE = "Seed must be a whole number.";
+const SEED_MESSAGE = "Seed must be a whole number from 0 to 4294967295.";
 
 // Engine rejection reasons as short messages for the player.
 const REJECTIONS = {
@@ -65,13 +65,14 @@ const REJECTIONS = {
 };
 const readable = (reason) => REJECTIONS[reason] ?? `The move was refused (${reason}).`;
 
-// A supplied seed: a safe integer, given as a number or as a string of digits
-// with an optional leading minus. Returns null for anything else.
+// A supplied seed: an unsigned 32-bit integer (0..4294967295), given as a number
+// or a string of digits. Returns null for anything else.
+const MAX_SEED = 4294967295;
 function parseSeed(seed) {
-  if (typeof seed === "string" && !/^-?\d+$/.test(seed)) return null;
+  if (typeof seed === "string" && !/^\d+$/.test(seed)) return null;
   if (typeof seed !== "string" && typeof seed !== "number") return null;
   const value = Number(seed);
-  return Number.isSafeInteger(value) ? value : null;
+  return Number.isInteger(value) && value >= 0 && value <= MAX_SEED ? value : null;
 }
 
 export const FABLE_ENGINE = Object.freeze({ createMatch, applyAction, legalActions, publicState });
