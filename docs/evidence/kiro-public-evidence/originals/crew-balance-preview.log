@@ -1,0 +1,28 @@
+{
+  "revision": "36ecede",
+  "seeds": [
+    0,
+    999
+  ],
+  "matches_per_variant": 1000,
+  "results": {
+    "baseline": {
+      "cowboy_wins": 425,
+      "wizard_wins": 472,
+      "draws": 103,
+      "first_seat_wins": 583,
+      "second_seat_wins": 314,
+      "skeleton_matches": 1000
+    },
+    "skeleton-health-4": {
+      "cowboy_wins": 222,
+      "wizard_wins": 663,
+      "draws": 115,
+      "first_seat_wins": 481,
+      "second_seat_wins": 404,
+      "skeleton_matches": 1000
+    }
+  }
+}
+
+✅ Completed (no exception raised)

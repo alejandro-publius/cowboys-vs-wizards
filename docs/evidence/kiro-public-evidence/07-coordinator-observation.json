@@ -1,0 +1,35 @@
+{
+  "kind": "coordinator-observation-summary",
+  "notOriginalCliLog": true,
+  "agent": "Kiro CLI",
+  "engine": "v3",
+  "version": "3.3.0",
+  "modelOverride": null,
+  "observedRunnerPid": 66716,
+  "observedChildPid": 66719,
+  "observedStartUtc": "2026-11-17T01:32:20.369507+00:00",
+  "worktreeLabel": "kiro-evidence-reproduction",
+  "baseCommit": "599450a27703fbdb8961d626c3e779512f54f29e",
+  "setupCommit": "b7ab959",
+  "workerCommit": "4321ba40156a8b49e35602dbb23ed562dc8d9d85",
+  "sources": [
+    "Codex remote tool output observed running receipt before cleanup",
+    "Codex remote tool output observed run.log with Kiro Powers, Tool Load and inspect_duel_replay calls",
+    "Codex git/process inspection after worker commit"
+  ],
+  "observedToolSequence": [
+    "Kiro Powers",
+    "Tool Load",
+    "@orb-duel-review/inspect_duel_replay (matching standalone)",
+    "@orb-duel-review/inspect_duel_replay (matching showcase)",
+    "@orb-duel-review/inspect_duel_replay (stale standalone)",
+    "@orb-duel-review/inspect_duel_replay (stale showcase)"
+  ],
+  "limitations": [
+    "Launcher/log directory was absent after worker completion; removal cause not established from retained output.",
+    "Final process exit code unavailable.",
+    "Actual model id unavailable.",
+    "This summary is not a preserved original session transcript.",
+    "MCP result JSON is retained in 06-power-mcp-calls.json; this summary establishes observed execution provenance, not a new browser replay."
+  ]
+}

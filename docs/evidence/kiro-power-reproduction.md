@@ -10,7 +10,7 @@ Date: 2026-11-16 (America/Los_Angeles). Branch `kiro/evidence-reproduction`.
 
 | Item | Observed |
 | --- | --- |
-| Session client | Kiro IDE (from the session header); model selector shows Auto. No concrete model id was visible. |
+| Session client | Kiro CLI 3.3.0, explicitly launched with `chat --v3 --no-interactive` by Codex. No model override was passed; the actual model id was not recorded in the observed output. The original worker note misidentified this as the IDE; Codex corrected it during review. |
 | Installed apps | `/Applications/Kiro.app` CFBundleShortVersionString 1.4.178 (installed copy; not proof of the running build). `kiro-cli --version` prints 3.3.0. |
 | Worktree HEAD | `b7ab959` on `599450a` |
 
@@ -80,3 +80,9 @@ I then restored the copied HTML from the source and re-verified SHA-256 `b4e913d
 - The workspace server, not the installed server, produced the verdicts.
 - No visual, fun or current-release claim is made. Receipts do not show appearance.
 - `docs/kiro-build-log.md` and other shared docs were not edited here; the coordinator owns them.
+
+## Coordinator review and launch-record limitation
+
+Codex observed the actual CLI V3 process (PID 66719, runner 66716), the running receipt at 2026-11-17T01:32:20.369507+00:00, and the run log showing Kiro Powers loading, Tool Load and four MCP calls before completion. On the next check, commit `4321ba4` existed and both processes had exited, but the ignored `.artifacts/kiro-evidence-reproduction` launch/log directory was gone. The exact exit code and full current-session transcript therefore cannot be recovered from that launcher. [07-coordinator-observation.json](kiro-public-evidence/07-coordinator-observation.json) records those observations, explicitly as a coordinator summary, not original CLI output. The recovered historical originals and copied matching replay inputs remain available.
+
+Codex also checked every manifest file against its published SHA-256 and included the two evidence `.log` files omitted by the repository-wide ignore rule. These review corrections are Codex work; the recovery and Power/MCP execution remain Kiro work.
