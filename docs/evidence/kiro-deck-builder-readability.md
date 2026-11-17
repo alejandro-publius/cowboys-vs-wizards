@@ -42,3 +42,6 @@ Tasks 8 to 16 in `tasks.md`: measurements at 1280px and 390px (art width, 16px t
 | Honest status and attribution | this file |
 
 No hook, custom agent, property-based test or MCP tool ran for this task.
+
+## Subsequent ownership handoff
+Fable hit its reported usage limit before tracked UI edits. The approved brief transferred to actual Kiro CLI on branch kiro/readable-deck-workbench. This does not change who authored the original specification; implementation and browser acceptance remain separate evidence.

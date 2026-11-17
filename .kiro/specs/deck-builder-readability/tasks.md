@@ -7,7 +7,7 @@ Checked means done and evidenced. Nothing below is checked unless it was actuall
 - [x] 2. Write `design.md` with requirement-to-QA mapping
 - [x] 3. Write this checklist and `docs/evidence/kiro-deck-builder-readability.md`
 
-## Implementation (Fable, separate branch; pending)
+## Implementation (Kiro, separate branch; pending after Fable quota stop)
 - [ ] 4. Catalog and chosen-deck layout, R1, R2, R4, R5
 - [ ] 5. Add/remove control size, keyboard and focus, R3
 - [ ] 6. Mobile tabs or stack, R6
