@@ -1,4 +1,5 @@
 import { CARDS, SPELL_DAMAGE, opponent, tributeCost } from "./cards.js";
+import { MAX_ROUNDS } from "./state.js";
 
 // Ascending-order subsets of `items` with `size` members.
 function combinations(items, size) {
@@ -8,11 +9,14 @@ function combinations(items, size) {
 
 // Every action `side` may submit now, each accepted as is by applyAction.
 // Empty when it is not that side's phase or the match is over. Order is
-// fixed: summons, then spells, both in hand order, then end-phase last.
+// fixed: summons, then spells, then trap sets (trap matches only), each in
+// hand order, then end-phase last.
 // Tributes are listed in ascending slot order only; applyAction also accepts
 // the same slots in another order, which changes nothing.
 // `state` may be the full state or publicState(state, side) for the same side.
-export function legalActions(state, side) {
+// `options.cards` replaces CARDS for kind lookups, as in applyAction; it must
+// hold every CARDS entry unchanged (tests add one fixture trap card).
+export function legalActions(state, side, { cards = CARDS } = {}) {
   if (state.result || state.activeSide !== side) return [];
   const { hand, board } = state.sides[side];
   if (!hand) throw new TypeError("legalActions needs that side's hand; a public view holds only its viewer's");
@@ -25,8 +29,8 @@ export function legalActions(state, side) {
   if (!summonUsed && !castUsed) {
     const occupied = slots.filter((slot) => board[slot] !== null);
     for (const cardId of hand) {
-      if (CARDS[cardId].kind !== "troop") continue;
-      for (const tributes of combinations(occupied, tributeCost(CARDS[cardId].stars))) {
+      if (cards[cardId].kind !== "troop") continue;
+      for (const tributes of combinations(occupied, tributeCost(cards[cardId].stars))) {
         for (const slot of slots) {
           if (board[slot] !== null && !tributes.includes(slot)) continue;
           actions.push({ type: "summon", ...base, cardId, slot, tributes });
@@ -37,15 +41,21 @@ export function legalActions(state, side) {
 
   if (!castUsed) {
     for (const cardId of hand) {
-      if (CARDS[cardId].kind !== "spell") continue;
+      if (cards[cardId].kind !== "spell") continue;
       for (const target of slots) {
         if (enemyBoard[target] === null) continue;
         actions.push({ type: "spell", ...base, cardId, target });
-        if (!CARDS[cardId].relocates || enemyBoard[target].health <= SPELL_DAMAGE) continue;
+        if (!cards[cardId].relocates || enemyBoard[target].health <= SPELL_DAMAGE) continue;
         for (const destination of [target - 1, target + 1]) {
           if (enemyBoard[destination] === null) actions.push({ type: "spell", ...base, cardId, target, destination });
         }
       }
+    }
+  }
+
+  if (state.traps?.enabled === true && !castUsed && state.round < MAX_ROUNDS && state.sides[side].trap === null) {
+    for (const cardId of hand) {
+      if (cards[cardId]?.kind === "trap") actions.push({ type: "set-trap", ...base, cardId });
     }
   }
 
