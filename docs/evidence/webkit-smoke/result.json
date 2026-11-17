@@ -1,0 +1,59 @@
+{
+  "check": "Playwright WebKit on a desktop; not Safari on an iPhone",
+  "date": "2026-11-17T05:27:59.459Z",
+  "commit": "c65f49e7bd70ef81244d83d906f9e6521bef3020",
+  "url": "http://127.0.0.1:8123/?mode=match&deck=starter&seed=0",
+  "browser": {
+    "name": "webkit",
+    "version": "27.2",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15"
+  },
+  "os": "Darwin 25.6.0 arm64",
+  "viewport": "1440x900",
+  "webgl": "webgl2",
+  "steps": [
+    {
+      "name": "title menu appears",
+      "seen": true,
+      "detail": "Play button visible: \"Play\"",
+      "screenshot": "01-title-menu-appears.png"
+    },
+    {
+      "name": "match starts with seed 0",
+      "seen": true,
+      "detail": "status accepting_input, 4 cards in hand",
+      "screenshot": "02-match-starts-with-seed-0.png"
+    },
+    {
+      "name": "3D board has WebGL 2 or the fallback is shown",
+      "seen": true,
+      "detail": "WebGL 2 context: WebGL 2.0, canvas 1440x900",
+      "screenshot": "03-3d-board-has-webgl-2-or-the-fallback-is-shown.png"
+    },
+    {
+      "name": "card chosen",
+      "seen": true,
+      "detail": "selected cowboy-sheriff-5",
+      "screenshot": "04-card-chosen.png"
+    },
+    {
+      "name": "lane picked",
+      "seen": true,
+      "detail": "picked \"Your lane 1: empty\"; Confirm is enabled",
+      "screenshot": "05-lane-picked.png"
+    },
+    {
+      "name": "troop summoned",
+      "seen": true,
+      "detail": "Sheriff 3/3 | Empty | Empty",
+      "screenshot": "06-troop-summoned.png"
+    },
+    {
+      "name": "no console errors",
+      "seen": true,
+      "detail": "0 console errors",
+      "screenshot": "07-no-console-errors.png"
+    }
+  ],
+  "consoleErrors": []
+}
