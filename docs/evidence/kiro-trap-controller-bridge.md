@@ -3,8 +3,8 @@
 Date: 2026-11-17 (America/Los_Angeles). Base: `main` at a8d1bba, after T1-T7
 (T7 #103). Branch `kiro/trap-controller-104`. Work done by Kiro using Kiro CLI
 3.4.0 (verified by `kiro-cli --version`). The session context names
-`claude-opus-5.5` as the current model. No session-credit figure was emitted
-inside this session, so none is recorded here.
+`claude-opus-5.5` as the current model. Kiro V3 stream metadata recorded **8.291599298839138 session credits**
+(its own usage reading, not a billing invoice).
 Headless only: no 3D, model, sound, art, animation, UI flag, renderer method,
 `src/game`, `selection.js`, card, deck, package or CI change. The trap flag
 stays off by default; this is not production activation.
@@ -84,3 +84,28 @@ No browser replay, human playtest or deploy was run.
 - The comment above `publicEvents` in `src/game/view.js` still says it is not
   used by the controller ("wiring is T6"). It is now used; `src/game` was not
   in scope.
+
+
+## Independent coordinator verification
+
+After the Kiro-authored b492086 commit and the worker runFinished event,
+the coordinator inspected the full three-file change and reran:
+
+- node --test tests/match/trap-controller.test.js tests/match/controller.test.js:
+  **14/14 pass**.
+- npm test: **299/299 Node tests pass**, 2/2 GLB structural checks (no
+  animation or visual-quality conclusion).
+- node scripts/check-links.mjs: 168 Markdown files, 611 relative links and
+  images, **0 broken**.
+- git diff HEAD^ HEAD --check: **pass**.
+- Kiro CLI version 3.4.0 and selected model claude-opus-5.5.
+  Final session metadata reported 8.291599298839138 credits.
+- Base SHA: a8d1bba1d5274236908de16946c4637c84e9097b.
+
+This note was added by the coordinator, separately from Kiro's authored
+controller patch and test file. The test-only fixture does NOT establish
+released-game compatibility when a trap is selected by the current card
+workbench. The observed controller.options()/selectionOptions crash in
+synthetic fixture mode is outside this PR and must remain a separate
+developer-only placeholder interaction task. No real browser/3D/human
+playtest was run.
