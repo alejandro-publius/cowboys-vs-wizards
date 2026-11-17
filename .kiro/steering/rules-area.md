@@ -9,4 +9,4 @@ fileMatchPattern: ["src/game/**", "scripts/verify-duel.mjs", "scripts/simulate-m
 - Numeric rules and known contradictions are in `docs/kiro-task-01.md`. Do not invent mechanics to fill gaps.
 - Card specs are generated (`card-specs.generated.js`). Change specs under `.kiro/specs/duel-card-pipeline/cards/`, then run `sh scripts/check-card-specs.sh`.
 - Apply each action once. Keep replay deterministic for a given seed. Health orbs stay between one and five per living troop.
-- Smallest check: `node scripts/verify-duel.mjs`. No renderer build needed.
+- Run the closest affected rules test first; `node scripts/verify-duel.mjs` is the broader integration check. No renderer build needed.

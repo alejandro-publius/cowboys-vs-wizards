@@ -189,7 +189,8 @@ async function launch(){
     const state=controller.status(),options=controller.options(),displayed=controller.displayed();
     if(state==="terminal"&&displayed?.result)profile.record("match-complete",{matchId:matchRun,won:displayed.result.outcome==="win"});
     matchView.discards(displayed);
-    if(state!=="playing")clashShown=clashNext;
+    // Publish only after playback drains successfully; error/leave must not announce an unfinished clash.
+    if(["accepting_input","cpu_turn","terminal"].includes(state))clashShown=clashNext;
     overlay.render(cardModel({displayed,options,status:state,
       seed:controller.seed(),seedPinned:controller.seedPinned(),message:controller.message(),clashLog:clashShown}));
     board.highlight(state==="accepting_input"&&options?{cowboy:options.ownSlots,wizard:options.enemySlots}:{});

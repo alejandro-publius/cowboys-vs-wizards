@@ -14,7 +14,12 @@ import { CARDS } from "../../src/game/cards.js";
 import { clashLog } from "../../src/match/clash-log.js";
 import { makeBot, playMatch } from "../../scripts/play-match.mjs";
 
-const SEEDS = process.env.CLASH_LOG_SEED === undefined ? Array.from({ length: 200 }, (_, seed) => seed) : [Number(process.env.CLASH_LOG_SEED)];
+const replayValue = process.env.CLASH_LOG_SEED;
+const replayMode = replayValue !== undefined;
+if (replayMode && (!/^-?\d+$/.test(replayValue) || !Number.isSafeInteger(Number(replayValue)))) {
+  throw new RangeError("CLASH_LOG_SEED must be a safe integer");
+}
+const SEEDS = replayMode ? [Number(replayValue)] : Array.from({ length: 200 }, (_, seed) => seed);
 const PAIRINGS = [["cpu", "cpu"], ["cpu", "random"], ["random", "cpu"], ["random", "random"]];
 const DESCRIBED = new Set(["spell", "damage", "defeat"]);
 const CARD_NAMES = [...new Set(Object.values(CARDS).map((card) => card.name))];
@@ -66,7 +71,7 @@ function allowed(event) {
   return { names: [named(event.cardId)], numbers: [event.slot + 1] };
 }
 
-test("generated clash batches cover each event kind and both simultaneous directions", () => {
+test("generated clash batches cover each event kind and both simultaneous directions", {skip: replayMode ? "Coverage belongs to the full corpus; replay runs the five behavior properties." : false}, () => {
   assert.ok(ALL.length >= 800, `only ${ALL.length} clash batches generated`);
   const seen = { baseHit: 0, troopHit: 0, spell: 0, move: 0, defeat: 0, simultaneous: 0 };
   for (const { events } of ALL) {
