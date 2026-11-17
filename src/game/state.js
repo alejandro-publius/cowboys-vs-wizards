@@ -7,6 +7,9 @@ export const OPENING_HAND = 4;
 export const MAX_ROUNDS = 9;
 // Names the rule set in reports. Change it whenever a rule or card value changes.
 export const RULES_VERSION = "orb-duel-draft-1";
+// Names the opt-in trap prototype (A + X, issue #89 T1). Stored only on matches
+// created with `traps: true`; RULES_VERSION is unchanged for default matches.
+export const TRAP_RULES_VERSION = "trap-ax-proto-1";
 
 // mulberry32 step. The whole generator is one uint32, so it lives in the
 // match state as a plain number and replays from a seed are identical.
@@ -33,9 +36,12 @@ function shuffle(ids, rng) {
 // New match from an integer seed and optional Cowboy deck. Restart custom
 // matches with the same seed and deck. RNG draws happen in a fixed order: cowboy shuffle, wizard
 // shuffle, starting side. Nothing after setup draws from the RNG. Index 0 of
-// a deck is its top.
-export function createMatch(seed, { cowboyDeck } = {}) {
+// a deck is its top. `traps: true` adds an empty trap zone per side, a
+// `tactical: null` allowance per side and a `traps` version key; it draws no
+// extra RNG and leaves decks and hands unchanged. Off (the default) adds nothing.
+export function createMatch(seed, { cowboyDeck, traps = false } = {}) {
   if (!Number.isInteger(seed)) throw new TypeError("seed must be an integer");
+  if (typeof traps !== "boolean") throw new TypeError("traps must be a boolean");
   if (cowboyDeck !== undefined) {
     const result = validateDeckIds(cowboyDeck);
     if (!result.ok) throw new TypeError(result.error);
@@ -53,10 +59,11 @@ export function createMatch(seed, { cowboyDeck } = {}) {
       board: Array(SLOT_COUNT).fill(null),
       discard: [],
     };
+    if (traps) sides[side].trap = null;
   }
   const start = nextRandom(rng);
   const startingSide = SIDES[Math.floor(start.value * SIDES.length)];
-  return {
+  const match = {
     seed,
     revision: 0, // +1 per accepted action
     rng: start.rng,
@@ -64,9 +71,13 @@ export function createMatch(seed, { cowboyDeck } = {}) {
     startingSide, // acts first this round; alternates every round
     activeSide: startingSide, // whose action phase it is; null once the match is over
     // Each side's one summon and one cast for the current round.
-    allowances: Object.fromEntries(SIDES.map((side) => [side, { summonUsed: false, castUsed: false }])),
+    allowances: Object.fromEntries(
+      SIDES.map((side) => [side, traps ? { summonUsed: false, castUsed: false, tactical: null } : { summonUsed: false, castUsed: false }]),
+    ),
     actionIds: [], // IDs of accepted actions that supplied one
     result: null, // { winner, loser, reason, round } once the match is over
     sides,
   };
+  if (traps) match.traps = TRAP_RULES_VERSION;
+  return match;
 }
