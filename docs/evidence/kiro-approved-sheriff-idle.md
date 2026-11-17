@@ -1,5 +1,5 @@
 # Approved Sheriff idle in the match (Kiro runtime integration)
-November 16, 2026, America/Los_Angeles. Branch `kiro/approved-sheriff-idle`, from 849ecce. Local only: not pushed, merged or deployed. **Not yet visually verified**: only numerical Node checks and one build were run.
+November 16, 2026, America/Los_Angeles. Branch `kiro/approved-sheriff-idle`, from 849ecce. This worker receipt began as a local handoff with only numerical checks and a build. Codex subsequently reviewed the actual match and integrated the change into draft PR #13; see the coordinator review below. Not merged or deployed.
 
 ## Credits
 - Art: the user's Tripo Sheriff, `assets/models/sheriff.glb`, unchanged (geometry, material and rig).
@@ -35,7 +35,7 @@ No game rule, damage or engine code was touched; `src/main.js` and `rig.js` were
 - Not run: Wizard test (shared idle code unchanged), full suites, browser capture, Blender.
 
 ## Remaining limits
-- Not visually verified. The coordinator must review it in the actual match.
+- The original worker handoff required actual-match review; the completed coordinator review is recorded below.
 - The clip's first frame is a Mixamo standing pose, not the Sheriff's procedural rest pose. Cues start and end in the rest pose, so the pose cuts when the idle starts and stops (no blend was added). The clip repeats back to back; its last and first frames differ by at most 3.4e-4.
 - The head turns up to 42.5 degrees from the first frame (local quaternion angle); the source evidence quotes 34.81 degrees by another measure.
 - The seated lift keeps the lowest foot on the tile; the other boot may hover if the clip lifts it. The holstered revolver follows the hips' translation but not their rotation.
@@ -48,3 +48,5 @@ Codex reviewed the actual seed-0 match in Chrome after this commit. A 300-frame 
 The visible idle-to-attack pose change remains abrupt; this is a remaining polish item. The new seating uses the tile origin and boot vertices below 0.02 model units; the earlier approved preview raycast the tile surface and selected foot vertices below 0.13. These are not identical algorithms.
 
 Local capture receipt: `.artifacts/kiro-approved-sheriff-idle/visual/capture.json` in the Kiro worktree. The preview camera parameter produced the normal board view in this build; the shared close video is an explicit crop of that actual match recording.
+
+Final combined branch: `node scripts/verify-duel.mjs` passed 134/134 tests and both shipped animated GLB structural checks; build and `git diff --check` passed.
