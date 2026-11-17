@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "check": "node scripts/verify-scene.mjs"
+    "check": "node scripts/verify-scene.mjs",
+    "test": "node scripts/verify-duel.mjs"
   },
   "dependencies": {
     "three": "0.180.0",

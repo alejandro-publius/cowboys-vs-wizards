@@ -36,6 +36,7 @@ Follow the tested seed 60 route to the Mounted Billy and Dragon clash. [Seed 60 
 | --- | --- |
 | Title screen, settings, custom deck and pause/resume in Chrome | `node scripts/browser-menu-check.mjs http://127.0.0.1:PORT/?seed=0` (serve `dist/web/` first) |
 | Game, presenter and asset tests | `node scripts/verify-duel.mjs` |
+| The same tests by their npm name, as run on every pull request | `npm test` |
 | The same tests, a fresh build and an eight-step Chrome replay | `node scripts/verify-duel.mjs --browser` |
 | Attack demo geometry, grip and event order | `npm run check` |
 | A seeded rules trace | `node scripts/play-match.mjs --seed 60` |
