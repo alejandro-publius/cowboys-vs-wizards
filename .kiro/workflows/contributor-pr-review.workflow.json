@@ -1,0 +1,30 @@
+{
+  "name": "contributor-pr-review",
+  "description": "Review one frozen contributor PR (default: #40 clash log, issue #29): inspect its diff against the issue's acceptance list, run the affected checks, replay it in headless Chrome from a local HTTP build with the opt-in flag on and off, and report concrete bugs and acceptance gaps. Read-only for source; artifacts go to .artifacts/kiro/contributor-review-40/.",
+  "steps": [
+    {
+      "type": "step",
+      "id": "inspect-diff",
+      "agent": "wf-code-reviewer",
+      "prompt": "Review candidate 4fb0f88eeb5109d38db367f1fbcaf4c4fe8589ce (PR #40) against base c65f49e7bd70ef81244d83d906f9e6521bef3020. Do not edit any file. First run `git rev-parse HEAD` and `git diff --stat c65f49e7bd70ef81244d83d906f9e6521bef3020 4fb0f88eeb5109d38db367f1fbcaf4c4fe8589ce` and confirm the six changed files are src/main.js, src/match/clash-log.js, src/ui/card-model.js, src/ui/cards.js, src/ui/match.css and tests/match/clash-log.test.js; report any difference. Read the full diff of those six files, the '# Issue 29' section of .artifacts/dispatch-inputs/feature-briefs.md (the acceptance list) and .artifacts/dispatch-inputs/pr40.md (the author's claims). For each acceptance item give: met / not met / unverifiable by reading, with file and line evidence. Look for concrete behavior bugs: stale or lost events between roundEvents and the clash, log state across a new match, anything visible or added to the DOM without ?log=1, hidden Wizard information, live-region announcements repeating, layout overlap. Do not report style preferences. Give each finding a severity (bug, acceptance gap, or note) and a reproduction idea. Write the result to .artifacts/kiro/contributor-review-40/inspect-diff.md and put the same content in the final response."
+    },
+    {
+      "type": "step",
+      "id": "run-checks",
+      "agent": "wf-coder",
+      "prompt": "Previous step findings:\n{{inspect-diff.output}}\n\nIn the project root, confirm `git rev-parse HEAD` is 4fb0f88eeb5109d38db367f1fbcaf4c4fe8589ce; if not, stop and report. Do not edit source and do not run npm install or npm ci (node_modules is a shared read-only symlink). Run these as separate shell calls and record each literal Command, Exit status and the pass/fail counts: (1) `node --test tests/match/clash-log.test.js`; (2) `node scripts/verify-duel.mjs`; (3) `npm run build`. Also run `node scripts/browser-match-check.mjs --showcase --summary --out-dir .artifacts/kiro/contributor-review-40/default-file` once against the file:// build, to record the default-mode replay as the repo's script runs it. Save the combined output to .artifacts/kiro/contributor-review-40/run-checks.txt. Final response: a table of Command, Exit status, counts, and the first failure if any."
+    },
+    {
+      "type": "step",
+      "id": "browser-replay",
+      "agent": "wf-coder",
+      "prompt": "Checks result:\n{{run-checks.output}}\n\nIf the build in dist/ was not produced, report this step as blocked and stop. Do not edit tracked files. Work only under .artifacts/kiro/contributor-review-40/. Serve dist/ over local HTTP with `python3 -m http.server <free port> --bind 127.0.0.1 --directory dist` started in the background; record its PID and stop only that PID when done. Page path: /cowboys-vs-wizards-board-duel.html. Run two replays with `node scripts/browser-match-check.mjs --showcase --summary --url '<page URL>?mode=match&deck=starter&seed=60&log=1' --out-dir .artifacts/kiro/contributor-review-40/http-log-on` and the same without `&log=1` into `.../http-log-off`. Record each literal Command, Exit status, observed steps out of 4, console errors, SHA-256, and receipt path, and whether the two hashes match. The stock script does not read the log element, so make a temporary instrumented copy of scripts/browser-match-check.mjs at .artifacts/kiro/contributor-review-40/probe-check.mjs (change relative imports to absolute file paths into the project; the only behavior change is that, after the showcase's round-5 end-phase clash has settled and again at the end, it evaluates and records: count of `.match-clash-log` elements, count of `[aria-live]` elements, `#match` child count, and the section's role, aria-live and textContent/li lines). Run the probe for log=1 and for log omitted, with --out-dir under the same artifacts folder, and report the recorded values. Compare the seed-60 round-5 lines on screen with the expected event facts (Sheriff hits Wizard Base 3 to 2, Mounted Billy hits Dragon 5 to 2, Dragon hits Mounted Billy 3 to 0, Mounted Billy defeated); if possible also dump the engine events for that clash via a small node script that imports src/game and src/match/clash-log.js so text and events can be compared line by line. Check that the element is absent without the parameter and that the log persists after the clash and is replaced, not appended, on a later clash. Close the HTTP server and the probe's Chrome only if you started them. Any step that could not run: record the literal error and mark it blocked, never success. Save a summary to .artifacts/kiro/contributor-review-40/browser-replay.md."
+    },
+    {
+      "type": "step",
+      "id": "report",
+      "agent": "wf-code-reviewer",
+      "prompt": "Combine the three results without re-running anything.\nDiff review:\n{{inspect-diff.output}}\nChecks:\n{{run-checks.output}}\nBrowser:\n{{browser-replay.output}}\nWrite .artifacts/kiro/contributor-review-40/report.md only. Sections: Candidate (SHA, base), Acceptance table (each #29 item, verdict, evidence), Confirmed bugs, Acceptance gaps, Checks run (command, exit, counts), Browser replay (log on vs off, steps, errors, hashes), Pending or blocked. Include only findings backed by an observation or a file and line; mark anything else pending and name the step that omitted it. Do not include style comments. End with a one-line verdict: ready, ready with gaps, or not ready."
+    }
+  ]
+}
