@@ -27,7 +27,15 @@ All choices come from the existing `legalActions`. The lab adds no rule.
 - End phase calls `controller.endPhase()`.
 - The Wizard CPU runs through the existing controller and scheduler (`requestAnimationFrame` drives `scheduler.tick`). Restart and Leave advance the scheduler epoch, so a queued CPU step from the old match is dropped.
 
-Known limit: buttons are disabled while a move plays, so keyboard focus can drop back to the page and you may need to Tab again.
+Keyboard focus (issue #110): every control is disabled while a move plays. If you used the keyboard (Enter or Space) for an accepted action, the lab returns focus at the next `accepting_input` to the same control if it is still enabled, otherwise to the first playable hand card, otherwise to End phase. It does nothing after a mouse action or any pointer press, or when you moved focus to another enabled control during playback. It never presses a button for you.
+
+Remaining caveats, from a Chrome automation run only: Cancel disables itself after clearing a selection, so focus stays on a disabled Cancel until you Tab (Tab and Shift+Tab still move from it). If the match ends, focus is not restored. Nobody has tested this with a screen reader or with human keyboard users.
+
+```sh
+node --test tests/experiments/trap-placeholder-keyboard.test.js
+```
+
+This drives installed Google Chrome over the DevTools protocol on a 127.0.0.1 server it starts itself. It skips when Chrome is not at the default macOS path.
 
 ## Data boundary
 
@@ -39,4 +47,4 @@ The DOM reads only `controller.view()`, `displayed()`, `options()`, `status()` a
 node --test tests/experiments/trap-placeholder.test.js
 ```
 
-Evidence: [docs/evidence/kiro-trap-placeholder-108.md](../../docs/evidence/kiro-trap-placeholder-108.md).
+Evidence: [docs/evidence/kiro-trap-placeholder-108.md](../../docs/evidence/kiro-trap-placeholder-108.md) and [docs/evidence/kiro-trap-keyboard-110.md](../../docs/evidence/kiro-trap-keyboard-110.md).

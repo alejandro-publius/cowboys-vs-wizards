@@ -14,6 +14,33 @@ const scheduler = createScheduler();
 scheduler.tick(performance.now());
 const { controller, events } = createLab({ scheduler, onChange: () => render() });
 
+// Issue #110: an accepted action disables every control while it plays, so a
+// keyboard user's focus drops to the page. `keyed` remembers the control that
+// a keyboard press (click with detail 0) used for such an action; the next
+// accepting_input render puts focus back on it, or on the first playable hand
+// card, or on End phase. Nothing is restored after a mouse action, after any
+// pointer press, or when the user has moved focus to another usable control.
+let keyed = null;
+const usable = (node) => node instanceof HTMLButtonElement && node.isConnected && !node.disabled && node.getClientRects().length > 0;
+function act(run) {
+  return (event) => {
+    run();
+    const target = event.currentTarget;
+    keyed = event.detail === 0 && controller.status() !== "accepting_input" ? { id: target.id, key: target.dataset.key } : null;
+  };
+}
+addEventListener("pointerdown", () => (keyed = null), true);
+function restoreFocus(status) {
+  if (!keyed || status === "playing" || status === "submitting" || status === "cpu_turn") return;
+  const want = keyed;
+  keyed = null;
+  const active = document.activeElement;
+  if (status !== "accepting_input" || (active && active !== document.body && active.isConnected && !active.disabled)) return;
+  const match = want.id ? $(want.id) : [...document.querySelectorAll("#hand button, #commands button")].find((b) => b.dataset.key === want.key);
+  const target = [match, ...$("hand").querySelectorAll("button"), $("end-phase")].find(usable);
+  target?.focus();
+}
+
 // Lanes are created once and updated in place so focus survives a redraw.
 const lanes = {};
 for (const side of [ENEMY, VIEWER]) {
@@ -21,7 +48,7 @@ for (const side of [ENEMY, VIEWER]) {
   for (let slot = 0; slot < SLOT_COUNT; slot++) {
     const button = document.createElement("button");
     button.type = "button";
-    button.addEventListener("click", () => controller.input({ type: "slot", side, slot }));
+    button.addEventListener("click", act(() => controller.input({ type: "slot", side, slot })));
     $(`${side}-lanes`).append(button);
     lanes[side].push(button);
   }
@@ -114,7 +141,7 @@ function render() {
         label: `${cardName(cardId)}${stats}`,
         disabled: !accepting || !options.playableCardIds.includes(cardId),
         pressed: options?.cardId === cardId,
-        onClick: () => controller.input({ type: "card", cardId }),
+        onClick: act(() => controller.input({ type: "card", cardId })),
       };
     }),
   );
@@ -132,11 +159,12 @@ function render() {
       key: `${index}-${label}`,
       label,
       disabled: false,
-      onClick: () => controller.submit(action),
+      onClick: act(() => controller.submit(action)),
     })),
     "li",
   );
   renderLog();
+  restoreFocus(status);
 }
 
 $("seed-form").addEventListener("submit", (event) => {
@@ -145,10 +173,10 @@ $("seed-form").addEventListener("submit", (event) => {
 });
 $("restart").addEventListener("click", () => controller.restart());
 $("leave").addEventListener("click", () => controller.leave());
-$("confirm").addEventListener("click", () => controller.input({ type: "confirm" }));
-$("skip").addEventListener("click", () => controller.input({ type: "skip" }));
-$("cancel").addEventListener("click", () => controller.input({ type: "cancel" }));
-$("end-phase").addEventListener("click", () => controller.endPhase());
+$("confirm").addEventListener("click", act(() => controller.input({ type: "confirm" })));
+$("skip").addEventListener("click", act(() => controller.input({ type: "skip" })));
+$("cancel").addEventListener("click", act(() => controller.input({ type: "cancel" })));
+$("end-phase").addEventListener("click", act(() => controller.endPhase()));
 $("show-log").addEventListener("change", () => renderLog());
 addEventListener("pagehide", () => controller.leave());
 
