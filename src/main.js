@@ -219,7 +219,13 @@ async function launch(){
     if(hit)controller.input({type:"slot",side:hit.side,slot:hit.slot});
   });
   document.addEventListener("keydown",event=>{
-    if(appMode==="match"&&event.key==="Escape"&&!document.querySelector("dialog[open]"))controller.input({type:"cancel"});
+    if(appMode!=="match"||event.key!=="Escape"||event.repeat||event.defaultPrevented||event.isComposing)return;
+    const target=event.target;
+    if(document.querySelector("dialog[open]")||
+      (target instanceof Element&&(target.closest("input,textarea,select")||target.isContentEditable)))return;
+    if(controller.status()!=="accepting_input"||!controller.options()?.canCancel)return;
+    controller.input({type:"cancel"});
+    event.preventDefault();
   });
   function setMode(next){
     if(next===appMode)return;
