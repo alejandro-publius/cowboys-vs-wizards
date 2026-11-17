@@ -38,7 +38,7 @@ Follow the tested seed 60 route to the Mounted Billy and Dragon clash. [Seed 60 
 | Game, presenter and asset tests | `node scripts/verify-duel.mjs` |
 | The same tests by their npm name, as run on every pull request | `npm test` |
 | The same tests, a fresh build and an eight-step Chrome replay | `node scripts/verify-duel.mjs --browser` |
-| Title menu, match start, WebGL 2 and one summon in WebKit, the Safari engine | `node scripts/browser-webkit-smoke.mjs http://127.0.0.1:PORT/` (serve `dist/web/` first; once: `npx playwright-core install webkit`) |
+| Title menu, match start, WebGL 2 and one summon in WebKit, the Safari engine | `npx -y -p playwright-core@1.64.1 node scripts/browser-webkit-smoke.mjs http://127.0.0.1:PORT/` (serve `dist/web/` first; once: `npx -y playwright-core@1.64.1 install webkit`) |
 | Attack demo geometry, grip and event order | `npm run check` |
 | A seeded rules trace | `node scripts/play-match.mjs --seed 60` |
 

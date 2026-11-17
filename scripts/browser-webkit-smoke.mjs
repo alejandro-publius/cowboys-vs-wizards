@@ -3,8 +3,11 @@
 // and serves nothing itself:
 //
 //   npm run build -- --web && python3 -m http.server 8123 -d dist/web
-//   npx playwright-core install webkit        (once)
-//   node scripts/browser-webkit-smoke.mjs http://127.0.0.1:8123/ [--out-dir PATH]
+//   npx -y playwright-core@1.64.1 install webkit        (once)
+//   npx -y -p playwright-core@1.64.1 node scripts/browser-webkit-smoke.mjs http://127.0.0.1:8123/ [--out-dir PATH]
+//
+// Playwright is not a project dependency. npx fetches the pinned version and
+// puts its command on PATH; the script loads the library from beside it.
 //
 // Steps, in order: the title menu appears; a match starts with
 // ?mode=match&deck=starter&seed=0; the board has a WebGL 2 context or the
@@ -17,8 +20,18 @@ import {execFileSync} from "node:child_process";
 import {mkdir, writeFile} from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import {fileURLToPath} from "node:url";
-import {webkit} from "playwright-core";
+import {existsSync} from "node:fs";
+import {createRequire} from "node:module";
+import {fileURLToPath, pathToFileURL} from "node:url";
+
+const RUN = "npx -y -p playwright-core@1.64.1 node scripts/browser-webkit-smoke.mjs <served page URL>";
+// npx -p puts <cache>/node_modules/.bin on PATH; the library is one level up.
+const bin = (process.env.PATH ?? "").split(path.delimiter).find((dir) => existsSync(path.join(dir, "playwright-core")));
+if (!bin) {
+  console.error(`playwright-core is not on PATH. Run this check as:\n  ${RUN}`);
+  process.exit(2);
+}
+const {webkit} = createRequire(pathToFileURL(path.join(bin, "..", "x.js")))("playwright-core");
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const args = process.argv.slice(2);
@@ -26,7 +39,7 @@ const at = args.indexOf("--out-dir");
 const outDir = path.resolve(at < 0 ? path.join(root, ".artifacts/webkit-smoke") : args[at + 1] ?? "");
 const given = args.find((arg, i) => !arg.startsWith("--") && (at < 0 || i !== at + 1));
 if (!given || (at >= 0 && !args[at + 1])) {
-  console.error("usage: node scripts/browser-webkit-smoke.mjs <served page URL> [--out-dir PATH]");
+  console.error(`usage: ${RUN} [--out-dir PATH]`);
   process.exit(2);
 }
 const menuUrl = new URL(given);
@@ -41,7 +54,7 @@ let browser;
 try {
   browser = await webkit.launch();
 } catch (error) {
-  console.error(`${error.message}\nWebKit did not start. Install it once with: npx playwright-core install webkit`);
+  console.error(`${error.message}\nWebKit did not start. Install it once with: npx -y playwright-core@1.64.1 install webkit`);
   process.exit(2);
 }
 const page = await browser.newPage({viewport: {width: 1440, height: 900}});

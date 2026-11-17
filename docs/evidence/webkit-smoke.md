@@ -41,7 +41,7 @@ This is a reading of two screenshots, not a diagnosis. No fix was attempted; the
 
 | | |
 | --- | --- |
-| Command | `node scripts/browser-webkit-smoke.mjs http://127.0.0.1:8123/` |
+| Command | `npx -y -p playwright-core@1.64.1 node scripts/browser-webkit-smoke.mjs http://127.0.0.1:8123/` (the recorded run below used the same script with `playwright-core` 1.64.1 installed locally; the npx form was then run and gave the same seven results) |
 | Build served | `npm run build -- --web`, then `python3 -m http.server 8123 -d dist/web`; `dist/web/index.html` SHA-256 `2350e260ff7bb5c800098d1f082862f53b448a1825ce2b5258a285d8b48d59af` |
 | Commit | `c65f49e` (`main`), plus this branch's script |
 | Engine | Playwright WebKit 27.2 (build v2370), headless, from `playwright-core` 1.64.1 |
