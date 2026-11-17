@@ -26,7 +26,7 @@ We wanted card decisions to happen visibly in the arena: sacrifice troops for st
 ## Implementation and Kiro
 Plain JavaScript rules stay separate from Three.js presentation and Rapier scene behavior. Fable wrote the engine and CPU. Kiro wrote the presentation, specification and tooling: its Requirements-First spec guided match presentation and seeded checks. A custom agent, hooks, saved Workflows and a Review Power/MCP tie results to actual built HTML. Codex coordinated integration and independent checks. The user approved the art and motion; visuals come from original Tripo exports and approved sourced motion.
 
-The saved Kiro Workflow passed 157 tests and 12 scripted browser checks. That run is historical and belongs to frozen commit `e9aeb06`; the runtime has not changed since. It was not re-run for this document.
+The saved Kiro Workflow passed 157 tests and 12 scripted browser checks. That run is historical and belongs to frozen commit `e9aeb06`; later runtime changes need their own checks. This run was not repeated for the document.
 
 ## Challenges and lessons
 A convincing animation can misrepresent simultaneous attacks. Passing rules tests do not catch every visible defect: Crew found developer labels that were removed. Generated mesh rigging also has limits, so original exports remain untouched and new motion requires approved sources. Historical test counts and timing improvements retain their original commit/date.
@@ -40,7 +40,7 @@ A convincing animation can misrepresent simultaneous attacks. Passing rules test
 - Custom-deck regression: 128 distinct decks replayed twice; 2,199 first-pass actions; 1,419 CPU/public-view checks. Correctness coverage, not a human balance estimate.
 
 ## Demo video
-[Narration and shot list](judge-demo-script.md): 2:40, 324 spoken words, timed segments, each shot marked EXISTS or NEEDED. Narration and Kiro UI footage are not recorded yet.
+[Narration and shot list](judge-demo-script.md): planned 2:40, 325 spoken words, timed segments, each shot marked EXISTS or NEEDED. Narration and Kiro UI footage are not recorded yet.
 
 ## URLs
 - Game: https://alejandro-publius.github.io/cowboys-vs-wizards/

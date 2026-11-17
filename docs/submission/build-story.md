@@ -18,7 +18,7 @@ A seeded property compares presentation cues with engine damage events. In a sep
 ## Make the build identify itself
 The saved replay Workflow runs actual browser checks and records the HTML hash. The local Orb Duel Review Power supplies the review procedure, and the project MCP inspects the receipt. A matching page and receipt pass. Pairing the same clean receipt with an older page returns stale.
 
-The saved Workflow passed 157 tests and 12 scripted browser checks. That run belongs to frozen commit `e9aeb06`, and the game runtime has not changed since. The number describes that commit and nothing newer.
+The saved Workflow passed 157 tests and 12 scripted browser checks. That run belongs to frozen commit `e9aeb06`, and the figures describe that commit. Any later runtime change needs its own checks.
 
 Kiro authored the reviewer server and Power procedure. Codex authored the initial replay Workflow and configured the working workspace MCP connection; Kiro executed and refreshed the Workflow. Installed Power copies and workspace servers can differ, so our reproduction records those versions separately.
 
@@ -42,7 +42,7 @@ We keep long research and transcripts out of always-loaded instructions. A short
 The most useful Kiro features produced observable consequences: a spec defined simultaneous attacks, a hook ran a real check, a Workflow reproduced a route, and a reviewer rejected stale evidence.
 
 ## What the evidence does not show
-Automated tests show that the rules hold and that the tested page is the page we shipped. They do not show that anyone wants the game or finds it clear. A five-task first-time playtest is written and has not been run; its results table is blank. Animation feel and visual quality still need human judgment.
+The recorded checks support the tested rule behavior and identify the reviewed build. They do not show that anyone wants the game or finds it clear. A five-task first-time playtest is written and has not been run; its results table is blank. Animation feel and visual quality still need human judgment.
 
 - [Play](https://alejandro-publius.github.io/cowboys-vs-wizards/)
 - [Game source](https://github.com/alejandro-publius/cowboys-vs-wizards)

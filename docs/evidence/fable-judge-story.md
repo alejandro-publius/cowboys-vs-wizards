@@ -1,6 +1,6 @@
 # Fable judge-story pass
 
-November 16, 2026. Author: Fable (Claude Fable 5.2, Claude Agent SDK). Branch `fable/judge-story-polish`, based on main `b5cecc6`. Docs only.
+November 16, 2026. Author: Fable through Claude Code CLI 2.1.326 (requested model `claude-fable-5-2`; the final response reports the same model key). Branch `fable/judge-story-polish`, based on main `b5cecc6`. Docs only.
 
 ## Files changed
 
@@ -41,3 +41,32 @@ No runtime, asset, rules, test, config, package or Kiro file was touched.
 - The onboarding copy check produced two observations and no code change.
 - `docs/JUDGE-GUIDE.md` was not edited (outside the owned files). It does not yet link to the demo script.
 - This pass gives the game no quality score.
+
+## Codex review and sanitized execution receipt
+
+The actual Fable task completed successfully, with no quota error or timeout. Codex launched one file-only task, then reviewed the four changed files. Raw output remains outside the worktree in ignored `.artifacts/fable-judge-story-polish-launch/`. No account balance or credential is published.
+
+Codex checked the final Workflow note at `docs/evidence/kiro-closeout-release-check.md`: run `wf_5bd13532f5142477` records 157 tests and 8+4 browser checks on `e9aeb06`. Fable's earlier not-verified statement above records its own narrower read; the figures are now corroborated by this separate review.
+
+Two concrete corrections were made after Fable finished: the narration now says troop cards become pieces (spells do not), and human task5 asks for a different valid twelve-card deck rather than an impossible single-count change. Codex also removed a time-sensitive claim that runtime would remain unchanged, and distinguished an unrecorded final script from the source videos that already exist.
+
+Codex counted narration with a word-boundary expression retaining internal hyphens/apostrophes: 325 words, segments 29, 55, 58, 44, 63, 22, 46, 8. The 2:40 plan still needs an actual read-through. This docs-only review ran no game tests, builds or browser replays.
+
+```json
+{
+  "app": "Claude Code 2.1.326",
+  "requested_model": "claude-fable-5-2",
+  "reported_model_usage_keys": [
+    "claude-fable-5-2"
+  ],
+  "session_id": "6f3eedce-25fd-45e5-a6e9-b691c3997034",
+  "exit_code": 0,
+  "timed_out": false,
+  "started_utc": "2026-11-17T04:19:38.092606+00:00",
+  "ended_utc": "2026-11-17T04:22:36.376843+00:00",
+  "reported_turns": 21,
+  "permission_denial_count": 0,
+  "stdout_sha256": "e4eaf8ba7048ab48da8927107890b2222a743fba7dba1a5a3b5b53f9de639a88",
+  "stderr_sha256": "e705bbf8982385da2b1a03725921d0a6c6730bbaadd22c8f9168522573d067e0"
+}
+```
