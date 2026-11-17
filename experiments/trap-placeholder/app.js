@@ -2,9 +2,12 @@
 // controller's public surface (view, displayed, options, status, message)
 // and the Cowboy-projected event log; every action goes through
 // controller.input, controller.submit or controller.endPhase.
+// Issue #116: the scenario and Wizard CPU selects apply only on Start (the
+// seed form submit). Restart keeps the active scenario, level and seed.
 import { createScheduler } from "../../src/match/scheduler.js";
 import { MAX_ROUNDS, SLOT_COUNT } from "../../src/game/state.js";
-import { LAB_CARDS, VIEWER, cardName, commandList, createLab, eventLine, trapText } from "./lab.js";
+import { VIEWER, cardName, commandList, createLabSession, eventLine, trapText } from "./lab.js";
+import { SCENARIO_LABELS } from "./scenarios.js";
 
 const ENEMY = "wizard";
 const $ = (id) => document.getElementById(id);
@@ -12,7 +15,11 @@ const orbs = (n, max) => "\u25cf".repeat(Math.max(0, n)) + "\u25cb".repeat(Math.
 
 const scheduler = createScheduler();
 scheduler.tick(performance.now());
-const { controller, events } = createLab({ scheduler, onChange: () => render() });
+const wanted = () => ({ scenario: $("scenario").value, cpuLevel: $("cpu-level").value });
+const session = createLabSession({ scheduler, onChange: () => render(), settings: wanted() });
+// The active lab's controller; a Start with changed settings replaces it.
+const controller = () => session.lab().controller;
+const events = () => session.lab().events();
 
 // Issue #110: an accepted action disables every control while it plays, so a
 // keyboard user's focus drops to the page. `keyed` remembers the control that
@@ -26,7 +33,7 @@ function act(run) {
   return (event) => {
     run();
     const target = event.currentTarget;
-    keyed = event.detail === 0 && controller.status() !== "accepting_input" ? { id: target.id, key: target.dataset.key } : null;
+    keyed = event.detail === 0 && controller().status() !== "accepting_input" ? { id: target.id, key: target.dataset.key } : null;
   };
 }
 addEventListener("pointerdown", () => (keyed = null), true);
@@ -48,7 +55,7 @@ for (const side of [ENEMY, VIEWER]) {
   for (let slot = 0; slot < SLOT_COUNT; slot++) {
     const button = document.createElement("button");
     button.type = "button";
-    button.addEventListener("click", act(() => controller.input({ type: "slot", side, slot })));
+    button.addEventListener("click", act(() => controller().input({ type: "slot", side, slot })));
     $(`${side}-lanes`).append(button);
     lanes[side].push(button);
   }
@@ -78,7 +85,7 @@ function fillButtons(container, items, wrap) {
 function laneText(side, slot, troop) {
   const owner = side === VIEWER ? "Your" : "Enemy";
   if (!troop) return `${owner} lane ${slot + 1}: empty`;
-  const card = LAB_CARDS[troop.cardId];
+  const card = session.lab().cards[troop.cardId];
   return `${owner} lane ${slot + 1}: ${card.name}\nHealth ${troop.health} of ${card.health} ${orbs(troop.health, card.health)}\nAttack ${card.attack}`;
 }
 
@@ -91,10 +98,12 @@ function sideInfo(view, side) {
 }
 
 let logShown = 0;
+let logGeneration = session.generation();
 function renderLog() {
   const all = events();
   const list = $("log");
-  if (all.length < logShown) {
+  if (all.length < logShown || logGeneration !== session.generation()) {
+    logGeneration = session.generation();
     list.replaceChildren();
     logShown = 0;
   }
@@ -108,16 +117,20 @@ function renderLog() {
 }
 
 function render() {
-  const status = controller.status();
-  const view = controller.view();
-  const shown = status === "idle" ? null : (controller.displayed() ?? view);
-  const options = controller.options();
+  const status = controller().status();
+  const view = controller().view();
+  const shown = status === "idle" ? null : (controller().displayed() ?? view);
+  const options = controller().options();
   const accepting = status === "accepting_input";
 
   const result = view?.result ? ` Result: ${view.result.outcome} (${view.result.reason}).` : "";
+  const active = session.settings();
+  const pick = wanted();
+  const pending = pick.scenario !== active.scenario || pick.cpuLevel !== active.cpuLevel ? " Settings changed: they apply on Start." : "";
+  const variant = ` Scenario ${SCENARIO_LABELS[active.scenario]}. Wizard CPU: ${active.cpuLevel}.${pending}`;
   $("status").textContent = view && status !== "idle"
-    ? `Status: ${status}. Seed ${controller.seed()}. Round ${view.round} of ${MAX_ROUNDS}. Phase: ${view.activeSide === VIEWER ? "Cowboy" : "Wizard"}.${result} ${controller.message() ?? ""}`
-    : `Status: ${status}. ${controller.message() ?? "Enter a seed and start."}`;
+    ? `Status: ${status}. Seed ${controller().seed()}. Round ${view.round} of ${MAX_ROUNDS}. Phase: ${view.activeSide === VIEWER ? "Cowboy" : "Wizard"}.${result}${variant} ${controller().message() ?? ""}`
+    : `Status: ${status}.${variant} ${controller().message() ?? "Enter a seed and start."}`;
 
   for (const side of [ENEMY, VIEWER]) {
     $(`${side}-info`).textContent = shown ? sideInfo(shown, side) : "";
@@ -134,14 +147,14 @@ function render() {
   fillButtons(
     $("hand"),
     hand.map((cardId, index) => {
-      const card = LAB_CARDS[cardId];
+      const card = session.lab().cards[cardId];
       const stats = card.kind === "troop" ? ` (${card.stars} stars, attack ${card.attack}, health ${card.health})` : ` (${card.kind})`;
       return {
         key: `${cardId}-${index}`,
         label: `${cardName(cardId)}${stats}`,
         disabled: !accepting || !options.playableCardIds.includes(cardId),
         pressed: options?.cardId === cardId,
-        onClick: act(() => controller.input({ type: "card", cardId })),
+        onClick: act(() => controller().input({ type: "card", cardId })),
       };
     }),
   );
@@ -155,11 +168,11 @@ function render() {
 
   fillButtons(
     $("commands"),
-    (accepting ? commandList(view) : []).map(({ label, action }, index) => ({
+    (accepting ? commandList(view, session.lab().cards) : []).map(({ label, action }, index) => ({
       key: `${index}-${label}`,
       label,
       disabled: false,
-      onClick: act(() => controller.submit(action)),
+      onClick: act(() => controller().submit(action)),
     })),
     "li",
   );
@@ -169,16 +182,18 @@ function render() {
 
 $("seed-form").addEventListener("submit", (event) => {
   event.preventDefault();
-  controller.start($("seed").value.trim());
+  session.start($("seed").value.trim(), wanted());
 });
-$("restart").addEventListener("click", () => controller.restart());
-$("leave").addEventListener("click", () => controller.leave());
-$("confirm").addEventListener("click", act(() => controller.input({ type: "confirm" })));
-$("skip").addEventListener("click", act(() => controller.input({ type: "skip" })));
-$("cancel").addEventListener("click", act(() => controller.input({ type: "cancel" })));
-$("end-phase").addEventListener("click", act(() => controller.endPhase()));
+$("restart").addEventListener("click", () => session.restart());
+$("leave").addEventListener("click", () => session.leave());
+// A changed select only updates the status note; the match is untouched until Start.
+for (const id of ["scenario", "cpu-level"]) $(id).addEventListener("change", () => render());
+$("confirm").addEventListener("click", act(() => controller().input({ type: "confirm" })));
+$("skip").addEventListener("click", act(() => controller().input({ type: "skip" })));
+$("cancel").addEventListener("click", act(() => controller().input({ type: "cancel" })));
+$("end-phase").addEventListener("click", act(() => controller().endPhase()));
 $("show-log").addEventListener("change", () => renderLog());
-addEventListener("pagehide", () => controller.leave());
+addEventListener("pagehide", () => session.leave());
 
 function loop(now) {
   scheduler.tick(now);
@@ -186,4 +201,4 @@ function loop(now) {
 }
 requestAnimationFrame(loop);
 render();
-controller.start($("seed").value.trim());
+session.start($("seed").value.trim(), wanted());

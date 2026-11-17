@@ -1,6 +1,6 @@
-# Trap placeholder lab (issue #108)
+# Trap placeholder lab (issues #108 and #116)
 
-**Experimental, synthetic, local only.** This is a developer lab for the frozen A + X trap prototype. It is not released UI, not gameplay art and not linked from the game. Traps stay off in the shipped game (`createMatch(seed)` with no `traps` option). Each side gets one anonymous test-fixture trap in its opening hand, defined only in [lab.js](lab.js). The fixture is not a card, deck entry, copy count or balance result. There are no models, animation, audio or art. The page uses plain native buttons and text. Nobody has reviewed it for accessibility.
+**Experimental, synthetic, local only.** This is a developer lab for the frozen A + X trap prototype. It is not released UI, not gameplay art and not linked from the game. Traps stay off in the shipped game (`createMatch(seed)` with no `traps` option). In the default FIXTURE scenario each side gets one anonymous test-fixture trap in its opening hand, defined only in [lab.js](lab.js). The fixture is not a card, deck entry, copy count or balance result. There are no models, animation, audio or art. The page uses plain native buttons and text. Nobody has reviewed it for accessibility.
 
 ## Run it
 
@@ -17,6 +17,23 @@ Then open `http://127.0.0.1:8108/experiments/trap-placeholder/index.html`. Stop 
 - Both sides' three lanes, with each troop's health orbs and attack; base life orbs; round and active phase; deck, hand and discard counts.
 - Your trap zone with its identity and set or armed state. The enemy zone reads only "set (face-down)" until the trap springs.
 - A status line (`aria-live="polite"`), an optional public event log (`role="log"`), a seed field (seeds 0 and 60 replay deterministically), and Start, Restart and Leave.
+
+## Scenarios and Wizard CPU (issue #116)
+
+Two native selects in the seed form, both developer-only. A change applies only when you press Start (or Enter in the seed field); until then the status line says "Settings changed: they apply on Start." and the match in progress is untouched. Restart keeps the active scenario, CPU level and pinned seed.
+
+| Scenario | Deck per side | Trap flag |
+| --- | --- | --- |
+| FIXTURE (default) | shipped 12 plus one extra fixture trap in the opening hand: 13 cards, not a 12-card deck | on |
+| BASE | shipped 12, exactly `createMatch(seed)` | off; the trap zones read "traps not enabled in this scenario" |
+| T1 | 12: spell copy 2 relabelled to an anonymous synthetic trap (1 spell, 1 trap) | on |
+| T2 | 12: both spell copies relabelled (0 spells, 2 traps) | on |
+
+T1 and T2 relabel after the shuffle ([scenarios.js](scenarios.js)), so the seed, shuffle, starting side and every other ID match BASE. They use the same IDs as the #114 simulation; the page cannot import [sim.js](../trap-deck-sim/sim.js) because it uses `node:crypto`, and a Node test checks that both give the same opening for seeds 0 to 199. The synthetic traps are labels for this lab, not cards or a claim about any real trap.
+
+The Wizard CPU select (easy, normal, hard; default normal) picks `cpuFor(level)` from `src/game/cpu.js`. Normal is the unchanged `chooseAction` the lab used before. You always play the Cowboy.
+
+A Start with changed settings leaves the old controller (`controller.leave()` advances the scheduler epoch, so no queued CPU step, timer or playback survives), ignores any later callback from it, clears the log and starts a fresh controller. A refused seed keeps the current match. The status line names the active scenario, its real card count and the Wizard level.
 
 ## Controls
 
@@ -45,6 +62,9 @@ The DOM reads only `controller.view()`, `displayed()`, `options()`, `status()` a
 
 ```sh
 node --test tests/experiments/trap-placeholder.test.js
+node --test tests/experiments/trap-placeholder-scenarios.test.js
 ```
 
-Evidence: [docs/evidence/kiro-trap-placeholder-108.md](../../docs/evidence/kiro-trap-placeholder-108.md) and [docs/evidence/kiro-trap-keyboard-110.md](../../docs/evidence/kiro-trap-keyboard-110.md).
+The scenario test also runs a Chrome smoke of BASE, T1 and T2 (skipped when Chrome is not at the default macOS path). It sets the selects by script with a change event, not by keyboard.
+
+Evidence: [docs/evidence/kiro-trap-placeholder-108.md](../../docs/evidence/kiro-trap-placeholder-108.md), [docs/evidence/kiro-trap-keyboard-110.md](../../docs/evidence/kiro-trap-keyboard-110.md) and [docs/evidence/kiro-trap-scenario-selector-116.md](../../docs/evidence/kiro-trap-scenario-selector-116.md).
