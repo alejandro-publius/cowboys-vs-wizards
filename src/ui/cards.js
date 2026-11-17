@@ -126,9 +126,10 @@ export function mountCards(root, handlers = {}) {
     skip: el("button", {type: "button", "data-action": "skip"}, "Skip move"),
     endPhase: el("button", {type: "button", "data-action": "end-phase"}, "End phase"),
   };
+  const selectionActions=el("div",{class:"match-buttons selection-actions"},buttons.confirm,buttons.cancel,buttons.skip);
   const selectionPanel=el("div",{class:"selection-panel",hidden:true},
     prompt,
-    el("div",{class:"match-buttons selection-actions"},buttons.confirm,buttons.cancel,buttons.skip));
+    selectionActions);
   const handCount=el("span",{class:"hand-count"});
   const viewArt=el("button",{class:"view-art",type:"button","data-action":"view-art"},"Card art");
   const bottom=el("div",{class:"match-bottom"},selectionPanel,message,
@@ -377,7 +378,10 @@ export function mountCards(root, handlers = {}) {
     setText(phaseLabel,model.status==="cpu_turn"?"Wizards":model.status==="playing"?"Resolving":"End turn");
     const selected=model.cowboy.hand.find(card=>card.selected);
     const inPanel = selectionPanel.contains(document.activeElement);
-    selectionPanel.hidden=!selected||!model.buttons.cancel;
+    const selectionOn=Boolean(selected)&&model.buttons.cancel;
+    // ?guide=1 only: keep the prompt visible while idle; the buttons stay hidden without a selection.
+    selectionPanel.hidden=!selectionOn&&!model.guideShown;
+    selectionActions.hidden=model.guideShown&&!selectionOn;
     if (selected) lastCard = selected.cardId;
     for (const [name, button] of Object.entries(buttons)) button.disabled = !model.buttons[name];
     if (selected) buttons.confirm.textContent = selected.kind === "spell" ? "Cast" : "Summon";

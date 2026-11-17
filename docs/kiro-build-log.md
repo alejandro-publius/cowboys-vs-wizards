@@ -215,3 +215,11 @@ Problem: release 2550c3f validated seed 60 by hand, but `.kiro/workflows/orb-due
 Verification (observed, standalone build sha256 `b4e913df…`): `node scripts/verify-duel.mjs --browser` exited 0 with 112 of 112 Node tests passing and 8 of 8 Chrome steps. `node scripts/browser-match-check.mjs --showcase --summary --out-dir .artifacts/kiro/showcase` exited 0 with 4 of 4 steps, seed 60 and 0 console errors. The real MCP server returned `pass` for the standalone and showcase targets, with `sameBuild: true`; `web` returned `absent` because no web receipt exists, and an unknown target or extra input returned protocol errors. Negatives on temporary copies returned `fail` for seed 0 and for three steps, and `stale` for a changed showcase hash, a changed page and a differing seed-0 receipt hash. The real receipts were not modified.
 
 Not verified: the saved Workflow itself was not invoked. Only the two underlying commands and the MCP server were run from the CLI, so a Workflow run remains pending. Logs (ignored): `.artifacts/kiro/showdown-workflow/`.
+
+## November 16, Pacific — guide correction and live build identity
+
+Kiro CLI 3.4.0 V3 completed #35 in two passes (`48ecea9`, `32ba790`). The first pass left idle tips in a hidden panel; the correction makes the existing transparent prompt visible without showing idle selection buttons. Actual Chrome checks compare guide-off to the original build at twelve steps and cover stop/restart and phone-size layout. The corrected worker branch passed 193 tests and model checks; coordinator integration passed 16 focused tests. [Guide evidence](evidence/kiro-guided-first-match.md). No human acceptance claimed.
+
+Kiro's #54 commit `2966298` adds build.json plus independent live commit/hash verification. PR #55 merged as `4c0723d`; its real Pages build, deployment and verify-live jobs passed. [Receipt](evidence/kiro-build-identity.md). Session credit observations for ten earlier jobs are now published as exact session values with source hashes, never an account total. [Usage](evidence/kiro-session-usage-20261116.md).
+
+The next substantial Kiro task is #56, boundary generation, failure reduction and requirement mapping. It is dispatched, not completed. User asks for alternate-prompt check-ins instead of continuous worker polling.

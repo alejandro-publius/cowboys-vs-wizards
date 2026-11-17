@@ -1,0 +1,96 @@
+{
+ "on": {
+  "query": "mode=match&deck=starter&seed=0&guide=1",
+  "version": "Chrome/157.0.8103.52",
+  "prompts": [
+   {
+    "label": "r1 idle",
+    "prompt": "Choose a glowing card, or end your phase. Choose a glowing card in your hand to summon a troop or cast a spell, or end your phase."
+   },
+   {
+    "label": "r1 lane",
+    "prompt": "Choose a tile for Sheriff. Pick one of your open lanes (lane 1, lane 2, lane 3) for Sheriff."
+   },
+   {
+    "label": "r1 confirm",
+    "prompt": "Confirm Sheriff, or cancel. Confirm to summon Sheriff, or cancel to choose again."
+   },
+   {
+    "label": "r1 after summon",
+    "prompt": "End your phase. You have no playable card, so end your phase to start the clash."
+   },
+   {
+    "label": "r2 idle",
+    "prompt": "Choose a glowing card, or end your phase. The round 1 clash: Your Sheriff in lane 1 hit the Skeleton: 3 → 2 orbs (and 1 more event)."
+   },
+   {
+    "label": "r2 tribute",
+    "prompt": "Choose 1 troop to sacrifice (0 chosen). Choose 1 of your troops to sacrifice for Billy, then pick a lane."
+   },
+   {
+    "label": "r2 lane",
+    "prompt": "Choose a tile for Billy. Pick one of your open lanes (lane 1, lane 2, lane 3) for Billy."
+   },
+   {
+    "label": "r2 confirm",
+    "prompt": "Confirm Billy, or cancel. Confirm to summon Billy, or cancel to choose again."
+   },
+   {
+    "label": "r2 after tribute",
+    "prompt": "Choose a glowing card, or end your phase. You have already summoned this round, so cast a spell or end your phase."
+   },
+   {
+    "label": "r3 idle",
+    "prompt": "Choose a glowing card, or end your phase."
+   }
+  ],
+  "errors": []
+ },
+ "off": {
+  "query": "mode=match&deck=starter&seed=0",
+  "version": "Chrome/157.0.8103.52",
+  "prompts": [
+   {
+    "label": "r1 idle",
+    "prompt": "Choose a glowing card, or end your phase."
+   },
+   {
+    "label": "r1 lane",
+    "prompt": "Choose a tile for Sheriff."
+   },
+   {
+    "label": "r1 confirm",
+    "prompt": "Confirm Sheriff, or cancel."
+   },
+   {
+    "label": "r1 after summon",
+    "prompt": "End your phase."
+   },
+   {
+    "label": "r2 idle",
+    "prompt": "Choose a glowing card, or end your phase."
+   },
+   {
+    "label": "r2 tribute",
+    "prompt": "Choose 1 troop to sacrifice (0 chosen)."
+   },
+   {
+    "label": "r2 lane",
+    "prompt": "Choose a tile for Billy."
+   },
+   {
+    "label": "r2 confirm",
+    "prompt": "Confirm Billy, or cancel."
+   },
+   {
+    "label": "r2 after tribute",
+    "prompt": "Choose a glowing card, or end your phase."
+   },
+   {
+    "label": "r3 idle",
+    "prompt": "Choose a glowing card, or end your phase."
+   }
+  ],
+  "errors": []
+ }
+}

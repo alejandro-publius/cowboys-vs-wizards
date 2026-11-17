@@ -33,3 +33,7 @@ On a push to `main`, after `deploy`, `verify-live` passes once `https://alejandr
 - The retry budget (about 35 s) may be short if Pages propagation is slower. It is a one-line change to `--attempts`/`--delay-ms`.
 - The check proves the live HTML and manifest match this run's build. It does not cover other files such as `assets/`.
 - The CI test workflow was not edited. `npm test` picks up the new test automatically.
+
+## Coordinator deployment observation — November 16, Pacific
+
+PR [#55](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/55) merged as `4c0723df30d7c4080ea6724441aac2a9b036c817`. The actual [Pages run](https://github.com/alejandro-publius/cowboys-vs-wizards/actions/runs/44037705030) completed build, deploy and verify-live successfully. The final job fetched the public manifest and HTML and verified that commit and HTML SHA-256 `ac0806f6bed48cbb2a32064bd89674c0c50245e379ca50e2d5dcaa57ffec8eb5` on attempt 1. This records a real deployed release, not the earlier local fixtures. It checks the HTML identity, not every external asset or human gameplay.

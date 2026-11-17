@@ -9,7 +9,7 @@ The source labels S1–S45 are defined in the [reference legend](#reference-lege
 1. **Publish the video with real Kiro footage** (item 1). It is required, it carries the presentation score, and three of its shots do not exist yet.
 2. **Put a person and a real Safari in front of the game** (items 2 and 3). Every source that shipped a browser project says passing checks were not enough, and this project has already proved it twice.
 3. **Turn the weakest of the eight write-up topics into a strong one: property-based testing** (item 5). The expanded generated coverage still has no shrinking.
-4. **Make the live site name its own build** (item 4). The project's whole argument is that evidence names the build it came from; the deployed page is the one artifact that does not.
+4. **Build identity is now live** (item 4). PR #55 publishes the commit and HTML hash, and the actual deployment verification passed.
 5. **Run Kiro as a reviewer on every pull request** (item 6). It is the most visible continuous use of Kiro available, and the setup is a published recipe.
 
 ## How to read an item
@@ -41,10 +41,9 @@ Each item gives the sources, the gap as it stands today, how to do it, who has t
 
 ### 4. Publish a build identity file with the site
 - **Sources:** S35 (nobu_13: verify the commit you deploy matches the one you reviewed), S19 (audit trail agents cannot edit), S22 (test deployed flows).
-- **Gap today:** `pages.yml` prints the SHA-256 of `dist/web/index.html` into the public Actions run summary. `https://alejandro-publius.github.io/cowboys-vs-wizards/build.json` returns 404. A judge cannot tie the page in front of them to a commit.
-- **How:** in the `pages.yml` build job, after the web build, write `dist/web/build.json` with the commit, the build time and the SHA-256 of `index.html`. No change under `src/`. Then add a final job step that fetches the live `build.json` after deploy and fails if its commit is not the one just built.
-- **Who:** any agent; the coordinator owns `pages.yml`.
-- **Done when:** the live URL returns the commit of `main`, and the README's Verify table has a row for it.
+- **Current state:** Kiro #54 is merged through PR #55. The public [build.json](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) identifies the build, and the README has a Verify row. The real [Pages run](https://github.com/alejandro-publius/cowboys-vs-wizards/actions/runs/44037705030) checked both the manifest and served HTML against independent CI commit/hash expectations and passed on attempt 1.
+- **Evidence:** [Kiro implementation and actual deployment receipt](../evidence/kiro-build-identity.md). Only index.html identity is covered, not all assets.
+- **Status:** complete for this scoped release-verification task.
 
 ### 5. Property-based tests with real generators and shrinking
 - **Sources:** S16 (Kiro extracts properties from EARS requirements, generates hundreds or thousands of cases and shrinks failures; listed as an IDE capability), S15 (boundary-focused generators; difference-test a simple model against the real code; reproduce every failure on unmodified code), S31 (Oshima: turn acceptance criteria into property tests).

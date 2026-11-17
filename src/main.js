@@ -11,6 +11,7 @@ import {createController,FABLE_ENGINE} from "./match/controller.js";
 import {cpuFor} from "./game/cpu.js";
 import {clashLog} from "./match/clash-log.js";
 import {openingMatch,parseOpeningParams} from "./game/opening-policy.js";
+import {guideLine,guideProgress,trackGuide} from "./match/guide.js";
 import {mountCards} from "./ui/cards.js";
 import {cardModel} from "./ui/card-model.js";
 import {mountTitleMenu} from "./ui/title-menu.js";
@@ -175,6 +176,9 @@ async function launch(){
   let controller=null;
   // ?log=1 opts into the clash log: a round's events become sentences, shown once its playback ends.
   const logOn=new URLSearchParams(location.search).get("log")==="1";
+  // ?guide=1 opts into one line of advice per step of the first two rounds, appended to the prompt.
+  const guideOn=new URLSearchParams(location.search).get("guide")==="1";
+  let guideState=guideProgress();
   let roundEvents=[],clashNext=logOn?{title:"",lines:[]}:null,clashShown=clashNext;
   // The graveyards react when the Presenter's displayed discard lists grow.
   const cued=withGraveyards(withClashReady(withCues(board)));
@@ -191,7 +195,8 @@ async function launch(){
     matchView.discards(displayed);
     // Publish only after playback drains successfully; error/leave must not announce an unfinished clash.
     if(["accepting_input","cpu_turn","terminal"].includes(state))clashShown=clashNext;
-    overlay.render(cardModel({displayed,options,status:state,
+    const guide=guideOn&&state==="accepting_input"&&displayed&&options?guideLine({view:displayed,options,progress:guideState}):null;
+    overlay.render(cardModel({displayed,options,status:state,guide,
       seed:controller.seed(),seedPinned:controller.seedPinned(),message:controller.message(),clashLog:clashShown}));
     board.highlight(state==="accepting_input"&&options?{cowboy:options.ownSlots,wizard:options.enemySlots}:{});
   }
@@ -243,6 +248,7 @@ async function launch(){
   const engine={...FABLE_ENGINE,
     createMatch(seed){
       matchRun++;
+      guideState=guideProgress();
       if(logOn){roundEvents=[];clashNext=clashShown={title:"",lines:[]};}
       const counts=params.get("deck")==="starter"?null:profile.get().deck;
       const options=counts&&validateDeck(counts).ok?{cowboyDeck:deckIds(counts)}:{};
@@ -250,6 +256,7 @@ async function launch(){
     },
     applyAction(state,action){
       const result=FABLE_ENGINE.applyAction(state,action);
+      if(guideOn&&result.ok)guideState=trackGuide(guideState,result.events);
       if(logOn&&result.ok){
         roundEvents.push(...result.events);
         const log=clashLog(roundEvents);

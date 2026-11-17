@@ -9,3 +9,9 @@ Verification design:
 - Optional generated variation: seeds 0 to 99 with cpu play, asserting every line is non-empty, one sentence and names no Wizard hand card. The issue does not require it; do not claim it unless built.
 
 Open decision for Rachel and Alex: the wording of each line. This plan does not write the advice.
+
+## As built
+- `guideLine({view, options, progress})` takes the Cowboy public view, `selectionOptions` output and a progress record (`trackGuide` folds Engine events: first clash via `clashLog`, first Cowboy tribute summon). `src/main.js` keeps the record only when `?guide=1` and resets it in `createMatch`.
+- `cardModel({guide})` appends the line to the prompt (`prompt + " " + line`) only while accepting input; absent or empty guide leaves the prompt unchanged.
+- Wording decision made by this run, not approved by Rachel or Alex.
+- The optional seeds 0 to 99 generated check was not built.

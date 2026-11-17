@@ -1,0 +1,545 @@
+{
+  "date": "11/16/2026, 11:15:57 PM PST",
+  "page": "dist/cowboys-vs-wizards-board-duel.html",
+  "base": "/tmp/gbase/dist/cowboys-vs-wizards-board-duel.html",
+  "note": "Headless Chrome, real mouse clicks, file URLs, seed 0 starter deck. No human and no screen reader involved.",
+  "pass": true,
+  "failures": [],
+  "guideOn": {
+    "1-opening-idle": {
+      "prompt": "Choose a glowing card, or end your phase. Glowing cards in your hand can be played as a troop or a spell.",
+      "visible": true,
+      "panelHidden": false,
+      "buttons": {
+        "confirm": {
+          "visible": false,
+          "enabled": false
+        },
+        "cancel": {
+          "visible": false,
+          "enabled": false
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    },
+    "2-lane-step": {
+      "prompt": "Choose a tile for Sheriff. Lit tiles you can use for Sheriff: lane 1, lane 2, lane 3.",
+      "visible": true,
+      "panelHidden": false,
+      "buttons": {
+        "confirm": {
+          "visible": true,
+          "enabled": false
+        },
+        "cancel": {
+          "visible": true,
+          "enabled": true
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    },
+    "3-confirm-step": {
+      "prompt": "Confirm Sheriff, or cancel. Summon plays Sheriff as chosen; Cancel returns to your hand.",
+      "visible": true,
+      "panelHidden": false,
+      "buttons": {
+        "confirm": {
+          "visible": true,
+          "enabled": true
+        },
+        "cancel": {
+          "visible": true,
+          "enabled": true
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    },
+    "4-end-phase-idle": {
+      "prompt": "End your phase. You have no playable card; ending your phase finishes your part of the round, and the clash follows once both sides have moved.",
+      "visible": true,
+      "panelHidden": false,
+      "buttons": {
+        "confirm": {
+          "visible": false,
+          "enabled": false
+        },
+        "cancel": {
+          "visible": false,
+          "enabled": false
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    },
+    "5-first-clash-idle": {
+      "prompt": "Choose a glowing card, or end your phase. The round 1 clash: Your Sheriff in lane 1 hit the Skeleton: 3 → 2 orbs (and 1 more event).",
+      "visible": true,
+      "panelHidden": false,
+      "buttons": {
+        "confirm": {
+          "visible": false,
+          "enabled": false
+        },
+        "cancel": {
+          "visible": false,
+          "enabled": false
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    },
+    "6-tribute-step": {
+      "prompt": "Choose 1 troop to sacrifice (0 chosen). Billy needs 1 friendly troop sacrificed; lit tiles hold your troops.",
+      "visible": true,
+      "panelHidden": false,
+      "buttons": {
+        "confirm": {
+          "visible": true,
+          "enabled": false
+        },
+        "cancel": {
+          "visible": true,
+          "enabled": true
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    },
+    "7-tribute-chosen": {
+      "prompt": "Choose a tile for Billy. Lit tiles you can use for Billy: lane 1, lane 2, lane 3.",
+      "visible": true,
+      "panelHidden": false,
+      "buttons": {
+        "confirm": {
+          "visible": true,
+          "enabled": false
+        },
+        "cancel": {
+          "visible": true,
+          "enabled": true
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    },
+    "8-confirm-step": {
+      "prompt": "Confirm Billy, or cancel. Summon plays Billy as chosen; Cancel returns to your hand.",
+      "visible": true,
+      "panelHidden": false,
+      "buttons": {
+        "confirm": {
+          "visible": true,
+          "enabled": true
+        },
+        "cancel": {
+          "visible": true,
+          "enabled": true
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    },
+    "9-after-tribute-idle": {
+      "prompt": "Choose a glowing card, or end your phase. You have already summoned this round; a spell is still possible.",
+      "visible": true,
+      "panelHidden": false,
+      "buttons": {
+        "confirm": {
+          "visible": false,
+          "enabled": false
+        },
+        "cancel": {
+          "visible": false,
+          "enabled": false
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    },
+    "10-round3-idle": {
+      "prompt": "Choose a glowing card, or end your phase.",
+      "visible": false,
+      "panelHidden": true,
+      "buttons": {
+        "confirm": {
+          "visible": false,
+          "enabled": false
+        },
+        "cancel": {
+          "visible": false,
+          "enabled": false
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    },
+    "11-terminal": {
+      "prompt": "The match is over.",
+      "visible": false,
+      "panelHidden": true,
+      "buttons": {
+        "confirm": {
+          "visible": false,
+          "enabled": false
+        },
+        "cancel": {
+          "visible": false,
+          "enabled": false
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    },
+    "12-after-restart": {
+      "prompt": "Choose a glowing card, or end your phase. Glowing cards in your hand can be played as a troop or a spell.",
+      "visible": true,
+      "panelHidden": false,
+      "buttons": {
+        "confirm": {
+          "visible": false,
+          "enabled": false
+        },
+        "cancel": {
+          "visible": false,
+          "enabled": false
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    }
+  },
+  "guideOffBase": {
+    "1-opening-idle": {
+      "prompt": "Choose a glowing card, or end your phase.",
+      "visible": false,
+      "panelHidden": true,
+      "buttons": {
+        "confirm": {
+          "visible": false,
+          "enabled": false
+        },
+        "cancel": {
+          "visible": false,
+          "enabled": false
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    },
+    "2-lane-step": {
+      "prompt": "Choose a tile for Sheriff.",
+      "visible": true,
+      "panelHidden": false,
+      "buttons": {
+        "confirm": {
+          "visible": true,
+          "enabled": false
+        },
+        "cancel": {
+          "visible": true,
+          "enabled": true
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    },
+    "3-confirm-step": {
+      "prompt": "Confirm Sheriff, or cancel.",
+      "visible": true,
+      "panelHidden": false,
+      "buttons": {
+        "confirm": {
+          "visible": true,
+          "enabled": true
+        },
+        "cancel": {
+          "visible": true,
+          "enabled": true
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    },
+    "4-end-phase-idle": {
+      "prompt": "End your phase.",
+      "visible": false,
+      "panelHidden": true,
+      "buttons": {
+        "confirm": {
+          "visible": false,
+          "enabled": false
+        },
+        "cancel": {
+          "visible": false,
+          "enabled": false
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    },
+    "5-first-clash-idle": {
+      "prompt": "Choose a glowing card, or end your phase.",
+      "visible": false,
+      "panelHidden": true,
+      "buttons": {
+        "confirm": {
+          "visible": false,
+          "enabled": false
+        },
+        "cancel": {
+          "visible": false,
+          "enabled": false
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    },
+    "6-tribute-step": {
+      "prompt": "Choose 1 troop to sacrifice (0 chosen).",
+      "visible": true,
+      "panelHidden": false,
+      "buttons": {
+        "confirm": {
+          "visible": true,
+          "enabled": false
+        },
+        "cancel": {
+          "visible": true,
+          "enabled": true
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    },
+    "7-tribute-chosen": {
+      "prompt": "Choose a tile for Billy.",
+      "visible": true,
+      "panelHidden": false,
+      "buttons": {
+        "confirm": {
+          "visible": true,
+          "enabled": false
+        },
+        "cancel": {
+          "visible": true,
+          "enabled": true
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    },
+    "8-confirm-step": {
+      "prompt": "Confirm Billy, or cancel.",
+      "visible": true,
+      "panelHidden": false,
+      "buttons": {
+        "confirm": {
+          "visible": true,
+          "enabled": true
+        },
+        "cancel": {
+          "visible": true,
+          "enabled": true
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    },
+    "9-after-tribute-idle": {
+      "prompt": "Choose a glowing card, or end your phase.",
+      "visible": false,
+      "panelHidden": true,
+      "buttons": {
+        "confirm": {
+          "visible": false,
+          "enabled": false
+        },
+        "cancel": {
+          "visible": false,
+          "enabled": false
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    },
+    "10-round3-idle": {
+      "prompt": "Choose a glowing card, or end your phase.",
+      "visible": false,
+      "panelHidden": true,
+      "buttons": {
+        "confirm": {
+          "visible": false,
+          "enabled": false
+        },
+        "cancel": {
+          "visible": false,
+          "enabled": false
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    },
+    "11-terminal": {
+      "prompt": "The match is over.",
+      "visible": false,
+      "panelHidden": true,
+      "buttons": {
+        "confirm": {
+          "visible": false,
+          "enabled": false
+        },
+        "cancel": {
+          "visible": false,
+          "enabled": false
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    },
+    "12-after-restart": {
+      "prompt": "Choose a glowing card, or end your phase.",
+      "visible": false,
+      "panelHidden": true,
+      "buttons": {
+        "confirm": {
+          "visible": false,
+          "enabled": false
+        },
+        "cancel": {
+          "visible": false,
+          "enabled": false
+        },
+        "skip": {
+          "visible": false,
+          "enabled": false
+        }
+      }
+    }
+  },
+  "mobile": {
+    "1-opening-idle": {
+      "visible": true,
+      "fontPx": 12,
+      "clipped": false,
+      "rect": {
+        "l": 28,
+        "t": 580,
+        "w": 334,
+        "h": 34
+      },
+      "viewport": [
+        390,
+        844
+      ]
+    },
+    "2-lane-step": {
+      "visible": true,
+      "fontPx": 12,
+      "clipped": false,
+      "rect": {
+        "l": 28,
+        "t": 563,
+        "w": 179,
+        "h": 50
+      },
+      "viewport": [
+        390,
+        844
+      ]
+    },
+    "3-confirm-step": {
+      "visible": true,
+      "fontPx": 12,
+      "clipped": false,
+      "rect": {
+        "l": 28,
+        "t": 547,
+        "w": 179,
+        "h": 67
+      },
+      "viewport": [
+        390,
+        844
+      ]
+    },
+    "4-end-phase-idle": {
+      "visible": true,
+      "fontPx": 12,
+      "clipped": false,
+      "rect": {
+        "l": 28,
+        "t": 563,
+        "w": 334,
+        "h": 50
+      },
+      "viewport": [
+        390,
+        844
+      ]
+    },
+    "5-first-clash-idle": {
+      "visible": true,
+      "fontPx": 12,
+      "clipped": false,
+      "rect": {
+        "l": 28,
+        "t": 563,
+        "w": 334,
+        "h": 50
+      },
+      "viewport": [
+        390,
+        844
+      ]
+    }
+  }
+}
