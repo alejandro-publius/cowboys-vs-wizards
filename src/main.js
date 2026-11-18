@@ -28,9 +28,9 @@ function applyPreferences(settings){
 }
 const menu=mountTitleMenu(get("title-screen"),{
   profile,
-  async onPlay(){
+  async onPlay(guided=false){
     if(!game){
-      launching??=launch();
+      launching??=launch(guided);
       try{game=await launching;}finally{launching=null;}
     }
     menu.hide();get("arena").hidden=false;game.enter();
@@ -87,7 +87,8 @@ function recording(){
   }
   get("boot").hidden=true;get("fallback").hidden=false;
 }
-async function launch(){
+async function launch(guided){
+  const params=new URLSearchParams(location.search);
   const renderer=new T.WebGLRenderer({antialias:true,powerPreference:"high-performance"});
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFShadowMap;
   renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;
@@ -176,9 +177,10 @@ async function launch(){
   // match board (with the Billy and Wizard cues) and the card overlay.
   let controller=null;
   // ?log=1 opts into the clash log: a round's events become sentences, shown once its playback ends.
-  const logOn=new URLSearchParams(location.search).get("log")==="1";
-  // ?guide=1 opts into one line of advice per step of the first two rounds, appended to the prompt.
-  const guideOn=new URLSearchParams(location.search).get("guide")==="1";
+  const logOn=params.get("log")==="1";
+  // The menu offers one starter match. Direct ?guide=1 links keep their existing hints.
+  const hintsRequested=params.get("guide")==="1";
+  let guidedMatch=guided;
   let guideState=guideProgress();
   let roundEvents=[],clashNext=logOn?{title:"",lines:[]}:null,clashShown=clashNext;
   // The graveyards react when the Presenter's displayed discard lists grow.
@@ -196,7 +198,7 @@ async function launch(){
     matchView.discards(displayed);
     // Publish only after playback drains successfully; error/leave must not announce an unfinished clash.
     if(["accepting_input","cpu_turn","terminal"].includes(state))clashShown=clashNext;
-    const guide=guideOn&&state==="accepting_input"&&displayed&&options?guideLine({view:displayed,options,progress:guideState}):null;
+    const guide=(guidedMatch||hintsRequested)&&state==="accepting_input"&&displayed&&options?guideLine({view:displayed,options,progress:guideState}):null;
     overlay.render(cardModel({displayed,options,status:state,guide,
       seed:controller.seed(),seedPinned:controller.seedPinned(),message:controller.message(),clashLog:clashShown}));
     board.highlight(state==="accepting_input"&&options?{cowboy:options.ownSlots,wizard:options.enemySlots}:{});
@@ -243,7 +245,6 @@ async function launch(){
       return {left:box.left+(p.x+1)/2*box.width-size/2,top:box.top+(1-p.y)/2*box.height-size/2,width:size,height:size};
     }
   });
-  const params=new URLSearchParams(location.search);
   // ?opening=shipped|both[&first=cowboy|wizard] opts into the local opening A/B; otherwise the default engine runs.
   const opening=parseOpeningParams(params);
   const engine={...FABLE_ENGINE,
@@ -251,13 +252,13 @@ async function launch(){
       matchRun++;
       guideState=guideProgress();
       if(logOn){roundEvents=[];clashNext=clashShown={title:"",lines:[]};}
-      const counts=params.get("deck")==="starter"?null:profile.get().deck;
+      const counts=guidedMatch||params.get("deck")==="starter"?null:profile.get().deck;
       const options=counts&&validateDeck(counts).ok?{cowboyDeck:deckIds(counts)}:{};
-      return opening?openingMatch(seed,opening.opening,opening.first,options):createMatch(seed,options);
+      return opening&&!guidedMatch?openingMatch(seed,opening.opening,opening.first,options):createMatch(seed,options);
     },
     applyAction(state,action){
       const result=FABLE_ENGINE.applyAction(state,action);
-      if(guideOn&&result.ok)guideState=trackGuide(guideState,result.events);
+      if((guidedMatch||hintsRequested)&&result.ok)guideState=trackGuide(guideState,result.events);
       if(logOn&&result.ok){
         roundEvents.push(...result.events);
         const log=clashLog(roundEvents);
@@ -278,7 +279,8 @@ async function launch(){
   if(closeup)board.closeUp(closeup[1],Number(closeup[2]),Boolean(closeup[3]));
   function startMatch(){
     scheduler.tick(performance.now()-pausedTotal);
-    if(!controller.start(params.get("seed")??undefined))controller.start();
+    const seed=guidedMatch?"0":params.get("seed")??undefined;
+    if(!controller.start(seed))controller.start();
   }
   renderer.domElement.addEventListener("pointerdown",event=>{
     if(appMode!=="match"||event.button!==0)return;
@@ -389,7 +391,10 @@ async function launch(){
       for(const animation of pausedAnimations)if(animation.effect?.target?.isConnected)animation.play();
       pausedAnimations=[];
       previous=0;configure(profile.get().settings);
-      if(appMode==="match"&&controller.status()==="terminal")startMatch();
+      if(appMode==="match"&&controller.status()==="terminal"){
+        guidedMatch=false;
+        startMatch();
+      }
       size();get("home").focus();
     }
   };

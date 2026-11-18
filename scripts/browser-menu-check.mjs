@@ -136,6 +136,7 @@ try{
  await click('#menu-play');await wait(`!document.getElementById('arena').hidden&&document.getElementById('match').dataset.status==='accepting_input'`,180000);
  const hand=await evaluate(`Array.from(document.querySelectorAll('.match-hand [data-card-id]'),n=>n.dataset.cardId)`);
  assert.deepEqual(hand,createMatch(0,{cowboyDeck:deckIds(expectedCounts)}).sides.cowboy.hand);check('Play uses the saved deck in the actual seeded engine',hand);
+ assert.equal(await evaluate(`document.querySelector('.selection-panel').hidden`),true);
  await click('.match-hand [data-card-id^="cowboy-sheriff"]');await click('.match-slot[data-side="cowboy"][data-slot="0"]');await click('[data-action="confirm"]');
  await wait(`document.getElementById('match').dataset.status==='accepting_input'`);assert.equal((await saved()).stats.summons,1);check('A real summon earns First Summon exactly once');
  await click('[data-action="end-phase"]');await wait(`['playing','cpu_turn'].includes(document.getElementById('match').dataset.status)`);
@@ -147,6 +148,34 @@ try{
  await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
  await sleep(200);const mobile=await evaluate(`({overflow:document.documentElement.scrollWidth>innerWidth,buttons:Array.from(document.querySelectorAll('.menu-hotspot'),b=>({id:b.id,h:b.getBoundingClientRect().height,w:b.getBoundingClientRect().width}))})`);
  assert.equal(mobile.overflow,false);assert(mobile.buttons.every(b=>b.h>=44&&b.w>=44));await shot('title-mobile');check('Portrait controls are readable, touch-sized, without horizontal overflow',mobile);
+ const guidedUrl=new URL(url);
+ guidedUrl.searchParams.set('seed','60');
+ guidedUrl.searchParams.set('guide','0');
+ await send('Page.navigate',{url:guidedUrl.href});
+ await wait(`location.href===${JSON.stringify(guidedUrl.href)}&&document.getElementById('title-screen')?.dataset.ready==='true'`);
+ await click('#menu-how');
+ const guideButton=await evaluate(`(()=>{
+   const b=document.getElementById('menu-guide'), r=b.getBoundingClientRect();
+   return {height:r.height, fits:r.left>=0&&r.right<=innerWidth, describedBy:document.getElementById(b.getAttribute('aria-describedby'))?.textContent};
+ })()`);
+ assert(guideButton.height>=44&&guideButton.fits&&guideButton.describedBy.includes('starter-deck'));
+ await key('Tab','Tab',9);assert.equal(await evaluate('document.activeElement.id'),'menu-guide');
+ await key('Enter','Enter',13);
+ await wait(`!document.getElementById('arena').hidden&&document.getElementById('match').dataset.status==='accepting_input'`,180000);
+ const startingHand=await evaluate(`Array.from(document.querySelectorAll('.match-hand [data-card-id]'),n=>n.dataset.cardId)`);
+ assert.deepEqual(startingHand,createMatch(0).sides.cowboy.hand);
+ assert.match(await evaluate(`document.querySelector('.match-details code').textContent`),/\b0\b/);
+ assert.equal(await evaluate(`document.querySelector('.selection-panel').hidden`),false);
+ assert.match(await evaluate(`document.querySelector('.match-prompt').textContent`),/Glowing cards/);
+ assert.deepEqual((await saved()).deck,expectedCounts);
+ check('How to Play starts a playable starter duel with visible hints and preserves the saved deck',guideButton);
+ await click('#home');await click('#menu-how');
+ assert(await evaluate(`!document.getElementById('menu-guide')`));
+ await key('Escape','Escape',27);await click('#menu-play');
+ await wait(`!document.getElementById('arena').hidden&&document.getElementById('match').dataset.status==='accepting_input'`);
+ assert.deepEqual(await evaluate(`Array.from(document.querySelectorAll('.match-hand [data-card-id]'),n=>n.dataset.cardId)`),startingHand);
+ assert.equal(await evaluate(`document.querySelector('.selection-panel').hidden`),false);
+ check('Guided duel resumes with its opening state and cannot be replaced from How to Play');
  assert.deepEqual(report.errors,[]);
 }catch(error){report.error=String(error.stack??error);process.exitCode=1;}
 finally{

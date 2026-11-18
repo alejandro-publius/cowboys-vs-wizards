@@ -13,9 +13,20 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings}) {
   const scene=$(root,'.title-scene'),page=$(root,'.menu-page'),content=$(root,'.menu-page-content');
   const heading=$(root,'#menu-page-title'),notice=$(root,'#menu-notice'),play=$(root,'#menu-play');
   let returnFocus=play;
+  let guidedAvailable=true,loading=false;
   const say=text=>{notice.textContent=text;notice.hidden=!text;};
   const savedMessage=text=>say(profile.isPersistent()?text:'Saved for this session only. Browser storage is unavailable.');
   const button=(text,fn,attrs={})=>{const b=element('button',text,{type:'button',...attrs});b.addEventListener('click',fn);return b;};
+  async function start(opener,guided=false){
+    if(loading)return;
+    loading=true;play.disabled=opener.disabled=true;say('Loading the board…');
+    try{await onPlay(guided);say('');}
+    catch(error){console.error(error);say('The board could not load. Please try again.');}
+    finally{
+      loading=false;play.disabled=opener.disabled=false;
+      if(!root.hidden&&opener.getClientRects().length)opener.focus();
+    }
+  }
   function home(){page.hidden=true;page.classList.remove('deck-page');scene.hidden=false;say('');returnFocus.focus();}
   function open(title,opener){
     page.classList.remove('deck-page');returnFocus=opener;scene.hidden=true;page.hidden=false;heading.textContent=title;
@@ -57,6 +68,10 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings}) {
   function how(opener){
     open('How to Play',opener);
     content.append(element('p','You lead the Cowboys. The computer commands the Wizards. Break the enemy Base before yours falls.',{class:'menu-intro'}));
+    if(guidedAvailable){
+      const guided=button('Start guided duel',()=>start(guided,true),{id:'menu-guide',class:'menu-guide-button','aria-describedby':'menu-guide-summary'});
+      content.append(guided,element('p','Play a starter-deck match with short hints as you take your first turns.',{id:'menu-guide-summary',class:'menu-guide-summary'}));
+    }
     const steps=element('ol',undefined,{class:'how-steps'});
     for(const text of [
       'Choose a glowing card, pick a lane, then confirm your summon.',
@@ -66,7 +81,7 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings}) {
       'End your turn when ready. The Wizards act, then opposing troops strike at the same time: both deal damage even if one falls. An unblocked troop attacks the enemy Base.',
       'Each orb is one life. Both Bases start at five. After nine rounds, more Base orbs wins; equal Base orbs is a draw.'
     ])steps.append(element('li',text));
-    content.append(steps,element('p','Escape cancels a card selection. Main menu pauses your match; Play resumes it. Restart begins a new match with your saved deck.',{class:'menu-hint'}));
+    content.append(steps,element('p','Escape cancels a card selection. Main menu pauses your match. Play resumes it. Restart starts a fresh match.',{class:'menu-hint'}));
   }
   function deck(opener){
     open('Build Deck',opener);
@@ -76,11 +91,7 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings}) {
   const actions={settings,achievements,how,deck};
   for(const item of root.querySelectorAll('[data-menu-page]'))item.addEventListener('click',()=>actions[item.dataset.menuPage](item));
   $(root,'#menu-back').addEventListener('click',home);
-  play.addEventListener('click',async()=>{
-    play.disabled=true;say('Loading the board…');
-    try{await onPlay();say('');}catch(error){console.error(error);say('The board could not load. Please try Play again.');}
-    finally{play.disabled=false;}
-  });
+  play.addEventListener('click',()=>start(play));
   root.addEventListener('keydown',event=>{
     if(event.key==='Escape'&&!page.hidden){event.preventDefault();home();return;}
     if(!page.hidden||!['ArrowDown','ArrowUp','ArrowRight','ArrowLeft'].includes(event.key))return;
@@ -90,7 +101,7 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings}) {
   });
   root.dataset.ready="true";
   return {
-    show({resume=false}={}){root.hidden=false;home();play.setAttribute('aria-label',resume?'Resume match':'Play');say(resume?'Match paused · Play to resume':'');play.focus();},
+    show({resume=false}={}){guidedAvailable=false;root.hidden=false;home();play.setAttribute('aria-label',resume?'Resume match':'Play');say(resume?'Match paused · Play to resume':'');play.focus();},
     hide(){root.hidden=true;},
     status:say
   };
