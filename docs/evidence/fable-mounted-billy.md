@@ -84,6 +84,8 @@ You have a Sheriff on 1 orb in lane 1 and a Sheriff on 2 orbs in lane 2. The Wiz
 
 I opened both pages in headless Chrome with no address ending and clicked through them. Both opened on the board above. The commit route ended in "Victory. A Base fell in round 5." on the attack-4 page and with Mounted Billy defeated in the round 4 clash on the attack-3 page. Restart and **Replay this deal** each returned to the same board and hand. The round-9 results in the table come from the script, where the bots play on.
 
+Codex rebuilt both pages, reproduced the two SHA-256 hashes from the handoff, and independently played the full commit route in Safari. Both versions opened on the same round-three board and hand. Attack 3 left the Wizard on one orb and ended in a round-nine defeat. Attack 4 removed the Wizard and ended in a round-five victory. Replay restored the decision on both pages. The keep-route round-nine draws were verified by the engine trace.
+
 `--board 850 --cpu hard` prints the same four results against the Hard bot. That board comes from the script only. The pages do not open on it.
 
 ## What a human playtest should answer
