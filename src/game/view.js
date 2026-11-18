@@ -55,7 +55,10 @@ export function publicState(state, side) {
   // A Lantern Wraith hunt's marked move is public: the board shows it.
   if (state.bountyDrift) view.bountyDrift = state.bountyDrift;
   if (traps) view.traps = { enabled: true, rulesVersion: state.traps.rulesVersion };
-  if (state.rideOut?.enabled === true) view.rideOut = { enabled: true, rulesVersion: state.rideOut.rulesVersion };
+  if (state.rideOut?.enabled === true) {
+    view.rideOut = { enabled: true, rulesVersion: state.rideOut.rulesVersion };
+    if (state.rideOut.swap === true) view.rideOut.swap = true; // the swap rule is public, like the move
+  }
   return structuredClone(view);
 }
 

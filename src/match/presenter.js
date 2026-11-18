@@ -303,8 +303,8 @@ export function createPresenter({ scheduler, renderer, pauses = {}, onChange, on
     if (!live(gen)) return;
     later(gen, cueTime(cue, "end", "move"), () => {
       const { board } = displayed.sides[side];
-      board[destination] = board[slot];
-      board[slot] = null;
+      // A troop already in the destination takes the vacated lane (cover swap).
+      [board[destination], board[slot]] = [board[slot], board[destination]];
       if (changed(gen)) play(gen, next);
     });
   }

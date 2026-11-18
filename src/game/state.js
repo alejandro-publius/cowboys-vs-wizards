@@ -14,6 +14,9 @@ export const TRAP_RULES_VERSION = `${RULES_VERSION}+traps`;
 // Rule set of the opt-in Ride Out experiment (.kiro/specs/ride-out). Stored in
 // `state.rideOut` only on matches created with `rideOut: true`.
 export const RIDE_OUT_RULES_VERSION = `${RULES_VERSION}+ride-out`;
+// Cover-swap variant of Ride Out (docs/evidence/fable-cover-swap.md): the move
+// may also enter an adjacent lane held by a friendly troop, trading places.
+export const RIDE_SWAP_RULES_VERSION = `${RIDE_OUT_RULES_VERSION}+swap`;
 
 // mulberry32 step. The whole generator is one uint32, so it lives in the
 // match state as a plain number and replays from a seed are identical.
@@ -44,12 +47,15 @@ function shuffle(ids, rng) {
 // `tactical: null` allowance per side and `traps: { enabled, rulesVersion }`; it draws no
 // extra RNG and leaves decks and hands unchanged. Off (the default) adds nothing.
 // `rideOut: true` adds only `rideOut: { enabled, rulesVersion }`: no RNG draw,
-// no allowance key. The two experiments cannot be combined.
-export function createMatch(seed, { cowboyDeck, traps = false, rideOut = false } = {}) {
+// no allowance key. The two experiments cannot be combined. `rideSwap: true`
+// needs `rideOut: true` and adds `swap: true` to that object, nothing else.
+export function createMatch(seed, { cowboyDeck, traps = false, rideOut = false, rideSwap = false } = {}) {
   if (!Number.isInteger(seed)) throw new TypeError("seed must be an integer");
   if (typeof traps !== "boolean") throw new TypeError("traps must be a boolean");
   if (typeof rideOut !== "boolean") throw new TypeError("rideOut must be a boolean");
   if (traps && rideOut) throw new TypeError("rideOut cannot be combined with traps");
+  if (typeof rideSwap !== "boolean") throw new TypeError("rideSwap must be a boolean");
+  if (rideSwap && !rideOut) throw new TypeError("rideSwap needs rideOut");
   if (cowboyDeck !== undefined) {
     const result = validateDeckIds(cowboyDeck);
     if (!result.ok) throw new TypeError(result.error);
@@ -87,6 +93,8 @@ export function createMatch(seed, { cowboyDeck, traps = false, rideOut = false }
     sides,
   };
   if (traps) match.traps = { enabled: true, rulesVersion: TRAP_RULES_VERSION };
-  if (rideOut) match.rideOut = { enabled: true, rulesVersion: RIDE_OUT_RULES_VERSION };
+  if (rideOut) match.rideOut = rideSwap
+    ? { enabled: true, rulesVersion: RIDE_SWAP_RULES_VERSION, swap: true }
+    : { enabled: true, rulesVersion: RIDE_OUT_RULES_VERSION };
   return match;
 }
