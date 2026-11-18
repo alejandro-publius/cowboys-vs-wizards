@@ -60,37 +60,31 @@ A smaller screening run on seeds 30000–30511 (1,024 matches per row, an uncomm
 
 ## One board to play: seed 823
 
-Build the two pages, then open each with the same address ending. The Wizard is the Normal bot and the Cowboy acts first in round 1.
-
 ```sh
 node scripts/mounted-billy-lab.mjs --build
-python3 -m http.server 8790 --bind 127.0.0.1 --directory dist/mounted-billy
 ```
 
-- Current card: `http://127.0.0.1:8790/current.html?mode=match&deck=starter&seed=823`
-- Attack 4: `http://127.0.0.1:8790/attack-4.html?mode=match&deck=starter&seed=823`
+Open `dist/mounted-billy/attack-3.html` and `dist/mounted-billy/attack-4.html` in a browser. They need no server and no address ending. The tab title and the line under the heading name the version, and Mounted Billy's attack is the only difference between the two files.
 
-The browser tab title names the version. The steps are the same on both pages.
+Each page deals seed 823 with the starter deck, lets the Normal bots play rounds 1 and 2 (a Sheriff into lane 1, then one into lane 2) and hands over at round 3. The Wizard is the Normal bot. **Replay this deal** on the result screen, or Restart in the ☰ menu, returns to the same board.
 
-1. Round 1: summon a Sheriff in lane 1. End turn.
-2. Round 2: summon a Sheriff in lane 2. End turn.
-3. Round 3 is the board. You have a Sheriff on 1 orb in lane 1 and a Sheriff on 2 orbs in lane 2. The Wizard has a Skeleton on 1 orb in lane 1 and a Skeleton on 2 orbs in lane 2. Both Bases have 5 orbs. Your hand is Sheriff, Billy, Mounted Billy and Deadeye.
+You have a Sheriff on 1 orb in lane 1 and a Sheriff on 2 orbs in lane 2. The Wizard has a Skeleton on 1 orb in lane 1 and a Skeleton on 2 orbs in lane 2. Both Bases have 5 orbs. Your hand is Sheriff, Billy, Mounted Billy and Deadeye.
 
 **Commit.** Select Mounted Billy, pick both Sheriffs as tributes, place him in lane 2 and confirm. Cast Deadeye on the Skeleton in lane 1. End turn. The lane preview promises a dead Skeleton, and the Wizard then replaces that Skeleton with a 4-orb Wizard.
 
-- Current card: the Wizard survives the clash on 1 orb. In round 4, summon a Sheriff in lane 1 and end the turn. Singularity and the Wizard's hit finish Mounted Billy in that clash. You are back to one Sheriff against one Skeleton with both Bases at 5. Played on by the bots, the Wizard side wins 3 orbs to 2 at the round limit.
+- Attack 3: the Wizard survives the clash on 1 orb. In round 4, summon a Sheriff in lane 1 and end the turn. Singularity and the Wizard's hit finish Mounted Billy in that clash. You are back to one Sheriff against one Skeleton with both Bases at 5. Played on by the bots, the Wizard side wins 3 orbs to 2 at the round limit.
 - Attack 4: the Wizard dies in the round 3 clash. Round 4: summon a Sheriff in lane 1, end turn. Round 5: summon a Sheriff in lane 3, end turn. The Wizard Base falls in round 5.
 
-**Keep.** Summon the Sheriff in lane 3, cast Deadeye on the Skeleton in lane 1, end turn. Both older Sheriffs die in that clash anyway, one to Singularity and one to the new Wizard. With Mounted Billy left in hand for the rest of the match, the bots reach a 2–2 draw at the round limit on both pages.
+**Keep.** Summon the Sheriff in lane 3, cast Deadeye on the Skeleton in lane 1, end turn. Both older Sheriffs die in that clash anyway, one to Singularity and one to the new Wizard. With Mounted Billy left in hand for the rest of the match, the bots reach a 2–2 draw at the round limit with either card.
 
 | Seed 823, round 3 | Keep | Commit |
 | --- | --- | --- |
-| Current card | Draw, round 9 | Wizard wins, round 9 |
+| Attack 3 | Draw, round 9 | Wizard wins, round 9 |
 | Attack 4 | Draw, round 9 | Cowboy wins, round 5 |
 
-I clicked the commit route to its end and the keep route through round 3 on both built pages in headless Chrome. The pages showed the same clashes as the script, including "Victory. A Base fell in round 5." on the attack-4 page. The rounds after that on the keep route and on the current card's commit route come from the script alone.
+I opened both pages in headless Chrome with no address ending and clicked through them. Both opened on the board above. The commit route ended in "Victory. A Base fell in round 5." on the attack-4 page and with Mounted Billy defeated in the round 4 clash on the attack-3 page. Restart and **Replay this deal** each returned to the same board and hand. The round-9 results in the table come from the script, where the bots play on.
 
-Seed 850 with `&cpu=hard` gives the same four results against the Hard bot. That one is from the script and was not clicked through.
+`--board 850 --cpu hard` prints the same four results against the Hard bot. That board comes from the script only. The pages do not open on it.
 
 ## What a human playtest should answer
 
@@ -102,7 +96,7 @@ Record the choice and the reason on each page. The bots cannot tell whether atta
 
 - Every number here is a bot playing a bot, against one Wizard deck.
 - The board is one seed chosen from the first 1,500 seeds because committing wins there only at attack 4. It illustrates the difference and does not measure how often it happens.
-- Deadeye Control was compared in the bot table. It was not played on the seed 823 board, because a different deck deals different hands. To play it, open `current.html` with no address ending, choose Build Deck, Load Deadeye Control, then Save deck.
+- Deadeye Control was compared in the bot table. It was not played on the seed 823 board, because a different deck deals different hands. To play it, run `npm run build`, open the ordinary graybox page and choose Build Deck, Load Deadeye Control, then Save deck.
 
 ## Reproduce
 
@@ -110,7 +104,7 @@ Record the choice and the reason on each page. The bots cannot tell whether atta
 node scripts/mounted-billy-lab.mjs                           # both tables, about 80 seconds
 node scripts/mounted-billy-lab.mjs --board 823               # the four seed 823 endings, move by move
 node scripts/mounted-billy-lab.mjs --board 850 --cpu hard
-node scripts/mounted-billy-lab.mjs --build                   # dist/mounted-billy/current.html and attack-4.html
+node scripts/mounted-billy-lab.mjs --build                   # dist/mounted-billy/attack-3.html and attack-4.html
 ```
 
-The script stops if its patched copy still loads the shipped card, or if the two rule sets do not reach the same board.
+The script stops if its patched copy still loads the shipped card, if the two rule sets do not reach the same board, or if the two built pages differ by anything other than the digit 3 against 4 in the title, the lab line and the card.

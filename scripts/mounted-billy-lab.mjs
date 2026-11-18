@@ -1,27 +1,54 @@
 // Mounted Billy: keep, simplify or cut? Results are in docs/evidence/fable-mounted-billy.md.
 //   node scripts/mounted-billy-lab.mjs [--from 32000 --count 1024]   matched-seed report (JSON)
 //   node scripts/mounted-billy-lab.mjs --board 823 [--cpu normal] [--lane 2]   four endings of one board
-//   node scripts/mounted-billy-lab.mjs --build   playable pages in dist/mounted-billy/
-// The alternative is one number: Mounted Billy's attack 3 -> 4. It exists only in a
-// patched copy of src/ under .artifacts/mounted-billy/, so the shipped card is unchanged.
+//   node scripts/mounted-billy-lab.mjs --build   decision pages dist/mounted-billy/attack-{3,4}.html
+// The alternative is one number: Mounted Billy's attack 3 -> 4. It exists only in patched
+// copies of src/ under .artifacts/mounted-billy/, so the shipped card and page are unchanged.
 import assert from "node:assert/strict";
 import {execFileSync} from "node:child_process";
 import {cpSync, mkdirSync, readFileSync, rmSync, writeFileSync} from "node:fs";
+import {fileURLToPath} from "node:url";
 import {parseArgs} from "node:util";
 import {DEADEYE_CONTROL} from "../src/game/deck-presets.js";
+import {commitsAt, decisionBoard, hideBilly, isBilly} from "./mounted-billy-decision.js";
 
 const root = new URL("../", import.meta.url);
-const altRoot = new URL(".artifacts/mounted-billy/attack-4/", root);
-const MB = "cowboy-mounted-billy-1";
 const STAT = '"name":"Mounted Billy","kind":"troop","stars":7,"health":5,"attack":';
+const DECISION_SEED = 823;
 
-rmSync(altRoot, {recursive: true, force: true});
-cpSync(new URL("src/", root), new URL("src/", altRoot), {recursive: true});
-cpSync(new URL("scripts/build-graybox.mjs", root), new URL("scripts/build-graybox.mjs", altRoot));
-const specs = new URL("src/game/card-specs.generated.js", altRoot);
-const stock = readFileSync(specs, "utf8");
-assert.equal(stock.split(`${STAT}3`).length, 2, "expected one Mounted Billy spec with attack 3");
-writeFileSync(specs, stock.replace(`${STAT}3`, `${STAT}4`));
+// Every edit must hit exactly one place, so a changed source stops the lab.
+function patch(base, file, edits) {
+  const target = new URL(file, base);
+  let text = readFileSync(target, "utf8");
+  for (const [from, to] of edits) {
+    assert.equal(text.split(from).length, 2, `${file}: expected exactly one "${from}"`);
+    text = text.replace(from, () => to);
+  }
+  writeFileSync(target, text);
+}
+
+// A copy of src/ where Mounted Billy has `attack` and the graybox page deals DECISION_SEED
+// (unless the address names another deal), lets the bots play the opening and hands over at
+// the first turn he can be summoned. Guided lessons keep their normal start.
+function writeTree(attack) {
+  const base = new URL(`.artifacts/mounted-billy/attack-${attack}/`, root);
+  rmSync(base, {recursive: true, force: true});
+  cpSync(new URL("src/", root), new URL("src/", base), {recursive: true});
+  cpSync(new URL("scripts/build-graybox.mjs", root), new URL("scripts/build-graybox.mjs", base));
+  cpSync(new URL("scripts/mounted-billy-decision.js", root), new URL("src/mounted-billy-decision.js", base));
+  patch(base, "src/game/card-specs.generated.js", [[`${STAT}3`, `${STAT}${attack}`]]);
+  patch(base, "src/graybox.js", [
+    ['import {chooseAction, cpuFor} from "./game/cpu.js";', 'import {chooseAction, cpuFor} from "./game/cpu.js";\nimport {decisionBoard} from "./mounted-billy-decision.js";'],
+    ["new URLSearchParams(location.search)", `new URLSearchParams(location.search || "?mode=match&deck=starter&seed=${DECISION_SEED}")`],
+    ["FABLE_ENGINE.createMatch(seed, options)", "(guided ? (state) => state : (state) => decisionBoard({...FABLE_ENGINE, cpuFor}, state))(FABLE_ENGINE.createMatch(seed, options))"],
+  ]);
+  patch(base, "src/ui/graybox.html", [
+    ["| Graybox</title>", `| Mounted Billy attack ${attack}</title>`],
+    ['<section id="match"', `<p>Mounted Billy lab, attack ${attack}. The opening rounds were played for you. Keep your Sheriffs or tribute them for Mounted Billy, then play the duel out. Restart in the ☰ menu returns to this decision.</p>\n    <section id="match"`],
+  ]);
+  return base;
+}
+const altRoot = writeTree(4);
 
 async function load(base) {
   const game = {};
@@ -36,12 +63,7 @@ for (const [id, card] of Object.entries(rules.current.CARDS)) {
   assert.deepEqual(rules["attack-4"].CARDS[id], card.name === "Mounted Billy" ? {...card, attack: 4} : card);
 }
 
-// The Cowboy's view without Mounted Billy in hand; the Wizard's view is returned as is.
-const hideBilly = (view) => view.viewer !== "cowboy" ? view :
-  {...view, sides: {...view.sides, cowboy: {...view.sides.cowboy, hand: view.sides.cowboy.hand.filter((id) => id !== MB)}}};
 const points = (state) => (state.result.winner === "cowboy" ? 1 : state.result.winner === null ? 0.5 : 0);
-const commitsAt = (game, state) => state.activeSide !== "cowboy" ? [] :
-  game.legalActions(game.publicState(state, "cowboy"), "cowboy").filter((action) => action.type === "summon" && action.cardId === MB);
 
 function step(game, state, action, log) {
   const applied = game.applyAction(state, action);
@@ -88,9 +110,9 @@ function arm(game, cpu, counts, {from, count, never = false, fork = false}) {
           split.bestLane += best;
           split.averageLane += lanes.reduce((sum, value) => sum + value, 0) / lanes.length;
           split[best > keep ? "commitBetter" : best < keep ? "keepBetter" : "same"]++;
-          if (action.cardId === MB) split.botCommits++;
+          if (isBilly(action.cardId)) split.botCommits++;
         }
-        summoned ||= action.cardId === MB;
+        summoned ||= isBilly(action.cardId);
         state = step(game, state, action);
       }
       const result = points(state);
@@ -163,11 +185,9 @@ function board(seed, cpu, lane) {
       if (applied.events.some((event) => event.type === "clash")) lines.push(`     after clash ${before.round}: ${side(applied.state, "cowboy")}   ${side(applied.state, "wizard")}`);
     };
     lines.push(`\n== ${ruleSet}: opening, Wizard CPU ${cpu}`);
-    let state = game.createMatch(seed);
-    while (!state.result && commitsAt(game, state).length === 0) {
-      state = step(game, state, choose(hideBilly(game.publicState(state, state.activeSide))), log);
-    }
-    assert.ok(!state.result, `seed ${seed}: Mounted Billy never becomes summonable`);
+    const start = game.createMatch(seed);
+    const state = decisionBoard(game, start, {cpu, log});
+    assert.notEqual(state, start, `seed ${seed}: Mounted Billy never becomes summonable`);
     shared ??= JSON.stringify(state);
     assert.equal(JSON.stringify(state), shared, "both rule sets must reach the same board");
     lines.push(`  BOARD round ${state.round}: ${side(state, "cowboy")}   ${side(state, "wizard")}   hand: ${state.sides.cowboy.hand.map(name).join(", ")}`);
@@ -182,16 +202,26 @@ function board(seed, cpu, lane) {
   console.log(lines.join("\n").trim());
 }
 
+// Two pages that open on the same round-three board and differ only in Mounted Billy's attack.
 function buildPages() {
+  const [current, changed] = Object.values(rules).map((game) => decisionBoard(game, game.createMatch(DECISION_SEED)));
+  assert.deepEqual(current, changed, "both pages must open on the same board");
+  assert.ok(current.round === 3 && commitsAt(rules.current, current).length > 0, "the decision board moved");
   const out = new URL("dist/mounted-billy/", root);
+  rmSync(out, {recursive: true, force: true}); // this lab's own output, including pages from its earlier version
   mkdirSync(out, {recursive: true});
-  for (const [name, base, label] of [["current", root, "Mounted Billy attack 3 (current)"], ["attack-4", altRoot, "Mounted Billy attack 4 (experiment)"]]) {
-    execFileSync(process.execPath, [new URL("scripts/build-graybox.mjs", base).pathname], {stdio: "ignore"});
+  const pages = [3, 4].map((attack) => {
+    const base = attack === 4 ? altRoot : writeTree(attack);
+    execFileSync(process.execPath, [fileURLToPath(new URL("scripts/build-graybox.mjs", base))], {stdio: "ignore"});
     const html = readFileSync(new URL("dist/cowboys-vs-wizards-board-duel.html", base), "utf8");
-    assert.ok(html.includes("<title>Cowboys vs. Wizards | Graybox</title>"), "graybox title changed");
-    writeFileSync(new URL(`${name}.html`, out), html.replace("| Graybox</title>", `| ${label}</title>`));
-    console.log(`Built dist/mounted-billy/${name}.html  (${label})`);
-  }
+    writeFileSync(new URL(`attack-${attack}.html`, out), html);
+    console.log(`Built dist/mounted-billy/attack-${attack}.html`);
+    return html;
+  });
+  // Title, lab line and the card's attack: three characters, each 3 against 4, and nothing else.
+  assert.equal(pages[0].length, pages[1].length, "the pages differ by more than Mounted Billy's attack");
+  const differing = [...pages[0]].flatMap((char, index) => (char === pages[1][index] ? [] : [char + pages[1][index]]));
+  assert.deepEqual(differing, ["34", "34", "34"], "the pages differ by more than Mounted Billy's attack");
 }
 
 const {values} = parseArgs({options: {
