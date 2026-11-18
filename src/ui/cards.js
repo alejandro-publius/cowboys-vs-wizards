@@ -8,6 +8,7 @@
 // mountCards(root, handlers) -> {render(model)}
 // handlers: onCard(cardId), onSlot(side, slot), onConfirm(), onCancel(),
 //   onSkip(), onEndPhase(), onRestart(), onReplaySeed(text),
+//   onReplayDeal(), onNewDuel() (plain result only; both needed to show them),
 //   summonTarget(slot) -> {left, top, width, height} screen rect of the Cowboy
 //   board tile for a summon flight, or null to fall back to the lane button
 // render() sets root.dataset.status to the controller status.
@@ -16,6 +17,7 @@ import {createCardBody, describeCard} from "./card-art.js";
 import {CARDS, tributeCost} from "../game/cards.js";
 
 const ACTIONS = {confirm: "onConfirm", cancel: "onCancel", skip: "onSkip", "end-phase": "onEndPhase", restart: "onRestart"};
+const REMATCH = {"replay-deal": "onReplayDeal", "new-duel": "onNewDuel"};
 // Public catalog: the first copy of each of the eight card names.
 const catalog = Object.values(CARDS).filter((card, i, all) => all.findIndex((each) => each.name === card.name) === i);
 const catalogId = (card) => catalog.find((each) => each.name === card.name).id;
@@ -210,8 +212,17 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
 
   const resultTitle = el("h2"), resultText = el("p");
   const resultRestart = el("button", {type: "button", "data-action": "restart"}, "Restart");
+  // Plain (graybox) result with rematch handlers: Replay this deal and New duel
+  // replace Restart. The illustrated result keeps its Restart.
+  const rematch = plain && handlers.onReplayDeal && handlers.onNewDuel ? {
+    replay: el("button", {type: "button", "data-action": "replay-deal"}, "Replay this deal"),
+    fresh: el("button", {type: "button", "data-action": "new-duel"}, "New duel"),
+  } : null;
+  const resultActions = rematch
+    ? el("div", {class: "match-buttons result-actions"}, rematch.replay, rematch.fresh)
+    : resultRestart;
   const result = el("section", {class: "match-result", "aria-label": "Match result", hidden: true},
-    resultTitle, resultText, resultRestart);
+    resultTitle, resultText, resultActions);
 
   viewArt.hidden = plain;
   root.replaceChildren(top,own,lanes,phaseControl,bottom,...(plain ? [] : [viewer]),result);
@@ -379,6 +390,14 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
       if (!plain) pending = summonGeometry();
       const outcome = call("onConfirm");
       if (!outcome?.ok || model.status === "error") pending = null;
+    } else if (rematch && REMATCH[action]) {
+      cancelSummon();
+      clearDraw();
+      call(REMATCH[action]);
+      // The next match's renders have run; the pressed button is now hidden.
+      if (result.hidden && (stray() || result.contains(document.activeElement))) {
+        (hand.querySelector("button:enabled") ?? (buttons.endPhase.disabled ? menuButton : buttons.endPhase)).focus();
+      }
     } else if (ACTIONS[action]) {
       if (action === "restart" || action === "cancel") cancelSummon();
       if (action === "restart") clearDraw();
@@ -489,6 +508,7 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
     }
 
     restart.disabled = resultRestart.disabled = !model.buttons.restart;
+    if (rematch) rematch.replay.disabled = rematch.fresh.disabled = !model.buttons.restart;
     buttons.skip.hidden=!model.buttons.skip;
 
     result.hidden = model.result === null;

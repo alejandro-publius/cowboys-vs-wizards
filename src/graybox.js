@@ -38,6 +38,17 @@ let progress = guideProgress();
 let run = 0;
 let roundEvents = [];
 let latestClash = null;
+// The configuration captured when the current match was created, and the one
+// "Replay this deal" hands back to createMatch for exactly one start.
+let deal = null;
+let replay = null;
+
+// Read at match creation, so a deck saved mid-match only affects later deals.
+function freshDeal(seed) {
+  const counts = guided || params.get("deck") === "starter" ? null : profile.get().deck;
+  const options = counts && validateDeck(counts).ok ? {cowboyDeck: deckIds(counts)} : {};
+  return {seed, guided, opening: guided ? null : opening, options};
+}
 
 const engine = {
   ...FABLE_ENGINE,
@@ -46,10 +57,11 @@ const engine = {
     progress = guideProgress();
     roundEvents = [];
     latestClash = {title: "Latest clash", lines: ["End the turn to view both sides’ attacks."]};
-    const counts = guided || params.get("deck") === "starter" ? null : profile.get().deck;
-    const options = counts && validateDeck(counts).ok ? {cowboyDeck: deckIds(counts)} : {};
-    return opening && !guided
-      ? openingMatch(seed, opening.opening, opening.first, options)
+    deal = replay ?? freshDeal(seed);
+    replay = null;
+    const options = deal.options.cowboyDeck ? {cowboyDeck: [...deal.options.cowboyDeck]} : {};
+    return deal.opening
+      ? openingMatch(seed, deal.opening.opening, deal.opening.first, options)
       : FABLE_ENGINE.createMatch(seed, options);
   },
   applyAction(state, action) {
@@ -108,6 +120,24 @@ function play(action) {
   return result;
 }
 const input = (event) => play(() => controller.input(event));
+// Result screen: the completed match's seed, deck, CPU/opening and guided setting.
+function replayDeal() {
+  if (controller.status() !== "terminal" || !deal) return;
+  const completed = deal;
+  guided = completed.guided;
+  replay = completed;
+  try {
+    play(() => controller.start(completed.seed));
+  } finally {
+    replay = null;
+  }
+}
+// Result screen: a generated seed and the latest saved deck, outside the guided lesson.
+function newDuel() {
+  if (controller.status() !== "terminal") return;
+  guided = false;
+  play(() => controller.start());
+}
 const overlay = mountCards(match, {
   onCard: (cardId) => input({type: "card", cardId}),
   onSlot: (side, slot) => input({type: "slot", side, slot}),
@@ -117,6 +147,8 @@ const overlay = mountCards(match, {
   onEndPhase: () => play(() => controller.endPhase()),
   onRestart: () => play(() => controller.restart()),
   onReplaySeed: (seed) => play(() => controller.start(seed)),
+  onReplayDeal: replayDeal,
+  onNewDuel: newDuel,
 }, {plain: true});
 
 const menu = mountTitleMenu(node("title-screen"), {
