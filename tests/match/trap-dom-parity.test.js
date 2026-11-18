@@ -1,0 +1,181 @@
+// Issue #131: Node checks of scripts/browser-trap-parity-131.mjs. No browser
+// is launched here; the real-Chrome comparison runs only from the script.
+// This file checks the Node mirror (T1 lab engine, normal Wizard CPU) on
+// seeds 0 and 60, and that the DOM comparator and redaction check catch
+// wrong fields. `fakeDom` below is a test-only copy of the strings that
+// experiments/trap-placeholder/app.js render() writes; if app.js changes its
+// wording, the real-Chrome run of the script is the authority.
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { SIDES } from "../../src/game/cards.js";
+import { MAX_ROUNDS } from "../../src/game/state.js";
+import { publicState } from "../../src/game/view.js";
+import { commandList, eventLine } from "../../experiments/trap-placeholder/lab.js";
+import {
+  CPU_LEVEL, SCENARIO, TERMINAL_PHASE_FINDING, breakLineOf, checkRedaction, compareDomToView, compareSnapshot,
+  createMirror, decideInput, hiddenWizardIds, parseArgs, readDom,
+} from "../../scripts/browser-trap-parity-131.mjs";
+
+const glyphs = (n, max) => "\u25cf".repeat(Math.max(0, n)) + "\u25cb".repeat(Math.max(0, max - n));
+
+// Test-only rendering of a view in the lab's wording (see the header note).
+function fakeDom(view, status, seed, cards, events) {
+  const result = view.result ? ` Result: ${view.result.outcome} (${view.result.reason}).` : "";
+  const info = (side) => {
+    const s = view.sides[side];
+    const text = `Base life orbs ${s.baseOrbs} of 5 ${glyphs(s.baseOrbs, 5)}. Deck ${s.deckCount}, hand ${s.handCount}, discard ${s.discard.length}.`;
+    if (side !== "cowboy") return text;
+    const a = view.allowances.cowboy;
+    return `${text} Summon used: ${a.summonUsed ? "yes" : "no"}. Spell or trap used: ${a.castUsed ? `yes (${a.tactical ?? "spell"})` : "no"}.`;
+  };
+  const lane = (side, slot) => {
+    const owner = side === "cowboy" ? "Your" : "Enemy";
+    const troop = view.sides[side].board[slot];
+    if (!troop) return `${owner} lane ${slot + 1}: empty`;
+    const card = cards[troop.cardId];
+    return `${owner} lane ${slot + 1}: ${card.name}\nHealth ${troop.health} of ${card.health} ${glyphs(troop.health, card.health)}\nAttack ${card.attack}`;
+  };
+  const trap = (side) => {
+    const t = view.sides[side].trap;
+    if (side === "wizard") return t ? "Enemy trap: set (face-down)" : "Enemy trap: none";
+    if (!t) return "Trap zone: empty";
+    return `${cards[t.cardId].name}. ${t.setRound < view.round ? "Trap armed. It springs at the next clash if the enemy has a troop." : "Trap set. It springs from next round."}`;
+  };
+  const hand = view.sides.cowboy.hand.map((id, i) => {
+    const c = cards[id];
+    const stats = c.kind === "troop" ? ` (${c.stars} stars, attack ${c.attack}, health ${c.health})` : ` (${c.kind})`;
+    return { text: `${c.name}${stats}`, key: `${id}-${i}`, disabled: false, pressed: "false" };
+  });
+  return {
+    status: `Status: ${status}. Seed ${seed}. Round ${view.round} of ${MAX_ROUNDS}. Phase: ${view.activeSide === "cowboy" ? "Cowboy" : "Wizard"}.${result} Scenario T1 (x). Wizard CPU: normal. `,
+    info: Object.fromEntries(SIDES.map((s) => [s, info(s)])),
+    trap: Object.fromEntries(SIDES.map((s) => [s, trap(s)])),
+    lanes: Object.fromEntries(SIDES.map((s) => [s, [0, 1, 2].map((slot) => ({ text: lane(s, slot), disabled: true }))])),
+    hand,
+    commands: [],
+    log: events.map(eventLine),
+    html: `<html><body>${hand.map((h) => `<button data-key="${h.key}">${h.text}</button>`).join("")}</body></html>`,
+  };
+}
+
+// Node-only play of one seed with the script's policy; one record per stable point.
+function playMirror(seed) {
+  const mirror = createMirror(seed);
+  const points = [];
+  const inputs = [];
+  const record = () => {
+    const s = mirror.snapshot();
+    points.push({ snapshot: structuredClone(s), full: structuredClone(mirror.full()) });
+    return s;
+  };
+  let s = record();
+  while (s.status !== "terminal") {
+    assert.ok(inputs.length < 150, `seed ${seed}: no result`);
+    const input = decideInput({ view: s.view, options: s.options, commands: commandList(s.view, mirror.cards).map((e) => e.label) });
+    assert.equal(mirror.apply(input)?.ok, true, `seed ${seed}: ${JSON.stringify(input)} accepted`);
+    inputs.push(input);
+    s = record();
+  }
+  return { mirror, points, inputs };
+}
+
+// A page read built from a mirror point (what the browser read returns).
+const pageOf = ({ snapshot, full }, cards) => ({
+  status: snapshot.status, seed: snapshot.seed, settings: { scenario: SCENARIO, cpuLevel: CPU_LEVEL },
+  view: snapshot.view, displayed: snapshot.displayed, options: snapshot.options, events: snapshot.events,
+  dom: fakeDom(snapshot.displayed ?? snapshot.view, snapshot.status, snapshot.seed, cards, snapshot.events),
+  full,
+});
+
+test("arguments: seeds 0 and 60 by default; bad seeds and unknown flags are refused", () => {
+  assert.deepEqual(parseArgs([]), { seeds: [0, 60], out: null });
+  assert.deepEqual(parseArgs(["--seeds", "7", "--out", "r.json"]), { seeds: [7], out: "r.json" });
+  assert.throws(() => parseArgs(["--seeds", "-1"]), /--seeds/);
+  assert.throws(() => parseArgs(["--seeds", "4294967296"]), /--seeds/);
+  assert.throws(() => parseArgs(["--fast"]), /unknown argument/);
+});
+
+test("the page read pauses on the last line of render() in the lab app.js", () => {
+  const source = readFileSync(new URL("../../experiments/trap-placeholder/app.js", import.meta.url), "utf8");
+  const line = breakLineOf(source);
+  const lines = source.split("\n");
+  const start = lines.indexOf("function render() {");
+  assert.ok(start >= 0 && start < line, "render() starts before the break line");
+  assert.equal(lines[line + 1], "}", "the break line is the last statement of render()");
+  assert.throws(() => breakLineOf("function render() {\n}\n"), /found 0/);
+});
+
+for (const seed of [0, 60]) {
+  test(`seed ${seed}: the T1 mirror is deterministic, every action is accepted, and every stable point compares clean`, () => {
+    const a = playMirror(seed);
+    const b = playMirror(seed);
+    assert.deepEqual(b.inputs, a.inputs);
+    assert.deepEqual(b.mirror.events(), a.mirror.events());
+    assert.deepEqual(b.points.map((p) => p.snapshot.view), a.points.map((p) => p.snapshot.view));
+    const events = a.mirror.events();
+    assert.ok(a.inputs.some((i) => i.type === "command" || i.type === "confirm"), "at least one legal Cowboy action beyond End phase");
+    for (const point of a.points) {
+      const page = pageOf(point, a.mirror.cards);
+      const findings = [];
+      assert.deepEqual(compareSnapshot(page, point.snapshot, point.full, a.mirror.cards, findings), [], `seed ${seed} revision ${point.snapshot.view.revision}`);
+      assert.deepEqual(point.snapshot.view, publicState(point.full, "cowboy"));
+      if (point.snapshot.status === "terminal") assert.deepEqual(findings, [TERMINAL_PHASE_FINDING]);
+      else assert.deepEqual(findings, []);
+    }
+    if (seed === 0) {
+      assert.equal(events.filter((e) => e.type === "trap-set" && e.side === "wizard").length, 1, "Wizard sets its trap on seed 0");
+      assert.ok(a.points.some((p) => p.full.sides.wizard.trap), "a stable point holds a hidden Wizard trap");
+      assert.ok(events.some((e) => e.type === "trap-trigger" && e.side === "wizard"));
+    } else {
+      assert.ok(a.inputs.some((i) => i.type === "card") && a.inputs.some((i) => i.type === "confirm"), "Cowboy sets its trap by card and Confirm");
+      assert.ok(events.some((e) => e.type === "trap-set" && e.side === "cowboy" && e.cardId === "test-fixture-deck-trap-cowboy-2"));
+    }
+  });
+}
+
+test("the comparator catches a wrong visible lane, base, count, round, phase or hand field", () => {
+  const { mirror, points } = playMirror(60);
+  const point = points.find((p) => p.snapshot.status === "accepting_input" && SIDES.every((s) => p.snapshot.view.sides[s].board.some(Boolean)));
+  assert.ok(point, "a point with troops on both sides");
+  const page = pageOf(point, mirror.cards);
+  const opts = { status: page.status, seed: page.seed };
+  assert.deepEqual(compareDomToView(page.dom, page.view, mirror.cards, opts), []);
+  const slot = page.view.sides.wizard.board.findIndex(Boolean);
+  const mutate = (fn) => { const dom = structuredClone(page.dom); fn(dom); return compareDomToView(dom, page.view, mirror.cards, opts); };
+  const cases = {
+    health: (d) => (d.lanes.wizard[slot].text = d.lanes.wizard[slot].text.replace(/Health (\d+)/, (_, h) => `Health ${Number(h) + 1}`)),
+    attack: (d) => (d.lanes.wizard[slot].text = d.lanes.wizard[slot].text.replace(/Attack (\d+)/, (_, x) => `Attack ${Number(x) + 1}`)),
+    glyphs: (d) => (d.lanes.wizard[slot].text = d.lanes.wizard[slot].text.replace("\u25cf", "\u25cb")),
+    name: (d) => (d.lanes.wizard[slot].text = d.lanes.wizard[slot].text.replace(/: [^\n]+\n/, ": Somebody\n")),
+    emptied: (d) => (d.lanes.wizard[slot].text = `Enemy lane ${slot + 1}: empty`),
+    base: (d) => (d.info.cowboy = d.info.cowboy.replace(/Base life orbs (\d)/, (_, b) => `Base life orbs ${Number(b) - 1}`)),
+    deck: (d) => (d.info.wizard = d.info.wizard.replace(/Deck (\d+)/, (_, n) => `Deck ${Number(n) + 1}`)),
+    round: (d) => (d.status = d.status.replace(/Round (\d+)/, (_, r) => `Round ${Number(r) + 1}`)),
+    phase: (d) => (d.status = d.status.replace("Phase: Cowboy", "Phase: Wizard")),
+    hand: (d) => d.hand.pop(),
+    unparsed: (d) => (d.status = "Status: ?"),
+  };
+  for (const [name, fn] of Object.entries(cases)) assert.ok(mutate(fn).length > 0, `${name} mismatch caught`);
+});
+
+test("redaction: a revealed Wizard trap, ID or trap-set cardId is caught; the engine's hidden trap is never in the view", () => {
+  const { mirror, points } = playMirror(0);
+  const point = points.find((p) => p.full.sides.wizard.trap);
+  const page = pageOf(point, mirror.cards);
+  const trapId = point.full.sides.wizard.trap.cardId;
+  assert.equal(trapId, "test-fixture-deck-trap-wizard-2");
+  assert.ok(hiddenWizardIds(point.full).includes(trapId));
+  assert.deepEqual(page.view.sides.wizard.trap, { faceDown: true, setRound: point.full.sides.wizard.trap.setRound });
+  assert.equal(JSON.stringify(page.view).includes(trapId), false);
+  assert.deepEqual(checkRedaction(page, point.full), []);
+
+  const leaked = (fn) => { const copy = structuredClone(page); fn(copy); return checkRedaction(copy, point.full); };
+  assert.ok(leaked((p) => (p.view.sides.wizard.trap = { cardId: trapId, setRound: 1 })).length > 0, "card ID in the view");
+  assert.ok(leaked((p) => (p.dom.trap.wizard = "Placeholder deck trap (synthetic). Trap set.")).length > 0, "named in the DOM");
+  assert.ok(leaked((p) => (p.dom.html += `<i>${trapId}</i>`)).length > 0, "ID in the HTML");
+  assert.ok(leaked((p) => (p.dom.html += `<i>${point.full.sides.wizard.deck[0]}</i>`)).length > 0, "Wizard deck ID in the HTML");
+  assert.ok(leaked((p) => (p.view.sides.wizard.hand = point.full.sides.wizard.hand)).length > 0, "Wizard hand in the view");
+  assert.ok(leaked((p) => p.events.push({ type: "trap-set", side: "wizard", revision: 1, cardId: trapId })).length > 0, "trap-set cardId");
+  assert.ok(leaked((p) => (p.view.sides.wizard.trap = null)).length > 0, "hidden trap dropped from the view");
+});
