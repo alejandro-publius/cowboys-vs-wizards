@@ -1,0 +1,55 @@
+/* One-decision Ride Out playtest page, inlined by scripts/build-ride-out-playtest.mjs. */
+:root {
+  color-scheme: light;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+  color: #111;
+  background: #fff;
+}
+body { margin: 0; }
+main { max-width: 42rem; margin: 0 auto; padding: 1rem; }
+h1 { font-size: 1.6rem; line-height: 1.2; margin: 0.5rem 0 1rem; }
+h2 { font-size: 1.25rem; line-height: 1.3; margin: 1.75rem 0 0.5rem; }
+h3 { font-size: 1.05rem; margin: 1.25rem 0 0.25rem; }
+[hidden] { display: none !important; }
+table { width: 100%; border-collapse: collapse; table-layout: fixed; margin: 0.5rem 0; }
+caption { text-align: left; font-weight: 600; padding-bottom: 0.25rem; }
+th, td { border: 1px solid #444; padding: 0.4rem; vertical-align: top; text-align: left; overflow-wrap: anywhere; }
+thead th:first-child { width: 24%; }
+td.empty { color: #444; font-style: italic; }
+.stats { display: block; font-size: 0.9rem; }
+.bases { font-weight: 600; }
+button {
+  font: inherit;
+  display: block;
+  width: 100%;
+  min-height: 2.75rem;
+  margin: 0.6rem 0;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  color: #111;
+  background: #eee;
+  border: 2px solid #111;
+  border-radius: 0.4rem;
+  cursor: pointer;
+}
+button[aria-pressed="true"] { color: #fff; background: #111; }
+button:disabled { cursor: default; }
+button:disabled:not([aria-pressed="true"]) { background: #fff; border-style: dashed; }
+:focus-visible { outline: 3px solid #0047ab; outline-offset: 3px; }
+.line-title { display: block; font-weight: 700; }
+label { display: block; font-weight: 600; margin: 1rem 0 0.4rem; }
+textarea {
+  font: inherit;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem;
+  border: 2px solid #111;
+  border-radius: 0.4rem;
+}
+textarea[readonly] { background: #f2f2f2; }
+.hint, footer { font-size: 0.9rem; color: #333; }
+article { border-top: 2px solid #111; margin-top: 1.25rem; }
+.role { display: block; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; }
+footer { margin-top: 2rem; border-top: 1px solid #888; padding-top: 0.5rem; }
