@@ -91,6 +91,14 @@ function laneText(side, slot, troop) {
   return `${owner} lane ${slot + 1}: ${card.name}\nHealth ${troop.health} of ${card.health} ${orbs(troop.health, card.health)}\nAttack ${card.attack}`;
 }
 
+// Issue #132: after the result the engine view has activeSide null. Show a
+// neutral "none" then; never infer the Wizard from a missing side.
+function phaseLabel(side) {
+  if (side === VIEWER) return "Cowboy";
+  if (side === ENEMY) return "Wizard";
+  return "none";
+}
+
 function sideInfo(view, side) {
   const s = view.sides[side];
   const text = `Base life orbs ${s.baseOrbs} of 5 ${orbs(s.baseOrbs, 5)}. Deck ${s.deckCount}, hand ${s.handCount}, discard ${s.discard.length}.`;
@@ -134,7 +142,7 @@ function render() {
   const seedPending = view && status !== "idle" && validSeed(typed) && Number(typed) !== controller().seed() ? ` Seed field ${Number(typed)} applies on Start.` : "";
   const variant = ` Scenario ${SCENARIO_LABELS[active.scenario]}. Wizard CPU: ${active.cpuLevel}.${pending}${seedPending}`;
   $("status").textContent = view && status !== "idle"
-    ? `Status: ${status}. Seed ${controller().seed()}. Round ${view.round} of ${MAX_ROUNDS}. Phase: ${view.activeSide === VIEWER ? "Cowboy" : "Wizard"}.${result}${variant} ${controller().message() ?? ""}`
+    ? `Status: ${status}. Seed ${controller().seed()}. Round ${view.round} of ${MAX_ROUNDS}. Phase: ${phaseLabel(view.activeSide)}.${result}${variant} ${controller().message() ?? ""}`
     : `Status: ${status}.${variant} ${controller().message() ?? "Enter a seed and start."}`;
 
   for (const side of [ENEMY, VIEWER]) {

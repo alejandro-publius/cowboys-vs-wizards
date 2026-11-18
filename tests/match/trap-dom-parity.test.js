@@ -13,11 +13,14 @@ import { MAX_ROUNDS } from "../../src/game/state.js";
 import { publicState } from "../../src/game/view.js";
 import { commandList, eventLine } from "../../experiments/trap-placeholder/lab.js";
 import {
-  CPU_LEVEL, SCENARIO, TERMINAL_PHASE_FINDING, breakLineOf, checkRedaction, compareDomToView, compareSnapshot,
+  CPU_LEVEL, SCENARIO, breakLineOf, checkRedaction, compareDomToView, compareSnapshot,
   createMirror, decideInput, hiddenWizardIds, parseArgs, readDom,
 } from "../../scripts/browser-trap-parity-131.mjs";
 
 const glyphs = (n, max) => "\u25cf".repeat(Math.max(0, n)) + "\u25cb".repeat(Math.max(0, max - n));
+
+// Issue #132: the lab's phase wording, "none" once activeSide is null.
+const phaseLabel = (side) => (side === "cowboy" ? "Cowboy" : side === "wizard" ? "Wizard" : "none");
 
 // Test-only rendering of a view in the lab's wording (see the header note).
 function fakeDom(view, status, seed, cards, events) {
@@ -48,7 +51,7 @@ function fakeDom(view, status, seed, cards, events) {
     return { text: `${c.name}${stats}`, key: `${id}-${i}`, disabled: false, pressed: "false" };
   });
   return {
-    status: `Status: ${status}. Seed ${seed}. Round ${view.round} of ${MAX_ROUNDS}. Phase: ${view.activeSide === "cowboy" ? "Cowboy" : "Wizard"}.${result} Scenario T1 (x). Wizard CPU: normal. `,
+    status: `Status: ${status}. Seed ${seed}. Round ${view.round} of ${MAX_ROUNDS}. Phase: ${phaseLabel(view.activeSide)}.${result} Scenario T1 (x). Wizard CPU: normal. `,
     info: Object.fromEntries(SIDES.map((s) => [s, info(s)])),
     trap: Object.fromEntries(SIDES.map((s) => [s, trap(s)])),
     lanes: Object.fromEntries(SIDES.map((s) => [s, [0, 1, 2].map((slot) => ({ text: lane(s, slot), disabled: true }))])),
@@ -120,8 +123,7 @@ for (const seed of [0, 60]) {
       const findings = [];
       assert.deepEqual(compareSnapshot(page, point.snapshot, point.full, a.mirror.cards, findings), [], `seed ${seed} revision ${point.snapshot.view.revision}`);
       assert.deepEqual(point.snapshot.view, publicState(point.full, "cowboy"));
-      if (point.snapshot.status === "terminal") assert.deepEqual(findings, [TERMINAL_PHASE_FINDING]);
-      else assert.deepEqual(findings, []);
+      assert.deepEqual(findings, [], "no known display gap remains (issue #132)");
     }
     if (seed === 0) {
       assert.equal(events.filter((e) => e.type === "trap-set" && e.side === "wizard").length, 1, "Wizard sets its trap on seed 0");
@@ -157,6 +159,46 @@ test("the comparator catches a wrong visible lane, base, count, round, phase or 
     unparsed: (d) => (d.status = "Status: ?"),
   };
   for (const [name, fn] of Object.entries(cases)) assert.ok(mutate(fn).length > 0, `${name} mismatch caught`);
+});
+
+test("terminal status line: activeSide null reads Phase: none, never Wizard, and the comparator is strict (issue #132)", () => {
+  const source = readFileSync(new URL("../../experiments/trap-placeholder/app.js", import.meta.url), "utf8");
+  assert.equal(source.includes('view.activeSide === VIEWER ? "Cowboy" : "Wizard"'), false, "app.js no longer infers the Wizard from a non-Cowboy side");
+  assert.match(source, /Phase: \$\{phaseLabel\(view\.activeSide\)\}\./);
+  assert.match(source, /return "none";/);
+  for (const seed of [0, 60]) {
+    const { mirror, points } = playMirror(seed);
+    const end = points.at(-1);
+    assert.equal(end.snapshot.status, "terminal");
+    const view = end.snapshot.displayed ?? end.snapshot.view;
+    assert.equal(view.activeSide, null, `seed ${seed}: engine view has no active side at the result`);
+    assert.ok(view.result, `seed ${seed}: terminal view has a result`);
+    const page = pageOf(end, mirror.cards);
+    assert.match(page.dom.status, /Phase: none\. Result: /);
+    assert.equal(page.dom.status.includes("Phase: Wizard"), false);
+    assert.equal(readDom(page.dom).status.phase, null);
+    const opts = { status: page.status, seed: page.seed };
+    const findings = [];
+    assert.deepEqual(compareDomToView(page.dom, view, mirror.cards, { ...opts, findings }), []);
+    assert.deepEqual(findings, []);
+    // The old wording is now a strict mismatch, not a known finding.
+    const old = structuredClone(page.dom);
+    old.status = old.status.replace("Phase: none.", "Phase: Wizard.");
+    const oldFindings = [];
+    const diffs = compareDomToView(old, view, mirror.cards, { ...opts, findings: oldFindings });
+    assert.deepEqual(diffs, ['phase: DOM "wizard" vs view null']);
+    assert.deepEqual(oldFindings, []);
+    const cowboy = structuredClone(page.dom);
+    cowboy.status = cowboy.status.replace("Phase: none.", "Phase: Cowboy.");
+    assert.deepEqual(compareDomToView(cowboy, view, mirror.cards, opts), ['phase: DOM "cowboy" vs view null']);
+  }
+  // Live phases keep their labels.
+  const { mirror, points } = playMirror(60);
+  const live = points.find((p) => p.snapshot.status === "accepting_input");
+  assert.equal(live.snapshot.view.activeSide, "cowboy");
+  assert.match(pageOf(live, mirror.cards).dom.status, /Phase: Cowboy\./);
+  const wizardView = { ...live.snapshot.view, activeSide: "wizard" };
+  assert.equal(readDom(fakeDom(wizardView, "cpu_turn", 60, mirror.cards, [])).status.phase, "wizard");
 });
 
 test("redaction: a revealed Wizard trap, ID or trap-set cardId is caught; the engine's hidden trap is never in the view", () => {
