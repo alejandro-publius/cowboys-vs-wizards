@@ -92,11 +92,9 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
     actions.append(button(`Load ${DEADEYE_CONTROL.name}`, () => {
       counts = {...DEADEYE_CONTROL.counts};
       refresh();
-      const msg = `${DEADEYE_CONTROL.name} loaded as an unsaved draft. Choose Save deck to use it in your next match.`;
-      say(msg);
-      feedback.textContent = msg;
+      feedback.textContent = `${DEADEYE_CONTROL.name} draft loaded. Save deck to use it in your next match.`;
     }, {id: 'load-deadeye-control', 'aria-describedby': 'wb-preset-summary'}));
-    presetNotes.push(element('p', `Compared with the starter deck, ${DEADEYE_CONTROL.name} has one more Deadeye and gives up Mounted Billy, the costly two-tribute finisher. It keeps six Sheriffs and three Billy and loads as an unsaved draft you can edit.`, {id: 'wb-preset-summary', class: 'detail-line'}));
+    presetNotes.push(element('p', 'Adds one Deadeye in place of Mounted Billy, the two-tribute finisher.', {id: 'wb-preset-summary', class: 'detail-line'}));
   }
   chosen.append(total, openingOdds, rows, validation, actions, ...presetNotes, feedback);
   collection.append(grid);
