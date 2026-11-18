@@ -1,4 +1,4 @@
-import {cpuFor} from "./game/cpu.js";
+import {chooseAction, cpuFor} from "./game/cpu.js";
 import {deckIds, validateDeck} from "./game/deck-builder.js";
 import {openingMatch, parseOpeningParams} from "./game/opening-policy.js";
 import {clashForecast} from "./match/clash-forecast.js";
@@ -22,6 +22,9 @@ const profile = createProfileStore();
 const params = new URLSearchParams(location.search);
 const opening = parseOpeningParams(params);
 const hints = params.get("guide") === "1";
+// How to Play → Start guided duel: starter deck, seed 60, Normal Wizard (docs/evidence/clash-royale-launch-decks.md).
+const GUIDED_SEED = "60";
+const chosenCpu = cpuFor(params.get("cpu"));
 const scheduler = createScheduler();
 const instant = () => ({impact: 0, end: 0});
 // The overlay reads the presenter's displayed state. The renderer has no shadow copy of the rules or board.
@@ -67,7 +70,7 @@ const engine = {
 };
 const controller = createController({
   engine, renderer, scheduler, pauses, cpuDelay: 0,
-  chooseCpuAction: cpuFor(params.get("cpu")),
+  chooseCpuAction: (...args) => (guided ? chooseAction : chosenCpu)(...args),
   onChange() {
     const displayed = controller.displayed();
     const options = controller.options();
@@ -76,7 +79,7 @@ const controller = createController({
       profile.record("match-complete", {matchId: run, won: displayed.result.outcome === "win"});
     }
     const guide = (guided || hints) && options && displayed && status === "accepting_input"
-      ? guideLine({view: displayed, options, progress})
+      ? guideLine({view: displayed, options, progress, opener: guided})
       : null;
     const model = cardModel({
       displayed, options, status, guide, clashLog: latestClash,
@@ -124,7 +127,7 @@ const menu = mountTitleMenu(node("title-screen"), {
     if (startGuided || ["idle", "terminal"].includes(controller.status())) {
       guided = startGuided;
       play(() => {
-        if (!controller.start(guided ? "0" : params.get("seed") ?? undefined)) controller.start();
+        if (!controller.start(guided ? GUIDED_SEED : params.get("seed") ?? undefined)) controller.start();
       });
     }
     node("home").focus();
