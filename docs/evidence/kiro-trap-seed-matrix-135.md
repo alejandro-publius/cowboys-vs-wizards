@@ -1,6 +1,6 @@
 # Kiro evidence: T1 six-seed browser-to-engine parity matrix (issue #135)
 
-Date: 2026-11-17 (America/Los_Angeles). Worker: Kiro CLI 3.4.0 V3, model `claude-opus-5.5` (requested by the user; the session reported this model). Credits and usage: the runtime emitted none to this worker, so none are recorded. Base: origin/main `9a4aa178afd0c46dacf514410b5565881745c266` (#134 merged). Worktree `.worktrees/kiro-trap-seed-matrix-135`, one local commit, not pushed, merged or opened as a PR.
+Date: 2026-11-17 (America/Los_Angeles). Worker: Kiro CLI 3.4.0 V3 with explicit `--model claude-opus-5.5` request; streamed session `sess_787a5ba0-6e2b-47c6-838a-62832749d17c` emitted **8.225163944941956 Kiro credits**, independently read by the coordinator. Model selection does not independently prove backend-model identity or account-wide usage. Base: origin/main `9a4aa178afd0c46dacf514410b5565881745c266` (#134 merged). Worktree `.worktrees/kiro-trap-seed-matrix-135`; at Kiro handoff the worker made one local commit and left publishing and integration to the coordinator.
 
 ## Problem
 
