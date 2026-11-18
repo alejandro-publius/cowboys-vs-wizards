@@ -25,7 +25,13 @@
 // phase. Only the Scenario select and seed field are set by script (as the
 // existing #116 smoke does); Start is a real click.
 //
-//   node scripts/browser-trap-parity-131.mjs [--seeds 0,60] [--out FILE.json]
+//   node scripts/browser-trap-parity-131.mjs [--seeds 0,60 | --seed-kit t1] [--out FILE.json]
+//
+// Issue #135: --seed-kit t1 runs the six #120 playtest-kit seeds
+// (55,9,2,23,7,43, categories A-F) through the same checks. Each seed then
+// passes or fails on its own, and each run reports its Cowboy trap
+// opportunity: the round the kit schedules the trap draw (layoutOf) against
+// what this policy actually saw in Chrome (drawn, set, or never reached).
 //
 // Serves the repository root on 127.0.0.1 only. A host resolver rule maps
 // every other host to NOTFOUND and any non-loopback request fails the run.
@@ -45,6 +51,7 @@ import { createScheduler } from "../src/match/scheduler.js";
 import { createController } from "../src/match/controller.js";
 import { commandList, createLabEngine, createPlaceholderRenderer, eventLine } from "../experiments/trap-placeholder/lab.js";
 import { DECK_TRAP_IDS } from "../experiments/trap-placeholder/scenarios.js";
+import { layoutOf, roundForPosition } from "../experiments/trap-playtest-kit/seeds.js";
 
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const root = fileURLToPath(new URL("../", import.meta.url));
@@ -53,20 +60,31 @@ export const SCENARIO = "T1";
 export const CPU_LEVEL = "normal";
 const STABLE = new Set(["accepting_input", "terminal"]);
 const MAX_INPUTS = 150;
+// Wall-clock bound per seed in Chrome (issue #135); a slower seed fails alone.
+const SEED_SECONDS = 180;
+// Issue #135: the six T1 seeds of the #120 kit, categories A to F in order
+// (experiments/trap-playtest-kit/seed-plan.md). A test pins this list to
+// pickSeeds(); the preset only names it, the --seeds path runs it.
+export const SEED_KITS = Object.freeze({ t1: Object.freeze([55, 9, 2, 23, 7, 43]) });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const canon = (value) => JSON.parse(JSON.stringify(value ?? null));
 const same = (a, b) => JSON.stringify(canon(a)) === JSON.stringify(canon(b));
 
 export function parseArgs(argv) {
   const opt = (name, fallback) => { const i = argv.indexOf(name); return i < 0 ? fallback : argv[i + 1]; };
-  const known = new Set(["--seeds", "--out"]);
+  const known = new Set(["--seeds", "--seed-kit", "--out"]);
   for (let i = 0; i < argv.length; i += 2) if (!known.has(argv[i])) throw new Error(`unknown argument ${argv[i]}`);
-  const seeds = String(opt("--seeds", "0,60")).split(",").map((s) => s.trim()).filter(Boolean).map((s) => {
+  const kit = opt("--seed-kit", null);
+  if (kit !== null) {
+    if (argv.includes("--seeds")) throw new Error("--seed-kit and --seeds are exclusive");
+    if (!Object.hasOwn(SEED_KITS, kit)) throw new Error(`--seed-kit: unknown kit ${kit} (known: ${Object.keys(SEED_KITS).join(", ")})`);
+  }
+  const seeds = String(kit !== null ? SEED_KITS[kit].join(",") : opt("--seeds", "0,60")).split(",").map((s) => s.trim()).filter(Boolean).map((s) => {
     if (!/^\d+$/.test(s) || Number(s) > 4294967295) throw new Error(`--seeds: bad seed ${s}`);
     return Number(s);
   });
   if (!seeds.length) throw new Error("--seeds: need at least one seed");
-  return { seeds, out: opt("--out", null) };
+  return { seeds, out: opt("--out", null), ...(kit !== null ? { seedKit: kit } : {}) };
 }
 
 // ---- Node mirror: the same lab engine, controller and CPU -------------------
@@ -267,6 +285,24 @@ export function compareSnapshot(page, mirror, full, cards, findings = []) {
 
 // ---- receipt -----------------------------------------------------------------
 
+// Issue #135: the Cowboy trap opportunity of one finished run. `scheduledRound`
+// is the round the T1 deal puts the trap in hand if the match lasts;
+// `firstSeenRound` is the first stable point whose Cowboy hand held it.
+export function trapOpportunity({ scheduledRound, firstSeenRound, cowboyTrapSet, rounds }) {
+  let outcome;
+  if (cowboyTrapSet) outcome = "set";
+  else if (firstSeenRound !== null) outcome = "drawn-not-set";
+  else if (rounds < scheduledRound) outcome = "not-reached";
+  else outcome = "not-drawn";
+  const text = {
+    set: `trap scheduled for round ${scheduledRound}, in hand from round ${firstSeenRound}, set by the Cowboy`,
+    "drawn-not-set": `trap in hand from round ${firstSeenRound}, never set by this policy`,
+    "not-reached": `conditional: trap scheduled for round ${scheduledRound}, match ended in round ${rounds}; no trap opportunity occurred`,
+    "not-drawn": `trap scheduled for round ${scheduledRound} but not seen in hand by round ${rounds}`,
+  }[outcome];
+  return { scheduledRound, firstSeenRound, outcome, text };
+}
+
 export function digestOf(runs) {
   const stable = runs.map(({ seed, inputs, snapshots }) => ({ seed, inputs, snapshots }));
   return createHash("sha256").update(JSON.stringify(stable)).digest("hex");
@@ -398,6 +434,8 @@ async function runSeed(chrome, origin, seed, breakLine) {
 
   const mirror = createMirror(seed);
   const inputs = [], snapshots = [], mismatches = [], findings = [];
+  const deadline = Date.now() + SEED_SECONDS * 1000;
+  let firstSeenRound = null;
   let hiddenTrapPoints = 0, wizardTrapSetRound = null, wizardTrapSprung = false, cowboyTrapSet = false, summons = 0;
   const compare = async (label) => {
     const page = await readPage();
@@ -409,6 +447,7 @@ async function runSeed(chrome, origin, seed, breakLine) {
     for (const f of found) findings.push(`${label}: ${f}`);
     if (full.sides.wizard.trap) { hiddenTrapPoints++; wizardTrapSetRound ??= full.sides.wizard.trap.setRound; }
     if (page.events.some((e) => e.type === "trap-trigger" && e.side === "wizard")) wizardTrapSprung = true;
+    if (firstSeenRound === null && page.view.sides.cowboy.hand.some((id) => DECK_TRAP_IDS.includes(id))) firstSeenRound = page.view.round;
     const parsed = readDom(page.dom);
     snapshots.push({ label, status: page.status, round: page.view.round, activeSide: page.view.activeSide, revision: page.view.revision,
       result: page.view.result?.outcome ?? null, dom: { status: parsed.status, sides: parsed.sides, lanes: parsed.lanes, trap: parsed.trap }, mismatches: diffs.length });
@@ -426,6 +465,7 @@ async function runSeed(chrome, origin, seed, breakLine) {
 
   while (page.status !== "terminal") {
     if (inputs.length >= MAX_INPUTS) throw new Error(`seed ${seed}: no result after ${MAX_INPUTS} inputs`);
+    if (Date.now() > deadline) throw new Error(`seed ${seed}: over ${SEED_SECONDS} s`);
     const input = decideInput({ view: page.view, options: page.options, commands: page.dom.commands });
     const answer = mirror.apply(input);
     if (!answer?.ok) throw new Error(`seed ${seed}: mirror rejected ${JSON.stringify(input)}: ${answer?.reason ?? answer?.message}`);
@@ -447,6 +487,7 @@ async function runSeed(chrome, origin, seed, breakLine) {
   return {
     seed, inputs, snapshots, mismatches, findings,
     result: page.view.result, rounds: page.view.round,
+    trapOpportunity: trapOpportunity({ scheduledRound: roundForPosition(layoutOf(seed).trap), firstSeenRound, cowboyTrapSet, rounds: page.view.round }),
     coverage: {
       stablePoints: snapshots.length, summonsByCommandClick: summons, cowboyTrapSet,
       wizardTrapSet: counts("trap-set", "wizard"), wizardTrapSetRound, hiddenWizardTrapPoints: hiddenTrapPoints, wizardTrapSprung,
@@ -473,35 +514,44 @@ async function main() {
   const git = (...a) => spawnSync("git", a, { cwd: root, encoding: "utf8" }).stdout.trim();
   const server = await serve();
   const chrome = await launch();
-  const runs = [];
-  let failure = null;
+  const runs = [], failures = [];
   try {
-    for (const seed of cfg.seeds) runs.push(await runSeed(chrome, server.origin, seed, breakLine));
-  } catch (error) {
-    failure = error.message;
+    // Issue #135: one seed's failure is recorded and the next seed still runs.
+    for (const seed of cfg.seeds) {
+      try { runs.push(await runSeed(chrome, server.origin, seed, breakLine)); }
+      catch (error) { failures.push({ seed, failure: error.message }); await chrome.send("Debugger.resume").catch(() => {}); }
+    }
   } finally {
     await chrome.close();
     await server.close();
   }
   const mismatches = runs.reduce((n, r) => n + r.mismatches.length, 0);
-  const pass = !failure && mismatches === 0 && chrome.errors.length === 0 && chrome.remote.length === 0 && runs.length === cfg.seeds.length;
+  const failure = failures[0]?.failure ?? null;
+  const pass = !failures.length && mismatches === 0 && chrome.errors.length === 0 && chrome.remote.length === 0 && runs.length === cfg.seeds.length;
   const receipt = {
-    tool: "scripts/browser-trap-parity-131.mjs", issue: 131, pass, failure,
+    tool: "scripts/browser-trap-parity-131.mjs", issue: 131, pass, failure, seeds: cfg.seeds, seedKit: cfg.seedKit ?? null,
+    // Per seed: did this Chrome run finish clean ("pass") or not ("fail").
+    chromeResults: cfg.seeds.map((seed) => {
+      const f = failures.find((x) => x.seed === seed);
+      const r = runs.find((x) => x.seed === seed);
+      return f ? { seed, chrome: "fail", failure: f.failure } : { seed, chrome: r.mismatches.length ? "fail" : "pass", mismatches: r.mismatches.length };
+    }),
     head: git("rev-parse", "HEAD"), dirtyTracked: git("status", "--porcelain", "--untracked-files=no") !== "",
     chrome: chrome.product, node: process.version, platform: `${process.platform} ${os.release()} ${process.arch}`,
     scenario: SCENARIO, cpuLevel: CPU_LEVEL, files, breakpoint: `${LAB}/app.js line ${breakLine + 1}`,
     startedAt: started.toISOString(), seconds: Math.round((Date.now() - started) / 100) / 10,
     consoleErrors: chrome.errors, remoteRequests: chrome.remote, mismatches, knownFindings: runs.reduce((n, r) => n + r.findings.length, 0),
     digest: digestOf(runs),
-    runs: runs.map(({ seed, inputs, snapshots, mismatches: m, findings, result, rounds, coverage }) => ({
-      seed, result: result && { winner: result.winner, outcome: result.outcome, reason: result.reason }, rounds, coverage,
+    runs: runs.map(({ seed, inputs, snapshots, mismatches: m, findings, result, rounds, coverage, trapOpportunity: opp }) => ({
+      seed, result: result && { winner: result.winner, outcome: result.outcome, reason: result.reason }, rounds, trapOpportunity: opp, coverage,
       inputs, mismatches: m, findings, finalDom: snapshots.at(-1)?.dom,
     })),
   };
   const text = JSON.stringify(receipt, null, 2) + "\n";
   if (cfg.out) await writeFile(cfg.out, text);
   console.log(cfg.out ? `receipt written to ${cfg.out}` : text);
-  for (const r of receipt.runs) console.log(`seed ${r.seed}: ${r.coverage.stablePoints} stable points, ${r.inputs.length} inputs, mismatches ${r.mismatches.length}, known findings ${r.findings.length}, result ${r.result?.outcome} (${r.result?.reason}), round ${r.rounds}; coverage ${JSON.stringify(r.coverage)}`);
+  for (const r of receipt.runs) console.log(`seed ${r.seed}: ${r.coverage.stablePoints} stable points, ${r.inputs.length} inputs, mismatches ${r.mismatches.length}, known findings ${r.findings.length}, result ${r.result?.outcome} (${r.result?.reason}), round ${r.rounds}; Cowboy trap ${r.trapOpportunity.outcome}: ${r.trapOpportunity.text}; coverage ${JSON.stringify(r.coverage)}`);
+  for (const f of failures) console.log(`seed ${f.seed}: Chrome run FAILED: ${f.failure}`);
   console.log(`pass ${pass}; digest ${receipt.digest}; ${chrome.product}; console errors ${chrome.errors.length}; remote ${chrome.remote.length}${failure ? `; failure: ${failure}` : ""}`);
   process.exit(pass ? 0 : 1);
 }
