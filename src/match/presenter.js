@@ -373,7 +373,8 @@ export function createPresenter({ scheduler, renderer, pauses = {}, onChange, on
     if (event.type === "spell") return playSpell(gen, event, index + 1);
     if (event.type === "ride-out") {
       const { side, slot, destination } = event;
-      displayed.allowances[side] = structuredClone(batch.to.allowances[side]);
+      // A Wanted Wraith's drift uses no allowance.
+      if (!event.drift) displayed.allowances[side] = structuredClone(batch.to.allowances[side]);
       return playMove(gen, side, slot, destination, index + 1);
     }
     if (event.type === "damage") return playClash(gen, index);

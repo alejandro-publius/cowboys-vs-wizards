@@ -1,10 +1,32 @@
 import { CARDS, SIDES, opponent } from "./cards.js";
 import { MAX_ROUNDS, SLOT_COUNT } from "./state.js";
+import { adjacentLanes, shiftTroop } from "./lanes.js";
+// Lantern Wraith hunts: `state.bountyDrift = { round, destination }` marks the
+// Wizard lane the wanted troop moves into just before that round's clash. It
+// stays put when it is gone, the lane is taken or the lane is not adjacent.
+// The pending move { slot, destination }, or null. The clash, its previews
+// and the lane mark all read this one function.
+export function pendingDrift(state) {
+  const drift = state.bountyDrift;
+  if (!drift || !state.bountyTarget || state.round !== drift.round) return null;
+  const board = state.sides.wizard.board;
+  const slot = board.findIndex((troop) => troop?.cardId === state.bountyTarget);
+  if (slot < 0 || board[drift.destination] !== null || !adjacentLanes(slot).includes(drift.destination)) return null;
+  return { slot, destination: drift.destination };
+}
 
 // One simultaneous clash on `state`, which must be the working copy inside
 // applyAction (it is changed in place). Every number a renderer needs is
 // computed here once and reported through `emit`.
 export function resolveClash(state, emit) {
+  // The wanted troop's marked move happens first, through the Ride Out seam.
+  const drift = pendingDrift(state);
+  if (drift) {
+    const { board } = state.sides.wizard;
+    const { cardId, health } = board[drift.slot];
+    shiftTroop(board, drift.slot, drift.destination);
+    emit({ type: "ride-out", side: "wizard", cardId, slot: drift.slot, destination: drift.destination, health, drift: true });
+  }
   // Traps read the board before any damage, so both sides' choices come from
   // the same snapshot and a cancelled troop still blocks and takes damage.
   const cancelled = state.traps?.enabled === true ? triggerTraps(state, emit) : [];

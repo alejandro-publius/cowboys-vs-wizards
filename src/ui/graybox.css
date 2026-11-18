@@ -147,3 +147,6 @@ dialog::backdrop { background: #0009; }
 .wanted-hunts li p { color: var(--muted); margin-top: .2rem; }
 .wanted-hunts li[data-cleared] strong::before { content: "Cleared · "; }
 .match-slot[data-wanted][data-side=wizard] { color: #ffdb95; border-color: #b98a4f; }
+.match-slot[data-mark=drift][data-side=wizard] { outline: 3px dashed #ffdb95; outline-offset: -5px; }
+.match-slot[data-mark=blocked][data-side=wizard] { outline: 2px dotted #8c6b4b; outline-offset: -5px; }
+.match-slot .wraith-mark { color: #ffdb95; font-size: .78rem; }

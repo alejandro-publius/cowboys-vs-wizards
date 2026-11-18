@@ -9,7 +9,7 @@ export const DEFAULT_COUNTS = Object.freeze(
   Object.fromEntries(COWBOY_CATALOG.map(({ type, copies }) => [type, copies])),
 );
 
-export const BOUNTY_REWARDS = Object.freeze(CARD_SPECS.filter((spec) => spec.bounty).map(Object.freeze));
+export const BOUNTY_REWARDS = Object.freeze(CARD_SPECS.filter((spec) => spec.side === "cowboy" && spec.bounty).map(Object.freeze));
 export const copyLimit = (card) => card.bounty ? 1 : MAX_COWBOY_COPIES;
 const catalog = [...COWBOY_CATALOG, ...BOUNTY_REWARDS];
 const typeById = new Map(catalog.flatMap((card) =>
@@ -19,12 +19,15 @@ const invalid = (error, total = 0) => ({ ok: false, error, total });
 
 // Missing known types count as zero. Unknown types and coerced numbers are
 // rejected so stored or user-provided selections cannot change the catalog.
-export function validateDeck(counts, {bountyReward = false} = {}) {
+// `rewards` lists the unlocked Wanted reward types; `bountyReward: true`
+// admits every reward (the engine-level ID check, not a player entitlement).
+export function validateDeck(counts, {bountyReward = false, rewards = []} = {}) {
   if (!counts || typeof counts !== "object" || Array.isArray(counts) ||
       ![Object.prototype, null].includes(Object.getPrototypeOf(counts))) {
     return invalid("Choose card counts for your Cowboy deck.");
   }
-  const available = bountyReward ? catalog : COWBOY_CATALOG;
+  const available = bountyReward ? catalog
+    : [...COWBOY_CATALOG, ...BOUNTY_REWARDS.filter((card) => rewards.includes(card.type))];
   if (Object.keys(counts).some((type) => !available.some((card) => card.type === type))) {
     return invalid("Choose cards from your unlocked Cowboy collection.");
   }

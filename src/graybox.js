@@ -1,5 +1,6 @@
 import {chooseAction, cpuFor} from "./game/cpu.js";
-import {createDragonHunt, dragonRewardEarned, HUNT_GOAL, HUNTS_BY_ID} from "./game/bounty-hunt.js";
+import {bossOfHunt, clearedFor, createHunt, earnedRewards, HUNT_GOAL, HUNTS_BY_ID, rewardEarned} from "./game/bounty-hunt.js";
+import {CARDS} from "./game/cards.js";
 import {deckIds, validateDeck} from "./game/deck-builder.js";
 import {BILLY_POSSE, DEADEYE_CONTROL} from "./game/deck-presets.js";
 import {GRAYBOX_OPENINGS, openingMatch, parseOpeningParams} from "./game/opening-policy.js";
@@ -52,7 +53,8 @@ let latestClash = null;
 let deal = null;
 let nextDeal = null;
 
-const deckEntitlement = () => ({bountyReward: dragonRewardEarned(profile.get())});
+// Only the rewards this profile has earned may enter a deck.
+const deckEntitlement = () => ({rewards: earnedRewards(profile.get())});
 
 // Read at match creation, so a deck saved mid-match only affects later deals.
 function freshDeal(seed) {
@@ -73,7 +75,7 @@ const engine = {
     deal = nextDeal ? {...nextDeal, seed} : freshDeal(seed);
     nextDeal = null;
     if (deal.rideLesson) return createRideOutLesson();
-    if (deal.hunt) return createDragonHunt(deal.hunt);
+    if (deal.hunt) return createHunt(deal.hunt);
     const options = { ...deal.options };
     return deal.opening
       ? openingMatch(seed, deal.opening.opening, deal.opening.first, options)
@@ -127,10 +129,12 @@ const controller = createController({
       && !displayed.allowances.cowboy.summonUsed && !displayed.allowances.cowboy.castUsed;
     model.bounty = Boolean(deal?.hunt);
     const saved = model.bounty ? profile.get() : null;
+    const boss = model.bounty ? bossOfHunt(deal.hunt.id) : null;
     const huntProgress = status === "terminal" && model.bounty
-      ? `${saved.clearedHunts.length} / ${HUNT_GOAL} hunts cleared.`
-        + (dragonRewardEarned(saved) ? " Captured Dragon is ready in Build Deck." : "")
-      : "Defeat the wanted Dragon while your Base stands.";
+      ? `${clearedFor(saved, boss)} / ${HUNT_GOAL} ${boss.name} hunts cleared.`
+        + (rewardEarned(saved, boss) ? ` ${CARDS[`${boss.reward}-1`].name} is ready in Build Deck.` : "")
+      : `Defeat the wanted ${CARDS[boss?.card]?.name ?? "Dragon"} while your Base stands.`
+        + (deal?.hunt?.markLane !== undefined ? " Watch the marked Wizard lane before the first clash." : "");
     model.openingNote = [
       model.bounty && `${deal.hunt.name}. ${huntProgress}`,
       deal?.isDraft && "Trying an unsaved deck.",

@@ -36,7 +36,8 @@ test("registry holds available copies; default decks retain each spec's copies a
     assert.deepEqual(DECKS[side], expectedDeck);
     assert.ok(Object.isFrozen(DECKS[side]));
   }
-  assert.equal(expectedRegistry.length, 37);
+  // 35 starter instances plus one Captured Dragon, one Captured Wraith and one Lantern Wraith boss.
+  assert.equal(expectedRegistry.length, 39);
   assert.deepEqual(Object.keys(CARDS).sort(), expectedRegistry.sort());
   assert.ok(Object.isFrozen(CARDS) && Object.isFrozen(DECKS));
 });

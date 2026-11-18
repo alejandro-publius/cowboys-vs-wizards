@@ -1,5 +1,6 @@
 import {CARDS, SIDES, SPELL_DAMAGE, opponent} from "../game/cards.js";
-import {resolveClash} from "../game/clash.js";
+import {pendingDrift, resolveClash} from "../game/clash.js";
+import {shiftTroop} from "../game/lanes.js";
 import {SLOT_COUNT} from "../game/state.js";
 
 // Deadeye target previews for the plain graybox, keyed by enemy lane: the
@@ -22,7 +23,19 @@ export function spellForecasts(view, options) {
     if (!troop) return [];
     const after = Math.max(0, troop.health - SPELL_DAMAGE);
     const parts = [`${CARDS[troop.cardId].name} ${troop.health} → ${after}${after === 0 ? " (removed)" : ""}`];
+    // A lethal shot on a Lantern Wraith hunt can open the Wraith's marked lane.
+    let filled = false;
     if (after === 0) {
+      const board = view.sides[enemy].board.map((each) => each && {...each});
+      board[lane] = null;
+      const drift = pendingDrift({...view, sides: {...view.sides, [enemy]: {...view.sides[enemy], board}}});
+      if (drift) {
+        shiftTroop(board, drift.slot, drift.destination);
+        parts.push(`${CARDS[view.bountyTarget].name} drifts to lane ${drift.destination + 1}`);
+        filled = board[lane] !== null;
+      }
+    }
+    if (after === 0 && !filled) {
       // The opened lane alone, on a detached copy: your troop there, if any, meets no blocker.
       const sides = Object.fromEntries(SIDES.map((side) => [side, {
         baseOrbs: view.sides[side].baseOrbs, board: Array(SLOT_COUNT).fill(null), discard: [],

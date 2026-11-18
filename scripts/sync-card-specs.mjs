@@ -35,8 +35,10 @@ function validateSpec(file, spec) {
   if (!isInt(spec.order, 1)) fail("order must be a positive integer");
   if (typeof spec.name !== "string" || spec.name.trim() === "") fail("name must be a non-empty string");
   if (Object.hasOwn(spec, "bounty")) {
-    if (spec.bounty !== true || spec.side !== "cowboy" || spec.kind !== "troop" || spec.copies !== 0) {
-      fail("a bounty reward must be a Cowboy troop with zero starter copies");
+    // A Cowboy bounty card is a one-copy Wanted reward; a Wizard one is a Wanted boss.
+    // Neither is in a starter deck.
+    if (spec.bounty !== true || spec.kind !== "troop" || spec.copies !== 0) {
+      fail("a bounty card must be a troop with zero starter copies");
     }
   } else if (!isInt(spec.copies, 1, DECK_SIZE)) fail(`copies must be an integer from 1 to ${DECK_SIZE}`);
   if (spec.kind === "troop") {

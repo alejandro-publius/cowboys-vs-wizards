@@ -40,7 +40,7 @@ test("the Cowboy pool has six copies per type without expanding the Wizard pool"
     assert.equal(Object.hasOwn(CARDS, `${type}-7`), false);
   }
   assert.equal(Object.values(CARDS).filter(({ side, bounty }) => side === "cowboy" && !bounty).length, 24);
-  assert.deepEqual(Object.values(CARDS).filter(({ side }) => side === "wizard").map(({ id }) => id), DEFAULT_WIZARD_IDS);
+  assert.deepEqual(Object.values(CARDS).filter(({ side, bounty }) => side === "wizard" && !bounty).map(({ id }) => id), DEFAULT_WIZARD_IDS);
   assert.equal(Object.hasOwn(CARDS, "wizard-dragon-2"), false);
 });
 

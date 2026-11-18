@@ -1,5 +1,5 @@
 import {CARDS, SIDES, opponent} from "../game/cards.js";
-import {resolveClash, resultAfterClash} from "../game/clash.js";
+import {pendingDrift, resolveClash, resultAfterClash} from "../game/clash.js";
 import {shiftTroop} from "../game/lanes.js";
 
 function baseLine(label, before, after) {
@@ -7,11 +7,11 @@ function baseLine(label, before, after) {
 }
 
 // The match result from the viewer's side, as a lower-case clause.
-function verdict({winner, loser, reason}, viewer) {
+function verdict({winner, loser, reason}, viewer, boss = "Dragon") {
   const outcome = winner === viewer ? "you win the match"
     : loser === viewer ? "you lose the match"
     : "the match ends in a draw";
-  if (reason === "bounty-captured") return "you capture the Dragon";
+  if (reason === "bounty-captured") return `you capture the ${boss}`;
   if (reason === "bounty-escaped") return "the bounty slips away";
   return reason === "round-limit" ? `${outcome} at the round limit` : outcome;
 }
@@ -27,7 +27,10 @@ export function clashForecast(view, options) {
     return [side, {baseOrbs, board: board.map((troop) => troop && {...troop}), discard: [...discard]}];
   }));
   const losses = [];
-  resolveClash({sides}, (event) => {
+  // A Lantern Wraith hunt's marked move runs inside the same resolver.
+  const hunt = {round: view.round, bountyTarget: view.bountyTarget, bountyDrift: view.bountyDrift};
+  const drift = pendingDrift({...hunt, sides});
+  resolveClash({...hunt, sides}, (event) => {
     if (event.type !== "defeat") return;
     const owner = event.side === view.viewer ? "Your" : "Enemy";
     losses.push(`${owner} ${CARDS[event.cardId].name} (lane ${event.slot + 1})`);
@@ -38,11 +41,13 @@ export function clashForecast(view, options) {
   const own = view.viewer;
   const enemy = opponent(own);
   const enemyStillActs = view.startingSide === own;
-  let timing = enemyStillActs
+  const boss = view.bountyTarget ? CARDS[view.bountyTarget].name : undefined;
+  let timing = drift ? `The ${boss} drifts from lane ${drift.slot + 1} to lane ${drift.destination + 1} first. ` : "";
+  timing += enemyStillActs
     ? "Wizards still act. Preview assumes the board stays as shown."
     : "End turn resolves this clash.";
   if (result) {
-    const outcome = verdict(result, own);
+    const outcome = verdict(result, own, boss);
     timing += enemyStillActs
       ? ` If it does, ${outcome}.`
       : ` ${outcome[0].toUpperCase()}${outcome.slice(1)}.`;

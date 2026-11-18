@@ -97,22 +97,30 @@ function cardButton(card, enabled, inFlight, plain) {
 }
 // `forecast` is one lane preview, named by `preview` in the label: a summon's
 // clash on a Cowboy lane or, plain only, a Deadeye shot on a Wizard lane.
-function slotButton(side, slot, troop, clickable, chosen, plain, forecast, preview = "Clash preview", wanted = false) {
+// The Lantern Wraith's one telegraph, on its marked Wizard lane.
+const MARK_TEXT = {
+  drift: "Wraith drifts here before the clash",
+  blocked: "Wraith's marked lane is taken: it holds",
+};
+function slotButton(side, slot, troop, clickable, chosen, plain, forecast, preview = "Clash preview", wanted = false, mark = null) {
   const owner = side === "cowboy" ? "Your" : "Wizard";
-  const contents = troop ? `${wanted ? "Wanted Dragon" : troop.name}, ${troop.health} of ${troop.max} health` : "empty";
+  const name = wanted ? `Wanted ${troop.name}` : troop?.name;
+  const contents = troop ? `${name}, ${troop.health} of ${troop.max} health` : "empty";
+  const note = mark ? MARK_TEXT[mark] : null;
   const face = plain
-    ? [el("small", {}, `Lane ${slot + 1}`), el("strong", {}, wanted ? "Wanted Dragon" : troop?.name ?? "Empty"),
+    ? [el("small", {}, `Lane ${slot + 1}`), el("strong", {}, name ?? "Empty"),
       troop ? orbs(troop.health, troop.max) : null,
+      note ? el("small", {class: "wraith-mark"}, note) : null,
       forecast ? el("small", {class: "plain-forecast"}, forecast) : null]
     : [troop ? `${troop.name} ${troop.health}/${troop.max}` : "Empty"];
-  return el("button", {type: "button", class: "match-slot", "data-wanted": wanted, "data-side": side, "data-slot": slot, disabled: !clickable,
+  return el("button", {type: "button", class: "match-slot", "data-wanted": wanted, "data-mark": mark, "data-side": side, "data-slot": slot, disabled: !clickable,
     "aria-pressed": chosen ? "true" : null,
-    "aria-label": `${owner} lane ${slot + 1}: ${contents}${forecast ? `. ${preview}: ${forecast}` : ""}`}, ...face);
+    "aria-label": `${owner} lane ${slot + 1}: ${contents}${note ? `. ${note}` : ""}${forecast ? `. ${preview}: ${forecast}` : ""}`}, ...face);
 }
 
-function resultDetail({outcome, reason, round}) {
-  if (reason === "bounty-captured") return "The Dragon fell and your Base survived.";
-  if (reason === "bounty-escaped") return "The Dragon escaped. You can take the hunt again.";
+function resultDetail({outcome, reason, round, boss = "Dragon"}) {
+  if (reason === "bounty-captured") return `The ${boss} fell and your Base survived.`;
+  if (reason === "bounty-escaped") return `The ${boss} escaped. You can take the hunt again.`;
   if (reason === "base-destroyed") return outcome === "draw" ? `Both Bases fell in round ${round}.` : `A Base fell in round ${round}.`;
   if (reason === "round-limit") {
     return outcome === "draw" ? `Round ${round} ended with the Bases level.` : `Round ${round} ended; more Base orbs wins.`;
@@ -496,9 +504,9 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
     message.hidden = !model.message || (selected && model.status!=="error");
 
     const refocus = focusedKey(root);
-    lanes.replaceChildren(...model.lanes.flatMap(({lane, cowboy, wizard, wanted}) => [
+    lanes.replaceChildren(...model.lanes.flatMap(({lane, cowboy, wizard, wanted, mark}) => [
       slotButton("wizard", lane, wizard, model.slots.wizard.includes(lane), false, plain,
-        plain ? model.spellForecasts?.[lane] : null, "Shot preview", wanted),
+        plain ? model.spellForecasts?.[lane] : null, "Shot preview", wanted, mark),
       slotButton("cowboy", lane, cowboy, model.slots.cowboy.includes(lane),
         model.tributes.includes(lane) || model.ride?.from === lane || model.ride?.destination === lane, plain,
         model.rideForecasts?.[lane] ?? model.summonForecasts?.[lane]),

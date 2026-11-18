@@ -14,6 +14,7 @@
 // unplayable, else null. Without it the hand cards keep their shape.
 import {CARDS} from "../game/cards.js";
 import {SLOT_COUNT} from "../game/state.js";
+import {pendingDrift} from "../game/clash.js";
 
 export const RESULT_LABELS = Object.freeze({win: "Victory", loss: "Defeat", draw: "Draw"});
 
@@ -64,6 +65,13 @@ export function cardModel({displayed = null, options = null, status = "idle", se
     for (const card of hand) card.blockedReason = accepting && !card.playable ? blockedReasons[card.cardId] ?? null : null;
   }
   const outcome = displayed?.result?.outcome;
+  // Lantern Wraith hunts: the one marked Wizard lane, until the marked clash.
+  // "drift" when the Wraith will move there (the same pendingDrift the clash
+  // runs), "blocked" when that lane is taken and the Wraith will hold.
+  const driftPlan = displayed?.bountyDrift;
+  const mark = driftPlan && displayed.round === driftPlan.round && !displayed.result
+    && wizard?.board.some((troop) => troop?.cardId === displayed.bountyTarget)
+    ? {lane: driftPlan.destination, state: pendingDrift(displayed) ? "drift" : "blocked"} : null;
   return {
     status,
     round: displayed?.round ?? null,
@@ -94,6 +102,7 @@ export function cardModel({displayed = null, options = null, status = "idle", se
       cowboy: troopSummary(cowboy?.board[lane]),
       wizard: troopSummary(wizard?.board[lane]),
       ...(displayed?.bountyTarget && {wanted: wizard?.board[lane]?.cardId === displayed.bountyTarget}),
+      ...(lane === mark?.lane && {mark: mark.state}),
     })),
     // Slots a click can choose now: own (Cowboy) and enemy (Wizard).
     slots: {
@@ -125,6 +134,7 @@ export function cardModel({displayed = null, options = null, status = "idle", se
     result: outcome === undefined ? null : {
       outcome,
       label: displayed.result.reason === "bounty-captured" ? "Bounty captured" : RESULT_LABELS[outcome] ?? outcome,
+      ...(displayed.bountyTarget && {boss: CARDS[displayed.bountyTarget].name}),
       reason: displayed.result.reason ?? null,
       round: displayed.result.round ?? null,
     },

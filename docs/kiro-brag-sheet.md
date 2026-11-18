@@ -2,6 +2,11 @@
 
 [Judge-facing brag sheet, eight Devpost answers and recording register](submission/kiro-brag-sheet.md)
 
+## November 18 Wanted progression
+
+- **From one bounty to two.** Kiro IDE (Claude Opus 5.5) built Lantern Wraith's five fights, a lane telegraph that follows the rules engine, independent bounty progress, and the playable Captured Wraith reward. Kiro reported 343 passing game and match tests. Codex independently cleared all five hunts in Safari, checked that a repeat clear and a loss give no extra progress, and summoned Captured Wraith after reloading and trying Wraith Posse on seed 15. The Dragon stayed locked in that fresh profile. [Before and after, exact moves and checks](evidence/kiro-lantern-wraith.md).
+- **Reusable bounty draft.** In a separate IDE session, Kiro updated the `bounty-designer` agent for the shared boss registry. Its draft package includes five encounters with winning and losing lines, a one-copy deck reward, and briefs for a shared portrait and matching GLB. The written profile limits the agent to local drafts. Running a new candidate through the revised profile and scheduling weekly runs are pending. [Agent profile](../.kiro/agents/bounty-designer.json).
+
 ## November 17 steering follow-up
 
 Four fresh Kiro CLI V3 sessions verified that rules, rendering and interface guidance loads on matching file reads. The control read of `package.json` loaded only the always-on guidance. Each response followed the format supplied by the loaded files in the test fixture. [Activation evidence and scope](evidence/kiro-scoped-steering-hook.md#file-scoped-activation-verified-on-november-17-2026-pacific).

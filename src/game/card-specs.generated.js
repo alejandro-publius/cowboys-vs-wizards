@@ -6,8 +6,10 @@ export const CARD_SPECS = [
   {"type":"cowboy-mounted-billy","side":"cowboy","order":3,"name":"Mounted Billy","kind":"troop","stars":7,"health":5,"attack":3,"copies":1},
   {"type":"cowboy-deadeye","side":"cowboy","order":4,"name":"Deadeye","kind":"spell","relocates":false,"copies":2},
   {"type":"cowboy-captured-dragon","side":"cowboy","order":5,"name":"Captured Dragon","kind":"troop","stars":5,"health":2,"attack":3,"copies":0,"bounty":true},
+  {"type":"cowboy-captured-wraith","side":"cowboy","order":6,"name":"Captured Wraith","kind":"troop","stars":3,"health":2,"attack":2,"copies":0,"bounty":true},
   {"type":"wizard-skeleton","side":"wizard","order":1,"name":"Skeleton","kind":"troop","stars":1,"health":3,"attack":1,"copies":6},
   {"type":"wizard-wizard","side":"wizard","order":2,"name":"Wizard","kind":"troop","stars":5,"health":4,"attack":2,"copies":3},
   {"type":"wizard-dragon","side":"wizard","order":3,"name":"Dragon","kind":"troop","stars":8,"health":5,"attack":3,"copies":1},
   {"type":"wizard-singularity","side":"wizard","order":4,"name":"Singularity","kind":"spell","relocates":true,"copies":2},
+  {"type":"wizard-lantern-wraith","side":"wizard","order":5,"name":"Lantern Wraith","kind":"troop","stars":6,"health":4,"attack":2,"copies":0,"bounty":true},
 ];

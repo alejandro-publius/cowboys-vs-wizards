@@ -30,7 +30,7 @@ function sentence(event) {
     return `${event.caster === "cowboy" ? "Your " : ""}${event.spell} hit ${troop(target.side, target.cardId)} in ${lane(target.slot)}: ${orbs(event.before, event.after)}${moved}`;
   }
   if (event.type === "ride-out") {
-    return `${troop(event.side, event.cardId, true)} rode from ${lane(event.slot)} to ${lane(event.destination)}`;
+    return `${troop(event.side, event.cardId, true)} ${event.drift ? "drifted" : "rode"} from ${lane(event.slot)} to ${lane(event.destination)}`;
   }
   if (event.type === "defeat") return `${troop(event.side, event.cardId, true)} in ${lane(event.slot)} was defeated`;
   return null;

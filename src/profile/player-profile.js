@@ -1,4 +1,4 @@
-import {dragonRewardEarned, HUNTS_BY_ID} from '../game/bounty-hunt.js';
+import {bossOfHunt, HUNTS_BY_ID, rewardEarned} from '../game/bounty-hunt.js';
 
 const STORAGE_KEY = 'cvw-player-v1';
 const DEFAULT_SETTINGS = Object.freeze({
@@ -17,6 +17,7 @@ export const ACHIEVEMENTS = Object.freeze([
   { id: 'deck-builder', name: 'Deck Builder', description: 'Save a custom deck.' },
   { id: 'bounty-hunter', name: 'Bounty Hunter', description: 'Clear all five Graveyard Dragon hunts.' },
   { id: 'clean-capture', name: 'Clean Capture', description: 'Win a bounty without losing a Base orb.' },
+  { id: 'lantern-snuffer', name: 'Lantern Snuffer', description: 'Clear all five Lantern Wraith hunts.' },
 ].map(Object.freeze));
 
 function isRecord(value) {
@@ -179,7 +180,9 @@ export function createProfileStore(storage = defaultStorage()) {
       if (cleared && (!clean || profile.achievements['clean-capture'])) return get();
       if (!cleared) profile.clearedHunts.push(huntId);
       if (clean === true) unlock('clean-capture');
-      if (dragonRewardEarned(profile)) unlock('bounty-hunter');
+      // Each boss counts only its own hunts toward its achievement and reward.
+      const boss = bossOfHunt(huntId);
+      if (rewardEarned(profile, boss)) unlock(boss.achievement);
       return persist();
     },
     record(event, detail = {}) {

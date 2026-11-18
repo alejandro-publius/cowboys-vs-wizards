@@ -2,7 +2,7 @@ import {BOUNTY_REWARDS, COWBOY_CATALOG, DECK_SIZE, DEFAULT_COUNTS, copyLimit, de
 import {BILLY_POSSE, DEADEYE_CONTROL} from '../game/deck-presets.js';
 import {MAX_COWBOY_COPIES, tributeCost} from '../game/cards.js';
 import {openingDroughtRate} from '../game/opening-policy.js';
-import {dragonRewardEarned} from '../game/bounty-hunt.js';
+import {earnedRewards} from '../game/bounty-hunt.js';
 
 const element = (tag, text, attrs = {}) => {
   const node = document.createElement(tag);
@@ -25,8 +25,9 @@ const ruleOf = card => card.kind === 'spell'
 // plays a copy of the current legal draft and leaves the saved deck unchanged.
 export function renderDeckWorkbench({content, profile, say, savedMessage, button, presets = false, tryDraft, bounties = false}) {
   const saved = profile.get();
-  const entitlement = {bountyReward: bounties && dragonRewardEarned(saved)};
-  const collectionCards = entitlement.bountyReward ? [...COWBOY_CATALOG, ...BOUNTY_REWARDS] : COWBOY_CATALOG;
+  // Each Wanted reward joins the collection only after its own boss is cleared.
+  const entitlement = {rewards: bounties ? earnedRewards(saved) : []};
+  const collectionCards = [...COWBOY_CATALOG, ...BOUNTY_REWARDS.filter(card => entitlement.rewards.includes(card.type))];
   const stored = saved.deck;
   let counts = {...(stored && validateDeck(stored, entitlement).ok ? stored : DEFAULT_COUNTS)};
   let selected = COWBOY_CATALOG[0].type;
@@ -121,7 +122,15 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
     }, {id: 'load-billy-posse', 'aria-describedby': 'wb-billy-posse-summary'}));
     notes.push(element('p', 'Billy Posse: hold or pressure lanes with Sheriffs, then trade one Sheriff as tribute for Billy to strengthen that lane. A fourth Billy replaces Mounted Billy.', {id: 'wb-billy-posse-summary', class: 'detail-line'}));
   }
-  if (entitlement.bountyReward) {
+  if (entitlement.rewards.includes("cowboy-captured-wraith")) {
+    actions.append(button("Load Wraith Posse", () => {
+      counts = {...DEFAULT_COUNTS, "cowboy-sheriff": DEFAULT_COUNTS["cowboy-sheriff"] - 1, "cowboy-captured-wraith": 1};
+      selected = "cowboy-captured-wraith";
+      refresh();
+      feedback.textContent = "Wraith Posse loaded. Try the draft or save it for your next duel.";
+    }, {id: "load-wraith-posse"}));
+  }
+  if (entitlement.rewards.includes("cowboy-captured-dragon")) {
     actions.append(button("Load Dragon Posse", () => {
       counts = {...DEFAULT_COUNTS, "cowboy-mounted-billy": 0, "cowboy-captured-dragon": 1};
       selected = "cowboy-captured-dragon";
