@@ -18,15 +18,17 @@ Play or resume a match, read the rules, save settings, view earned achievements,
 
 [Play Cowboys vs. Wizards in your browser](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Seed 0 opening](https://alejandro-publius.github.io/cowboys-vs-wizards/?mode=match&deck=starter&seed=0) · [Seed 60 showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/?mode=match&deck=starter&seed=60)
 
-For a local build, use Node.js 22.18 or later and a WebGL 2 browser. Install dependencies with `npm ci`, then build.
+For the local working graybox, use Node.js 22.18 or later. Install dependencies with `npm ci`, then build.
 
 ```sh
 npm run build
 ```
 
-Open `dist/cowboys-vs-wizards-board-duel.html`. The single file includes the models, card art and fallback recording. The title menu opens first. Use `?mode=match&deck=starter&seed=0` for the repeatable starter opening with a free Sheriff summon; ordinary matches use the saved deck. A seed reproduces an opening only with the same deck. The seed can also be entered in the game menu. Choose **Attack demo** or append `?mode=demo` for the original Billy and Wizard exchange.
+Open `dist/cowboys-vs-wizards-board-duel.html` in a desktop browser. The graybox uses a flat board, text cards, health orbs and a clash log. Turns resolve immediately. Use **How to Play → Start guided duel** for the starter opening or enter a seed in the duel menu. The same deck and seed give the same opening.
 
-For a static website, run `npm run build -- --web` and serve the entire `dist/web/` directory. It contains an `index.html` and content-hashed assets. Relative URLs allow hosting under a subdirectory.
+Run `npm run build:art` to build the illustrated game and attack demo at the same path. That build requires WebGL 2 and includes models, card art and a fallback recording. Use `?mode=match&deck=starter&seed=0` for the free Sheriff opening or `?mode=demo` for the original Billy and Wizard exchange.
+
+For a static website, `npm run build -- --web` writes the self-contained graybox to `dist/web/index.html`. `npm run build:art -- --web` writes the illustrated build and its content-hashed assets there. The Pages workflow uses the illustrated build.
 
 Follow the tested seed 60 route to the Mounted Billy and Dragon clash. [Seed 60 play-through](docs/morning-handoff.md#the-duel-to-film)
 
@@ -34,10 +36,10 @@ Follow the tested seed 60 route to the Mounted Billy and Dragon clash. [Seed 60 
 
 | What you need | Command |
 | --- | --- |
-| Title screen, settings, custom deck and pause/resume in Chrome | `node scripts/browser-menu-check.mjs http://127.0.0.1:PORT/?seed=0` (serve `dist/web/` first) |
+| Illustrated title screen, settings, custom deck and pause/resume in Chrome | `node scripts/browser-menu-check.mjs http://127.0.0.1:PORT/?seed=0` (serve the illustrated web build) |
 | Game, presenter and asset tests | `node scripts/verify-duel.mjs` |
 | The same tests by their npm name, as run on every pull request | `npm test` |
-| The same tests, a fresh build and an eight-step Chrome replay | `node scripts/verify-duel.mjs --browser` |
+| The same tests, a fresh illustrated build and an eight-step Chrome replay | `node scripts/verify-duel.mjs --browser` |
 | Title menu, match start, WebGL 2 and one summon in WebKit, the Safari engine | `npx -y -p playwright-core@1.64.1 node scripts/browser-webkit-smoke.mjs http://127.0.0.1:PORT/` (serve `dist/web/` first; once: `npx -y playwright-core@1.64.1 install webkit`) |
 | Attack demo geometry, grip and event order | `npm run check` |
 | Which commit the live site is (after a Pages deploy) | `curl https://alejandro-publius.github.io/cowboys-vs-wizards/build.json`; CI compares it and the live `index.html` digest with the built release ([evidence](docs/evidence/kiro-build-identity.md)) |
@@ -77,7 +79,8 @@ For ongoing balance review, the separate [Night Watch Kiro Crew app](https://git
 | `src/match/` | Selection, controller, scheduler and event playback |
 | `src/render/` | Three.js scene, rigs, orbs and combat cues |
 | `src/ui/` | Illustrated hand, interactive overlay and menus |
-| `src/main.js` | Browser boot, mode switching and frame loop |
+| `src/graybox.js` | Graybox entry point and instant cues |
+| `src/main.js` | Illustrated game boot, mode switching and frame loop |
 | `assets/` | Optimized Tripo models, card illustrations and media |
 | `scripts/`, `tests/` | Build, replay, simulation and verification |
 | `.kiro/`, `docs/` | Workspace guidance, requirements, research and evidence |

@@ -31,7 +31,7 @@ jobs:
 
       - run: node scripts/verify-duel.mjs
 
-      - run: npm run build -- --web
+      - run: npm run build:art -- --web
 
       - name: Write dist/web/build.json
         run: node scripts/write-build-identity.mjs --commit "$GITHUB_SHA"

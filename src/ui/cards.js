@@ -13,7 +13,7 @@
 // render() sets root.dataset.status to the controller status.
 
 import {createCardBody, describeCard} from "./card-art.js";
-import {CARDS} from "../game/cards.js";
+import {CARDS, tributeCost} from "../game/cards.js";
 
 const ACTIONS = {confirm: "onConfirm", cancel: "onCancel", skip: "onSkip", "end-phase": "onEndPhase", restart: "onRestart"};
 // Public catalog: the first copy of each of the eight card names.
@@ -55,7 +55,29 @@ function pile(name) {
   };
 }
 
-function cardButton(card, enabled, inFlight) {
+function plainCard(card) {
+  const troop = card.kind === "troop";
+  const cost = troop ? tributeCost(card.stars) : 0;
+  return [
+    el("strong", {class: "plain-card-name"}, card.name),
+    el("span", {class: "plain-card-stats"}, troop ? `${card.attack} attack · ${card.health} life` : "Removes one enemy orb"),
+    el("small", {class: "plain-card-cost"}, troop ? (cost ? `${cost} tribute${cost === 1 ? "" : "s"}` : "Free summon") : "Spell"),
+  ];
+}
+
+function orbs(current, capacity) {
+  return el("span", {class: "plain-orbs", "aria-hidden": "true"}, ...Array.from({length: capacity}, (_, index) =>
+    el("span", {class: index < current ? "filled" : ""}),
+  ));
+}
+
+function setBase(node, count, plain) {
+  const label = `Base ${shown(count)}/5`;
+  if (plain) node.replaceChildren(label, orbs(count, 5));
+  else setText(node, label);
+}
+
+function cardButton(card, enabled, inFlight, plain) {
   return el("button", {
     type: "button",
     class: "card-front card-stage" + (inFlight ? " in-flight" : ""),
@@ -64,14 +86,17 @@ function cardButton(card, enabled, inFlight) {
     "aria-label": describeCard(card) + (card.playable ? ", playable now" : ""),
     "aria-pressed": String(card.selected),
     disabled: !enabled,
-  }, createCardBody(card));
+  }, ...(plain ? plainCard(card) : [createCardBody(card)]));
 }
-function slotButton(side, slot, troop, clickable, chosen) {
+function slotButton(side, slot, troop, clickable, chosen, plain) {
   const owner = side === "cowboy" ? "Your" : "Wizard";
   const contents = troop ? `${troop.name}, ${troop.health} of ${troop.max} health` : "empty";
+  const face = plain
+    ? [el("small", {}, `Lane ${slot + 1}`), el("strong", {}, troop?.name ?? "Empty"),
+      troop ? orbs(troop.health, troop.max) : null]
+    : [troop ? `${troop.name} ${troop.health}/${troop.max}` : "Empty"];
   return el("button", {type: "button", class: "match-slot", "data-side": side, "data-slot": slot, disabled: !clickable,
-    "aria-pressed": chosen ? "true" : null, "aria-label": `${owner} lane ${slot + 1}: ${contents}`},
-  troop ? `${troop.name} ${troop.health}/${troop.max}` : "Empty");
+    "aria-pressed": chosen ? "true" : null, "aria-label": `${owner} lane ${slot + 1}: ${contents}`}, ...face);
 }
 
 function resultDetail({outcome, reason, round}) {
@@ -92,7 +117,7 @@ function focusedKey(root) {
   return null;
 }
 
-export function mountCards(root, handlers = {}) {
+export function mountCards(root, handlers = {}, {plain = false} = {}) {
   const call = (name, ...args) => handlers[name]?.(...args);
 
   const round = el("span"), phase = el("span", {class: "match-phase"});
@@ -103,14 +128,16 @@ export function mountCards(root, handlers = {}) {
   const restart = el("button", {type: "button", "data-action": "restart"}, "Restart");
   const wizardDeck = pile("Wizard deck");
   const wizardHand = el("div", {class: "match-backs", role: "img"});
-  const wizardBase = el("span", {class: "match-base sr-only"});
+  const wizardBase = el("span", {class: plain ? "match-base" : "match-base sr-only"});
   const menu = el("dialog", {class:"match-details duel-dialog","aria-label":"Duel menu"},
     el("div",{class:"dialog-heading"},el("h2",{},"Cowboys vs. Wizards"),el("button",{type:"button","data-action":"close-menu","aria-label":"Close menu"},"×")),
     el("p",{},round," · ",phase),
     el("div",{class:"match-line"},el("span",{},"Seed ",seedText," ",seedKind),seedForm,restart),
-    el("p",{class:"match-muted"},"Pick a card, choose a lit tile, then summon. Stars set the tribute cost. Each orb is one life."));
+    el("p",{class:"match-muted"},`Pick a card, choose a ${plain ? "highlighted lane" : "lit tile"}, then summon. Stars set the tribute cost. Each orb is one life.`));
   const menuButton=el("button",{class:"arena-menu",type:"button","data-action":"menu","aria-label":"Open duel menu"},"☰");
+  const summary = plain ? el("p", {class: "plain-match-summary"}) : null;
   const top=el("div",{class:"match-top"},menuButton,menu,
+    summary,
     el("section",{class:"match-opponent","aria-label":"Wizard hand, deck, and The Gateway"},
       wizardDeck.node,wizardHand,wizardBase));
 
@@ -119,7 +146,7 @@ export function mountCards(root, handlers = {}) {
   const lanes = el("div", {class: "match-lanes", role: "group", "aria-label": "Lanes"});
   const hand = el("div", {class: "match-hand", role: "group", "aria-label": "Your hand"});
   const cowboyDeck = pile("Your deck");
-  const cowboyBase = el("span", {class:"match-base sr-only"});
+  const cowboyBase = el("span", {class:plain ? "match-base" : "match-base sr-only"});
   const buttons = {
     confirm: el("button", {type: "button", "data-action": "confirm"}, "Confirm"),
     cancel: el("button", {type: "button", "data-action": "cancel"}, "Cancel"),
@@ -170,7 +197,8 @@ export function mountCards(root, handlers = {}) {
   const result = el("section", {class: "match-result", "aria-label": "Match result", hidden: true},
     resultTitle, resultText, resultRestart);
 
-  root.replaceChildren(top,own,lanes,phaseControl,bottom,viewer,result);
+  viewArt.hidden = plain;
+  root.replaceChildren(top,own,lanes,phaseControl,bottom,...(plain ? [] : [viewer]),result);
 
   // Transient card animations: a copy of the confirmed troop card flying from
   // its hand position to the chosen lane's indicator, and a drawn Cowboy card
@@ -194,7 +222,7 @@ export function mountCards(root, handlers = {}) {
   };
 
   const moving = (cardId, index) => cardId === flight?.cardId || index === drawFlight?.handIndex;
-  const reducedMotion = () => document.documentElement.classList.contains("reduce-card-motion") || typeof root.animate !== "function" || matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reducedMotion = () => plain || document.documentElement.classList.contains("reduce-card-motion") || typeof root.animate !== "function" || matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   function clearFlight() {
     if (!flight) return;
@@ -332,7 +360,7 @@ export function mountCards(root, handlers = {}) {
     if (cardId) call("onCard", cardId);
     else if (side) call("onSlot", side, Number(slot));
     else if (action === "confirm") {
-      pending = summonGeometry();
+      if (!plain) pending = summonGeometry();
       const outcome = call("onConfirm");
       if (!outcome?.ok || model.status === "error") pending = null;
     } else if (ACTIONS[action]) {
@@ -362,16 +390,18 @@ export function mountCards(root, handlers = {}) {
     setText(phase, model.phase);
     setText(seedText, model.seed.text);
     setText(seedKind, model.seed.value === null ? "" : model.seed.pinned ? "(pinned)" : "(generated)");
+    if (summary) setText(summary, `${round.textContent} · ${model.phase} · Seed ${model.seed.text}`);
 
     wizardDeck.set(model.wizard.deckCount);
     const held = model.wizard.handCount ?? 0;
-    if (wizardHand.childElementCount !== held) wizardHand.replaceChildren(...Array.from({length: held}, back));
+    if (plain) setText(wizardHand, `Hand ${shown(model.wizard.handCount)}`);
+    else if (wizardHand.childElementCount !== held) wizardHand.replaceChildren(...Array.from({length: held}, back));
     wizardHand.setAttribute("aria-label", `Wizard hand: ${cards(model.wizard.handCount)}`);
-    setText(wizardBase, `Base ${shown(model.wizard.baseOrbs)}/5`);
-    const newDraw = model.draw && model.draw.key !== drawKey ? model.draw : null;
+    setBase(wizardBase, model.wizard.baseOrbs, plain);
+    const newDraw = !plain && model.draw && model.draw.key !== drawKey ? model.draw : null;
     const drawOrigin = newDraw ? cowboyDeck.top().getBoundingClientRect() : null;
     cowboyDeck.set(model.cowboy.deckCount);
-    setText(cowboyBase, `Base ${shown(model.cowboy.baseOrbs)}/5`);
+    setBase(cowboyBase, model.cowboy.baseOrbs, plain);
 
     setText(handCount,"Your hand · "+model.cowboy.handCount);
     setText(phaseRound,"ROUND "+model.round);
@@ -403,11 +433,11 @@ export function mountCards(root, handlers = {}) {
 
     const refocus = focusedKey(root);
     lanes.replaceChildren(...model.lanes.flatMap(({lane, cowboy, wizard}) => [
-      slotButton("wizard", lane, wizard, model.slots.wizard.includes(lane), false),
-      slotButton("cowboy", lane, cowboy, model.slots.cowboy.includes(lane), model.tributes.includes(lane)),
+      slotButton("wizard", lane, wizard, model.slots.wizard.includes(lane), false, plain),
+      slotButton("cowboy", lane, cowboy, model.slots.cowboy.includes(lane), model.tributes.includes(lane), plain),
     ]));
     hand.replaceChildren(...model.cowboy.hand.map((card, index) => {
-      const node=cardButton(card,model.buttons.hand,moving(card.cardId,index));
+      const node=cardButton(card,model.buttons.hand,moving(card.cardId,index),plain);
       node.style.setProperty("--fan",index-(model.cowboy.hand.length-1)/2);
       return node;
     }));
