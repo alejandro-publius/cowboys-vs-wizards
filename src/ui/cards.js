@@ -88,15 +88,17 @@ function cardButton(card, enabled, inFlight, plain) {
     disabled: !enabled,
   }, ...(plain ? plainCard(card) : [createCardBody(card)]));
 }
-function slotButton(side, slot, troop, clickable, chosen, plain) {
+function slotButton(side, slot, troop, clickable, chosen, plain, forecast) {
   const owner = side === "cowboy" ? "Your" : "Wizard";
   const contents = troop ? `${troop.name}, ${troop.health} of ${troop.max} health` : "empty";
   const face = plain
     ? [el("small", {}, `Lane ${slot + 1}`), el("strong", {}, troop?.name ?? "Empty"),
-      troop ? orbs(troop.health, troop.max) : null]
+      troop ? orbs(troop.health, troop.max) : null,
+      forecast ? el("small", {class: "plain-forecast"}, forecast) : null]
     : [troop ? `${troop.name} ${troop.health}/${troop.max}` : "Empty"];
   return el("button", {type: "button", class: "match-slot", "data-side": side, "data-slot": slot, disabled: !clickable,
-    "aria-pressed": chosen ? "true" : null, "aria-label": `${owner} lane ${slot + 1}: ${contents}`}, ...face);
+    "aria-pressed": chosen ? "true" : null,
+    "aria-label": `${owner} lane ${slot + 1}: ${contents}${forecast ? `. Clash preview: ${forecast}` : ""}`}, ...face);
 }
 
 function resultDetail({outcome, reason, round}) {
@@ -434,7 +436,8 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
     const refocus = focusedKey(root);
     lanes.replaceChildren(...model.lanes.flatMap(({lane, cowboy, wizard}) => [
       slotButton("wizard", lane, wizard, model.slots.wizard.includes(lane), false, plain),
-      slotButton("cowboy", lane, cowboy, model.slots.cowboy.includes(lane), model.tributes.includes(lane), plain),
+      slotButton("cowboy", lane, cowboy, model.slots.cowboy.includes(lane), model.tributes.includes(lane), plain,
+        model.summonForecasts?.[lane]),
     ]));
     hand.replaceChildren(...model.cowboy.hand.map((card, index) => {
       const node=cardButton(card,model.buttons.hand,moving(card.cardId,index),plain);

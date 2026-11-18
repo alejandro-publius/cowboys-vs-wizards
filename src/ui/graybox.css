@@ -80,6 +80,7 @@ h1 { font-size: clamp(1.3rem, 3vw, 2rem); }
 }
 .match-slot:disabled { opacity: 1; }
 .match-slot small { color: var(--muted); }
+.match-slot .plain-forecast { font-size: .78rem; font-variant-numeric: tabular-nums; }
 .match-slot[data-side=cowboy] { color: var(--cowboy); background: #302820; }
 .match-slot[data-side=wizard] { color: var(--wizard); background: #292635; }
 .match-slot:not(:disabled), .match-slot[aria-pressed=true] { border-color: currentColor; }

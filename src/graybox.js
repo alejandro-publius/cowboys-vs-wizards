@@ -6,6 +6,7 @@ import {createController, FABLE_ENGINE} from "./match/controller.js";
 import {guideLine, guideProgress, trackGuide} from "./match/guide.js";
 import {DEFAULT_PAUSES} from "./match/presenter.js";
 import {createScheduler} from "./match/scheduler.js";
+import {summonForecasts} from "./match/summon-forecast.js";
 import {createProfileStore} from "./profile/player-profile.js";
 import {cardModel} from "./ui/card-model.js";
 import {mountCards} from "./ui/cards.js";
@@ -79,6 +80,10 @@ const controller = createController({
       seed: controller.seed(), seedPinned: controller.seedPinned(), message: controller.message(),
     });
     model.prompt = model.prompt.replace("glowing card", "highlighted card");
+    model.summonForecasts = status === "accepting_input" ? summonForecasts(displayed, options) : {};
+    if (Object.keys(model.summonForecasts).length > 0) {
+      model.prompt += " Clash preview assumes the rest of the board stays as shown.";
+    }
     overlay.render(model);
   },
 });
