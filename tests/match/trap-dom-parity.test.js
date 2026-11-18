@@ -14,8 +14,9 @@ import { publicState } from "../../src/game/view.js";
 import { commandList, eventLine } from "../../experiments/trap-placeholder/lab.js";
 import {
   CPU_LEVEL, SCENARIO, breakLineOf, checkRedaction, compareDomToView, compareSnapshot,
-  createMirror, decideInput, hiddenWizardIds, parseArgs, readDom,
+  SEED_KITS, createMirror, decideInput, hiddenWizardIds, parseArgs, readDom, trapOpportunity,
 } from "../../scripts/browser-trap-parity-131.mjs";
+import { layoutOf, pickSeeds, roundForPosition } from "../../experiments/trap-playtest-kit/seeds.js";
 
 const glyphs = (n, max) => "\u25cf".repeat(Math.max(0, n)) + "\u25cb".repeat(Math.max(0, max - n));
 
@@ -97,6 +98,24 @@ test("arguments: seeds 0 and 60 by default; bad seeds and unknown flags are refu
   assert.throws(() => parseArgs(["--seeds", "-1"]), /--seeds/);
   assert.throws(() => parseArgs(["--seeds", "4294967296"]), /--seeds/);
   assert.throws(() => parseArgs(["--fast"]), /unknown argument/);
+});
+
+test("--seed-kit t1 is the #120 kit's six seeds in category order; it excludes --seeds (issue #135)", () => {
+  assert.deepEqual(SEED_KITS.t1, pickSeeds().picks.map((p) => p.seed));
+  assert.deepEqual(parseArgs(["--seed-kit", "t1"]), { seeds: [55, 9, 2, 23, 7, 43], out: null, seedKit: "t1" });
+  assert.deepEqual(parseArgs(["--seed-kit", "t1", "--out", "r.json"]).out, "r.json");
+  assert.throws(() => parseArgs(["--seed-kit", "t2"]), /unknown kit/);
+  assert.throws(() => parseArgs(["--seed-kit", "t1", "--seeds", "0"]), /exclusive/);
+  assert.throws(() => parseArgs(["--seeds", "0", "--seed-kit", "t1"]), /exclusive/);
+});
+
+test("trapOpportunity separates set, drawn, not reached and not drawn (issue #135)", () => {
+  assert.equal(trapOpportunity({ scheduledRound: 1, firstSeenRound: 1, cowboyTrapSet: true, rounds: 5 }).outcome, "set");
+  assert.equal(trapOpportunity({ scheduledRound: 4, firstSeenRound: 4, cowboyTrapSet: false, rounds: 5 }).outcome, "drawn-not-set");
+  const late = trapOpportunity({ scheduledRound: 8, firstSeenRound: null, cowboyTrapSet: false, rounds: 6 });
+  assert.equal(late.outcome, "not-reached");
+  assert.match(late.text, /^conditional: .*round 8.*round 6/);
+  assert.equal(trapOpportunity({ scheduledRound: 4, firstSeenRound: null, cowboyTrapSet: false, rounds: 5 }).outcome, "not-drawn");
 });
 
 test("the page read pauses on the last line of render() in the lab app.js", () => {
@@ -220,4 +239,43 @@ test("redaction: a revealed Wizard trap, ID or trap-set cardId is caught; the en
   assert.ok(leaked((p) => (p.view.sides.wizard.hand = point.full.sides.wizard.hand)).length > 0, "Wizard hand in the view");
   assert.ok(leaked((p) => p.events.push({ type: "trap-set", side: "wizard", revision: 1, cardId: trapId })).length > 0, "trap-set cardId");
   assert.ok(leaked((p) => (p.view.sides.wizard.trap = null)).length > 0, "hidden trap dropped from the view");
+});
+
+// Issue #135: the expected Node-mirror outcome of each T1 kit seed under the
+// script's policy and normal Wizard CPU. The Chrome run must reproduce these;
+// they are fixed-policy regression values, not balance or playtest results.
+const KIT_EXPECTED = {
+  55: { result: "win", rounds: 5, trap: "set", cowboySet: 1, wizardSet: 1, cowboyTriggers: 1, wizardTriggers: 1 },
+  9: { result: "loss", rounds: 6, trap: "set", cowboySet: 1, wizardSet: 1, cowboyTriggers: 1, wizardTriggers: 1 },
+  2: { result: "loss", rounds: 5, trap: "set", cowboySet: 1, wizardSet: 1, cowboyTriggers: 1, wizardTriggers: 1 },
+  23: { result: "loss", rounds: 5, trap: "set", cowboySet: 1, wizardSet: 1, cowboyTriggers: 1, wizardTriggers: 1 },
+  7: { result: "loss", rounds: 6, trap: "not-reached", cowboySet: 0, wizardSet: 1, cowboyTriggers: 0, wizardTriggers: 0 },
+  43: { result: "loss", rounds: 5, trap: "not-reached", cowboySet: 0, wizardSet: 0, cowboyTriggers: 0, wizardTriggers: 0 },
+};
+
+test("T1 seed kit: each seed's mirror is deterministic, compares clean at every stable point and matches its pinned outcome (issue #135)", () => {
+  assert.deepEqual(Object.keys(KIT_EXPECTED).map(Number).sort((x, y) => x - y), [...SEED_KITS.t1].sort((x, y) => x - y));
+  for (const seed of SEED_KITS.t1) {
+    const a = playMirror(seed);
+    const b = playMirror(seed);
+    assert.deepEqual(b.inputs, a.inputs, `seed ${seed} inputs`);
+    assert.deepEqual(b.mirror.events(), a.mirror.events(), `seed ${seed} events`);
+    for (const point of a.points) {
+      assert.deepEqual(compareSnapshot(pageOf(point, a.mirror.cards), point.snapshot, point.full, a.mirror.cards), [], `seed ${seed} revision ${point.snapshot.view.revision}`);
+    }
+    const events = a.mirror.events();
+    const count = (type, side) => events.filter((e) => e.type === type && e.side === side).length;
+    const last = a.points.at(-1).snapshot.view;
+    const seen = a.points.find((p) => p.snapshot.view.sides.cowboy.hand.some((id) => id.includes("deck-trap-cowboy")));
+    const opp = trapOpportunity({
+      scheduledRound: roundForPosition(layoutOf(seed).trap), firstSeenRound: seen ? seen.snapshot.view.round : null,
+      cowboyTrapSet: count("trap-set", "cowboy") > 0, rounds: last.round,
+    });
+    const want = KIT_EXPECTED[seed];
+    assert.deepEqual(
+      { result: last.result.outcome, rounds: last.round, trap: opp.outcome, cowboySet: count("trap-set", "cowboy"), wizardSet: count("trap-set", "wizard"),
+        cowboyTriggers: count("trap-trigger", "cowboy"), wizardTriggers: count("trap-trigger", "wizard") },
+      want, `seed ${seed}`);
+    if (want.wizardSet) assert.ok(a.points.some((p) => p.full.sides.wizard.trap), `seed ${seed}: a stable point holds a hidden Wizard trap`);
+  }
 });
