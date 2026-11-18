@@ -14,13 +14,14 @@ test('a new profile has defaults and no unearned achievements', () => {
     settings: { sound: false, reducedMotion: false, performance: 'auto' },
     deck: null,
     achievements: {},
+    clearedHunts: [],
     stats: { matches: 0, wins: 0, summons: 0, spells: 0 },
   });
   store.updateSettings({ sound: true });
   store.saveDeck(null);
   store.record('preview');
   assert.deepEqual(store.get().achievements, {});
-  assert.equal(new Set(ACHIEVEMENTS.map(({ id }) => id)).size, 5);
+  assert.equal(new Set(ACHIEVEMENTS.map(({ id }) => id)).size, 7);
 });
 
 test('settings, deck, actual progress and unlocks survive a persistence roundtrip', () => {
@@ -33,8 +34,8 @@ test('settings, deck, actual progress and unlocks survive a persistence roundtri
   store.record('match-complete', { won: true });
   assert.deepEqual(createProfileStore(storage).get(), store.get());
   assert.deepEqual(store.get().stats, { matches: 1, wins: 1, summons: 1, spells: 1 });
-  assert.deepEqual(Object.keys(store.get().achievements).sort(), ACHIEVEMENTS.map(({ id }) => id).sort());
-  assert.deepEqual(Object.keys(JSON.parse(storage.getItem(KEY))).sort(), ['achievements', 'deck', 'settings', 'stats']);
+  assert.deepEqual(Object.keys(store.get().achievements).sort(), ACHIEVEMENTS.filter(({ id }) => !['bounty-hunter', 'clean-capture'].includes(id)).map(({ id }) => id).sort());
+  assert.deepEqual(Object.keys(JSON.parse(storage.getItem(KEY))).sort(), ['achievements', 'clearedHunts', 'deck', 'settings', 'stats']);
 });
 
 test('corrupt and wrongly typed saved data fall back safely', () => {

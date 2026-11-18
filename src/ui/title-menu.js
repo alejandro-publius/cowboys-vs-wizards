@@ -1,5 +1,6 @@
 import {ACHIEVEMENTS} from '../profile/player-profile.js';
 import {renderDeckWorkbench} from './deck-workbench.js';
+import {renderWantedBoard} from './wanted-board.js';
 
 const $ = (root, selector) => root.querySelector(selector);
 function element(tag, text, attrs={}) {
@@ -9,7 +10,7 @@ function element(tag, text, attrs={}) {
   return node;
 }
 
-export function mountTitleMenu(root,{profile,onPlay,onSettings,onTryDraft,onTryRideOut}) {
+export function mountTitleMenu(root,{profile,onPlay,onSettings,onTryDraft,onTryRideOut,onHunt}) {
   const scene=$(root,'.title-scene'),page=$(root,'.menu-page'),content=$(root,'.menu-page-content');
   const heading=$(root,'#menu-page-title'),notice=$(root,'#menu-notice'),play=$(root,'#menu-play');
   // Only the graybox title screen carries data-deck-presets="true"; the illustrated builder has no marker.
@@ -98,9 +99,17 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings,onTryDraft,onTryR
     const tryDraft=typeof onTryDraft==='function'&&!paused
       ?(counts,opener)=>start(opener,()=>onTryDraft(counts))
       :undefined;
-    renderDeckWorkbench({content,profile,say,savedMessage,button,presets,tryDraft});
+    renderDeckWorkbench({content,profile,say,savedMessage,button,presets,tryDraft,bounties:Boolean(onHunt)});
   }
-  const actions={settings,achievements,how,deck};
+  function wanted(opener){
+    open('Wanted',opener);
+    if(paused){
+      content.append(element('p','Finish your paused duel before starting a hunt.',{class:'menu-hint'}));
+      return;
+    }
+    renderWantedBoard(content,profile.get(),(opener,id)=>start(opener,()=>onHunt(id)));
+  }
+  const actions={settings,achievements,how,deck,wanted};
   for(const item of root.querySelectorAll('[data-menu-page]'))item.addEventListener('click',()=>actions[item.dataset.menuPage](item));
   $(root,'#menu-back').addEventListener('click',home);
   play.addEventListener('click',()=>start(play));

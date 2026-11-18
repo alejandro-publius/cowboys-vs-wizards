@@ -1,7 +1,8 @@
-import {COWBOY_CATALOG, DECK_SIZE, DEFAULT_COUNTS, deckIds, validateDeck} from '../game/deck-builder.js';
+import {BOUNTY_REWARDS, COWBOY_CATALOG, DECK_SIZE, DEFAULT_COUNTS, copyLimit, deckIds, validateDeck} from '../game/deck-builder.js';
 import {BILLY_POSSE, DEADEYE_CONTROL} from '../game/deck-presets.js';
 import {MAX_COWBOY_COPIES, tributeCost} from '../game/cards.js';
 import {openingDroughtRate} from '../game/opening-policy.js';
+import {dragonRewardEarned} from '../game/bounty-hunt.js';
 
 const element = (tag, text, attrs = {}) => {
   const node = document.createElement(tag);
@@ -22,9 +23,12 @@ const ruleOf = card => card.kind === 'spell'
 // `presets` comes from the graybox title-screen marker and adds Load Deadeye Control
 // and Load Billy Posse. Optional `tryDraft(counts, opener)` adds Try draft, which
 // plays a copy of the current legal draft and leaves the saved deck unchanged.
-export function renderDeckWorkbench({content, profile, say, savedMessage, button, presets = false, tryDraft}) {
-  const stored = profile.get().deck;
-  let counts = {...(stored && validateDeck(stored).ok ? stored : DEFAULT_COUNTS)};
+export function renderDeckWorkbench({content, profile, say, savedMessage, button, presets = false, tryDraft, bounties = false}) {
+  const saved = profile.get();
+  const entitlement = {bountyReward: bounties && dragonRewardEarned(saved)};
+  const collectionCards = entitlement.bountyReward ? [...COWBOY_CATALOG, ...BOUNTY_REWARDS] : COWBOY_CATALOG;
+  const stored = saved.deck;
+  let counts = {...(stored && validateDeck(stored, entitlement).ok ? stored : DEFAULT_COUNTS)};
   let selected = COWBOY_CATALOG[0].type;
   const count = type => counts[type] ?? 0;
 
@@ -49,7 +53,7 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
     feedback.textContent = '';
     refresh();
   }
-  for (const card of COWBOY_CATALOG) {
+  for (const card of collectionCards) {
     const tile = element('button', undefined, {type: 'button', class: 'deck-choice', 'data-card': card.type});
     tile.append(
       element('span', undefined, {class: 'deck-art', 'data-card-type': card.type, role: 'img', 'aria-label': card.name + ' illustrated card'}),
@@ -72,7 +76,7 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
   }
 
   const save = button('Save deck', () => {
-    const result = validateDeck(counts);
+    const result = validateDeck(counts, entitlement);
     if (!result.ok) {say(result.error); feedback.textContent = result.error; return;}
     profile.saveDeck(counts);
     const msg = profile.isPersistent() ? 'Deck saved. Your next match will use these cards.' : 'Saved for this session only. Browser storage is unavailable.';
@@ -91,7 +95,7 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
   let trial = null;
   if (tryDraft) {
     trial = button('Try draft', async () => {
-      const result = validateDeck(counts);
+      const result = validateDeck(counts, entitlement);
       if (!result.ok) {say(result.error); feedback.textContent = result.error; refresh(); return;}
       feedback.textContent = '';
       await tryDraft({...counts}, trial);
@@ -117,25 +121,33 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
     }, {id: 'load-billy-posse', 'aria-describedby': 'wb-billy-posse-summary'}));
     notes.push(element('p', 'Billy Posse: hold or pressure lanes with Sheriffs, then trade one Sheriff as tribute for Billy to strengthen that lane. A fourth Billy replaces Mounted Billy.', {id: 'wb-billy-posse-summary', class: 'detail-line'}));
   }
+  if (entitlement.bountyReward) {
+    actions.append(button("Load Dragon Posse", () => {
+      counts = {...DEFAULT_COUNTS, "cowboy-mounted-billy": 0, "cowboy-captured-dragon": 1};
+      selected = "cowboy-captured-dragon";
+      refresh();
+      feedback.textContent = "Dragon Posse loaded. Try the draft or save it for your next duel.";
+    }, {id: "load-dragon-posse"}));
+  }
   chosen.append(total, openingOdds, rows, validation, actions, ...notes, feedback);
   collection.append(grid);
   layout.append(collection, detail, chosen);
   content.append(layout);
 
   function refresh() {
-    const result = validateDeck(counts);
+    const result = validateDeck(counts, entitlement);
     total.textContent = `${result.total} / ${DECK_SIZE} cards`;
     total.dataset.ready = String(result.ok);
     openingOdds.hidden = !result.ok;
     if (result.ok) {
-      const rate = (100 * openingDroughtRate(deckIds(counts))).toFixed(1);
+      const rate = (100 * openingDroughtRate(deckIds(counts, entitlement))).toFixed(1);
       openingOdds.textContent = `${rate}% chance of no free summon in a standard opening hand.`;
     }
     validation.textContent = result.ok ? 'Ready to save.' : result.error;
     validation.dataset.ok = String(result.ok);
     save.disabled = !result.ok;
     if (trial) trial.disabled = !result.ok;
-    for (const card of COWBOY_CATALOG) {
+    for (const card of collectionCards) {
       const n = count(card.type), tile = tiles.get(card.type), r = deckRows.get(card.type);
       tile.setAttribute('aria-pressed', String(card.type === selected));
       tile.setAttribute('aria-label', `Select ${card.name}, ${n} in deck`);
@@ -144,14 +156,14 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
       r.row.dataset.selected = String(card.type === selected);
       r.row.dataset.empty = String(n === 0);
       r.minus.disabled = n === 0;
-      r.plus.disabled = n >= MAX_COWBOY_COPIES || result.total >= DECK_SIZE;
+      r.plus.disabled = n >= copyLimit(card) || result.total >= DECK_SIZE;
     }
-    const card = COWBOY_CATALOG.find(c => c.type === selected), n = count(selected);
+    const card = collectionCards.find(c => c.type === selected), n = count(selected);
     detail.replaceChildren(
       element('h3', card.name),
       element('p', `${costOf(card)} · ${statsOf(card)}`, {class: 'detail-line'}),
       element('p', ruleOf(card), {class: 'detail-rule'}),
-      element('p', `${n} of up to ${MAX_COWBOY_COPIES} in your deck.`, {class: 'detail-line'}));
+      element('p', `${n} of up to ${copyLimit(card)} in your deck.`, {class: 'detail-line'}));
   }
   refresh();
 }

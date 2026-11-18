@@ -25,7 +25,7 @@ function validateSpec(file, spec) {
 
   if (!Object.hasOwn(FIELDS, spec.kind)) return [`${file}: kind must be "troop" or "spell"`];
   const fields = FIELDS[spec.kind];
-  for (const key of Object.keys(spec)) if (!fields.includes(key)) fail(`unknown field "${key}" for a ${spec.kind}`);
+  for (const key of Object.keys(spec)) if (!fields.includes(key) && key !== "bounty") fail(`unknown field "${key}" for a ${spec.kind}`);
   for (const key of fields) if (!(key in spec)) fail(`missing field "${key}"`);
 
   if (typeof spec.type !== "string" || !/^[a-z]+(-[a-z]+)*$/.test(spec.type)) fail("type must be lowercase words joined by '-'");
@@ -34,7 +34,11 @@ function validateSpec(file, spec) {
   else if (typeof spec.type === "string" && !spec.type.startsWith(`${spec.side}-`)) fail(`type must start with "${spec.side}-"`);
   if (!isInt(spec.order, 1)) fail("order must be a positive integer");
   if (typeof spec.name !== "string" || spec.name.trim() === "") fail("name must be a non-empty string");
-  if (!isInt(spec.copies, 1, DECK_SIZE)) fail(`copies must be an integer from 1 to ${DECK_SIZE}`);
+  if (Object.hasOwn(spec, "bounty")) {
+    if (spec.bounty !== true || spec.side !== "cowboy" || spec.kind !== "troop" || spec.copies !== 0) {
+      fail("a bounty reward must be a Cowboy troop with zero starter copies");
+    }
+  } else if (!isInt(spec.copies, 1, DECK_SIZE)) fail(`copies must be an integer from 1 to ${DECK_SIZE}`);
   if (spec.kind === "troop") {
     if (!isInt(spec.stars, 1)) fail("stars must be a positive integer");
     if (!isInt(spec.health, 1, MAX_HEALTH)) fail(`health must be an integer from 1 to ${MAX_HEALTH}`);
@@ -83,6 +87,7 @@ function loadSpecs() {
 function render(specs) {
   const lines = specs.map((spec) => {
     const ordered = Object.fromEntries(FIELDS[spec.kind].map((key) => [key, spec[key]]));
+    if (spec.bounty) ordered.bounty = true;
     return `  ${JSON.stringify(ordered)},`;
   });
   return [

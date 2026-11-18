@@ -19,7 +19,7 @@ import {CARDS, tributeCost} from "../game/cards.js";
 const ACTIONS = {confirm: "onConfirm", "ride-out": "onRideOut", cancel: "onCancel", skip: "onSkip", "end-phase": "onEndPhase", restart: "onRestart"};
 const REMATCH = {"replay-deal": "onReplayDeal", "new-duel": "onNewDuel"};
 // Public catalog: the first copy of each of the eight card names.
-const catalog = Object.values(CARDS).filter((card, i, all) => all.findIndex((each) => each.name === card.name) === i);
+const catalog = Object.values(CARDS).filter((card) => !card.bounty).filter((card, i, all) => all.findIndex((each) => each.name === card.name) === i);
 const catalogId = (card) => catalog.find((each) => each.name === card.name).id;
 
 function el(tag, attributes = {}, ...children) {
@@ -97,20 +97,22 @@ function cardButton(card, enabled, inFlight, plain) {
 }
 // `forecast` is one lane preview, named by `preview` in the label: a summon's
 // clash on a Cowboy lane or, plain only, a Deadeye shot on a Wizard lane.
-function slotButton(side, slot, troop, clickable, chosen, plain, forecast, preview = "Clash preview") {
+function slotButton(side, slot, troop, clickable, chosen, plain, forecast, preview = "Clash preview", wanted = false) {
   const owner = side === "cowboy" ? "Your" : "Wizard";
-  const contents = troop ? `${troop.name}, ${troop.health} of ${troop.max} health` : "empty";
+  const contents = troop ? `${wanted ? "Wanted Dragon" : troop.name}, ${troop.health} of ${troop.max} health` : "empty";
   const face = plain
-    ? [el("small", {}, `Lane ${slot + 1}`), el("strong", {}, troop?.name ?? "Empty"),
+    ? [el("small", {}, `Lane ${slot + 1}`), el("strong", {}, wanted ? "Wanted Dragon" : troop?.name ?? "Empty"),
       troop ? orbs(troop.health, troop.max) : null,
       forecast ? el("small", {class: "plain-forecast"}, forecast) : null]
     : [troop ? `${troop.name} ${troop.health}/${troop.max}` : "Empty"];
-  return el("button", {type: "button", class: "match-slot", "data-side": side, "data-slot": slot, disabled: !clickable,
+  return el("button", {type: "button", class: "match-slot", "data-wanted": wanted, "data-side": side, "data-slot": slot, disabled: !clickable,
     "aria-pressed": chosen ? "true" : null,
     "aria-label": `${owner} lane ${slot + 1}: ${contents}${forecast ? `. ${preview}: ${forecast}` : ""}`}, ...face);
 }
 
 function resultDetail({outcome, reason, round}) {
+  if (reason === "bounty-captured") return "The Dragon fell and your Base survived.";
+  if (reason === "bounty-escaped") return "The Dragon escaped. You can take the hunt again.";
   if (reason === "base-destroyed") return outcome === "draw" ? `Both Bases fell in round ${round}.` : `A Base fell in round ${round}.`;
   if (reason === "round-limit") {
     return outcome === "draw" ? `Round ${round} ended with the Bases level.` : `Round ${round} ended; more Base orbs wins.`;
@@ -494,9 +496,9 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
     message.hidden = !model.message || (selected && model.status!=="error");
 
     const refocus = focusedKey(root);
-    lanes.replaceChildren(...model.lanes.flatMap(({lane, cowboy, wizard}) => [
+    lanes.replaceChildren(...model.lanes.flatMap(({lane, cowboy, wizard, wanted}) => [
       slotButton("wizard", lane, wizard, model.slots.wizard.includes(lane), false, plain,
-        plain ? model.spellForecasts?.[lane] : null, "Shot preview"),
+        plain ? model.spellForecasts?.[lane] : null, "Shot preview", wanted),
       slotButton("cowboy", lane, cowboy, model.slots.cowboy.includes(lane),
         model.tributes.includes(lane) || model.ride?.from === lane || model.ride?.destination === lane, plain,
         model.rideForecasts?.[lane] ?? model.summonForecasts?.[lane]),
@@ -525,8 +527,12 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
       launchDraw(newDraw, drawOrigin);
     }
 
+    seedForm.hidden = Boolean(model.bounty);
     restart.disabled = resultRestart.disabled = !model.buttons.restart;
-    if (rematch) rematch.replay.disabled = rematch.fresh.disabled = !model.buttons.restart;
+    if (rematch) {
+      rematch.replay.disabled = rematch.fresh.disabled = !model.buttons.restart;
+      setText(rematch.fresh, model.bounty ? "Back to Wanted" : "New duel");
+    }
     buttons.skip.hidden=!model.buttons.skip;
 
     result.hidden = model.result === null;

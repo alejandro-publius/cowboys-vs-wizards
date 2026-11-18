@@ -30,7 +30,7 @@ export function legalActions(state, side, { cards = CARDS } = {}) {
   const actions = [];
 
   if (!summonUsed && !castUsed) {
-    const occupied = slots.filter((slot) => board[slot] !== null);
+    const occupied = slots.filter((slot) => board[slot] !== null && board[slot].cardId !== state.bountyTarget);
     for (const cardId of hand) {
       if (cards[cardId].kind !== "troop") continue;
       for (const tributes of combinations(occupied, tributeCost(cards[cardId].stars))) {
