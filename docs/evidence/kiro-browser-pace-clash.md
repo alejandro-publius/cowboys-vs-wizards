@@ -1,8 +1,8 @@
 # Browser pace with a clash: default vs `?pace=fast` (issue #128)
 
-Date: 2026-11-17, PST (America/Los_Angeles). Executor: Kiro (Kiro IDE session, model `claude-opus-5.5` from session context), single worker in worktree `.worktrees/kiro-pace-clash-128`. Base: main `fba0c0c06beed26d348cf14ba598839016554836` (merge of #127). No usage-credit figure was emitted by the runtime, so none is recorded. Scope: measurement tooling only. No change to `src/`, art, audio, decks, package or production files.
+Date: 2026-11-17, PST (America/Los_Angeles). Executor: Kiro (Kiro IDE session, model `claude-opus-5.5` from session context), single worker in worktree `.worktrees/kiro-pace-clash-128`. Base: main `fba0c0c06beed26d348cf14ba598839016554836` (merge of #127). Kiro's original note did not record a credit figure. In later independent inspection the coordinator found separate CLI V3 stream `session_usage` reports of 5.861284 and 4.052862 credits in the #128 continuation logs; these are two emitted session figures, not a combined project cost or proof of a backend model identity. Scope: measurement tooling only. No change to `src/`, art, audio, decks, package or production files.
 
-**Status: incomplete measurement.** The tooling change and its unit tests are done. No complete Chrome receipt for the clash route exists. The results below are partial and must not be read as a default-vs-fast comparison with n = 3.
+**Status at Kiro handoff: incomplete measurement.** The tooling change and unit tests were done, but Kiro did not produce a full three-sample browser receipt. The coordinator later independently completed all 12 Chrome runs with matched summons, observable health reductions, and identical state order, documented in [coordinator-browser-pace-clash-128.md](coordinator-browser-pace-clash-128.md). The partial Kiro-run data below remains historical.
 
 ## Change
 
