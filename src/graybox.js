@@ -43,10 +43,10 @@ let progress = guideProgress();
 let run = 0;
 let roundEvents = [];
 let latestClash = null;
-// The configuration captured when the current match was created, and the one
-// "Replay this deal" hands back to createMatch for exactly one start.
+// Each match captures its configuration. Replay and draft starts can supply
+// a configuration for exactly one call to createMatch.
 let deal = null;
-let replay = null;
+let nextDeal = null;
 
 // Read at match creation, so a deck saved mid-match only affects later deals.
 function freshDeal(seed) {
@@ -62,8 +62,8 @@ const engine = {
     progress = guideProgress();
     roundEvents = [];
     latestClash = {title: "Latest clash", lines: ["End the turn to view both sides’ attacks."]};
-    deal = replay ?? freshDeal(seed);
-    replay = null;
+    deal = nextDeal ? {...nextDeal, seed} : freshDeal(seed);
+    nextDeal = null;
     const options = deal.options.cowboyDeck ? {cowboyDeck: [...deal.options.cowboyDeck]} : {};
     return deal.opening
       ? openingMatch(seed, deal.opening.opening, deal.opening.first, options)
@@ -79,7 +79,7 @@ const engine = {
       latestClash = log;
       roundEvents = [];
     }
-    if (action.side === "cowboy" && ["summon", "spell"].includes(action.type)) {
+    if (!deal.isDraft && action.side === "cowboy" && ["summon", "spell"].includes(action.type)) {
       profile.record(action.type, {id: `${run}:${result.state.revision}`});
     }
     return result;
@@ -92,7 +92,7 @@ const controller = createController({
     const displayed = controller.displayed();
     const options = controller.options();
     const status = controller.status();
-    if (status === "terminal") {
+    if (status === "terminal" && !deal.isDraft) {
       profile.record("match-complete", {matchId: run, won: displayed.result.outcome === "win"});
     }
     const guide = (guided || hints) && options && displayed && status === "accepting_input"
@@ -106,7 +106,8 @@ const controller = createController({
     });
     model.prompt = model.prompt.replace("glowing card", "highlighted card");
     // Shown for the deal actually being played, so Replay this deal keeps it.
-    model.openingNote = deal?.opening?.opening === "freeOpener" ? FREE_OPENER_NOTE : null;
+    const openingNote = deal?.opening?.opening === "freeOpener" ? FREE_OPENER_NOTE : "";
+    model.openingNote = deal?.isDraft ? `Trying an unsaved deck. ${openingNote}`.trim() : openingNote;
     model.clashForecast = status === "accepting_input" ? clashForecast(displayed, options) : null;
     model.summonForecasts = status === "accepting_input" ? summonForecasts(displayed, options) : {};
     if (Object.keys(model.summonForecasts).length > 0) {
@@ -127,17 +128,22 @@ function play(action) {
   return result;
 }
 const input = (event) => play(() => controller.input(event));
+function startWithDeal(configuration, start) {
+  nextDeal = configuration;
+  try {
+    return play(start);
+  } finally {
+    nextDeal = null;
+  }
+}
+function restartCurrent(start) {
+  return deal?.isDraft ? startWithDeal(deal, start) : play(start);
+}
 // Result screen: the completed match's seed, deck, CPU/opening and guided setting.
 function replayDeal() {
   if (controller.status() !== "terminal" || !deal) return;
-  const completed = deal;
-  guided = completed.guided;
-  replay = completed;
-  try {
-    play(() => controller.start(completed.seed));
-  } finally {
-    replay = null;
-  }
+  guided = deal.guided;
+  startWithDeal(deal, () => controller.start(deal.seed));
 }
 // Result screen: a generated seed and the latest saved deck, outside the guided lesson.
 function newDuel() {
@@ -152,14 +158,27 @@ const overlay = mountCards(match, {
   onCancel: () => input({type: "cancel"}),
   onSkip: () => input({type: "skip"}),
   onEndPhase: () => play(() => controller.endPhase()),
-  onRestart: () => play(() => controller.restart()),
-  onReplaySeed: (seed) => play(() => controller.start(seed)),
+  onRestart: () => restartCurrent(() => controller.restart()),
+  onReplaySeed: (seed) => restartCurrent(() => controller.start(seed)),
   onReplayDeal: replayDeal,
   onNewDuel: newDuel,
 }, {plain: true});
 
 const menu = mountTitleMenu(node("title-screen"), {
   profile,
+  onTryDraft(counts) {
+    if (!["idle", "terminal"].includes(controller.status()) || !validateDeck(counts).ok) {
+      throw new Error("A deck draft requires a legal deck and no match in progress.");
+    }
+    guided = false;
+    const trial = {guided, opening, options: {cowboyDeck: deckIds(counts)}, isDraft: true};
+    if (!startWithDeal(trial, () => controller.start(params.get("seed") ?? undefined) || controller.start())) {
+      throw new Error("The trial duel could not start.");
+    }
+    menu.hide();
+    arena.hidden = false;
+    node("home").focus();
+  },
   onPlay(startGuided) {
     menu.hide();
     arena.hidden = false;
