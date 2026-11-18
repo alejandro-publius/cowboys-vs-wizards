@@ -1,5 +1,6 @@
 import {chooseAction, cpuFor} from "./game/cpu.js";
 import {deckIds, validateDeck} from "./game/deck-builder.js";
+import {BILLY_POSSE, DEADEYE_CONTROL} from "./game/deck-presets.js";
 import {GRAYBOX_OPENINGS, openingMatch, parseOpeningParams} from "./game/opening-policy.js";
 import {clashForecast} from "./match/clash-forecast.js";
 import {clashLog} from "./match/clash-log.js";
@@ -27,6 +28,8 @@ const hints = params.get("guide") === "1";
 // How to Play → Start guided duel: starter deck, seed 60, Normal Wizard (docs/evidence/clash-royale-launch-decks.md).
 const GUIDED_SEED = "60";
 const chosenCpu = cpuFor(params.get("cpu"));
+const requestedDeck = params.get("deck");
+const pinnedPreset = new Map([["billy-posse", BILLY_POSSE], ["deadeye-control", DEADEYE_CONTROL]]).get(requestedDeck);
 const scheduler = createScheduler();
 const instant = () => ({impact: 0, end: 0});
 // The overlay reads the presenter's displayed state. The renderer has no shadow copy of the rules or board.
@@ -47,7 +50,7 @@ let replay = null;
 
 // Read at match creation, so a deck saved mid-match only affects later deals.
 function freshDeal(seed) {
-  const counts = guided || params.get("deck") === "starter" ? null : profile.get().deck;
+  const counts = guided || requestedDeck === "starter" ? null : pinnedPreset?.counts ?? profile.get().deck;
   const options = counts && validateDeck(counts).ok ? {cowboyDeck: deckIds(counts)} : {};
   return {seed, guided, opening: guided ? null : opening, options};
 }
