@@ -13,7 +13,7 @@ import { legalActions } from "../../src/game/legal.js";
 import { publicState } from "../../src/game/view.js";
 import { chooseAction } from "../../src/game/cpu.js";
 import { emptySelection, selectionOptions, selectionStep } from "../../src/match/selection.js";
-import { guideLine, guideProgress, trackGuide } from "../../src/match/guide.js";
+import { guideLine, guideProgress, OPENER_TIP, trackGuide } from "../../src/match/guide.js";
 import { cardModel } from "../../src/ui/card-model.js";
 
 const text = (path) => readFileSync(new URL(`../../${path}`, import.meta.url), "utf8");
@@ -193,4 +193,69 @@ test("GF-7: without guide the prompt is byte-identical at every seed 0 selection
   }
   assert.ok(!/guide/.test(text("src/match/selection.js")));
   assert.match(text("src/main.js"), /get\("guide"\)==="1"/);
+});
+
+test("guided opener: seed 60 shows the block-or-trade tip only on the first idle decision, with fallbacks", () => {
+  // Starter deck seed 60; the Normal Wizard (chooseAction) moves first.
+  let state = createMatch(60);
+  let progress = guideProgress();
+  let n = 0;
+  const apply = (action) => {
+    const r = applyAction(state, { ...action, actionId: `o${++n}` });
+    assert.ok(r.ok, `rejected: ${r.reason}`);
+    state = r.state;
+    progress = trackGuide(progress, r.events);
+  };
+  assert.equal(state.activeSide, "wizard");
+  while (state.activeSide === "wizard") apply(chooseAction(publicState(state, "wizard")));
+
+  const view = publicState(state, "cowboy");
+  const options = selectionOptions(emptySelection, view);
+  const enemy = view.sides.wizard.board.filter(Boolean);
+  assert.equal(view.round, 1);
+  assert.equal(view.startingSide, "wizard");
+  assert.ok(view.sides.cowboy.board.every((troop) => !troop));
+  assert.deepEqual(enemy.map((troop) => CARDS[troop.cardId].name), ["Skeleton"]);
+  const sheriff = idOf(view, "Sheriff");
+  assert.ok(options.playableCardIds.includes(sheriff));
+
+  const line = (v, o = options, opener = true) => guideLine({ view: v, options: o, progress, opener });
+  assert.equal(line(view), OPENER_TIP);
+  assert.equal((OPENER_TIP.match(/[.!?]/g) ?? []).length, 1);
+  // ?guide=1 (no opener flag) keeps the existing line.
+  const plain = line(view, options, false);
+  assert.ok(plain && plain !== OPENER_TIP);
+
+  // Each missing condition falls back to the normal advice.
+  const fallback = (change) => {
+    const copy = structuredClone(view);
+    change(copy);
+    assert.notEqual(line(copy), OPENER_TIP);
+  };
+  const empty = view.sides.wizard.board.findIndex((troop) => !troop);
+  const other = Object.keys(CARDS).find((id) => CARDS[id].kind === "troop" && CARDS[id].name !== "Skeleton");
+  fallback((v) => { v.round = 2; });
+  fallback((v) => { v.startingSide = "cowboy"; });
+  fallback((v) => { v.allowances.cowboy.castUsed = true; });
+  fallback((v) => { v.sides.cowboy.board[0] = { cardId: sheriff, health: CARDS[sheriff].health }; });
+  fallback((v) => { v.sides.wizard.board[empty] = { ...enemy[0] }; });
+  fallback((v) => { v.sides.wizard.board = v.sides.wizard.board.map((t) => t && { ...t, cardId: other }); });
+  assert.notEqual(line(view, { ...options, playableCardIds: options.playableCardIds.filter((id) => CARDS[id].name !== "Sheriff") }), OPENER_TIP);
+
+  // During selection the lane advice returns.
+  const picked = selectionStep(emptySelection, { type: "card", cardId: sheriff }, view, { accepting: true, newActionId: () => "o-sel" });
+  const slotOptions = selectionOptions(picked.selection, view);
+  assert.equal(slotOptions.step, "slot");
+  assert.equal(line(view, slotOptions), "Lit tiles you can use for Sheriff: lane 1, lane 2, lane 3.");
+
+  // After the open-lane choice the normal idle advice returns.
+  const open = legalActions(view, "cowboy").find((a) => a.type === "summon" && a.cardId === sheriff && a.slot !== view.sides.wizard.board.findIndex(Boolean));
+  apply(open);
+  const after = publicState(state, "cowboy");
+  const afterLine = line(after, selectionOptions(emptySelection, after));
+  assert.ok(afterLine && afterLine !== OPENER_TIP);
+
+  // Seed 0 (Cowboy first, empty board) never shows the tip.
+  const zero = publicState(createMatch(0), "cowboy");
+  assert.equal(line(zero, selectionOptions(emptySelection, zero)), "Glowing cards in your hand can be played as a troop or a spell.");
 });
