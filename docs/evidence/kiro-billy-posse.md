@@ -2,7 +2,7 @@
 
 Kiro Opus 5.5 added **Load Billy Posse** to the graybox Build Deck screen. The list keeps six Sheriffs and two Deadeyes and turns the starter's Mounted Billy into a fourth one-tribute Billy. Hold or pressure a lane with Sheriff, then spend one weakened defender to put a stronger attacker there.
 
-The earlier paired study scored this deck at 53.86% on Normal and 48.05% on Hard, versus 49.39% and 48.80% for starter (2,048 bot matches per row). A later 384-match screen per row found that both candidates with only one Deadeye scored at most 36.5% across the two settings. These results support keeping two shots in the trial. Human balance remains open. [Mounted Billy study](fable-mounted-billy.md) · [Launch-deck research](clash-royale-launch-decks.md)
+The earlier paired study scored this deck at 53.86% on Normal and 48.05% on Hard, versus 49.39% and 48.80% for starter (2,048 bot matches per row). A later screen of seeds 34600–34791 with both first seats (384 matches per row) found that both candidates with only one Deadeye scored at most 36.5% across the two settings. These results support keeping two shots in the trial. Human balance remains open. The paired study lives at `docs/evidence/fable-mounted-billy.md` on `claude/graybox-mounted-billy`. [Launch-deck research](clash-royale-launch-decks.md)
 
 ## Record the comparison
 
