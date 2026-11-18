@@ -1,4 +1,5 @@
 import {COWBOY_CATALOG, DECK_SIZE, DEFAULT_COUNTS, deckIds, validateDeck} from '../game/deck-builder.js';
+import {DEADEYE_CONTROL} from '../game/deck-presets.js';
 import {MAX_COWBOY_COPIES, tributeCost} from '../game/cards.js';
 import {openingDroughtRate} from '../game/opening-policy.js';
 
@@ -18,7 +19,8 @@ const ruleOf = card => card.kind === 'spell'
 
 // Collection + chosen-deck workbench. Uses the approved card art as CSS backgrounds
 // (.deck-art), the existing validation and profile.saveDeck; no new rules.
-export function renderDeckWorkbench({content, profile, say, savedMessage, button}) {
+// `presets` comes from the graybox title-screen marker and adds Load Deadeye Control.
+export function renderDeckWorkbench({content, profile, say, savedMessage, button, presets = false}) {
   const stored = profile.get().deck;
   let counts = {...(stored && validateDeck(stored).ok ? stored : DEFAULT_COUNTS)};
   let selected = COWBOY_CATALOG[0].type;
@@ -83,7 +85,20 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
   });
   const actions = element('div', undefined, {class: 'menu-actions'});
   actions.append(save, reset);
-  chosen.append(total, openingOdds, rows, validation, actions, feedback);
+  const presetNotes = [];
+  if (presets) {
+    // Loading replaces only this unsaved draft. The saved profile deck and the
+    // current match stay as they are until Save deck.
+    actions.append(button(`Load ${DEADEYE_CONTROL.name}`, () => {
+      counts = {...DEADEYE_CONTROL.counts};
+      refresh();
+      const msg = `${DEADEYE_CONTROL.name} loaded as an unsaved draft. Choose Save deck to use it in your next match.`;
+      say(msg);
+      feedback.textContent = msg;
+    }, {id: 'load-deadeye-control', 'aria-describedby': 'wb-preset-summary'}));
+    presetNotes.push(element('p', `Compared with the starter deck, ${DEADEYE_CONTROL.name} has one more Deadeye and gives up Mounted Billy, the costly two-tribute finisher. It keeps six Sheriffs and three Billy and loads as an unsaved draft you can edit.`, {id: 'wb-preset-summary', class: 'detail-line'}));
+  }
+  chosen.append(total, openingOdds, rows, validation, actions, ...presetNotes, feedback);
   collection.append(grid);
   layout.append(collection, detail, chosen);
   content.append(layout);
