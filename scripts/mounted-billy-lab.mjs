@@ -1,7 +1,8 @@
 // Mounted Billy: keep, simplify or cut? Results are in docs/evidence/fable-mounted-billy.md.
 //   node scripts/mounted-billy-lab.mjs [--from 32000 --count 1024]   matched-seed report (JSON)
 //   node scripts/mounted-billy-lab.mjs --board 823 [--cpu normal] [--lane 2]   four endings of one board
-//   node scripts/mounted-billy-lab.mjs --build   decision pages dist/mounted-billy/attack-{3,4}.html
+//   node scripts/mounted-billy-lab.mjs --scan --from 0 --count 2000   boards where the choice goes each way
+//   node scripts/mounted-billy-lab.mjs --build   dist/mounted-billy/index.html and attack-{3,4}.html
 // The alternative is one number: Mounted Billy's attack 3 -> 4. It exists only in patched
 // copies of src/ under .artifacts/mounted-billy/, so the shipped card and page are unchanged.
 import assert from "node:assert/strict";
@@ -14,7 +15,10 @@ import {commitsAt, decisionBoard, hideBilly, isBilly} from "./mounted-billy-deci
 
 const root = new URL("../", import.meta.url);
 const STAT = '"name":"Mounted Billy","kind":"troop","stars":7,"health":5,"attack":';
-const DECISION_SEED = 823;
+// Playtest boards, each a seed's first Mounted Billy decision. The first is the pages' default.
+// docs/evidence/fable-mounted-billy.md says how --scan led to each one.
+const BOARDS = [823, 254, 167];
+const boardQuery = (seed) => `?mode=match&deck=starter&seed=${seed}`;
 
 // Every edit must hit exactly one place, so a changed source stops the lab.
 function patch(base, file, edits) {
@@ -27,7 +31,7 @@ function patch(base, file, edits) {
   writeFileSync(target, text);
 }
 
-// A copy of src/ where Mounted Billy has `attack` and the graybox page deals DECISION_SEED
+// A copy of src/ where Mounted Billy has `attack` and the graybox page deals BOARDS[0]
 // (unless the address names another deal), lets the bots play the opening and hands over at
 // the first turn he can be summoned. Guided lessons keep their normal start.
 function writeTree(attack) {
@@ -39,12 +43,12 @@ function writeTree(attack) {
   patch(base, "src/game/card-specs.generated.js", [[`${STAT}3`, `${STAT}${attack}`]]);
   patch(base, "src/graybox.js", [
     ['import {chooseAction, cpuFor} from "./game/cpu.js";', 'import {chooseAction, cpuFor} from "./game/cpu.js";\nimport {decisionBoard} from "./mounted-billy-decision.js";'],
-    ["new URLSearchParams(location.search)", `new URLSearchParams(location.search || "?mode=match&deck=starter&seed=${DECISION_SEED}")`],
+    ["new URLSearchParams(location.search)", `new URLSearchParams(location.search || "${boardQuery(BOARDS[0])}")`],
     ["FABLE_ENGINE.createMatch(seed, options)", "(guided ? (state) => state : (state) => decisionBoard({...FABLE_ENGINE, cpuFor}, state))(FABLE_ENGINE.createMatch(seed, options))"],
   ]);
   patch(base, "src/ui/graybox.html", [
     ["| Graybox</title>", `| Mounted Billy attack ${attack}</title>`],
-    ['<section id="match"', `<p>Mounted Billy lab, attack ${attack}. The opening rounds were played for you. Keep your Sheriffs or tribute them for Mounted Billy, then play the duel out. Restart in the ☰ menu returns to this decision.</p>\n    <section id="match"`],
+    ['<section id="match"', `<p>Mounted Billy lab, attack ${attack}. The opening rounds were played for you. Keep your Sheriffs or tribute them for Mounted Billy, then play the duel out. Restart in the ☰ menu returns to this decision. <a href="index.html" style="color:inherit">Other boards</a></p>\n    <section id="match"`],
   ]);
   return base;
 }
@@ -202,11 +206,48 @@ function board(seed, cpu, lane) {
   console.log(lines.join("\n").trim());
 }
 
+// Every seed in the range, dealt as the pages deal it, at its first Mounted Billy decision.
+// Keep means he stays in hand for the rest of the match; commit means he enters that lane now.
+// The Normal bots finish each line under both rule sets.
+function scan({from, count}) {
+  const boards = [];
+  for (let seed = from; seed < from + count; seed++) {
+    const row = {seed};
+    let shared;
+    for (const [ruleSet, game] of Object.entries(rules)) {
+      const start = game.createMatch(seed);
+      const state = decisionBoard(game, start);
+      if (state === start) break;
+      shared ??= state;
+      assert.deepEqual(state, shared, `seed ${seed}: the rule sets reach different boards`);
+      const choose = game.cpuFor("normal");
+      const commits = commitsAt(game, state).map((commit) => points(finish(game, step(game, state, commit), choose)));
+      Object.assign(row, {round: state.round, troops: state.sides.cowboy.board.map((troop) => (troop ? game.CARDS[troop.cardId].name : "-")).join(" | ")});
+      row[ruleSet] = {keep: points(finish(game, state, choose, {never: true})), bestCommit: Math.max(...commits), worstCommit: Math.min(...commits)};
+    }
+    if (row.current) boards.push(row);
+  }
+  const sheriffs = (row) => row.troops.split(" | ").filter((name) => name !== "-").every((name) => name === "Sheriff");
+  const groups = {
+    // Keeping wins and every commit lane loses, at both attack values, with only Sheriffs on the board.
+    keepWinsEveryCommitLoses: (row) => sheriffs(row) && ["current", "attack-4"].every((id) => row[id].keep === 1 && row[id].bestCommit === 0),
+    keepBeatsEveryCommitAtAttack4: (row) => row["attack-4"].keep > row["attack-4"].bestCommit,
+    reversalKeepToCommit: (row) => row.current.keep > row.current.bestCommit && row["attack-4"].bestCommit > row["attack-4"].keep,
+    reversalCommitToKeep: (row) => row.current.bestCommit > row.current.keep && row["attack-4"].keep > row["attack-4"].bestCommit,
+  };
+  console.log(JSON.stringify({
+    seeds: {from, count}, wizard: "normal", boards: boards.length,
+    ...Object.fromEntries(Object.entries(groups).map(([name, test]) => [name, {count: boards.filter(test).length, seeds: boards.filter(test).map((row) => row.seed)}])),
+  }, null, 2));
+}
+
 // Two pages that open on the same round-three board and differ only in Mounted Billy's attack.
 function buildPages() {
-  const [current, changed] = Object.values(rules).map((game) => decisionBoard(game, game.createMatch(DECISION_SEED)));
-  assert.deepEqual(current, changed, "both pages must open on the same board");
-  assert.ok(current.round === 3 && commitsAt(rules.current, current).length > 0, "the decision board moved");
+  for (const seed of BOARDS) {
+    const [current, changed] = Object.values(rules).map((game) => decisionBoard(game, game.createMatch(seed)));
+    assert.deepEqual(current, changed, `seed ${seed}: both pages must open on the same board and hand`);
+    assert.ok(commitsAt(rules.current, current).length > 0, `seed ${seed}: no Mounted Billy decision`);
+  }
   const out = new URL("dist/mounted-billy/", root);
   rmSync(out, {recursive: true, force: true}); // this lab's own output, including pages from its earlier version
   mkdirSync(out, {recursive: true});
@@ -222,13 +263,31 @@ function buildPages() {
   assert.equal(pages[0].length, pages[1].length, "the pages differ by more than Mounted Billy's attack");
   const differing = [...pages[0]].flatMap((char, index) => (char === pages[1][index] ? [] : [char + pages[1][index]]));
   assert.deepEqual(differing, ["34", "34", "34"], "the pages differ by more than Mounted Billy's attack");
+  // The link page names no outcome: the player chooses first and reads the evidence note after.
+  writeFileSync(new URL("index.html", out), `<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>Mounted Billy lab boards</title>
+<body style="font: 1rem/1.5 system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem">
+<h1>Mounted Billy lab</h1>
+<p>Each board opens on the first turn Mounted Billy can be summoned. Both versions of a board start with the same lanes and the same hand. His attack is the only difference. Keep your troops or tribute them, then play the duel out.</p>
+<ul>
+${BOARDS.map((seed) => `  <li>Seed ${seed}: ${[3, 4].map((attack) => `<a href="attack-${attack}.html${boardQuery(seed).replaceAll("&", "&amp;")}">attack ${attack}</a>`).join(" · ")}</li>`).join("\n")}
+</ul>
+</body>
+</html>
+`);
+  console.log("Built dist/mounted-billy/index.html");
 }
 
 const {values} = parseArgs({options: {
   from: {type: "string", default: "32000"}, count: {type: "string", default: "1024"},
   board: {type: "string"}, cpu: {type: "string", default: "normal"}, lane: {type: "string", default: "2"},
-  build: {type: "boolean", default: false},
+  build: {type: "boolean", default: false}, scan: {type: "boolean", default: false},
 }});
 if (values.build) buildPages();
+else if (values.scan) scan({from: Number(values.from), count: Number(values.count)});
 else if (values.board) board(Number(values.board), values.cpu, Number(values.lane));
 else report({from: Number(values.from), count: Number(values.count)});

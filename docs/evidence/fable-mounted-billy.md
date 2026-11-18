@@ -88,16 +88,61 @@ Codex rebuilt both pages, reproduced the two SHA-256 hashes from the handoff, an
 
 `--board 850 --cpu hard` prints the same four results against the Hard bot. That board comes from the script only. The pages do not open on it.
 
+## Two follow-up boards: seeds 254 and 167
+
+Seed 823 shows attack 4 paying off. These two boards show where it does not, and where the answer changes between the pages.
+
+**How they were found.** `--scan --from 0 --count 2000` deals seeds 0–1999 as the pages do: starter deck, the seed's own first seat, Normal bots, stopped at the first turn Mounted Billy can be summoned. That gives 1,466 boards. On each board the Normal bots finish one line where he stays in hand for the rest of the match (keep) and one line for each lane he can enter now (commit), at attack 3 and at attack 4.
+
+| Seeds 0–1999, Normal bots | Boards |
+| --- | --- |
+| Reached a Mounted Billy decision | 1,466 |
+| Keeping beats committing in every lane at attack 4 | 136 |
+| Of those: only Sheriffs on the board, keeping wins and every commit lane loses, at both attack values | 23 |
+| Best choice flips from keep at attack 3 to commit at attack 4 (seed 823 is one) | 20 |
+| Best choice flips from commit at attack 3 to keep at attack 4 (seed 17) | 1 |
+
+- **Seed 254** is the lowest of the 23 that has the same six lanes as seed 823 and a Sheriff in hand, so keeping costs no tribute. Seed 4 is lower and has the same lanes, but its hand has no Sheriff. Seeds 11 and 43 have other lanes.
+- **Seed 167** is the lowest of the 20 with only Sheriffs on the Cowboy side. Seed 81 is lower and has a Billy on the board.
+
+**Links.** After `--build`, open `dist/mounted-billy/index.html`. It links each board on both pages and names no outcome. The address endings are `?mode=match&deck=starter&seed=254` and `?mode=match&deck=starter&seed=167` on `attack-3.html` and `attack-4.html`. **Replay this deal** and Restart return to the board, as on seed 823.
+
+**The boards.**
+
+- Seed 254, round 3. Same lanes as seed 823: your Sheriffs on 1 and 2 orbs in lanes 1 and 2, Skeletons on 1 and 2 orbs across from them, lane 3 empty, both Bases on 5. The hand is Mounted Billy, Billy, Sheriff, Billy. Seed 823 had a Deadeye where this hand has a second Billy.
+- Seed 167, round 3. The same lanes again, plus a fresh Skeleton in the Wizard's lane 3, because the Wizard acted first this round. The hand is Billy, Sheriff, Mounted Billy, Billy.
+
+Play both pages before reading on.
+
+### Outcome notes
+
+These are the bots' lines from `--board 254` and `--board 167`. A player can do better or worse than either.
+
+| Round 3 choice | Seed 254, attack 3 | Seed 254, attack 4 | Seed 167, attack 3 | Seed 167, attack 4 |
+| --- | --- | --- | --- | --- |
+| Keep (Sheriff into lane 3) | Cowboy wins, round 9 | Cowboy wins, round 9 | Draw, round 9 | Draw, round 9 |
+| Commit (any lane) | Wizard wins, round 5 | Wizard wins, round 5 | Wizard wins, round 4 | Cowboy wins, round 6 or 7 |
+
+**Seed 254: keeping wins at both attack values.** With no Deadeye, nothing removes the Skeleton in lane 1 once its Sheriff is tributed. The Wizard does not block Mounted Billy. It turns that Skeleton into a Wizard and races through the two lanes the tribute opened, and the Cowboy Base goes 5, 3, 2, 0. Attack 4 only changes how close the race is: the Wizard Base ends on 2 orbs at attack 3 and on 1 at attack 4.
+
+**Seed 167: the best choice flips.** At attack 3 the Wizard answers the tribute by sacrificing two Skeletons for the Dragon in lane 3. The Dragon takes the last 3 orbs of the Cowboy Base in round 4, while Mounted Billy and a Sheriff leave the Wizard Base on 1. At attack 4 the same race would empty both Bases in the same clash, so the Normal bot blocks Mounted Billy every round and never plays the Dragon. The Cowboy wins in round 6 if he enters lane 1 and in round 7 otherwise. I take the block to follow from the bot's penalty for losing its own Base. I did not test that separately.
+
+**Seed 17 is the one flip the other way,** at round 8. At attack 3 the Wizard gambles on the Dragon in round 9 and loses the round-limit count 3 orbs to 1. At attack 4 it has to block instead, and wins the count 4 to 2. It reads as a bot mistake that attack 4 happens to prevent. It is not on the link page; the address ending with `seed=17` opens it.
+
+I followed the link page to all six board pages in headless Chrome. For each seed the attack-3 and attack-4 pages opened on the same lanes, Bases and hand, with only Mounted Billy's printed attack differing. I then clicked the bots' commit line and keep line on every page, twelve lines in all, and each ended with the result and round in the table. Replay this deal after each line, and Restart from the ☰ menu mid-match, restored the board and hand every time. No page errors.
+
 ## What a human playtest should answer
 
 At the round 3 board, before any result is shown: does the player see a real choice between holding two wounded Sheriffs and riding in with Mounted Billy, and can they say what he is for?
+
+On seed 254 the lanes are the same as on seed 823 and only the hand differs: does the player notice that the missing Deadeye changes the answer? On seed 167: does the choice on the attack-4 page feel different from the same board on the attack-3 page before any clash is shown?
 
 Record the choice and the reason on each page. The bots cannot tell whether attack 4 makes the commit feel earned or simply obvious, and their Normal results suggest it could be the second.
 
 ## Limits
 
 - Every number here is a bot playing a bot, against one Wizard deck.
-- The board is one seed chosen from the first 1,500 seeds because committing wins there only at attack 4. It illustrates the difference and does not measure how often it happens.
+- Seed 823 was chosen from the first 1,500 seeds because committing wins there only at attack 4. Seeds 254 and 167 were picked by the rules above from the scan of seeds 0–1999. Each illustrates one case. The scan counts say how often each case occurred under the Normal bots, with "keep" meaning he is never summoned.
 - Deadeye Control was compared in the bot table. It was not played on the seed 823 board, because a different deck deals different hands. To play it, run `npm run build`, open the ordinary graybox page and choose Build Deck, Load Deadeye Control, then Save deck.
 
 ## Reproduce
@@ -106,7 +151,10 @@ Record the choice and the reason on each page. The bots cannot tell whether atta
 node scripts/mounted-billy-lab.mjs                           # both tables, about 80 seconds
 node scripts/mounted-billy-lab.mjs --board 823               # the four seed 823 endings, move by move
 node scripts/mounted-billy-lab.mjs --board 850 --cpu hard
-node scripts/mounted-billy-lab.mjs --build                   # dist/mounted-billy/attack-3.html and attack-4.html
+node scripts/mounted-billy-lab.mjs --scan --from 0 --count 2000   # the follow-up board counts and seeds
+node scripts/mounted-billy-lab.mjs --board 254
+node scripts/mounted-billy-lab.mjs --board 167
+node scripts/mounted-billy-lab.mjs --build                   # dist/mounted-billy/index.html, attack-3.html and attack-4.html
 ```
 
 The script stops if its patched copy still loads the shipped card, if the two rule sets do not reach the same board, or if the two built pages differ by anything other than the digit 3 against 4 in the title, the lab line and the card.
