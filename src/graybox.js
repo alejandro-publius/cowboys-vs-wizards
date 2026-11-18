@@ -30,8 +30,10 @@ const FREE_OPENER_NOTE = "Free-opener test: an opening hand with no free summon 
 const hints = params.get("guide") === "1";
 const wantsRideOut = params.get("rideOut") === "1";
 const RIDE_OUT_NOTE = "Summon or Ride Out this turn. You can cast a spell afterward.";
-// How to Play → Start guided duel: starter deck, seed 60, Normal Wizard (docs/evidence/clash-royale-launch-decks.md).
-const GUIDED_SEED = "60";
+// How to Play → Start guided duel: starter deck, seed 690, Normal Wizard
+// (Fable 5.2 first-session brief, .artifacts/coordination/first-ten-minutes-kiro-brief.md).
+// Seed 60 and every other seed stay reachable by ?seed= and the seed links.
+const GUIDED_SEED = "690";
 const chosenCpu = cpuFor(params.get("cpu"));
 const requestedDeck = params.get("deck");
 const pinnedPreset = new Map([["billy-posse", BILLY_POSSE], ["deadeye-control", DEADEYE_CONTROL]]).get(requestedDeck);

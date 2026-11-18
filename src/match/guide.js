@@ -7,7 +7,7 @@
 // guideLine({view, options, progress}) -> string | null
 //   view: publicState(state, "cowboy"); options: selectionOptions(...) output;
 //   progress: from guideProgress() / trackGuide().
-//   opener: true only for the menu's guided duel (seed 60); it enables the
+//   opener: true only for the menu's guided duel (seed 690); it enables the
 //   one block-or-trade tip on its first idle decision. ?guide=1 leaves it off.
 // The guide stops once round two is over and the first Cowboy tribute summon
 // has happened (whichever is later), and at the match result.
@@ -32,7 +32,7 @@ const plural = (count, word) => `${count} ${word}${count === 1 ? "" : "s"}`;
 
 export const OPENER_TIP = "Put Sheriff across from the Skeleton to protect your Base, or choose an open lane to trade Base damage.";
 
-// The block-or-trade choice of the guided opener (starter deck, seed 60), read
+// The block-or-trade choice of the guided opener (starter deck, seed 690; seed 60 opens the same way), read
 // only from the public board: round 1, the viewer acts second, nothing used yet,
 // an empty friendly board, exactly one opposing troop and it is a Skeleton, and
 // a playable Sheriff. Called at the idle step only.
