@@ -18,12 +18,21 @@ export function resolveClash(state, emit) {
     }
   }
 
+  // Experimental round-1 Base shield (.kiro/specs/round-one-tempo). Only tests
+  // and scripts/compare-round-one-tempo.mjs set this flag on a match state;
+  // createMatch never does and publicState never shows it. With it, an attack
+  // into an empty lane in round 1 deals nothing: its event keeps the attacker
+  // and reports amount 0, an unchanged Base and `shielded: true`.
+  const baseShield = state.round === 1 && state.experimentalRoundOneBaseShield === true;
+
   // Defeated troops stay in their slots until all damage is applied, so a
   // blocker absorbs the whole attack and nothing spills to the base.
-  for (const { lane, side, cardId, amount } of attacks) {
+  for (const { lane, side, cardId, amount: attack } of attacks) {
     const enemySide = opponent(side);
     const enemy = state.sides[enemySide];
     const blocker = enemy.board[lane];
+    const shielded = baseShield && !blocker;
+    const amount = shielded ? 0 : attack;
     const before = blocker ? blocker.health : enemy.baseOrbs;
     const after = Math.max(0, before - amount);
     if (blocker) blocker.health = after;
@@ -38,6 +47,7 @@ export function resolveClash(state, emit) {
       amount,
       before,
       after,
+      ...(shielded && { shielded: true }),
     });
   }
 
