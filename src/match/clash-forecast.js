@@ -11,6 +11,8 @@ function verdict({winner, loser, reason}, viewer) {
   const outcome = winner === viewer ? "you win the match"
     : loser === viewer ? "you lose the match"
     : "the match ends in a draw";
+  if (reason === "bounty-captured") return "you capture the Dragon";
+  if (reason === "bounty-escaped") return "the bounty slips away";
   return reason === "round-limit" ? `${outcome} at the round limit` : outcome;
 }
 
@@ -31,7 +33,7 @@ export function clashForecast(view, options) {
     losses.push(`${owner} ${CARDS[event.cardId].name} (lane ${event.slot + 1})`);
   });
   // Judge the resolved snapshot as the live match does, round limit included.
-  const result = resultAfterClash({round: view.round, sides});
+  const result = resultAfterClash({round: view.round, sides, bountyTarget: view.bountyTarget});
 
   const own = view.viewer;
   const enemy = opponent(own);

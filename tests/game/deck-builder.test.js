@@ -19,7 +19,7 @@ const CUSTOM_COUNTS = Object.freeze({
 });
 
 test("catalog and defaults retain all existing stats and default ID order", () => {
-  assert.deepEqual(COWBOY_CATALOG, CARD_SPECS.filter((spec) => spec.side === "cowboy"));
+  assert.deepEqual(COWBOY_CATALOG, CARD_SPECS.filter((spec) => spec.side === "cowboy" && !spec.bounty));
   assert.deepEqual(DEFAULT_COUNTS, {
     "cowboy-sheriff": 6, "cowboy-billy": 3, "cowboy-mounted-billy": 1, "cowboy-deadeye": 2,
   });
@@ -39,7 +39,7 @@ test("the Cowboy pool has six copies per type without expanding the Wizard pool"
     }
     assert.equal(Object.hasOwn(CARDS, `${type}-7`), false);
   }
-  assert.equal(Object.values(CARDS).filter(({ side }) => side === "cowboy").length, 24);
+  assert.equal(Object.values(CARDS).filter(({ side, bounty }) => side === "cowboy" && !bounty).length, 24);
   assert.deepEqual(Object.values(CARDS).filter(({ side }) => side === "wizard").map(({ id }) => id), DEFAULT_WIZARD_IDS);
   assert.equal(Object.hasOwn(CARDS, "wizard-dragon-2"), false);
 });

@@ -1,4 +1,5 @@
 import {chooseAction, cpuFor} from "./game/cpu.js";
+import {createDragonHunt, dragonRewardEarned, HUNT_GOAL, HUNTS_BY_ID} from "./game/bounty-hunt.js";
 import {deckIds, validateDeck} from "./game/deck-builder.js";
 import {BILLY_POSSE, DEADEYE_CONTROL} from "./game/deck-presets.js";
 import {GRAYBOX_OPENINGS, openingMatch, parseOpeningParams} from "./game/opening-policy.js";
@@ -51,11 +52,14 @@ let latestClash = null;
 let deal = null;
 let nextDeal = null;
 
+const deckEntitlement = () => ({bountyReward: dragonRewardEarned(profile.get())});
+
 // Read at match creation, so a deck saved mid-match only affects later deals.
 function freshDeal(seed) {
   const counts = guided || requestedDeck === "starter" ? null : pinnedPreset?.counts ?? profile.get().deck;
-  const options = {rideOut: !guided && (wantsRideOut || deal?.options.rideOut === true)};
-  if (counts && validateDeck(counts).ok) options.cowboyDeck = deckIds(counts);
+  const options = {rideOut: !guided && (wantsRideOut || (!deal?.hunt && deal?.options.rideOut === true))};
+  const entitlement = deckEntitlement();
+  if (counts && validateDeck(counts, entitlement).ok) options.cowboyDeck = deckIds(counts, entitlement);
   return {seed, guided, opening: guided ? null : opening, options};
 }
 
@@ -69,6 +73,7 @@ const engine = {
     deal = nextDeal ? {...nextDeal, seed} : freshDeal(seed);
     nextDeal = null;
     if (deal.rideLesson) return createRideOutLesson();
+    if (deal.hunt) return createDragonHunt(deal.hunt);
     const options = { ...deal.options };
     return deal.opening
       ? openingMatch(seed, deal.opening.opening, deal.opening.first, options)
@@ -84,7 +89,7 @@ const engine = {
       latestClash = log;
       roundEvents = [];
     }
-    if (!deal.isDraft && !deal.rideLesson && action.side === "cowboy" && ["summon", "spell"].includes(action.type)) {
+    if (!deal.isDraft && !deal.rideLesson && !deal.hunt && action.side === "cowboy" && ["summon", "spell"].includes(action.type)) {
       profile.record(action.type, {id: `${run}:${result.state.revision}`});
     }
     return result;
@@ -92,13 +97,21 @@ const engine = {
 };
 const controller = createController({
   engine, renderer, scheduler, pauses, cpuDelay: 0,
-  chooseCpuAction: (...args) => (guided ? chooseAction : chosenCpu)(...args),
+  chooseCpuAction(view) {
+    // The notice shows the whole enemy formation. Monsters strike at the clash.
+    if (deal?.hunt) return FABLE_ENGINE.legalActions(view, "wizard").at(-1);
+    return (guided ? chooseAction : chosenCpu)(view);
+  },
   onChange() {
     const displayed = controller.displayed();
     const options = controller.options();
     const status = controller.status();
-    if (status === "terminal" && !deal.isDraft && !deal.rideLesson) {
-      profile.record("match-complete", {matchId: run, won: displayed.result.outcome === "win"});
+    if (status === "terminal") {
+      if (deal.hunt && displayed.result.reason === "bounty-captured") {
+        profile.recordBounty(deal.hunt.id, {clean: displayed.sides.cowboy.baseOrbs === deal.hunt.cowboyBase});
+      } else if (!deal.hunt && !deal.isDraft && !deal.rideLesson) {
+        profile.record("match-complete", {matchId: run, won: displayed.result.outcome === "win"});
+      }
     }
     const guide = (guided || hints) && options && displayed && status === "accepting_input"
       ? guideLine({view: displayed, options, progress, opener: guided})
@@ -112,7 +125,14 @@ const controller = createController({
     model.prompt = model.prompt.replace("glowing card", "highlighted card");
     const lessonChoice = deal?.rideLesson && displayed?.round === 2
       && !displayed.allowances.cowboy.summonUsed && !displayed.allowances.cowboy.castUsed;
+    model.bounty = Boolean(deal?.hunt);
+    const saved = model.bounty ? profile.get() : null;
+    const huntProgress = status === "terminal" && model.bounty
+      ? `${saved.clearedHunts.length} / ${HUNT_GOAL} hunts cleared.`
+        + (dragonRewardEarned(saved) ? " Captured Dragon is ready in Build Deck." : "")
+      : "Defeat the wanted Dragon while your Base stands.";
     model.openingNote = [
+      model.bounty && `${deal.hunt.name}. ${huntProgress}`,
       deal?.isDraft && "Trying an unsaved deck.",
       deal?.opening?.opening === "freeOpener" && FREE_OPENER_NOTE,
       displayed?.rideOut?.enabled && RIDE_OUT_NOTE,
@@ -148,7 +168,7 @@ function startWithDeal(configuration, start) {
   }
 }
 function restartCurrent(start) {
-  return deal?.isDraft || deal?.rideLesson ? startWithDeal(deal, start) : play(start);
+  return deal?.isDraft || deal?.rideLesson || deal?.hunt ? startWithDeal(deal, start) : play(start);
 }
 // Result screen: the completed match's seed, deck, CPU/opening and guided setting.
 function replayDeal() {
@@ -159,6 +179,12 @@ function replayDeal() {
 // Result screen: a generated seed and the latest saved deck, outside the guided lesson.
 function newDuel() {
   if (controller.status() !== "terminal") return;
+  if (deal.hunt) {
+    arena.hidden = true;
+    menu.show();
+    node("menu-wanted").click();
+    return;
+  }
   guided = false;
   play(() => controller.start());
 }
@@ -171,8 +197,10 @@ const overlay = mountCards(match, {
   onRideOut: () => input({type: "ride-out"}),
   onEndPhase: () => play(() => controller.endPhase()),
   onRestart: () => restartCurrent(() => controller.restart()),
-  onReplaySeed: (seed) => deal?.rideLesson
-    ? play(() => controller.start(seed)) : restartCurrent(() => controller.start(seed)),
+  onReplaySeed: (seed) => {
+    if (deal?.hunt) return;
+    return deal?.rideLesson ? play(() => controller.start(seed)) : restartCurrent(() => controller.start(seed));
+  },
   onReplayDeal: replayDeal,
   onNewDuel: newDuel,
 }, {plain: true});
@@ -189,17 +217,31 @@ function tryRideOut() {
   node("home").focus();
 }
 
+function startHunt(id) {
+  const hunt = HUNTS_BY_ID.get(id);
+  if (!hunt || !["idle", "terminal"].includes(controller.status())) return;
+  guided = false;
+  if (!startWithDeal({hunt, guided, options: {rideOut: true}}, () => controller.start(hunt.seed))) {
+    throw new Error("The hunt could not start.");
+  }
+  menu.hide();
+  arena.hidden = false;
+  node("home").focus();
+}
+
 const menu = mountTitleMenu(node("title-screen"), {
   profile,
   onTryRideOut: tryRideOut,
+  onHunt: startHunt,
   onTryDraft(counts) {
-    if (!["idle", "terminal"].includes(controller.status()) || !validateDeck(counts).ok) {
+    const entitlement = deckEntitlement();
+    if (!["idle", "terminal"].includes(controller.status()) || !validateDeck(counts, entitlement).ok) {
       throw new Error("A deck draft requires a legal deck and no match in progress.");
     }
     guided = false;
     const trial = freshDeal(null);
     trial.isDraft = true;
-    trial.options.cowboyDeck = deckIds(counts);
+    trial.options.cowboyDeck = deckIds(counts, entitlement);
     if (!startWithDeal(trial, () => controller.start(params.get("seed") ?? undefined) || controller.start())) {
       throw new Error("The trial duel could not start.");
     }

@@ -99,6 +99,12 @@ export function resultAfterClash(state) {
   const [a, b] = SIDES;
   const orbs = { [a]: state.sides[a].baseOrbs, [b]: state.sides[b].baseOrbs };
   const destroyed = orbs[a] === 0 || orbs[b] === 0;
+  if (state.bountyTarget) {
+    const captured = orbs.cowboy > 0 && !state.sides.wizard.board.some((troop) => troop?.cardId === state.bountyTarget);
+    if (!captured && !destroyed && state.round < MAX_ROUNDS) return null;
+    const winner = captured ? "cowboy" : "wizard";
+    return {winner, loser: opponent(winner), reason: captured ? "bounty-captured" : "bounty-escaped", round: state.round};
+  }
   if (!destroyed && state.round < MAX_ROUNDS) return null;
   const reason = destroyed ? "base-destroyed" : "round-limit";
   if (orbs[a] === orbs[b]) return { winner: null, loser: null, reason, round: state.round };

@@ -23,7 +23,7 @@ function summonRejection(state, action) {
   if (
     !Array.isArray(tributes) ||
     new Set(tributes).size !== tributes.length ||
-    !tributes.every((slot) => isSlot(slot) && board[slot] !== null)
+    !tributes.every((slot) => isSlot(slot) && board[slot] !== null && board[slot].cardId !== state.bountyTarget)
   ) {
     return "invalid-tribute";
   }
@@ -108,6 +108,11 @@ function rejection(state, action, cards) {
 }
 
 // The apply* functions run only after validation, on the working copy.
+function finishMatch(state, result, emit) {
+  state.result = result;
+  state.activeSide = null;
+  emit({type: "result", result: {...result}});
+}
 function applySummon(next, action, emit) {
   const own = next.sides[action.side];
   for (const slot of action.tributes) {
@@ -147,6 +152,7 @@ function applySpell(next, action, emit) {
     enemy.board[action.target] = null;
     enemy.discard.push(troop.cardId);
     emit({ type: "defeat", side: enemySide, slot: action.target, cardId: troop.cardId });
+    if (troop.cardId === next.bountyTarget) finishMatch(next, resultAfterClash(next), emit);
   } else if (moved) {
     shiftTroop(enemy.board, action.target, action.destination);
   }
@@ -186,9 +192,7 @@ function applyEndPhase(next, action, emit) {
   resolveClash(next, emit);
   const result = resultAfterClash(next);
   if (result) {
-    next.result = result;
-    next.activeSide = null;
-    emit({ type: "result", result: { ...result } });
+    finishMatch(next, result, emit);
     return;
   }
 

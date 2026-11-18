@@ -93,6 +93,7 @@ export function cardModel({displayed = null, options = null, status = "idle", se
       lane,
       cowboy: troopSummary(cowboy?.board[lane]),
       wizard: troopSummary(wizard?.board[lane]),
+      ...(displayed?.bountyTarget && {wanted: wizard?.board[lane]?.cardId === displayed.bountyTarget}),
     })),
     // Slots a click can choose now: own (Cowboy) and enemy (Wizard).
     slots: {
@@ -123,7 +124,7 @@ export function cardModel({displayed = null, options = null, status = "idle", se
     },
     result: outcome === undefined ? null : {
       outcome,
-      label: RESULT_LABELS[outcome] ?? outcome,
+      label: displayed.result.reason === "bounty-captured" ? "Bounty captured" : RESULT_LABELS[outcome] ?? outcome,
       reason: displayed.result.reason ?? null,
       round: displayed.result.round ?? null,
     },

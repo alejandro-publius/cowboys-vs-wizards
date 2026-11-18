@@ -121,3 +121,29 @@ dialog::backdrop { background: #0009; }
   .match-slot .plain-orbs { gap: .17rem; }
   .match-slot .plain-orbs span { width: .5rem; height: .5rem; }
 }
+
+.wanted-poster {
+  display: grid;
+  gap: .55rem;
+  max-width: 40rem;
+  padding: clamp(1rem, 4vw, 2rem);
+  border: 4px double #5d3b25;
+  background: #e8d3a8;
+  color: #352314;
+}
+.wanted-eyebrow {
+  font: bold clamp(1.5rem, 5vw, 3rem)/1 Georgia, serif;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.wanted-poster h3 { font: bold clamp(1.4rem, 4vw, 2.25rem)/1.1 Georgia, serif; }
+.wanted-reward { border-top: 1px solid #8c6b4b; padding-top: .55rem; }
+.wanted-progress { margin-top: .35rem; }
+.wanted-hunts { display: grid; gap: .5rem; list-style: none; padding: 0; margin: 0; max-width: 40rem; }
+.wanted-hunts li {
+  display: flex; justify-content: space-between; align-items: center; gap: .75rem;
+  border: 1px solid var(--line); border-radius: 4px; padding: .65rem;
+}
+.wanted-hunts li p { color: var(--muted); margin-top: .2rem; }
+.wanted-hunts li[data-cleared] strong::before { content: "Cleared · "; }
+.match-slot[data-wanted][data-side=wizard] { color: #ffdb95; border-color: #b98a4f; }

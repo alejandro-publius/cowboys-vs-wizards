@@ -23,7 +23,7 @@ export const DECKS = {};
 for (const side of SIDES) {
   DECKS[side] = [];
   for (const { type, order, copies, ...card } of CARD_SPECS.filter((spec) => spec.side === side)) {
-    const available = side === "cowboy" ? MAX_COWBOY_COPIES : copies;
+    const available = card.bounty ? 1 : side === "cowboy" ? MAX_COWBOY_COPIES : copies;
     for (let copy = 1; copy <= available; copy++) {
       const id = `${type}-${copy}`;
       CARDS[id] = Object.freeze({ id, side, ...card });
