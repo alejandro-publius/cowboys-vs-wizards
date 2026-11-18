@@ -78,15 +78,20 @@ function setBase(node, count, plain) {
 }
 
 function cardButton(card, enabled, inFlight, plain) {
+  // Plain hand only: an unplayable card shows why, and the text describes its button.
+  const reason = plain && card.blockedReason ? card.blockedReason : null;
+  const reasonId = reason ? `hand-reason-${card.cardId}` : null;
   return el("button", {
     type: "button",
     class: "card-front card-stage" + (inFlight ? " in-flight" : ""),
     "data-card-id": card.cardId,
     "data-playable": card.playable,
     "aria-label": describeCard(card) + (card.playable ? ", playable now" : ""),
+    "aria-describedby": reasonId,
     "aria-pressed": String(card.selected),
     disabled: !enabled,
-  }, ...(plain ? plainCard(card) : [createCardBody(card)]));
+  }, ...(plain ? plainCard(card) : [createCardBody(card)]),
+  reason ? el("small", {class: "plain-card-reason", id: reasonId}, reason) : null);
 }
 function slotButton(side, slot, troop, clickable, chosen, plain, forecast) {
   const owner = side === "cowboy" ? "Your" : "Wizard";

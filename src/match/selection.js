@@ -3,6 +3,7 @@
 // full Engine state. Every option offered comes from the
 // legalActions(view, view.viewer) entries for the selected card, so no rule
 // is re-implemented here; the messages only explain why a card has no entry.
+// blockedReasons(view) lists those messages for the hand before any click.
 //
 // Steps: idle, tribute, slot, target, destination, confirm.
 //   troop: idle -> tribute (cost > 0) -> slot -> confirm
@@ -43,6 +44,9 @@ function legalFor(view, cards) {
 
 // Legal entries for one card; [] outside the viewer's phase.
 const entriesFor = (view, cardId, cards) => legalFor(view, cards).filter((action) => action.cardId === cardId);
+
+// Hand cards with at least one legal entry.
+const playableIds = (actions) => [...new Set(actions.map((action) => action.cardId).filter(Boolean))];
 
 // The legal entry a "confirm" selection stands for.
 function matches(entry, chosen) {
@@ -175,6 +179,16 @@ export function selectionStep(current, input, view, { accepting = false, newActi
   }
 }
 
+// Why each hand card without a legal entry cannot be played now, keyed by
+// card ID: the blockedReason text a click on that card returns. Empty
+// outside the viewer's phase of a running match, where clicks are ignored.
+export function blockedReasons(view, { cards = CARDS } = {}) {
+  if (view.result || view.activeSide !== view.viewer) return {};
+  const playable = new Set(playableIds(legalFor(view, cards)));
+  const blocked = view.sides[view.viewer].hand.filter((cardId) => !playable.has(cardId));
+  return Object.fromEntries(blocked.map((cardId) => [cardId, blockedReason(view, cards[cardId])]));
+}
+
 function idlePrompt(view, hasPlayableCards) {
   if (view.result) return "The match is over.";
   if (view.activeSide !== view.viewer) return "Waiting for the opponent.";
@@ -185,7 +199,7 @@ function idlePrompt(view, hasPlayableCards) {
 // slots, the chosen tributes, button flags and a short prompt.
 export function selectionOptions(current, view, { cards = CARDS } = {}) {
   const actions = legalFor(view, cards);
-  const playableCardIds = [...new Set(actions.map((action) => action.cardId).filter(Boolean))];
+  const playableCardIds = playableIds(actions);
   const options = {
     playableCardIds,
     step: current.step,

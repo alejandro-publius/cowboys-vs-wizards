@@ -6,6 +6,7 @@ import {createController, FABLE_ENGINE} from "./match/controller.js";
 import {guideLine, guideProgress, trackGuide} from "./match/guide.js";
 import {DEFAULT_PAUSES} from "./match/presenter.js";
 import {createScheduler} from "./match/scheduler.js";
+import {blockedReasons} from "./match/selection.js";
 import {summonForecasts} from "./match/summon-forecast.js";
 import {createProfileStore} from "./profile/player-profile.js";
 import {cardModel} from "./ui/card-model.js";
@@ -78,6 +79,8 @@ const controller = createController({
     const model = cardModel({
       displayed, options, status, guide, clashLog: latestClash,
       seed: controller.seed(), seedPinned: controller.seedPinned(), message: controller.message(),
+      // Each unplayable hand card shows the reason a click on it would give.
+      blockedReasons: status === "accepting_input" && displayed ? blockedReasons(displayed) : {},
     });
     model.prompt = model.prompt.replace("glowing card", "highlighted card");
     model.summonForecasts = status === "accepting_input" ? summonForecasts(displayed, options) : {};

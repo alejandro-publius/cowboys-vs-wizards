@@ -8,6 +8,10 @@
 // and message(); displayed and options may be null. clashLog is the opt-in
 // ?log=1 list from src/match/clash-log.js, or null when the preview is off.
 // guide is the ?guide=1 sentence from src/match/guide.js, or null.
+// blockedReasons is opt-in (the plain graybox hand): the blockedReasons(view)
+// map from src/match/selection.js. With it every hand card gets
+// blockedReason, its text while input is accepted and the card is
+// unplayable, else null. Without it the hand cards keep their shape.
 import {CARDS} from "../game/cards.js";
 import {SLOT_COUNT} from "../game/state.js";
 
@@ -49,12 +53,16 @@ function troopSummary(troop) {
   return {name: card.name, health: troop.health, max: card.health};
 }
 
-export function cardModel({displayed = null, options = null, status = "idle", seed = null, seedPinned = false, message = null, clashLog = null, guide = null} = {}) {
+export function cardModel({displayed = null, options = null, status = "idle", seed = null, seedPinned = false, message = null, clashLog = null, guide = null, blockedReasons = null} = {}) {
   const accepting = status === "accepting_input";
   const cowboy = displayed?.sides.cowboy ?? null;
   const wizard = displayed?.sides.wizard ?? null;
   const selected = options?.cardId ?? null;
   const playable = new Set(accepting ? options?.playableCardIds : []);
+  const hand = (cowboy?.hand ?? []).map((cardId) => front(cardId, cardId === selected, playable.has(cardId)));
+  if (blockedReasons) {
+    for (const card of hand) card.blockedReason = accepting && !card.playable ? blockedReasons[card.cardId] ?? null : null;
+  }
   const outcome = displayed?.result?.outcome;
   return {
     status,
@@ -65,7 +73,7 @@ export function cardModel({displayed = null, options = null, status = "idle", se
       deckCount: cowboy?.deckCount ?? null,
       handCount: cowboy?.handCount ?? null,
       baseOrbs: cowboy?.baseOrbs ?? null,
-      hand: (cowboy?.hand ?? []).map((cardId) => front(cardId, cardId === selected, playable.has(cardId))),
+      hand,
     },
     // Counts only: never the Wizard hand or deck.
     wizard: {

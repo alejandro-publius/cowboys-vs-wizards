@@ -95,6 +95,7 @@ h1 { font-size: clamp(1.3rem, 3vw, 2rem); }
 .match-hand { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 130px), 1fr)); gap: .45rem; }
 .card-front { display: grid; align-content: start; gap: .2rem; text-align: left; min-height: 84px; }
 .plain-card-stats, .plain-card-cost { font-size: .82rem; color: var(--muted); }
+.plain-card-reason { font-size: .82rem; line-height: 1.3; color: #ffb4a2; }
 .card-front[data-playable=true] { border-color: var(--cowboy); }
 .card-front[aria-pressed=true] { background: #443421; outline: 2px solid var(--cowboy); outline-offset: -3px; }
 .match-clash-log, .match-result { padding: .65rem .8rem; border: 1px solid var(--line); border-radius: 4px; }

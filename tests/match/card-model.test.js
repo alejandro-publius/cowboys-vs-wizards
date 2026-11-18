@@ -5,13 +5,13 @@
 // model must never reveal.
 import test from "node:test";
 import assert from "node:assert/strict";
-import { CARDS, SIDES } from "../../src/game/cards.js";
+import { CARDS, SIDES, tributeCost } from "../../src/game/cards.js";
 import { createMatch } from "../../src/game/state.js";
 import { applyAction } from "../../src/game/actions.js";
 import { publicState } from "../../src/game/view.js";
 import { legalActions } from "../../src/game/legal.js";
 import { chooseAction } from "../../src/game/cpu.js";
-import { emptySelection, selectionOptions, selectionStep } from "../../src/match/selection.js";
+import { blockedReasons, emptySelection, selectionOptions, selectionStep } from "../../src/match/selection.js";
 import { RESULT_LABELS, cardModel } from "../../src/ui/card-model.js";
 
 const SEEDS = Array.from({ length: 100 }, (_, seed) => seed);
@@ -147,4 +147,38 @@ test("card model: no match yet, the result labels and the message", () => {
     assert.equal(model.buttons.endPhase, false);
     assert.deepEqual(model.seed, { value: 3, pinned: false, text: "3" });
   }
+});
+
+test("card model: opt-in blocked reasons appear on unplayable cards only while accepting input (seed 14)", (t) => {
+  const view = publicState(createMatch(14), "cowboy");
+  const options = selectionOptions(emptySelection, view);
+  const reasons = blockedReasons(view);
+  const input = { displayed: view, options, seed: 14, seedPinned: true, message: null };
+  assert.deepEqual(options.playableCardIds, [], "seed 14 opens with zero legal plays");
+
+  const shown = cardModel({ ...input, status: "accepting_input", blockedReasons: reasons });
+  assert.deepEqual(shown.cowboy.hand.map((card) => card.blockedReason), view.sides.cowboy.hand.map((cardId) => reasons[cardId]));
+  assert.ok(shown.cowboy.hand.every((card) => !card.playable && typeof card.blockedReason === "string"), "every seed-14 card has a reason");
+  for (const card of shown.cowboy.hand) {
+    const cost = tributeCost(card.stars);
+    t.diagnostic(`seed 14 ${card.cardId}: ${card.name} | ${card.attack} attack · ${card.health} life | ${cost} tribute${cost === 1 ? "" : "s"} | ${card.blockedReason}`);
+  }
+
+  // Opting in adds only blockedReason; without it the shared hand cards keep their shape.
+  const shared = cardModel({ ...input, status: "accepting_input" });
+  assert.ok(shared.cowboy.hand.every((card) => !("blockedReason" in card)));
+  const stripped = shown.cowboy.hand.map(({ blockedReason, ...card }) => card);
+  assert.deepEqual({ ...shown, cowboy: { ...shown.cowboy, hand: stripped } }, shared);
+
+  // No reason outside player input, nor on a card the options call playable.
+  for (const status of ["submitting", "playing", "cpu_turn", "terminal"]) {
+    const waiting = cardModel({ ...input, status, blockedReasons: reasons });
+    assert.ok(waiting.cowboy.hand.every((card) => card.blockedReason === null), status);
+  }
+  const [first, ...rest] = view.sides.cowboy.hand;
+  const mixed = cardModel({ ...input, options: { ...options, playableCardIds: [first] }, status: "accepting_input", blockedReasons: reasons });
+  assert.deepEqual(
+    mixed.cowboy.hand.map((card) => [card.playable, card.blockedReason]),
+    [[true, null], ...rest.map((cardId) => [false, reasons[cardId]])],
+  );
 });
