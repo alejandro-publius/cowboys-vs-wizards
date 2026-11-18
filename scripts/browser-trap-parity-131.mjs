@@ -146,9 +146,9 @@ const glyphs = (n, max) => ORB.repeat(Math.max(0, n)) + EMPTY.repeat(Math.max(0,
 
 // Structured fields from the strings render() wrote. null where a line does not parse.
 export function readDom(dom) {
-  const st = dom.status.match(/^Status: (\w+)\. Seed (\d+)\. Round (\d+) of (\d+)\. Phase: (Cowboy|Wizard)\.(?: Result: (\w+) \(([^)]*)\)\.)? Scenario (\w+) .*Wizard CPU: (\w+)\./);
+  const st = dom.status.match(/^Status: (\w+)\. Seed (\d+)\. Round (\d+) of (\d+)\. Phase: (Cowboy|Wizard|none)\.(?: Result: (\w+) \(([^)]*)\)\.)? Scenario (\w+) .*Wizard CPU: (\w+)\./);
   const status = st && {
-    status: st[1], seed: Number(st[2]), round: Number(st[3]), maxRounds: Number(st[4]), phase: st[5].toLowerCase(),
+    status: st[1], seed: Number(st[2]), round: Number(st[3]), maxRounds: Number(st[4]), phase: st[5] === "none" ? null : st[5].toLowerCase(),
     result: st[6] ? { outcome: st[6], reason: st[7] } : null, scenario: st[8], cpuLevel: st[9],
   };
   const sides = {};
@@ -176,9 +176,8 @@ export function readDom(dom) {
 }
 
 // Every visible field of `dom` against the page's displayed public view.
-// Returns a list of mismatch strings (empty when equal); a known display gap
-// is pushed to `findings` instead and still reported in the receipt.
-export const TERMINAL_PHASE_FINDING = "terminal status line reads \"Phase: Wizard\" while the engine view has activeSide null";
+// Returns a list of mismatch strings (empty when equal). `findings` stays in
+// the receipt shape for known display gaps; issue #132 removed the only one.
 export function compareDomToView(dom, view, cards, { status, seed, findings = [] } = {}) {
   const out = [];
   const check = (label, got, want) => { if (!same(got, want)) out.push(`${label}: DOM ${JSON.stringify(got)} vs view ${JSON.stringify(want)}`); };
@@ -189,11 +188,9 @@ export function compareDomToView(dom, view, cards, { status, seed, findings = []
     check("seed", read.status.seed, seed);
     check("round", read.status.round, view.round);
     check("maxRounds", read.status.maxRounds, MAX_ROUNDS);
-    // Known lab display gap (issue #131 finding): app.js prints "Phase: Wizard"
-    // for any activeSide that is not the Cowboy, including null after the
-    // result. Only that exact case is a finding; every other phase must match.
-    if (view.activeSide === null && view.result && read.status.phase === "wizard") findings.push(TERMINAL_PHASE_FINDING);
-    else check("phase", read.status.phase, view.activeSide);
+    // Issue #132: strict. "Phase: none" parses to null and must equal a null
+    // activeSide; a terminal "Phase: Wizard" is a mismatch, not a finding.
+    check("phase", read.status.phase, view.activeSide);
     check("result", read.status.result, view.result ? { outcome: view.result.outcome, reason: view.result.reason } : null);
     check("scenario", [read.status.scenario, read.status.cpuLevel], [SCENARIO, CPU_LEVEL]);
   }
