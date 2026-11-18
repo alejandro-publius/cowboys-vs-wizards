@@ -100,6 +100,12 @@ export function cardModel({displayed = null, options = null, status = "idle", se
       wizard: accepting ? [...(options?.enemySlots ?? [])] : [],
     },
     tributes: [...(options?.tributes ?? [])],
+    ...(displayed?.rideOut?.enabled && {ride: {
+      available: accepting && Boolean(options?.canRideOut),
+      choosing: accepting && Boolean(options?.step?.startsWith("ride-")),
+      from: options?.rideFrom ?? null,
+      destination: options?.rideDestination ?? null,
+    }}),
     // The pending choice: cardId and, once a tile is chosen, its slot. The
     // overlay uses it to fly a confirmed summon from the hand to its lane.
     selection: {cardId: selected, slot: options?.slot ?? null},

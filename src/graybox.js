@@ -2,11 +2,12 @@ import {chooseAction, cpuFor} from "./game/cpu.js";
 import {deckIds, validateDeck} from "./game/deck-builder.js";
 import {BILLY_POSSE, DEADEYE_CONTROL} from "./game/deck-presets.js";
 import {GRAYBOX_OPENINGS, openingMatch, parseOpeningParams} from "./game/opening-policy.js";
-import {clashForecast} from "./match/clash-forecast.js";
+import {clashForecast, rideForecasts} from "./match/clash-forecast.js";
 import {clashLog} from "./match/clash-log.js";
 import {createController, FABLE_ENGINE} from "./match/controller.js";
 import {guideLine, guideProgress, trackGuide} from "./match/guide.js";
 import {DEFAULT_PAUSES} from "./match/presenter.js";
+import {createRideOutLesson, RIDE_OUT_LESSON_SEED} from "./match/ride-out-lesson.js";
 import {createScheduler} from "./match/scheduler.js";
 import {blockedReasons} from "./match/selection.js";
 import {spellForecasts} from "./match/spell-forecast.js";
@@ -25,6 +26,8 @@ const params = new URLSearchParams(location.search);
 const opening = parseOpeningParams(params, GRAYBOX_OPENINGS);
 const FREE_OPENER_NOTE = "Free-opener test: an opening hand with no free summon swaps its last card for the top free troop in that deck.";
 const hints = params.get("guide") === "1";
+const wantsRideOut = params.get("rideOut") === "1";
+const RIDE_OUT_NOTE = "Summon or Ride Out this turn. You can cast a spell afterward.";
 // How to Play → Start guided duel: starter deck, seed 60, Normal Wizard (docs/evidence/clash-royale-launch-decks.md).
 const GUIDED_SEED = "60";
 const chosenCpu = cpuFor(params.get("cpu"));
@@ -51,7 +54,8 @@ let nextDeal = null;
 // Read at match creation, so a deck saved mid-match only affects later deals.
 function freshDeal(seed) {
   const counts = guided || requestedDeck === "starter" ? null : pinnedPreset?.counts ?? profile.get().deck;
-  const options = counts && validateDeck(counts).ok ? {cowboyDeck: deckIds(counts)} : {};
+  const options = {rideOut: !guided && (wantsRideOut || deal?.options.rideOut === true)};
+  if (counts && validateDeck(counts).ok) options.cowboyDeck = deckIds(counts);
   return {seed, guided, opening: guided ? null : opening, options};
 }
 
@@ -64,7 +68,8 @@ const engine = {
     latestClash = {title: "Latest clash", lines: ["End the turn to view both sides’ attacks."]};
     deal = nextDeal ? {...nextDeal, seed} : freshDeal(seed);
     nextDeal = null;
-    const options = deal.options.cowboyDeck ? {cowboyDeck: [...deal.options.cowboyDeck]} : {};
+    if (deal.rideLesson) return createRideOutLesson();
+    const options = { ...deal.options };
     return deal.opening
       ? openingMatch(seed, deal.opening.opening, deal.opening.first, options)
       : FABLE_ENGINE.createMatch(seed, options);
@@ -79,7 +84,7 @@ const engine = {
       latestClash = log;
       roundEvents = [];
     }
-    if (!deal.isDraft && action.side === "cowboy" && ["summon", "spell"].includes(action.type)) {
+    if (!deal.isDraft && !deal.rideLesson && action.side === "cowboy" && ["summon", "spell"].includes(action.type)) {
       profile.record(action.type, {id: `${run}:${result.state.revision}`});
     }
     return result;
@@ -92,7 +97,7 @@ const controller = createController({
     const displayed = controller.displayed();
     const options = controller.options();
     const status = controller.status();
-    if (status === "terminal" && !deal.isDraft) {
+    if (status === "terminal" && !deal.isDraft && !deal.rideLesson) {
       profile.record("match-complete", {matchId: run, won: displayed.result.outcome === "win"});
     }
     const guide = (guided || hints) && options && displayed && status === "accepting_input"
@@ -105,14 +110,20 @@ const controller = createController({
       blockedReasons: status === "accepting_input" && displayed ? blockedReasons(displayed) : {},
     });
     model.prompt = model.prompt.replace("glowing card", "highlighted card");
-    // Shown for the deal actually being played, so Replay this deal keeps it.
-    const openingNote = deal?.opening?.opening === "freeOpener" ? FREE_OPENER_NOTE : "";
-    model.openingNote = deal?.isDraft ? `Trying an unsaved deck. ${openingNote}`.trim() : openingNote;
+    const lessonChoice = deal?.rideLesson && displayed?.round === 2
+      && !displayed.allowances.cowboy.summonUsed && !displayed.allowances.cowboy.castUsed;
+    model.openingNote = [
+      deal?.isDraft && "Trying an unsaved deck.",
+      deal?.opening?.opening === "freeOpener" && FREE_OPENER_NOTE,
+      displayed?.rideOut?.enabled && RIDE_OUT_NOTE,
+      lessonChoice && "Hold the lane, ride into the open lane, or tribute the wounded Sheriff for Billy.",
+    ].filter(Boolean).join(" ");
     model.clashForecast = status === "accepting_input" ? clashForecast(displayed, options) : null;
     model.summonForecasts = status === "accepting_input" ? summonForecasts(displayed, options) : {};
     if (Object.keys(model.summonForecasts).length > 0) {
       model.prompt += " Clash preview assumes the rest of the board stays as shown.";
     }
+    model.rideForecasts = status === "accepting_input" ? rideForecasts(displayed, options) : {};
     model.spellForecasts = status === "accepting_input" ? spellForecasts(displayed, options) : {};
     if (Object.keys(model.spellForecasts).length > 0) {
       model.prompt += " Shot preview assumes no Wizard reply before the clash.";
@@ -137,7 +148,7 @@ function startWithDeal(configuration, start) {
   }
 }
 function restartCurrent(start) {
-  return deal?.isDraft ? startWithDeal(deal, start) : play(start);
+  return deal?.isDraft || deal?.rideLesson ? startWithDeal(deal, start) : play(start);
 }
 // Result screen: the completed match's seed, deck, CPU/opening and guided setting.
 function replayDeal() {
@@ -157,21 +168,38 @@ const overlay = mountCards(match, {
   onConfirm: () => input({type: "confirm"}),
   onCancel: () => input({type: "cancel"}),
   onSkip: () => input({type: "skip"}),
+  onRideOut: () => input({type: "ride-out"}),
   onEndPhase: () => play(() => controller.endPhase()),
   onRestart: () => restartCurrent(() => controller.restart()),
-  onReplaySeed: (seed) => restartCurrent(() => controller.start(seed)),
+  onReplaySeed: (seed) => deal?.rideLesson
+    ? play(() => controller.start(seed)) : restartCurrent(() => controller.start(seed)),
   onReplayDeal: replayDeal,
   onNewDuel: newDuel,
 }, {plain: true});
 
+function tryRideOut() {
+  if (!["idle", "terminal"].includes(controller.status())) return;
+  guided = false;
+  const lesson = {guided, options: {rideOut: true}, rideLesson: true, opening: null};
+  if (!startWithDeal(lesson, () => controller.start(RIDE_OUT_LESSON_SEED))) {
+    throw new Error("The Ride Out duel could not start.");
+  }
+  menu.hide();
+  arena.hidden = false;
+  node("home").focus();
+}
+
 const menu = mountTitleMenu(node("title-screen"), {
   profile,
+  onTryRideOut: tryRideOut,
   onTryDraft(counts) {
     if (!["idle", "terminal"].includes(controller.status()) || !validateDeck(counts).ok) {
       throw new Error("A deck draft requires a legal deck and no match in progress.");
     }
     guided = false;
-    const trial = {guided, opening, options: {cowboyDeck: deckIds(counts)}, isDraft: true};
+    const trial = freshDeal(null);
+    trial.isDraft = true;
+    trial.options.cowboyDeck = deckIds(counts);
     if (!startWithDeal(trial, () => controller.start(params.get("seed") ?? undefined) || controller.start())) {
       throw new Error("The trial duel could not start.");
     }
@@ -202,4 +230,5 @@ document.addEventListener("keydown", (event) => {
   input({type: "cancel"});
   event.preventDefault();
 });
-if (params.get("mode") === "match") node("menu-play").click();
+if (params.get("mode") === "ride-out") tryRideOut();
+else if (params.get("mode") === "match") node("menu-play").click();

@@ -7,7 +7,7 @@
 //
 // mountCards(root, handlers) -> {render(model)}
 // handlers: onCard(cardId), onSlot(side, slot), onConfirm(), onCancel(),
-//   onSkip(), onEndPhase(), onRestart(), onReplaySeed(text),
+//   onSkip(), onRideOut() (plain only), onEndPhase(), onRestart(), onReplaySeed(text),
 //   onReplayDeal(), onNewDuel() (plain result only; both needed to show them),
 //   summonTarget(slot) -> {left, top, width, height} screen rect of the Cowboy
 //   board tile for a summon flight, or null to fall back to the lane button
@@ -16,7 +16,7 @@
 import {createCardBody, describeCard} from "./card-art.js";
 import {CARDS, tributeCost} from "../game/cards.js";
 
-const ACTIONS = {confirm: "onConfirm", cancel: "onCancel", skip: "onSkip", "end-phase": "onEndPhase", restart: "onRestart"};
+const ACTIONS = {confirm: "onConfirm", "ride-out": "onRideOut", cancel: "onCancel", skip: "onSkip", "end-phase": "onEndPhase", restart: "onRestart"};
 const REMATCH = {"replay-deal": "onReplayDeal", "new-duel": "onNewDuel"};
 // Public catalog: the first copy of each of the eight card names.
 const catalog = Object.values(CARDS).filter((card, i, all) => all.findIndex((each) => each.name === card.name) === i);
@@ -184,7 +184,9 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
   const forecast = plain ? el("div", {class: "clash-forecast", role: "status", hidden: true},
     el("p", {}, el("strong", {}, "Next clash"), forecastBases),
     forecastLosses, forecastTiming, forecastPass) : null;
-  const phaseControl=el("div",{class:"match-buttons phase-control"},forecast,buttons.endPhase);
+  const ride = plain && handlers.onRideOut
+    ? el("button", {type: "button", "data-action": "ride-out", hidden: true}, "Ride Out") : null;
+  const phaseControl=el("div",{class:"match-buttons phase-control"},forecast,ride,buttons.endPhase);
   const viewerCard=el("div",{class:"card-preview card-stage"});
   const viewerTitle=el("h2",{},"Card art");
   const viewerNote=el("p",{class:"viewer-note"});
@@ -461,13 +463,20 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
     }
     const selected=model.cowboy.hand.find(card=>card.selected);
     const inPanel = selectionPanel.contains(document.activeElement);
-    const selectionOn=Boolean(selected)&&model.buttons.cancel;
-    // ?guide=1 only: keep the prompt visible while idle; the buttons stay hidden without a selection.
+    const fromRide = ride && document.activeElement === ride;
+    const riding = model.ride?.choosing;
+    const selectionOn=(Boolean(selected)||riding)&&model.buttons.cancel;
+    if (ride) {
+      ride.hidden = !model.ride || model.status === "terminal";
+      ride.disabled = !model.ride?.available;
+    }
+    // Keep the guide visible while idle and the buttons visible during a choice.
     selectionPanel.hidden=!selectionOn&&!model.guideShown;
     selectionActions.hidden=model.guideShown&&!selectionOn;
     if (selected) lastCard = selected.cardId;
     for (const [name, button] of Object.entries(buttons)) button.disabled = !model.buttons[name];
-    if (selected) buttons.confirm.textContent = selected.kind === "spell" ? "Cast" : "Summon";
+    if (riding) buttons.confirm.textContent = "Confirm Ride Out";
+    else if (selected) buttons.confirm.textContent = selected.kind === "spell" ? "Cast" : "Summon";
     setText(prompt, model.prompt);
     if (model.clashLog) {
       if (!clashLog) {
@@ -488,8 +497,9 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
     lanes.replaceChildren(...model.lanes.flatMap(({lane, cowboy, wizard}) => [
       slotButton("wizard", lane, wizard, model.slots.wizard.includes(lane), false, plain,
         plain ? model.spellForecasts?.[lane] : null, "Shot preview"),
-      slotButton("cowboy", lane, cowboy, model.slots.cowboy.includes(lane), model.tributes.includes(lane), plain,
-        model.summonForecasts?.[lane]),
+      slotButton("cowboy", lane, cowboy, model.slots.cowboy.includes(lane),
+        model.tributes.includes(lane) || model.ride?.from === lane || model.ride?.destination === lane, plain,
+        model.rideForecasts?.[lane] ?? model.summonForecasts?.[lane]),
     ]));
     hand.replaceChildren(...model.cowboy.hand.map((card, index) => {
       const node=cardButton(card,model.buttons.hand,moving(card.cardId,index),plain);
@@ -500,10 +510,12 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
     if (refocus) root.querySelector(refocus)?.focus();
     // Focus lost from a board control goes to the next step: Confirm once the
     // selection is complete, else the card just cancelled, the hand, End phase.
-    if (refocus || inPanel) strayed = true;
+    if (refocus || inPanel || fromRide) strayed = true;
     if (strayed && stray()) {
       (!selectionPanel.hidden && model.buttons.confirm ? buttons.confirm
-        : hand.querySelector(`[data-card-id="${CSS.escape(lastCard ?? "")}"]:enabled`)
+        : (riding ? lanes.querySelector("button:enabled") : null)
+          ?? (inPanel && model.ride?.available && !selected ? ride : null)
+          ?? hand.querySelector(`[data-card-id="${CSS.escape(lastCard ?? "")}"]:enabled`)
           ?? hand.querySelector("button:enabled") ?? buttons.endPhase).focus();
     }
     strayed &&= stray();

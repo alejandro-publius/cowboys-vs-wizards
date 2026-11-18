@@ -9,8 +9,9 @@
 //   troop: idle -> tribute (cost > 0) -> slot -> confirm
 //   spell: idle -> target -> destination (only with a relocation entry) -> confirm
 //   trap:  idle -> confirm (a set-trap entry; trap matches only)
+//   ride:  idle -> ride-source (if needed) -> ride-destination -> ride-confirm
 // Inputs: { type: "card", cardId } | { type: "slot", side, slot } |
-//         { type: "confirm" } | { type: "cancel" } | { type: "skip" }
+//         { type: "confirm" } | { type: "cancel" } | { type: "skip" } | { type: "ride-out" }
 // Neither `view` nor `selection` is ever mutated; selections are frozen.
 //
 // `options.cards` (default CARDS) is the card catalog for kind and name
@@ -44,6 +45,7 @@ function legalFor(view, cards) {
 
 // Legal entries for one card; [] outside the viewer's phase.
 const entriesFor = (view, cardId, cards) => legalFor(view, cards).filter((action) => action.cardId === cardId);
+const rideActions = (actions) => actions.filter((action) => action.type === "ride-out");
 
 // Hand cards with at least one legal entry.
 const playableIds = (actions) => [...new Set(actions.map((action) => action.cardId).filter(Boolean))];
@@ -80,7 +82,9 @@ function blockedReason(view, card) {
   const troops = board.filter((troop) => troop !== null).length;
   const cost = tributeCost(card.stars);
   if (troops < cost) return `${card.name} needs ${plural(cost, "tribute troop")}; you have ${troops} on the board.`;
-  if (summonUsed) return "You have already summoned this round.";
+  if (summonUsed) return view.rideOut?.enabled
+    ? "You already summoned or rode out this round."
+    : "You have already summoned this round.";
   if (castUsed && tactical === "trap") return "You set a trap this round, so you cannot summon. Summon first next time.";
   if (castUsed) return "A spell was cast this round, and summons must come first.";
   if (cost === 0 && troops === board.length) return `No open tile for ${card.name}.`;
@@ -99,7 +103,31 @@ function clickCard(current, cardId, view, cards) {
   return { selection: selection({ step, cardId, tributes: [] }) };
 }
 
+function startRide(current, view, cards) {
+  const sources = ascending(rideActions(legalFor(view, cards)).map((action) => action.slot));
+  if (!sources.length) return { selection: current, message: "No troop can ride out now." };
+  return { selection: selection(sources.length === 1
+    ? { step: "ride-destination", slot: sources[0] }
+    : { step: "ride-source" }) };
+}
+
+function clickRide(current, side, slot, view, cards) {
+  if (current.step === "ride-confirm") return { selection: current, message: "Confirm or cancel." };
+  const rides = rideActions(legalFor(view, cards));
+  if (current.step === "ride-source") {
+    if (side === view.viewer && rides.some((action) => action.slot === slot)) {
+      return { selection: selection({ step: "ride-destination", slot }) };
+    }
+    return { selection: current, message: "Choose a highlighted friendly troop." };
+  }
+  if (side === view.viewer && rides.some((action) => action.slot === current.slot && action.destination === slot)) {
+    return { selection: selection({ ...current, step: "ride-confirm", destination: slot }) };
+  }
+  return { selection: current, message: "Choose an adjacent empty lane." };
+}
+
 function clickSlot(current, { side, slot }, view, cards) {
+  if (current.step.startsWith("ride-")) return clickRide(current, side, slot, view, cards);
   if (current.step === "idle") return { selection: current, message: "Choose a card first." };
   if (current.step === "confirm") return { selection: current, message: "Confirm or cancel." };
   const own = side === view.viewer;
@@ -150,8 +178,10 @@ function skip(current, view, cards) {
 }
 
 function confirm(current, view, newActionId, cards) {
-  if (current.step !== "confirm") return { selection: current };
-  const found = entriesFor(view, current.cardId, cards).filter((entry) => matches(entry, current));
+  if (current.step !== "confirm" && current.step !== "ride-confirm") return { selection: current };
+  const found = current.step === "ride-confirm"
+    ? rideActions(legalFor(view, cards)).filter((entry) => entry.slot === current.slot && entry.destination === current.destination)
+    : entriesFor(view, current.cardId, cards).filter((entry) => matches(entry, current));
   if (found.length !== 1) return { selection: emptySelection, message: "That move is no longer legal. Choose again." };
   return { selection: emptySelection, action: { ...structuredClone(found[0]), actionId: newActionId() } };
 }
@@ -164,6 +194,8 @@ function confirm(current, view, newActionId, cards) {
 export function selectionStep(current, input, view, { accepting = false, newActionId, cards = CARDS } = {}) {
   if (!accepting || view.result || view.activeSide !== view.viewer) return { selection: current };
   switch (input?.type) {
+    case "ride-out":
+      return startRide(current, view, cards);
     case "card":
       return clickCard(current, input.cardId, view, cards);
     case "slot":
@@ -214,8 +246,30 @@ export function selectionOptions(current, view, { cards = CARDS } = {}) {
     canCancel: current.step !== "idle",
     prompt: "",
   };
+  if (view.rideOut?.enabled) {
+    const rides = rideActions(actions);
+    options.canRideOut = current.step === "idle" && rides.length > 0;
+    if (current.step.startsWith("ride-")) {
+      options.rideFrom = current.slot ?? null;
+      options.rideDestination = current.destination ?? null;
+      const moves = rides.filter((action) => action.slot === current.slot);
+      if (current.step === "ride-source") {
+        options.ownSlots = ascending(rides.map((action) => action.slot));
+        options.prompt = "Choose a friendly troop to Ride Out.";
+      } else if (current.step === "ride-destination") {
+        options.ownSlots = moves.map((action) => action.destination);
+        options.prompt = "Choose an adjacent empty lane. This spends your summon.";
+      } else {
+        options.canConfirm = moves.some((action) => action.destination === current.destination);
+        options.prompt = `Ride from lane ${current.slot + 1} to lane ${current.destination + 1}, or cancel.`;
+      }
+      return options;
+    }
+  }
   if (current.step === "idle") {
-    options.prompt = idlePrompt(view, playableCardIds.length > 0);
+    options.prompt = options.canRideOut
+      ? "Choose a card, Ride Out, or end your turn."
+      : idlePrompt(view, playableCardIds.length > 0);
     return options;
   }
 
