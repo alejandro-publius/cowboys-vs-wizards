@@ -6,6 +6,7 @@ import {GRAYBOX_OPENINGS, openingMatch, parseOpeningParams} from "./game/opening
 import {clashForecast, rideForecasts} from "./match/clash-forecast.js";
 import {clashLog} from "./match/clash-log.js";
 import {createController, FABLE_ENGINE} from "./match/controller.js";
+import {COVER_LESSON_SEED, createCoverLesson} from "./match/cover-swap-lesson.js";
 import {guideLine, guideProgress, trackGuide} from "./match/guide.js";
 import {DEFAULT_PAUSES} from "./match/presenter.js";
 import {createRideOutLesson, RIDE_OUT_LESSON_SEED} from "./match/ride-out-lesson.js";
@@ -27,8 +28,11 @@ const params = new URLSearchParams(location.search);
 const opening = parseOpeningParams(params, GRAYBOX_OPENINGS);
 const FREE_OPENER_NOTE = "Free-opener test: an opening hand with no free summon swaps its last card for the top free troop in that deck.";
 const hints = params.get("guide") === "1";
-const wantsRideOut = params.get("rideOut") === "1";
+// ?rideOut=swap is Ride Out plus the cover swap (docs/evidence/fable-cover-swap.md).
+const wantsSwap = params.get("rideOut") === "swap";
+const wantsRideOut = wantsSwap || params.get("rideOut") === "1";
 const RIDE_OUT_NOTE = "Summon or Ride Out this turn. You can cast a spell afterward.";
+const RIDE_SWAP_NOTE = "Summon or Ride Out this turn. Ride Out can also swap two neighbouring troops, orbs kept. You can cast a spell afterward.";
 // How to Play → Start guided duel: starter deck, seed 60, Normal Wizard (docs/evidence/clash-royale-launch-decks.md).
 const GUIDED_SEED = "60";
 const chosenCpu = cpuFor(params.get("cpu"));
@@ -58,6 +62,7 @@ const deckEntitlement = () => ({bountyReward: dragonRewardEarned(profile.get())}
 function freshDeal(seed) {
   const counts = guided || requestedDeck === "starter" ? null : pinnedPreset?.counts ?? profile.get().deck;
   const options = {rideOut: !guided && (wantsRideOut || (!deal?.hunt && deal?.options.rideOut === true))};
+  if (options.rideOut && (wantsSwap || deal?.options.rideSwap === true)) options.rideSwap = true;
   const entitlement = deckEntitlement();
   if (counts && validateDeck(counts, entitlement).ok) options.cowboyDeck = deckIds(counts, entitlement);
   return {seed, guided, opening: guided ? null : opening, options};
@@ -72,6 +77,7 @@ const engine = {
     latestClash = {title: "Latest clash", lines: ["End the turn to view both sides’ attacks."]};
     deal = nextDeal ? {...nextDeal, seed} : freshDeal(seed);
     nextDeal = null;
+    if (deal.cover) return createCoverLesson({swap: deal.options.rideSwap === true});
     if (deal.rideLesson) return createRideOutLesson();
     if (deal.hunt) return createDragonHunt(deal.hunt);
     const options = { ...deal.options };
@@ -135,7 +141,7 @@ const controller = createController({
       model.bounty && `${deal.hunt.name}. ${huntProgress}`,
       deal?.isDraft && "Trying an unsaved deck.",
       deal?.opening?.opening === "freeOpener" && FREE_OPENER_NOTE,
-      displayed?.rideOut?.enabled && RIDE_OUT_NOTE,
+      displayed?.rideOut?.enabled && (displayed.rideOut.swap ? RIDE_SWAP_NOTE : RIDE_OUT_NOTE),
       lessonChoice && "Hold the lane, ride into the open lane, or tribute the wounded Sheriff for Billy.",
     ].filter(Boolean).join(" ");
     model.clashForecast = status === "accepting_input" ? clashForecast(displayed, options) : null;
@@ -205,17 +211,19 @@ const overlay = mountCards(match, {
   onNewDuel: newDuel,
 }, {plain: true});
 
-function tryRideOut() {
+// A practice board. `rideSwap` (cover board only) adds the swap; restart and replay keep the lesson.
+function startLesson(options, seed, cover = false) {
   if (!["idle", "terminal"].includes(controller.status())) return;
   guided = false;
-  const lesson = {guided, options: {rideOut: true}, rideLesson: true, opening: null};
-  if (!startWithDeal(lesson, () => controller.start(RIDE_OUT_LESSON_SEED))) {
+  const lesson = {guided, options, rideLesson: true, cover, opening: null};
+  if (!startWithDeal(lesson, () => controller.start(seed))) {
     throw new Error("The Ride Out duel could not start.");
   }
   menu.hide();
   arena.hidden = false;
   node("home").focus();
 }
+const tryRideOut = () => startLesson({rideOut: true}, RIDE_OUT_LESSON_SEED);
 
 function startHunt(id) {
   const hunt = HUNTS_BY_ID.get(id);
@@ -273,4 +281,7 @@ document.addEventListener("keydown", (event) => {
   event.preventDefault();
 });
 if (params.get("mode") === "ride-out") tryRideOut();
+// The same round-six board under current Ride Out and under the swap variant.
+else if (params.get("mode") === "cover-ride") startLesson({rideOut: true}, COVER_LESSON_SEED, true);
+else if (params.get("mode") === "cover-swap") startLesson({rideOut: true, rideSwap: true}, COVER_LESSON_SEED, true);
 else if (params.get("mode") === "match") node("menu-play").click();

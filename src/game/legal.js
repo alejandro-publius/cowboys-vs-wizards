@@ -66,7 +66,9 @@ export function legalActions(state, side, { cards = CARDS } = {}) {
   if (state.rideOut?.enabled === true && !summonUsed && !castUsed) {
     for (const slot of slots) {
       if (board[slot] === null) continue;
-      for (const destination of shiftDestinations(board, slot)) actions.push({ type: "ride-out", ...base, slot, destination });
+      // With the swap variant an occupied adjacent lane is a destination too, so a
+      // swap is listed once from each of its two troops; both leave the same board.
+      for (const destination of shiftDestinations(board, slot, state.rideOut.swap === true)) actions.push({ type: "ride-out", ...base, slot, destination });
     }
   }
 

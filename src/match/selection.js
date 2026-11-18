@@ -123,7 +123,7 @@ function clickRide(current, side, slot, view, cards) {
   if (side === view.viewer && rides.some((action) => action.slot === current.slot && action.destination === slot)) {
     return { selection: selection({ ...current, step: "ride-confirm", destination: slot }) };
   }
-  return { selection: current, message: "Choose an adjacent empty lane." };
+  return { selection: current, message: view.rideOut?.swap ? "Choose an adjacent lane." : "Choose an adjacent empty lane." };
 }
 
 function clickSlot(current, { side, slot }, view, cards) {
@@ -258,10 +258,14 @@ export function selectionOptions(current, view, { cards = CARDS } = {}) {
         options.prompt = "Choose a friendly troop to Ride Out.";
       } else if (current.step === "ride-destination") {
         options.ownSlots = moves.map((action) => action.destination);
-        options.prompt = "Choose an adjacent empty lane. This spends your summon.";
+        options.prompt = view.rideOut.swap
+          ? "Choose an adjacent lane. A lane holding your troop swaps the two. This spends your summon."
+          : "Choose an adjacent empty lane. This spends your summon.";
       } else {
         options.canConfirm = moves.some((action) => action.destination === current.destination);
-        options.prompt = `Ride from lane ${current.slot + 1} to lane ${current.destination + 1}, or cancel.`;
+        options.prompt = view.sides[view.viewer].board[current.destination] === null
+          ? `Ride from lane ${current.slot + 1} to lane ${current.destination + 1}, or cancel.`
+          : `Swap the troops in lanes ${current.slot + 1} and ${current.destination + 1}, or cancel.`;
       }
       return options;
     }

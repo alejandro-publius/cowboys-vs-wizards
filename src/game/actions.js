@@ -66,7 +66,8 @@ function rideOutRejection(state, action) {
   const { board } = state.sides[action.side];
   if (!isSlot(action.slot) || board[action.slot] === null) return "invalid-slot";
   if (!adjacentLanes(action.slot).includes(action.destination)) return "invalid-destination";
-  if (board[action.destination] !== null) return "destination-occupied";
+  // The swap variant lets the move trade places with a friendly troop.
+  if (board[action.destination] !== null && state.rideOut.swap !== true) return "destination-occupied";
   return null;
 }
 
@@ -159,12 +160,17 @@ function applySpell(next, action, emit) {
 }
 
 // Own troop one lane over, health kept; no card changes zone and no RNG draw.
+// In a swap the troop it trades places with is named in `swapped`.
 function applyRideOut(next, action, emit) {
   const { board } = next.sides[action.side];
   const { cardId, health } = board[action.slot];
+  const other = board[action.destination];
   shiftTroop(board, action.slot, action.destination);
   next.allowances[action.side].summonUsed = true;
-  emit({ type: "ride-out", side: action.side, cardId, slot: action.slot, destination: action.destination, health });
+  emit({
+    type: "ride-out", side: action.side, cardId, slot: action.slot, destination: action.destination, health,
+    ...(other && { swapped: { cardId: other.cardId, health: other.health } }),
+  });
 }
 
 // Hand to own trap zone. No RNG draw. The event names the card; hiding it

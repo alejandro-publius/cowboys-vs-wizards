@@ -59,6 +59,7 @@ export function clashForecast(view, options) {
 }
 
 // Reuse the normal clash projection with the same troop and its remaining life.
+// Troops that would fall are named too: a swap often changes who falls and no Base.
 export function rideForecasts(view, options) {
   const from = options?.rideFrom;
   if (!view || from == null) return {};
@@ -69,6 +70,6 @@ export function rideForecasts(view, options) {
     const moved = { ...view.sides[own], board: [...view.sides[own].board] };
     shiftTroop(moved.board, from, to);
     const forecast = clashForecast({ ...view, sides: { ...view.sides, [own]: moved } }, { ...options, step: "idle" });
-    return [to, forecast.bases];
+    return [to, forecast.losses ? `${forecast.bases}. ${forecast.losses}` : forecast.bases];
   }));
 }

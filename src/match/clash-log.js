@@ -29,6 +29,9 @@ function sentence(event) {
     const moved = event.destination === undefined ? "" : `, then moved it to ${lane(event.destination)}`;
     return `${event.caster === "cowboy" ? "Your " : ""}${event.spell} hit ${troop(target.side, target.cardId)} in ${lane(target.slot)}: ${orbs(event.before, event.after)}${moved}`;
   }
+  if (event.type === "ride-out" && event.swapped) {
+    return `${troop(event.side, event.cardId, true)} in ${lane(event.slot)} and ${troop(event.side, event.swapped.cardId)} in ${lane(event.destination)} swapped lanes`;
+  }
   if (event.type === "ride-out") {
     return `${troop(event.side, event.cardId, true)} rode from ${lane(event.slot)} to ${lane(event.destination)}`;
   }

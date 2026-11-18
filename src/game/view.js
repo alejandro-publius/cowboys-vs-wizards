@@ -53,7 +53,10 @@ export function publicState(state, side) {
   };
   if (state.bountyTarget) view.bountyTarget = state.bountyTarget;
   if (traps) view.traps = { enabled: true, rulesVersion: state.traps.rulesVersion };
-  if (state.rideOut?.enabled === true) view.rideOut = { enabled: true, rulesVersion: state.rideOut.rulesVersion };
+  if (state.rideOut?.enabled === true) {
+    view.rideOut = { enabled: true, rulesVersion: state.rideOut.rulesVersion };
+    if (state.rideOut.swap === true) view.rideOut.swap = true; // the swap rule is public, like the move
+  }
   return structuredClone(view);
 }
 
