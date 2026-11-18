@@ -171,7 +171,14 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
   const own=el("section",{class:"match-own","aria-label":"Your deck and The Saloon"},cowboyDeck.node,cowboyBase);
   const phaseRound=el("small"),phaseLabel=el("strong");
   buttons.endPhase.replaceChildren(phaseRound,phaseLabel);
-  const phaseControl=el("div",{class:"match-buttons phase-control"},buttons.endPhase);
+  const forecastBases = el("span", {class: "clash-forecast-bases"});
+  const forecastLosses = el("p");
+  const forecastTiming = el("p", {class: "match-muted"});
+  const forecastPass = el("p");
+  const forecast = plain ? el("div", {class: "clash-forecast", role: "status", hidden: true},
+    el("p", {}, el("strong", {}, "Next clash"), forecastBases),
+    forecastLosses, forecastTiming, forecastPass) : null;
+  const phaseControl=el("div",{class:"match-buttons phase-control"},forecast,buttons.endPhase);
   const viewerCard=el("div",{class:"card-preview card-stage"});
   const viewerTitle=el("h2",{},"Card art");
   const viewerNote=el("p",{class:"viewer-note"});
@@ -413,6 +420,18 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
     setText(handCount,"Your hand · "+model.cowboy.handCount);
     setText(phaseRound,"ROUND "+model.round);
     setText(phaseLabel,model.status==="cpu_turn"?"Wizards":model.status==="playing"?"Resolving":"End turn");
+    if (forecast) {
+      const nextClash = model.clashForecast;
+      forecast.hidden = !nextClash;
+      if (nextClash) {
+        setText(forecastBases, nextClash.bases);
+        setText(forecastTiming, nextClash.timing);
+        setText(forecastLosses, nextClash.losses);
+        setText(forecastPass, nextClash.pass);
+        forecastLosses.hidden = !nextClash.losses;
+        forecastPass.hidden = !nextClash.pass;
+      }
+    }
     const selected=model.cowboy.hand.find(card=>card.selected);
     const inPanel = selectionPanel.contains(document.activeElement);
     const selectionOn=Boolean(selected)&&model.buttons.cancel;

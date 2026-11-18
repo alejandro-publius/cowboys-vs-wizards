@@ -86,8 +86,17 @@ h1 { font-size: clamp(1.3rem, 3vw, 2rem); }
 .match-slot:not(:disabled), .match-slot[aria-pressed=true] { border-color: currentColor; }
 .match-slot[aria-pressed=true] { outline: 2px solid currentColor; outline-offset: -4px; }
 .phase-control { justify-content: flex-end; }
-.phase-control button { display: flex; gap: .65rem; align-items: center; }
+.phase-control button { display: flex; gap: .65rem; align-items: center; align-self: start; }
 .phase-control small { color: var(--muted); }
+.clash-forecast {
+  flex: 1 1 19rem;
+  min-width: 0;
+  border-left: 2px solid var(--line);
+  padding: .2rem .65rem;
+  font-size: .87rem;
+  font-variant-numeric: tabular-nums;
+}
+.clash-forecast > p:first-child { display: flex; flex-wrap: wrap; column-gap: .65rem; }
 .match-bottom, .selection-panel { display: grid; gap: .5rem; }
 .selection-panel { border-left: 2px solid var(--cowboy); padding: .4rem .65rem; }
 .match-message { color: #ffb4a2; }

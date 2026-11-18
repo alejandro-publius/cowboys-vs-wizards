@@ -1,6 +1,7 @@
 import {cpuFor} from "./game/cpu.js";
 import {deckIds, validateDeck} from "./game/deck-builder.js";
 import {openingMatch, parseOpeningParams} from "./game/opening-policy.js";
+import {clashForecast} from "./match/clash-forecast.js";
 import {clashLog} from "./match/clash-log.js";
 import {createController, FABLE_ENGINE} from "./match/controller.js";
 import {guideLine, guideProgress, trackGuide} from "./match/guide.js";
@@ -83,6 +84,7 @@ const controller = createController({
       blockedReasons: status === "accepting_input" && displayed ? blockedReasons(displayed) : {},
     });
     model.prompt = model.prompt.replace("glowing card", "highlighted card");
+    model.clashForecast = status === "accepting_input" ? clashForecast(displayed, options) : null;
     model.summonForecasts = status === "accepting_input" ? summonForecasts(displayed, options) : {};
     if (Object.keys(model.summonForecasts).length > 0) {
       model.prompt += " Clash preview assumes the rest of the board stays as shown.";
