@@ -1,6 +1,6 @@
 # Trap lab engine-to-DOM parity in real Chrome (issue #131)
 
-Date: 2026-11-17, 18:34–18:36 PST (America/Los_Angeles). Author and executor: Kiro, single bounded worker, running in the Kiro IDE client (session `sess_ac83278b`), not Kiro CLI. Requested model from the session context: `claude-opus-5.5`. The runtime emitted no usage-credit figure, so none is recorded. Base: main `dda6597dc8950d2d0498cf18f5925ad3bb3463f1`, branch `kiro/trap-dom-parity-131`. Scope: developer-only verification. No change to `src/`, cards, decks, the lab, art, models, animation, sound, packages, CI or deployment.
+Date: 2026-11-17, 18:34–18:36 PST (America/Los_Angeles). Author and executor: Kiro CLI 3.4.0 V3, single bounded worker, invoked with `--model claude-opus-5.5` in isolated worktree (session `sess_ac83278b-4d88-47be-8040-4a4c7f613def`). The Kiro stream emitted session usage of 26.04144861558872 credits, as independently inspected by the coordinator; requested model selection does not independently prove backend-model identity. Base: main `dda6597dc8950d2d0498cf18f5925ad3bb3463f1`, branch `kiro/trap-dom-parity-131`. Scope: developer-only verification. No change to `src/`, cards, decks, the lab, art, models, animation, sound, packages, CI or deployment.
 
 ## What is compared
 
