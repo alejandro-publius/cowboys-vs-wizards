@@ -53,7 +53,7 @@ h1 { font-size: clamp(1.3rem, 3vw, 2rem); }
 
 #match { display: grid; grid-template-columns: minmax(0, 1fr); gap: .75rem; margin-top: 1rem; }
 .match-top { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: .5rem .75rem; }
-.match-opponent { grid-column: 1 / -1; }
+.match-opponent, .plain-opening-note { grid-column: 1 / -1; }
 .plain-match-summary { font-variant-numeric: tabular-nums; }
 .match-opponent, .match-own { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; }
 .match-opponent { color: var(--wizard); }
