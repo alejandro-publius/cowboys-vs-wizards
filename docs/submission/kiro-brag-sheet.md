@@ -59,6 +59,10 @@ Rules call for project footage and a public YouTube demo under three minutes. Th
 
 Keep the clip's seed, source revision and original receipt together. Use a single pair of builds and the same inputs for comparisons. Preserve historical labels on archive footage. For an intentionally broken fixture, say that on screen.
 
+### Optional board-readability insert
+
+Start with Alejandro's brief about stripping the board back. Replay the same move in the late graybox experiment and the finished arena: select Sheriff, choose the center lane, confirm, and show all three life orbs. The comparison preview includes the original arena, a quiet stage with the original bases and characters, and the game's existing placeholder tokens. Use the quiet stage to see whether the scenery can recede while the saloon, gateway and troops still identify the two sides. Label the graybox as a follow-up experiment. The prototype and its focused checks were done by Codex. Attribute any later implementation to the tool that actually runs it.
+
 ## Recovered handoffs
 
 - **Kiroween Project Help.** The original numbered brag sheet recorded the first playable Kiro match at `64e3614`, attack cue `1f4c7cd`, summon flight `415af3c`, graveyards `daf61d6` and the narrower custom-agent landing fix. Carry those forward when cutting the first-match and presentation clips. [Project Help chat](https://chatgpt.com/c/6af8b6f3-3e7c-83e8-a60c-1c8cd20c5cb8) · [Historical evidence map](../kiro-brag-sheet.md)
