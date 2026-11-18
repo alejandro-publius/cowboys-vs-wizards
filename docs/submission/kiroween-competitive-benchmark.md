@@ -1,5 +1,36 @@
 # Kiroween 2026 competitive benchmark (issue #80)
 
+## November 17 follow-up on the judging rubric
+
+Devpost lists five equally weighted criteria worth ten points each. The 2026 gallery was unpublished when checked, so the historical examples below use the 2025 award labels on individual entries. Use the criteria as acceptance targets. [2026 rules](https://kiroween.devpost.com/rules) · [2026 gallery](https://kiroween.devpost.com/project-gallery) · [2025 gallery](https://kiroween-2025.devpost.com/project-gallery)
+
+| 2025 entry | What the submission puts in front of the judge | Application to this duel |
+| --- | --- | --- |
+| [InteractionKit](https://devpost.com/software/kiro-interactionkit), first overall | A defined audience of builders who want working gesture input. The template leads to a demonstrable experience. | Name the audience in the first sentence. Show the first legal move before explaining the architecture. |
+| [UnitSet](https://devpost.com/software/unitset), second overall | One complete path from sketch to editable component, code inspection and export. | Show card choice, board consequence and the next decision in a continuous gameplay cut. |
+| [SpookBnB](https://devpost.com/software/spookbnb-when-dark-mode-gets-truly-dark), third overall | A familiar dark-mode toggle changes the entire interaction into a flashlight-guided escape room. | Show the game rule through the visual effect. In the showdown, keep the surviving Dragon and its falling life orbs visible through the impact. |
+| [Seance](https://devpost.com/software/seance), Best Costume Contest | The haunted book is the interaction. Answers advance its pages and wrong answers interrupt progress. | Keep the Western treatment attached to card choice, tribute and damage. Give new players one guided route inside the existing instructions. |
+| [Type To Death](https://devpost.com/software/type-to-death), Social Blitz winner | A horror typing mechanic has an explicit purpose the viewer can recognize quickly. | Give the duel an equally concrete hook. Play a card, watch it take a lane, then see the cost of the next move. |
+
+| Criterion | Evidence to have ready before submission |
+| --- | --- |
+| Potential Impact | Observe three to five first-time strategy or card-game players. Record time to first legal summon, whether they can explain their first lost orb and tribute, and whether they would play again. |
+| Technological Implementation | Show one real chain from Requirements-First spec to simultaneous-clash test, then the frozen Kiro workflow and the replay reviewer's pass and stale verdicts. Link the exact inputs and receipts. |
+| Design | Use the guided opening and inspect the hand, lane controls and hit feedback at desktop and phone sizes. Record a real iPhone and VoiceOver session. Review sourced character motion at the normal camera distance. |
+| Innovation/Idea | Show how tribute, Singularity and simultaneous damage combine in the same seed-60 clash. The visible proof is Billy landing his attack despite being defeated. |
+| Presentation | Begin with action in the first fifteen seconds. Use real footage from the chosen candidate, explain why the rules matter, and show the Kiro proof alongside the result. Upload an approved cut shorter than three minutes to public YouTube. |
+
+The official [Build With Kiro overview](https://kiro.dev/videos/PO3M2TKCUb0/) describes the path from planning to implementation and checks. [Working With Kiro workflows](https://kiro.dev/videos/b4U9PlBI5qM/) explains inspecting and refining a reusable recipe before saving it. The [Gofer AI winning-team interview](https://kiro.dev/videos/yTVWICb6ZI4/) describes cutting features after a pivot so the core pipeline could ship. For this entry that means putting the clear, reproducible duel and its release checks first. The [Crew tutorial](https://kiro.dev/videos/JjVbje4kAlY/) shows the value of automated triage when it reports actionable findings. Night Watch already has a scoped purpose in the form of seeded balance reports. Its naturally scheduled run and a fresh dashboard check still need evidence.
+
+### Reconciliation with the resource audit
+
+- Steering activation now has matching and non-matching cases. The default and fast Chrome pacing measurements are recorded. [Steering](../evidence/kiro-scoped-steering-hook.md) · [Pacing #125](../evidence/kiro-browser-pace-125.md)
+- The corrected native release workflow completed on the previous candidate, and the Power's project-bound MCP server verified the current receipts from that run. A new gameplay build needs fresh release receipts. [Frozen rerun and MCP comparison](../evidence/kiro-release-review-892cada.md#corrected-native-workflow-and-replay-review)
+- A narrated review cut exists. The public YouTube cut, owner narration and visual sign-off are still open. The shipped build and the new guided entry must be cited accurately in the final shot list.
+- The local T1 and BASE lab is available for a paired human test. The released-game onboarding test is a separate first-time-player task. Keep participant notes about both flows before drawing conclusions about clarity.
+
+The sections below retain the original six-repository snapshot.
+
 Written November 17, 2026 (America/Los_Angeles) by Kiro CLI 3.4 in an isolated worktree off `main` at `e214e8d`. Text-only. It changes no game source, art, test, or spec. Evidence and method: [kiro-competitive-research.md](../evidence/kiro-competitive-research.md).
 
 **Scope limit.** This reviews six public repositories, not the field. It makes no estimate of any score, ranking, or prize chance. Official rules: <https://kiroween.devpost.com/rules>. The page answered HTTP 200 to a plain request, but the rule quotations used here come from the pasted text recorded in [rules-check.md](rules-check.md), because the site is documented there as blocking automated readers. Kiro could not resolve the two optional 2025 references by bare GitHub repo name; that does not invalidate their Devpost submissions. The coordinator independently verified the public [InteractionKit](https://devpost.com/software/kiro-interactionkit) and [SpookBnB](https://devpost.com/software/spookbnb-when-dark-mode-gets-truly-dark) project pages. These are **historical design references**, not part of the six-repository 2026 sample.
