@@ -12,6 +12,8 @@ function element(tag, text, attrs={}) {
 export function mountTitleMenu(root,{profile,onPlay,onSettings}) {
   const scene=$(root,'.title-scene'),page=$(root,'.menu-page'),content=$(root,'.menu-page-content');
   const heading=$(root,'#menu-page-title'),notice=$(root,'#menu-notice'),play=$(root,'#menu-play');
+  // Only the graybox title screen carries data-deck-presets="true"; the illustrated builder has no marker.
+  const presets=root.dataset.deckPresets==='true';
   let returnFocus=play;
   let guidedAvailable=true,loading=false;
   const say=text=>{notice.textContent=text;notice.hidden=!text;};
@@ -86,7 +88,7 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings}) {
   function deck(opener){
     open('Build Deck',opener);
     page.classList.add('deck-page');
-    renderDeckWorkbench({content,profile,say,savedMessage,button});
+    renderDeckWorkbench({content,profile,say,savedMessage,button,presets});
   }
   const actions={settings,achievements,how,deck};
   for(const item of root.querySelectorAll('[data-menu-page]'))item.addEventListener('click',()=>actions[item.dataset.menuPage](item));
