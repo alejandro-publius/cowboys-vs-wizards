@@ -1,6 +1,6 @@
 # Trap lab terminal phase label (issue #132)
 
-Date: 2026-11-17, finished 21:33 PST (America/Los_Angeles). Author and executor: Kiro (Kiro IDE client, session `sess_3784150a-8c88-42c5-a337-6d2307f53320`), single bounded worker in isolated worktree `.worktrees/kiro-trap-terminal-phase-132`. The session context names the model `claude-opus-5.5`. That is the requested selection and does not independently prove backend-model identity. No credit or usage figure was emitted inside this session, so none is recorded here. The coordinator may add it from the client stream. Base: main `1d5a78cdf3aada8f8a3b13ac601e1f9a345c41cb`, branch `kiro/trap-terminal-phase-132`. Scope: developer-only trap placeholder lab. No change to `src/`, cards, decks, rules, art, models, animation, audio, packages, CI or deployment.
+Date: 2026-11-17, finished 21:33 PST (America/Los_Angeles). Author and executor: Kiro CLI 3.4.0 V3, invoked with `--model claude-opus-5.5` in isolated worktree `.worktrees/kiro-trap-terminal-phase-132` (session `sess_3784150a-8c88-42c5-a337-6d2307f53320`). The streamed `session_usage` emitted **6.805755833167496 credits**, independently read by the coordinator. Requested model selection does not independently prove backend-model identity or account-wide balance. Base: main `1d5a78cdf3aada8f8a3b13ac601e1f9a345c41cb`, branch `kiro/trap-terminal-phase-132`. Scope: developer-only trap placeholder lab. No change to `src/`, cards, decks, rules, art, models, animation, audio, packages, CI or deployment.
 
 ## Problem
 
