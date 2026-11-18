@@ -114,3 +114,13 @@ node scripts/compare-ride-out.mjs --lane holdout --cpu hard --out .artifacts/car
 ```
 
 Not yet done: UI and renderer wiring, and human play. The CPUs look one or two clashes ahead and never model the opponent's reply, so a person may value the move differently.
+
+## Playable graybox
+
+The full graybox now uses Kiro's Ride Out pilot rules in an opt-in duel. A troop can move one lane into an empty friendly slot and keeps its remaining orbs. The move spends that turn's summon. You can cast a spell after moving. The Wizard uses the same movement rules with its existing CPU policy.
+
+Run `npm run build` and open `dist/cowboys-vs-wizards-board-duel.html`. Choose **How to Play → Try Ride Out**. The same seed-0 practice duel is available with `?mode=ride-out`. For a full duel from round one, use `?mode=match&seed=0&deck=starter&rideOut=1`.
+
+The practice duel starts on round two with a wounded Sheriff facing a Skeleton in lane two, an open flank to the right, and Billy in hand. **Ride Out** selects the only eligible troop, highlights its legal destinations, and previews damage to both Bases. **Confirm Ride Out** completes the move. Players can also spend the same action on a summon or end the turn. Replay restores the starting choice.
+
+Codex integrated the pilot and checked both entry routes in Safari. Cancel kept the one-orb Sheriff in lane two. Confirm moved him to lane three with the same orb and left Deadeye playable. Ending the turn put the Cowboy Base at three orbs and the Wizard Base at four, matching the preview. Summoning Billy by tributing the Sheriff made Ride Out unavailable for that turn. The build and 107 focused Node tests passed. Human feedback on the choice is pending.

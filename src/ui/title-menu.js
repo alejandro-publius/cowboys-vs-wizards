@@ -9,7 +9,7 @@ function element(tag, text, attrs={}) {
   return node;
 }
 
-export function mountTitleMenu(root,{profile,onPlay,onSettings,onTryDraft}) {
+export function mountTitleMenu(root,{profile,onPlay,onSettings,onTryDraft,onTryRideOut}) {
   const scene=$(root,'.title-scene'),page=$(root,'.menu-page'),content=$(root,'.menu-page-content');
   const heading=$(root,'#menu-page-title'),notice=$(root,'#menu-notice'),play=$(root,'#menu-play');
   // Only the graybox title screen carries data-deck-presets="true"; the illustrated builder has no marker.
@@ -74,6 +74,10 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings,onTryDraft}) {
     if(guidedAvailable){
       const guided=button('Start guided duel',()=>start(guided,()=>onPlay(true)),{id:'menu-guide',class:'menu-guide-button','aria-describedby':'menu-guide-summary'});
       content.append(guided,element('p','Play a starter-deck match with short hints as you take your first turns.',{id:'menu-guide-summary',class:'menu-guide-summary'}));
+    }
+    if(onTryRideOut&&!paused){
+      const ride=button('Try Ride Out',()=>start(ride,onTryRideOut),{id:'menu-ride-out','aria-describedby':'menu-ride-out-summary'});
+      content.append(ride,element('p','Start at a wounded Sheriff and choose to stay, move, or summon Billy.',{id:'menu-ride-out-summary',class:'menu-guide-summary'}));
     }
     const steps=element('ol',undefined,{class:'how-steps'});
     for(const text of [

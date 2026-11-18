@@ -1,5 +1,6 @@
 import {CARDS, SIDES, opponent} from "../game/cards.js";
 import {resolveClash, resultAfterClash} from "../game/clash.js";
+import {shiftTroop} from "../game/lanes.js";
 
 function baseLine(label, before, after) {
   return `${label} ${before} → ${after}${after === 0 ? " (falls)" : ""}`;
@@ -51,6 +52,21 @@ export function clashForecast(view, options) {
     ].join(" · "),
     losses: losses.length ? `Troops that fall: ${losses.join(", ")}.` : "",
     timing,
-    pass: options.playableCardIds.length === 0 ? "No cards can be played. Select End turn." : "",
+    pass: options.playableCardIds.length === 0 && !options.canRideOut ? "No cards can be played. Select End turn." : "",
   };
+}
+
+// Reuse the normal clash projection with the same troop and its remaining life.
+export function rideForecasts(view, options) {
+  const from = options?.rideFrom;
+  if (!view || from == null) return {};
+  const destinations = options.step === "ride-destination" ? options.ownSlots
+    : options.canConfirm ? [options.rideDestination] : [];
+  const own = view.viewer;
+  return Object.fromEntries(destinations.map((to) => {
+    const moved = { ...view.sides[own], board: [...view.sides[own].board] };
+    shiftTroop(moved.board, from, to);
+    const forecast = clashForecast({ ...view, sides: { ...view.sides, [own]: moved } }, { ...options, step: "idle" });
+    return [to, forecast.bases];
+  }));
 }

@@ -1,7 +1,7 @@
 // Clash log: plain sentences for what one round's spells and clash did, for
 // the opt-in ?log=1 list. Pure: no DOM, no timers. Every number, lane and
 // card comes from the Engine event; nothing here computes damage. Only
-// spell, damage and defeat events are described, and each names a troop on
+// move, spell, damage and defeat events are described, and each names a troop on
 // the board or a spell as it is cast, so no hidden Wizard card can appear.
 //
 // clashLog(events) -> { title, lines } | null
@@ -28,6 +28,9 @@ function sentence(event) {
     const { target } = event;
     const moved = event.destination === undefined ? "" : `, then moved it to ${lane(event.destination)}`;
     return `${event.caster === "cowboy" ? "Your " : ""}${event.spell} hit ${troop(target.side, target.cardId)} in ${lane(target.slot)}: ${orbs(event.before, event.after)}${moved}`;
+  }
+  if (event.type === "ride-out") {
+    return `${troop(event.side, event.cardId, true)} rode from ${lane(event.slot)} to ${lane(event.destination)}`;
   }
   if (event.type === "defeat") return `${troop(event.side, event.cardId, true)} in ${lane(event.slot)} was defeated`;
   return null;
