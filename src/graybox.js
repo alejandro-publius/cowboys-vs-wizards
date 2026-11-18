@@ -1,6 +1,6 @@
 import {chooseAction, cpuFor} from "./game/cpu.js";
 import {deckIds, validateDeck} from "./game/deck-builder.js";
-import {openingMatch, parseOpeningParams} from "./game/opening-policy.js";
+import {GRAYBOX_OPENINGS, openingMatch, parseOpeningParams} from "./game/opening-policy.js";
 import {clashForecast} from "./match/clash-forecast.js";
 import {clashLog} from "./match/clash-log.js";
 import {createController, FABLE_ENGINE} from "./match/controller.js";
@@ -20,7 +20,9 @@ const arena = node("arena");
 const match = node("match");
 const profile = createProfileStore();
 const params = new URLSearchParams(location.search);
-const opening = parseOpeningParams(params);
+// The graybox alone also accepts ?opening=freeOpener (guaranteed free opener).
+const opening = parseOpeningParams(params, GRAYBOX_OPENINGS);
+const FREE_OPENER_NOTE = "Free-opener test: an opening hand with no free summon swaps its last card for the top free troop in that deck.";
 const hints = params.get("guide") === "1";
 // How to Play → Start guided duel: starter deck, seed 60, Normal Wizard (docs/evidence/clash-royale-launch-decks.md).
 const GUIDED_SEED = "60";
@@ -100,6 +102,8 @@ const controller = createController({
       blockedReasons: status === "accepting_input" && displayed ? blockedReasons(displayed) : {},
     });
     model.prompt = model.prompt.replace("glowing card", "highlighted card");
+    // Shown for the deal actually being played, so Replay this deal keeps it.
+    model.openingNote = deal?.opening?.opening === "freeOpener" ? FREE_OPENER_NOTE : null;
     model.clashForecast = status === "accepting_input" ? clashForecast(displayed, options) : null;
     model.summonForecasts = status === "accepting_input" ? summonForecasts(displayed, options) : {};
     if (Object.keys(model.summonForecasts).length > 0) {

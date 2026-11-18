@@ -147,8 +147,10 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
     el("p",{class:"match-muted"},`Pick a card, choose a ${plain ? "highlighted lane" : "lit tile"}, then summon. Stars set the tribute cost. Each orb is one life.`));
   const menuButton=el("button",{class:"arena-menu",type:"button","data-action":"menu","aria-label":"Open duel menu"},"☰");
   const summary = plain ? el("p", {class: "plain-match-summary"}) : null;
+  // Plain only: one line naming an active opening experiment (model.openingNote).
+  const openingNote = plain ? el("p", {class: "match-muted plain-opening-note", hidden: true}) : null;
   const top=el("div",{class:"match-top"},menuButton,menu,
-    summary,
+    summary,openingNote,
     el("section",{class:"match-opponent","aria-label":"Wizard hand, deck, and The Gateway"},
       wizardDeck.node,wizardHand,wizardBase));
 
@@ -426,6 +428,10 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
     setText(seedText, model.seed.text);
     setText(seedKind, model.seed.value === null ? "" : model.seed.pinned ? "(pinned)" : "(generated)");
     if (summary) setText(summary, `${round.textContent} · ${model.phase} · Seed ${model.seed.text}`);
+    if (openingNote) {
+      openingNote.hidden = !model.openingNote;
+      setText(openingNote, model.openingNote ?? "");
+    }
 
     wizardDeck.set(model.wizard.deckCount);
     const held = model.wizard.handCount ?? 0;
