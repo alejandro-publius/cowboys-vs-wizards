@@ -3,7 +3,7 @@
 // loopback-only static server for the built web page. No src/ change.
 //
 //   npm run build -- --web && node scripts/browser-pace-measure.mjs [--seeds 0,60] [--samples 3] [--turns 2]
-//     [--modes default,fast] [--dir dist/web] [--out FILE.json] [--swiftshader]
+//     [--modes default,fast] [--route passive|clash] [--dir dist/web] [--out FILE.json] [--swiftshader]
 //
 // For each sample, seed and mode it opens a fresh Chrome with a temporary
 // profile on ?mode=match&deck=starter&seed=N[&pace=fast] and, on each of the
@@ -18,6 +18,17 @@
 // performance clock, so CDP and polling delays are not included. "Frame" is
 // the next requestAnimationFrame after the DOM change, not a photon or paint
 // time: headless Chrome has no display.
+//
+// --route clash (issue #128) replaces steps 1-2 with a legal Cowboy summon made
+// through the page's own input path: a mouse click on the first hand card the
+// page labels "free summon, playable now", a click on the first enabled (lit)
+// Cowboy lane, then a click on the enabled Summon (confirm) button. It is
+// accepted only when that lane's label stops reading "empty" and the page is
+// back at accepting_input with no selection. The route never picks tributes,
+// spells or traps; if no free summon or lit lane is offered, the turn records
+// the reason and only ends the phase. The End phase playback that follows now
+// has a Cowboy troop on the board, so it can contain clash impacts. The default
+// route is "passive" and behaves exactly as in issue #125.
 //
 // Impact order: the overlay re-renders from the Presenter's displayed state
 // (slot health labels, Base orbs, hand counts, result). The ordered list of
@@ -40,6 +51,7 @@ import {fileURLToPath, pathToFileURL} from "node:url";
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const root = fileURLToPath(new URL("../", import.meta.url));
 const MODES = new Set(["default", "fast"]);
+const ROUTES = new Set(["passive", "clash"]);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export function parseArgs(argv) {
@@ -56,7 +68,9 @@ export function parseArgs(argv) {
     if (!Number.isInteger(v) || v < 1 || v > max) throw new Error(`${name} must be an integer 1..${max}`);
     return v;
   };
-  return {seeds, modes, samples: int("--samples", 3, 20), turns: int("--turns", 2, 10),
+  const route = opt("--route", "passive");
+  if (!ROUTES.has(route)) throw new Error(`--route accepts passive and clash, got ${route}`);
+  return {seeds, modes, route, samples: int("--samples", 3, 20), turns: int("--turns", 2, 10),
     dir: path.resolve(root, opt("--dir", "dist/web")), out: opt("--out", null), swiftshader: argv.includes("--swiftshader")};
 }
 
@@ -186,7 +200,7 @@ const PROBE = `(() => {
   if (document.documentElement) start(); else document.addEventListener("readystatechange", start, {once: true});
 })()`;
 
-async function runOne({origin, mode, seed, turns, swiftshader}) {
+async function runOne({origin, mode, seed, turns, swiftshader, route = "passive"}) {
   const c = await launch({swiftshader});
   try {
     const evaluate = async (expression) => {
@@ -236,12 +250,45 @@ async function runOne({origin, mode, seed, turns, swiftshader}) {
     await waitObs("first accepting_input", 0, (o) => o.status === "accepting_input" && !o.selected, 90000);
     const loadMs = Date.now() - navStart;
     const gpu = await evaluate(`(() => { try { const g = document.createElement("canvas").getContext("webgl2"); const d = g.getExtension("WEBGL_debug_renderer_info"); return d ? g.getParameter(d.UNMASKED_RENDERER_WEBGL) : g.getParameter(g.RENDERER); } catch (e) { return "unavailable"; } })()`);
-    const out = {mode, seed, loadMs, gpu, turns: []};
+    const out = {mode, seed, route, loadMs, gpu, turns: []};
+    // Legal free summon through real input (clash route). Returns the record or {skipped: reason}.
+    const summon = async () => {
+      const cardId = await evaluate(`document.querySelector('#match .match-hand [data-card-id][aria-label*="free summon"][aria-label$="playable now"]:enabled')?.dataset.cardId ?? null`);
+      if (!cardId) return {skipped: "no free summon playable"};
+      let {i, o} = await counts();
+      await click(`#match .match-hand [data-card-id="${cardId}"]`);
+      const t = await startOf(i, "click");
+      const a = await waitObs("summon card selected", o, (x) => x.selected && x.t >= t);
+      const lane = await evaluate(`document.querySelector('#match .match-slot[data-side="cowboy"]:enabled')?.dataset.slot ?? null`);
+      if (lane === null) {
+        await escape();
+        await waitObs("selection cleared", a.index, (x) => !x.selected && x.status === "accepting_input");
+        return {cardId, skipped: "no lit Cowboy lane"};
+      }
+      const laneSel = `#match .match-slot[data-side="cowboy"][data-slot="${lane}"]`;
+      await click(laneSel);
+      const t0 = Date.now();
+      while (!(await evaluate(`Boolean(document.querySelector('#match [data-action="confirm"]:enabled'))`))) {
+        if (Date.now() - t0 > 10000) throw new Error(`Summon button never enabled (${mode}, seed ${seed})`);
+        await sleep(40);
+      }
+      ({i, o} = await counts());
+      await click('#match [data-action="confirm"]');
+      const ct = await startOf(i, "click");
+      const laneLabel = `Your lane ${Number(lane) + 1}:`;
+      const filled = (x) => x.board.split("|")[1].split(";").some((l) => l.startsWith(laneLabel) && !/: empty$/.test(l));
+      const placed = await waitObs("summoned troop on lane", o, (x) => x.t >= ct && filled(x));
+      const settled = await waitObs("input after summon", placed.index, (x) => x.status === "accepting_input" && !x.selected && filled(x));
+      const label = await evaluate(`document.querySelector(${JSON.stringify(laneSel)})?.getAttribute("aria-label") ?? ""`);
+      return {cardId, slot: Number(lane), label, board: settled.board,
+        ack: {dom: placed.t - ct, frame: placed.frame - ct}, toInput: settled.t - ct};
+    };
 
     for (let turn = 1; turn <= turns; turn++) {
       await sleep(300);
       const rec = {turn, cardAck: null, escapeAck: null};
-      const enabled = await evaluate(`document.querySelector('#match .match-hand [data-card-id][aria-label$="playable now"]:enabled')?.dataset.cardId ?? null`);
+      if (route === "clash") rec.summon = await summon();
+      const enabled = route === "clash" ? null : await evaluate(`document.querySelector('#match .match-hand [data-card-id][aria-label$="playable now"]:enabled')?.dataset.cardId ?? null`);
       if (enabled) {
         let {i, o} = await counts();
         await click(`#match .match-hand [data-card-id="${enabled}"]`);
@@ -268,7 +315,7 @@ async function runOne({origin, mode, seed, turns, swiftshader}) {
       for (const x of obs.slice(0, done.index - o + 1)) if (seq.at(-1) !== x.board) seq.push(x.board);
       Object.assign(rec, {endAck: {dom: ack.t - t, frame: ack.frame - t}, toCpuTurn: cpu ? cpu.t - t : null, toComplete: done.t - t,
         from: startWhere, to: done.where,
-        boardSteps: seq.length, boardOrder: seq, endStatus: done.status});
+        boardSteps: seq.length, boardOrder: seq, endStatus: done.status, ...(route === "clash" ? {endBoard: done.board} : {})});
       out.turns.push(rec);
       if (done.status === "terminal") break;
     }
@@ -284,6 +331,8 @@ export function receipt(cfg, runs, html) {
     ["escapeAck.dom", "Escape key → cleared (DOM)"], ["escapeAck.frame", "Escape key → next frame"],
     ["endAck.frame", "End phase click → leaves input (next frame)"], ["toCpuTurn", "End phase click → cpu_turn (if any)"],
     ["toComplete", "End phase click → next input/terminal"]];
+  if (cfg.route === "clash") metrics.unshift(["summon.ack.dom", "Summon click → troop on lane (DOM)"],
+    ["summon.ack.frame", "Summon click → troop on lane (next frame)"], ["summon.toInput", "Summon click → input again"]);
   const get = (rec, key) => key.split(".").reduce((v, k) => v?.[k], rec);
   const table = [];
   for (const seed of cfg.seeds) for (let turn = 1; turn <= cfg.turns; turn++) for (const [key, label] of metrics) {
@@ -299,18 +348,29 @@ export function receipt(cfg, runs, html) {
     const seqs = runs.filter((r) => r.seed === seed).map((r) => ({mode: r.mode, seq: r.turns.find((x) => x.turn === turn)?.boardOrder})).filter((x) => x.seq);
     if (!seqs.length) continue;
     const verdicts = seqs.map((x) => compareOrder(seqs[0].seq, x.seq));
-    order.push({seed, turn, runs: seqs.length, steps: seqs.map((x) => `${x.mode}:${x.seq.length}`).join(" "),
+    const row = {seed, turn, runs: seqs.length, steps: seqs.map((x) => `${x.mode}:${x.seq.length}`).join(" "),
       order: verdicts.includes("different") ? "different" : verdicts.includes("subsequence") ? "subsequence" : "identical",
-      sameEndState: new Set(seqs.map((x) => x.seq.at(-1))).size === 1});
+      sameEndState: new Set(seqs.map((x) => x.seq.at(-1))).size === 1};
+    if (cfg.route === "clash") {
+      const recs = runs.filter((r) => r.seed === seed).map((r) => r.turns.find((x) => x.turn === turn)).filter(Boolean);
+      const keys = recs.map((x) => x.summon?.skipped ? "skip:" + x.summon.skipped : `${x.summon?.cardId}@${x.summon?.slot}`);
+      row.summon = [...new Set(keys)].join(", ");
+      row.sameSummon = new Set(keys).size === 1;
+    }
+    order.push(row);
   }
   const remote = runs.flatMap((r) => r.remoteRequests ?? []);
   const errors = runs.flatMap((r) => r.consoleErrors ?? []);
-  return {issue: 125, measured: "real headless Chrome, CDP mouse/keyboard input, page performance clock",
+  // Clash route: every run must land its turn-1 summon, or there is no clash to time.
+  const summonMissing = cfg.route === "clash" ? runs.filter((r) => !r.turns[0]?.summon?.cardId || r.turns[0].summon.skipped)
+    .map((r) => `${r.mode} seed ${r.seed} sample ${r.sample}: ${r.turns[0]?.summon?.skipped ?? "no turn"}`) : [];
+  return {issue: cfg.route === "clash" ? 128 : 125, route: cfg.route ?? "passive", measured: "real headless Chrome, CDP mouse/keyboard input, page performance clock",
     date: new Date().toLocaleString("en-US", {timeZone: "America/Los_Angeles", timeZoneName: "short"}),
     chrome: runs[0]?.chrome ?? null, gpu: [...new Set(runs.map((r) => r.gpu))], node: process.version, platform: `${os.platform()} ${os.arch()} ${os.release()}`,
     html: {path: path.relative(root, path.join(cfg.dir, "index.html")), sha256: html}, config: {...cfg, dir: path.relative(root, cfg.dir)},
-    pass: remote.length === 0 && errors.length === 0 && order.every((o) => o.order !== "different" && o.sameEndState),
-    remoteRequests: remote, consoleErrors: errors, loadMs: summarize(runs.map((r) => r.loadMs)), table, order,
+    pass: remote.length === 0 && errors.length === 0 && summonMissing.length === 0
+      && order.every((o) => o.order !== "different" && o.sameEndState && o.sameSummon !== false),
+    ...(cfg.route === "clash" ? {summonMissing} : {}), remoteRequests: remote, consoleErrors: errors, loadMs: summarize(runs.map((r) => r.loadMs)), table, order,
     runs: runs.map((r) => ({...r, turns: r.turns.map(({boardOrder, ...t}) => t)}))};
 }
 
@@ -318,8 +378,10 @@ export function markdown(rec) {
   const f = (s) => (s.n ? `${s.median} (${s.min}–${s.max}, n=${s.n})` : "—");
   const lines = [`| Seed | Turn | Metric, ms: median (min–max) | ${rec.config.modes.join(" | ")} |`, `| --- | --- | --- | ${rec.config.modes.map(() => "---").join(" | ")} |`];
   for (const r of rec.table) lines.push(`| ${r.seed} | ${r.turn} | ${r.metric} | ${rec.config.modes.map((m) => f(r[m])).join(" | ")} |`);
-  lines.push("", "| Seed | Turn | Runs | Overlay states per run | Order | Same end state |", "| --- | --- | --- | --- | --- | --- |");
-  for (const o of rec.order) lines.push(`| ${o.seed} | ${o.turn} | ${o.runs} | ${o.steps} | ${o.order} | ${o.sameEndState} |`);
+  const clash = rec.config.route === "clash";
+  lines.push("", `| Seed | Turn | Runs | Overlay states per run | Order | Same end state |${clash ? " Summon | Same summon |" : ""}`,
+    `| --- | --- | --- | --- | --- | --- |${clash ? " --- | --- |" : ""}`);
+  for (const o of rec.order) lines.push(`| ${o.seed} | ${o.turn} | ${o.runs} | ${o.steps} | ${o.order} | ${o.sameEndState} |${clash ? ` ${o.summon} | ${o.sameSummon} |` : ""}`);
   return lines.join("\n");
 }
 
@@ -330,10 +392,10 @@ async function main() {
   const runs = [];
   try {
     for (let sample = 0; sample < cfg.samples; sample++) for (const seed of cfg.seeds) for (const mode of modeOrder(cfg.modes, sample)) {
-      const r = await runOne({origin: server.origin, mode, seed, turns: cfg.turns, swiftshader: cfg.swiftshader});
+      const r = await runOne({origin: server.origin, mode, seed, turns: cfg.turns, swiftshader: cfg.swiftshader, route: cfg.route});
       r.sample = sample;
       runs.push(r);
-      process.stderr.write(`sample ${sample} seed ${seed} ${mode}: end phase → next input ${r.turns.map((t) => Math.round(t.toComplete)).join(", ")} ms\n`);
+      process.stderr.write(`sample ${sample} seed ${seed} ${mode} ${cfg.route}: end phase → next input ${r.turns.map((t) => Math.round(t.toComplete)).join(", ")} ms\n`);
     }
   } finally { await server.close(); }
   const rec = receipt(cfg, runs, html);
