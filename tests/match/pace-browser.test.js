@@ -62,3 +62,45 @@ test("receipt shape: per-metric rows per mode, order verdicts, fails on remote r
   runs[1].remoteRequests = ["https://example.invalid/x"];
   assert.equal(receipt(cfg, runs, "hash").pass, false);
 });
+
+test("route: passive by default, clash on request, anything else rejected", () => {
+  assert.equal(parseArgs([]).route, "passive");
+  assert.equal(parseArgs(["--route", "clash"]).route, "clash");
+  assert.throws(() => parseArgs(["--route", "attack"]), /--route/);
+});
+
+test("passive receipt keeps issue 125 and adds no summon rows or columns", () => {
+  const cfg = parseArgs(["--seeds", "0", "--samples", "1", "--turns", "1"]);
+  const runs = ["default", "fast"].map((mode) => ({mode, seed: 0, loadMs: 1, gpu: "g", consoleErrors: [], remoteRequests: [],
+    turns: [{turn: 1, endAck: {frame: 1}, toComplete: 10, boardOrder: ["a"]}]}));
+  const rec = receipt(cfg, runs, "hash");
+  assert.equal(rec.issue, 125);
+  assert.equal(rec.summonMissing, undefined);
+  assert.equal(rec.order[0].summon, undefined);
+  assert.equal(rec.table.some((r) => r.metric.startsWith("Summon")), false);
+  assert.doesNotMatch(markdown(rec), /Summon/);
+});
+
+test("clash receipt: summon metrics, same-summon check, fails when a turn-1 summon is missing", () => {
+  const cfg = parseArgs(["--seeds", "0", "--samples", "1", "--turns", "1", "--route", "clash"]);
+  const turn = (summon, seq) => ({turn: 1, summon, endAck: {dom: 7, frame: 13}, toComplete: 9000, boardOrder: seq});
+  const placed = {cardId: "cowboy-sheriff-5", slot: 0, ack: {dom: 350, frame: 365}, toInput: 900};
+  const runs = ["default", "fast"].map((mode, sample) => ({mode, seed: 0, sample, loadMs: 1, gpu: "g", consoleErrors: [], remoteRequests: [],
+    turns: [turn({...placed}, ["a", "b", "c"])]}));
+  const rec = receipt(cfg, runs, "hash");
+  assert.equal(rec.issue, 128);
+  assert.equal(rec.route, "clash");
+  assert.equal(rec.pass, true);
+  assert.deepEqual(rec.summonMissing, []);
+  assert.equal(rec.order[0].summon, "cowboy-sheriff-5@0");
+  assert.equal(rec.order[0].sameSummon, true);
+  assert.equal(rec.table.find((r) => r.metric === "Summon click → input again").fast.median, 900);
+  assert.match(markdown(rec), /\| identical \| true \| cowboy-sheriff-5@0 \| true \|/);
+
+  runs[1].turns[0].summon = {...placed, slot: 1};
+  assert.equal(receipt(cfg, runs, "hash").pass, false, "different lane across modes");
+  runs[1].turns[0].summon = {skipped: "no free summon playable"};
+  const missing = receipt(cfg, runs, "hash");
+  assert.equal(missing.pass, false);
+  assert.match(missing.summonMissing[0], /fast seed 0 sample 1: no free summon playable/);
+});
