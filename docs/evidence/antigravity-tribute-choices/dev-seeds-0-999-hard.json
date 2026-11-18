@@ -1,0 +1,4119 @@
+{
+  "rulesVersion": "orb-duel-draft-1",
+  "playerSide": "cowboy",
+  "bots": {
+    "cowboy": "normal",
+    "wizard": "hard"
+  },
+  "sample": {
+    "from": 0,
+    "to": 999,
+    "seedCount": 1000,
+    "startsPerSeed": [
+      "cowboy",
+      "wizard"
+    ],
+    "matches": 2000,
+    "stepBound": 54
+  },
+  "checks": {
+    "cardConservationAfterEveryStep": "passed",
+    "frozenStateImmutability": "passed",
+    "publicViewOnlyBots": "passed",
+    "naturalSeatMatchesEqualPlayMatch": 1000
+  },
+  "matchResults": {
+    "matches": 2000,
+    "cowboyWins": 646,
+    "wizardWins": 1163,
+    "draws": 191,
+    "matchesWithTributeDecision": 1986,
+    "byFirstSeat": {
+      "cowboy": {
+        "matches": 1000,
+        "cowboyWins": 380,
+        "wizardWins": 520,
+        "draws": 100,
+        "matchesWithTributeDecision": 993
+      },
+      "wizard": {
+        "matches": 1000,
+        "cowboyWins": 266,
+        "wizardWins": 643,
+        "draws": 91,
+        "matchesWithTributeDecision": 993
+      }
+    }
+  },
+  "overall": {
+    "decisionStates": 8722,
+    "rawLegalActions": 81498,
+    "distinctActionGroups": 61626,
+    "duplicateActionsCollapsed": 19872,
+    "statesWithFreeSummon": 6335,
+    "statesWith1Tribute": 8409,
+    "statesWith2Tribute": 1941,
+    "botChoseTribute": 3494,
+    "botChoseTribute1": 2771,
+    "botChoseTribute2": 723,
+    "chosenTributeRegretVsNonTributeOnBase": 878,
+    "chosenTributeRegretVsAnyOnBase": 1265,
+    "chosenTribute1RegretVsAnyOnBase": 622,
+    "chosenTribute2RegretVsAnyOnBase": 643,
+    "missedTributeGainOnBase": 78,
+    "anyTributeUndominated4Axis": 6436,
+    "allTributesDominated4Axis": 2286,
+    "anyTributeBeatsAllNonTributesOnCombat": 2639,
+    "allTributesDominatedOnCombat": 2454,
+    "anyTributeBeatsHoldOnBase": 4772,
+    "anyTributeSavesLethalVsHold": 2113,
+    "anyTributeDealsLethalVsHold": 228,
+    "allPairs": {
+      "pairs": 101677,
+      "fourAxis": {
+        "tributeDominates": 10854,
+        "tradeoff": 62060,
+        "nonTributeDominates": 27225,
+        "exactTie": 1538
+      },
+      "combatThreeAxis": {
+        "tributeDominates": 45315,
+        "tradeoff": 26347,
+        "nonTributeDominates": 20988,
+        "exactTie": 9027
+      },
+      "cardForTempoOnly": 34604,
+      "baseRaceTradeoff": 24839,
+      "preventedOwnMatchDefeat": 12993,
+      "dealtEnemyMatchDefeat": 1170,
+      "causedOwnMatchDefeat": 8951,
+      "axisBreakdown": {
+        "baseOrbs": {
+          "win": 22349,
+          "tie": 43557,
+          "loss": 35771
+        },
+        "livingTroops": {
+          "win": 38214,
+          "tie": 37451,
+          "loss": 26012
+        },
+        "remainingHand": {
+          "win": 4777,
+          "tie": 40827,
+          "loss": 56073
+        },
+        "defeat": {
+          "win": 62504,
+          "tie": 27767,
+          "loss": 11406
+        }
+      },
+      "ratesPct": {
+        "fourAxisTradeoff": 61.04,
+        "fourAxisTributeDominates": 10.67,
+        "fourAxisNonTributeDominates": 26.78,
+        "combatTradeoff": 25.91,
+        "combatTributeDominates": 44.57,
+        "combatNonTributeDominates": 20.64,
+        "cardForTempoOnly": 34.03
+      }
+    },
+    "vsHold": {
+      "pairs": 34569,
+      "fourAxis": {
+        "tributeDominates": 0,
+        "tradeoff": 28367,
+        "nonTributeDominates": 6202,
+        "exactTie": 0
+      },
+      "combatThreeAxis": {
+        "tributeDominates": 21931,
+        "tradeoff": 6436,
+        "nonTributeDominates": 897,
+        "exactTie": 5305
+      },
+      "cardForTempoOnly": 21931,
+      "baseRaceTradeoff": 8954,
+      "preventedOwnMatchDefeat": 6052,
+      "dealtEnemyMatchDefeat": 459,
+      "causedOwnMatchDefeat": 1051,
+      "axisBreakdown": {
+        "baseOrbs": {
+          "win": 10389,
+          "tie": 20052,
+          "loss": 4128
+        },
+        "livingTroops": {
+          "win": 18135,
+          "tie": 13111,
+          "loss": 3323
+        },
+        "remainingHand": {
+          "win": 0,
+          "tie": 0,
+          "loss": 34569
+        },
+        "defeat": {
+          "win": 23908,
+          "tie": 9365,
+          "loss": 1296
+        }
+      },
+      "ratesPct": {
+        "fourAxisTradeoff": 82.06,
+        "fourAxisTributeDominates": 0,
+        "fourAxisNonTributeDominates": 17.94,
+        "combatTradeoff": 18.62,
+        "combatTributeDominates": 63.44,
+        "combatNonTributeDominates": 2.59,
+        "cardForTempoOnly": 63.44
+      }
+    },
+    "vsFreeSummon": {
+      "pairs": 35138,
+      "fourAxis": {
+        "tributeDominates": 2165,
+        "tradeoff": 15053,
+        "nonTributeDominates": 17466,
+        "exactTie": 454
+      },
+      "combatThreeAxis": {
+        "tributeDominates": 2227,
+        "tradeoff": 13739,
+        "nonTributeDominates": 18546,
+        "exactTie": 626
+      },
+      "cardForTempoOnly": 205,
+      "baseRaceTradeoff": 6731,
+      "preventedOwnMatchDefeat": 157,
+      "dealtEnemyMatchDefeat": 217,
+      "causedOwnMatchDefeat": 6825,
+      "axisBreakdown": {
+        "baseOrbs": {
+          "win": 1157,
+          "tie": 6532,
+          "loss": 27449
+        },
+        "livingTroops": {
+          "win": 1962,
+          "tie": 14114,
+          "loss": 19062
+        },
+        "remainingHand": {
+          "win": 4777,
+          "tie": 27471,
+          "loss": 2890
+        },
+        "defeat": {
+          "win": 14624,
+          "tie": 11689,
+          "loss": 8825
+        }
+      },
+      "ratesPct": {
+        "fourAxisTradeoff": 42.84,
+        "fourAxisTributeDominates": 6.16,
+        "fourAxisNonTributeDominates": 49.71,
+        "combatTradeoff": 39.1,
+        "combatTributeDominates": 6.34,
+        "combatNonTributeDominates": 52.78,
+        "cardForTempoOnly": 0.58
+      }
+    },
+    "vsSpell": {
+      "pairs": 31970,
+      "fourAxis": {
+        "tributeDominates": 8689,
+        "tradeoff": 18640,
+        "nonTributeDominates": 3557,
+        "exactTie": 1084
+      },
+      "combatThreeAxis": {
+        "tributeDominates": 21157,
+        "tradeoff": 6172,
+        "nonTributeDominates": 1545,
+        "exactTie": 3096
+      },
+      "cardForTempoOnly": 12468,
+      "baseRaceTradeoff": 9154,
+      "preventedOwnMatchDefeat": 6784,
+      "dealtEnemyMatchDefeat": 494,
+      "causedOwnMatchDefeat": 1075,
+      "axisBreakdown": {
+        "baseOrbs": {
+          "win": 10803,
+          "tie": 16973,
+          "loss": 4194
+        },
+        "livingTroops": {
+          "win": 18117,
+          "tie": 10226,
+          "loss": 3627
+        },
+        "remainingHand": {
+          "win": 0,
+          "tie": 13356,
+          "loss": 18614
+        },
+        "defeat": {
+          "win": 23972,
+          "tie": 6713,
+          "loss": 1285
+        }
+      },
+      "ratesPct": {
+        "fourAxisTradeoff": 58.3,
+        "fourAxisTributeDominates": 27.18,
+        "fourAxisNonTributeDominates": 11.13,
+        "combatTradeoff": 19.31,
+        "combatTributeDominates": 66.18,
+        "combatNonTributeDominates": 4.83,
+        "cardForTempoOnly": 39
+      }
+    },
+    "byTributeCost": {
+      "1": {
+        "pairs": 87226,
+        "fourAxis": {
+          "tributeDominates": 8732,
+          "tradeoff": 52128,
+          "nonTributeDominates": 24885,
+          "exactTie": 1481
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 40190,
+          "tradeoff": 19668,
+          "nonTributeDominates": 18509,
+          "exactTie": 8859
+        },
+        "cardForTempoOnly": 31574,
+        "baseRaceTradeoff": 21661,
+        "preventedOwnMatchDefeat": 10576,
+        "dealtEnemyMatchDefeat": 1007,
+        "causedOwnMatchDefeat": 6343,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 20334,
+            "tie": 38069,
+            "loss": 28823
+          },
+          "livingTroops": {
+            "win": 33136,
+            "tie": 32518,
+            "loss": 21572
+          },
+          "remainingHand": {
+            "win": 3939,
+            "tie": 34300,
+            "loss": 48987
+          },
+          "defeat": {
+            "win": 51826,
+            "tie": 26899,
+            "loss": 8501
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 59.76,
+          "fourAxisTributeDominates": 10.01,
+          "fourAxisNonTributeDominates": 28.53,
+          "combatTradeoff": 22.55,
+          "combatTributeDominates": 46.08,
+          "combatNonTributeDominates": 21.22,
+          "cardForTempoOnly": 36.2
+        }
+      },
+      "2": {
+        "pairs": 14451,
+        "fourAxis": {
+          "tributeDominates": 2122,
+          "tradeoff": 9932,
+          "nonTributeDominates": 2340,
+          "exactTie": 57
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 5125,
+          "tradeoff": 6679,
+          "nonTributeDominates": 2479,
+          "exactTie": 168
+        },
+        "cardForTempoOnly": 3030,
+        "baseRaceTradeoff": 3178,
+        "preventedOwnMatchDefeat": 2417,
+        "dealtEnemyMatchDefeat": 163,
+        "causedOwnMatchDefeat": 2608,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 2015,
+            "tie": 5488,
+            "loss": 6948
+          },
+          "livingTroops": {
+            "win": 5078,
+            "tie": 4933,
+            "loss": 4440
+          },
+          "remainingHand": {
+            "win": 838,
+            "tie": 6527,
+            "loss": 7086
+          },
+          "defeat": {
+            "win": 10678,
+            "tie": 868,
+            "loss": 2905
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 68.73,
+          "fourAxisTributeDominates": 14.68,
+          "fourAxisNonTributeDominates": 16.19,
+          "combatTradeoff": 46.22,
+          "combatTributeDominates": 35.46,
+          "combatNonTributeDominates": 17.15,
+          "cardForTempoOnly": 20.97
+        }
+      }
+    },
+    "byTributeCostVsHold": {
+      "1": {
+        "pairs": 28551,
+        "fourAxis": {
+          "tributeDominates": 0,
+          "tradeoff": 22998,
+          "nonTributeDominates": 5553,
+          "exactTie": 0
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 19445,
+          "tradeoff": 3553,
+          "nonTributeDominates": 330,
+          "exactTie": 5223
+        },
+        "cardForTempoOnly": 19445,
+        "baseRaceTradeoff": 7424,
+        "preventedOwnMatchDefeat": 4784,
+        "dealtEnemyMatchDefeat": 402,
+        "causedOwnMatchDefeat": 212,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 9272,
+            "tie": 17450,
+            "loss": 1829
+          },
+          "livingTroops": {
+            "win": 15400,
+            "tie": 11100,
+            "loss": 2051
+          },
+          "remainingHand": {
+            "win": 0,
+            "tie": 0,
+            "loss": 28551
+          },
+          "defeat": {
+            "win": 19235,
+            "tie": 8948,
+            "loss": 368
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 80.55,
+          "fourAxisTributeDominates": 0,
+          "fourAxisNonTributeDominates": 19.45,
+          "combatTradeoff": 12.44,
+          "combatTributeDominates": 68.11,
+          "combatNonTributeDominates": 1.16,
+          "cardForTempoOnly": 68.11
+        }
+      },
+      "2": {
+        "pairs": 6018,
+        "fourAxis": {
+          "tributeDominates": 0,
+          "tradeoff": 5369,
+          "nonTributeDominates": 649,
+          "exactTie": 0
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 2486,
+          "tradeoff": 2883,
+          "nonTributeDominates": 567,
+          "exactTie": 82
+        },
+        "cardForTempoOnly": 2486,
+        "baseRaceTradeoff": 1530,
+        "preventedOwnMatchDefeat": 1268,
+        "dealtEnemyMatchDefeat": 57,
+        "causedOwnMatchDefeat": 839,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 1117,
+            "tie": 2602,
+            "loss": 2299
+          },
+          "livingTroops": {
+            "win": 2735,
+            "tie": 2011,
+            "loss": 1272
+          },
+          "remainingHand": {
+            "win": 0,
+            "tie": 0,
+            "loss": 6018
+          },
+          "defeat": {
+            "win": 4673,
+            "tie": 417,
+            "loss": 928
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 89.22,
+          "fourAxisTributeDominates": 0,
+          "fourAxisNonTributeDominates": 10.78,
+          "combatTradeoff": 47.91,
+          "combatTributeDominates": 41.31,
+          "combatNonTributeDominates": 9.42,
+          "cardForTempoOnly": 41.31
+        }
+      }
+    },
+    "bySacrificeConditionVsHold": {
+      "damagedTroop": {
+        "pairs": 24764,
+        "fourAxis": {
+          "tributeDominates": 0,
+          "tradeoff": 21768,
+          "nonTributeDominates": 2996,
+          "exactTie": 0
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 16354,
+          "tradeoff": 5414,
+          "nonTributeDominates": 841,
+          "exactTie": 2155
+        },
+        "cardForTempoOnly": 16354,
+        "baseRaceTradeoff": 4802,
+        "preventedOwnMatchDefeat": 4599,
+        "dealtEnemyMatchDefeat": 389,
+        "causedOwnMatchDefeat": 1043,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 6570,
+            "tie": 14330,
+            "loss": 3864
+          },
+          "livingTroops": {
+            "win": 15573,
+            "tie": 6682,
+            "loss": 2509
+          },
+          "remainingHand": {
+            "win": 0,
+            "tie": 0,
+            "loss": 24764
+          },
+          "defeat": {
+            "win": 20080,
+            "tie": 3398,
+            "loss": 1286
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 87.9,
+          "fourAxisTributeDominates": 0,
+          "fourAxisNonTributeDominates": 12.1,
+          "combatTradeoff": 21.86,
+          "combatTributeDominates": 66.04,
+          "combatNonTributeDominates": 3.4,
+          "cardForTempoOnly": 66.04
+        }
+      },
+      "oneHpTroop": {
+        "pairs": 8954,
+        "fourAxis": {
+          "tributeDominates": 0,
+          "tradeoff": 8374,
+          "nonTributeDominates": 580,
+          "exactTie": 0
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 6532,
+          "tradeoff": 1842,
+          "nonTributeDominates": 276,
+          "exactTie": 304
+        },
+        "cardForTempoOnly": 6532,
+        "baseRaceTradeoff": 1359,
+        "preventedOwnMatchDefeat": 1583,
+        "dealtEnemyMatchDefeat": 109,
+        "causedOwnMatchDefeat": 679,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 2645,
+            "tie": 4569,
+            "loss": 1740
+          },
+          "livingTroops": {
+            "win": 6647,
+            "tie": 1816,
+            "loss": 491
+          },
+          "remainingHand": {
+            "win": 0,
+            "tie": 0,
+            "loss": 8954
+          },
+          "defeat": {
+            "win": 7592,
+            "tie": 604,
+            "loss": 758
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 93.52,
+          "fourAxisTributeDominates": 0,
+          "fourAxisNonTributeDominates": 6.48,
+          "combatTradeoff": 20.57,
+          "combatTributeDominates": 72.95,
+          "combatNonTributeDominates": 3.08,
+          "cardForTempoOnly": 72.95
+        }
+      },
+      "fullHealthOnly": {
+        "pairs": 9805,
+        "fourAxis": {
+          "tributeDominates": 0,
+          "tradeoff": 6599,
+          "nonTributeDominates": 3206,
+          "exactTie": 0
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 5577,
+          "tradeoff": 1022,
+          "nonTributeDominates": 56,
+          "exactTie": 3150
+        },
+        "cardForTempoOnly": 5577,
+        "baseRaceTradeoff": 4152,
+        "preventedOwnMatchDefeat": 1453,
+        "dealtEnemyMatchDefeat": 70,
+        "causedOwnMatchDefeat": 8,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 3819,
+            "tie": 5722,
+            "loss": 264
+          },
+          "livingTroops": {
+            "win": 2562,
+            "tie": 6429,
+            "loss": 814
+          },
+          "remainingHand": {
+            "win": 0,
+            "tie": 0,
+            "loss": 9805
+          },
+          "defeat": {
+            "win": 3828,
+            "tie": 5967,
+            "loss": 10
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 67.3,
+          "fourAxisTributeDominates": 0,
+          "fourAxisNonTributeDominates": 32.7,
+          "combatTradeoff": 10.42,
+          "combatTributeDominates": 56.88,
+          "combatNonTributeDominates": 0.57,
+          "cardForTempoOnly": 56.88
+        }
+      }
+    },
+    "twoTributeVsOneTribute": {
+      "pairs": 19890,
+      "fourAxis": {
+        "tributeDominates": 4810,
+        "tradeoff": 6888,
+        "nonTributeDominates": 7536,
+        "exactTie": 656
+      },
+      "combatThreeAxis": {
+        "tributeDominates": 4707,
+        "tradeoff": 4644,
+        "nonTributeDominates": 9723,
+        "exactTie": 816
+      },
+      "cardForTempoOnly": 45,
+      "baseRaceTradeoff": 3370,
+      "preventedOwnMatchDefeat": 887,
+      "dealtEnemyMatchDefeat": 81,
+      "causedOwnMatchDefeat": 3440,
+      "axisBreakdown": {
+        "baseOrbs": {
+          "win": 1470,
+          "tie": 8414,
+          "loss": 10006
+        },
+        "livingTroops": {
+          "win": 4043,
+          "tie": 6407,
+          "loss": 9440
+        },
+        "remainingHand": {
+          "win": 4325,
+          "tie": 15333,
+          "loss": 232
+        },
+        "defeat": {
+          "win": 7789,
+          "tie": 7068,
+          "loss": 5033
+        }
+      },
+      "ratesPct": {
+        "fourAxisTradeoff": 34.63,
+        "fourAxisTributeDominates": 24.18,
+        "fourAxisNonTributeDominates": 37.89,
+        "combatTradeoff": 23.35,
+        "combatTributeDominates": 23.67,
+        "combatNonTributeDominates": 48.88,
+        "cardForTempoOnly": 0.23
+      }
+    },
+    "uniquePublicPositions": 2856,
+    "stateRatesPct": {
+      "duplicateActionReduction": 24.38,
+      "botChoseTribute": 40.06,
+      "chosenTributeRegretVsNonTributeAmongChosen": 25.13,
+      "chosenTributeRegretVsAnyAmongChosen": 36.2,
+      "anyTributeBeatsHoldOnBase": 54.71,
+      "anyTributeBeatsAllNonTributesOnCombat": 30.26,
+      "allTributesDominatedOnCombat": 28.14,
+      "anyTributeSavesLethalVsHold": 24.23,
+      "anyTributeDealsLethalVsHold": 2.61
+    }
+  },
+  "byFirstSeat": {
+    "cowboy": {
+      "decisionStates": 3875,
+      "rawLegalActions": 38501,
+      "distinctActionGroups": 28578,
+      "duplicateActionsCollapsed": 9923,
+      "statesWithFreeSummon": 2897,
+      "statesWith1Tribute": 3736,
+      "statesWith2Tribute": 918,
+      "botChoseTribute": 1517,
+      "botChoseTribute1": 1112,
+      "botChoseTribute2": 405,
+      "chosenTributeRegretVsNonTributeOnBase": 492,
+      "chosenTributeRegretVsAnyOnBase": 664,
+      "chosenTribute1RegretVsAnyOnBase": 287,
+      "chosenTribute2RegretVsAnyOnBase": 377,
+      "missedTributeGainOnBase": 49,
+      "anyTributeUndominated4Axis": 2815,
+      "allTributesDominated4Axis": 1060,
+      "anyTributeBeatsAllNonTributesOnCombat": 993,
+      "allTributesDominatedOnCombat": 1136,
+      "anyTributeBeatsHoldOnBase": 2545,
+      "anyTributeSavesLethalVsHold": 1114,
+      "anyTributeDealsLethalVsHold": 115,
+      "allPairs": {
+        "pairs": 49123,
+        "fourAxis": {
+          "tributeDominates": 4970,
+          "tradeoff": 29577,
+          "nonTributeDominates": 13771,
+          "exactTie": 805
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 21641,
+          "tradeoff": 12399,
+          "nonTributeDominates": 10204,
+          "exactTie": 4879
+        },
+        "cardForTempoOnly": 16793,
+        "baseRaceTradeoff": 13364,
+        "preventedOwnMatchDefeat": 7879,
+        "dealtEnemyMatchDefeat": 638,
+        "causedOwnMatchDefeat": 4060,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 11384,
+            "tie": 22351,
+            "loss": 15388
+          },
+          "livingTroops": {
+            "win": 18310,
+            "tie": 16871,
+            "loss": 13942
+          },
+          "remainingHand": {
+            "win": 1422,
+            "tie": 18789,
+            "loss": 28912
+          },
+          "defeat": {
+            "win": 30192,
+            "tie": 13491,
+            "loss": 5440
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 60.21,
+          "fourAxisTributeDominates": 10.12,
+          "fourAxisNonTributeDominates": 28.03,
+          "combatTradeoff": 25.24,
+          "combatTributeDominates": 44.05,
+          "combatNonTributeDominates": 20.77,
+          "cardForTempoOnly": 34.19
+        }
+      },
+      "vsHold": {
+        "pairs": 15831,
+        "fourAxis": {
+          "tributeDominates": 0,
+          "tradeoff": 13029,
+          "nonTributeDominates": 2802,
+          "exactTie": 0
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 9752,
+          "tradeoff": 3277,
+          "nonTributeDominates": 291,
+          "exactTie": 2511
+        },
+        "cardForTempoOnly": 9752,
+        "baseRaceTradeoff": 4705,
+        "preventedOwnMatchDefeat": 3381,
+        "dealtEnemyMatchDefeat": 232,
+        "causedOwnMatchDefeat": 385,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 4829,
+            "tie": 9556,
+            "loss": 1446
+          },
+          "livingTroops": {
+            "win": 8182,
+            "tie": 5409,
+            "loss": 2240
+          },
+          "remainingHand": {
+            "win": 0,
+            "tie": 0,
+            "loss": 15831
+          },
+          "defeat": {
+            "win": 11333,
+            "tie": 4020,
+            "loss": 478
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 82.3,
+          "fourAxisTributeDominates": 0,
+          "fourAxisNonTributeDominates": 17.7,
+          "combatTradeoff": 20.7,
+          "combatTributeDominates": 61.6,
+          "combatNonTributeDominates": 1.84,
+          "cardForTempoOnly": 61.6
+        }
+      },
+      "vsFreeSummon": {
+        "pairs": 15699,
+        "fourAxis": {
+          "tributeDominates": 845,
+          "tradeoff": 5824,
+          "nonTributeDominates": 8669,
+          "exactTie": 361
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 781,
+          "tradeoff": 5381,
+          "nonTributeDominates": 9051,
+          "exactTie": 486
+        },
+        "cardForTempoOnly": 58,
+        "baseRaceTradeoff": 2495,
+        "preventedOwnMatchDefeat": 81,
+        "dealtEnemyMatchDefeat": 134,
+        "causedOwnMatchDefeat": 3238,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 372,
+            "tie": 3159,
+            "loss": 12168
+          },
+          "livingTroops": {
+            "win": 839,
+            "tie": 6039,
+            "loss": 8821
+          },
+          "remainingHand": {
+            "win": 1422,
+            "tie": 12278,
+            "loss": 1999
+          },
+          "defeat": {
+            "win": 5654,
+            "tie": 5600,
+            "loss": 4445
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 37.1,
+          "fourAxisTributeDominates": 5.38,
+          "fourAxisNonTributeDominates": 55.22,
+          "combatTradeoff": 34.28,
+          "combatTributeDominates": 4.97,
+          "combatNonTributeDominates": 57.65,
+          "cardForTempoOnly": 0.37
+        }
+      },
+      "vsSpell": {
+        "pairs": 17593,
+        "fourAxis": {
+          "tributeDominates": 4125,
+          "tradeoff": 10724,
+          "nonTributeDominates": 2300,
+          "exactTie": 444
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 11108,
+          "tradeoff": 3741,
+          "nonTributeDominates": 862,
+          "exactTie": 1882
+        },
+        "cardForTempoOnly": 6983,
+        "baseRaceTradeoff": 6164,
+        "preventedOwnMatchDefeat": 4417,
+        "dealtEnemyMatchDefeat": 272,
+        "causedOwnMatchDefeat": 437,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 6183,
+            "tie": 9636,
+            "loss": 1774
+          },
+          "livingTroops": {
+            "win": 9289,
+            "tie": 5423,
+            "loss": 2881
+          },
+          "remainingHand": {
+            "win": 0,
+            "tie": 6511,
+            "loss": 11082
+          },
+          "defeat": {
+            "win": 13205,
+            "tie": 3871,
+            "loss": 517
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 60.96,
+          "fourAxisTributeDominates": 23.45,
+          "fourAxisNonTributeDominates": 13.07,
+          "combatTradeoff": 21.26,
+          "combatTributeDominates": 63.14,
+          "combatNonTributeDominates": 4.9,
+          "cardForTempoOnly": 39.69
+        }
+      },
+      "byTributeCost": {
+        "1": {
+          "pairs": 41980,
+          "fourAxis": {
+            "tributeDominates": 3893,
+            "tradeoff": 24405,
+            "nonTributeDominates": 12900,
+            "exactTie": 782
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 19248,
+            "tradeoff": 8645,
+            "nonTributeDominates": 9304,
+            "exactTie": 4783
+          },
+          "cardForTempoOnly": 15453,
+          "baseRaceTradeoff": 11774,
+          "preventedOwnMatchDefeat": 6517,
+          "dealtEnemyMatchDefeat": 553,
+          "causedOwnMatchDefeat": 3101,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 10910,
+              "tie": 18972,
+              "loss": 12098
+            },
+            "livingTroops": {
+              "win": 15816,
+              "tie": 14847,
+              "loss": 11317
+            },
+            "remainingHand": {
+              "win": 848,
+              "tie": 15447,
+              "loss": 25685
+            },
+            "defeat": {
+              "win": 24367,
+              "tie": 13224,
+              "loss": 4389
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 58.13,
+            "fourAxisTributeDominates": 9.27,
+            "fourAxisNonTributeDominates": 30.73,
+            "combatTradeoff": 20.59,
+            "combatTributeDominates": 45.85,
+            "combatNonTributeDominates": 22.16,
+            "cardForTempoOnly": 36.81
+          }
+        },
+        "2": {
+          "pairs": 7143,
+          "fourAxis": {
+            "tributeDominates": 1077,
+            "tradeoff": 5172,
+            "nonTributeDominates": 871,
+            "exactTie": 23
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 2393,
+            "tradeoff": 3754,
+            "nonTributeDominates": 900,
+            "exactTie": 96
+          },
+          "cardForTempoOnly": 1340,
+          "baseRaceTradeoff": 1590,
+          "preventedOwnMatchDefeat": 1362,
+          "dealtEnemyMatchDefeat": 85,
+          "causedOwnMatchDefeat": 959,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 474,
+              "tie": 3379,
+              "loss": 3290
+            },
+            "livingTroops": {
+              "win": 2494,
+              "tie": 2024,
+              "loss": 2625
+            },
+            "remainingHand": {
+              "win": 574,
+              "tie": 3342,
+              "loss": 3227
+            },
+            "defeat": {
+              "win": 5825,
+              "tie": 267,
+              "loss": 1051
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 72.41,
+            "fourAxisTributeDominates": 15.08,
+            "fourAxisNonTributeDominates": 12.19,
+            "combatTradeoff": 52.55,
+            "combatTributeDominates": 33.5,
+            "combatNonTributeDominates": 12.6,
+            "cardForTempoOnly": 18.76
+          }
+        }
+      },
+      "byTributeCostVsHold": {
+        "1": {
+          "pairs": 12999,
+          "fourAxis": {
+            "tributeDominates": 0,
+            "tradeoff": 10451,
+            "nonTributeDominates": 2548,
+            "exactTie": 0
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 8628,
+            "tradeoff": 1823,
+            "nonTributeDominates": 86,
+            "exactTie": 2462
+          },
+          "cardForTempoOnly": 8628,
+          "baseRaceTradeoff": 3977,
+          "preventedOwnMatchDefeat": 2747,
+          "dealtEnemyMatchDefeat": 205,
+          "causedOwnMatchDefeat": 59,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 4584,
+              "tie": 7985,
+              "loss": 430
+            },
+            "livingTroops": {
+              "win": 6889,
+              "tie": 4627,
+              "loss": 1483
+            },
+            "remainingHand": {
+              "win": 0,
+              "tie": 0,
+              "loss": 12999
+            },
+            "defeat": {
+              "win": 8989,
+              "tie": 3889,
+              "loss": 121
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 80.4,
+            "fourAxisTributeDominates": 0,
+            "fourAxisNonTributeDominates": 19.6,
+            "combatTradeoff": 14.02,
+            "combatTributeDominates": 66.37,
+            "combatNonTributeDominates": 0.66,
+            "cardForTempoOnly": 66.37
+          }
+        },
+        "2": {
+          "pairs": 2832,
+          "fourAxis": {
+            "tributeDominates": 0,
+            "tradeoff": 2578,
+            "nonTributeDominates": 254,
+            "exactTie": 0
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 1124,
+            "tradeoff": 1454,
+            "nonTributeDominates": 205,
+            "exactTie": 49
+          },
+          "cardForTempoOnly": 1124,
+          "baseRaceTradeoff": 728,
+          "preventedOwnMatchDefeat": 634,
+          "dealtEnemyMatchDefeat": 27,
+          "causedOwnMatchDefeat": 326,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 245,
+              "tie": 1571,
+              "loss": 1016
+            },
+            "livingTroops": {
+              "win": 1293,
+              "tie": 782,
+              "loss": 757
+            },
+            "remainingHand": {
+              "win": 0,
+              "tie": 0,
+              "loss": 2832
+            },
+            "defeat": {
+              "win": 2344,
+              "tie": 131,
+              "loss": 357
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 91.03,
+            "fourAxisTributeDominates": 0,
+            "fourAxisNonTributeDominates": 8.97,
+            "combatTradeoff": 51.34,
+            "combatTributeDominates": 39.69,
+            "combatNonTributeDominates": 7.24,
+            "cardForTempoOnly": 39.69
+          }
+        }
+      },
+      "bySacrificeConditionVsHold": {
+        "damagedTroop": {
+          "pairs": 10500,
+          "fourAxis": {
+            "tributeDominates": 0,
+            "tradeoff": 9478,
+            "nonTributeDominates": 1022,
+            "exactTie": 0
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 7021,
+            "tradeoff": 2457,
+            "nonTributeDominates": 290,
+            "exactTie": 732
+          },
+          "cardForTempoOnly": 7021,
+          "baseRaceTradeoff": 2263,
+          "preventedOwnMatchDefeat": 2482,
+          "dealtEnemyMatchDefeat": 212,
+          "causedOwnMatchDefeat": 383,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 3172,
+              "tie": 6011,
+              "loss": 1317
+            },
+            "livingTroops": {
+              "win": 6657,
+              "tie": 2294,
+              "loss": 1549
+            },
+            "remainingHand": {
+              "win": 0,
+              "tie": 0,
+              "loss": 10500
+            },
+            "defeat": {
+              "win": 8963,
+              "tie": 1063,
+              "loss": 474
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 90.27,
+            "fourAxisTributeDominates": 0,
+            "fourAxisNonTributeDominates": 9.73,
+            "combatTradeoff": 23.4,
+            "combatTributeDominates": 66.87,
+            "combatNonTributeDominates": 2.76,
+            "cardForTempoOnly": 66.87
+          }
+        },
+        "oneHpTroop": {
+          "pairs": 3479,
+          "fourAxis": {
+            "tributeDominates": 0,
+            "tradeoff": 3245,
+            "nonTributeDominates": 234,
+            "exactTie": 0
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 2629,
+            "tradeoff": 616,
+            "nonTributeDominates": 117,
+            "exactTie": 117
+          },
+          "cardForTempoOnly": 2629,
+          "baseRaceTradeoff": 267,
+          "preventedOwnMatchDefeat": 336,
+          "dealtEnemyMatchDefeat": 57,
+          "causedOwnMatchDefeat": 285,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 800,
+              "tie": 2013,
+              "loss": 666
+            },
+            "livingTroops": {
+              "win": 2721,
+              "tie": 606,
+              "loss": 152
+            },
+            "remainingHand": {
+              "win": 0,
+              "tie": 0,
+              "loss": 3479
+            },
+            "defeat": {
+              "win": 2960,
+              "tie": 205,
+              "loss": 314
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 93.27,
+            "fourAxisTributeDominates": 0,
+            "fourAxisNonTributeDominates": 6.73,
+            "combatTradeoff": 17.71,
+            "combatTributeDominates": 75.57,
+            "combatNonTributeDominates": 3.36,
+            "cardForTempoOnly": 75.57
+          }
+        },
+        "fullHealthOnly": {
+          "pairs": 5331,
+          "fourAxis": {
+            "tributeDominates": 0,
+            "tradeoff": 3551,
+            "nonTributeDominates": 1780,
+            "exactTie": 0
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 2731,
+            "tradeoff": 820,
+            "nonTributeDominates": 1,
+            "exactTie": 1779
+          },
+          "cardForTempoOnly": 2731,
+          "baseRaceTradeoff": 2442,
+          "preventedOwnMatchDefeat": 899,
+          "dealtEnemyMatchDefeat": 20,
+          "causedOwnMatchDefeat": 2,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 1657,
+              "tie": 3545,
+              "loss": 129
+            },
+            "livingTroops": {
+              "win": 1525,
+              "tie": 3115,
+              "loss": 691
+            },
+            "remainingHand": {
+              "win": 0,
+              "tie": 0,
+              "loss": 5331
+            },
+            "defeat": {
+              "win": 2370,
+              "tie": 2957,
+              "loss": 4
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 66.61,
+            "fourAxisTributeDominates": 0,
+            "fourAxisNonTributeDominates": 33.39,
+            "combatTradeoff": 15.38,
+            "combatTributeDominates": 51.23,
+            "combatNonTributeDominates": 0.02,
+            "cardForTempoOnly": 51.23
+          }
+        }
+      },
+      "twoTributeVsOneTribute": {
+        "pairs": 9504,
+        "fourAxis": {
+          "tributeDominates": 2327,
+          "tradeoff": 3063,
+          "nonTributeDominates": 3789,
+          "exactTie": 325
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 2296,
+          "tradeoff": 1888,
+          "nonTributeDominates": 4936,
+          "exactTie": 384
+        },
+        "cardForTempoOnly": 24,
+        "baseRaceTradeoff": 1411,
+        "preventedOwnMatchDefeat": 95,
+        "dealtEnemyMatchDefeat": 28,
+        "causedOwnMatchDefeat": 1388,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 415,
+            "tie": 4338,
+            "loss": 4751
+          },
+          "livingTroops": {
+            "win": 1953,
+            "tie": 2577,
+            "loss": 4974
+          },
+          "remainingHand": {
+            "win": 2475,
+            "tie": 6925,
+            "loss": 104
+          },
+          "defeat": {
+            "win": 3679,
+            "tie": 3607,
+            "loss": 2218
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 32.23,
+          "fourAxisTributeDominates": 24.48,
+          "fourAxisNonTributeDominates": 39.87,
+          "combatTradeoff": 19.87,
+          "combatTributeDominates": 24.16,
+          "combatNonTributeDominates": 51.94,
+          "cardForTempoOnly": 0.25
+        }
+      },
+      "uniquePublicPositions": 1094,
+      "stateRatesPct": {
+        "duplicateActionReduction": 25.77,
+        "botChoseTribute": 39.15,
+        "chosenTributeRegretVsNonTributeAmongChosen": 32.43,
+        "chosenTributeRegretVsAnyAmongChosen": 43.77,
+        "anyTributeBeatsHoldOnBase": 65.68,
+        "anyTributeBeatsAllNonTributesOnCombat": 25.63,
+        "allTributesDominatedOnCombat": 29.32,
+        "anyTributeSavesLethalVsHold": 28.75,
+        "anyTributeDealsLethalVsHold": 2.97
+      }
+    },
+    "wizard": {
+      "decisionStates": 4847,
+      "rawLegalActions": 42997,
+      "distinctActionGroups": 33048,
+      "duplicateActionsCollapsed": 9949,
+      "statesWithFreeSummon": 3438,
+      "statesWith1Tribute": 4673,
+      "statesWith2Tribute": 1023,
+      "botChoseTribute": 1977,
+      "botChoseTribute1": 1659,
+      "botChoseTribute2": 318,
+      "chosenTributeRegretVsNonTributeOnBase": 386,
+      "chosenTributeRegretVsAnyOnBase": 601,
+      "chosenTribute1RegretVsAnyOnBase": 335,
+      "chosenTribute2RegretVsAnyOnBase": 266,
+      "missedTributeGainOnBase": 29,
+      "anyTributeUndominated4Axis": 3621,
+      "allTributesDominated4Axis": 1226,
+      "anyTributeBeatsAllNonTributesOnCombat": 1646,
+      "allTributesDominatedOnCombat": 1318,
+      "anyTributeBeatsHoldOnBase": 2227,
+      "anyTributeSavesLethalVsHold": 999,
+      "anyTributeDealsLethalVsHold": 113,
+      "allPairs": {
+        "pairs": 52554,
+        "fourAxis": {
+          "tributeDominates": 5884,
+          "tradeoff": 32483,
+          "nonTributeDominates": 13454,
+          "exactTie": 733
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 23674,
+          "tradeoff": 13948,
+          "nonTributeDominates": 10784,
+          "exactTie": 4148
+        },
+        "cardForTempoOnly": 17811,
+        "baseRaceTradeoff": 11475,
+        "preventedOwnMatchDefeat": 5114,
+        "dealtEnemyMatchDefeat": 532,
+        "causedOwnMatchDefeat": 4891,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 10965,
+            "tie": 21206,
+            "loss": 20383
+          },
+          "livingTroops": {
+            "win": 19904,
+            "tie": 20580,
+            "loss": 12070
+          },
+          "remainingHand": {
+            "win": 3355,
+            "tie": 22038,
+            "loss": 27161
+          },
+          "defeat": {
+            "win": 32312,
+            "tie": 14276,
+            "loss": 5966
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 61.81,
+          "fourAxisTributeDominates": 11.2,
+          "fourAxisNonTributeDominates": 25.6,
+          "combatTradeoff": 26.54,
+          "combatTributeDominates": 45.05,
+          "combatNonTributeDominates": 20.52,
+          "cardForTempoOnly": 33.89
+        }
+      },
+      "vsHold": {
+        "pairs": 18738,
+        "fourAxis": {
+          "tributeDominates": 0,
+          "tradeoff": 15338,
+          "nonTributeDominates": 3400,
+          "exactTie": 0
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 12179,
+          "tradeoff": 3159,
+          "nonTributeDominates": 606,
+          "exactTie": 2794
+        },
+        "cardForTempoOnly": 12179,
+        "baseRaceTradeoff": 4249,
+        "preventedOwnMatchDefeat": 2671,
+        "dealtEnemyMatchDefeat": 227,
+        "causedOwnMatchDefeat": 666,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 5560,
+            "tie": 10496,
+            "loss": 2682
+          },
+          "livingTroops": {
+            "win": 9953,
+            "tie": 7702,
+            "loss": 1083
+          },
+          "remainingHand": {
+            "win": 0,
+            "tie": 0,
+            "loss": 18738
+          },
+          "defeat": {
+            "win": 12575,
+            "tie": 5345,
+            "loss": 818
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 81.86,
+          "fourAxisTributeDominates": 0,
+          "fourAxisNonTributeDominates": 18.14,
+          "combatTradeoff": 16.86,
+          "combatTributeDominates": 65,
+          "combatNonTributeDominates": 3.23,
+          "cardForTempoOnly": 65
+        }
+      },
+      "vsFreeSummon": {
+        "pairs": 19439,
+        "fourAxis": {
+          "tributeDominates": 1320,
+          "tradeoff": 9229,
+          "nonTributeDominates": 8797,
+          "exactTie": 93
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 1446,
+          "tradeoff": 8358,
+          "nonTributeDominates": 9495,
+          "exactTie": 140
+        },
+        "cardForTempoOnly": 147,
+        "baseRaceTradeoff": 4236,
+        "preventedOwnMatchDefeat": 76,
+        "dealtEnemyMatchDefeat": 83,
+        "causedOwnMatchDefeat": 3587,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 785,
+            "tie": 3373,
+            "loss": 15281
+          },
+          "livingTroops": {
+            "win": 1123,
+            "tie": 8075,
+            "loss": 10241
+          },
+          "remainingHand": {
+            "win": 3355,
+            "tie": 15193,
+            "loss": 891
+          },
+          "defeat": {
+            "win": 8970,
+            "tie": 6089,
+            "loss": 4380
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 47.48,
+          "fourAxisTributeDominates": 6.79,
+          "fourAxisNonTributeDominates": 45.25,
+          "combatTradeoff": 43,
+          "combatTributeDominates": 7.44,
+          "combatNonTributeDominates": 48.85,
+          "cardForTempoOnly": 0.76
+        }
+      },
+      "vsSpell": {
+        "pairs": 14377,
+        "fourAxis": {
+          "tributeDominates": 4564,
+          "tradeoff": 7916,
+          "nonTributeDominates": 1257,
+          "exactTie": 640
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 10049,
+          "tradeoff": 2431,
+          "nonTributeDominates": 683,
+          "exactTie": 1214
+        },
+        "cardForTempoOnly": 5485,
+        "baseRaceTradeoff": 2990,
+        "preventedOwnMatchDefeat": 2367,
+        "dealtEnemyMatchDefeat": 222,
+        "causedOwnMatchDefeat": 638,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 4620,
+            "tie": 7337,
+            "loss": 2420
+          },
+          "livingTroops": {
+            "win": 8828,
+            "tie": 4803,
+            "loss": 746
+          },
+          "remainingHand": {
+            "win": 0,
+            "tie": 6845,
+            "loss": 7532
+          },
+          "defeat": {
+            "win": 10767,
+            "tie": 2842,
+            "loss": 768
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 55.06,
+          "fourAxisTributeDominates": 31.75,
+          "fourAxisNonTributeDominates": 8.74,
+          "combatTradeoff": 16.91,
+          "combatTributeDominates": 69.9,
+          "combatNonTributeDominates": 4.75,
+          "cardForTempoOnly": 38.15
+        }
+      },
+      "byTributeCost": {
+        "1": {
+          "pairs": 45246,
+          "fourAxis": {
+            "tributeDominates": 4839,
+            "tradeoff": 27723,
+            "nonTributeDominates": 11985,
+            "exactTie": 699
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 20942,
+            "tradeoff": 11023,
+            "nonTributeDominates": 9205,
+            "exactTie": 4076
+          },
+          "cardForTempoOnly": 16121,
+          "baseRaceTradeoff": 9887,
+          "preventedOwnMatchDefeat": 4059,
+          "dealtEnemyMatchDefeat": 454,
+          "causedOwnMatchDefeat": 3242,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 9424,
+              "tie": 19097,
+              "loss": 16725
+            },
+            "livingTroops": {
+              "win": 17320,
+              "tie": 17671,
+              "loss": 10255
+            },
+            "remainingHand": {
+              "win": 3091,
+              "tie": 18853,
+              "loss": 23302
+            },
+            "defeat": {
+              "win": 27459,
+              "tie": 13675,
+              "loss": 4112
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 61.27,
+            "fourAxisTributeDominates": 10.69,
+            "fourAxisNonTributeDominates": 26.49,
+            "combatTradeoff": 24.36,
+            "combatTributeDominates": 46.28,
+            "combatNonTributeDominates": 20.34,
+            "cardForTempoOnly": 35.63
+          }
+        },
+        "2": {
+          "pairs": 7308,
+          "fourAxis": {
+            "tributeDominates": 1045,
+            "tradeoff": 4760,
+            "nonTributeDominates": 1469,
+            "exactTie": 34
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 2732,
+            "tradeoff": 2925,
+            "nonTributeDominates": 1579,
+            "exactTie": 72
+          },
+          "cardForTempoOnly": 1690,
+          "baseRaceTradeoff": 1588,
+          "preventedOwnMatchDefeat": 1055,
+          "dealtEnemyMatchDefeat": 78,
+          "causedOwnMatchDefeat": 1649,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 1541,
+              "tie": 2109,
+              "loss": 3658
+            },
+            "livingTroops": {
+              "win": 2584,
+              "tie": 2909,
+              "loss": 1815
+            },
+            "remainingHand": {
+              "win": 264,
+              "tie": 3185,
+              "loss": 3859
+            },
+            "defeat": {
+              "win": 4853,
+              "tie": 601,
+              "loss": 1854
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 65.13,
+            "fourAxisTributeDominates": 14.3,
+            "fourAxisNonTributeDominates": 20.1,
+            "combatTradeoff": 40.02,
+            "combatTributeDominates": 37.38,
+            "combatNonTributeDominates": 21.61,
+            "cardForTempoOnly": 23.13
+          }
+        }
+      },
+      "byTributeCostVsHold": {
+        "1": {
+          "pairs": 15552,
+          "fourAxis": {
+            "tributeDominates": 0,
+            "tradeoff": 12547,
+            "nonTributeDominates": 3005,
+            "exactTie": 0
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 10817,
+            "tradeoff": 1730,
+            "nonTributeDominates": 244,
+            "exactTie": 2761
+          },
+          "cardForTempoOnly": 10817,
+          "baseRaceTradeoff": 3447,
+          "preventedOwnMatchDefeat": 2037,
+          "dealtEnemyMatchDefeat": 197,
+          "causedOwnMatchDefeat": 153,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 4688,
+              "tie": 9465,
+              "loss": 1399
+            },
+            "livingTroops": {
+              "win": 8511,
+              "tie": 6473,
+              "loss": 568
+            },
+            "remainingHand": {
+              "win": 0,
+              "tie": 0,
+              "loss": 15552
+            },
+            "defeat": {
+              "win": 10246,
+              "tie": 5059,
+              "loss": 247
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 80.68,
+            "fourAxisTributeDominates": 0,
+            "fourAxisNonTributeDominates": 19.32,
+            "combatTradeoff": 11.12,
+            "combatTributeDominates": 69.55,
+            "combatNonTributeDominates": 1.57,
+            "cardForTempoOnly": 69.55
+          }
+        },
+        "2": {
+          "pairs": 3186,
+          "fourAxis": {
+            "tributeDominates": 0,
+            "tradeoff": 2791,
+            "nonTributeDominates": 395,
+            "exactTie": 0
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 1362,
+            "tradeoff": 1429,
+            "nonTributeDominates": 362,
+            "exactTie": 33
+          },
+          "cardForTempoOnly": 1362,
+          "baseRaceTradeoff": 802,
+          "preventedOwnMatchDefeat": 634,
+          "dealtEnemyMatchDefeat": 30,
+          "causedOwnMatchDefeat": 513,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 872,
+              "tie": 1031,
+              "loss": 1283
+            },
+            "livingTroops": {
+              "win": 1442,
+              "tie": 1229,
+              "loss": 515
+            },
+            "remainingHand": {
+              "win": 0,
+              "tie": 0,
+              "loss": 3186
+            },
+            "defeat": {
+              "win": 2329,
+              "tie": 286,
+              "loss": 571
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 87.6,
+            "fourAxisTributeDominates": 0,
+            "fourAxisNonTributeDominates": 12.4,
+            "combatTradeoff": 44.85,
+            "combatTributeDominates": 42.75,
+            "combatNonTributeDominates": 11.36,
+            "cardForTempoOnly": 42.75
+          }
+        }
+      },
+      "bySacrificeConditionVsHold": {
+        "damagedTroop": {
+          "pairs": 14264,
+          "fourAxis": {
+            "tributeDominates": 0,
+            "tradeoff": 12290,
+            "nonTributeDominates": 1974,
+            "exactTie": 0
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 9333,
+            "tradeoff": 2957,
+            "nonTributeDominates": 551,
+            "exactTie": 1423
+          },
+          "cardForTempoOnly": 9333,
+          "baseRaceTradeoff": 2539,
+          "preventedOwnMatchDefeat": 2117,
+          "dealtEnemyMatchDefeat": 177,
+          "causedOwnMatchDefeat": 660,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 3398,
+              "tie": 8319,
+              "loss": 2547
+            },
+            "livingTroops": {
+              "win": 8916,
+              "tie": 4388,
+              "loss": 960
+            },
+            "remainingHand": {
+              "win": 0,
+              "tie": 0,
+              "loss": 14264
+            },
+            "defeat": {
+              "win": 11117,
+              "tie": 2335,
+              "loss": 812
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 86.16,
+            "fourAxisTributeDominates": 0,
+            "fourAxisNonTributeDominates": 13.84,
+            "combatTradeoff": 20.73,
+            "combatTributeDominates": 65.43,
+            "combatNonTributeDominates": 3.86,
+            "cardForTempoOnly": 65.43
+          }
+        },
+        "oneHpTroop": {
+          "pairs": 5475,
+          "fourAxis": {
+            "tributeDominates": 0,
+            "tradeoff": 5129,
+            "nonTributeDominates": 346,
+            "exactTie": 0
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 3903,
+            "tradeoff": 1226,
+            "nonTributeDominates": 159,
+            "exactTie": 187
+          },
+          "cardForTempoOnly": 3903,
+          "baseRaceTradeoff": 1092,
+          "preventedOwnMatchDefeat": 1247,
+          "dealtEnemyMatchDefeat": 52,
+          "causedOwnMatchDefeat": 394,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 1845,
+              "tie": 2556,
+              "loss": 1074
+            },
+            "livingTroops": {
+              "win": 3926,
+              "tie": 1210,
+              "loss": 339
+            },
+            "remainingHand": {
+              "win": 0,
+              "tie": 0,
+              "loss": 5475
+            },
+            "defeat": {
+              "win": 4632,
+              "tie": 399,
+              "loss": 444
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 93.68,
+            "fourAxisTributeDominates": 0,
+            "fourAxisNonTributeDominates": 6.32,
+            "combatTradeoff": 22.39,
+            "combatTributeDominates": 71.29,
+            "combatNonTributeDominates": 2.9,
+            "cardForTempoOnly": 71.29
+          }
+        },
+        "fullHealthOnly": {
+          "pairs": 4474,
+          "fourAxis": {
+            "tributeDominates": 0,
+            "tradeoff": 3048,
+            "nonTributeDominates": 1426,
+            "exactTie": 0
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 2846,
+            "tradeoff": 202,
+            "nonTributeDominates": 55,
+            "exactTie": 1371
+          },
+          "cardForTempoOnly": 2846,
+          "baseRaceTradeoff": 1710,
+          "preventedOwnMatchDefeat": 554,
+          "dealtEnemyMatchDefeat": 50,
+          "causedOwnMatchDefeat": 6,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 2162,
+              "tie": 2177,
+              "loss": 135
+            },
+            "livingTroops": {
+              "win": 1037,
+              "tie": 3314,
+              "loss": 123
+            },
+            "remainingHand": {
+              "win": 0,
+              "tie": 0,
+              "loss": 4474
+            },
+            "defeat": {
+              "win": 1458,
+              "tie": 3010,
+              "loss": 6
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 68.13,
+            "fourAxisTributeDominates": 0,
+            "fourAxisNonTributeDominates": 31.87,
+            "combatTradeoff": 4.51,
+            "combatTributeDominates": 63.61,
+            "combatNonTributeDominates": 1.23,
+            "cardForTempoOnly": 63.61
+          }
+        }
+      },
+      "twoTributeVsOneTribute": {
+        "pairs": 10386,
+        "fourAxis": {
+          "tributeDominates": 2483,
+          "tradeoff": 3825,
+          "nonTributeDominates": 3747,
+          "exactTie": 331
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 2411,
+          "tradeoff": 2756,
+          "nonTributeDominates": 4787,
+          "exactTie": 432
+        },
+        "cardForTempoOnly": 21,
+        "baseRaceTradeoff": 1959,
+        "preventedOwnMatchDefeat": 792,
+        "dealtEnemyMatchDefeat": 53,
+        "causedOwnMatchDefeat": 2052,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 1055,
+            "tie": 4076,
+            "loss": 5255
+          },
+          "livingTroops": {
+            "win": 2090,
+            "tie": 3830,
+            "loss": 4466
+          },
+          "remainingHand": {
+            "win": 1850,
+            "tie": 8408,
+            "loss": 128
+          },
+          "defeat": {
+            "win": 4110,
+            "tie": 3461,
+            "loss": 2815
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 36.83,
+          "fourAxisTributeDominates": 23.91,
+          "fourAxisNonTributeDominates": 36.08,
+          "combatTradeoff": 26.54,
+          "combatTributeDominates": 23.21,
+          "combatNonTributeDominates": 46.09,
+          "cardForTempoOnly": 0.2
+        }
+      },
+      "uniquePublicPositions": 1762,
+      "stateRatesPct": {
+        "duplicateActionReduction": 23.14,
+        "botChoseTribute": 40.79,
+        "chosenTributeRegretVsNonTributeAmongChosen": 19.52,
+        "chosenTributeRegretVsAnyAmongChosen": 30.4,
+        "anyTributeBeatsHoldOnBase": 45.95,
+        "anyTributeBeatsAllNonTributesOnCombat": 33.96,
+        "allTributesDominatedOnCombat": 27.19,
+        "anyTributeSavesLethalVsHold": 20.61,
+        "anyTributeDealsLethalVsHold": 2.33
+      }
+    }
+  },
+  "byRoundOrder": {
+    "actingFirstInRound": {
+      "decisionStates": 4414,
+      "rawLegalActions": 41809,
+      "distinctActionGroups": 31725,
+      "duplicateActionsCollapsed": 10084,
+      "statesWithFreeSummon": 3109,
+      "statesWith1Tribute": 4218,
+      "statesWith2Tribute": 1363,
+      "botChoseTribute": 2162,
+      "botChoseTribute1": 1490,
+      "botChoseTribute2": 672,
+      "chosenTributeRegretVsNonTributeOnBase": 662,
+      "chosenTributeRegretVsAnyOnBase": 995,
+      "chosenTribute1RegretVsAnyOnBase": 369,
+      "chosenTribute2RegretVsAnyOnBase": 626,
+      "missedTributeGainOnBase": 54,
+      "anyTributeUndominated4Axis": 3860,
+      "allTributesDominated4Axis": 554,
+      "anyTributeBeatsAllNonTributesOnCombat": 1597,
+      "allTributesDominatedOnCombat": 650,
+      "anyTributeBeatsHoldOnBase": 1643,
+      "anyTributeSavesLethalVsHold": 960,
+      "anyTributeDealsLethalVsHold": 10,
+      "allPairs": {
+        "pairs": 51944,
+        "fourAxis": {
+          "tributeDominates": 6139,
+          "tradeoff": 34286,
+          "nonTributeDominates": 10335,
+          "exactTie": 1184
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 20954,
+          "tradeoff": 18663,
+          "nonTributeDominates": 6663,
+          "exactTie": 5664
+        },
+        "cardForTempoOnly": 14958,
+        "baseRaceTradeoff": 11384,
+        "preventedOwnMatchDefeat": 7642,
+        "dealtEnemyMatchDefeat": 23,
+        "causedOwnMatchDefeat": 3920,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 9806,
+            "tie": 24161,
+            "loss": 17977
+          },
+          "livingTroops": {
+            "win": 19370,
+            "tie": 19226,
+            "loss": 13348
+          },
+          "remainingHand": {
+            "win": 4170,
+            "tie": 20050,
+            "loss": 27724
+          },
+          "defeat": {
+            "win": 35796,
+            "tie": 11489,
+            "loss": 4659
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 66.01,
+          "fourAxisTributeDominates": 11.82,
+          "fourAxisNonTributeDominates": 19.9,
+          "combatTradeoff": 35.93,
+          "combatTributeDominates": 40.34,
+          "combatNonTributeDominates": 12.83,
+          "cardForTempoOnly": 28.8
+        }
+      },
+      "vsHold": {
+        "pairs": 19192,
+        "fourAxis": {
+          "tributeDominates": 0,
+          "tradeoff": 15862,
+          "nonTributeDominates": 3330,
+          "exactTie": 0
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 10799,
+          "tradeoff": 5063,
+          "nonTributeDominates": 515,
+          "exactTie": 2815
+        },
+        "cardForTempoOnly": 10799,
+        "baseRaceTradeoff": 4666,
+        "preventedOwnMatchDefeat": 3638,
+        "dealtEnemyMatchDefeat": 14,
+        "causedOwnMatchDefeat": 663,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 4548,
+            "tie": 11846,
+            "loss": 2798
+          },
+          "livingTroops": {
+            "win": 10184,
+            "tie": 6138,
+            "loss": 2870
+          },
+          "remainingHand": {
+            "win": 0,
+            "tie": 0,
+            "loss": 19192
+          },
+          "defeat": {
+            "win": 14173,
+            "tie": 4256,
+            "loss": 763
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 82.65,
+          "fourAxisTributeDominates": 0,
+          "fourAxisNonTributeDominates": 17.35,
+          "combatTradeoff": 26.38,
+          "combatTributeDominates": 56.27,
+          "combatNonTributeDominates": 2.68,
+          "cardForTempoOnly": 56.27
+        }
+      },
+      "vsFreeSummon": {
+        "pairs": 16855,
+        "fourAxis": {
+          "tributeDominates": 1740,
+          "tradeoff": 9550,
+          "nonTributeDominates": 5111,
+          "exactTie": 454
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 1709,
+          "tradeoff": 8773,
+          "nonTributeDominates": 5747,
+          "exactTie": 626
+        },
+        "cardForTempoOnly": 112,
+        "baseRaceTradeoff": 2229,
+        "preventedOwnMatchDefeat": 44,
+        "dealtEnemyMatchDefeat": 1,
+        "causedOwnMatchDefeat": 2949,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 851,
+            "tie": 2851,
+            "loss": 13153
+          },
+          "livingTroops": {
+            "win": 1398,
+            "tie": 8252,
+            "loss": 7205
+          },
+          "remainingHand": {
+            "win": 4170,
+            "tie": 12228,
+            "loss": 457
+          },
+          "defeat": {
+            "win": 9468,
+            "tie": 3924,
+            "loss": 3463
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 56.66,
+          "fourAxisTributeDominates": 10.32,
+          "fourAxisNonTributeDominates": 30.32,
+          "combatTradeoff": 52.05,
+          "combatTributeDominates": 10.14,
+          "combatNonTributeDominates": 34.1,
+          "cardForTempoOnly": 0.66
+        }
+      },
+      "vsSpell": {
+        "pairs": 15897,
+        "fourAxis": {
+          "tributeDominates": 4399,
+          "tradeoff": 8874,
+          "nonTributeDominates": 1894,
+          "exactTie": 730
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 8446,
+          "tradeoff": 4827,
+          "nonTributeDominates": 401,
+          "exactTie": 2223
+        },
+        "cardForTempoOnly": 4047,
+        "baseRaceTradeoff": 4489,
+        "preventedOwnMatchDefeat": 3960,
+        "dealtEnemyMatchDefeat": 8,
+        "causedOwnMatchDefeat": 308,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 4407,
+            "tie": 9464,
+            "loss": 2026
+          },
+          "livingTroops": {
+            "win": 7788,
+            "tie": 4836,
+            "loss": 3273
+          },
+          "remainingHand": {
+            "win": 0,
+            "tie": 7822,
+            "loss": 8075
+          },
+          "defeat": {
+            "win": 12155,
+            "tie": 3309,
+            "loss": 433
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 55.82,
+          "fourAxisTributeDominates": 27.67,
+          "fourAxisNonTributeDominates": 11.91,
+          "combatTradeoff": 30.36,
+          "combatTributeDominates": 53.13,
+          "combatNonTributeDominates": 2.52,
+          "cardForTempoOnly": 25.46
+        }
+      },
+      "byTributeCost": {
+        "1": {
+          "pairs": 41915,
+          "fourAxis": {
+            "tributeDominates": 4403,
+            "tradeoff": 27332,
+            "nonTributeDominates": 9053,
+            "exactTie": 1127
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 17154,
+            "tradeoff": 13932,
+            "nonTributeDominates": 5333,
+            "exactTie": 5496
+          },
+          "cardForTempoOnly": 12867,
+          "baseRaceTradeoff": 8786,
+          "preventedOwnMatchDefeat": 5696,
+          "dealtEnemyMatchDefeat": 21,
+          "causedOwnMatchDefeat": 2445,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 8290,
+              "tie": 19932,
+              "loss": 13693
+            },
+            "livingTroops": {
+              "win": 15854,
+              "tie": 15889,
+              "loss": 10172
+            },
+            "remainingHand": {
+              "win": 3440,
+              "tie": 15421,
+              "loss": 23054
+            },
+            "defeat": {
+              "win": 28030,
+              "tie": 10852,
+              "loss": 3033
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 65.21,
+            "fourAxisTributeDominates": 10.5,
+            "fourAxisNonTributeDominates": 21.6,
+            "combatTradeoff": 33.24,
+            "combatTributeDominates": 40.93,
+            "combatNonTributeDominates": 12.72,
+            "cardForTempoOnly": 30.7
+          }
+        },
+        "2": {
+          "pairs": 10029,
+          "fourAxis": {
+            "tributeDominates": 1736,
+            "tradeoff": 6954,
+            "nonTributeDominates": 1282,
+            "exactTie": 57
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 3800,
+            "tradeoff": 4731,
+            "nonTributeDominates": 1330,
+            "exactTie": 168
+          },
+          "cardForTempoOnly": 2091,
+          "baseRaceTradeoff": 2598,
+          "preventedOwnMatchDefeat": 1946,
+          "dealtEnemyMatchDefeat": 2,
+          "causedOwnMatchDefeat": 1475,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 1516,
+              "tie": 4229,
+              "loss": 4284
+            },
+            "livingTroops": {
+              "win": 3516,
+              "tie": 3337,
+              "loss": 3176
+            },
+            "remainingHand": {
+              "win": 730,
+              "tie": 4629,
+              "loss": 4670
+            },
+            "defeat": {
+              "win": 7766,
+              "tie": 637,
+              "loss": 1626
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 69.34,
+            "fourAxisTributeDominates": 17.31,
+            "fourAxisNonTributeDominates": 12.78,
+            "combatTradeoff": 47.17,
+            "combatTributeDominates": 37.89,
+            "combatNonTributeDominates": 13.26,
+            "cardForTempoOnly": 20.85
+          }
+        }
+      },
+      "byTributeCostVsHold": {
+        "1": {
+          "pairs": 14944,
+          "fourAxis": {
+            "tributeDominates": 0,
+            "tradeoff": 12056,
+            "nonTributeDominates": 2888,
+            "exactTie": 0
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 8940,
+            "tradeoff": 3116,
+            "nonTributeDominates": 155,
+            "exactTie": 2733
+          },
+          "cardForTempoOnly": 8940,
+          "baseRaceTradeoff": 3377,
+          "preventedOwnMatchDefeat": 2644,
+          "dealtEnemyMatchDefeat": 13,
+          "causedOwnMatchDefeat": 149,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 3710,
+              "tie": 9831,
+              "loss": 1403
+            },
+            "livingTroops": {
+              "win": 8249,
+              "tie": 4796,
+              "loss": 1899
+            },
+            "remainingHand": {
+              "win": 0,
+              "tie": 0,
+              "loss": 14944
+            },
+            "defeat": {
+              "win": 10849,
+              "tie": 3915,
+              "loss": 180
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 80.67,
+            "fourAxisTributeDominates": 0,
+            "fourAxisNonTributeDominates": 19.33,
+            "combatTradeoff": 20.85,
+            "combatTributeDominates": 59.82,
+            "combatNonTributeDominates": 1.04,
+            "cardForTempoOnly": 59.82
+          }
+        },
+        "2": {
+          "pairs": 4248,
+          "fourAxis": {
+            "tributeDominates": 0,
+            "tradeoff": 3806,
+            "nonTributeDominates": 442,
+            "exactTie": 0
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 1859,
+            "tradeoff": 1947,
+            "nonTributeDominates": 360,
+            "exactTie": 82
+          },
+          "cardForTempoOnly": 1859,
+          "baseRaceTradeoff": 1289,
+          "preventedOwnMatchDefeat": 994,
+          "dealtEnemyMatchDefeat": 1,
+          "causedOwnMatchDefeat": 514,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 838,
+              "tie": 2015,
+              "loss": 1395
+            },
+            "livingTroops": {
+              "win": 1935,
+              "tie": 1342,
+              "loss": 971
+            },
+            "remainingHand": {
+              "win": 0,
+              "tie": 0,
+              "loss": 4248
+            },
+            "defeat": {
+              "win": 3324,
+              "tie": 341,
+              "loss": 583
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 89.6,
+            "fourAxisTributeDominates": 0,
+            "fourAxisNonTributeDominates": 10.4,
+            "combatTradeoff": 45.83,
+            "combatTributeDominates": 43.76,
+            "combatNonTributeDominates": 8.47,
+            "cardForTempoOnly": 43.76
+          }
+        }
+      },
+      "bySacrificeConditionVsHold": {
+        "damagedTroop": {
+          "pairs": 15554,
+          "fourAxis": {
+            "tributeDominates": 0,
+            "tradeoff": 13873,
+            "nonTributeDominates": 1681,
+            "exactTie": 0
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 9795,
+            "tradeoff": 4078,
+            "nonTributeDominates": 461,
+            "exactTie": 1220
+          },
+          "cardForTempoOnly": 9795,
+          "baseRaceTradeoff": 3584,
+          "preventedOwnMatchDefeat": 2753,
+          "dealtEnemyMatchDefeat": 8,
+          "causedOwnMatchDefeat": 655,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 3671,
+              "tie": 9310,
+              "loss": 2573
+            },
+            "livingTroops": {
+              "win": 9612,
+              "tie": 3886,
+              "loss": 2056
+            },
+            "remainingHand": {
+              "win": 0,
+              "tie": 0,
+              "loss": 15554
+            },
+            "defeat": {
+              "win": 12743,
+              "tie": 2058,
+              "loss": 753
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 89.19,
+            "fourAxisTributeDominates": 0,
+            "fourAxisNonTributeDominates": 10.81,
+            "combatTradeoff": 26.22,
+            "combatTributeDominates": 62.97,
+            "combatNonTributeDominates": 2.96,
+            "cardForTempoOnly": 62.97
+          }
+        },
+        "oneHpTroop": {
+          "pairs": 5954,
+          "fourAxis": {
+            "tributeDominates": 0,
+            "tradeoff": 5507,
+            "nonTributeDominates": 447,
+            "exactTie": 0
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 4262,
+            "tradeoff": 1245,
+            "nonTributeDominates": 206,
+            "exactTie": 241
+          },
+          "cardForTempoOnly": 4262,
+          "baseRaceTradeoff": 1020,
+          "preventedOwnMatchDefeat": 1143,
+          "dealtEnemyMatchDefeat": 2,
+          "causedOwnMatchDefeat": 445,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 1862,
+              "tie": 2916,
+              "loss": 1176
+            },
+            "livingTroops": {
+              "win": 4316,
+              "tie": 1240,
+              "loss": 398
+            },
+            "remainingHand": {
+              "win": 0,
+              "tie": 0,
+              "loss": 5954
+            },
+            "defeat": {
+              "win": 4997,
+              "tie": 451,
+              "loss": 506
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 92.49,
+            "fourAxisTributeDominates": 0,
+            "fourAxisNonTributeDominates": 7.51,
+            "combatTradeoff": 20.91,
+            "combatTributeDominates": 71.58,
+            "combatNonTributeDominates": 3.46,
+            "cardForTempoOnly": 71.58
+          }
+        },
+        "fullHealthOnly": {
+          "pairs": 3638,
+          "fourAxis": {
+            "tributeDominates": 0,
+            "tradeoff": 1989,
+            "nonTributeDominates": 1649,
+            "exactTie": 0
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 1004,
+            "tradeoff": 985,
+            "nonTributeDominates": 54,
+            "exactTie": 1595
+          },
+          "cardForTempoOnly": 1004,
+          "baseRaceTradeoff": 1082,
+          "preventedOwnMatchDefeat": 885,
+          "dealtEnemyMatchDefeat": 6,
+          "causedOwnMatchDefeat": 8,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 877,
+              "tie": 2536,
+              "loss": 225
+            },
+            "livingTroops": {
+              "win": 572,
+              "tie": 2252,
+              "loss": 814
+            },
+            "remainingHand": {
+              "win": 0,
+              "tie": 0,
+              "loss": 3638
+            },
+            "defeat": {
+              "win": 1430,
+              "tie": 2198,
+              "loss": 10
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 54.67,
+            "fourAxisTributeDominates": 0,
+            "fourAxisNonTributeDominates": 45.33,
+            "combatTradeoff": 27.08,
+            "combatTributeDominates": 27.6,
+            "combatNonTributeDominates": 1.48,
+            "cardForTempoOnly": 27.6
+          }
+        }
+      },
+      "twoTributeVsOneTribute": {
+        "pairs": 14292,
+        "fourAxis": {
+          "tributeDominates": 3967,
+          "tradeoff": 5017,
+          "nonTributeDominates": 4652,
+          "exactTie": 656
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 3843,
+          "tradeoff": 3299,
+          "nonTributeDominates": 6334,
+          "exactTie": 816
+        },
+        "cardForTempoOnly": 24,
+        "baseRaceTradeoff": 2689,
+        "preventedOwnMatchDefeat": 682,
+        "dealtEnemyMatchDefeat": 2,
+        "causedOwnMatchDefeat": 1907,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 1207,
+            "tie": 6553,
+            "loss": 6532
+          },
+          "livingTroops": {
+            "win": 3401,
+            "tie": 4172,
+            "loss": 6719
+          },
+          "remainingHand": {
+            "win": 3562,
+            "tie": 10679,
+            "loss": 51
+          },
+          "defeat": {
+            "win": 5979,
+            "tie": 5376,
+            "loss": 2937
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 35.1,
+          "fourAxisTributeDominates": 27.76,
+          "fourAxisNonTributeDominates": 32.55,
+          "combatTradeoff": 23.08,
+          "combatTributeDominates": 26.89,
+          "combatNonTributeDominates": 44.32,
+          "cardForTempoOnly": 0.17
+        }
+      },
+      "uniquePublicPositions": 1275,
+      "stateRatesPct": {
+        "duplicateActionReduction": 24.12,
+        "botChoseTribute": 48.98,
+        "chosenTributeRegretVsNonTributeAmongChosen": 30.62,
+        "chosenTributeRegretVsAnyAmongChosen": 46.02,
+        "anyTributeBeatsHoldOnBase": 37.22,
+        "anyTributeBeatsAllNonTributesOnCombat": 36.18,
+        "allTributesDominatedOnCombat": 14.73,
+        "anyTributeSavesLethalVsHold": 21.75,
+        "anyTributeDealsLethalVsHold": 0.23
+      }
+    },
+    "actingSecondInRound": {
+      "decisionStates": 4308,
+      "rawLegalActions": 39689,
+      "distinctActionGroups": 29901,
+      "duplicateActionsCollapsed": 9788,
+      "statesWithFreeSummon": 3226,
+      "statesWith1Tribute": 4191,
+      "statesWith2Tribute": 578,
+      "botChoseTribute": 1332,
+      "botChoseTribute1": 1281,
+      "botChoseTribute2": 51,
+      "chosenTributeRegretVsNonTributeOnBase": 216,
+      "chosenTributeRegretVsAnyOnBase": 270,
+      "chosenTribute1RegretVsAnyOnBase": 253,
+      "chosenTribute2RegretVsAnyOnBase": 17,
+      "missedTributeGainOnBase": 24,
+      "anyTributeUndominated4Axis": 2576,
+      "allTributesDominated4Axis": 1732,
+      "anyTributeBeatsAllNonTributesOnCombat": 1042,
+      "allTributesDominatedOnCombat": 1804,
+      "anyTributeBeatsHoldOnBase": 3129,
+      "anyTributeSavesLethalVsHold": 1153,
+      "anyTributeDealsLethalVsHold": 218,
+      "allPairs": {
+        "pairs": 49733,
+        "fourAxis": {
+          "tributeDominates": 4715,
+          "tradeoff": 27774,
+          "nonTributeDominates": 16890,
+          "exactTie": 354
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 24361,
+          "tradeoff": 7684,
+          "nonTributeDominates": 14325,
+          "exactTie": 3363
+        },
+        "cardForTempoOnly": 19646,
+        "baseRaceTradeoff": 13455,
+        "preventedOwnMatchDefeat": 5351,
+        "dealtEnemyMatchDefeat": 1147,
+        "causedOwnMatchDefeat": 5031,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 12543,
+            "tie": 19396,
+            "loss": 17794
+          },
+          "livingTroops": {
+            "win": 18844,
+            "tie": 18225,
+            "loss": 12664
+          },
+          "remainingHand": {
+            "win": 607,
+            "tie": 20777,
+            "loss": 28349
+          },
+          "defeat": {
+            "win": 26708,
+            "tie": 16278,
+            "loss": 6747
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 55.85,
+          "fourAxisTributeDominates": 9.48,
+          "fourAxisNonTributeDominates": 33.96,
+          "combatTradeoff": 15.45,
+          "combatTributeDominates": 48.98,
+          "combatNonTributeDominates": 28.8,
+          "cardForTempoOnly": 39.5
+        }
+      },
+      "vsHold": {
+        "pairs": 15377,
+        "fourAxis": {
+          "tributeDominates": 0,
+          "tradeoff": 12505,
+          "nonTributeDominates": 2872,
+          "exactTie": 0
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 11132,
+          "tradeoff": 1373,
+          "nonTributeDominates": 382,
+          "exactTie": 2490
+        },
+        "cardForTempoOnly": 11132,
+        "baseRaceTradeoff": 4288,
+        "preventedOwnMatchDefeat": 2414,
+        "dealtEnemyMatchDefeat": 445,
+        "causedOwnMatchDefeat": 388,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 5841,
+            "tie": 8206,
+            "loss": 1330
+          },
+          "livingTroops": {
+            "win": 7951,
+            "tie": 6973,
+            "loss": 453
+          },
+          "remainingHand": {
+            "win": 0,
+            "tie": 0,
+            "loss": 15377
+          },
+          "defeat": {
+            "win": 9735,
+            "tie": 5109,
+            "loss": 533
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 81.32,
+          "fourAxisTributeDominates": 0,
+          "fourAxisNonTributeDominates": 18.68,
+          "combatTradeoff": 8.93,
+          "combatTributeDominates": 72.39,
+          "combatNonTributeDominates": 2.48,
+          "cardForTempoOnly": 72.39
+        }
+      },
+      "vsFreeSummon": {
+        "pairs": 18283,
+        "fourAxis": {
+          "tributeDominates": 425,
+          "tradeoff": 5503,
+          "nonTributeDominates": 12355,
+          "exactTie": 0
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 518,
+          "tradeoff": 4966,
+          "nonTributeDominates": 12799,
+          "exactTie": 0
+        },
+        "cardForTempoOnly": 93,
+        "baseRaceTradeoff": 4502,
+        "preventedOwnMatchDefeat": 113,
+        "dealtEnemyMatchDefeat": 216,
+        "causedOwnMatchDefeat": 3876,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 306,
+            "tie": 3681,
+            "loss": 14296
+          },
+          "livingTroops": {
+            "win": 564,
+            "tie": 5862,
+            "loss": 11857
+          },
+          "remainingHand": {
+            "win": 607,
+            "tie": 15243,
+            "loss": 2433
+          },
+          "defeat": {
+            "win": 5156,
+            "tie": 7765,
+            "loss": 5362
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 30.1,
+          "fourAxisTributeDominates": 2.32,
+          "fourAxisNonTributeDominates": 67.58,
+          "combatTradeoff": 27.16,
+          "combatTributeDominates": 2.83,
+          "combatNonTributeDominates": 70,
+          "cardForTempoOnly": 0.51
+        }
+      },
+      "vsSpell": {
+        "pairs": 16073,
+        "fourAxis": {
+          "tributeDominates": 4290,
+          "tradeoff": 9766,
+          "nonTributeDominates": 1663,
+          "exactTie": 354
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 12711,
+          "tradeoff": 1345,
+          "nonTributeDominates": 1144,
+          "exactTie": 873
+        },
+        "cardForTempoOnly": 8421,
+        "baseRaceTradeoff": 4665,
+        "preventedOwnMatchDefeat": 2824,
+        "dealtEnemyMatchDefeat": 486,
+        "causedOwnMatchDefeat": 767,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 6396,
+            "tie": 7509,
+            "loss": 2168
+          },
+          "livingTroops": {
+            "win": 10329,
+            "tie": 5390,
+            "loss": 354
+          },
+          "remainingHand": {
+            "win": 0,
+            "tie": 5534,
+            "loss": 10539
+          },
+          "defeat": {
+            "win": 11817,
+            "tie": 3404,
+            "loss": 852
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 60.76,
+          "fourAxisTributeDominates": 26.69,
+          "fourAxisNonTributeDominates": 10.35,
+          "combatTradeoff": 8.37,
+          "combatTributeDominates": 79.08,
+          "combatNonTributeDominates": 7.12,
+          "cardForTempoOnly": 52.39
+        }
+      },
+      "byTributeCost": {
+        "1": {
+          "pairs": 45311,
+          "fourAxis": {
+            "tributeDominates": 4329,
+            "tradeoff": 24796,
+            "nonTributeDominates": 15832,
+            "exactTie": 354
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 23036,
+            "tradeoff": 5736,
+            "nonTributeDominates": 13176,
+            "exactTie": 3363
+          },
+          "cardForTempoOnly": 18707,
+          "baseRaceTradeoff": 12875,
+          "preventedOwnMatchDefeat": 4880,
+          "dealtEnemyMatchDefeat": 986,
+          "causedOwnMatchDefeat": 3898,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 12044,
+              "tie": 18137,
+              "loss": 15130
+            },
+            "livingTroops": {
+              "win": 17282,
+              "tie": 16629,
+              "loss": 11400
+            },
+            "remainingHand": {
+              "win": 499,
+              "tie": 18879,
+              "loss": 25933
+            },
+            "defeat": {
+              "win": 23796,
+              "tie": 16047,
+              "loss": 5468
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 54.72,
+            "fourAxisTributeDominates": 9.55,
+            "fourAxisNonTributeDominates": 34.94,
+            "combatTradeoff": 12.66,
+            "combatTributeDominates": 50.84,
+            "combatNonTributeDominates": 29.08,
+            "cardForTempoOnly": 41.29
+          }
+        },
+        "2": {
+          "pairs": 4422,
+          "fourAxis": {
+            "tributeDominates": 386,
+            "tradeoff": 2978,
+            "nonTributeDominates": 1058,
+            "exactTie": 0
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 1325,
+            "tradeoff": 1948,
+            "nonTributeDominates": 1149,
+            "exactTie": 0
+          },
+          "cardForTempoOnly": 939,
+          "baseRaceTradeoff": 580,
+          "preventedOwnMatchDefeat": 471,
+          "dealtEnemyMatchDefeat": 161,
+          "causedOwnMatchDefeat": 1133,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 499,
+              "tie": 1259,
+              "loss": 2664
+            },
+            "livingTroops": {
+              "win": 1562,
+              "tie": 1596,
+              "loss": 1264
+            },
+            "remainingHand": {
+              "win": 108,
+              "tie": 1898,
+              "loss": 2416
+            },
+            "defeat": {
+              "win": 2912,
+              "tie": 231,
+              "loss": 1279
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 67.35,
+            "fourAxisTributeDominates": 8.73,
+            "fourAxisNonTributeDominates": 23.93,
+            "combatTradeoff": 44.05,
+            "combatTributeDominates": 29.96,
+            "combatNonTributeDominates": 25.98,
+            "cardForTempoOnly": 21.23
+          }
+        }
+      },
+      "byTributeCostVsHold": {
+        "1": {
+          "pairs": 13607,
+          "fourAxis": {
+            "tributeDominates": 0,
+            "tradeoff": 10942,
+            "nonTributeDominates": 2665,
+            "exactTie": 0
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 10505,
+            "tradeoff": 437,
+            "nonTributeDominates": 175,
+            "exactTie": 2490
+          },
+          "cardForTempoOnly": 10505,
+          "baseRaceTradeoff": 4047,
+          "preventedOwnMatchDefeat": 2140,
+          "dealtEnemyMatchDefeat": 389,
+          "causedOwnMatchDefeat": 63,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 5562,
+              "tie": 7619,
+              "loss": 426
+            },
+            "livingTroops": {
+              "win": 7151,
+              "tie": 6304,
+              "loss": 152
+            },
+            "remainingHand": {
+              "win": 0,
+              "tie": 0,
+              "loss": 13607
+            },
+            "defeat": {
+              "win": 8386,
+              "tie": 5033,
+              "loss": 188
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 80.41,
+            "fourAxisTributeDominates": 0,
+            "fourAxisNonTributeDominates": 19.59,
+            "combatTradeoff": 3.21,
+            "combatTributeDominates": 77.2,
+            "combatNonTributeDominates": 1.29,
+            "cardForTempoOnly": 77.2
+          }
+        },
+        "2": {
+          "pairs": 1770,
+          "fourAxis": {
+            "tributeDominates": 0,
+            "tradeoff": 1563,
+            "nonTributeDominates": 207,
+            "exactTie": 0
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 627,
+            "tradeoff": 936,
+            "nonTributeDominates": 207,
+            "exactTie": 0
+          },
+          "cardForTempoOnly": 627,
+          "baseRaceTradeoff": 241,
+          "preventedOwnMatchDefeat": 274,
+          "dealtEnemyMatchDefeat": 56,
+          "causedOwnMatchDefeat": 325,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 279,
+              "tie": 587,
+              "loss": 904
+            },
+            "livingTroops": {
+              "win": 800,
+              "tie": 669,
+              "loss": 301
+            },
+            "remainingHand": {
+              "win": 0,
+              "tie": 0,
+              "loss": 1770
+            },
+            "defeat": {
+              "win": 1349,
+              "tie": 76,
+              "loss": 345
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 88.31,
+            "fourAxisTributeDominates": 0,
+            "fourAxisNonTributeDominates": 11.69,
+            "combatTradeoff": 52.88,
+            "combatTributeDominates": 35.42,
+            "combatNonTributeDominates": 11.69,
+            "cardForTempoOnly": 35.42
+          }
+        }
+      },
+      "bySacrificeConditionVsHold": {
+        "damagedTroop": {
+          "pairs": 9210,
+          "fourAxis": {
+            "tributeDominates": 0,
+            "tradeoff": 7895,
+            "nonTributeDominates": 1315,
+            "exactTie": 0
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 6559,
+            "tradeoff": 1336,
+            "nonTributeDominates": 380,
+            "exactTie": 935
+          },
+          "cardForTempoOnly": 6559,
+          "baseRaceTradeoff": 1218,
+          "preventedOwnMatchDefeat": 1846,
+          "dealtEnemyMatchDefeat": 381,
+          "causedOwnMatchDefeat": 388,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 2899,
+              "tie": 5020,
+              "loss": 1291
+            },
+            "livingTroops": {
+              "win": 5961,
+              "tie": 2796,
+              "loss": 453
+            },
+            "remainingHand": {
+              "win": 0,
+              "tie": 0,
+              "loss": 9210
+            },
+            "defeat": {
+              "win": 7337,
+              "tie": 1340,
+              "loss": 533
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 85.72,
+            "fourAxisTributeDominates": 0,
+            "fourAxisNonTributeDominates": 14.28,
+            "combatTradeoff": 14.51,
+            "combatTributeDominates": 71.22,
+            "combatNonTributeDominates": 4.13,
+            "cardForTempoOnly": 71.22
+          }
+        },
+        "oneHpTroop": {
+          "pairs": 3000,
+          "fourAxis": {
+            "tributeDominates": 0,
+            "tradeoff": 2867,
+            "nonTributeDominates": 133,
+            "exactTie": 0
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 2270,
+            "tradeoff": 597,
+            "nonTributeDominates": 70,
+            "exactTie": 63
+          },
+          "cardForTempoOnly": 2270,
+          "baseRaceTradeoff": 339,
+          "preventedOwnMatchDefeat": 440,
+          "dealtEnemyMatchDefeat": 107,
+          "causedOwnMatchDefeat": 234,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 783,
+              "tie": 1653,
+              "loss": 564
+            },
+            "livingTroops": {
+              "win": 2331,
+              "tie": 576,
+              "loss": 93
+            },
+            "remainingHand": {
+              "win": 0,
+              "tie": 0,
+              "loss": 3000
+            },
+            "defeat": {
+              "win": 2595,
+              "tie": 153,
+              "loss": 252
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 95.57,
+            "fourAxisTributeDominates": 0,
+            "fourAxisNonTributeDominates": 4.43,
+            "combatTradeoff": 19.9,
+            "combatTributeDominates": 75.67,
+            "combatNonTributeDominates": 2.33,
+            "cardForTempoOnly": 75.67
+          }
+        },
+        "fullHealthOnly": {
+          "pairs": 6167,
+          "fourAxis": {
+            "tributeDominates": 0,
+            "tradeoff": 4610,
+            "nonTributeDominates": 1557,
+            "exactTie": 0
+          },
+          "combatThreeAxis": {
+            "tributeDominates": 4573,
+            "tradeoff": 37,
+            "nonTributeDominates": 2,
+            "exactTie": 1555
+          },
+          "cardForTempoOnly": 4573,
+          "baseRaceTradeoff": 3070,
+          "preventedOwnMatchDefeat": 568,
+          "dealtEnemyMatchDefeat": 64,
+          "causedOwnMatchDefeat": 0,
+          "axisBreakdown": {
+            "baseOrbs": {
+              "win": 2942,
+              "tie": 3186,
+              "loss": 39
+            },
+            "livingTroops": {
+              "win": 1990,
+              "tie": 4177,
+              "loss": 0
+            },
+            "remainingHand": {
+              "win": 0,
+              "tie": 0,
+              "loss": 6167
+            },
+            "defeat": {
+              "win": 2398,
+              "tie": 3769,
+              "loss": 0
+            }
+          },
+          "ratesPct": {
+            "fourAxisTradeoff": 74.75,
+            "fourAxisTributeDominates": 0,
+            "fourAxisNonTributeDominates": 25.25,
+            "combatTradeoff": 0.6,
+            "combatTributeDominates": 74.15,
+            "combatNonTributeDominates": 0.03,
+            "cardForTempoOnly": 74.15
+          }
+        }
+      },
+      "twoTributeVsOneTribute": {
+        "pairs": 5598,
+        "fourAxis": {
+          "tributeDominates": 843,
+          "tradeoff": 1871,
+          "nonTributeDominates": 2884,
+          "exactTie": 0
+        },
+        "combatThreeAxis": {
+          "tributeDominates": 864,
+          "tradeoff": 1345,
+          "nonTributeDominates": 3389,
+          "exactTie": 0
+        },
+        "cardForTempoOnly": 21,
+        "baseRaceTradeoff": 681,
+        "preventedOwnMatchDefeat": 205,
+        "dealtEnemyMatchDefeat": 79,
+        "causedOwnMatchDefeat": 1533,
+        "axisBreakdown": {
+          "baseOrbs": {
+            "win": 263,
+            "tie": 1861,
+            "loss": 3474
+          },
+          "livingTroops": {
+            "win": 642,
+            "tie": 2235,
+            "loss": 2721
+          },
+          "remainingHand": {
+            "win": 763,
+            "tie": 4654,
+            "loss": 181
+          },
+          "defeat": {
+            "win": 1810,
+            "tie": 1692,
+            "loss": 2096
+          }
+        },
+        "ratesPct": {
+          "fourAxisTradeoff": 33.42,
+          "fourAxisTributeDominates": 15.06,
+          "fourAxisNonTributeDominates": 51.52,
+          "combatTradeoff": 24.03,
+          "combatTributeDominates": 15.43,
+          "combatNonTributeDominates": 60.54,
+          "cardForTempoOnly": 0.38
+        }
+      },
+      "uniquePublicPositions": 1581,
+      "stateRatesPct": {
+        "duplicateActionReduction": 24.66,
+        "botChoseTribute": 30.92,
+        "chosenTributeRegretVsNonTributeAmongChosen": 16.22,
+        "chosenTributeRegretVsAnyAmongChosen": 20.27,
+        "anyTributeBeatsHoldOnBase": 72.63,
+        "anyTributeBeatsAllNonTributesOnCombat": 24.19,
+        "allTributesDominatedOnCombat": 41.88,
+        "anyTributeSavesLethalVsHold": 26.76,
+        "anyTributeDealsLethalVsHold": 5.06
+      }
+    }
+  },
+  "exampleSeed": [
+    {
+      "seed": 60,
+      "firstSeat": "cowboy",
+      "naturalFirstSeat": false,
+      "result": {
+        "winner": "wizard",
+        "loser": "cowboy",
+        "reason": "base-destroyed",
+        "round": 4
+      },
+      "totalActions": 18,
+      "decisions": [
+        {
+          "round": 2,
+          "actingFirstInRound": false,
+          "baseBefore": "4-4",
+          "ownBoardBefore": "Sheriff:3|-|-",
+          "enemyBoardBefore": "-|Skeleton:3|Skeleton:3",
+          "ownHandBefore": [
+            "Sheriff",
+            "Mounted Billy",
+            "Deadeye",
+            "Billy"
+          ],
+          "rawLegalActions": 8,
+          "distinctActionGroups": 8,
+          "chosenKey": "summon:Sheriff:trib0:[Sheriff:3|Sheriff:3|-]",
+          "branches": [
+            {
+              "key": "summon:Sheriff:trib0:[Sheriff:3|Sheriff:3|-]",
+              "category": "free-summon",
+              "rawCount": 1,
+              "chosenByBot": true,
+              "baseAfter": "3-3",
+              "netBaseOrbs": 0,
+              "livingTroops": "2-2",
+              "ownBoardAfter": "Sheriff:3|Sheriff:2|-",
+              "enemyBoardAfter": "-|Skeleton:2|Skeleton:3",
+              "ownRemainingHand": 3,
+              "troopDefeats": "0-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "summon:Sheriff:trib0:[Sheriff:3|-|Sheriff:3]",
+              "category": "free-summon",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "3-3",
+              "netBaseOrbs": 0,
+              "livingTroops": "2-2",
+              "ownBoardAfter": "Sheriff:3|-|Sheriff:2",
+              "enemyBoardAfter": "-|Skeleton:3|Skeleton:2",
+              "ownRemainingHand": 3,
+              "troopDefeats": "0-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "summon:Billy:trib1:[Billy:4|-|-]",
+              "category": "tribute-1",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "2-2",
+              "netBaseOrbs": 0,
+              "livingTroops": "1-2",
+              "ownBoardAfter": "Billy:4|-|-",
+              "enemyBoardAfter": "-|Skeleton:3|Skeleton:3",
+              "ownRemainingHand": 3,
+              "troopDefeats": "0-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "summon:Billy:trib1:[-|Billy:4|-]",
+              "category": "tribute-1",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "3-4",
+              "netBaseOrbs": -1,
+              "livingTroops": "1-1",
+              "ownBoardAfter": "-|Billy:3|-",
+              "enemyBoardAfter": "-|-|Skeleton:3",
+              "ownRemainingHand": 2,
+              "troopDefeats": "0-1",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "summon:Billy:trib1:[-|-|Billy:4]",
+              "category": "tribute-1",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "3-4",
+              "netBaseOrbs": -1,
+              "livingTroops": "1-1",
+              "ownBoardAfter": "-|-|Billy:3",
+              "enemyBoardAfter": "-|Skeleton:3|-",
+              "ownRemainingHand": 2,
+              "troopDefeats": "0-1",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "spell:Deadeye:L1->stay",
+              "category": "spell",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "2-3",
+              "netBaseOrbs": -1,
+              "livingTroops": "1-2",
+              "ownBoardAfter": "Sheriff:3|-|-",
+              "enemyBoardAfter": "-|Skeleton:2|Skeleton:3",
+              "ownRemainingHand": 3,
+              "troopDefeats": "0-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "spell:Deadeye:L2->stay",
+              "category": "spell",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "2-3",
+              "netBaseOrbs": -1,
+              "livingTroops": "1-2",
+              "ownBoardAfter": "Sheriff:3|-|-",
+              "enemyBoardAfter": "-|Skeleton:3|Skeleton:2",
+              "ownRemainingHand": 3,
+              "troopDefeats": "0-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "end-phase",
+              "category": "hold",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "2-3",
+              "netBaseOrbs": -1,
+              "livingTroops": "1-2",
+              "ownBoardAfter": "Sheriff:3|-|-",
+              "enemyBoardAfter": "-|Skeleton:3|Skeleton:3",
+              "ownRemainingHand": 4,
+              "troopDefeats": "0-0",
+              "matchOutcome": "ongoing"
+            }
+          ]
+        },
+        {
+          "round": 3,
+          "actingFirstInRound": true,
+          "baseBefore": "3-3",
+          "ownBoardBefore": "Sheriff:3|Sheriff:2|-",
+          "enemyBoardBefore": "-|Skeleton:2|Skeleton:3",
+          "ownHandBefore": [
+            "Mounted Billy",
+            "Deadeye",
+            "Billy",
+            "Billy"
+          ],
+          "rawLegalActions": 14,
+          "distinctActionGroups": 10,
+          "chosenKey": "summon:Mounted Billy:trib2:[Mounted Billy:5|-|-]",
+          "branches": [
+            {
+              "key": "summon:Mounted Billy:trib2:[Mounted Billy:5|-|-]",
+              "category": "tribute-2",
+              "rawCount": 1,
+              "chosenByBot": true,
+              "baseAfter": "2-3",
+              "netBaseOrbs": -1,
+              "livingTroops": "1-2",
+              "ownBoardAfter": "Mounted Billy:3|-|-",
+              "enemyBoardAfter": "Wizard:1|-|Skeleton:3",
+              "ownRemainingHand": 3,
+              "troopDefeats": "0-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "summon:Mounted Billy:trib2:[-|Mounted Billy:5|-]",
+              "category": "tribute-2",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "2-3",
+              "netBaseOrbs": -1,
+              "livingTroops": "1-2",
+              "ownBoardAfter": "-|Mounted Billy:3|-",
+              "enemyBoardAfter": "-|Wizard:1|Skeleton:3",
+              "ownRemainingHand": 3,
+              "troopDefeats": "0-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "summon:Mounted Billy:trib2:[-|-|Mounted Billy:5]",
+              "category": "tribute-2",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "2-3",
+              "netBaseOrbs": -1,
+              "livingTroops": "1-2",
+              "ownBoardAfter": "-|-|Mounted Billy:3",
+              "enemyBoardAfter": "-|Skeleton:2|Wizard:1",
+              "ownRemainingHand": 3,
+              "troopDefeats": "0-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "summon:Billy:trib1:[Billy:4|Sheriff:2|-]",
+              "category": "tribute-1",
+              "rawCount": 2,
+              "chosenByBot": false,
+              "baseAfter": "2-2",
+              "netBaseOrbs": 0,
+              "livingTroops": "2-2",
+              "ownBoardAfter": "Billy:2|Sheriff:2|-",
+              "enemyBoardAfter": "Wizard:2|-|Skeleton:3",
+              "ownRemainingHand": 2,
+              "troopDefeats": "0-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "summon:Billy:trib1:[-|Sheriff:2|Billy:4]",
+              "category": "tribute-1",
+              "rawCount": 2,
+              "chosenByBot": false,
+              "baseAfter": "1-2",
+              "netBaseOrbs": -1,
+              "livingTroops": "2-2",
+              "ownBoardAfter": "-|Sheriff:2|Billy:3",
+              "enemyBoardAfter": "Wizard:4|-|Skeleton:1",
+              "ownRemainingHand": 2,
+              "troopDefeats": "0-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "summon:Billy:trib1:[Sheriff:3|Billy:4|-]",
+              "category": "tribute-1",
+              "rawCount": 2,
+              "chosenByBot": false,
+              "baseAfter": "2-2",
+              "netBaseOrbs": 0,
+              "livingTroops": "2-2",
+              "ownBoardAfter": "Sheriff:3|Billy:2|-",
+              "enemyBoardAfter": "-|Wizard:2|Skeleton:3",
+              "ownRemainingHand": 3,
+              "troopDefeats": "0-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "summon:Billy:trib1:[Sheriff:3|-|Billy:4]",
+              "category": "tribute-1",
+              "rawCount": 2,
+              "chosenByBot": false,
+              "baseAfter": "2-2",
+              "netBaseOrbs": 0,
+              "livingTroops": "2-2",
+              "ownBoardAfter": "Sheriff:3|-|Billy:2",
+              "enemyBoardAfter": "-|Skeleton:2|Wizard:2",
+              "ownRemainingHand": 2,
+              "troopDefeats": "0-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "spell:Deadeye:L1->stay",
+              "category": "spell",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "0-1",
+              "netBaseOrbs": -1,
+              "livingTroops": "2-1",
+              "ownBoardAfter": "Sheriff:3|Sheriff:2|-",
+              "enemyBoardAfter": "-|-|Dragon:5",
+              "ownRemainingHand": 3,
+              "troopDefeats": "0-0",
+              "matchOutcome": "loss"
+            },
+            {
+              "key": "spell:Deadeye:L2->stay",
+              "category": "spell",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "0-1",
+              "netBaseOrbs": -1,
+              "livingTroops": "2-1",
+              "ownBoardAfter": "Sheriff:3|Sheriff:2|-",
+              "enemyBoardAfter": "-|-|Dragon:5",
+              "ownRemainingHand": 3,
+              "troopDefeats": "0-0",
+              "matchOutcome": "loss"
+            },
+            {
+              "key": "end-phase",
+              "category": "hold",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "0-1",
+              "netBaseOrbs": -1,
+              "livingTroops": "2-1",
+              "ownBoardAfter": "Sheriff:3|Sheriff:2|-",
+              "enemyBoardAfter": "-|-|Dragon:5",
+              "ownRemainingHand": 4,
+              "troopDefeats": "0-0",
+              "matchOutcome": "loss"
+            }
+          ]
+        },
+        {
+          "round": 4,
+          "actingFirstInRound": false,
+          "baseBefore": "2-3",
+          "ownBoardBefore": "Mounted Billy:2|-|-",
+          "enemyBoardBefore": "Wizard:1|Skeleton:3|Skeleton:3",
+          "ownHandBefore": [
+            "Deadeye",
+            "Billy",
+            "Billy",
+            "Billy"
+          ],
+          "rawLegalActions": 13,
+          "distinctActionGroups": 7,
+          "chosenKey": "summon:Billy:trib1:[Billy:4|-|-]",
+          "branches": [
+            {
+              "key": "summon:Billy:trib1:[Billy:4|-|-]",
+              "category": "tribute-1",
+              "rawCount": 3,
+              "chosenByBot": true,
+              "baseAfter": "0-1",
+              "netBaseOrbs": -1,
+              "livingTroops": "1-2",
+              "ownBoardAfter": "Billy:4|-|-",
+              "enemyBoardAfter": "-|Skeleton:3|Skeleton:3",
+              "ownRemainingHand": 2,
+              "troopDefeats": "0-1",
+              "matchOutcome": "loss"
+            },
+            {
+              "key": "summon:Billy:trib1:[-|Billy:4|-]",
+              "category": "tribute-1",
+              "rawCount": 3,
+              "chosenByBot": false,
+              "baseAfter": "1-3",
+              "netBaseOrbs": -2,
+              "livingTroops": "1-2",
+              "ownBoardAfter": "-|Billy:3|-",
+              "enemyBoardAfter": "-|Skeleton:1|Skeleton:3",
+              "ownRemainingHand": 2,
+              "troopDefeats": "0-1",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "summon:Billy:trib1:[-|-|Billy:4]",
+              "category": "tribute-1",
+              "rawCount": 3,
+              "chosenByBot": false,
+              "baseAfter": "1-3",
+              "netBaseOrbs": -2,
+              "livingTroops": "1-2",
+              "ownBoardAfter": "-|-|Billy:3",
+              "enemyBoardAfter": "-|Skeleton:3|Skeleton:1",
+              "ownRemainingHand": 2,
+              "troopDefeats": "0-1",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "spell:Deadeye:L0->stay",
+              "category": "spell",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "0-0",
+              "netBaseOrbs": 0,
+              "livingTroops": "1-2",
+              "ownBoardAfter": "Mounted Billy:2|-|-",
+              "enemyBoardAfter": "-|Skeleton:3|Skeleton:3",
+              "ownRemainingHand": 3,
+              "troopDefeats": "0-1",
+              "matchOutcome": "draw"
+            },
+            {
+              "key": "spell:Deadeye:L1->stay",
+              "category": "spell",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "0-3",
+              "netBaseOrbs": -3,
+              "livingTroops": "0-2",
+              "ownBoardAfter": "-|-|-",
+              "enemyBoardAfter": "-|Skeleton:2|Skeleton:3",
+              "ownRemainingHand": 3,
+              "troopDefeats": "1-1",
+              "matchOutcome": "loss"
+            },
+            {
+              "key": "spell:Deadeye:L2->stay",
+              "category": "spell",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "0-3",
+              "netBaseOrbs": -3,
+              "livingTroops": "0-2",
+              "ownBoardAfter": "-|-|-",
+              "enemyBoardAfter": "-|Skeleton:3|Skeleton:2",
+              "ownRemainingHand": 3,
+              "troopDefeats": "1-1",
+              "matchOutcome": "loss"
+            },
+            {
+              "key": "end-phase",
+              "category": "hold",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "0-3",
+              "netBaseOrbs": -3,
+              "livingTroops": "0-2",
+              "ownBoardAfter": "-|-|-",
+              "enemyBoardAfter": "-|Skeleton:3|Skeleton:3",
+              "ownRemainingHand": 4,
+              "troopDefeats": "1-1",
+              "matchOutcome": "loss"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 60,
+      "firstSeat": "wizard",
+      "naturalFirstSeat": true,
+      "result": {
+        "winner": "wizard",
+        "loser": "cowboy",
+        "reason": "base-destroyed",
+        "round": 5
+      },
+      "totalActions": 22,
+      "decisions": [
+        {
+          "round": 2,
+          "actingFirstInRound": true,
+          "baseBefore": "5-5",
+          "ownBoardBefore": "Sheriff:2|-|-",
+          "enemyBoardBefore": "Skeleton:2|-|-",
+          "ownHandBefore": [
+            "Sheriff",
+            "Mounted Billy",
+            "Deadeye",
+            "Billy"
+          ],
+          "rawLegalActions": 7,
+          "distinctActionGroups": 7,
+          "chosenKey": "summon:Sheriff:trib0:[Sheriff:2|Sheriff:3|-]",
+          "branches": [
+            {
+              "key": "summon:Sheriff:trib0:[Sheriff:2|Sheriff:3|-]",
+              "category": "free-summon",
+              "rawCount": 1,
+              "chosenByBot": true,
+              "baseAfter": "5-4",
+              "netBaseOrbs": 1,
+              "livingTroops": "1-1",
+              "ownBoardAfter": "-|Sheriff:3|-",
+              "enemyBoardAfter": "Wizard:3|-|-",
+              "ownRemainingHand": 2,
+              "troopDefeats": "1-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "summon:Sheriff:trib0:[Sheriff:2|-|Sheriff:3]",
+              "category": "free-summon",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "5-4",
+              "netBaseOrbs": 1,
+              "livingTroops": "1-1",
+              "ownBoardAfter": "-|-|Sheriff:3",
+              "enemyBoardAfter": "Wizard:3|-|-",
+              "ownRemainingHand": 2,
+              "troopDefeats": "1-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "summon:Billy:trib1:[Billy:4|-|-]",
+              "category": "tribute-1",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "3-3",
+              "netBaseOrbs": 0,
+              "livingTroops": "1-1",
+              "ownBoardAfter": "Billy:4|-|-",
+              "enemyBoardAfter": "-|Wizard:4|-",
+              "ownRemainingHand": 3,
+              "troopDefeats": "0-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "summon:Billy:trib1:[-|Billy:4|-]",
+              "category": "tribute-1",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "4-5",
+              "netBaseOrbs": -1,
+              "livingTroops": "1-2",
+              "ownBoardAfter": "-|Billy:3|-",
+              "enemyBoardAfter": "Skeleton:2|Skeleton:1|-",
+              "ownRemainingHand": 3,
+              "troopDefeats": "0-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "summon:Billy:trib1:[-|-|Billy:4]",
+              "category": "tribute-1",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "4-5",
+              "netBaseOrbs": -1,
+              "livingTroops": "1-2",
+              "ownBoardAfter": "-|-|Billy:3",
+              "enemyBoardAfter": "Skeleton:2|-|Skeleton:1",
+              "ownRemainingHand": 3,
+              "troopDefeats": "0-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "spell:Deadeye:L0->stay",
+              "category": "spell",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "5-5",
+              "netBaseOrbs": 0,
+              "livingTroops": "0-1",
+              "ownBoardAfter": "-|-|-",
+              "enemyBoardAfter": "Wizard:3|-|-",
+              "ownRemainingHand": 3,
+              "troopDefeats": "1-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "end-phase",
+              "category": "hold",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "5-5",
+              "netBaseOrbs": 0,
+              "livingTroops": "0-1",
+              "ownBoardAfter": "-|-|-",
+              "enemyBoardAfter": "Wizard:3|-|-",
+              "ownRemainingHand": 4,
+              "troopDefeats": "1-0",
+              "matchOutcome": "ongoing"
+            }
+          ]
+        },
+        {
+          "round": 3,
+          "actingFirstInRound": false,
+          "baseBefore": "5-4",
+          "ownBoardBefore": "-|Sheriff:3|-",
+          "enemyBoardBefore": "Wizard:3|-|Skeleton:3",
+          "ownHandBefore": [
+            "Mounted Billy",
+            "Billy",
+            "Billy"
+          ],
+          "rawLegalActions": 7,
+          "distinctActionGroups": 4,
+          "chosenKey": "summon:Billy:trib1:[Billy:4|-|-]",
+          "branches": [
+            {
+              "key": "summon:Billy:trib1:[Billy:4|-|-]",
+              "category": "tribute-1",
+              "rawCount": 2,
+              "chosenByBot": true,
+              "baseAfter": "4-4",
+              "netBaseOrbs": 0,
+              "livingTroops": "1-2",
+              "ownBoardAfter": "Billy:2|-|-",
+              "enemyBoardAfter": "Wizard:1|-|Skeleton:3",
+              "ownRemainingHand": 2,
+              "troopDefeats": "0-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "summon:Billy:trib1:[-|Billy:4|-]",
+              "category": "tribute-1",
+              "rawCount": 2,
+              "chosenByBot": false,
+              "baseAfter": "2-2",
+              "netBaseOrbs": 0,
+              "livingTroops": "1-2",
+              "ownBoardAfter": "-|Billy:4|-",
+              "enemyBoardAfter": "Wizard:3|-|Skeleton:3",
+              "ownRemainingHand": 2,
+              "troopDefeats": "0-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "summon:Billy:trib1:[-|-|Billy:4]",
+              "category": "tribute-1",
+              "rawCount": 2,
+              "chosenByBot": false,
+              "baseAfter": "3-4",
+              "netBaseOrbs": -1,
+              "livingTroops": "1-2",
+              "ownBoardAfter": "-|-|Billy:3",
+              "enemyBoardAfter": "Wizard:3|-|Skeleton:1",
+              "ownRemainingHand": 2,
+              "troopDefeats": "0-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "end-phase",
+              "category": "hold",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "2-3",
+              "netBaseOrbs": -1,
+              "livingTroops": "1-2",
+              "ownBoardAfter": "-|Sheriff:3|-",
+              "enemyBoardAfter": "Wizard:3|-|Skeleton:3",
+              "ownRemainingHand": 3,
+              "troopDefeats": "0-0",
+              "matchOutcome": "ongoing"
+            }
+          ]
+        },
+        {
+          "round": 4,
+          "actingFirstInRound": true,
+          "baseBefore": "4-4",
+          "ownBoardBefore": "Billy:2|-|-",
+          "enemyBoardBefore": "Wizard:1|-|Skeleton:3",
+          "ownHandBefore": [
+            "Mounted Billy",
+            "Billy",
+            "Billy"
+          ],
+          "rawLegalActions": 7,
+          "distinctActionGroups": 4,
+          "chosenKey": "summon:Billy:trib1:[Billy:4|-|-]",
+          "branches": [
+            {
+              "key": "summon:Billy:trib1:[Billy:4|-|-]",
+              "category": "tribute-1",
+              "rawCount": 2,
+              "chosenByBot": true,
+              "baseAfter": "1-4",
+              "netBaseOrbs": -3,
+              "livingTroops": "1-3",
+              "ownBoardAfter": "-|Billy:2|-",
+              "enemyBoardAfter": "Wizard:1|Skeleton:1|Skeleton:3",
+              "ownRemainingHand": 2,
+              "troopDefeats": "0-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "summon:Billy:trib1:[-|Billy:4|-]",
+              "category": "tribute-1",
+              "rawCount": 2,
+              "chosenByBot": false,
+              "baseAfter": "1-4",
+              "netBaseOrbs": -3,
+              "livingTroops": "1-3",
+              "ownBoardAfter": "-|Billy:3|-",
+              "enemyBoardAfter": "Wizard:1|Skeleton:1|Skeleton:3",
+              "ownRemainingHand": 2,
+              "troopDefeats": "0-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "summon:Billy:trib1:[-|-|Billy:4]",
+              "category": "tribute-1",
+              "rawCount": 2,
+              "chosenByBot": false,
+              "baseAfter": "1-4",
+              "netBaseOrbs": -3,
+              "livingTroops": "1-3",
+              "ownBoardAfter": "-|-|Billy:3",
+              "enemyBoardAfter": "Wizard:1|Skeleton:3|Skeleton:1",
+              "ownRemainingHand": 2,
+              "troopDefeats": "0-0",
+              "matchOutcome": "ongoing"
+            },
+            {
+              "key": "end-phase",
+              "category": "hold",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "1-4",
+              "netBaseOrbs": -3,
+              "livingTroops": "0-3",
+              "ownBoardAfter": "-|-|-",
+              "enemyBoardAfter": "Wizard:1|Skeleton:1|Skeleton:3",
+              "ownRemainingHand": 3,
+              "troopDefeats": "1-0",
+              "matchOutcome": "ongoing"
+            }
+          ]
+        },
+        {
+          "round": 5,
+          "actingFirstInRound": false,
+          "baseBefore": "1-4",
+          "ownBoardBefore": "-|Billy:2|-",
+          "enemyBoardBefore": "Wizard:1|Wizard:4|Skeleton:3",
+          "ownHandBefore": [
+            "Mounted Billy",
+            "Billy",
+            "Sheriff"
+          ],
+          "rawLegalActions": 6,
+          "distinctActionGroups": 6,
+          "chosenKey": "summon:Billy:trib1:[Billy:4|-|-]",
+          "branches": [
+            {
+              "key": "summon:Billy:trib1:[Billy:4|-|-]",
+              "category": "tribute-1",
+              "rawCount": 1,
+              "chosenByBot": true,
+              "baseAfter": "0-4",
+              "netBaseOrbs": -4,
+              "livingTroops": "1-2",
+              "ownBoardAfter": "Billy:2|-|-",
+              "enemyBoardAfter": "-|Wizard:4|Skeleton:3",
+              "ownRemainingHand": 2,
+              "troopDefeats": "0-1",
+              "matchOutcome": "loss"
+            },
+            {
+              "key": "summon:Billy:trib1:[-|Billy:4|-]",
+              "category": "tribute-1",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "0-4",
+              "netBaseOrbs": -4,
+              "livingTroops": "1-3",
+              "ownBoardAfter": "-|Billy:2|-",
+              "enemyBoardAfter": "Wizard:1|Wizard:2|Skeleton:3",
+              "ownRemainingHand": 2,
+              "troopDefeats": "0-0",
+              "matchOutcome": "loss"
+            },
+            {
+              "key": "summon:Billy:trib1:[-|-|Billy:4]",
+              "category": "tribute-1",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "0-4",
+              "netBaseOrbs": -4,
+              "livingTroops": "1-3",
+              "ownBoardAfter": "-|-|Billy:3",
+              "enemyBoardAfter": "Wizard:1|Wizard:4|Skeleton:1",
+              "ownRemainingHand": 2,
+              "troopDefeats": "0-0",
+              "matchOutcome": "loss"
+            },
+            {
+              "key": "summon:Sheriff:trib0:[Sheriff:3|Billy:2|-]",
+              "category": "free-summon",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "0-4",
+              "netBaseOrbs": -4,
+              "livingTroops": "1-2",
+              "ownBoardAfter": "Sheriff:1|-|-",
+              "enemyBoardAfter": "-|Wizard:2|Skeleton:3",
+              "ownRemainingHand": 2,
+              "troopDefeats": "1-1",
+              "matchOutcome": "loss"
+            },
+            {
+              "key": "summon:Sheriff:trib0:[-|Billy:2|Sheriff:3]",
+              "category": "free-summon",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "0-4",
+              "netBaseOrbs": -4,
+              "livingTroops": "1-3",
+              "ownBoardAfter": "-|-|Sheriff:2",
+              "enemyBoardAfter": "Wizard:1|Wizard:2|Skeleton:2",
+              "ownRemainingHand": 2,
+              "troopDefeats": "1-0",
+              "matchOutcome": "loss"
+            },
+            {
+              "key": "end-phase",
+              "category": "hold",
+              "rawCount": 1,
+              "chosenByBot": false,
+              "baseAfter": "0-4",
+              "netBaseOrbs": -4,
+              "livingTroops": "0-3",
+              "ownBoardAfter": "-|-|-",
+              "enemyBoardAfter": "Wizard:1|Wizard:2|Skeleton:3",
+              "ownRemainingHand": 3,
+              "troopDefeats": "1-0",
+              "matchOutcome": "loss"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
