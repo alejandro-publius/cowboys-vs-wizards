@@ -8,6 +8,7 @@ import {guideLine, guideProgress, trackGuide} from "./match/guide.js";
 import {DEFAULT_PAUSES} from "./match/presenter.js";
 import {createScheduler} from "./match/scheduler.js";
 import {blockedReasons} from "./match/selection.js";
+import {spellForecasts} from "./match/spell-forecast.js";
 import {summonForecasts} from "./match/summon-forecast.js";
 import {createProfileStore} from "./profile/player-profile.js";
 import {cardModel} from "./ui/card-model.js";
@@ -88,6 +89,10 @@ const controller = createController({
     model.summonForecasts = status === "accepting_input" ? summonForecasts(displayed, options) : {};
     if (Object.keys(model.summonForecasts).length > 0) {
       model.prompt += " Clash preview assumes the rest of the board stays as shown.";
+    }
+    model.spellForecasts = status === "accepting_input" ? spellForecasts(displayed, options) : {};
+    if (Object.keys(model.spellForecasts).length > 0) {
+      model.prompt += " Shot preview assumes no Wizard reply before the clash.";
     }
     overlay.render(model);
   },

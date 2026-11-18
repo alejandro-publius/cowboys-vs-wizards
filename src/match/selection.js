@@ -196,7 +196,7 @@ function idlePrompt(view, hasPlayableCards) {
 }
 
 // What the overlay may offer for the current step: clickable own and enemy
-// slots, the chosen tributes, button flags and a short prompt.
+// slots, the chosen tributes and spell target, button flags and a short prompt.
 export function selectionOptions(current, view, { cards = CARDS } = {}) {
   const actions = legalFor(view, cards);
   const playableCardIds = playableIds(actions);
@@ -205,6 +205,8 @@ export function selectionOptions(current, view, { cards = CARDS } = {}) {
     step: current.step,
     cardId: current.cardId ?? null,
     tributes: [...(current.tributes ?? [])],
+    // The chosen spell target from its pick through confirmation, else null.
+    target: current.target ?? null,
     ownSlots: [],
     enemySlots: [],
     canConfirm: false,
