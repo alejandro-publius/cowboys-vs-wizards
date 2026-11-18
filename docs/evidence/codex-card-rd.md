@@ -1,6 +1,6 @@
 # Graybox card design experiments
 
-November 17, 2026 Pacific. This note covers Codex's work. The Kiro and Antigravity jobs have separate worktrees and receipts.
+November 17–18, 2026 Pacific. This note records the graybox changes and the results that informed them. Kiro and Antigravity worked in separate worktrees.
 
 ## Make the existing lane choice readable
 
@@ -26,6 +26,19 @@ On the shared 512-seed set, the paired change was −6.93 points for Normal (95%
 
 The deck workbench now shows the exact chance of a four-card opening with no free summon for the current legal deck. This is calculated from the deck's own card counts without simulating games. In Safari, the six-Sheriff stock deck showed 3.0% and a legal one-Sheriff deck showed 66.7%. The calculation describes the ordinary opening, before any optional opening policy.
 
+## Round-one Base shield
+
+Kiro IDE with Claude Opus 5.5 wrote the Requirements-First spec, flag-gated engine variant, tests and paired runner on `kiro/round-one-tempo`. In the Normal mirror, seeds 20000–20511 gave 1,024 matches per variant. The holdout report and its repeat matched byte for byte.
+
+| CPU mirror | Opening | First-seat win gap before → after shield | Mean rounds before → after |
+| --- | --- | --- | --- |
+| Normal, Kiro | Shipped | +24.32 → +24.12 pt | 7.175 → 7.234 |
+| Normal, Kiro | Both | +12.70 → +12.70 pt | 7.621 → 7.621 |
+| Hard, Codex follow-up | Shipped | −22.56 → −25.59 pt | 5.766 → 6.302 |
+| Hard, Codex follow-up | Both | −43.26 → −55.37 pt | 5.822 → 6.253 |
+
+Kiro's shield absorbed 74 Base orbs under the shipped opening. In Both, the Normal bots blocked every lane that had a round-one attack, so the shield did nothing in that cohort. Keep the current rules for the working build. The Normal spec replay and the Hard sensitivity are two separately labeled runs on the same seeds.
+
 ## Test whether the biggest summon pays off
 
 The deck screen uses the game's legal deck builder and current engine. It tests five Cowboy deck plans against the stock Wizard deck over seeds 24000–24255, each with both starting seats and separate Normal and Hard mirrors. Wider control decks with six Sheriffs performed better than tribute-heavy and spell-heavy decks in that sample.
@@ -39,7 +52,9 @@ An isolated follow-up replaces just one Mounted Billy with one Deadeye, keeping 
 
 The stock deck and signature seed-60 route stay intact. Check whether the extra Deadeye, the lost opportunity to draw an expensive troop, or a particular response policy drives the result before tuning a card. This is a deck swap under fixed bots, so it does not by itself establish a cause or a human balance change.
 
-The graybox also previews a visible cost of tributing. Each placement shows which paid lanes would expose your Base to an enemy that was already across from a tribute troop. Refill one of those lanes and the forecast shows its troop exchange instead. The focused fixture puts a Dragon across from a tribute. Placing Mounted Billy away from that lane exposes a 3-orb Base to defeat, while refilling the lane produces a trade between Billy and the Dragon. This preview uses the current board and leaves room for a later move or spell to change the clash.
+Antigravity's Carbon High audit found a concrete case to teach. When the normal Cowboy bot acted first and chose Mounted Billy, an alternative had a better same-round Base margin in 238 of 252 holdout decisions against the Normal Wizard and 569 of 642 against the Hard Wizard. That finding concerns the immediate Base margin. Future rounds and human choices can reverse the trade.
+
+The graybox now shows which paid lanes expose your Base to an enemy that was across from a tribute troop before the summon. In Safari, seed 60 round four showed lane two open and the Cowboy Base going from four to three if Mounted Billy went in lane three. Refilling lane two showed the Skeleton and Mounted Billy exchanging hits. The later showdown still left the Dragon at two of five orbs and the Cowboy center empty in round six.
 
 ```sh
 node scripts/screen-cowboy-decks.mjs
