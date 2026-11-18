@@ -1,11 +1,20 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { CARDS, DECKS, SIDES } from "../../src/game/cards.js";
+import { deckIds } from "../../src/game/deck-builder.js";
 import { createMatch } from "../../src/game/state.js";
-import { drought, isFree, openingMatch, parseOpeningParams } from "../../src/game/opening-policy.js";
+import { drought, isFree, openingDroughtRate, openingMatch, parseOpeningParams } from "../../src/game/opening-policy.js";
 
 const seeds = [0, 60, ...Array.from({ length: 300 }, (_, i) => 1000 + i)];
 const params = (query) => new URLSearchParams(query);
+
+test("standard opening risk is exact for stock and one-Sheriff decks", () => {
+  const heavyDeck = deckIds({
+    "cowboy-sheriff": 1, "cowboy-billy": 3, "cowboy-mounted-billy": 4, "cowboy-deadeye": 4,
+  });
+  assert.ok(Math.abs(openingDroughtRate(DECKS.cowboy) - 15 / 495) < 1e-12);
+  assert.ok(Math.abs(openingDroughtRate(heavyDeck) - 330 / 495) < 1e-12);
+});
 
 test("shipped opening equals createMatch for natural and forced seats", () => {
   for (const seed of seeds) assert.deepEqual(openingMatch(seed, "shipped"), createMatch(seed));

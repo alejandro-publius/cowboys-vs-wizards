@@ -24,6 +24,8 @@ The existing Both experiment combines a guaranteed free opener and a fifth card 
 
 On the shared 512-seed set, the paired change was −6.93 points for Normal (95% interval −12.06 to −1.80) and −19.04 points for Hard (95% interval −23.26 to −14.82). Both eliminated the observed no-summon starts, but it widened the existing Hard second-seat advantage. Free opener alone removed the same no-summon starts with a much smaller gap change (+0.59 for Normal and −0.29 for Hard). Keep the ordinary opening rules while testing those two questions separately: can both sides act early, and is the seat advantage acceptable? Human balance remains unmeasured.
 
+The deck workbench now shows the exact chance of a four-card opening with no free summon for the current legal deck. This is calculated from the deck's own card counts without simulating games. In Safari, the six-Sheriff stock deck showed 3.0% and a legal one-Sheriff deck showed 66.7%. The calculation describes the ordinary opening, before any optional opening policy.
+
 ```sh
 node scripts/compare-opening-policies.mjs --from 20000 --count 1000 --out .artifacts/card-rd/opening-20000.json
 node scripts/compare-opening-policies.mjs --from 21000 --count 512 --cpu normal --out .artifacts/card-rd/opening-normal-21000.json

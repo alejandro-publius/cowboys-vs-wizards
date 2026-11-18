@@ -2,10 +2,21 @@
 // opening state returned by createMatch; nothing here runs unless a caller
 // opts in. scripts/compare-opening-policies.mjs uses the same functions.
 import { CARDS, SIDES, opponent, tributeCost } from "./cards.js";
-import { createMatch } from "./state.js";
+import { createMatch, OPENING_HAND } from "./state.js";
 
 export const isFree = (id) => CARDS[id].kind === "troop" && tributeCost(CARDS[id].stars) === 0;
 export const drought = (hand) => !hand.some(isFree);
+
+// Chance that all standard opening draws miss the deck's free troops.
+export function openingDroughtRate(deck) {
+  const otherCards = deck.filter((id) => !isFree(id)).length;
+  if (otherCards < OPENING_HAND) return 0;
+  let rate = 1;
+  for (let draw = 0; draw < OPENING_HAND; draw++) {
+    rate *= (otherCards - draw) / (deck.length - draw);
+  }
+  return rate;
+}
 
 // A hand with no free troop trades its last-dealt card for the topmost free
 // troop in its own deck. Sizes and deck order are otherwise unchanged.

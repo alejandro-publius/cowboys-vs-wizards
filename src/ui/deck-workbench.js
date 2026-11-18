@@ -1,5 +1,6 @@
-import {COWBOY_CATALOG, DECK_SIZE, DEFAULT_COUNTS, validateDeck} from '../game/deck-builder.js';
+import {COWBOY_CATALOG, DECK_SIZE, DEFAULT_COUNTS, deckIds, validateDeck} from '../game/deck-builder.js';
 import {MAX_COWBOY_COPIES, tributeCost} from '../game/cards.js';
+import {openingDroughtRate} from '../game/opening-policy.js';
 
 const element = (tag, text, attrs = {}) => {
   const node = document.createElement(tag);
@@ -32,6 +33,7 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
   const chosen = element('section', undefined, {class: 'wb-panel wb-chosen', 'aria-labelledby': 'wb-chosen-title'});
   chosen.append(element('h3', 'Your deck', {id: 'wb-chosen-title'}));
   const total = element('p', '', {class: 'deck-total'});
+  const openingOdds = element('p', '', {class: 'detail-line'});
   const rows = element('ul', undefined, {class: 'deck-rows'});
   const validation = element('p', '', {class: 'deck-validation', role: 'status'});
   const feedback = element('p', '', {class: 'deck-feedback', role: 'status'});
@@ -81,7 +83,7 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
   });
   const actions = element('div', undefined, {class: 'menu-actions'});
   actions.append(save, reset);
-  chosen.append(total, rows, validation, actions, feedback);
+  chosen.append(total, openingOdds, rows, validation, actions, feedback);
   collection.append(grid);
   layout.append(collection, detail, chosen);
   content.append(layout);
@@ -90,6 +92,11 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
     const result = validateDeck(counts);
     total.textContent = `${result.total} / ${DECK_SIZE} cards`;
     total.dataset.ready = String(result.ok);
+    openingOdds.hidden = !result.ok;
+    if (result.ok) {
+      const rate = (100 * openingDroughtRate(deckIds(counts))).toFixed(1);
+      openingOdds.textContent = `${rate}% chance of no free summon in a standard opening hand.`;
+    }
     validation.textContent = result.ok ? 'Ready to save.' : result.error;
     validation.dataset.ok = String(result.ok);
     save.disabled = !result.ok;
