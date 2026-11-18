@@ -11,6 +11,9 @@ export const RULES_VERSION = "orb-duel-draft-1";
 // section 2). Stored in `state.traps` only on matches created with
 // `traps: true`; RULES_VERSION is unchanged for default matches.
 export const TRAP_RULES_VERSION = `${RULES_VERSION}+traps`;
+// Rule set of the opt-in Ride Out experiment (.kiro/specs/ride-out). Stored in
+// `state.rideOut` only on matches created with `rideOut: true`.
+export const RIDE_OUT_RULES_VERSION = `${RULES_VERSION}+ride-out`;
 
 // mulberry32 step. The whole generator is one uint32, so it lives in the
 // match state as a plain number and replays from a seed are identical.
@@ -40,9 +43,13 @@ function shuffle(ids, rng) {
 // a deck is its top. `traps: true` adds an empty trap zone per side, a
 // `tactical: null` allowance per side and `traps: { enabled, rulesVersion }`; it draws no
 // extra RNG and leaves decks and hands unchanged. Off (the default) adds nothing.
-export function createMatch(seed, { cowboyDeck, traps = false } = {}) {
+// `rideOut: true` adds only `rideOut: { enabled, rulesVersion }`: no RNG draw,
+// no allowance key. The two experiments cannot be combined.
+export function createMatch(seed, { cowboyDeck, traps = false, rideOut = false } = {}) {
   if (!Number.isInteger(seed)) throw new TypeError("seed must be an integer");
   if (typeof traps !== "boolean") throw new TypeError("traps must be a boolean");
+  if (typeof rideOut !== "boolean") throw new TypeError("rideOut must be a boolean");
+  if (traps && rideOut) throw new TypeError("rideOut cannot be combined with traps");
   if (cowboyDeck !== undefined) {
     const result = validateDeckIds(cowboyDeck);
     if (!result.ok) throw new TypeError(result.error);
@@ -80,5 +87,6 @@ export function createMatch(seed, { cowboyDeck, traps = false } = {}) {
     sides,
   };
   if (traps) match.traps = { enabled: true, rulesVersion: TRAP_RULES_VERSION };
+  if (rideOut) match.rideOut = { enabled: true, rulesVersion: RIDE_OUT_RULES_VERSION };
   return match;
 }

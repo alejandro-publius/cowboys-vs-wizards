@@ -1,5 +1,6 @@
 import { CARDS, SPELL_DAMAGE, opponent, tributeCost } from "./cards.js";
 import { MAX_ROUNDS } from "./state.js";
+import { shiftDestinations } from "./lanes.js";
 
 // Ascending-order subsets of `items` with `size` members.
 function combinations(items, size) {
@@ -10,7 +11,9 @@ function combinations(items, size) {
 // Every action `side` may submit now, each accepted as is by applyAction.
 // Empty when it is not that side's phase or the match is over. Order is
 // fixed: summons, then spells, then trap sets (trap matches only), each in
-// hand order, then end-phase last.
+// hand order, then ride-outs (ride-out matches only) by slot and destination,
+// then end-phase last. Ride-outs follow every shipped action type, so a
+// chooser that keeps the first of equal scores keeps its shipped choice.
 // Tributes are listed in ascending slot order only; applyAction also accepts
 // the same slots in another order, which changes nothing.
 // `state` may be the full state or publicState(state, side) for the same side.
@@ -46,8 +49,8 @@ export function legalActions(state, side, { cards = CARDS } = {}) {
         if (enemyBoard[target] === null) continue;
         actions.push({ type: "spell", ...base, cardId, target });
         if (!cards[cardId].relocates || enemyBoard[target].health <= SPELL_DAMAGE) continue;
-        for (const destination of [target - 1, target + 1]) {
-          if (enemyBoard[destination] === null) actions.push({ type: "spell", ...base, cardId, target, destination });
+        for (const destination of shiftDestinations(enemyBoard, target)) {
+          actions.push({ type: "spell", ...base, cardId, target, destination });
         }
       }
     }
@@ -56,6 +59,14 @@ export function legalActions(state, side, { cards = CARDS } = {}) {
   if (state.traps?.enabled === true && !castUsed && state.round < MAX_ROUNDS && state.sides[side].trap === null) {
     for (const cardId of hand) {
       if (cards[cardId]?.kind === "trap") actions.push({ type: "set-trap", ...base, cardId });
+    }
+  }
+
+  // Ride Out experiment: the move takes the summon allowance and cannot follow a spell.
+  if (state.rideOut?.enabled === true && !summonUsed && !castUsed) {
+    for (const slot of slots) {
+      if (board[slot] === null) continue;
+      for (const destination of shiftDestinations(board, slot)) actions.push({ type: "ride-out", ...base, slot, destination });
     }
   }
 

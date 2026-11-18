@@ -1,8 +1,8 @@
 import { CARDS, SPELL_DAMAGE, opponent, tributeCost } from "./cards.js";
-import { MAX_ROUNDS, SLOT_COUNT } from "./state.js";
+import { MAX_ROUNDS } from "./state.js";
 import { resolveClash, resultAfterClash } from "./clash.js";
+import { adjacentLanes, isSlot, shiftDestinations, shiftTroop } from "./lanes.js";
 
-const isSlot = (slot) => Number.isInteger(slot) && slot >= 0 && slot < SLOT_COUNT;
 // On a trap match (issue #89/#90, A + X) the cast and the set share castUsed;
 // tactical records which one used it. Off, tactical is absent and this is false.
 const trapUsed = (state, side) => state.traps?.enabled === true && state.allowances[side].tactical === "trap";
@@ -52,10 +52,22 @@ function spellRejection(state, action) {
   const legalMove =
     card.relocates &&
     enemyBoard[action.target].health > SPELL_DAMAGE &&
-    isSlot(action.destination) &&
-    Math.abs(action.destination - action.target) === 1 &&
-    enemyBoard[action.destination] === null;
+    shiftDestinations(enemyBoard, action.target).includes(action.destination);
   return legalMove ? null : "invalid-destination";
+}
+
+// Ride Out experiment (.kiro/specs/ride-out, RO-4): the move uses the summon
+// allowance, so it shares the summon's reason and, like a summon, cannot
+// follow a spell. Reached only on a match created with rideOut: true.
+function rideOutRejection(state, action) {
+  const { summonUsed, castUsed } = state.allowances[action.side];
+  if (summonUsed) return "summon-used";
+  if (castUsed) return "ride-out-after-spell";
+  const { board } = state.sides[action.side];
+  if (!isSlot(action.slot) || board[action.slot] === null) return "invalid-slot";
+  if (!adjacentLanes(action.slot).includes(action.destination)) return "invalid-destination";
+  if (board[action.destination] !== null) return "destination-occupied";
+  return null;
 }
 
 // Contract section 3 order. `cards` is the lookup for the card kind; it is
@@ -72,11 +84,19 @@ function setTrapRejection(state, action, cards) {
   return null;
 }
 
-const REJECTIONS = { summon: summonRejection, spell: spellRejection, "set-trap": setTrapRejection, "end-phase": () => null };
+const REJECTIONS = {
+  summon: summonRejection,
+  spell: spellRejection,
+  "set-trap": setTrapRejection,
+  "ride-out": rideOutRejection,
+  "end-phase": () => null,
+};
 
 function rejection(state, action, cards) {
   if (state.result) return "match-over";
   if (action === null || typeof action !== "object" || !Object.hasOwn(REJECTIONS, action.type)) return "invalid-action";
+  // Without the flag the move does not exist: same reason and order as an unknown type.
+  if (action.type === "ride-out" && state.rideOut?.enabled !== true) return "invalid-action";
   const { actionId } = action;
   if (actionId !== undefined) {
     if (typeof actionId !== "string" || actionId === "") return "invalid-action";
@@ -128,9 +148,17 @@ function applySpell(next, action, emit) {
     enemy.discard.push(troop.cardId);
     emit({ type: "defeat", side: enemySide, slot: action.target, cardId: troop.cardId });
   } else if (moved) {
-    enemy.board[action.target] = null;
-    enemy.board[action.destination] = troop;
+    shiftTroop(enemy.board, action.target, action.destination);
   }
+}
+
+// Own troop one lane over, health kept; no card changes zone and no RNG draw.
+function applyRideOut(next, action, emit) {
+  const { board } = next.sides[action.side];
+  const { cardId, health } = board[action.slot];
+  shiftTroop(board, action.slot, action.destination);
+  next.allowances[action.side].summonUsed = true;
+  emit({ type: "ride-out", side: action.side, cardId, slot: action.slot, destination: action.destination, health });
 }
 
 // Hand to own trap zone. No RNG draw. The event names the card; hiding it
@@ -180,7 +208,7 @@ function applyEndPhase(next, action, emit) {
   emit({ type: "phase-start", side: next.activeSide, round: next.round });
 }
 
-const APPLY = { summon: applySummon, spell: applySpell, "set-trap": applySetTrap, "end-phase": applyEndPhase };
+const APPLY = { summon: applySummon, spell: applySpell, "set-trap": applySetTrap, "ride-out": applyRideOut, "end-phase": applyEndPhase };
 
 // Apply one action to a match state. Never mutates `state`.
 //   accepted: { ok: true, state: <new state>, events: [...] }
@@ -189,6 +217,7 @@ const APPLY = { summon: applySummon, spell: applySpell, "set-trap": applySetTrap
 //   { type: "summon", cardId, slot, tributes }   tributes: own slots to sacrifice
 //   { type: "spell", cardId, target, destination? }   enemy slot indexes
 //   { type: "set-trap", cardId }   only on a match created with traps: true
+//   { type: "ride-out", slot, destination }   own lanes; only with rideOut: true
 //   { type: "end-phase" }
 // `options.cards` replaces CARDS for the set-trap kind check only (tests use
 // it for a fixture trap card; the shipped catalog has no trap).
