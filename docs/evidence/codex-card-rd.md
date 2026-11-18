@@ -39,6 +39,14 @@ Kiro IDE with Claude Opus 5.5 wrote the Requirements-First spec, flag-gated engi
 
 Kiro's shield absorbed 74 Base orbs under the shipped opening. In Both, the Normal bots blocked every lane that had a round-one attack, so the shield did nothing in that cohort. Keep the current rules for the working build. The Normal spec replay and the Hard sensitivity are two separately labeled runs on the same seeds.
 
+## Ride Out experiment
+
+The opt-in rule lets a troop shift one lane into a vacant friendly slot by spending the summon allowance. A spell can follow the move. Kiro wrote the requirements, engine changes, public-view CPU behavior, tests and paired runner on `kiro/ride-out-pilot`. The shipped routes at seeds 0 and 60 passed parity.
+
+In the 2,000-seed holdout with both first seats, Normal used Ride Out in 478 of 4,000 enabled matches and Hard used it in 258 of 4,000. Average matches shortened by 0.09 and 0.04 rounds respectively. At the first divergence, the riding side improved its result in 93 Normal matches and 75 Hard matches, and worsened it in nine and one respectively. These are paired results under two fixed CPU policies.
+
+Seed 61007 gives a clear scene for a future playtest. With one Cowboy Base orb left, Mounted Billy leaves the defended center lane and swings from an empty lane. Both Bases fall that round, turning the ordinary route's loss into a draw. In the current graybox build, Ride Out remains a developer experiment while that choice awaits human observation.
+
 ## Test whether the biggest summon pays off
 
 The deck screen uses the game's legal deck builder and current engine. It tests five Cowboy deck plans against the stock Wizard deck over seeds 24000–24255, each with both starting seats and separate Normal and Hard mirrors. Wider control decks with six Sheriffs performed better than tribute-heavy and spell-heavy decks in that sample.
