@@ -4,6 +4,8 @@ import {summonForecasts} from "../../src/match/summon-forecast.js";
 
 const sheriff = "cowboy-sheriff-1";
 const skeleton = "wizard-skeleton-1";
+const dragon = "wizard-dragon-1";
+const mountedBilly = "cowboy-mounted-billy-1";
 const view = () => ({
   viewer: "cowboy",
   sides: {
@@ -32,4 +34,22 @@ test("only forecasts legal troop placements during choice or confirmation", () =
     assert.deepEqual(summonForecasts(board, options), {});
   }
   assert.deepEqual(summonForecasts({...board, traps: {enabled: true}}, placement), {});
+});
+
+test("warns when a tribute opens a defended lane and omits the warning if that lane is refilled", () => {
+  const board = view();
+  board.sides.cowboy.board = [{cardId: sheriff, health: 2}, {cardId: sheriff, health: 2}, null];
+  board.sides.cowboy.baseOrbs = 3;
+  board.sides.wizard.board[1] = {cardId: dragon, health: 5};
+  const before = structuredClone(board);
+  const options = {step: "slot", cardId: mountedBilly, ownSlots: [0, 1, 2], tributes: [0, 1]};
+  assert.deepEqual(summonForecasts(board, options), {
+    0: "Enemy base 5 → 2 · Tribute opens lane 2: your Base 3 → 0",
+    1: "Dragon 5 → 2 · Mounted Billy 5 → 2",
+    2: "Enemy base 5 → 2 · Tribute opens lane 2: your Base 3 → 0",
+  });
+  assert.deepEqual(board, before);
+  board.sides.wizard.board[0] = {cardId: skeleton, health: 3};
+  assert.equal(summonForecasts(board, options)[2],
+    "Enemy base 5 → 2 · Tributes open lanes 1, 2: your Base 3 → 0");
 });

@@ -39,6 +39,8 @@ An isolated follow-up replaces just one Mounted Billy with one Deadeye, keeping 
 
 The stock deck and signature seed-60 route stay intact. Check whether the extra Deadeye, the lost opportunity to draw an expensive troop, or a particular response policy drives the result before tuning a card. This is a deck swap under fixed bots, so it does not by itself establish a cause or a human balance change.
 
+The graybox also previews a visible cost of tributing. Each placement shows which paid lanes would expose your Base to an enemy that was already across from a tribute troop. Refill one of those lanes and the forecast shows its troop exchange instead. The focused fixture puts a Dragon across from a tribute. Placing Mounted Billy away from that lane exposes a 3-orb Base to defeat, while refilling the lane produces a trade between Billy and the Dragon. This preview uses the current board and leaves room for a later move or spell to change the clash.
+
 ```sh
 node scripts/screen-cowboy-decks.mjs
 node scripts/screen-cowboy-decks.mjs --isolate
