@@ -1,5 +1,7 @@
 # How we used Kiro on Cowboys vs. Wizards: evidence map
 
+[Judge-facing brag sheet, eight Devpost answers and recording register](submission/kiro-brag-sheet.md)
+
 ## November 17 steering follow-up
 
 Four fresh Kiro CLI V3 sessions verified that rules, rendering and interface guidance loads on matching file reads. The control read of `package.json` loaded only the always-on guidance. Each response followed the format supplied by the loaded files in the test fixture. [Activation evidence and scope](evidence/kiro-scoped-steering-hook.md#file-scoped-activation-verified-on-november-17-2026-pacific).
