@@ -26,6 +26,24 @@ On the shared 512-seed set, the paired change was −6.93 points for Normal (95%
 
 The deck workbench now shows the exact chance of a four-card opening with no free summon for the current legal deck. This is calculated from the deck's own card counts without simulating games. In Safari, the six-Sheriff stock deck showed 3.0% and a legal one-Sheriff deck showed 66.7%. The calculation describes the ordinary opening, before any optional opening policy.
 
+## Test whether the biggest summon pays off
+
+The deck screen uses the game's legal deck builder and current engine. It tests five Cowboy deck plans against the stock Wizard deck over seeds 24000–24255, each with both starting seats and separate Normal and Hard mirrors. Wider control decks with six Sheriffs performed better than tribute-heavy and spell-heavy decks in that sample.
+
+An isolated follow-up replaces just one Mounted Billy with one Deadeye, keeping six Sheriffs and three Billy cards. Each deck ran 1,024 matches per CPU cohort on fresh seeds 24256–24767. Both decks had the same 40 opening droughts in each cohort.
+
+| CPU mirror | Stock Cowboy wins | Swapped Cowboy wins | Paired win-share change |
+| --- | --- | --- | --- |
+| Normal | 429/1,024 | 570/1,024 | +13.77 pt (95% interval +11.20 to +16.34) |
+| Hard | 447/1,024 | 574/1,024 | +12.40 pt (95% interval +9.94 to +14.87) |
+
+The stock deck and signature seed-60 route stay intact. Check whether the extra Deadeye, the lost opportunity to draw an expensive troop, or a particular response policy drives the result before tuning a card. This is a deck swap under fixed bots, so it does not by itself establish a cause or a human balance change.
+
+```sh
+node scripts/screen-cowboy-decks.mjs
+node scripts/screen-cowboy-decks.mjs --isolate
+```
+
 ```sh
 node scripts/compare-opening-policies.mjs --from 20000 --count 1000 --out .artifacts/card-rd/opening-20000.json
 node scripts/compare-opening-policies.mjs --from 21000 --count 512 --cpu normal --out .artifacts/card-rd/opening-normal-21000.json
