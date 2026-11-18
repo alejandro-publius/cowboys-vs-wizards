@@ -6,6 +6,11 @@ Read imports one level at a time. Never dump the repo or reference collection.
 
 ## Game design R&D
 
+Fable 5.2 leads core mechanics, progression design and engine contracts. It
+hands off a decision, acceptance cases and any reference prototype. Kiro
+implements that brief, integrates it, and runs the checks. Route unresolved
+gameplay and engine policy decisions back to Fable.
+
 Treat every card, stat, deck and mechanic as a design hypothesis. Propose
 simpler or stronger ideas whenever research or playtests reveal them, even
 when the current version already works. Consider tuning, replacing or cutting
