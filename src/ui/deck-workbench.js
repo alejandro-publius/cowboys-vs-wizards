@@ -20,8 +20,9 @@ const ruleOf = card => card.kind === 'spell'
 // Collection + chosen-deck workbench. Uses the approved card art as CSS backgrounds
 // (.deck-art), the existing validation and profile.saveDeck; no new rules.
 // `presets` comes from the graybox title-screen marker and adds Load Deadeye Control
-// and Load Billy Posse.
-export function renderDeckWorkbench({content, profile, say, savedMessage, button, presets = false}) {
+// and Load Billy Posse. Optional `tryDraft(counts, opener)` adds Try draft, which
+// plays a copy of the current legal draft and leaves the saved deck unchanged.
+export function renderDeckWorkbench({content, profile, say, savedMessage, button, presets = false, tryDraft}) {
   const stored = profile.get().deck;
   let counts = {...(stored && validateDeck(stored).ok ? stored : DEFAULT_COUNTS)};
   let selected = COWBOY_CATALOG[0].type;
@@ -85,8 +86,21 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
     feedback.textContent = 'Starter deck restored. Choose Save deck to keep it.';
   });
   const actions = element('div', undefined, {class: 'menu-actions'});
-  actions.append(save, reset);
-  const presetNotes = [];
+  actions.append(save);
+  const notes = [];
+  let trial = null;
+  if (tryDraft) {
+    trial = button('Try draft', async () => {
+      const result = validateDeck(counts);
+      if (!result.ok) {say(result.error); feedback.textContent = result.error; refresh(); return;}
+      feedback.textContent = '';
+      await tryDraft({...counts}, trial);
+      refresh();
+    }, {id: 'try-draft', 'aria-describedby': 'wb-try-summary'});
+    actions.append(trial);
+    notes.push(element('p', 'Play a trial duel with this draft. Your saved deck is kept.', {id: 'wb-try-summary', class: 'detail-line'}));
+  }
+  actions.append(reset);
   if (presets) {
     // Loading replaces only this unsaved draft. The saved profile deck and the
     // current match stay as they are until Save deck.
@@ -95,15 +109,15 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
       refresh();
       feedback.textContent = `${DEADEYE_CONTROL.name} draft loaded. Save deck to use it in your next match.`;
     }, {id: 'load-deadeye-control', 'aria-describedby': 'wb-preset-summary'}));
-    presetNotes.push(element('p', 'Adds one Deadeye in place of Mounted Billy, the two-tribute finisher.', {id: 'wb-preset-summary', class: 'detail-line'}));
+    notes.push(element('p', 'Adds one Deadeye in place of Mounted Billy, the two-tribute finisher.', {id: 'wb-preset-summary', class: 'detail-line'}));
     actions.append(button(`Load ${BILLY_POSSE.name}`, () => {
       counts = {...BILLY_POSSE.counts};
       refresh();
       feedback.textContent = `${BILLY_POSSE.name} draft loaded. Save deck to use it in your next match.`;
     }, {id: 'load-billy-posse', 'aria-describedby': 'wb-billy-posse-summary'}));
-    presetNotes.push(element('p', 'Billy Posse: hold or pressure lanes with Sheriffs, then trade one Sheriff as tribute for Billy to strengthen that lane. A fourth Billy replaces Mounted Billy.', {id: 'wb-billy-posse-summary', class: 'detail-line'}));
+    notes.push(element('p', 'Billy Posse: hold or pressure lanes with Sheriffs, then trade one Sheriff as tribute for Billy to strengthen that lane. A fourth Billy replaces Mounted Billy.', {id: 'wb-billy-posse-summary', class: 'detail-line'}));
   }
-  chosen.append(total, openingOdds, rows, validation, actions, ...presetNotes, feedback);
+  chosen.append(total, openingOdds, rows, validation, actions, ...notes, feedback);
   collection.append(grid);
   layout.append(collection, detail, chosen);
   content.append(layout);
@@ -120,6 +134,7 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
     validation.textContent = result.ok ? 'Ready to save.' : result.error;
     validation.dataset.ok = String(result.ok);
     save.disabled = !result.ok;
+    if (trial) trial.disabled = !result.ok;
     for (const card of COWBOY_CATALOG) {
       const n = count(card.type), tile = tiles.get(card.type), r = deckRows.get(card.type);
       tile.setAttribute('aria-pressed', String(card.type === selected));

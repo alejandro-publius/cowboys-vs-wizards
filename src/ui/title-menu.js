@@ -9,20 +9,21 @@ function element(tag, text, attrs={}) {
   return node;
 }
 
-export function mountTitleMenu(root,{profile,onPlay,onSettings}) {
+export function mountTitleMenu(root,{profile,onPlay,onSettings,onTryDraft}) {
   const scene=$(root,'.title-scene'),page=$(root,'.menu-page'),content=$(root,'.menu-page-content');
   const heading=$(root,'#menu-page-title'),notice=$(root,'#menu-notice'),play=$(root,'#menu-play');
   // Only the graybox title screen carries data-deck-presets="true"; the illustrated builder has no marker.
   const presets=root.dataset.deckPresets==='true';
   let returnFocus=play;
-  let guidedAvailable=true,loading=false;
+  // paused tracks show({resume}) on its own; guidedAvailable turns off after any show().
+  let guidedAvailable=true,loading=false,paused=false;
   const say=text=>{notice.textContent=text;notice.hidden=!text;};
   const savedMessage=text=>say(profile.isPersistent()?text:'Saved for this session only. Browser storage is unavailable.');
   const button=(text,fn,attrs={})=>{const b=element('button',text,{type:'button',...attrs});b.addEventListener('click',fn);return b;};
-  async function start(opener,guided=false){
+  async function start(opener,launch=()=>onPlay(false)){
     if(loading)return;
     loading=true;play.disabled=opener.disabled=true;say('Loading the board…');
-    try{await onPlay(guided);say('');}
+    try{await launch();say('');}
     catch(error){console.error(error);say('The board could not load. Please try again.');}
     finally{
       loading=false;play.disabled=opener.disabled=false;
@@ -71,7 +72,7 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings}) {
     open('How to Play',opener);
     content.append(element('p','You lead the Cowboys. The computer commands the Wizards. Break the enemy Base before yours falls.',{class:'menu-intro'}));
     if(guidedAvailable){
-      const guided=button('Start guided duel',()=>start(guided,true),{id:'menu-guide',class:'menu-guide-button','aria-describedby':'menu-guide-summary'});
+      const guided=button('Start guided duel',()=>start(guided,()=>onPlay(true)),{id:'menu-guide',class:'menu-guide-button','aria-describedby':'menu-guide-summary'});
       content.append(guided,element('p','Play a starter-deck match with short hints as you take your first turns.',{id:'menu-guide-summary',class:'menu-guide-summary'}));
     }
     const steps=element('ol',undefined,{class:'how-steps'});
@@ -88,7 +89,12 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings}) {
   function deck(opener){
     open('Build Deck',opener);
     page.classList.add('deck-page');
-    renderDeckWorkbench({content,profile,say,savedMessage,button,presets});
+    // Try draft plays a copy of the current draft without saving it. Offered only
+    // when the host supplies onTryDraft and no paused duel would be replaced.
+    const tryDraft=typeof onTryDraft==='function'&&!paused
+      ?(counts,opener)=>start(opener,()=>onTryDraft(counts))
+      :undefined;
+    renderDeckWorkbench({content,profile,say,savedMessage,button,presets,tryDraft});
   }
   const actions={settings,achievements,how,deck};
   for(const item of root.querySelectorAll('[data-menu-page]'))item.addEventListener('click',()=>actions[item.dataset.menuPage](item));
@@ -103,7 +109,7 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings}) {
   });
   root.dataset.ready="true";
   return {
-    show({resume=false}={}){guidedAvailable=false;root.hidden=false;home();play.setAttribute('aria-label',resume?'Resume match':'Play');say(resume?'Match paused · Play to resume':'');play.focus();},
+    show({resume=false}={}){guidedAvailable=false;paused=Boolean(resume);root.hidden=false;home();play.setAttribute('aria-label',resume?'Resume match':'Play');say(resume?'Match paused · Play to resume':'');play.focus();},
     hide(){root.hidden=true;},
     status:say
   };
