@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dragon Fire | Graybox prototype</title>
+  <link rel="icon" href="data:,">
+  <style>@@STYLE@@</style>
+</head>
+<body>
+  <main>
+    <h1>Dragon Fire</h1>
+    <p class="blurb" id="blurb"></p>
+    <nav id="positions" aria-label="Position">
+      <button type="button" data-position="burnThrough">Burn through</button>
+      <button type="button" data-position="lastStand">Last stand</button>
+    </nav>
+    <p id="goal"></p>
+    <section id="board" aria-label="Board"></section>
+    <p id="hand"></p>
+    <div id="actions">
+      <button type="button" data-choice="lane1"></button>
+      <button type="button" data-choice="lane2"></button>
+      <button type="button" data-choice="lane3"></button>
+      <button type="button" data-choice="hold"></button>
+      <button type="button" id="reset">Reset</button>
+    </div>
+    <section id="outcome" aria-live="polite"></section>
+  </main>
+  <script>@@SCRIPT@@</script>
+</body>
+</html>
