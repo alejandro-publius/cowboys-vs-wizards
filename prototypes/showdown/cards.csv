@@ -1,0 +1,26 @@
+Card,Faction,Kind,Type,Stars,Tributes to summon,Attack,Orbs,Keywords,What it does,Copies in the starter deck,New in Showdown
+Sheriff,Cowboy,Troop,Lawman,2,0,1,3,,No keyword.,4,No
+Billy,Cowboy,Troop,Outlaw,5,1,2,4,,No keyword.,2,No
+Mounted Billy,Cowboy,Troop,Outlaw,7,2,3,5,Ride,"Ride: Can ride past enemy troops to strike the Base for 1 orb, unless one of them has Guard.",1,No
+Deadeye,Cowboy,Spell,,,,,,,Remove 1 orb from an enemy troop.,1,No
+Captured Dragon,Cowboy,Troop,Beast,5,1,4,2,Sweep,"Sweep: When it attacks a troop, every other enemy troop loses 1 orb.",0,No
+Captured Wraith,Cowboy,Troop,Undead,3,0,2,2,Ghostly,Ghostly: Spells cannot target it.,0,No
+Covered Wagon,Cowboy,Troop,Rig,4,0,1,4,Guard,Guard: Enemies must attack this troop before any other troop or the Base.,2,No
+Outrider,Cowboy,Troop,Lawman,3,0,1,3,Ride,"Ride: Can ride past enemy troops to strike the Base for 1 orb, unless one of them has Guard.",2,No
+Dynamiter,Cowboy,Troop,Outlaw,3,0,3,1,Last Stand,"Last Stand: When it is defeated in a fight, the troop that fought it loses 1 orb.",1,No
+Ranger,Cowboy,Troop,Lawman,5,1,2,4,Scout,"Scout: When it arrives, draw a card.",1,No
+Gatling Crew,Cowboy,Troop,Rig,7,2,4,4,Sweep,"Sweep: When it attacks a troop, every other enemy troop loses 1 orb.",0,No
+Lasso,Cowboy,Spell,,,,,,,Stun an enemy troop: it cannot attack on its next turn.,1,No
+Skeleton,Wizard,Troop,Undead,1,0,1,3,,No keyword.,4,No
+Wizard,Wizard,Troop,Mage,5,1,2,4,Raise,"Raise: When it arrives, the last Undead troop in your graveyard returns with 1 orb.",2,No
+Dragon,Wizard,Troop,Beast,8,2,3,5,Sweep,"Sweep: When it attacks a troop, every other enemy troop loses 1 orb.",1,No
+Singularity,Wizard,Spell,,,,,,,Remove 1 orb from an enemy troop.,1,No
+Lantern Wraith,Wizard,Troop,Undead,6,1,2,4,Ghostly,Ghostly: Spells cannot target it.,0,No
+Imp,Wizard,Troop,Fiend,2,0,3,1,Quickdraw,"Quickdraw: Can attack on the turn it arrives, even when it was free.",1,No
+Bear Trap,Cowboy,Trap,,,,,,,"Trap. When an enemy troop attacks, it loses 2 orbs first. If that defeats it, the attack never lands.",1,Yes
+Bone Wall,Wizard,Troop,Undead,3,0,0,4,Guard,Guard: Enemies must attack this troop before any other troop or the Base.,2,Yes
+Raven Familiar,Wizard,Troop,Beast,2,0,1,1,Scout,"Scout: When it arrives, draw a card.",1,Yes
+Headless Horseman,Wizard,Troop,Undead,5,1,2,3,Ride,"Ride: Can ride past enemy troops to strike the Base for 1 orb, unless one of them has Guard.",1,Yes
+Jack-o'-Lantern,Wizard,Troop,Fiend,1,0,1,1,Last Stand,"Last Stand: When it is defeated in a fight, the troop that fought it loses 1 orb.",1,Yes
+Hellfire,Wizard,Spell,,,,,,,Remove 1 orb from every enemy troop.,1,Yes
+Hex,Wizard,Trap,,,,,,,"Trap. When an enemy troop attacks, the attack is cancelled.",1,Yes
