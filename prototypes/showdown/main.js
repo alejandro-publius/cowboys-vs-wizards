@@ -398,7 +398,9 @@ function renderDuel() {
 
   // After a win: what it paid, then the two cards to choose from. After a loss: what the rematch gives.
   const earned = outcome?.earned;
-  $("reward").innerHTML = !earned ? "" : [
+  // A game inside a match and a two-player game pay nothing, but they still need the button that moves on.
+  const moveOn = `<div class="row"><button type="button" class="can" data-again="1">${state.result ? againLabel() : ""}</button></div>`;
+  $("reward").innerHTML = !outcome ? "" : !earned ? moveOn : [
     earned.captured ? `<h2>Captured</h2><div class="row"><div class="${cardClass(earned.captured)} earned">${face(earned.captured, {full: true})}</div></div>` : "",
     earned.cards.length ? `<h2>New in your collection</h2><div class="row">${earned.cards.map(([type, copies]) => `<div class="${cardClass(type)} earned">${face(type, {full: true, extra: copies > 1 ? `<span class="note">×${copies}</span>` : ""})}</div>`).join("")}</div>` : "",
     earned.packs ? `<p class="good">You earned ${plural(earned.packs, "pack")}. Open ${earned.packs > 1 ? "them" : "it"} in camp.</p>` : "",
@@ -407,7 +409,7 @@ function renderDuel() {
     outcome.won && save.offer ? `<h2>${OFFER_HEADING}</h2>${offerRow()}` : "",
     picked ? `<p class="good">Added ${TYPES[picked].name}: you now own ${owned(save, picked)}. The new copy is not in your deck yet: use Build deck in camp.</p>` : "",
     !outcome.won && outcome.grit ? `<p class="note">Grit: your Base starts the rematch with ${5 + outcome.grit} orbs.</p>` : "",
-    `<div class="row"><button type="button" class="can" data-again="1">${againLabel()}</button></div>`,
+    moveOn,
   ].join("");
 
   const canCover = attacking && options.some((a) => a.type === "cover" && a.slot === pick.troop);
