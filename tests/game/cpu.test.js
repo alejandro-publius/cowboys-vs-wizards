@@ -14,6 +14,7 @@ import { publicState } from "../../src/game/view.js";
 import { CPU_LEVELS, chooseAction, cpuFor } from "../../src/game/cpu.js";
 import { MAX_STEPS, makeBot, playMatch } from "../../scripts/play-match.mjs";
 import { simulate } from "../../scripts/simulate-matches.mjs";
+import { historicalBot } from "../../scripts/compare-ride-out.mjs";
 
 const SEEDS = Array.from({ length: 50 }, (_, seed) => seed); // 0-49, so 14, 27 and 47 are included
 const cpuBots = { cowboy: chooseAction, wizard: chooseAction };
@@ -55,11 +56,14 @@ test("CPU against CPU finishes within the step bound and replays identically", (
     const first = playMatch(seed, cpuBots);
     assert.ok(first.state.result, `seed ${seed}`);
     assert.ok(first.log.length <= MAX_STEPS, `seed ${seed}: ${first.log.length} actions`);
-    // At most one summon, one cast and one end-phase per side per round.
+    // At most one summon-or-ride-out, one cast and one end-phase per side per round:
+    // a ride-out spends the summon allowance and cannot follow a cast.
     const phases = {};
     for (const { round, side, action } of first.log) {
       const phase = (phases[`${round}:${side}`] ??= []);
       assert.equal(phase.includes(action.type), false, `seed ${seed} round ${round}: second ${action.type}`);
+      if (action.type === "summon") assert.equal(phase.includes("ride-out"), false, `seed ${seed} round ${round}: summon after ride-out`);
+      if (action.type === "ride-out") assert.deepEqual(phase, [], `seed ${seed} round ${round}: ride-out after ${phase}`);
       phase.push(action.type);
     }
     assert.deepEqual(playMatch(seed, cpuBots), first, `seed ${seed} replay`);
@@ -156,12 +160,81 @@ for (const level of CPU_LEVELS) test(`hidden information does not change the ${l
 test("normal is the opponent from before the levels existed, move for move, on seeds 0-199", () => {
   for (const name of ["normal", "cpu", undefined, null, "", "HARD", "bogus"]) assert.equal(cpuFor(name), chooseAction, String(name));
   // SHA-256 of every action of CPU-against-CPU matches on seeds 0-199, recorded on main at c65f49e before cpu.js gained levels.
+  // That opponent never had a card-level ride: historicalBot reads CARDS without `rides`, so its legal list is the old one.
+  const old = historicalBot(cpuFor("normal"));
   const hash = createHash("sha256");
   for (let seed = 0; seed < 200; seed++) {
-    const { log } = playMatch(seed, { cowboy: cpuFor("normal"), wizard: cpuFor("normal") });
+    const { log } = playMatch(seed, { cowboy: old, wizard: old });
+    assert.equal(log.some(({ action }) => action.type === "ride-out"), false, `seed ${seed}`);
     hash.update(JSON.stringify(log.map(({ action }) => action)));
   }
   assert.equal(hash.digest("hex"), "bda3d1f8bd9c07fed672430fc82d23691c462d3067164624ce581ce68b371a82");
+});
+
+// The state a ride-out must produce: the troop moves one lane with its health,
+// the summon allowance is spent, the revision advances, nothing else changes.
+function assertRideStep(before, entry, label) {
+  const { action, state } = entry;
+  const expected = structuredClone(before);
+  const { board } = expected.sides[action.side];
+  assert.equal(CARDS[board[action.slot].cardId].rides, true, `${label}: ${board[action.slot].cardId} does not ride`);
+  assert.equal(Math.abs(action.slot - action.destination), 1, label);
+  assert.equal(board[action.destination], null, `${label}: destination occupied`);
+  board[action.destination] = board[action.slot];
+  board[action.slot] = null;
+  expected.allowances[action.side].summonUsed = true;
+  expected.revision += 1;
+  assert.deepEqual(state, expected, `${label}: ride-out state`);
+}
+
+test("the current normal CPU leaves the historical trace only at an actual ride-out, on seeds 0-199", (t) => {
+  const old = historicalBot(cpuFor("normal"));
+  let matchesWithRide = 0;
+  let rides = 0;
+  for (let seed = 0; seed < 200; seed++) {
+    const now = playMatch(seed, cpuBots);
+    const then = playMatch(seed, { cowboy: old, wizard: old });
+    const actions = (log) => log.map(({ action }) => action);
+    const first = now.log.findIndex(({ action }) => action.type === "ride-out");
+    now.log.forEach((entry, i) => {
+      if (entry.action.type === "ride-out") {
+        rides += 1;
+        assertRideStep(i === 0 ? now.opening : now.log[i - 1].state, entry, `seed ${seed} action ${i}`);
+      }
+    });
+    if (first === -1) {
+      // No ride-out chosen: the extra legal moves changed nothing.
+      assert.deepEqual(actions(now.log), actions(then.log), `seed ${seed}: differs with no ride-out`);
+      assert.deepEqual(now.state.result, then.state.result, `seed ${seed}: result`);
+      continue;
+    }
+    matchesWithRide += 1;
+    assert.deepEqual(actions(now.log).slice(0, first), actions(then.log).slice(0, first), `seed ${seed}: differs before the first ride-out`);
+    assert.notDeepEqual(then.log[first].action, now.log[first].action, `seed ${seed}: the historical bot did not play another action there`);
+  }
+  t.diagnostic(`seeds 0-199: ${matchesWithRide} matches with a ride-out, ${rides} ride-outs`);
+});
+
+test("the CPU rides out when that scores strictly more than ending the phase, and only with a card that rides", () => {
+  const rider = troop("cowboy-mounted-billy-1");
+  const skeleton = troop("wizard-skeleton-1");
+  // Mounted Billy (attack 3) is blocked by a Skeleton in lane 0. In lane 1 it hits the Base for 3
+  // while the Skeleton hits ours for 1: the one-clash score is 18 against 15 for ending the phase.
+  const blocked = position("cowboy", { hand: [], board: [rider, null, null], enemyBoard: [skeleton, null, null] });
+  assert.deepEqual(legalActions(blocked, "cowboy").map(({ type }) => type), ["ride-out", "end-phase"]);
+  const ride = decide(blocked, "cowboy");
+  assert.deepEqual(ride, { type: "ride-out", side: "cowboy", revision: blocked.revision, slot: 0, destination: 1 });
+  const applied = applyAction(blocked, ride);
+  assert.equal(applied.ok, true, applied.reason);
+  assert.deepEqual(applied.state.sides.cowboy.board, [null, rider, null]);
+  assert.deepEqual(applied.events.map(({ type }) => type), ["ride-out"]);
+  assert.deepEqual(decide(applied.state, "cowboy"), { type: "end-phase", side: "cowboy", revision: applied.state.revision });
+  // The pre-Ride policy has no such move and ends the phase.
+  assert.deepEqual(decide(blocked, "cowboy", historicalBot(chooseAction)), { type: "end-phase", side: "cowboy", revision: blocked.revision });
+  // An ordinary troop in the same spot has no ride-out to choose.
+  const sheriff = position("cowboy", { hand: [], board: [troop("cowboy-sheriff-1"), null, null], enemyBoard: [skeleton, null, null] });
+  assert.deepEqual(legalActions(sheriff, "cowboy").map(({ type }) => type), ["end-phase"]);
+  assert.equal(decide(sheriff, "cowboy").type, "end-phase");
 });
 
 test("easy and hard choose legal actions, finish within the step bound and replay identically", () => {
