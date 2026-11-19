@@ -6,6 +6,7 @@ import { legalActions } from "../../src/game/legal.js";
 import { applyAction } from "../../src/game/actions.js";
 
 const DRAGON = "cowboy-captured-dragon-1";
+const DEADEYE = "cowboy-deadeye-1";
 const HOLD_CARD = "cowboy-sheriff-3";
 const troop = (cardId, health) => ({ cardId, health });
 
@@ -22,6 +23,14 @@ const POSITIONS = {
     cowboyBase: 1,
     wizardBase: 5,
     wizard: [troop("wizard-skeleton-1", 3), troop("wizard-wizard-1", 4), troop("wizard-skeleton-2", 3)],
+  },
+  // Burn Through's board, but the lane-1 Skeleton is on 2 orbs and the hand adds Deadeye.
+  setUpTheBurn: {
+    goal: "The Wizard's Base is down to 2 orbs. Your Base has 3. The Wizard's lane 1 Skeleton has 2 orbs left.",
+    cowboyBase: 3,
+    wizardBase: 2,
+    deadeye: true,
+    wizard: [troop("wizard-skeleton-1", 2), troop("wizard-wizard-1", 4), troop("wizard-skeleton-2", 3)],
   },
 };
 
@@ -42,7 +51,7 @@ function setup(position) {
   state.allowances.wizard.summonUsed = true;
   state.sides.cowboy.baseOrbs = p.cowboyBase;
   state.sides.wizard.baseOrbs = p.wizardBase;
-  state.sides.cowboy.hand = [DRAGON, HOLD_CARD];
+  state.sides.cowboy.hand = p.deadeye ? [DRAGON, HOLD_CARD, DEADEYE] : [DRAGON, HOLD_CARD];
   state.sides.cowboy.board = [troop("cowboy-sheriff-1", 2), troop("cowboy-sheriff-2", 3), null];
   state.sides.wizard.board = p.wizard.map((t) => ({ ...t }));
   return state;
@@ -50,11 +59,9 @@ function setup(position) {
 
 const sameTributes = (a, b) => a.length === b.length && a.every((slot, i) => slot === b[i]);
 
-// Plays one choice. Returns the final state, events, result, and for a burn-through
-// the result the same move would have had without Fire.
-function play(position, choice) {
+function summon(position, choice) {
   const c = CHOICES[choice];
-  let state = setup(position);
+  const state = setup(position);
   const tributes = c.tribute === null ? [] : [c.tribute];
   const action = legalActions(state, "cowboy").find(
     (a) => a.type === "summon" && a.cardId === c.card && a.slot === c.slot && sameTributes(a.tributes, tributes),
@@ -62,14 +69,27 @@ function play(position, choice) {
   if (!action) throw new Error(`${c.label} is not a legal summon`);
   const applied = applyAction(state, action);
   if (!applied.ok) throw new Error(`Summon rejected: ${applied.reason}`);
-  state = structuredClone(applied.state);
+  return applied.state;
+}
+
+// Resolve an optional shot and the clash for the summoned troop.
+function play(position, choice, shot = null, summoned = summon(position, choice)) {
+  let state = structuredClone(summoned);
+  const events = [];
+  if (shot !== null) {
+    const cast = legalActions(state, "cowboy").find((a) => a.type === "spell" && a.cardId === DEADEYE && a.target === shot);
+    if (!cast) throw new Error(`Deadeye on Wizard lane ${shot + 1} is not legal`);
+    const shotResult = applyAction(state, cast);
+    if (!shotResult.ok) throw new Error(`Deadeye rejected: ${shotResult.reason}`);
+    state = structuredClone(shotResult.state);
+    events.push(...shotResult.events.filter((e) => e.type === "spell" || e.type === "defeat"));
+  }
   const openLanes = [0, 1, 2].filter((i) => !state.sides.cowboy.board[i] && state.sides.wizard.board[i]);
   // Blocker's health just before the clash, for the Dragon's lane.
   const dragonLane = state.sides.cowboy.board.findIndex((t) => t?.cardId === DRAGON);
   const blocker = dragonLane >= 0 ? state.sides.wizard.board[dragonLane] : null;
   const blockerBefore = blocker ? { cardId: blocker.cardId, health: blocker.health } : null;
 
-  const events = [];
   resolveClash(state, (event) => events.push(event));
 
   // Dragon Fire: attack above the blocker's remaining orbs burns through after the clash.
@@ -94,6 +114,7 @@ const name = (cardId) => CARDS[cardId].name;
 
 function describe(events) {
   return events.flatMap((e) => {
+    if (e.type === "spell") return [{ text: `Deadeye hit Enemy ${name(e.target.cardId)} in lane ${e.target.slot + 1}, ${e.before} to ${e.after}.` }];
     if (e.type === "damage") {
       const hitter = `${who(e.attacker.side)} ${name(e.attacker.cardId)}`;
       const target = e.target.kind === "base" ? `${who(e.target.side)} Base` : `${who(e.target.side)} ${name(e.target.cardId)}`;
@@ -114,8 +135,10 @@ function verdict(result) {
 
 const orbWord = (n) => `${n} orb${n === 1 ? "" : "s"}`;
 
-function why(out, choice) {
+function why(out, choice, shot = null) {
   const lines = [];
+  if (shot !== null) lines.push(`Deadeye hit the Wizard troop in lane ${shot + 1}.`);
+  else if (POSITIONS[position].deadeye) lines.push("You did not cast Deadeye.");
   if (choice !== "hold") {
     const lane = out.dragonLane + 1;
     if (!out.blockerBefore) lines.push(`Lane ${lane} had no blocker, so the Dragon hit the Wizard Base directly.`);
@@ -139,7 +162,8 @@ function why(out, choice) {
 
 const $ = (id) => document.getElementById(id);
 let position = "burnThrough";
-let played = null;
+let played = false;
+let pending = null;
 
 function orbs(now, max) {
   return `<span class="orbs" role="img" aria-label="${now} of ${max} orbs">${"●".repeat(now)}<span class="lost">${"○".repeat(Math.max(0, max - now))}</span></span>`;
@@ -168,23 +192,34 @@ function render() {
   renderBoard(state);
   $("goal").textContent = POSITIONS[position].goal;
   $("blurb").textContent = "Captured Dragon: when its attack is more than its blocker has orbs left, the rest burns through to the Wizard Base. The Wizard has acted; your choice ends your turn and the clash resolves.";
-  $("hand").innerHTML = `Your hand: Captured Dragon (ATK ${CARDS[DRAGON].attack}, ${orbWord(CARDS[DRAGON].health)}; costs one Sheriff tribute), Sheriff (no tribute).`;
+  $("hand").innerHTML = `Your hand: Captured Dragon (ATK ${CARDS[DRAGON].attack}, ${orbWord(CARDS[DRAGON].health)}; costs one Sheriff tribute), Sheriff (no tribute)${POSITIONS[position].deadeye ? ", Deadeye (spell: removes 1 orb from a Wizard troop; optional)" : ""}.`;
+  $("shot").hidden = true;
+  $("end-turn").hidden = true;
+  $("shot-none").checked = true;
+  for (const r of document.querySelectorAll("[name=shot]")) r.disabled = false;
   for (const b of document.querySelectorAll("[data-choice]")) {
     const c = CHOICES[b.dataset.choice];
     b.innerHTML = `${c.label}<small>${tributeText(c, state.sides.cowboy.board)}</small>`;
     b.disabled = false;
   }
-  $("outcome").textContent = "Choose a play. The clash resolves when you do.";
+  $("outcome").textContent = POSITIONS[position].deadeye
+    ? "Choose a troop to summon."
+    : "Choose a play. The clash resolves when you do.";
   for (const b of document.querySelectorAll("[data-position]")) b.setAttribute("aria-pressed", String(b.dataset.position === position));
-  played = null;
+  played = false;
+  pending = null;
 }
 
-function choose(choice) {
+function finish(choice, summoned) {
   if (played) return;
-  played = choice;
-  const out = play(position, choice);
+  played = true;
+  $("end-turn").hidden = true;
+  const checked = document.querySelector("[name=shot]:checked").value;
+  const shot = POSITIONS[position].deadeye && checked !== "none" ? Number(checked) : null;
+  const out = play(position, choice, shot, summoned);
   renderBoard(out.state);
   for (const b of document.querySelectorAll("[data-choice]")) b.disabled = true;
+  for (const r of document.querySelectorAll("[name=shot]")) r.disabled = true;
   const v = verdict(out.result);
   const lines = describe(out.events).map((l) => `<li${l.fire ? ' class="fire"' : ""}>${l.text}</li>`).join("");
   let noFire = "";
@@ -192,18 +227,39 @@ function choose(choice) {
     const w = verdict(out.withoutFire.result);
     noFire = `<p><b>Without Dragon Fire (same move, same board):</b> ${w.text} Wizard Base ${out.withoutFire.wizardBase}, your Base ${out.withoutFire.cowboyBase}.</p>`;
   }
-  const others = Object.keys(CHOICES).filter((k) => k !== choice).map((k) => {
-    const o = play(position, k);
-    return `<li>${CHOICES[k].label}: ${verdict(o.result).text}${o.fire ? " (Dragon Fire)" : ""}</li>`;
-  }).join("");
+  const shotLabel = (s) => (s === null ? "no shot" : `Deadeye on Wizard lane ${s + 1}`);
+  const others = (POSITIONS[position].deadeye
+    ? [null, 0, 1, 2].filter((s) => s !== shot).map((s) => [`${CHOICES[choice].label}, ${shotLabel(s)}`, play(position, choice, s)])
+    : Object.keys(CHOICES).filter((k) => k !== choice).map((k) => [CHOICES[k].label, play(position, k)])
+  ).map(([label, o]) => `<li>${label}: ${verdict(o.result).text}${o.fire ? " (Dragon Fire)" : ""}</li>`).join("");
   $("outcome").innerHTML = `<strong class="${v.cls}">${v.text}</strong>
-    <p><b>Your play:</b> ${CHOICES[choice].label}. ${tributeText(CHOICES[choice], setup(position).sides.cowboy.board)}.</p>
+    <p><b>Your play:</b> ${CHOICES[choice].label}${POSITIONS[position].deadeye ? `, ${shotLabel(shot)}` : ""}. ${tributeText(CHOICES[choice], setup(position).sides.cowboy.board)}.</p>
     <ul>${lines}</ul>${noFire}
-    <p><b>Why:</b> ${why(out, choice)}</p>
+    <p><b>Why:</b> ${why(out, choice, shot)}</p>
     <p><b>Other choices:</b></p><ul>${others}</ul>
     ${position === "burnThrough" ? `<p><button type="button" data-goto="lastStand">Try Last stand</button></p>` : ""}`;
 }
 
+function choose(choice) {
+  if (!POSITIONS[position].deadeye) {
+    finish(choice);
+    return;
+  }
+  if (pending || played) return;
+  const state = summon(position, choice);
+  pending = { choice, state };
+  renderBoard(state);
+  for (const button of document.querySelectorAll("[data-choice]")) button.disabled = true;
+  $("hand").textContent = "Deadeye is ready. Choose a target or end the turn without a shot.";
+  $("shot").hidden = false;
+  $("end-turn").hidden = false;
+  $("outcome").textContent = "Your troop is in position. End the turn to resolve the clash.";
+  $("shot-none").focus();
+}
+
+$("end-turn").addEventListener("click", () => {
+  if (pending) finish(pending.choice, pending.state);
+});
 for (const b of document.querySelectorAll("[data-position]")) {
   b.addEventListener("click", () => { position = b.dataset.position; render(); });
 }

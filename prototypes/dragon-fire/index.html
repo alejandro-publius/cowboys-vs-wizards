@@ -14,15 +14,24 @@
     <nav id="positions" aria-label="Position">
       <button type="button" data-position="burnThrough">Burn through</button>
       <button type="button" data-position="lastStand">Last stand</button>
+      <button type="button" data-position="setUpTheBurn">Set up the burn</button>
     </nav>
     <p id="goal"></p>
     <section id="board" aria-label="Board"></section>
     <p id="hand"></p>
+    <fieldset id="shot" hidden>
+      <legend>Deadeye target</legend>
+      <label><input type="radio" name="shot" id="shot-none" value="none" checked> No shot</label>
+      <label><input type="radio" name="shot" value="0"> Wizard lane 1</label>
+      <label><input type="radio" name="shot" value="1"> Wizard lane 2</label>
+      <label><input type="radio" name="shot" value="2"> Wizard lane 3</label>
+    </fieldset>
     <div id="actions">
       <button type="button" data-choice="lane1"></button>
       <button type="button" data-choice="lane2"></button>
       <button type="button" data-choice="lane3"></button>
       <button type="button" data-choice="hold"></button>
+      <button type="button" id="end-turn" hidden>End turn</button>
       <button type="button" id="reset">Reset</button>
     </div>
     <section id="outcome" aria-live="polite"></section>
