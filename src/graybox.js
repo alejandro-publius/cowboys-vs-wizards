@@ -2,7 +2,7 @@ import {chooseAction, cpuFor} from "./game/cpu.js";
 import {bossOfHunt, clearedFor, createHunt, earnedRewards, HUNT_GOAL, HUNTS_BY_ID, rewardEarned} from "./game/bounty-hunt.js";
 import {CARDS, tributeCost} from "./game/cards.js";
 import {deckIds, validateDeck} from "./game/deck-builder.js";
-import {BILLY_POSSE, DEADEYE_CONTROL, DRAGON_POSSE, IMP_DECK, IMP_NAME, STARGAZER_DECK, STARGAZER_NAME, WRAITH_POSSE, frontierUnlocked} from "./game/deck-presets.js";
+import {BILLY_POSSE, DEADEYE_CONTROL, DRAGON_POSSE, IMP_DECK, IMP_NAME, STARGAZER_DECK, STARGAZER_WINS, STARGAZER_NAME, WRAITH_POSSE, frontierUnlocked} from "./game/deck-presets.js";
 import {GRAYBOX_OPENINGS, openingMatch, parseOpeningParams} from "./game/opening-policy.js";
 import {clashForecast, rideForecasts} from "./match/clash-forecast.js";
 import {clashLog} from "./match/clash-log.js";
@@ -152,6 +152,12 @@ function resultExtras(displayed, hunted, boss) {
   const saved = profile.get();
   if (!deal.hunt && !deal.isDraft && !deal.rideLesson && saved.stats.matches === 1 && saved.clearedHunts.length === 0) {
     return {resultNote: WRAITH_NOTICE_TEXT, resultGo: {label: "Take the notice", start: () => startHunt(WRAITH_NOTICE_ORDER[0])}};
+  }
+  // A lost or drawn counted Wizard duel (after seven wins): offer the matching practice snapshot.
+  const practiceId = {stargazer: "dynamiter", imp: "tribute"}[deal.opponent];
+  if (practiceId && !deal.hunt && !deal.isDraft && !deal.rideLesson && !deal.practice
+    && displayed.result.outcome !== "win" && saved.stats.wins >= STARGAZER_WINS) {
+    return {resultGo: {label: `${PRACTICE_CHALLENGES[practiceId].title} (${OPPONENTS[deal.opponent].name})`, start: () => startPractice(practiceId)}};
   }
   // A real Try Draft match: reopen its unsaved recipe. Nothing is saved here.
   if (deal.draftCounts && deal.isDraft && !deal.hunt && !deal.rideLesson) {
