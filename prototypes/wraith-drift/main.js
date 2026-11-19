@@ -9,11 +9,16 @@ import { createHunt, HUNTS_BY_ID } from "../../src/game/bounty-hunt.js";
 
 const WRAITH = "cowboy-captured-wraith-1";
 const WRAITH_LANE = 1;
+const BOSS = "wizard-lantern-wraith-1";
+const DEADEYE_TARGET = 2; // lane 3, the marked lane in Blacksmith Forge
 const troop = (cardId) => ({ cardId, health: CARDS[cardId].health });
 
 const POSITIONS = {
   gallows: {
     goal: "Learn the move: the Lantern Wraith is marked to drift into lane 1. Your Base has 2 orbs.",
+  },
+  blacksmith: {
+    goal: "Catch the Wraith by clearing its destination. It is marked to drift into lane 3, where a 1-orb Skeleton stands across from Billy. Your Base has 2 orbs.",
   },
   raid: {
     goal: "The Wizard's Base is down to 2 orbs.",
@@ -35,6 +40,7 @@ const POSITIONS = {
 // Split Trail leaves both lanes next to the Wraith available.
 function setup(position) {
   if (position === "gallows") return createHunt(HUNTS_BY_ID.get("gallows-lantern"));
+  if (position === "blacksmith") return createHunt(HUNTS_BY_ID.get("blacksmith-forge"));
   const { cowboyBase, wizardBase } = POSITIONS[position];
   const state = createMatch(0);
   state.round = 5;
@@ -62,6 +68,18 @@ function play(position, choice) {
     resolveClash(state, (event) => events.push(event));
     return { state, events, result: resultAfterClash(state) };
   }
+  if (position === "blacksmith") {
+    if (choice === "deadeye") {
+      const cast = legalActions(state, "cowboy").find((a) => a.type === "spell" && CARDS[a.cardId].name === "Deadeye" && a.target === DEADEYE_TARGET && a.destination == null);
+      if (!cast) throw new Error("No legal Deadeye on lane 3");
+      const applied = applyAction(state, cast);
+      if (!applied.ok) throw new Error(`Deadeye rejected: ${applied.reason}`);
+      state = applied.state;
+      events.push(...applied.events);
+    }
+    resolveClash(state, (event) => events.push(event));
+    return { state, events, result: resultAfterClash(state) };
+  }
   if (choice === "drift" || choice.startsWith("drift:")) {
     const destination = choice === "drift" ? shiftDestinations(state.sides.cowboy.board, WRAITH_LANE)[0] : Number(choice.slice(6));
     if (!shiftDestinations(state.sides.cowboy.board, WRAITH_LANE).includes(destination)) throw new Error(`Illegal drift to lane ${destination + 1}`);
@@ -78,6 +96,7 @@ const name = (cardId) => CARDS[cardId].name;
 function describe(events) {
   return events.flatMap((e) => {
     if (e.type === "ride-out") return [e.side === "wizard" ? `The Lantern Wraith drifted to lane ${e.destination + 1}.` : `Billy rode to lane ${e.destination + 1}.`];
+    if (e.type === "spell") return [`${e.spell} hit the Enemy ${name(e.target.cardId)} in lane ${e.target.slot + 1}, ${e.before} to ${e.after}.`];
     if (e.type === "drift") return [`Captured Wraith drifted to lane ${e.destination + 1}.`];
     if (e.type === "damage") {
       const hitter = `${who(e.attacker.side)} ${name(e.attacker.cardId)}`;
@@ -115,6 +134,15 @@ function splitWhy(events) {
 
 function why(position, choice, events) {
   if (position === "splitTrail") return splitWhy(events);
+  if (position === "blacksmith") {
+    const drifted = events.some((e) => e.type === "ride-out" && e.drift);
+    const caught = events.some((e) => e.type === "defeat" && e.side === "wizard" && e.cardId === BOSS);
+    if (choice === "hold") return "The Skeleton occupied marked lane 3, so the drift was blocked. The Wraith stayed in lane 2 and, with no one across from it, hit your Base.";
+    if (!drifted) return "Deadeye did not open lane 3 for the drift.";
+    return caught
+      ? "Deadeye cleared the Skeleton from lane 3, so the Wraith drifted in and fought Billy there. Billy's attack finished it."
+      : "Deadeye cleared lane 3 and the Wraith drifted in against Billy, but it survived the clash.";
+  }
   if (position === "gallows") {
     return choice === "drift"
       ? "Billy was already in lane 1 when the Wraith drifted in, so they fought each other there."
@@ -145,7 +173,7 @@ function cardHtml(side, t, mark) {
 }
 
 function renderBoard(state) {
-  const mark = position === "gallows" ? pendingDrift(state)?.destination : -1;
+  const mark = position === "gallows" ? pendingDrift(state)?.destination : position === "blacksmith" ? state.bountyDrift.destination : -1;
   const lane = (side, i) => `<div class="lane${side === "wizard" && i === mark ? " marked" : ""}">${cardHtml(side, state.sides[side].board[i], side === "cowboy" && state.sides[side].board[i]?.cardId === WRAITH)}</div>`;
   const base = (side, label) => `<div class="base ${side}">${label} Base ${orbs(state.sides[side].baseOrbs, 5)}</div>`;
   const row = (side) => [0, 1, 2].map((i) => lane(side, i)).join("");
@@ -158,20 +186,26 @@ function render() {
   renderBoard(state);
   $("goal").textContent = POSITIONS[position].goal;
   const gallows = position === "gallows";
+  const blacksmith = position === "blacksmith";
   $("blurb").textContent = gallows
     ? "Learn the Lantern Wraith's move by fighting it."
-    : "You captured the Lantern Wraith. Its drift is a one-clash prototype power here.";
+    : blacksmith
+      ? "Learn a second way to catch the Lantern Wraith: clear the lane it wants to drift into."
+      : "You captured the Lantern Wraith. Its drift is a one-clash prototype power here.";
   const split = position === "splitTrail";
-  const dests = shiftDestinations(state.sides.cowboy.board, WRAITH_LANE);
+  const dests = gallows || blacksmith ? [] : shiftDestinations(state.sides.cowboy.board, WRAITH_LANE);
+  $("hold").textContent = blacksmith ? "Hold" : "Hold lane";
   $("drift").textContent = gallows
     ? "Ride Billy to lane 1"
-    : `Drift to lane ${dests[0] + 1}`;
+    : blacksmith ? "Deadeye the Skeleton in lane 3" : `Drift to lane ${dests[0] + 1}`;
   $("drift2").hidden = !split;
   if (split) $("drift2").textContent = `Drift to lane ${dests[1] + 1}`;
   $("hold").disabled = $("drift").disabled = $("drift2").disabled = false;
   $("outcome").innerHTML = gallows
     ? "Before the first clash, the Wraith drifts into marked lane 1 if that lane is empty. Then everything attacks."
-    : "The Wizard has committed. The drift happens before attacks.";
+    : blacksmith
+      ? "Before the first clash, the Wraith drifts into marked lane 3 if that lane is empty. Then everything attacks."
+      : "The Wizard has committed. The drift happens before attacks.";
   for (const b of document.querySelectorAll("[data-position]")) b.setAttribute("aria-pressed", String(b.dataset.position === position));
   played = null;
 }
@@ -183,13 +217,14 @@ function choose(choice) {
   renderBoard(state);
   $("hold").disabled = $("drift").disabled = $("drift2").disabled = true;
   const gallows = position === "gallows";
-  const choiceName = (c) => (c === "hold" ? "hold lane" : c === "drift" ? (gallows ? "ride Billy to lane 1" : "drift") : `drift to lane ${Number(c.slice(6)) + 1}`);
-  const verdictOf = (r) => (gallows ? huntVerdict(r.state, r.result) : verdict(r.result));
-  const options = position === "splitTrail" ? ["hold", "drift:0", "drift:2"] : ["hold", "drift"];
+  const hunt = gallows || position === "blacksmith";
+  const choiceName = (c) => (c === "hold" ? (hunt && !gallows ? "hold" : "hold lane") : c === "deadeye" ? "Deadeye the Skeleton in lane 3" : c === "drift" ? (gallows ? "ride Billy to lane 1" : "drift") : `drift to lane ${Number(c.slice(6)) + 1}`);
+  const verdictOf = (r) => (hunt ? huntVerdict(r.state, r.result) : verdict(r.result));
+  const options = position === "splitTrail" ? ["hold", "drift:0", "drift:2"] : position === "blacksmith" ? ["hold", "deadeye"] : ["hold", "drift"];
   const v = verdictOf({ state, result });
   const others = options.filter((c) => c !== choice)
     .map((c) => `<p><b>Other choice (${choiceName(c)}):</b> ${verdictOf(play(position, c)).text}</p>`).join("");
-  const next = gallows && result?.reason === "bounty-captured"
+  const next = hunt && result?.reason === "bounty-captured"
     ? `<p><button type="button" data-goto="raid">Use the captured Wraith</button></p>`
     : position === "raid" ? `<p><button type="button" data-goto="lastStand">Optional: try Last stand</button></p>` : "";
   $("outcome").innerHTML = `<strong class="${v.cls}">${v.text}</strong>
@@ -206,7 +241,7 @@ $("outcome").addEventListener("click", (e) => {
   if (go) { position = go.dataset.goto; render(); }
 });
 $("hold").addEventListener("click", () => choose("hold"));
-$("drift").addEventListener("click", () => choose(position === "splitTrail" ? `drift:${shiftDestinations(setup(position).sides.cowboy.board, WRAITH_LANE)[0]}` : "drift"));
+$("drift").addEventListener("click", () => choose(position === "blacksmith" ? "deadeye" : position === "splitTrail" ? `drift:${shiftDestinations(setup(position).sides.cowboy.board, WRAITH_LANE)[0]}` : "drift"));
 $("drift2").addEventListener("click", () => choose(`drift:${shiftDestinations(setup(position).sides.cowboy.board, WRAITH_LANE)[1]}`));
 $("reset").addEventListener("click", render);
 render();
