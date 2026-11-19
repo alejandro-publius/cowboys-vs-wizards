@@ -36,6 +36,12 @@ for (const side of SIDES) {
   }
   Object.freeze(DECKS[side]);
 }
+// The Stargazer's third Singularity. Registered for optional `wizardDeck`
+// lists only; DECKS.wizard stays as generated.
+{
+  const { id: _id, ...singularity } = CARDS["wizard-singularity-2"];
+  CARDS["wizard-singularity-3"] = Object.freeze({ id: "wizard-singularity-3", ...singularity });
+}
 Object.freeze(CARDS);
 Object.freeze(DECKS);
 

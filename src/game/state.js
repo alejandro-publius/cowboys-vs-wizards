@@ -1,4 +1,4 @@
-import { DECKS, SIDES } from "./cards.js";
+import { CARDS, DECKS, SIDES } from "./cards.js";
 import { validateDeckIds } from "./deck-builder.js";
 
 export const SLOT_COUNT = 3;
@@ -37,15 +37,31 @@ function shuffle(ids, rng) {
   return { ids: out, rng };
 }
 
+// Optional Wizard deck: exactly 12 distinct registered, non-bounty Wizard IDs.
+function validateWizardDeck(ids) {
+  if (!Array.isArray(ids) || ids.length !== 12) {
+    throw new TypeError("wizardDeck must be an array of 12 card IDs");
+  }
+  const seen = new Set();
+  for (let i = 0; i < 12; i++) {
+    const id = Object.hasOwn(ids, i) ? ids[i] : undefined;
+    const card = typeof id === "string" && Object.hasOwn(CARDS, id) ? CARDS[id] : undefined;
+    if (!card || card.side !== "wizard" || card.bounty) throw new TypeError(`wizardDeck: ${String(id)} is not a Wizard card`);
+    if (seen.has(id)) throw new TypeError(`wizardDeck: ${id} appears twice`);
+    seen.add(id);
+  }
+}
+
 // New match from an integer seed and optional Cowboy deck. Restart custom
 // matches with the same seed and deck. RNG draws happen in a fixed order: cowboy shuffle, wizard
 // shuffle, starting side. Nothing after setup draws from the RNG. Index 0 of
-// a deck is its top. `traps: true` adds an empty trap zone per side, a
+// a deck is its top. `wizardDeck` (12 distinct Wizard IDs) replaces the default
+// Wizard deck and changes no draw order. `traps: true` adds an empty trap zone per side, a
 // `tactical: null` allowance per side and `traps: { enabled, rulesVersion }`; it draws no
 // extra RNG and leaves decks and hands unchanged. Off (the default) adds nothing.
 // `rideOut: true` adds only `rideOut: { enabled, rulesVersion }`: no RNG draw,
 // no allowance key. The two experiments cannot be combined.
-export function createMatch(seed, { cowboyDeck, traps = false, rideOut = false } = {}) {
+export function createMatch(seed, { cowboyDeck, wizardDeck, traps = false, rideOut = false } = {}) {
   if (!Number.isInteger(seed)) throw new TypeError("seed must be an integer");
   if (typeof traps !== "boolean") throw new TypeError("traps must be a boolean");
   if (typeof rideOut !== "boolean") throw new TypeError("rideOut must be a boolean");
@@ -54,10 +70,12 @@ export function createMatch(seed, { cowboyDeck, traps = false, rideOut = false }
     const result = validateDeckIds(cowboyDeck);
     if (!result.ok) throw new TypeError(result.error);
   }
+  if (wizardDeck !== undefined) validateWizardDeck(wizardDeck);
   let rng = seed >>> 0;
   const sides = {};
   for (const side of SIDES) {
-    const ids = side === "cowboy" && cowboyDeck !== undefined ? cowboyDeck : DECKS[side];
+    const custom = side === "cowboy" ? cowboyDeck : wizardDeck;
+    const ids = custom !== undefined ? custom : DECKS[side];
     const shuffled = shuffle(ids, rng);
     rng = shuffled.rng;
     sides[side] = {

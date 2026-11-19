@@ -67,6 +67,18 @@ export const NIGHT_RIDERS = Object.freeze({
   }),
 });
 
+// The Stargazer: an optional Wizard opponent, 6 Skeleton, 2 Wizard, 1 Dragon,
+// 3 Singularity, in card ID order. Offered at 7 counted duel wins.
+export const STARGAZER_WINS = 7;
+export const STARGAZER_DECK = Object.freeze([
+  "wizard-skeleton-1", "wizard-skeleton-2", "wizard-skeleton-3",
+  "wizard-skeleton-4", "wizard-skeleton-5", "wizard-skeleton-6",
+  "wizard-wizard-1", "wizard-wizard-2",
+  "wizard-dragon-1",
+  "wizard-singularity-1", "wizard-singularity-2", "wizard-singularity-3",
+]);
+export const STARGAZER_NAME = "The Stargazer";
+
 // One-tribute posse: Sheriffs hold or pressure lanes, then one is traded for a
 // Billy to strengthen that lane. Replaces Mounted Billy with a fourth Billy and
 // keeps the starter's two Deadeyes.

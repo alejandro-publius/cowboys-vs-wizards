@@ -36,9 +36,11 @@ test("registry holds available copies; default decks retain each spec's copies a
     assert.deepEqual(DECKS[side], expectedDeck);
     assert.ok(Object.isFrozen(DECKS[side]));
   }
-  // 36 starter-pool instances, eleven Frontier-pack instances (2+2+2+2+1+2),
-  // plus one Captured Dragon, one Captured Wraith and one Lantern Wraith boss.
-  assert.equal(expectedRegistry.length, 50);
+  const extraSingularity = "wizard-singularity-3";
+  expectedRegistry.push(extraSingularity);
+  assert.deepEqual(CARDS[extraSingularity], {...CARDS["wizard-singularity-2"], id: extraSingularity});
+  assert.ok(Object.isFrozen(CARDS[extraSingularity]));
+  assert.equal(expectedRegistry.length, 51);
   assert.deepEqual(Object.keys(CARDS).sort(), expectedRegistry.sort());
   assert.ok(Object.isFrozen(CARDS) && Object.isFrozen(DECKS));
 });
