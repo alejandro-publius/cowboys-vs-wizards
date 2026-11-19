@@ -1,5 +1,5 @@
-// Usage: node prototypes/playtest-lab/build.mjs <abs dragon-fire.html> <abs wraith-drift.html>
-// Copies the launcher and the two offline builds into dist/playtest-lab/.
+// Usage: node prototypes/playtest-lab/build.mjs <abs dragon-fire.html> <abs wraith-drift.html> <abs first-duel.html>
+// Copies the launcher and the three offline builds into dist/playtest-lab/.
 import {copyFileSync, existsSync, mkdirSync, readFileSync, statSync} from 'node:fs';
 import {isAbsolute, join, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -37,22 +37,26 @@ function validate(label, path) {
   }
 }
 
-const [dragonPath, wraithPath, ...extra] = process.argv.slice(2);
-if (extra.length) fail('expected exactly two arguments, got ' + (2 + extra.length));
+const [dragonPath, wraithPath, duelPath, ...extra] = process.argv.slice(2);
+if (extra.length) fail('expected exactly three arguments, got ' + (3 + extra.length));
 validate('Dragon Fire', dragonPath);
 validate('Wraith Drift', wraithPath);
-if (resolve(dragonPath) === resolve(wraithPath)) fail('both arguments point to the same file');
+validate('First duel', duelPath);
+const resolved = [dragonPath, wraithPath, duelPath].map((p) => resolve(p));
+if (new Set(resolved).size !== resolved.length) fail('two arguments point to the same file');
 if (!existsSync(launcher)) fail('launcher missing: ' + launcher);
 
 mkdirSync(outDir, {recursive: true});
 copyFileSync(launcher, join(outDir, 'index.html'));
 copyFileSync(dragonPath, join(outDir, 'dragon-fire.html'));
 copyFileSync(wraithPath, join(outDir, 'wraith-drift.html'));
+copyFileSync(duelPath, join(outDir, 'first-duel.html'));
 
-// The index links to ./dragon-fire.html and ./wraith-drift.html; confirm both targets exist.
+// The index links to each bundled page; confirm every target exists. The first duel is linked twice (bare and ?seed=690).
 const index = readFileSync(join(outDir, 'index.html'), 'utf8');
-for (const name of ['dragon-fire.html', 'wraith-drift.html']) {
+for (const name of ['dragon-fire.html', 'wraith-drift.html', 'first-duel.html']) {
   if (!index.includes('href="./' + name + '"')) fail('index.html does not link to ./' + name);
   if (!existsSync(join(outDir, name))) fail('missing output: ' + name);
 }
+if (!index.includes('href="./first-duel.html?seed=690"')) fail('index.html does not link to ./first-duel.html?seed=690');
 console.log('playtest-lab written to ' + outDir);
