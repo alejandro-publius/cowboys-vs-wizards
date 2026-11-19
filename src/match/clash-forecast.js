@@ -1,6 +1,7 @@
 import {CARDS, SIDES, opponent} from "../game/cards.js";
 import {pendingDrift, resolveClash, resultAfterClash} from "../game/clash.js";
 import {shiftTroop} from "../game/lanes.js";
+import {IF_NO_REBUILD, rebuildLane, rebuildNote} from "./fire-arc-forecast.js";
 
 function baseLine(label, before, after) {
   return `${label} ${before} → ${after}${after === 0 ? " (falls)" : ""}`;
@@ -16,7 +17,7 @@ function verdict({winner, loser, reason}, viewer, boss = "Dragon") {
   return reason === "round-limit" ? `${outcome} at the round limit` : outcome;
 }
 
-export function clashForecast(view, options) {
+export function clashForecast(view, options, fireArc = null) {
   if (!view || view.result || view.traps?.enabled || view.activeSide !== view.viewer
     || options?.step !== "idle") return null;
 
@@ -50,26 +51,31 @@ export function clashForecast(view, options) {
   timing += enemyStillActs
     ? "Wizards still act. Preview assumes the board stays as shown."
     : "End turn resolves this clash.";
-  if (result) {
+  // A publicly marked rival lane can be rebuilt after this turn: the shown
+  // board is only an assumption, so no verdict is asserted.
+  const marked = rebuildLane(view, fireArc);
+  if (result && marked === null) {
     const outcome = verdict(result, own, boss);
     timing += enemyStillActs
       ? ` If it does, ${outcome}.`
       : ` ${outcome[0].toUpperCase()}${outcome.slice(1)}.`;
   }
+  const conditional = marked === null ? "" : IF_NO_REBUILD;
   return {
-    bases: [
+    bases: conditional + [
       baseLine("Your Base", view.sides[own].baseOrbs, sides[own].baseOrbs),
       baseLine("Enemy Base", view.sides[enemy].baseOrbs, sides[enemy].baseOrbs),
     ].join(" · "),
-    losses: losses.length ? `Troops that fall: ${losses.join(", ")}.` : "",
-    ...(fires.length && {fire: `Dragon Fire burns through (${fires.join("; ")}).`}),
+    losses: losses.length ? `${conditional}Troops that fall: ${losses.join(", ")}.` : "",
+    ...(fires.length && {fire: `${conditional}Dragon Fire burns through (${fires.join("; ")}).`}),
+    ...(marked !== null && {rebuild: rebuildNote(marked)}),
     timing,
     pass: options.playableCardIds.length === 0 && !options.canRideOut ? "No cards can be played. Select End turn." : "",
   };
 }
 
 // Reuse the normal clash projection with the same troop and its remaining life.
-export function rideForecasts(view, options) {
+export function rideForecasts(view, options, fireArc = null) {
   const from = options?.rideFrom;
   if (!view || from == null) return {};
   const destinations = options.step === "ride-destination" ? options.ownSlots
@@ -78,7 +84,7 @@ export function rideForecasts(view, options) {
   return Object.fromEntries(destinations.map((to) => {
     const moved = { ...view.sides[own], board: [...view.sides[own].board] };
     shiftTroop(moved.board, from, to);
-    const forecast = clashForecast({ ...view, sides: { ...view.sides, [own]: moved } }, { ...options, step: "idle" });
+    const forecast = clashForecast({ ...view, sides: { ...view.sides, [own]: moved } }, { ...options, step: "idle" }, fireArc);
     return [to, forecast.bases];
   }));
 }
