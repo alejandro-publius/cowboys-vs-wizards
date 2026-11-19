@@ -563,11 +563,11 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
       launchDraw(newDraw, drawOrigin);
     }
 
-    seedForm.hidden = Boolean(model.bounty);
+    seedForm.hidden = Boolean(model.bounty || model.practice);
     restart.disabled = resultRestart.disabled = !model.buttons.restart;
     if (rematch) {
       rematch.replay.disabled = rematch.fresh.disabled = !model.buttons.restart;
-      setText(rematch.fresh, model.bounty ? "Back to Wanted" : "New duel");
+      setText(rematch.fresh, model.bounty ? "Back to Wanted" : model.practice ? "Leave practice" : "New duel");
     }
     buttons.skip.hidden=!model.buttons.skip;
 

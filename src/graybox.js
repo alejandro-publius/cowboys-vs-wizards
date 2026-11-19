@@ -9,6 +9,7 @@ import {clashLog} from "./match/clash-log.js";
 import {createController, FABLE_ENGINE} from "./match/controller.js";
 import {guideLine, guideProgress, trackGuide} from "./match/guide.js";
 import {DEFAULT_PAUSES} from "./match/presenter.js";
+import {createPractice, PRACTICE_CHALLENGES, PRACTICE_NO_REWARD_NOTE} from "./match/practice-challenges.js";
 import {createRideOutLesson, RIDE_OUT_LESSON_SEED} from "./match/ride-out-lesson.js";
 import {createScheduler} from "./match/scheduler.js";
 import {blockedReasons} from "./match/selection.js";
@@ -98,6 +99,7 @@ const engine = {
     deal = nextDeal ? {...nextDeal, seed} : freshDeal(seed);
     nextDeal = null;
     if (deal.rideLesson) return createRideOutLesson();
+    if (deal.practice) return createPractice(deal.practice);
     if (deal.hunt) return createHunt(deal.hunt);
     const options = { ...deal.options };
     return deal.opening
@@ -159,6 +161,8 @@ const controller = createController({
   chooseCpuAction(view) {
     // The notice shows the whole enemy formation. Monsters strike at the clash.
     if (deal?.hunt) return FABLE_ENGINE.legalActions(view, "wizard").at(-1);
+    // Practice routes hold only against the Normal bot, whatever ?cpu says.
+    if (deal?.practice) return chooseAction(view);
     return (guided || deal?.posse ? chooseAction : chosenCpu)(view);
   },
   onChange() {
@@ -180,7 +184,7 @@ const controller = createController({
         profile.record("match-complete", {matchId: run, won: displayed.result.outcome === "win"});
       }
     }
-    const guide = (guided || hints) && options && displayed && status === "accepting_input"
+    const guide = (guided || (hints && !deal?.practice)) && options && displayed && status === "accepting_input"
       ? guideLine({view: displayed, options, progress, opener: guided})
       : null;
     const model = cardModel({
@@ -195,6 +199,8 @@ const controller = createController({
     const lessonChoice = deal?.rideLesson && displayed?.round === 2
       && !displayed.allowances.cowboy.summonUsed && !displayed.allowances.cowboy.castUsed;
     model.bounty = Boolean(deal?.hunt);
+    model.practice = Boolean(deal?.practice);
+    const practice = deal?.practice ? PRACTICE_CHALLENGES[deal.practice] : null;
     const saved = model.bounty ? profile.get() : null;
     const boss = model.bounty ? bossOfHunt(deal.hunt.id) : null;
     const huntProgress = status === "terminal" && model.bounty
@@ -205,7 +211,9 @@ const controller = createController({
     model.openingNote = [
       model.bounty && `${deal.hunt.name}. ${huntProgress}`,
       deal?.opponent && `Opponent: ${OPPONENTS[deal.opponent].name}.`,
-      deal?.isDraft && "Trying an unsaved deck.",
+      practice && displayed?.round === practice.round && practice.note,
+      practice && PRACTICE_NO_REWARD_NOTE,
+      deal?.isDraft && !practice && "Trying an unsaved deck.",
       deal?.posse && displayed?.round === 1 && POSSE_NOTE,
       deal?.opening?.opening === "freeOpener" && FREE_OPENER_NOTE,
       displayed?.rideOut?.enabled ? RIDE_OUT_NOTE
@@ -256,6 +264,13 @@ function replayDeal() {
 // Result screen: a generated seed and the latest saved deck, outside the guided lesson.
 function newDuel() {
   if (controller.status() !== "terminal") return;
+  if (deal.practice) {
+    // Leave practice: back to How to Play. The next ordinary duel reads the saved deck and default opponent.
+    guided = false;
+    arena.hidden = true;
+    menu.openHow();
+    return;
+  }
   if (deal.hunt) {
     arena.hidden = true;
     menu.show();
@@ -276,7 +291,7 @@ const overlay = mountCards(match, {
   onEndPhase: () => play(() => controller.endPhase()),
   onRestart: () => restartCurrent(() => controller.restart()),
   onReplaySeed: (seed) => {
-    if (deal?.hunt) return;
+    if (deal?.hunt || deal?.practice) return;
     return deal?.rideLesson ? play(() => controller.start(seed)) : restartCurrent(() => controller.start(seed));
   },
   onReplayDeal: replayDeal,
@@ -290,6 +305,20 @@ function tryRideOut() {
   const lesson = {guided, options: {rideOut: true}, rideLesson: true, opening: null};
   if (!startWithDeal(lesson, () => controller.start(RIDE_OUT_LESSON_SEED))) {
     throw new Error("The Ride Out duel could not start.");
+  }
+  menu.hide();
+  arena.hidden = false;
+  node("home").focus();
+}
+
+function startPractice(id) {
+  const challenge = PRACTICE_CHALLENGES[id];
+  if (!challenge || !["idle", "terminal"].includes(controller.status())) return;
+  guided = false;
+  // A draft deal: no match, win, summon or spell is recorded. Explicit options: no Ride Out, no ?wizard= deck.
+  const practice = {seed: challenge.seed, guided: false, opening: null, isDraft: true, practice: id, options: {rideOut: false}};
+  if (!startWithDeal(practice, () => controller.start(challenge.seed))) {
+    throw new Error("The practice deal could not start.");
   }
   menu.hide();
   arena.hidden = false;
@@ -326,6 +355,8 @@ function startPosse() {
 const menu = mountTitleMenu(node("title-screen"), {
   profile,
   onTryRideOut: tryRideOut,
+  onPractice: startPractice,
+  practiceChallenges: Object.values(PRACTICE_CHALLENGES),
   onHunt: startHunt,
   onTryDraft(counts) {
     const entitlement = deckEntitlement();
@@ -369,4 +400,6 @@ document.addEventListener("keydown", (event) => {
   event.preventDefault();
 });
 if (params.get("mode") === "ride-out") tryRideOut();
+else if (params.get("mode") === "practice-dynamiter") startPractice("dynamiter");
+else if (params.get("mode") === "practice-tribute") startPractice("tribute");
 else if (params.get("mode") === "match") node("menu-play").click();
