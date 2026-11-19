@@ -1,6 +1,6 @@
 // Usage: node prototypes/playtest-lab/build.mjs <abs dragon-fire.html> <abs wraith-drift.html> <abs first-duel.html>
 // Copies the launcher and the three offline builds into dist/playtest-lab/.
-import {copyFileSync, existsSync, mkdirSync, readFileSync, statSync} from 'node:fs';
+import {copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync} from 'node:fs';
 import {isAbsolute, join, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
@@ -51,6 +51,29 @@ copyFileSync(launcher, join(outDir, 'index.html'));
 copyFileSync(dragonPath, join(outDir, 'dragon-fire.html'));
 copyFileSync(wraithPath, join(outDir, 'wraith-drift.html'));
 copyFileSync(duelPath, join(outDir, 'first-duel.html'));
+
+const readme = [
+  'Orb Duel Playtest Lab',
+  '',
+  'Everything here runs locally. Nothing is sent anywhere.',
+  '',
+  'Launch',
+  '1. Open a fresh browser profile or a new private/incognito window for each participant.',
+  '2. In that window, open index.html from this folder (double-click it, or drag it into the window).',
+  '3. Use the launch links. The first duel has a guided link (bare address) and a standard link (?seed=690).',
+  '',
+  'Observe',
+  '- Optional: press Start in the Observer timer when the participant begins, then use the Mark buttons.',
+  '  Marks fill the two time fields. Each mark works once until you press Reset timer. You can type times instead.',
+  '',
+  'Save and exchange',
+  '1. Fill in the Session record, then press "Download session record (.json)".',
+  '   Feedback has its own "Download observation (.json)" button.',
+  '2. The files land in your browser downloads folder.',
+  '3. Send or hand over those .json files to the organizer. Each is plain text and can be opened in any editor.',
+  ''
+].join('\n');
+writeFileSync(join(outDir, 'README.txt'), readme);
 
 // The index links to each bundled page; confirm every target exists. The first duel is linked twice (bare and ?seed=690).
 const index = readFileSync(join(outDir, 'index.html'), 'utf8');
