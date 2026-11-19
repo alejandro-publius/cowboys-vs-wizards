@@ -19,7 +19,8 @@ const posterOrder = (boss) => (boss.id === "lantern-wraith" ? WRAITH_NOTICE_ORDE
 const firstWraith = (a, b) => (b.id === "lantern-wraith") - (a.id === "lantern-wraith");
 
 // One poster and hunt list per boss. Each boss counts only its own hunts.
-export function renderWantedBoard(content, profile, start) {
+// onPosse(opener, kind) is optional; without it no showcase button appears.
+export function renderWantedBoard(content, profile, start, onPosse) {
   const {clearedHunts} = profile;
   for (const boss of [...BOSSES].sort(firstWraith)) {
     const earned = rewardEarned(profile, boss);
@@ -37,6 +38,14 @@ export function renderWantedBoard(content, profile, start) {
         : `Clear five different hunts to earn ${achievement} and add ${reward.name} to your collection.`),
       element("p", `${reward.name} · ${reward.attack} attack · ${reward.health} orbs · ${tributeCost(reward.stars)} tribute`, "wanted-reward"),
     );
+    if (earned && typeof onPosse === "function") {
+      const kind = boss.id === "lantern-wraith" ? "wraith" : "dragon";
+      const label = `Duel with the ${kind === "wraith" ? "Wraith" : "Dragon"} Posse`;
+      const duel = element("button", label, "wanted-posse");
+      duel.type = "button";
+      duel.addEventListener("click", () => onPosse(duel, kind));
+      poster.append(duel);
+    }
     const list = element("ul", null, "wanted-hunts");
     list.setAttribute("aria-label", `${boss.name} hunts`);
     for (const id of posterOrder(boss)) {

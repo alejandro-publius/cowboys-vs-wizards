@@ -11,7 +11,7 @@ function element(tag, text, attrs={}) {
   return node;
 }
 
-export function mountTitleMenu(root,{profile,onPlay,onSettings,onTryDraft,onTryRideOut,onPractice,practiceChallenges=[],onHunt}) {
+export function mountTitleMenu(root,{profile,onPlay,onSettings,onTryDraft,onTryRideOut,onPractice,practiceChallenges=[],onHunt,onPosse}) {
   const scene=$(root,'.title-scene'),page=$(root,'.menu-page'),content=$(root,'.menu-page-content');
   const heading=$(root,'#menu-page-title'),notice=$(root,'#menu-notice'),play=$(root,'#menu-play');
   // Only the graybox title screen carries data-deck-presets="true"; the illustrated builder has no marker.
@@ -118,7 +118,8 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings,onTryDraft,onTryR
       content.append(element('p','Finish your paused duel before starting a hunt.',{class:'menu-hint'}));
       return;
     }
-    renderWantedBoard(content,profile.get(),(opener,id)=>start(opener,()=>onHunt(id)));
+    renderWantedBoard(content,profile.get(),(opener,id)=>start(opener,()=>onHunt(id)),
+      typeof onPosse==='function'?(opener,kind)=>start(opener,()=>onPosse(kind)):undefined);
   }
   const actions={settings,achievements,how,deck,wanted};
   for(const item of root.querySelectorAll('[data-menu-page]'))item.addEventListener('click',()=>actions[item.dataset.menuPage](item));
