@@ -1,8 +1,10 @@
 // Screens for the Showdown prototype: the camp (what to play, what you earned), the duel and the deck builder.
 // The rules are in rules.js and everything a player keeps is in progress.js; this file only shows them.
 import {DECKS, EFFECTS, KEYWORDS, RARITY, TYPES, cardOf, tributes} from "./cards.js";
+import {viewFor} from "./contract.js";
 import {applyAction, attackOf, attackOutcome, canAttack, createShowdown, legalActions, opponent, playTurn} from "./rules.js";
 import {BOUNTIES, DECK_SIZE, HUNTS, RIVALS, SIDE_SIZE, choose, deckProblems, duelFor, duelList, migrate, newSave, openPack, owned, settle, trailDone, withDeck} from "./progress.js";
+import {logged, report} from "./playtest.js";
 import {GRIT_CAP, TRAIL} from "./trail.js";
 
 const $ = (id) => document.getElementById(id);
@@ -35,6 +37,14 @@ let save = migrate(stored(SAVE) ?? stored(OLD_SAVE));
 function keep(next) {
   save = next;
   try { localStorage.setItem(SAVE, JSON.stringify(save)); } catch { /* storage is blocked: play on without saving */ }
+}
+
+// One line per finished duel against the Wizards, for the playtest report in the camp.
+const LOG = "cvw-showdown-playtest-v1";
+let log = Array.isArray(stored(LOG)) ? stored(LOG) : [];
+function keepLog(next) {
+  log = next;
+  try { localStorage.setItem(LOG, JSON.stringify(log)); } catch { /* storage is blocked: the report covers this visit only */ }
 }
 
 // ---- What is on screen ----------------------------------------------------------------------
@@ -109,6 +119,7 @@ function renderCamp() {
   $("collection").innerHTML = `<strong>Deck:</strong> ${count(save.deck)}.${sum(save.side) ? ` <strong>Side deck:</strong> ${count(save.side)}.` : ""}
     <br><strong>Collection:</strong> Sheriff and Billy in any number${sum(save.collection) ? `, ${count(save.collection)}` : ""}.`;
   $("code").value = btoa(JSON.stringify(save));
+  $("report").value = report(log, save);
 }
 
 // ---- Deck builder ---------------------------------------------------------------------------
@@ -186,6 +197,7 @@ function advance() {
   }
   if (!state.result || outcome) return;
   const winner = state.result.winner;
+  if (solo()) keepLog(logged(log, {name: game.duel.name, won: winner === "cowboy", turns: state.turn, seconds: Math.round((Date.now() - game.started) / 1000), rules: game.rules}));
   outcome = {winner, earned: null, matchOver: true};
   if (game.match) {
     if (winner) game.match.wins[winner] += 1;
@@ -221,6 +233,7 @@ function deal() {
   lines = [{turn: `Turn 1: ${solo() ? (state.active === "cowboy" ? "you" : "the Wizards") : `the ${faction(state.active)}s`}`}];
   pick = null;
   outcome = null;
+  Object.assign(game, {started: Date.now(), rules: false});
   advance();
   curtain = !solo();
   show("duel");
@@ -288,14 +301,16 @@ function renderDuel() {
   // Enemy troops and Base the current pick may be aimed at, and own troops a picked card may go on.
   const aims = new Set(attacking ? options.filter((a) => a.type === "attack" && a.slot === pick.troop).map((a) => a.target) : kind === "spell" ? playsOf(pick.card).map((a) => a.target) : []);
   const carriers = new Set(kind === "gear" ? playsOf(pick.card).map((a) => a.slot) : []);
+  // The board is drawn from what this player may see, so the other hand, traps and both deck orders never reach the page.
+  const view = viewFor(state, own);
   const row = (side) => {
-    const s = state.sides[side];
+    const s = view.sides[side];
     const isOwn = side === own;
     const baseOpen = !isOwn && aims.has("base");
-    const traps = isOwn ? (s.traps.length ? `Set: ${s.traps.map(name).join(", ")}` : "No trap set") : s.traps.length ? `${plural(s.traps.length, "card")} face down` : "Nothing face down";
+    const traps = isOwn ? (s.traps.length ? `Set: ${s.traps.map(name).join(", ")}` : "No trap set") : s.trapCount ? `${plural(s.trapCount, "card")} face down` : "Nothing face down";
     const base = `<button type="button" class="base ${side}${baseOpen ? " can" : ""}" ${baseOpen ? 'data-enemy="base"' : "disabled"}>
       <strong>${solo() ? (isOwn ? "Your" : "Wizard") : faction(side)} Base</strong>${orbs(s.base, s.baseMax)}
-      <span class="note">Hand ${s.hand.length} · Deck ${s.deck.length} · Graveyard ${s.discard.length}</span>
+      <span class="note">Hand ${s.handCount} · Deck ${s.deckCount} · Graveyard ${s.discard.length}</span>
       <span class="note">▲ ${traps}</span>${baseOpen ? preview("base") : ""}</button>`;
     const slots = s.board.map((troop, slot) => {
       if (!troop) return `<button type="button" class="slot ${side}" disabled><span class="note">empty</span></button>`;
@@ -325,7 +340,7 @@ function renderDuel() {
   $("location").textContent = state.location ? `■ Location: ${name(state.location.cardId)} (${whose(state.location.side).toLowerCase()}). ${EFFECTS[cardOf(state.location.cardId).effect].text.replace("Location. ", "")}` : "";
 
   const playable = new Set(options.filter((a) => a.cardId).map((a) => name(a.cardId)));
-  $("hand").innerHTML = state.sides[own].hand.map((cardId) => {
+  $("hand").innerHTML = view.sides[own].hand.map((cardId) => {
     const card = cardOf(cardId);
     const cost = tributes(cardId);
     const on = playable.has(card.name);
@@ -368,6 +383,7 @@ function renderDuel() {
   $("log").scrollTop = $("log").scrollHeight;
   for (const side of ["cowboy", "wizard"]) $(`${side}-graveyard`).textContent = state.sides[side].discard.map(name).join(", ") || "empty";
   // Only the keywords on cards in this duel, so a new player reads a short list.
+  // This list names keywords, never cards, and both decks are known lists, so reading the whole state here shows nothing hidden.
   const cards = ["cowboy", "wizard"].flatMap((side) => [...state.sides[side].hand, ...state.sides[side].deck, ...state.sides[side].discard, ...state.sides[side].board.filter(Boolean).map((troop) => troop.cardId)]);
   const inPlay = new Set(cards.flatMap((cardId) => cardOf(cardId).keys ?? []));
   $("keywords").innerHTML = Object.entries(KEYWORDS).filter(([key]) => inPlay.has(key)).map(([, [word, rule]]) => `<li><strong>${word}.</strong> ${rule}</li>`).join("")
@@ -416,9 +432,11 @@ $("load").addEventListener("click", () => {
   if (!bad) { keep(next); opened = null; renderCamp(); }
   $("code-note").textContent = bad ? "That is not a save code. Nothing was changed." : "Loaded.";
 });
+$("rules").addEventListener("toggle", () => { if ($("rules").open && game) game.rules = true; });
 $("reset").addEventListener("click", () => {
-  if (!confirm("Start over? Your cards and progress in this browser are erased.")) return;
+  if (!confirm("Start over? Your cards, progress and playtest report in this browser are erased.")) return;
   keep(newSave());
+  keepLog([]);
   opened = null;
   renderCamp();
   $("code-note").textContent = "Started over.";

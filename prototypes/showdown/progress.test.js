@@ -5,6 +5,7 @@ import {createShowdown} from "./rules.js";
 import {BOUNTIES, DECK_SIZE, HUNTS, OPEN_WINS_PER_PACK, PACK_SIZE, RIVALS, choose, deckProblems, duelFor, duelList, migrate, newSave, openPack, owned, settle, trailDone, withDeck} from "./progress.js";
 import {GRIT_CAP, STARTER, TRAIL, deckAfter} from "./trail.js";
 import {LADDER, saveAt, winRate} from "./trail-sim.mjs";
+import {LOG_LIMIT, logged, report} from "./playtest.js";
 
 const total = (counts) => Object.values(counts).reduce((sum, copies) => sum + copies, 0);
 const win = (save, id) => settle(save, id, true);
@@ -184,6 +185,22 @@ test("saves: the first version is carried over, a round trip is exact, and anyth
     {...save, hunts: {"lantern-wraith": 9}}, {...save, offer: ["wizard-imp", "cowboy-lasso"]}, {...save, packs: -1}, {...save, collection: {"no-such-card": 1}}]) {
     assert.deepEqual(migrate(bad), newSave());
   }
+});
+
+test("the playtest report says how far a player got, where they first lost and where they lost most", () => {
+  assert.equal(report([], newSave()), "No duel has been finished yet.");
+  let log = [];
+  for (const [name, won, turns, seconds, rules] of [["Boot Hill", true, 9, 80, false], ["Raven Roost", true, 11, 150, true], ["The Bone Fence", false, 14, 200, false],
+    ["The Bone Fence", false, 12, 100, true], ["The Bone Fence", true, 13, 190, false], ["Imp Hollow", false, 8, 60, false]]) log = logged(log, {name, won, turns, seconds, rules});
+  const text = report(log, saveAt({wins: 3}));
+  for (const line of ["Finished 6 duels in 13 min of play: won 3, lost 3.", "Reached: Trail 3 of 6 won, rivals 0 of 4, hunts 0 of 10, even-match wins 0.", "First loss: duel 3, The Bone Fence.",
+    "Lost most often: The Bone Fence, 2 times.", 'Opened "All the rules" during 2 of 6 duels.', "1. Boot Hill: won in 9 turns, 80 s", "2. Raven Roost: won in 11 turns, 3 min, read the rules", "6. Imp Hollow: lost in 8 turns, 60 s"]) {
+    assert.ok(text.split("\n").includes(line), `missing line: ${line}\n${text}`);
+  }
+  assert.ok(report([{name: "Boot Hill", won: true, turns: 9, seconds: 80, rules: false}], saveAt({wins: 1})).includes("Never lost."));
+  let long = [];
+  for (let i = 0; i < LOG_LIMIT + 5; i++) long = logged(long, {name: `duel ${i}`, won: true, turns: 1, seconds: 1, rules: false});
+  assert.deepEqual([long.length, long[0].name], [LOG_LIMIT, "duel 5"]);
 });
 
 test("a cushion, then a ramp, all the way to the even match: bot players on 80 deals", () => {

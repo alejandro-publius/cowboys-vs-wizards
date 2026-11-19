@@ -34,6 +34,11 @@
           <span id="code-note" class="note" role="status"></span>
         </div>
       </details>
+      <details>
+        <summary>Playtest report</summary>
+        <p class="note">What you played and how it went. Select all of it, copy it and send it to whoever asked you to play.</p>
+        <textarea id="report" rows="10" readonly aria-label="Playtest report"></textarea>
+      </details>
     </section>
 
     <section id="builder" aria-label="Deck builder" hidden>
@@ -49,7 +54,7 @@
 
     <section id="duel" aria-label="Duel" hidden>
       <p id="lesson"></p>
-      <details>
+      <details id="rules">
         <summary>All the rules</summary>
         <ol class="rules">
           <li>You choose every attack: pick your troop, then the enemy troop it hits.</li>

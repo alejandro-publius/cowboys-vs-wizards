@@ -13,6 +13,8 @@ node prototypes/showdown/export-art.mjs   # rewrites ART-DIRECTION.md after a ch
 
 The full rules are in [RULEBOOK.md](RULEBOOK.md). Every card is in [cards.csv](cards.csv). The look of every card and place, written for an image generator, is in [ART-DIRECTION.md](ART-DIRECTION.md).
 
+To test it on people, follow [PLAYTEST.md](PLAYTEST.md). To build it into the game, Kiro follows [the integration brief](../../docs/design/showdown-integration-kiro-brief.md); `contract.js` is what a screen may see and must show.
+
 ## What is in it
 
 **Rules**

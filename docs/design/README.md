@@ -19,6 +19,7 @@ Every number in these briefs comes from bot runs on scratch copies of the rules,
 | [First player](first-player-kiro-brief.md) | First Play opens the guided duel; three-minute playtest | Built on a branch, waiting on the playtest |
 | [Captured boss moves](captured-boss-moves-kiro-brief.md) | Dragon Fire and Ghost Walk pitches | Dragon Fire built as an arc |
 | [Depth arc](depth-arc-kiro-brief.md) | Ember Gulch and the Bonewright | Built and merged, waiting on a person |
+| [Showdown into the game](showdown-integration-kiro-brief.md) | Hands the Showdown engine to Kiro in three slices, with the screen contract | Written; waits on the playtest and on name approval |
 | [Showdown rules](../../prototypes/showdown/README.md) | The chosen fight: picked attacks, keywords, type tags, traps, 25 cards | Playable prototype; not yet the main game |
 | [Cover Swap](cover-swap-handoff.md) | Opt-in Ride Out variant | Cut; stays an experiment |
 | [Mounted Billy decision](mounted-billy-decision-handoff.md), [playtest boards](mounted-billy-playtest-handoff.md) | Attack 3 against 4 lab | Cut |
