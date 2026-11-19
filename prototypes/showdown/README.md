@@ -1,69 +1,76 @@
-# Showdown rules (prototype)
+# Showdown (prototype)
 
-The fight Alex chose on November 18, 2026 to build the deeper rules on: you choose every attack, your troops shield your Base, and turns alternate. It replaces the lane clash in this prototype only. The main game in `src/` is untouched.
+The fight Alex chose on November 18, 2026 to build the deeper rules on: you choose every attack, your troops shield your Base, and turns alternate. Everything here is separate from the main game in `src/`, which is untouched.
 
 ```sh
 node prototypes/showdown/build.mjs        # writes dist/showdown.html; open it in a browser
-node --test prototypes/showdown/rules.test.js
-node prototypes/showdown/sim.mjs 1000     # bot games, each deal played from both seats
-node prototypes/showdown/trail-sim.mjs    # how often three kinds of player win each Trail duel
+node --test prototypes/showdown/*.test.js
+node prototypes/showdown/sim.mjs 1000     # the even match, each deal played from both seats
+node prototypes/showdown/trail-sim.mjs    # how often three kinds of player win every duel on the ladder
 node prototypes/showdown/export-cards.mjs # rewrites cards.csv after a card change
 ```
 
-## Rules
-
-1. Draw a card. Then play: up to one troop, one spell and one trap a turn. Then attack once with each troop. Once you attack, you cannot play more cards that turn.
-2. Troops cost tributes as in the main game: 1 to 4 stars are free, 5 and 6 cost one of your troops, 7 and up cost two.
-3. An attack hits the enemy troop you choose. Damage beyond its last orb hits its owner's Base. A troop that survives hits back.
-4. A Base can be struck directly only when its side has no troops.
-5. A free troop rests on the turn it arrives. A troop paid for with a tribute can attack at once. Nobody attacks on the opening turn.
-6. A trap is set face down and springs on the next enemy attack, one trap per attack. Each side holds two at most.
-7. Whoever goes second starts with one more card.
-8. An empty deck costs your Base an orb each turn you would draw. A seventh card in hand is discarded.
-9. A Base with no orbs loses.
+The full rules are in [RULEBOOK.md](RULEBOOK.md). Every card is in [cards.csv](cards.csv).
 
 ## What is in it
 
-- **Eight keywords**, each with one fixed meaning: Guard, Quickdraw, Ride, Scout, Raise, Sweep, Last Stand and Ghostly.
-- **Type tags** on every troop: Lawman, Outlaw, Rig, Beast, Undead, Mage and Fiend. Raise is the first rule that reads a tag.
-- **Three card kinds:** troops, spells and traps. One status, Stunned.
-- **The graveyard as a resource:** the Wizard brings an Undead troop back.
-- **25 cards**, 13 Cowboy and 12 Wizard, in [cards.csv](cards.csv). Seven are new here: Bear Trap, Bone Wall, Raven Familiar, Headless Horseman, Jack-o'-Lantern, Hellfire and Hex.
+**Rules**
 
-## The Trail: a new player's first six duels
+- Five card kinds: troops, spells, traps, gear and locations. 29 cards, 15 Cowboy and 14 Wizard. Eleven are new here.
+- Eight keywords with one fixed meaning each: Guard, Quickdraw, Ride, Scout, Raise, Sweep, Last Stand, Ghostly. One status: Stunned.
+- A type on every troop (Lawman, Outlaw, Rig, Beast, Undead, Mage, Fiend). Raise and both locations read it.
+- Two stances: a troop attacks, or takes cover to keep damage off the Base at the price of not hitting back.
+- The graveyard as a resource, card draw, a hand limit, and an empty deck that costs the Base an orb a turn.
+- Rarity: Basic, Common, Uncommon, Rare, Legendary, each with a copy limit per deck.
 
-A first hour is not an even match. The Trail opens with two duels a player cannot really lose, then gets harder one step at a time, and every first win pays a new card that goes straight into the deck. The even match waits until the Trail is done.
+**A player's first hours**
 
-- You start with three card names and no keywords: Sheriff, Billy and Deadeye.
-- Each duel shows one new thing on the Wizard side, in one sentence above the board.
-- A win pays one or two new cards and shows what they do. Six wins earn eight new cards and every Cowboy keyword.
-- A loss gives the rematch one more Base orb, twice at most.
-- Only the keywords in the current duel are listed on screen.
+- **The Trail:** six duels that start as a sure win and get harder one step at a time. Each first win pays a new card.
+- **A choice after every win:** two cards are offered and you keep one.
+- **Rivals:** four, met in order, bridging to the even match. They pay packs and the first gear and location.
+- **Bounties:** the Lantern Wraith and the Graveyard Dragon. Beat one five times and its Legendary card is yours.
+- **Packs:** three cards, won and never bought.
+- **A softer rematch:** a loss gives your Base one more orb next time, twice at most.
 
-How often a bot player wins each duel on the first try, 400 deals each on November 18 (`node prototypes/showdown/trail-sim.mjs`). "Careless" takes any legal action, "simple" takes the best single action, "careful" plans the whole turn. A person should land between simple and careful.
+**Around the duel**
 
-| Duel | Shows | Pays | Careless | Simple | Careful |
-| --- | --- | --- | --- | --- | --- |
-| 1. Boot Hill | Attacking | Covered Wagon ×2 (Guard) | 100% | 100% | 100% |
-| 2. Raven Roost | Enemy keywords | Outrider ×2 (Ride) | 100% | 100% | 100% |
-| 3. The Bone Fence | Guard, Raise | Ranger (Scout), Lasso | 68% | 86% | 100% |
-| 4. Imp Hollow | Quickdraw | Dynamiter (Last Stand), Bear Trap | 43% | 85% | 89% |
-| 5. The Hexed Mile | Traps | Mounted Billy (Ride) | 31% | 65% | 97% |
-| 6. Dragon's Roost | The whole coven | Gatling Crew (Sweep) | 19% | 34% | 75% |
-| Open range | The even match | | 10% | 9% | 60% |
+- A deck builder with a four-card side deck.
+- Best of three, with side-deck swaps between games.
+- Two players on one screen, single game or best of three.
+- Progress saved in the browser, with a code to copy it elsewhere.
 
-The step from Dragon's Roost to the even match is still steep for a simple player. More duels belong between them.
+## The ladder, measured
 
-## Bot results for the even match
+How often a bot player wins each duel on the first try, 300 deals each, November 18 (`trail-sim.mjs`). "Careless" takes any legal action, "simple" takes the best single action, "careful" plans the whole turn. A person should land between simple and careful. The player's deck is the one the Trail builds, with no cards from offers or packs.
 
-2,000 games on November 18 (1,000 deals, each played from both seats, two 16-card starter decks): the first player won 55.7%, the Cowboys won 54.7%, and a game took 12.6 turns on average and 25 at most. Without the extra card for the second player, the first player won 62.5%.
+| Duel | Careless | Simple | Careful |
+| --- | --- | --- | --- |
+| Trail 1. Boot Hill | 99% | 100% | 100% |
+| Trail 2. Raven Roost | 100% | 99% | 100% |
+| Trail 3. The Bone Fence | 69% | 88% | 100% |
+| Trail 4. Imp Hollow | 41% | 85% | 89% |
+| Trail 5. The Hexed Mile | 20% | 60% | 95% |
+| Trail 6. Dragon's Roost | 19% | 41% | 78% |
+| Rival 1. The Stargazer | 22% | 33% | 90% |
+| Rival 2. The Imp | 30% | 56% | 88% |
+| Rival 3. The Bonewright | 11% | 37% | 91% |
+| Rival 4. The Graveyard Coven | 8% | 12% | 56% |
+| Lantern Wraith, hunts 1 to 5 | 89% to 15% | 91% to 38% | 97% to 62% |
+| Graveyard Dragon, hunts 1 to 5 | 28% to 4% | 58% to 9% | 86% to 49% |
+| Open range (the even match) | 10% | 14% | 65% |
 
-These are bot numbers. No person has played these rules yet.
+A test holds the shape: a sure win twice, a careful player winning most of every Trail duel and of the first three rivals, the last rival as the wall, and each bounty ending harder than it starts.
 
-## Not built
+**The even match** over 2,000 bot games with the two starter decks: the first player won 57.5%, the Cowboys won 59.3%, and a game took 13.4 turns on average and 27 at most. That is tilted toward the Cowboys and toward the first seat; it has not been retuned since cover was added.
 
-- Gear and Location cards, and any effect a player aims at their own troops.
-- A choice of which trap springs, or of which Undead returns.
-- Deck building, bounties and rivals: those live in the lane duel and have not been moved over. Trail progress is saved in the browser only.
-- A choice of reward, rarity, packs, or anything earned after the Trail.
+These are all bot numbers. No person has played these rules.
+
+## Known gaps
+
+- The simple player model falls off sharply at the first rival and the last one. Real players may find the same wall.
+- Two players means one screen. There is no play over a network: that needs a server.
+- The side deck is only used against the Wizards; two-player games use the starter decks.
+- Which trap springs and which Undead returns are fixed by order, not chosen.
 - The bot can see the top of its own deck when it plays a Scout.
+- Card names, keyword wording, duel names and reward order are first drafts.
+- Nothing here is in the main game yet. Its deck builder, bounties and rivals still run on the lane duel.

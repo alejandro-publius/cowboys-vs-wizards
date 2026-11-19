@@ -1,13 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
-import {DECKS, EFFECTS, KEYWORDS, TYPES, cardOf, deckIds} from "./cards.js";
+import {DECKS, EFFECTS, KEYWORDS, RARITY, TYPES, cardOf, deckIds} from "./cards.js";
 import {cardsCsv} from "./export-cards.mjs";
-import {GRIT_CAP, STARTER, TRAIL, afterDuel, currentDuel, deckAfter, duelOptions, newProgress} from "./trail.js";
-import {winRate} from "./trail-sim.mjs";
-import {HAND_CAP, OPENING_HAND, applyAction, attackOutcome, canAttack, createShowdown, legalActions, playTurn} from "./rules.js";
+import {HAND_CAP, OPENING_HAND, applyAction, attackOf, attackOutcome, canAttack, createShowdown, legalActions, playTurn} from "./rules.js";
 
-const troop = (type, health = TYPES[type].health, extra = {}) => ({cardId: `${type}-1`, health, attacked: false, stunned: false, arrived: 0, ...extra});
+const troop = (type, health = TYPES[type].health, extra = {}) => ({cardId: `${type}-1`, health, attacked: false, stunned: false, cover: false, gear: [], arrived: 0, ...extra});
 // Turn 4, Cowboy to act, nothing spent, boards as given, empty hands.
 function position(cowboy, wizard, active = "cowboy") {
   const state = createShowdown(690);
@@ -37,7 +35,13 @@ test("the card table: every card has what its kind needs, and both decks hold si
   for (const key of Object.keys(KEYWORDS)) {
     if (key !== "ghostly") assert.ok(played.some((card) => card.keys?.includes(key)), `no deck card has ${key}`);
   }
-  for (const effect of Object.keys(EFFECTS)) assert.ok(played.some((card) => card.effect === effect), `no deck card has ${effect}`);
+  // Every effect belongs to a card, and every spell and trap effect is in one of the two decks.
+  for (const effect of Object.keys(EFFECTS)) {
+    const card = Object.values(TYPES).find((each) => each.effect === effect);
+    assert.ok(card, `no card has ${effect}`);
+    if (card.kind === "spell" || card.kind === "trap") assert.ok(played.some((each) => each.effect === effect), `no deck card has ${effect}`);
+  }
+  for (const [type, card] of Object.entries(TYPES)) assert.ok(RARITY[card.rarity], `${type} has no rarity`);
 });
 
 test("the deal: same seed, same game; the second player starts with one more card", () => {
@@ -79,7 +83,7 @@ test("free troops rest on arrival, tribute troops strike at once, and nothing is
   const withBilly = act(state, {type: "summon", cardId: "cowboy-billy-1", tributes: [0]});
   assert.equal(canAttack(withBilly, withBilly.sides.cowboy.board[0]), true);
   const attacked = act(state, {type: "attack", slot: 0, target: 0});
-  assert.ok(legalActions(attacked).every((a) => a.type === "attack" || a.type === "end"));
+  assert.ok(legalActions(attacked).every((a) => ["attack", "cover", "end"].includes(a.type)));
   assert.throws(() => applyAction(attacked, {type: "set", cardId: "cowboy-bear-trap-1"}), /illegal/);
 });
 
@@ -119,6 +123,13 @@ test("Raise returns the last Undead troop from the graveyard with one orb, and o
   // The Skeleton paid as tribute is the last Undead in the graveyard, so it is the one that returns.
   assert.deepEqual(after.sides.wizard.board.map((t) => t && [t.cardId, t.health]), [["wizard-wizard-1", 4], ["wizard-skeleton-1", 1], null]);
   assert.deepEqual(after.sides.wizard.discard, ["wizard-bone-wall-1", "wizard-imp-1"]);
+  // A troop that costs a tribute rests when it is raised, because nothing was paid for it this time.
+  state.sides.wizard.discard = ["wizard-headless-horseman-1"];
+  state.sides.cowboy.board[0] = troop("cowboy-sheriff");
+  const raised = act(state, {type: "summon", cardId: "wizard-wizard-1", tributes: [0]});
+  assert.deepEqual(raised.sides.wizard.board.map((t) => t && [cardOf(t.cardId).name, canAttack(raised, t)]), [["Wizard", true], ["Skeleton", false], null]);
+  state.sides.wizard.board[0] = troop("wizard-imp");
+  assert.deepEqual(act(state, {type: "summon", cardId: "wizard-wizard-1", tributes: [0]}).sides.wizard.board.map((t) => t && [cardOf(t.cardId).name, canAttack(raised, t)])[1], ["Headless Horseman", false]);
   state.sides.wizard.board[0] = troop("wizard-imp");
   state.sides.wizard.discard = ["wizard-imp-2", "wizard-hex-1"];
   assert.equal(act(state, {type: "summon", cardId: "wizard-wizard-1", tributes: [0]}).sides.wizard.board.filter(Boolean).length, 1);
@@ -220,47 +231,80 @@ test("cards.csv matches the card table", () => {
   assert.equal(readFileSync(new URL("cards.csv", import.meta.url), "utf8"), cardsCsv(), "run: node prototypes/showdown/export-cards.mjs");
 });
 
-const total = (deck) => Object.values(deck).reduce((sum, copies) => sum + copies, 0);
+test("gear: a Six-Shooter adds 1 attack, Bone Armor adds 2 orbs, and gear goes to the graveyard with its troop", () => {
+  const state = position([troop("cowboy-sheriff")], [troop("wizard-skeleton")]);
+  state.sides.cowboy.hand = ["cowboy-six-shooter-1", "cowboy-deadeye-1"];
+  const armed = act(state, {type: "gear", cardId: "cowboy-six-shooter-1", slot: 0});
+  assert.equal(attackOf(armed, armed.sides.cowboy.board[0]), 2);
+  assert.ok(!legalActions(armed).some((a) => a.type === "spell"), "gear uses the turn's one other card");
+  state.sides.wizard.board[1] = troop("wizard-skeleton");
+  assert.ok(!legalActions(act(state, {type: "spell", cardId: "cowboy-deadeye-1", target: 1})).some((a) => a.type === "gear"), "and a spell uses it too");
+  assert.equal(act(armed, {type: "attack", slot: 0, target: 0}).sides.wizard.board[0].health, 1);
+  armed.sides.cowboy.board[0].health = 1;
+  let after = act(act(armed, {type: "end"}), {type: "attack", slot: 0, target: 0});
+  assert.deepEqual(after.sides.cowboy.discard, ["cowboy-sheriff-1", "cowboy-six-shooter-1"]);
 
-test("the Trail: sixteen-card decks throughout, every win pays a new Cowboy card, and the starter has no keywords", () => {
-  assert.ok(Object.keys(STARTER).every((type) => !(TYPES[type].keys ?? []).length));
-  const owned = new Set(Object.keys(STARTER));
-  TRAIL.forEach((duel, wins) => {
-    assert.equal(total(duel.deck), 16, duel.name);
-    assert.ok(Object.keys(duel.deck).every((type) => TYPES[type].side === "wizard"), duel.name);
-    assert.equal(total(deckAfter(wins + 1)), 16, `deck after ${duel.name}`);
-    for (const [earned] of duel.reward) {
-      assert.equal(TYPES[earned].side, "cowboy");
-      assert.ok(!owned.has(earned), `${duel.name} pays ${earned}, which the player already has`);
-      owned.add(earned);
-    }
-  });
+  const wizard = position([], [troop("wizard-skeleton")], "wizard");
+  wizard.sides.wizard.hand = ["wizard-bone-armor-1"];
+  assert.equal(act(wizard, {type: "gear", cardId: "wizard-bone-armor-1", slot: 0}).sides.wizard.board[0].health, 5);
 });
 
-test("the Trail: a win moves on, a loss adds one Base orb to the rematch, twice at most, and the even match comes last", () => {
-  let progress = newProgress();
-  assert.equal(currentDuel(progress).id, "boot-hill");
-  assert.deepEqual(duelOptions(progress).baseOrbs, {cowboy: 5, wizard: 3});
-  progress = afterDuel(afterDuel(afterDuel(progress, false), false), false);
-  assert.deepEqual(duelOptions(progress).baseOrbs, {cowboy: 5 + GRIT_CAP, wizard: 3});
-  progress = afterDuel(progress, true);
-  assert.deepEqual(progress, {wins: 1, losses: 0});
-  assert.equal(duelOptions(progress).decks.cowboy["cowboy-covered-wagon"], 2);
-  const done = {wins: TRAIL.length, losses: 0};
-  assert.equal(currentDuel(done), null);
-  assert.deepEqual(Object.keys(duelOptions(done)), ["decks"], "after the Trail: default Bases and a random first seat");
-  assert.deepEqual(afterDuel(done, true), done);
+test("locations: one for the whole table, it adds attack by type tag, and a new one replaces it", () => {
+  let state = position([troop("cowboy-sheriff"), troop("cowboy-billy")], [troop("wizard-skeleton"), troop("wizard-bone-wall")]);
+  state.sides.cowboy.hand = ["cowboy-sheriffs-office-1", "cowboy-sheriffs-office-2"];
+  state.sides.wizard.hand = ["wizard-boneyard-1"];
+  state = act(state, {type: "location", cardId: "cowboy-sheriffs-office-1"});
+  assert.deepEqual(state.sides.cowboy.board.map((t) => t && attackOf(state, t)), [2, 2, null], "the Lawman gains, the Outlaw does not");
+  state = act(state, {type: "end"});
+  state = act(state, {type: "location", cardId: "wizard-boneyard-1"});
+  assert.deepEqual(state.location, {cardId: "wizard-boneyard-1", side: "wizard"});
+  assert.deepEqual(state.sides.cowboy.discard, ["cowboy-sheriffs-office-1"]);
+  assert.equal(attackOf(state, state.sides.cowboy.board[0]), 1);
+  // The Bone Wall has no attack of its own; in the Boneyard it can strike.
+  assert.deepEqual(state.sides.wizard.board.map((t) => t && attackOf(state, t)), [2, 1, null]);
+  state.attacking = false;
+  assert.ok(legalActions(state).some((a) => a.type === "attack" && a.slot === 1));
+  // The location already in play cannot be played again.
+  const again = position([], []);
+  again.sides.cowboy.hand = ["cowboy-sheriffs-office-2"];
+  again.location = {cardId: "cowboy-sheriffs-office-1", side: "cowboy"};
+  assert.ok(!legalActions(again).some((a) => a.type === "location"));
 });
 
-test("the Trail is a cushion, then a ramp: bot players on 150 deals", () => {
-  const deals = 150;
-  // Any legal play wins the first two duels.
-  for (const wins of [0, 1]) assert.ok(winRate(wins, 0, deals) >= .95, `duel ${wins + 1} is not a sure win for careless play`);
-  // A player who plans the turn wins most of every Trail duel, and the last one is the hardest.
-  const careful = TRAIL.map((_, wins) => winRate(wins, 2, deals));
-  careful.forEach((rate, wins) => assert.ok(rate >= .7, `duel ${wins + 1}: a careful player wins only ${rate}`));
-  assert.equal(Math.min(...careful), careful.at(-1));
-  // The even match after the Trail is harder than any Trail duel, and still winnable.
-  const open = winRate(TRAIL.length, 2, deals);
-  assert.ok(open < careful.at(-1) && open >= .45, `the even match: ${open}`);
+test("cover: no damage reaches the Base and the troop does not hit back, until its owner's next turn", () => {
+  let state = position([troop("cowboy-sheriff", 1)], [troop("wizard-dragon")]);
+  state.sides.cowboy.hand = ["cowboy-sheriff-2"];
+  state = act(state, {type: "summon", cardId: "cowboy-sheriff-2", tributes: []});
+  // A troop that just arrived cannot attack, but it can take cover.
+  assert.deepEqual(legalActions(state).filter((a) => a.type === "cover").map((a) => a.slot), [0, 1]);
+  state = act(state, {type: "cover", slot: 0});
+  assert.ok(!legalActions(state).some((a) => a.type === "attack" && a.slot === 0), "taking cover is the troop's action");
+  assert.ok(!legalActions(state).some((a) => a.type === "summon"), "no cards after a troop acts");
+  state = act(state, {type: "end"});
+  assert.deepEqual(attackOutcome(state, 0, 0), {baseDamage: 0, targetLeft: 0, attackerLeft: 5});
+  // The same hit on a 1-orb troop standing in the open spills 2 onto the Base.
+  state.sides.cowboy.board[0].cover = false;
+  assert.equal(attackOutcome(state, 0, 0).baseDamage, 2);
+  // A troop in cover that survives does not hit back.
+  const sturdy = position([troop("cowboy-covered-wagon", 4, {cover: true})], [troop("wizard-skeleton")], "wizard");
+  assert.equal(attackOutcome(sturdy, 0, 0).attackerLeft, 3);
+  // Cover ends when its owner's turn begins.
+  assert.equal(act(sturdy, {type: "end"}).sides.cowboy.board[0].cover, false);
+});
+
+test("a bounty's boss opens on the board with the orbs the hunt gives it", () => {
+  const state = createShowdown(4, {first: "cowboy", opening: {wizard: [{type: "wizard-lantern-wraith", health: 6}]}});
+  assert.deepEqual(state.sides.wizard.board.map((t) => t && [cardOf(t.cardId).name, t.health]), [["Lantern Wraith", 6], null, null]);
+  let after = act(state, {type: "end"});
+  assert.ok(legalActions(after).some((a) => a.type === "end"));
+  // It was there before turn 1, so it attacks on the Wizards' first turn if a troop stands in front of it.
+  after.sides.cowboy.board[0] = troop("cowboy-sheriff");
+  assert.ok(legalActions(after).some((a) => a.type === "attack"));
+});
+
+test("the rulebook names every keyword with its exact rule, and every card kind", () => {
+  const book = readFileSync(new URL("RULEBOOK.md", import.meta.url), "utf8");
+  for (const [word, rule] of Object.values(KEYWORDS)) assert.ok(book.includes(`| ${word} | ${rule} |`), `RULEBOOK.md is out of date for ${word}`);
+  for (const kind of new Set(Object.values(TYPES).map((card) => card.kind))) assert.match(book, new RegExp(`\\| ${kind[0].toUpperCase()}${kind.slice(1)} \\|`), kind);
+  for (const [label, copies] of Object.values(RARITY)) assert.ok(book.includes(`${label} ${Number.isFinite(copies) ? copies : "any number"}`), `rarity ${label}`);
 });

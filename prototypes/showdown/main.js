@@ -1,93 +1,244 @@
-// Screen for the Showdown rules prototype. You are the Cowboys; the Wizards plan each turn in rules.js.
-import {EFFECTS, KEYWORDS, TYPES, cardOf, tributes} from "./cards.js";
-import {applyAction, attackOutcome, canAttack, createShowdown, legalActions, playTurn} from "./rules.js";
-import {GRIT_CAP, TRAIL, afterDuel, currentDuel, duelOptions, newProgress} from "./trail.js";
+// Screens for the Showdown prototype: the camp (what to play, what you earned), the duel and the deck builder.
+// The rules are in rules.js and everything a player keeps is in progress.js; this file only shows them.
+import {DECKS, EFFECTS, KEYWORDS, RARITY, TYPES, cardOf, tributes} from "./cards.js";
+import {applyAction, attackOf, attackOutcome, canAttack, createShowdown, legalActions, opponent, playTurn} from "./rules.js";
+import {BOUNTIES, DECK_SIZE, HUNTS, RIVALS, SIDE_SIZE, choose, deckProblems, duelFor, duelList, migrate, newSave, openPack, owned, settle, trailDone, withDeck} from "./progress.js";
+import {GRIT_CAP, TRAIL} from "./trail.js";
 
 const $ = (id) => document.getElementById(id);
 const name = (cardId) => cardOf(cardId).name;
-const orbs = (now, max) => `<span class="orbs" role="img" aria-label="${now} of ${max} orbs">${"●".repeat(now)}<span class="lost">${"○".repeat(Math.max(0, max - now))}</span></span>`;
-const who = (side) => (side === "cowboy" ? "Your" : "Enemy");
-// The same marks as the graybox card frames: troop, spell, trap.
-const MARK = {troop: "●", spell: "✦", trap: "▲"};
-const typeLine = (card) => `<span class="type">${MARK[card.kind]} ${card.kind === "troop" ? `Troop · ${card.tag}` : card.kind === "spell" ? "Spell" : "Trap"}</span>`;
+const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
+const sum = (counts) => Object.values(counts).reduce((total, copies) => total + copies, 0);
+const orbs = (now, max) => `<span class="orbs" role="img" aria-label="${now} of ${Math.max(now, max)} orbs">${"●".repeat(now)}<span class="lost">${"○".repeat(Math.max(0, max - now))}</span></span>`;
+// The same marks as the graybox card frames, plus gear and location.
+const MARK = {troop: "●", spell: "✦", trap: "▲", gear: "◆", location: "■"};
+const KIND = {spell: "Spell", trap: "Trap", gear: "Gear", location: "Location"};
+const typeLine = (card) => `<span class="type">${MARK[card.kind]} ${card.kind === "troop" ? `Troop · ${card.tag}` : KIND[card.kind]} · ${RARITY[card.rarity][0]}</span>`;
 const keywords = (card) => (card.keys ?? []).map((key) => `<span class="key" title="${KEYWORDS[key][1]}">${KEYWORDS[key][0]}</span>`).join(" ");
+// A card's face. `full` spells out each keyword, for the moment a card is earned or chosen.
+function face(type, {full = false, extra = ""} = {}) {
+  const card = TYPES[type];
+  const rules = card.kind !== "troop" ? EFFECTS[card.effect].text
+    : full ? card.keys.map((key) => `<strong>${KEYWORDS[key][0]}.</strong> ${KEYWORDS[key][1]}`).join(" ") || "No keyword." : "";
+  return `<strong>${card.name}</strong>${typeLine(card)}${card.kind === "troop" ? `${card.attack} attack · ${card.health} orbs ${full ? "" : keywords(card)}` : ""}
+    ${rules ? `<span class="note">${rules}</span>` : ""}${extra}`;
+}
+const cardClass = (type) => `card cowboy ${TYPES[type].kind} ${TYPES[type].rarity}`;
+const offerRow = () => `<div class="row">${save.offer.map((type) =>
+  `<button type="button" class="${cardClass(type)} earned can" data-choose="${type}">${face(type, {full: true, extra: `<span class="note">You own ${owned(save, type)}.</span>`})}</button>`).join("")}</div>`;
 
+// ---- Saved progress -------------------------------------------------------------------------
+const SAVE = "cvw-showdown-save-v2";
+const OLD_SAVE = "cvw-showdown-trail-v1";
+const stored = (key) => { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } };
+let save = migrate(stored(SAVE) ?? stored(OLD_SAVE));
+function keep(next) {
+  save = next;
+  try { localStorage.setItem(SAVE, JSON.stringify(save)); } catch { /* storage is blocked: play on without saving */ }
+}
+
+// ---- What is on screen ----------------------------------------------------------------------
 // A seed in the address fixes the first deal only; after that every duel is a fresh deal.
-let seed = Number(new URLSearchParams(location.search).get("seed") ?? Math.floor(Math.random() * 100000));
-const SAVE = "cvw-showdown-trail-v1";
-let progress = newProgress();
-try {
-  const saved = JSON.parse(localStorage.getItem(SAVE));
-  if (Number.isInteger(saved?.wins) && Number.isInteger(saved?.losses)) progress = {wins: Math.min(Math.max(saved.wins, 0), TRAIL.length), losses: Math.max(saved.losses, 0)};
-} catch { /* no saved progress, or storage is blocked: start the Trail from the top */ }
-const save = () => { try { localStorage.setItem(SAVE, JSON.stringify(progress)); } catch { /* play on without saving */ } };
-let duel; // the Trail duel being played, or null for the even match after the Trail
-let outcome; // set once the duel ends: {won, earned}
+let fixedSeed = new URLSearchParams(location.search).get("seed");
+const freshSeed = () => {
+  const seed = fixedSeed === null ? Math.floor(Math.random() * 100000) : Number(fixedSeed);
+  fixedSeed = null;
+  return seed;
+};
+let screen = null;
+let game; // {duel, players: 1 or 2, match: null or {wins, game, deck, side, first}, seed}
 let state;
 let lines; // log lines, oldest first
-// What the player is in the middle of: nothing, a card (with tributes picked so far), or an attacker.
-let pick;
+let pick; // nothing, a card (with tributes picked so far), or one of your troops
+let outcome; // set once the game ends
+let curtain = false; // two players: the screen is being passed
+let opened = null; // the pack just opened, shown once in the camp
+let draft; // the deck builder's working copy
 
+const solo = () => game.players === 1;
+const me = () => (solo() ? "cowboy" : state.active);
+const faction = (side) => (side === "cowboy" ? "Cowboy" : "Wizard");
+const whose = (side) => (solo() ? (side === "cowboy" ? "Your" : "Enemy") : faction(side));
+const baseOf = (side) => (solo() ? (side === "cowboy" ? "your Base" : "the Wizard Base") : `the ${faction(side)} Base`);
+
+function show(next) {
+  const visible = next === "duel" && curtain ? "curtain" : next;
+  const moved = visible !== (screen === "duel" && !$("curtain").hidden ? "curtain" : screen);
+  screen = next;
+  for (const id of ["camp", "builder", "duel", "curtain"]) $(id).hidden = id !== visible;
+  if (visible === "camp") renderCamp();
+  if (visible === "builder") renderBuilder();
+  if (visible === "duel") renderDuel();
+  if (visible === "curtain") $("curtain-text").textContent = `Pass the screen to the ${faction(state.active)} player.`;
+  if (moved) window.scrollTo(0, 0);
+}
+
+// ---- Camp -----------------------------------------------------------------------------------
+function renderCamp() {
+  const list = duelList(save);
+  // First things first: a card to choose, then a pack to open.
+  $("claim").innerHTML = save.offer ? `<h2>Choose a card</h2><p class="note">You won. Take one; it goes into your collection.</p>${offerRow()}`
+    : opened ? `<h2>In the pack</h2><div class="row">${opened.map((type) => `<div class="${cardClass(type)} earned">${face(type, {full: true})}</div>`).join("")}</div>
+        <div class="row"><button type="button" id="pack-done">${save.packs ? `Open the next pack (${save.packs} left)` : "Add them to my collection"}</button></div>`
+    : save.packs ? `<h2>${plural(save.packs, "pack")} to open</h2><div class="row"><button type="button" class="pack can" id="pack">Open a pack: three cards</button></div>` : "";
+
+  const tile = (duel, note, off = duel.state !== "open") => `<li><button type="button" class="tile ${duel.state}" ${off ? "disabled" : `data-duel="${duel.id}"`}>
+    <strong>${duel.state === "won" ? "✓ " : ""}${duel.name}</strong><span class="note">${note}</span></button></li>`;
+  const pays = (cards) => cards.map(([type, copies]) => `${TYPES[type].name}${copies > 1 ? ` ×${copies}` : ""}`).join(", ");
+  $("trail").innerHTML = list.filter((duel) => duel.kind === "trail").map((duel) => {
+    const reward = pays(TRAIL[duel.index].reward.map(([type, , copies]) => [type, copies]));
+    return tile(duel, duel.state === "won" ? `Earned ${reward}` : `Win to earn ${reward}`);
+  }).join("");
+  $("rivals").innerHTML = list.filter((duel) => duel.kind === "rival").map((duel, i) => {
+    const rival = RIVALS[i];
+    const reward = [pays(rival.reward.map((type) => [type, 1])), plural(rival.packs, "pack")].filter(Boolean).join(" and ");
+    // A beaten rival can be fought again for the card choice.
+    return tile(duel, duel.state === "won" ? "Beaten. Rematch for a card." : duel.state === "locked" ? (trailDone(save) ? "Beat the rival before" : "After the Trail") : `Win to earn ${reward}`, duel.state === "locked");
+  }).join("");
+  $("bounties").innerHTML = list.filter((duel) => duel.kind === "hunt").map((duel) => {
+    const bounty = BOUNTIES.find((each) => `hunt:${each.id}` === duel.id);
+    return tile(duel, duel.state === "won" ? `Captured: ${TYPES[bounty.reward].name}` : duel.state === "locked" ? "After the Trail"
+      : `${duel.cleared} of ${HUNTS} hunts won. Five capture ${TYPES[bounty.reward].name}.`);
+  }).join("");
+  const open = trailDone(save);
+  $("open").innerHTML = `<button type="button" data-duel="open" ${open ? "" : "disabled"}>The even match${open ? "" : " (after the Trail)"}</button>
+    <button type="button" data-match="open" ${open ? "" : "disabled"}>Best of three, with your side deck</button>
+    <button type="button" data-two="1">Two players, one screen</button>
+    <button type="button" data-two="3">Two players, best of three</button>`;
+  const count = (counts) => Object.entries(counts).map(([type, copies]) => `${TYPES[type].name} ×${copies}`).join(", ");
+  $("collection").innerHTML = `<strong>Deck:</strong> ${count(save.deck)}.${sum(save.side) ? ` <strong>Side deck:</strong> ${count(save.side)}.` : ""}
+    <br><strong>Collection:</strong> Sheriff and Billy in any number${sum(save.collection) ? `, ${count(save.collection)}` : ""}.`;
+  $("code").value = btoa(JSON.stringify(save));
+}
+
+// ---- Deck builder ---------------------------------------------------------------------------
+// With a pool (between the games of a match) only the deck and side deck cards can be moved, and nothing is saved.
+function openBuilder(pool, done) {
+  const source = pool ? game.match : save;
+  draft = {pool, done, deck: {...source.deck}, side: {...source.side}};
+  show("builder");
+}
+const draftProblems = () => (!draft.pool ? deckProblems(save, draft.deck, draft.side)
+  : sum(draft.deck) === DECK_SIZE ? [] : [`A deck is exactly ${DECK_SIZE} cards; this one has ${sum(draft.deck)}.`]);
+function renderBuilder() {
+  const types = Object.keys(TYPES).filter((type) => TYPES[type].side === "cowboy" && (draft.pool ? draft.pool[type] : owned(save, type) > 0));
+  const limit = (type) => (draft.pool ? draft.pool[type] : Math.min(owned(save, type), RARITY[TYPES[type].rarity][1]));
+  $("builder-title").textContent = draft.pool ? "Between games: swap with your side deck" : "Build deck";
+  $("builder-note").textContent = draft.pool ? "Move cards between your deck and your side deck. The change lasts for this match."
+    : `A deck is ${DECK_SIZE} cards. A side deck is up to ${SIDE_SIZE} more, to swap in between the games of a best of three.`;
+  $("builder-rows").innerHTML = types.map((type) => {
+    const [deck, side] = [draft.deck[type] ?? 0, draft.side[type] ?? 0];
+    const room = deck + side < limit(type);
+    const step = (zone, by, on, text) => `<button type="button" data-zone="${zone}" data-type="${type}" data-by="${by}" ${on ? "" : "disabled"} aria-label="${text} ${TYPES[type].name}">${by > 0 ? "+" : "−"}</button>`;
+    // Between games a card moves from one pile to the other, so "+" on the deck takes it from the side deck.
+    return `<div class="build-row"><div class="${cardClass(type)}">${face(type, {full: true})}</div>
+      <div><span class="note">Deck</span>${step("deck", -1, deck > 0, "One fewer in the deck:")} <strong>${deck}</strong> ${step("deck", 1, draft.pool ? side > 0 : room, "One more in the deck:")}</div>
+      <div><span class="note">Side deck</span>${step("side", -1, side > 0, "One fewer in the side deck:")} <strong>${side}</strong> ${step("side", 1, draft.pool ? deck > 0 : room, "One more in the side deck:")}</div>
+      <span class="note">${Number.isFinite(limit(type)) ? `Up to ${limit(type)}` : "Any number"}</span></div>`;
+  }).join("");
+  const problems = draftProblems();
+  $("builder-problems").innerHTML = `Deck ${sum(draft.deck)} of ${DECK_SIZE} · side deck ${sum(draft.side)} of ${SIDE_SIZE}.${problems.length ? ` <span class="warn">${problems.join(" ")}</span>` : ""}`;
+  $("builder-save").disabled = problems.length > 0;
+  $("builder-save").textContent = draft.pool ? "Play the next game" : "Save deck";
+  $("builder-cancel").hidden = Boolean(draft.pool);
+}
+function buildStep(zone, type, by) {
+  const other = zone === "deck" ? "side" : "deck";
+  draft[zone] = {...draft[zone], [type]: (draft[zone][type] ?? 0) + by};
+  if (draft.pool) draft[other] = {...draft[other], [type]: (draft[other][type] ?? 0) - by};
+  renderBuilder();
+}
+
+// ---- Duel -----------------------------------------------------------------------------------
 function say(events) {
   for (const e of events) {
-    const base = e.side === "cowboy" ? "the Wizard Base" : "your Base";
-    if (e.type === "turn") lines.push({turn: `Turn ${e.turn}: ${e.side === "cowboy" ? "you" : "the Wizards"}`});
-    else if (e.type === "tribute") lines.push({text: `${who(e.side)} ${name(e.cardId)} was paid as tribute.`});
-    else if (e.type === "summon") lines.push({text: `${who(e.side)} ${name(e.cardId)} arrived.`});
-    else if (e.type === "raise") lines.push({text: `Raise: ${who(e.side).toLowerCase()} ${name(e.cardId)} returned from the graveyard with 1 orb.`});
-    else if (e.type === "set") lines.push({text: e.side === "cowboy" ? "You set a trap face down." : "The Wizards set a card face down."});
-    else if (e.type === "burn") lines.push({text: `${who(e.side)} hand was full: ${name(e.cardId)} was discarded.`});
-    else if (e.type === "fatigue") lines.push({text: `${who(e.side)} deck is empty: ${e.side === "cowboy" ? "your Base" : "the Wizard Base"} lost 1 orb.`});
-    else if (e.type === "spell") lines.push({text: `${who(e.side)} ${name(e.cardId)} hit ${name(e.target)}: ${e.stunned ? "stunned for its next turn" : e.left === 0 ? "defeated" : `${e.left} orbs left`}.`});
-    else if (e.type === "trap") lines.push({text: `Trap! ${who(e.side)} ${name(e.cardId)} caught ${name(e.target)}: ${cardOf(e.cardId).effect === "hex" ? "its attack was cancelled" : e.left === 0 ? "defeated before it struck" : `it dropped to ${e.left} and attacked anyway`}.`});
+    if (e.type === "turn") lines.push({turn: `Turn ${e.turn}: ${solo() ? (e.side === "cowboy" ? "you" : "the Wizards") : `the ${faction(e.side)}s`}`});
+    else if (e.type === "tribute") lines.push({text: `${whose(e.side)} ${name(e.cardId)} was paid as tribute.`});
+    else if (e.type === "summon") lines.push({text: `${whose(e.side)} ${name(e.cardId)} arrived.`});
+    else if (e.type === "raise") lines.push({text: `Raise: ${whose(e.side).toLowerCase()} ${name(e.cardId)} returned from the graveyard with 1 orb.`});
+    else if (e.type === "set") lines.push({text: solo() && e.side === "cowboy" ? "You set a trap face down." : `The ${faction(e.side)}s set a card face down.`});
+    else if (e.type === "gear") lines.push({text: `${whose(e.side)} ${name(e.target)} now carries ${name(e.cardId)}.`});
+    else if (e.type === "location") lines.push({text: `${whose(e.side)} ${name(e.cardId)} is now the location.`});
+    else if (e.type === "cover") lines.push({text: `${whose(e.side)} ${name(e.cardId)} took cover.`});
+    else if (e.type === "burn") lines.push({text: `${whose(e.side)} hand was full: ${name(e.cardId)} was discarded.`});
+    else if (e.type === "fatigue") lines.push({text: `${whose(e.side)} deck is empty: ${baseOf(e.side)} lost 1 orb.`});
+    else if (e.type === "spell") lines.push({text: `${whose(e.side)} ${name(e.cardId)} hit ${name(e.target)}: ${e.stunned ? "stunned for its next turn" : e.left === 0 ? "defeated" : `${e.left} orbs left`}.`});
+    else if (e.type === "trap") lines.push({text: `Trap! ${whose(e.side)} ${name(e.cardId)} caught ${name(e.target)}: ${cardOf(e.cardId).effect === "hex" ? "its attack was cancelled" : e.left === 0 ? "defeated before it struck" : `it dropped to ${e.left} and attacked anyway`}.`});
     else if (e.type === "laststand") lines.push({text: `Last Stand: ${name(e.cardId)} took an orb off ${name(e.target)}${e.left === 0 ? ", defeating it" : ""}.`});
-    else if (e.type === "sweep") lines.push({text: `Sweep: ${name(e.cardId)} also hit ${e.count} other troop${e.count > 1 ? "s" : ""} for 1.`});
+    else if (e.type === "sweep") lines.push({text: `Sweep: ${name(e.cardId)} also hit ${plural(e.count, "other troop")} for 1.`});
     else if (e.type === "attack") {
-      if (e.target === "base") lines.push({text: `${who(e.side)} ${name(e.cardId)} struck ${base} for ${e.baseDamage}.`});
-      else {
-        const result = e.targetLeft === 0
-          ? `defeated it${e.baseDamage ? `, and ${e.baseDamage} went through to ${base}` : ""}`
-          : `left it on ${e.targetLeft}, and it hit back${e.attackerLeft === 0 ? `, defeating ${name(e.cardId)}` : ""}`;
-        lines.push({text: `${who(e.side)} ${name(e.cardId)} attacked ${name(e.target)} and ${result}.`});
-      }
+      const base = baseOf(opponent(e.side));
+      const result = e.target === "base" ? null
+        : e.targetLeft === 0 ? `defeated it${e.baseDamage ? `, and ${e.baseDamage} went through to ${base}` : e.covered ? "; it was in cover, so nothing reached the Base" : ""}`
+        : e.covered ? `left it on ${e.targetLeft}; it was in cover and did not hit back`
+        : `left it on ${e.targetLeft}, and it hit back${e.attackerLeft === 0 ? `, defeating ${name(e.cardId)}` : ""}`;
+      lines.push({text: result ? `${whose(e.side)} ${name(e.cardId)} attacked ${name(e.target)} and ${result}.` : `${whose(e.side)} ${name(e.cardId)} struck ${base} for ${e.baseDamage}.`});
     }
   }
 }
 
-// The Wizards take their whole turn at once.
-function wizardsPlay() {
-  while (!state.result && state.active === "wizard") {
-    const played = playTurn(state, duel?.level ?? 2);
+// Solo: the Wizards take their whole turn at once. Then, once the game is over, record it.
+function advance() {
+  while (solo() && !state.result && state.active === "wizard") {
+    const played = playTurn(state, game.duel.level);
     state = played.state;
     say(played.events);
   }
-  // Record the result once: a Trail win pays its cards and opens the next duel.
-  if (state.result && !outcome) {
-    const won = state.result.winner === "cowboy";
-    outcome = {won, earned: won && duel ? duel.reward : []};
-    if (duel) progress = afterDuel(progress, won);
-    save();
+  if (!state.result || outcome) return;
+  const winner = state.result.winner;
+  outcome = {winner, earned: null, matchOver: true};
+  if (game.match) {
+    if (winner) game.match.wins[winner] += 1;
+    // The loser of a game opens the next one.
+    game.match.first = winner ? opponent(winner) : state.first;
+    outcome.matchOver = Math.max(...Object.values(game.match.wins)) >= 2;
+  }
+  // A duel against the Wizards counts once it is decided: after the game, or after the match.
+  if (solo() && outcome.matchOver) {
+    const won = game.match ? game.match.wins.cowboy >= 2 : winner === "cowboy";
+    const settled = settle(save, game.duel.id, won);
+    Object.assign(outcome, {won, earned: settled.earned, grit: Math.min(settled.save.losses[game.duel.id] ?? 0, GRIT_CAP)});
+    keep(settled.save);
   }
 }
 
 function act(action) {
+  const before = state.active;
   const applied = applyAction(state, action);
   state = applied.state;
   say(applied.events);
   pick = null;
-  wizardsPlay();
-  render();
+  advance();
+  // Two players: hide the board while the screen changes hands.
+  curtain = !solo() && !state.result && state.active !== before;
+  show("duel");
 }
 
-function start(newSeed) {
-  seed = newSeed;
-  duel = currentDuel(progress);
-  outcome = null;
-  state = createShowdown(seed, duelOptions(progress));
-  lines = [{turn: `Turn 1: ${state.active === "cowboy" ? "you" : "the Wizards"}`}];
+// Starts a game of the current duel. The Cowboy deck is the saved one, or the match's own copy.
+function deal() {
+  const options = solo() ? duelFor(save, game.duel.id, game.match?.deck ?? save.deck).options : {decks: DECKS};
+  state = createShowdown(game.seed, {...options, ...(game.match?.first ? {first: game.match.first} : {})});
+  lines = [{turn: `Turn 1: ${solo() ? (state.active === "cowboy" ? "you" : "the Wizards") : `the ${faction(state.active)}s`}`}];
   pick = null;
-  wizardsPlay();
-  render();
+  outcome = null;
+  advance();
+  curtain = !solo();
+  show("duel");
+}
+function startDuel(id, {players = 1, best = 1} = {}) {
+  const duel = players === 1 ? duelFor(save, id) : {id: "two", kind: "two", name: "Two players", lesson: "Two players on one screen, each with a starter deck. Pass the screen when the turn ends."};
+  if (!duel) return;
+  game = {duel, players, seed: freshSeed(), match: best > 1 ? {wins: {cowboy: 0, wizard: 0}, game: 1, deck: {...save.deck}, side: {...save.side}, first: null} : null};
+  deal();
+}
+function nextGame() {
+  game.seed = freshSeed();
+  game.match.game += 1;
+  // Solo, with a side deck: offer the swap before the next game.
+  if (!solo() || !sum(game.match.side)) return deal();
+  const pool = {};
+  for (const counts of [game.match.deck, game.match.side]) for (const [type, copies] of Object.entries(counts)) pool[type] = (pool[type] ?? 0) + copies;
+  openBuilder(pool, () => { Object.assign(game.match, {deck: draft.deck, side: draft.side}); deal(); });
 }
 
 const legal = () => legalActions(state);
@@ -95,139 +246,181 @@ const playsOf = (cardId) => legal().filter((a) => a.cardId && name(a.cardId) ===
 
 function clickCard(cardId) {
   const options = playsOf(cardId);
-  // A trap, an untargeted spell or a free troop has one way to be played.
-  if (options.length === 1 && options[0].target === undefined && !options[0].tributes?.length) return act(options[0]);
-  pick = cardOf(cardId).kind === "spell" ? {card: cardId} : {card: cardId, tributes: []};
-  render();
+  // A trap, a location, an untargeted spell or a free troop has one way to be played.
+  if (options.length === 1 && options[0].target === undefined && options[0].slot === undefined && !options[0].tributes?.length) return act(options[0]);
+  pick = cardOf(cardId).kind === "troop" ? {card: cardId, tributes: []} : {card: cardId};
+  renderDuel();
 }
-
 function clickOwn(slot) {
   if (pick?.tributes) {
     const paid = pick.tributes.includes(slot) ? pick.tributes.filter((s) => s !== slot) : [...pick.tributes, slot].sort();
     const done = playsOf(pick.card).find((a) => a.tributes.join() === paid.join());
     if (done) return act(done);
     pick = {...pick, tributes: paid};
-  } else if (canAttack(state, state.sides.cowboy.board[slot])) pick = {attacker: slot};
-  render();
+  } else if (pick?.card) {
+    const gear = playsOf(pick.card).find((a) => a.type === "gear" && a.slot === slot);
+    if (gear) return act(gear);
+  } else if (legal().some((a) => (a.type === "attack" || a.type === "cover") && a.slot === slot)) pick = {troop: slot};
+  renderDuel();
 }
-
 function clickEnemy(target) {
-  if (pick?.attacker !== undefined) return act({type: "attack", slot: pick.attacker, target});
+  if (pick?.troop !== undefined) return act({type: "attack", slot: pick.troop, target});
   const cast = pick?.card && playsOf(pick.card).find((a) => a.target === target);
   if (cast) act(cast);
 }
 
 // What an attack from the picked troop would do to this target, in words. Face-down traps are not counted.
 function preview(target) {
-  const o = attackOutcome(state, pick.attacker, target);
-  if (target === "base") return `<span class="note good">${state.sides.wizard.board.some(Boolean) ? "Ride past: " : ""}Hit the Base for ${o.baseDamage}</span>`;
-  if (o.targetLeft === 0) return `<span class="note good">Defeated${o.baseDamage ? `, ${o.baseDamage} through to the Base` : ""}</span>`;
+  const o = attackOutcome(state, pick.troop, target);
+  const foe = state.sides[opponent(me())];
+  if (target === "base") return `<span class="note good">${foe.board.some(Boolean) ? "Ride past: " : ""}Hit the Base for ${o.baseDamage}</span>`;
+  if (o.targetLeft === 0) return `<span class="note good">Defeated${o.baseDamage ? `, ${o.baseDamage} through to the Base` : foe.board[target].cover ? ", nothing reaches the Base" : ""}</span>`;
+  if (foe.board[target].cover) return `<span class="note">Survives on ${o.targetLeft}. It is in cover and does not hit back.</span>`;
   return `<span class="note ${o.attackerLeft === 0 ? "warn" : ""}">Survives on ${o.targetLeft} and hits back: yours ${o.attackerLeft === 0 ? "is defeated" : `drops to ${o.attackerLeft}`}</span>`;
 }
 
-function render() {
-  const mine = state.active === "cowboy" && !state.result;
-  const attacking = pick?.attacker !== undefined;
-  const casting = Boolean(pick?.card) && cardOf(pick.card).kind === "spell";
-  // Enemy troops and Base the current pick may be aimed at.
-  const aims = new Set(!mine ? [] : attacking ? legal().filter((a) => a.type === "attack" && a.slot === pick.attacker).map((a) => a.target)
-    : casting ? playsOf(pick.card).map((a) => a.target) : []);
+function renderDuel() {
+  const mine = !state.result && (!solo() || state.active === "cowboy");
+  const [own, foe] = [me(), opponent(me())];
+  const attacking = pick?.troop !== undefined;
+  const kind = pick?.card ? cardOf(pick.card).kind : null;
+  const options = mine ? legal() : [];
+  // Enemy troops and Base the current pick may be aimed at, and own troops a picked card may go on.
+  const aims = new Set(attacking ? options.filter((a) => a.type === "attack" && a.slot === pick.troop).map((a) => a.target) : kind === "spell" ? playsOf(pick.card).map((a) => a.target) : []);
+  const carriers = new Set(kind === "gear" ? playsOf(pick.card).map((a) => a.slot) : []);
   const row = (side) => {
     const s = state.sides[side];
-    const own = side === "cowboy";
-    const baseOpen = !own && aims.has("base");
-    const traps = own ? (s.traps.length ? `Set: ${s.traps.map(name).join(", ")}` : "No trap set") : s.traps.length ? `${s.traps.length} card${s.traps.length > 1 ? "s" : ""} face down` : "Nothing face down";
+    const isOwn = side === own;
+    const baseOpen = !isOwn && aims.has("base");
+    const traps = isOwn ? (s.traps.length ? `Set: ${s.traps.map(name).join(", ")}` : "No trap set") : s.traps.length ? `${plural(s.traps.length, "card")} face down` : "Nothing face down";
     const base = `<button type="button" class="base ${side}${baseOpen ? " can" : ""}" ${baseOpen ? 'data-enemy="base"' : "disabled"}>
-      <strong>${own ? "Your" : "Wizard"} Base</strong>${orbs(s.base, s.baseMax)}
+      <strong>${solo() ? (isOwn ? "Your" : "Wizard") : faction(side)} Base</strong>${orbs(s.base, s.baseMax)}
       <span class="note">Hand ${s.hand.length} · Deck ${s.deck.length} · Graveyard ${s.discard.length}</span>
       <span class="note">▲ ${traps}</span>${baseOpen ? preview("base") : ""}</button>`;
     const slots = s.board.map((troop, slot) => {
       if (!troop) return `<button type="button" class="slot ${side}" disabled><span class="note">empty</span></button>`;
       const card = cardOf(troop.cardId);
-      let cls = "", data = "disabled", note = troop.stunned ? "Stunned" : "";
-      if (own && mine) {
+      let cls = "", data = "disabled", note = troop.cover ? "In cover" : troop.stunned ? "Stunned" : "";
+      if (isOwn && mine) {
         const tribute = pick?.tributes && playsOf(pick.card).some((a) => a.tributes.includes(slot));
         const ready = canAttack(state, troop);
+        const actable = options.some((a) => (a.type === "attack" || a.type === "cover") && a.slot === slot);
         if (tribute) { cls = pick.tributes.includes(slot) ? " chosen" : " can"; data = `data-own="${slot}"`; note = "Tribute"; }
-        else if (!pick && ready) { cls = " can"; data = `data-own="${slot}"`; note = "Can attack"; }
-        else if (pick?.attacker === slot) { cls = " pick"; note = "Attacking: choose a target"; }
-        else if (troop.attacked) note = "Has attacked";
-        else if (!ready && !troop.stunned && card.attack > 0 && state.turn > 1) note = "Rests this turn";
-      } else if (!own && aims.has(slot)) {
+        else if (carriers.has(slot)) { cls = " can"; data = `data-own="${slot}"`; note = "Give it the gear"; }
+        else if (pick?.troop === slot) { cls = " pick"; note = ready ? "Choose a target, or take cover" : "It can take cover"; }
+        else if (!pick && actable) { cls = " can"; data = `data-own="${slot}"`; note = ready ? "Can attack" : "Can take cover"; }
+        else if (troop.attacked && !troop.cover) note = "Has attacked";
+      } else if (!isOwn && aims.has(slot)) {
         cls = " can"; data = `data-enemy="${slot}"`;
-        if (casting) note = cardOf(pick.card).effect === "tie" ? "Would be stunned" : troop.health === 1 ? "Would be defeated" : `Would drop to ${troop.health - 1}`;
+        if (kind === "spell") note = cardOf(pick.card).effect === "tie" ? "Would be stunned" : troop.health === 1 ? "Would be defeated" : `Would drop to ${troop.health - 1}`;
       }
-      return `<button type="button" class="slot ${side}${cls}" ${data}><strong>${card.name}</strong>${typeLine(card)}
-        ${card.attack} attack ${orbs(troop.health, card.health)} ${keywords(card)}${note ? `<span class="note">${note}</span>` : ""}${!own && attacking && aims.has(slot) ? preview(slot) : ""}</button>`;
+      const attack = attackOf(state, troop);
+      return `<button type="button" class="slot ${side}${cls}" ${data}><strong>${card.name}</strong><span class="type">${MARK.troop} Troop · ${card.tag}</span>
+        ${attack} attack${attack !== card.attack ? ` (+${attack - card.attack})` : ""} ${orbs(troop.health, card.health)} ${keywords(card)}
+        ${troop.gear.length ? `<span class="note">◆ ${troop.gear.map(name).join(", ")}</span>` : ""}${note ? `<span class="note">${note}</span>` : ""}${!isOwn && attacking && aims.has(slot) ? preview(slot) : ""}</button>`;
     }).join("");
     return `<div class="side">${base}${slots}</div>`;
   };
-  $("board").innerHTML = row("wizard") + row("cowboy");
+  $("board").innerHTML = row(foe) + row(own);
+  $("location").textContent = state.location ? `■ Location: ${name(state.location.cardId)} (${whose(state.location.side).toLowerCase()}). ${EFFECTS[cardOf(state.location.cardId).effect].text.replace("Location. ", "")}` : "";
 
-  const playable = new Set(legal().filter((a) => a.cardId).map((a) => name(a.cardId)));
-  $("hand").innerHTML = state.sides.cowboy.hand.map((cardId) => {
+  const playable = new Set(options.filter((a) => a.cardId).map((a) => name(a.cardId)));
+  $("hand").innerHTML = state.sides[own].hand.map((cardId) => {
     const card = cardOf(cardId);
     const cost = tributes(cardId);
-    const body = card.kind === "troop"
-      ? `${card.attack} attack · ${card.health} orbs ${keywords(card)}<span class="note">${cost === 0 ? "Free" : `${cost} tribute${cost > 1 ? "s" : ""}, attacks at once`}</span>`
-      : `<span class="note">${EFFECTS[card.effect].text}</span>`;
-    const on = mine && playable.has(card.name);
-    return `<button type="button" class="card cowboy ${card.kind}${pick?.card === cardId ? " pick" : on ? " can" : ""}" data-card="${cardId}" ${on ? "" : "disabled"}>
-      <strong>${card.name}</strong>${typeLine(card)}${body}</button>`;
+    const on = playable.has(card.name);
+    return `<button type="button" class="card ${card.side} ${card.kind} ${card.rarity}${pick?.card === cardId ? " pick" : on ? " can" : ""}" data-card="${cardId}" ${on ? "" : "disabled"}>
+      ${face(cardId.replace(/-\d+$/, ""), {extra: card.kind === "troop" ? `<span class="note">${cost === 0 ? "Free" : `${plural(cost, "tribute")}, attacks at once`}</span>` : ""})}</button>`;
   }).join("");
 
   const r = state.result;
-  const next = currentDuel(progress);
-  $("status").innerHTML = r
-    ? `<span class="result ${r.winner === "cowboy" ? "good" : "warn"}">${r.winner === "cowboy" ? "You win: the Wizard Base fell." : r.winner === "wizard" ? "You lose: your Base fell." : "Draw."}</span>`
-    : `${duel ? duel.name : "Open range"} · turn ${state.turn} · your turn`;
-  // After a win: the cards just earned, each with what it does. After a loss: what the rematch gives.
-  $("reward").innerHTML = !outcome ? "" : outcome.earned.length
-    ? `<h2>New in your deck</h2>${outcome.earned.map(([type, , copies]) => `<div class="card cowboy ${TYPES[type].kind} earned"><strong>${TYPES[type].name}${copies > 1 ? ` ×${copies}` : ""}</strong>${typeLine(TYPES[type])}
-        ${TYPES[type].kind === "troop" ? `${TYPES[type].attack} attack · ${TYPES[type].health} orbs<span class="note">${TYPES[type].keys.map((key) => `<strong>${KEYWORDS[key][0]}.</strong> ${KEYWORDS[key][1]}`).join(" ") || "No keyword."}</span>` : `<span class="note">${EFFECTS[TYPES[type].effect].text}</span>`}</div>`).join("")}`
-    : !outcome.won && duel ? `<p class="note">${progress.losses <= GRIT_CAP ? `Grit: your Base starts the rematch with ${5 + progress.losses} orbs.` : `Your Base keeps its ${5 + GRIT_CAP} orbs for the rematch.`}</p>`
-    : outcome.won && !next && duel ? `<p class="note">The Trail is done. From here the Wizards play their best and the match is even.</p>` : "";
-  $("again").textContent = !r ? "Restart this duel" : !outcome.won ? "Rematch" : next ? `Next duel: ${next.name}` : "Play again";
-  $("lesson").textContent = duel ? duel.lesson : "An even match against the whole coven. The Wizards plan every turn.";
-  $("trail").innerHTML = TRAIL.map((step, i) => {
-    const earned = step.reward.map(([type, , copies]) => `${TYPES[type].name}${copies > 1 ? ` ×${copies}` : ""}`).join(", ");
-    const cls = i < progress.wins ? "won" : i === progress.wins ? "now" : "ahead";
-    return `<li class="${cls}"><strong>${i < progress.wins ? "✓ " : ""}${step.name}</strong><span class="note">${i < progress.wins ? `Earned ${earned}` : `Win to earn ${earned}`}</span></li>`;
-  }).join("") + `<li class="${progress.wins === TRAIL.length ? "now" : "ahead"}"><strong>Open range</strong><span class="note">The even match</span></li>`;
-  const guarded = state.sides.wizard.board.some((troop) => troop && cardOf(troop.cardId).keys.includes("guard"));
+  const match = game.match;
+  const score = match ? ` · game ${match.game} of 3 · ${solo() ? `you ${match.wins.cowboy}, Wizards ${match.wins.wizard}` : `Cowboys ${match.wins.cowboy}, Wizards ${match.wins.wizard}`}` : "";
+  const verdict = !r ? "" : r.winner === null ? "Draw." : solo() ? (r.winner === "cowboy" ? "You win: the Wizard Base fell." : "You lose: your Base fell.") : `The ${faction(r.winner)}s win: ${baseOf(opponent(r.winner))} fell.`;
+  $("status").innerHTML = r ? `<span class="result ${!solo() || r.winner === "cowboy" ? "good" : "warn"}">${verdict}</span>${score}`
+    : `${game.duel.name}${score} · turn ${state.turn} · ${solo() ? "your turn" : `the ${faction(state.active)}s' turn`}`;
+
+  // After a win: what it paid, then the two cards to choose from. After a loss: what the rematch gives.
+  const earned = outcome?.earned;
+  $("reward").innerHTML = !earned ? "" : [
+    earned.captured ? `<h2>Captured</h2><div class="row"><div class="${cardClass(earned.captured)} earned">${face(earned.captured, {full: true})}</div></div>` : "",
+    earned.cards.length ? `<h2>New in your collection</h2><div class="row">${earned.cards.map(([type, copies]) => `<div class="${cardClass(type)} earned">${face(type, {full: true, extra: copies > 1 ? `<span class="note">×${copies}</span>` : ""})}</div>`).join("")}</div>` : "",
+    earned.packs ? `<p class="good">You earned ${plural(earned.packs, "pack")}. Open ${earned.packs > 1 ? "them" : "it"} in camp.</p>` : "",
+    outcome.won && save.offer ? `<h2>Choose a card</h2>${offerRow()}` : "",
+    !outcome.won && outcome.grit ? `<p class="note">Grit: your Base starts the rematch with ${5 + outcome.grit} orbs.</p>` : "",
+  ].join("");
+
+  const guarded = state.sides[foe].board.some((troop) => troop && cardOf(troop.cardId).keys.includes("guard"));
   $("prompt").textContent = r ? "" : pick?.tributes ? `Choose ${tributes(pick.card)} of your troops to pay for ${name(pick.card)}.`
-    : casting ? `Choose an enemy troop for ${name(pick.card)}.`
-    : attacking ? (guarded ? "A Guard stands in the way: attack it first." : aims.has("base") && aims.size === 1 ? "No enemy troops: strike the Base." : "Choose what to attack.")
-    : state.attacking ? "Attack with your other troops, or end the turn."
-    : state.turn === 1 ? "Play your cards. Nobody attacks on the opening turn." : "Play a card, pick a troop to attack with, or end the turn.";
+    : kind === "gear" ? `Choose one of your troops to carry ${name(pick.card)}.`
+    : kind === "spell" ? `Choose an enemy troop for ${name(pick.card)}.`
+    : attacking ? (aims.size === 0 ? "This troop cannot attack now. It can take cover." : guarded ? "A Guard stands in the way: attack it first." : aims.has("base") && aims.size === 1 ? "No enemy troops: strike the Base." : "Choose what to attack.")
+    : state.attacking ? "Act with your other troops, or end the turn."
+    : state.turn === 1 ? "Play your cards. Nobody attacks on the opening turn." : "Play a card, pick a troop to act with, or end the turn.";
+  $("end").hidden = Boolean(r);
   $("end").disabled = !mine;
+  $("cover").hidden = !(attacking && options.some((a) => a.type === "cover" && a.slot === pick.troop));
   $("cancel").hidden = !pick;
+  $("again").textContent = !r ? "Restart this duel" : !outcome.matchOver ? `Game ${match.game + 1}` : !solo() ? "Play again"
+    : !outcome.won ? "Rematch" : game.duel.kind === "trail" || !duelFor(save, game.duel.id) ? "Continue" : "Play it again";
+  $("lesson").textContent = game.duel.lesson;
   $("log").innerHTML = lines.map((l) => (l.turn ? `<li class="turn">${l.turn}</li>` : `<li>${l.text}</li>`)).join("");
   $("log").scrollTop = $("log").scrollHeight;
-  for (const side of ["cowboy", "wizard"]) {
-    $(`${side}-graveyard`).textContent = state.sides[side].discard.map(name).join(", ") || "empty";
-  }
+  for (const side of ["cowboy", "wizard"]) $(`${side}-graveyard`).textContent = state.sides[side].discard.map(name).join(", ") || "empty";
   // Only the keywords on cards in this duel, so a new player reads a short list.
-  const decks = duelOptions({wins: duel ? TRAIL.indexOf(duel) : TRAIL.length, losses: 0}).decks;
-  const inPlay = new Set([...Object.keys(decks.cowboy), ...Object.keys(decks.wizard)].flatMap((type) => TYPES[type].keys ?? []));
+  const cards = ["cowboy", "wizard"].flatMap((side) => [...state.sides[side].hand, ...state.sides[side].deck, ...state.sides[side].discard, ...state.sides[side].board.filter(Boolean).map((troop) => troop.cardId)]);
+  const inPlay = new Set(cards.flatMap((cardId) => cardOf(cardId).keys ?? []));
   $("keywords").innerHTML = Object.entries(KEYWORDS).filter(([key]) => inPlay.has(key)).map(([, [word, rule]]) => `<li><strong>${word}.</strong> ${rule}</li>`).join("")
     || "<li>No keywords in this duel yet.</li>";
 }
 
+// ---- Clicks ---------------------------------------------------------------------------------
 document.addEventListener("click", (event) => {
   const b = event.target.closest("button");
   if (!b || b.disabled) return;
-  if (b.dataset.card) clickCard(b.dataset.card);
-  else if (b.dataset.own) clickOwn(Number(b.dataset.own));
-  else if (b.dataset.enemy) clickEnemy(b.dataset.enemy === "base" ? "base" : Number(b.dataset.enemy));
+  const d = b.dataset;
+  if (d.choose) { keep(choose(save, d.choose)); show(screen); }
+  else if (d.duel) startDuel(d.duel);
+  else if (d.match) startDuel(d.match, {best: 3});
+  else if (d.two) startDuel("two", {players: 2, best: Number(d.two)});
+  else if (d.zone) buildStep(d.zone, d.type, Number(d.by));
+  else if (d.card) clickCard(d.card);
+  else if (d.own) clickOwn(Number(d.own));
+  else if (d.enemy) clickEnemy(d.enemy === "base" ? "base" : Number(d.enemy));
+  else if (b.id === "pack" || (b.id === "pack-done" && save.packs)) { const pack = openPack(save); opened = pack.cards; keep(pack.save); renderCamp(); }
+  else if (b.id === "pack-done") { opened = null; renderCamp(); }
 });
+$("build").addEventListener("click", () => openBuilder(null, () => { keep(withDeck(save, draft.deck, draft.side)); show("camp"); }));
+$("builder-save").addEventListener("click", () => draft.done());
+$("builder-cancel").addEventListener("click", () => show("camp"));
 $("end").addEventListener("click", () => act({type: "end"}));
-$("cancel").addEventListener("click", () => { pick = null; render(); });
-// Restarting an unfinished duel replays the same deal; after a result the next duel gets a fresh one.
-$("again").addEventListener("click", () => start(state.result ? Math.floor(Math.random() * 100000) : seed));
-$("reset").addEventListener("click", () => {
-  progress = newProgress();
-  save();
-  start(Math.floor(Math.random() * 100000));
+$("cover").addEventListener("click", () => act({type: "cover", slot: pick.troop}));
+$("cancel").addEventListener("click", () => { pick = null; renderDuel(); });
+$("ready").addEventListener("click", () => { curtain = false; show("duel"); });
+$("leave").addEventListener("click", () => { curtain = false; show("camp"); });
+// Before a result this replays the same deal. After one it is the next game, the rematch, or the way back.
+$("again").addEventListener("click", () => {
+  if (!state.result) return deal();
+  if (!outcome.matchOver) return nextGame();
+  if (!solo()) return startDuel("two", {players: 2, best: game.match ? 3 : 1});
+  // A Trail win moves on, and a finished bounty is gone: go back to camp to see what opened.
+  if (outcome.won && (game.duel.kind === "trail" || !duelFor(save, game.duel.id))) return show("camp");
+  startDuel(game.duel.id, {best: game.match ? 3 : 1});
 });
-start(seed);
+$("load").addEventListener("click", () => {
+  const text = $("code").value.trim();
+  let next = null;
+  try { next = migrate(JSON.parse(atob(text))); } catch { /* not a save code */ }
+  // migrate() answers anything it cannot trust with a new save, so a new save from any other code means the code was bad.
+  const bad = !next || (JSON.stringify(next) === JSON.stringify(newSave()) && text !== btoa(JSON.stringify(newSave())));
+  if (!bad) { keep(next); opened = null; renderCamp(); }
+  $("code-note").textContent = bad ? "That is not a save code. Nothing was changed." : "Loaded.";
+});
+$("reset").addEventListener("click", () => {
+  if (!confirm("Start over? Your cards and progress in this browser are erased.")) return;
+  keep(newSave());
+  opened = null;
+  renderCamp();
+  $("code-note").textContent = "Started over.";
+});
+show("camp");

@@ -1,5 +1,5 @@
 // The Trail: a new player's first six duels. Each one is easier than an even match, shows one
-// new thing on the Wizard side, and pays a new card on the first win. Pure: no DOM, no storage.
+// new thing on the Wizard side, and pays a new card on the first win. Progress and saving are in progress.js.
 import {DECKS} from "./cards.js";
 
 // What a new player starts with: three card names and no keywords.
@@ -32,8 +32,6 @@ export const TRAIL = Object.freeze([
 
 // A lost duel gives the rematch one more Base orb, twice at most.
 export const GRIT_CAP = 2;
-export const newProgress = () => ({wins: 0, losses: 0});
-export const currentDuel = (progress) => TRAIL[progress.wins] ?? null;
 
 // Your deck after `wins` duels: the starter with each earned card swapped in.
 export function deckAfter(wins) {
@@ -46,14 +44,3 @@ export function deckAfter(wins) {
   }
   return Object.fromEntries(Object.entries(deck).filter(([, copies]) => copies > 0));
 }
-
-// createShowdown options for the next duel. After the Trail it is an even match against the coven.
-export function duelOptions(progress) {
-  const duel = currentDuel(progress);
-  const decks = {cowboy: deckAfter(progress.wins), wizard: duel?.deck ?? DECKS.wizard};
-  if (!duel) return {decks};
-  return {decks, baseOrbs: {cowboy: 5 + Math.min(progress.losses, GRIT_CAP), wizard: duel.base}, ...(duel.first ? {first: duel.first} : {})};
-}
-
-// Progress after a duel: a win moves on and clears the losses; a loss on the Trail is counted for grit.
-export const afterDuel = (progress, won) => (won ? {wins: Math.min(progress.wins + 1, TRAIL.length), losses: 0} : {...progress, losses: progress.losses + 1});

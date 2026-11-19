@@ -15,47 +15,62 @@ export const KEYWORDS = Object.freeze({
   ghostly: ["Ghostly", "Spells cannot target it."],
 });
 
-// What a spell or trap does. `target` says whether the player picks an enemy troop.
+// How rare a card is, and how many copies one deck may hold. Basic cards have no limit and are never earned.
+export const RARITY = Object.freeze({
+  basic: ["Basic", Infinity], common: ["Common", 4], uncommon: ["Uncommon", 3], rare: ["Rare", 2], legendary: ["Legendary", 1],
+});
+
+// What a spell, trap, gear or location does. `target` says whether the player picks an enemy troop.
+// Gear adds to the troop that carries it. A location adds attack to every troop with its tag, on both sides.
 export const EFFECTS = Object.freeze({
   shot: {target: true, text: "Remove 1 orb from an enemy troop."},
   tie: {target: true, text: "Stun an enemy troop: it cannot attack on its next turn."},
   hellfire: {target: false, text: "Remove 1 orb from every enemy troop."},
   snare: {target: false, text: "Trap. When an enemy troop attacks, it loses 2 orbs first. If that defeats it, the attack never lands."},
   hex: {target: false, text: "Trap. When an enemy troop attacks, the attack is cancelled."},
+  sixshooter: {attack: 1, orbs: 0, text: "Gear. The troop that carries it has +1 attack."},
+  bonearmor: {attack: 0, orbs: 2, text: "Gear. The troop that carries it gains 2 orbs."},
+  office: {tag: "Lawman", text: "Location. Lawman troops have +1 attack."},
+  boneyard: {tag: "Undead", text: "Location. Undead troops have +1 attack."},
 });
 
 // tag and keywords for troops, effect for spells and traps.
 const OVERLAY = {
-  "cowboy-sheriff": {tag: "Lawman"},
-  "cowboy-billy": {tag: "Outlaw"},
-  "cowboy-mounted-billy": {tag: "Outlaw", keys: ["ride"]},
-  "cowboy-deadeye": {effect: "shot"},
-  "cowboy-captured-dragon": {tag: "Beast", keys: ["sweep"]},
-  "cowboy-captured-wraith": {tag: "Undead", keys: ["ghostly"]},
-  "cowboy-covered-wagon": {tag: "Rig", keys: ["guard"]},
-  "cowboy-outrider": {tag: "Lawman", keys: ["ride"]},
-  "cowboy-dynamiter": {tag: "Outlaw", keys: ["laststand"]},
-  "cowboy-ranger": {tag: "Lawman", keys: ["scout"]},
-  "cowboy-gatling-crew": {tag: "Rig", keys: ["sweep"]},
-  "cowboy-lasso": {effect: "tie"},
-  "wizard-skeleton": {tag: "Undead"},
-  "wizard-wizard": {tag: "Mage", keys: ["raise"]},
-  "wizard-dragon": {tag: "Beast", keys: ["sweep"]},
-  "wizard-singularity": {effect: "shot"},
-  "wizard-lantern-wraith": {tag: "Undead", keys: ["ghostly"]},
-  "wizard-imp": {tag: "Fiend", keys: ["quickdraw"]},
+  "cowboy-sheriff": {rarity: "basic", tag: "Lawman"},
+  "cowboy-billy": {rarity: "basic", tag: "Outlaw"},
+  "cowboy-mounted-billy": {rarity: "rare", tag: "Outlaw", keys: ["ride"]},
+  "cowboy-deadeye": {rarity: "common", effect: "shot"},
+  "cowboy-captured-dragon": {rarity: "legendary", tag: "Beast", keys: ["sweep"]},
+  "cowboy-captured-wraith": {rarity: "legendary", tag: "Undead", keys: ["ghostly"]},
+  "cowboy-covered-wagon": {rarity: "common", tag: "Rig", keys: ["guard"]},
+  "cowboy-outrider": {rarity: "common", tag: "Lawman", keys: ["ride"]},
+  "cowboy-dynamiter": {rarity: "uncommon", tag: "Outlaw", keys: ["laststand"]},
+  "cowboy-ranger": {rarity: "uncommon", tag: "Lawman", keys: ["scout"]},
+  "cowboy-gatling-crew": {rarity: "rare", tag: "Rig", keys: ["sweep"]},
+  "cowboy-lasso": {rarity: "uncommon", effect: "tie"},
+  "wizard-skeleton": {rarity: "basic", tag: "Undead"},
+  "wizard-wizard": {rarity: "uncommon", tag: "Mage", keys: ["raise"]},
+  "wizard-dragon": {rarity: "legendary", tag: "Beast", keys: ["sweep"]},
+  "wizard-singularity": {rarity: "common", effect: "shot"},
+  "wizard-lantern-wraith": {rarity: "legendary", tag: "Undead", keys: ["ghostly"]},
+  "wizard-imp": {rarity: "uncommon", tag: "Fiend", keys: ["quickdraw"]},
 };
 
-const troop = (side, name, stars, attack, health, tag, ...keys) => ({side, name, kind: "troop", stars, attack, health, tag, keys, fresh: true});
+const troop = (side, name, rarity, stars, attack, health, tag, ...keys) => ({side, name, rarity, kind: "troop", stars, attack, health, tag, keys, fresh: true});
+const other = (side, name, rarity, kind, effect) => ({side, name, rarity, kind, effect, fresh: true});
 // Cards that exist only in Showdown so far.
 const FRESH = {
-  "cowboy-bear-trap": {side: "cowboy", name: "Bear Trap", kind: "trap", effect: "snare", fresh: true},
-  "wizard-bone-wall": troop("wizard", "Bone Wall", 3, 0, 4, "Undead", "guard"),
-  "wizard-raven-familiar": troop("wizard", "Raven Familiar", 2, 1, 1, "Beast", "scout"),
-  "wizard-headless-horseman": troop("wizard", "Headless Horseman", 5, 2, 3, "Undead", "ride"),
-  "wizard-jack-o-lantern": troop("wizard", "Jack-o'-Lantern", 1, 1, 1, "Fiend", "laststand"),
-  "wizard-hellfire": {side: "wizard", name: "Hellfire", kind: "spell", effect: "hellfire", fresh: true},
-  "wizard-hex": {side: "wizard", name: "Hex", kind: "trap", effect: "hex", fresh: true},
+  "cowboy-bear-trap": other("cowboy", "Bear Trap", "uncommon", "trap", "snare"),
+  "cowboy-six-shooter": other("cowboy", "Six-Shooter", "uncommon", "gear", "sixshooter"),
+  "cowboy-sheriffs-office": other("cowboy", "Sheriff's Office", "rare", "location", "office"),
+  "wizard-bone-wall": troop("wizard", "Bone Wall", "common", 3, 0, 4, "Undead", "guard"),
+  "wizard-raven-familiar": troop("wizard", "Raven Familiar", "common", 2, 1, 1, "Beast", "scout"),
+  "wizard-headless-horseman": troop("wizard", "Headless Horseman", "rare", 5, 2, 3, "Undead", "ride"),
+  "wizard-jack-o-lantern": troop("wizard", "Jack-o'-Lantern", "common", 1, 1, 1, "Fiend", "laststand"),
+  "wizard-hellfire": other("wizard", "Hellfire", "uncommon", "spell", "hellfire"),
+  "wizard-hex": other("wizard", "Hex", "uncommon", "trap", "hex"),
+  "wizard-bone-armor": other("wizard", "Bone Armor", "uncommon", "gear", "bonearmor"),
+  "wizard-boneyard": other("wizard", "Boneyard", "rare", "location", "boneyard"),
 };
 
 export const TYPES = Object.freeze({
@@ -72,7 +87,7 @@ export const has = (cardId, key) => cardOf(cardId).keys?.includes(key) ?? false;
 // 1 to 4 stars are free, 5 and 6 cost one tribute, 7 and up cost two (the main game's rule).
 export const tributes = (cardId) => (cardOf(cardId).stars >= 7 ? 2 : cardOf(cardId).stars >= 5 ? 1 : 0);
 
-// Sixteen-card decks built to show every keyword, both traps and all three card kinds.
+// Sixteen-card decks for the even match. Gear and locations are earned, so they are not in these.
 export const DECKS = Object.freeze({
   cowboy: {"cowboy-sheriff": 4, "cowboy-outrider": 2, "cowboy-covered-wagon": 2, "cowboy-billy": 2, "cowboy-ranger": 1,
     "cowboy-dynamiter": 1, "cowboy-mounted-billy": 1, "cowboy-deadeye": 1, "cowboy-lasso": 1, "cowboy-bear-trap": 1},
