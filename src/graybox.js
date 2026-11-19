@@ -40,6 +40,8 @@ const RIDE_OUT_NOTE = "Summon or Ride Out this turn. You can cast a spell afterw
 // (Fable 5.2 first-session brief, .artifacts/coordination/first-ten-minutes-kiro-brief.md).
 // Seed 60 and every other seed stay reachable by ?seed= and the seed links.
 const GUIDED_SEED = "690";
+// Same sentence as the How to Play page, shown in round 1 of the guided duel.
+const GOAL_NOTE = "You lead the Cowboys. The computer commands the Wizards. Break the enemy Base before yours falls.";
 // Fable 5.2 first-session brief §3: an unsaved, entitled draft on a fixed deal. No Ride Out.
 const POSSE_SEED = "2328";
 const POSSE_NOTE = "Wraith Posse: Captured Wraith joins in place of one Sheriff. It is free to summon, hits for 2 and has 2 orbs. Troops hold their lanes; only cards marked Ride can Ride.";
@@ -218,6 +220,7 @@ const controller = createController({
       : `Defeat the wanted ${CARDS[boss?.card]?.name ?? "Dragon"} while your Base stands.`
         + (deal?.hunt?.markLane !== undefined ? " Watch the marked Wizard lane before the first clash." : "");
     model.openingNote = [
+      guided && !deal?.hunt && displayed?.round === 1 && GOAL_NOTE,
       model.bounty && `${deal.hunt.name}. ${huntProgress}`,
       deal?.opponent && `Opponent: ${OPPONENTS[deal.opponent].name}.`,
       practice && displayed?.round === practice.round && practice.note,
@@ -392,7 +395,9 @@ const menu = mountTitleMenu(node("title-screen"), {
     menu.hide();
     arena.hidden = false;
     if (startGuided || ["idle", "terminal"].includes(controller.status())) {
-      guided = startGuided;
+      // First Play of a profile with no completed duel and a bare address starts the guided duel.
+      const firstDuel = !startGuided && !opponent && location.search === "" && profile.get().stats.matches === 0;
+      guided = startGuided || firstDuel;
       startWithDeal(freshDeal(null, opponent ?? queryOpponent), () => {
         if (!controller.start(guided ? GUIDED_SEED : params.get("seed") ?? undefined)) controller.start();
       });
