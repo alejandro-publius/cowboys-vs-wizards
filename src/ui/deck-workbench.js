@@ -23,7 +23,7 @@ const ruleOf = card => card.kind === 'spell'
 // `presets` comes from the graybox title-screen marker and adds Load Deadeye Control
 // and Load Billy Posse. Optional `tryDraft(counts, opener)` adds Try draft, which
 // plays a copy of the current legal draft and leaves the saved deck unchanged.
-export function renderDeckWorkbench({content, profile, say, savedMessage, button, presets = false, tryDraft, bounties = false}) {
+export function renderDeckWorkbench({content, profile, say, savedMessage, button, presets = false, tryDraft, draft = null, bounties = false}) {
   const saved = profile.get();
   // Each Wanted reward joins the collection only after its own boss is cleared.
   // Frontier cards (zero starter copies) join the collection at their win counts.
@@ -38,7 +38,8 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
   const savedLegal = Boolean(stored && validateDeck(stored, entitlement).ok);
   let baseline = {...(savedLegal ? stored : DEFAULT_COUNTS)};
   let baselineSaved = savedLegal;
-  let counts = {...baseline};
+  const initial = draft && validateDeck(draft, entitlement).ok ? draft : baseline;
+  let counts = {...initial};
   let selected = collectionCards[0].type;
   const count = type => counts[type] ?? 0;
   // Compare actual card counts: an omitted type and an explicit 0 are the same.
@@ -189,6 +190,7 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
   }
   const frontierLine = element('p', frontierText, {class: 'detail-line'});
   chosen.append(frontierLine, total, openingOdds, playState, rows, validation, actions, ...notes, feedback);
+  if (draft) feedback.textContent = 'Your trial draft is back. Save deck to keep it, or Revert changes.';
   collection.append(grid);
   layout.append(collection, detail, chosen);
   content.append(layout);
