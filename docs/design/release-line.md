@@ -54,6 +54,10 @@ The graybox is the playable entry, described honestly as the rules-first build. 
 4. **A person before a mechanic.** No new mechanic is added until a real player has tried the last one.
 5. **This page is updated at every merge and every cut.**
 
+## Under review since the evening of November 18
+
+Alex played the lane duel and did not find it fun: strong troops did not protect the Base and no attack was chosen. A different fight, "Showdown", is on the branch `fable/showdown-prototype` for him to try. Until he decides, lane-based work (Ride, Wraith Drift, Dragon Fire) is at risk and nothing new is built on it. The dates above were set before this.
+
 ## Scoreboard
 
 "Seen by a person" means a first-time human player. Agent browser checks do not count. Today that column is empty for everything.
@@ -84,6 +88,7 @@ The graybox is the playable entry, described honestly as the rules-first build. 
 
 ### Parked (not in Release 1 unless reopened)
 
+- The bounty pipeline with Kiro and Tripo. See [card types and bounties](card-types-and-bounties.md).
 - Dragon Fire on the real Captured Dragon in ordinary duels. Needs a balance run.
 - The Bonewright in free play.
 - Ghost Walk for the Wraith.

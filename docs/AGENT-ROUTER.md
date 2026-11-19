@@ -18,6 +18,7 @@
 | Sheriff fire / reaction / weapon | `src/render/{sheriff,cues,match-board}.js`; `docs/evidence/fable-sheriff-integration.md` if relevant | `node --test tests/match/sheriff.test.js` |
 | Wizard / Dragon / mounted animation | `src/render/{wizard,cues,match-board}.js`, `docs/character-animation-plan.md`; inspect specific asset only | `node --test tests/match/attack-clips.test.js` or `tests/match/wizard.test.js` |
 | 3D layout, orbs, camera | `src/render/{match-board,orbs,match-camera}.js` | `node --test tests/match/orbs.test.js` |
+| Give a card its 3D model | `src/render/presentation-manifest.js` (one entry; the file explains the fields) | `node --test tests/assets/presentation-manifest.test.mjs` |
 | New card and card registration | `.kiro/specs/duel-card-pipeline/`, `scripts/sync-card-specs.mjs` | `node --test tests/game/card-specs.test.js` |
 | Build / public site / replay | `scripts/{build,verify-duel,browser-match-check}.mjs`, `.github/workflows/pages.yml` | `node scripts/verify-duel.mjs`; browser option only for a page-affecting change |
 | Kiro tooling and evidence | relevant file in `.kiro/{specs,agents,steering,hooks,workflows,powers}/` plus matching evidence note | smallest relevant command; don't claim a Kiro run without a receipt |
