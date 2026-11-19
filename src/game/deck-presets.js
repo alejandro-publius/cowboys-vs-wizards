@@ -20,6 +20,16 @@ export const WRAITH_POSSE = Object.freeze({
   "cowboy-captured-wraith": 1,
 });
 
+// Starter cards plus the one Captured Dragon; a third Deadeye replaces a Billy
+// (Fable 5.2 dragon-reward brief). Shared by Build Deck and the Dragon showcase.
+export const DRAGON_POSSE = Object.freeze({
+  "cowboy-sheriff": 6,
+  "cowboy-billy": 2,
+  "cowboy-mounted-billy": 0,
+  "cowboy-deadeye": 3,
+  "cowboy-captured-dragon": 1,
+});
+
 // Frontier (content pack 1): one card per counted duel win, starting at the
 // second win. `wins` is profile.stats.wins, which skips hunts, drafts and lessons.
 export const FRONTIER_UNLOCKS = Object.freeze([
