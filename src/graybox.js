@@ -127,8 +127,9 @@ const engine = {
       const lane = rebuildLane(state, action);
       if (lane !== null) arcRebuild = {round: state.round, lane};
       arcState = result.state;
-      const final = result.state.result;
-      if (final?.winner === "wizard" && arcRebuild?.round === final.round) arcLoss = rebuildLossCause(result.events, arcRebuild.lane);
+      if (arcRebuild?.round === state.round) {
+        arcLoss = rebuildLossCause(result.events, arcRebuild.lane) ?? arcLoss;
+      }
     }
     if (guided || hints) progress = trackGuide(progress, result.events);
     roundEvents.push(...result.events);

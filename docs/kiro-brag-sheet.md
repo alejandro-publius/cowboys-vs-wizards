@@ -2,6 +2,10 @@
 
 [Judge-facing brag sheet, eight Devpost answers and recording register](submission/kiro-brag-sheet.md)
 
+## November 18 Dragon Fire arc
+
+Fable 5.2 designed the boards and the Bonewright's Rebuild. Kiro CLI built the opt-in rules, the three-stage draft and the board cues in three worktrees. The same Dragon Fire combo wins in round 7 when the rival has already moved and loses in round 8 when it can rebuild. Record both outcomes, then replay the marked board and wait to use the Dragon. The winning delayed line ends in round 9. [Exact Chrome routes and attribution](evidence/kiro-dragon-fire-arc.md).
+
 ## November 18 duel feedback and deck building
 
 | Before | After | Record it |

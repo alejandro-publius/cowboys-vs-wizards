@@ -3,9 +3,6 @@
 // Pure rules data: no DOM, rendering, filesystem or network. Nothing here is a
 // counted result, reward or profile change.
 //
-// Dragon Fire itself is Job 1 (clash.js). Until it lands these states set
-// `state.dragonFire = { enabled: true }` directly, as the brief says.
-//
 // The Bonewright's Rebuild: on a round the Cowboy moves first, while the
 // Bonewright holds a Wizard and has not acted, its troop with the fewest orbs
 // left (below that card's printed orbs; ties to the lower lane) carries the
@@ -65,12 +62,11 @@ function bonewrightBoard() {
   };
 }
 
-// A fresh, unplayed state for a stage. Dragon Fire is set directly (Job 1 pending).
+// A fresh authored state for this stage.
 export function createFireArcStage(stage) {
   const spec = FIRE_ARC[stage];
   if (!spec) throw new Error(`Unknown fire arc stage ${stage}`);
-  const state = createMatch(spec.seed, { rideOut: spec.rideOut });
-  state.dragonFire = { enabled: true };
+  const state = createMatch(spec.seed, { rideOut: spec.rideOut, dragonFire: true });
   for (const side of ["cowboy", "wizard"]) {
     const own = state.sides[side];
     const data = spec[side];
@@ -81,7 +77,9 @@ export function createFireArcStage(stage) {
     own.discard = [];
   }
   state.round = spec.round;
-  state.startingSide = state.activeSide = spec.startingSide;
+  state.startingSide = spec.startingSide;
+  // Position A begins after the Bonewright has passed.
+  state.activeSide = "cowboy";
   if (spec.bountyTarget) state.bountyTarget = spec.bountyTarget;
   return state;
 }

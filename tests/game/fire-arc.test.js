@@ -28,19 +28,10 @@ function endTurn(state, rival = rivalAction) {
 }
 const orbs = (state, side) => state.sides[side].board.map((troop) => troop && troop.health);
 
-// Dragon Fire is Job 1 (clash.js). Tests that need the burn-through skip until it lands.
-const fireLands = (() => {
-  let state = createFireArcStage("position-a");
-  state = summon(state, DRAGON, 1, [1]);
-  state = shoot(state, 1);
-  return endTurn(state).sides.wizard.baseOrbs === 0;
-})();
-const needsFire = { skip: fireLands ? false : "Job 1 (Dragon Fire in clash.js) has not landed" };
-
-test("every stage holds each card once and sets Dragon Fire directly", () => {
+test("every stage holds each card once and enables Dragon Fire", () => {
   for (const stage of Object.keys(FIRE_ARC)) {
     const state = createFireArcStage(stage);
-    assert.deepEqual(state.dragonFire, { enabled: true });
+    assert.equal(state.dragonFire.enabled, true);
     for (const side of ["cowboy", "wizard"]) {
       const own = state.sides[side];
       const ids = [...own.hand, ...own.deck, ...own.board.filter(Boolean).map((troop) => troop.cardId)];
@@ -72,7 +63,7 @@ test("Ember Gulch slower capture: Billy, end turn, then Deadeye captures in roun
   assert.equal(state.result.round, 2);
 });
 
-test("Ember Gulch tempting mistake: Deadeye alone burns through and the Dragon escapes", needsFire, () => {
+test("Ember Gulch tempting mistake: Deadeye alone burns through and the Dragon escapes", () => {
   let state = createFireArcStage("ember-gulch");
   state = shoot(state, 1);
   state = endTurn(state, bossEnd);
@@ -103,7 +94,7 @@ test("the mark needs a below-printed troop, a Wizard in hand and an unacted Bone
   assert.equal(rebuildMark(tie), 0);
 });
 
-test("position A fire now: Dragon tributes the lane 2 Sheriff, Deadeye the Skeleton, Bonewright Base falls", needsFire, () => {
+test("position A fire now: Dragon tributes the lane 2 Sheriff, Deadeye the Skeleton, Bonewright Base falls", () => {
   let state = createFireArcStage("position-a");
   state = summon(state, DRAGON, 1, [1]);
   state = shoot(state, 1);
@@ -139,7 +130,7 @@ test("position B: after your turn the rival rebuilds lane 2 with a Wizard", () =
   assert.equal(rivalAction(state).type, "end-phase");
 });
 
-test("position B hold then fire: boards after clashes 7 and 8, victory in round 9", needsFire, () => {
+test("position B hold then fire: boards after clashes 7 and 8, victory in round 9", () => {
   let state = createFireArcStage("position-b");
   state = summon(state, "cowboy-sheriff-3", 2);
   state = endTurn(state);
