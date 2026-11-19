@@ -10,7 +10,7 @@ This covers the local Frontier graybox. Each row is a distinct card type. It has
 | Billy | 5 | 2 / 4 | 1 | Starter. Turns one friendly troop into a sturdier lane threat. |
 | Mounted Billy | 7 | 3 / 5 | 2 | Starter. Concentrates the value of two troops into one lane. Has Ride. |
 | Deadeye | Spell | — | — | Starter. Removes one orb from an enemy troop. A useful way to finish a wounded blocker. |
-| Captured Dragon | 5 | 3 / 2 | 1 | Clear all five distinct Graveyard Dragon hunts. Hits hard and can fall quickly. Limit one. |
+| Captured Dragon | 5 | 4 / 2 | 1 | Clear all five distinct Graveyard Dragon hunts. Hits hard and can fall quickly. Limit one. |
 | Captured Wraith | 3 | 2 / 2 | 0 | Clear all five distinct Lantern Wraith hunts. Starts pressure faster than Sheriff, with fewer orbs. Limit one. |
 | Lasso | Spell | — | — | 2 counted duel wins. Remove one orb, then optionally pull the survivor into an adjacent empty lane. Limit two. |
 | Covered Wagon | 4 | 1 / 4 | 0 | 3 counted duel wins. Survives a Dragon attack on one orb. Limit two. |

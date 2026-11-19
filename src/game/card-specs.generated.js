@@ -5,7 +5,7 @@ export const CARD_SPECS = [
   {"type":"cowboy-billy","side":"cowboy","order":2,"name":"Billy","kind":"troop","stars":5,"health":4,"attack":2,"copies":3},
   {"type":"cowboy-mounted-billy","side":"cowboy","order":3,"name":"Mounted Billy","kind":"troop","stars":7,"health":5,"attack":3,"copies":1,"rides":true},
   {"type":"cowboy-deadeye","side":"cowboy","order":4,"name":"Deadeye","kind":"spell","relocates":false,"copies":2},
-  {"type":"cowboy-captured-dragon","side":"cowboy","order":5,"name":"Captured Dragon","kind":"troop","stars":5,"health":2,"attack":3,"copies":0,"bounty":true},
+  {"type":"cowboy-captured-dragon","side":"cowboy","order":5,"name":"Captured Dragon","kind":"troop","stars":5,"health":2,"attack":4,"copies":0,"bounty":true},
   {"type":"cowboy-captured-wraith","side":"cowboy","order":6,"name":"Captured Wraith","kind":"troop","stars":3,"health":2,"attack":2,"copies":0,"bounty":true},
   {"type":"cowboy-covered-wagon","side":"cowboy","order":7,"name":"Covered Wagon","kind":"troop","stars":4,"health":4,"attack":1,"copies":0,"limit":2},
   {"type":"cowboy-outrider","side":"cowboy","order":8,"name":"Outrider","kind":"troop","stars":3,"health":3,"attack":1,"copies":0,"limit":2,"rides":true},

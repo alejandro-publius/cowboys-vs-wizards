@@ -43,8 +43,9 @@ const GUIDED_SEED = "690";
 // Fable 5.2 first-session brief §3: an unsaved, entitled draft on a fixed deal. No Ride Out.
 const POSSE_SEED = "2328";
 const POSSE_NOTE = "Wraith Posse: Captured Wraith joins in place of one Sheriff. It is free to summon, hits for 2 and has 2 orbs. Troops hold their lanes; only cards marked Ride can Ride.";
-const DRAGON_POSSE_SEED = "264";
-const DRAGON_POSSE_NOTE = "Dragon Posse: Captured Dragon rides in place of Mounted Billy. It costs one tribute, hits for 3 and has 2 orbs.";
+const DRAGON_POSSE_SEED = "468";
+const capturedDragon = CARDS["cowboy-captured-dragon-1"];
+const DRAGON_POSSE_NOTE = `Dragon Posse: Captured Dragon rides in place of Mounted Billy. It costs one tribute, hits for ${capturedDragon.attack} and has ${capturedDragon.health} orbs.`;
 const WRAITH_NOTICE_TEXT = "A notice is up on the Wanted board: the Lantern Wraith.";
 const chosenCpu = cpuFor(params.get("cpu"));
 const requestedDeck = params.get("deck");
