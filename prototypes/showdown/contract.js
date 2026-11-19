@@ -34,7 +34,7 @@ export const EVENTS = Object.freeze({
   set: {fields: ["side"], shows: "That side puts one card face down in a trap slot. The card is not named."},
   cover: {fields: ["side", "cardId"], shows: "A troop takes cover until its owner's next turn."},
   trap: {fields: ["side", "cardId", "target", "left", "stopped"], shows: "A face-down card of `side` is revealed and springs on the attacking troop. `stopped` means the attack never lands."},
-  attack: {fields: ["side", "cardId", "target", "covered", "baseDamage", "targetLeft", "attackerLeft"], shows: "A troop strikes a troop or the Base. The target drops to `targetLeft`, a surviving target outside cover hits back, and `baseDamage` orbs leave the defending Base."},
+  attack: {fields: ["side", "cardId", "target", "covered", "hitBack", "baseDamage", "targetLeft", "attackerLeft"], shows: "A troop strikes a troop or the Base. The target drops to `targetLeft`, a surviving target outside cover hits back for `hitBack` orbs, and `baseDamage` orbs leave the defending Base."},
   laststand: {fields: ["side", "cardId", "target", "left"], shows: "A troop defeated in a fight takes one orb off the troop that fought it."},
   sweep: {fields: ["side", "cardId", "count"], shows: "After its attack, the troop's sweep takes one orb from each of the other enemy troops."},
 });

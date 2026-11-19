@@ -206,7 +206,7 @@ function attack(next, action, events) {
   }
   const outcome = attackOutcome(next, action.slot, action.target);
   events.push({type: "attack", side, cardId: attacker.cardId, target: action.target === "base" ? "base" : enemy.board[action.target].cardId,
-    covered: action.target !== "base" && enemy.board[action.target].cover, ...outcome});
+    covered: action.target !== "base" && enemy.board[action.target].cover, hitBack: attacker.health - outcome.attackerLeft, ...outcome});
   if (action.target !== "base") {
     const defender = enemy.board[action.target];
     defender.health = outcome.targetLeft;

@@ -23,9 +23,16 @@ function face(type, {full = false, extra = ""} = {}) {
   const rules = card.kind !== "troop" ? EFFECTS[card.effect].text
     : full ? card.keys.map((key) => `<strong>${KEYWORDS[key][0]}.</strong> ${KEYWORDS[key][1]}`).join(" ") || "No keyword." : "";
   return `<strong>${card.name}</strong>${typeLine(card)}${card.kind === "troop" ? `${card.attack} attack · ${plural(card.health, "orb")} ${full ? "" : keywords(card)}` : ""}
-    ${rules ? `<span class="note">${rules}</span>` : ""}${extra}`;
+    ${rules ? `<span class="note">${rules}</span>` : ""}${card.kind === "troop" ? `<span class="note">${costLine(type)}</span>` : ""}${extra}`;
+}
+// What a troop costs and when it can first attack, in words a newcomer has not had to learn yet.
+function costLine(type) {
+  const cost = tributes(`${type}-1`);
+  if (cost) return `Cost: ${cost} of your troops, sent to the graveyard. Attacks the turn it arrives.`;
+  return TYPES[type].keys.includes("quickdraw") ? "Cost: none." : "Cost: none. Rests the turn it arrives.";
 }
 const cardClass = (type) => `card cowboy ${TYPES[type].kind} ${TYPES[type].rarity}`;
+const OFFER_HEADING = "Bonus: pick 1 more card to keep";
 const offerRow = () => `<div class="row">${save.offer.map((type) =>
   `<button type="button" class="${cardClass(type)} earned can" data-choose="${type}">${face(type, {full: true, extra: `<span class="note">You own ${owned(save, type)}.</span>`})}</button>`).join("")}</div>`;
 
@@ -64,6 +71,7 @@ let outcome; // set once the game ends
 let curtain = false; // two players: the screen is being passed
 let opened = null; // the pack just opened, shown once in the camp
 let draft; // the deck builder's working copy
+let picked = null; // the card just taken from an offer, so the screen can confirm it
 
 const solo = () => game.players === 1;
 const me = () => (solo() ? "cowboy" : state.active);
@@ -87,10 +95,13 @@ function show(next) {
 function renderCamp() {
   const list = duelList(save);
   // First things first: a card to choose, then a pack to open.
-  $("claim").innerHTML = save.offer ? `<h2>Choose a card</h2><p class="note">You won. Take one; it goes into your collection.</p>${offerRow()}`
+  const next = TRAIL[save.wins];
+  const hint = picked ? `<p class="good">Added ${TYPES[picked].name}: you now own ${owned(save, picked)}. The new copy is not in your deck yet: use Build deck below.</p>` : "";
+  $("claim").innerHTML = save.offer ? `<h2>${OFFER_HEADING}</h2><p class="note">You won. The one you pick goes into your collection.</p>${offerRow()}`
     : opened ? `<h2>In the pack</h2><div class="row">${opened.map((type) => `<div class="${cardClass(type)} earned">${face(type, {full: true})}</div>`).join("")}</div>
         <div class="row"><button type="button" id="pack-done">${save.packs ? `Open the next pack (${save.packs} left)` : "Add them to my collection"}</button></div>`
-    : save.packs ? `<h2>${plural(save.packs, "pack")} to open</h2><div class="row"><button type="button" class="pack can" id="pack">Open a pack: three cards</button></div>` : "";
+    : save.packs ? `${hint}<h2>${plural(save.packs, "pack")} to open</h2><div class="row"><button type="button" class="pack can" id="pack">Open a pack: three cards</button></div>`
+    : `${hint}${next ? `<p id="next">${save.wins === 0 && !log.length ? "Start here" : "Next"}: click <strong>${next.name}</strong> to play ${save.wins === 0 ? "your first duel" : "it"}.</p>` : ""}`;
 
   const tile = (duel, note, off = duel.state !== "open") => `<li><button type="button" class="tile ${duel.state}" ${off ? "disabled" : `data-duel="${duel.id}"`}>
     <strong>${duel.state === "won" ? "✓ " : ""}${duel.name}</strong><span class="note">${note}</span></button></li>`;
@@ -145,7 +156,7 @@ function renderBuilder() {
     return `<div class="build-row"><div class="${cardClass(type)}">${face(type, {full: true})}</div>
       <div><span class="note">Deck</span>${step("deck", -1, deck > 0, "One fewer in the deck:")} <strong>${deck}</strong> ${step("deck", 1, draft.pool ? side > 0 : room, "One more in the deck:")}</div>
       <div><span class="note">Side deck</span>${step("side", -1, side > 0, "One fewer in the side deck:")} <strong>${side}</strong> ${step("side", 1, draft.pool ? deck > 0 : room, "One more in the side deck:")}</div>
-      <span class="note">${Number.isFinite(limit(type)) ? `Up to ${limit(type)}` : "Any number"}</span></div>`;
+      <span class="note">${Number.isFinite(limit(type)) ? `Limit: ${limit(type)} in deck and side deck together` : "Limit: none"}</span></div>`;
   }).join("");
   const problems = draftProblems();
   $("builder-problems").innerHTML = `Deck ${sum(draft.deck)} of ${DECK_SIZE} · side deck ${sum(draft.side)} of ${SIDE_SIZE}.${problems.length ? ` <span class="warn">${problems.join(" ")}</span>` : ""}`;
@@ -171,9 +182,10 @@ function say(events) {
     else if (e.type === "gear") lines.push({text: `${whose(e.side)} ${name(e.target)} now carries ${name(e.cardId)}.`});
     else if (e.type === "location") lines.push({text: `${whose(e.side)} ${name(e.cardId)} is now the location.`});
     else if (e.type === "cover") lines.push({text: `${whose(e.side)} ${name(e.cardId)} took cover.`});
-    else if (e.type === "burn") lines.push({text: `${whose(e.side)} hand was full: ${name(e.cardId)} was discarded.`});
+    else if (e.type === "draw") lines.push({text: solo() ? (e.side === "cowboy" ? "You drew a card." : "The Wizards drew a card.") : `The ${faction(e.side)}s drew a card.`});
+    else if (e.type === "burn") lines.push({text: `${whose(e.side)} hand was full (6 cards is the limit): ${name(e.cardId)} was discarded.`});
     else if (e.type === "fatigue") lines.push({text: `${whose(e.side)} deck is empty: ${baseOf(e.side)} lost 1 orb.`});
-    else if (e.type === "spell") lines.push({text: `${whose(e.side)} ${name(e.cardId)} hit ${name(e.target)}: ${e.stunned ? "stunned for its next turn" : e.left === 0 ? "defeated" : `${e.left} orbs left`}.`});
+    else if (e.type === "spell") lines.push({text: `${whose(e.side)} ${name(e.cardId)} hit ${name(e.target)}: ${e.stunned ? "stunned for its next turn" : e.left === 0 ? "defeated" : `${plural(e.left, "orb")} left`}.`});
     else if (e.type === "trap") lines.push({text: `Trap! ${whose(e.side)} ${name(e.cardId)} caught ${name(e.target)}: ${cardOf(e.cardId).effect === "hex" ? "its attack was cancelled" : e.left === 0 ? "defeated before it struck" : `it dropped to ${e.left} and attacked anyway`}.`});
     else if (e.type === "laststand") lines.push({text: `Last Stand: ${name(e.cardId)} took an orb off ${name(e.target)}${e.left === 0 ? ", defeating it" : ""}.`});
     else if (e.type === "sweep") lines.push({text: `Sweep: ${name(e.cardId)} also hit ${plural(e.count, "other troop")} for 1.`});
@@ -182,7 +194,8 @@ function say(events) {
       const result = e.target === "base" ? null
         : e.targetLeft === 0 ? `defeated it${e.baseDamage ? `, and ${e.baseDamage} went through to ${base}` : e.covered ? "; it was in cover, so nothing reached the Base" : ""}`
         : e.covered ? `left it on ${e.targetLeft}; it was in cover and did not hit back`
-        : `left it on ${e.targetLeft}, and it hit back${e.attackerLeft === 0 ? `, defeating ${name(e.cardId)}` : ""}`;
+        : !e.hitBack ? `left it on ${e.targetLeft}; it has no attack, so it did not hit back`
+        : `left it on ${e.targetLeft}, and it hit back for ${e.hitBack}${e.attackerLeft === 0 ? `, defeating ${name(e.cardId)}` : ""}`;
       lines.push({text: result ? `${whose(e.side)} ${name(e.cardId)} attacked ${name(e.target)} and ${result}.` : `${whose(e.side)} ${name(e.cardId)} struck ${base} for ${e.baseDamage}.`});
     }
   }
@@ -209,7 +222,10 @@ function advance() {
   if (solo() && outcome.matchOver) {
     const won = game.match ? game.match.wins.cowboy >= 2 : winner === "cowboy";
     const settled = settle(save, game.duel.id, won);
-    Object.assign(outcome, {won, earned: settled.earned, grit: Math.min(settled.save.losses[game.duel.id] ?? 0, GRIT_CAP)});
+    // Which of the cards just earned went straight into the deck, and what each replaced (the Trail swaps plain cards out).
+    const swaps = game.duel.kind === "trail" && won ? TRAIL[save.wins].reward : [];
+    const intoDeck = swaps.map(([type, replaced]) => [type, (settled.save.deck[type] ?? 0) - (save.deck[type] ?? 0), replaced]).filter(([, copies]) => copies > 0);
+    Object.assign(outcome, {won, earned: settled.earned, intoDeck, grit: Math.min(settled.save.losses[game.duel.id] ?? 0, GRIT_CAP)});
     keep(settled.save);
   }
 }
@@ -233,6 +249,7 @@ function deal() {
   lines = [{turn: `Turn 1: ${solo() ? (state.active === "cowboy" ? "you" : "the Wizards") : `the ${faction(state.active)}s`}`}];
   pick = null;
   outcome = null;
+  picked = null;
   Object.assign(game, {started: Date.now(), rules: false});
   advance();
   curtain = !solo();
@@ -282,14 +299,39 @@ function clickEnemy(target) {
   if (cast) act(cast);
 }
 
+// Why a card in hand cannot be played right now, so a greyed card always says why.
+function blocked(cardId) {
+  const card = cardOf(cardId);
+  if (state.attacking) return "No more cards this turn: a troop has acted.";
+  if (card.kind === "troop") {
+    if (state.summonUsed) return "One troop a turn.";
+    const cost = tributes(cardId);
+    return state.sides[me()].board.filter(Boolean).length < cost ? `Needs ${plural(cost, "troop")} of yours to pay with.` : "Your board is full.";
+  }
+  if (card.kind === "trap") return state.setUsed ? "One trap a turn." : "Both trap slots are full.";
+  if (state.castUsed) return "One spell, gear or location a turn.";
+  return card.kind === "location" ? "Already the location." : card.kind === "gear" ? "No troop to carry it." : "No target.";
+}
+
 // What an attack from the picked troop would do to this target, in words. Face-down traps are not counted.
 function preview(target) {
   const o = attackOutcome(state, pick.troop, target);
   const foe = state.sides[opponent(me())];
   if (target === "base") return `<span class="note good">${foe.board.some(Boolean) ? "Ride past: " : ""}Hit the Base for ${o.baseDamage}</span>`;
-  if (o.targetLeft === 0) return `<span class="note good">Defeated${o.baseDamage ? `, ${o.baseDamage} through to the Base` : foe.board[target].cover ? ", nothing reaches the Base" : ""}</span>`;
+  const lastStand = o.targetLeft === 0 && cardOf(foe.board[target].cardId).keys.includes("laststand") ? ". Its Last Stand costs yours 1 orb" : "";
+  if (o.targetLeft === 0) return `<span class="note good">Defeated${o.baseDamage ? `, ${o.baseDamage} through to the Base` : foe.board[target].cover ? ", nothing reaches the Base" : ""}${lastStand}</span>`;
   if (foe.board[target].cover) return `<span class="note">Survives on ${o.targetLeft}. It is in cover and does not hit back.</span>`;
+  if (attackOf(state, foe.board[target]) === 0) return `<span class="note">Survives on ${o.targetLeft}. It has no attack, so yours is unharmed.</span>`;
   return `<span class="note ${o.attackerLeft === 0 ? "warn" : ""}">Survives on ${o.targetLeft} and hits back: yours ${o.attackerLeft === 0 ? "is defeated" : `drops to ${o.attackerLeft}`}</span>`;
+}
+
+// What the "again" button does next, in words.
+function againLabel() {
+  if (!state.result) return "Restart this duel";
+  if (!outcome.matchOver) return `Game ${game.match.game + 1}`;
+  if (!solo()) return "Play again";
+  if (!outcome.won) return "Rematch";
+  return game.duel.kind === "trail" || !duelFor(save, game.duel.id) ? "Back to camp" : "Play it again";
 }
 
 function renderDuel() {
@@ -311,7 +353,7 @@ function renderDuel() {
     const base = `<button type="button" class="base ${side}${baseOpen ? " can" : ""}" ${baseOpen ? 'data-enemy="base"' : "disabled"}>
       <strong>${solo() ? (isOwn ? "Your" : "Wizard") : faction(side)} Base</strong>${orbs(s.base, s.baseMax)}
       <span class="note">Hand ${s.handCount} · Deck ${s.deckCount} · Graveyard ${s.discard.length}</span>
-      <span class="note">▲ ${traps}</span>${baseOpen ? preview("base") : ""}</button>`;
+      ${(isOwn ? s.traps.length || s.hand.some((id) => cardOf(id).kind === "trap") : s.trapCount) ? `<span class="note">▲ ${traps}</span>` : ""}${baseOpen ? preview("base") : ""}</button>`;
     const slots = s.board.map((troop, slot) => {
       if (!troop) return `<button type="button" class="slot ${side}" disabled><span class="note">empty</span></button>`;
       const card = cardOf(troop.cardId);
@@ -342,10 +384,9 @@ function renderDuel() {
   const playable = new Set(options.filter((a) => a.cardId).map((a) => name(a.cardId)));
   $("hand").innerHTML = view.sides[own].hand.map((cardId) => {
     const card = cardOf(cardId);
-    const cost = tributes(cardId);
     const on = playable.has(card.name);
     return `<button type="button" class="card ${card.side} ${card.kind} ${card.rarity}${pick?.card === cardId ? " pick" : on ? " can" : ""}" data-card="${cardId}" ${on ? "" : "disabled"}>
-      ${face(cardId.replace(/-\d+$/, ""), {extra: card.kind === "troop" ? `<span class="note">${cost === 0 ? "Free" : `${plural(cost, "tribute")}, attacks at once`}</span>` : ""})}</button>`;
+      ${face(cardId.replace(/-\d+$/, ""), {extra: mine && !on ? `<span class="note warn">${blocked(cardId)}</span>` : ""})}</button>`;
   }).join("");
 
   const r = state.result;
@@ -361,23 +402,31 @@ function renderDuel() {
     earned.captured ? `<h2>Captured</h2><div class="row"><div class="${cardClass(earned.captured)} earned">${face(earned.captured, {full: true})}</div></div>` : "",
     earned.cards.length ? `<h2>New in your collection</h2><div class="row">${earned.cards.map(([type, copies]) => `<div class="${cardClass(type)} earned">${face(type, {full: true, extra: copies > 1 ? `<span class="note">×${copies}</span>` : ""})}</div>`).join("")}</div>` : "",
     earned.packs ? `<p class="good">You earned ${plural(earned.packs, "pack")}. Open ${earned.packs > 1 ? "them" : "it"} in camp.</p>` : "",
-    outcome.won && save.offer ? `<h2>Choose a card</h2>${offerRow()}` : "",
+    outcome.intoDeck.length ? `<p class="note">In your deck now: ${outcome.intoDeck.map(([type, copies, replaced]) => `${TYPES[type].name} ×${copies} in place of ${TYPES[replaced].name} ×${copies}`).join(", ")}.</p>` : "",
+    earned.cards.length && !outcome.intoDeck.length ? `<p class="note">${earned.cards.length > 1 ? "They are" : "It is"} in your collection, not your deck yet: use Build deck in camp.</p>` : "",
+    outcome.won && save.offer ? `<h2>${OFFER_HEADING}</h2>${offerRow()}` : "",
+    picked ? `<p class="good">Added ${TYPES[picked].name}: you now own ${owned(save, picked)}. The new copy is not in your deck yet: use Build deck in camp.</p>` : "",
     !outcome.won && outcome.grit ? `<p class="note">Grit: your Base starts the rematch with ${5 + outcome.grit} orbs.</p>` : "",
+    `<div class="row"><button type="button" class="can" data-again="1">${againLabel()}</button></div>`,
   ].join("");
 
+  const canCover = attacking && options.some((a) => a.type === "cover" && a.slot === pick.troop);
   const guarded = state.sides[foe].board.some((troop) => troop && cardOf(troop.cardId).keys.includes("guard"));
-  $("prompt").textContent = r ? "" : pick?.tributes ? `Choose ${tributes(pick.card)} of your troops to pay for ${name(pick.card)}.`
+  $("prompt").textContent = r ? "" : pick?.tributes ? `Choose ${tributes(pick.card)} of your troops to send to the graveyard as payment for ${name(pick.card)}.`
     : kind === "gear" ? `Choose one of your troops to carry ${name(pick.card)}.`
     : kind === "spell" ? `Choose an enemy troop for ${name(pick.card)}.`
-    : attacking ? (aims.size === 0 ? "This troop cannot attack now. It can take cover." : guarded ? "A Guard stands in the way: attack it first." : aims.has("base") && aims.size === 1 ? "No enemy troops: strike the Base." : "Choose what to attack.")
-    : state.attacking ? "Act with your other troops, or end the turn."
-    : state.turn === 1 ? "Play your cards. Nobody attacks on the opening turn." : "Play a card, pick a troop to act with, or end the turn.";
+    : attacking ? `${aims.size === 0 ? "This troop cannot attack now." : guarded ? "A Guard stands in the way: attack it first." : aims.has("base") && aims.size === 1 ? "No enemy troops: strike the Base." : "Choose what to attack."}${
+      canCover ? " Or take cover: until your next turn it keeps extra damage off your Base, but it will not hit back." : ""}`
+    : state.attacking ? "No more cards this turn. Act with your other troops, or end the turn."
+    : state.turn === 1 ? "Play your cards: one troop a turn. Nobody attacks on the opening turn."
+    : "First play cards (one troop, one other card). Then act with your troops. Once a troop acts, no more cards this turn.";
   $("end").hidden = Boolean(r);
   $("end").disabled = !mine;
-  $("cover").hidden = !(attacking && options.some((a) => a.type === "cover" && a.slot === pick.troop));
+  $("cover").hidden = !canCover;
   $("cancel").hidden = !pick;
-  $("again").textContent = !r ? "Restart this duel" : !outcome.matchOver ? `Game ${match.game + 1}` : !solo() ? "Play again"
-    : !outcome.won ? "Rematch" : game.duel.kind === "trail" || !duelFor(save, game.duel.id) ? "Continue" : "Play it again";
+  // After a result the button that moves on sits under the reward; the row here keeps only "Back to camp".
+  $("again").hidden = Boolean(r);
+  $("again").textContent = againLabel();
   $("lesson").textContent = game.duel.lesson;
   $("log").innerHTML = lines.map((l) => (l.turn ? `<li class="turn">${l.turn}</li>` : `<li>${l.text}</li>`)).join("");
   $("log").scrollTop = $("log").scrollHeight;
@@ -395,7 +444,8 @@ document.addEventListener("click", (event) => {
   const b = event.target.closest("button");
   if (!b || b.disabled) return;
   const d = b.dataset;
-  if (d.choose) { keep(choose(save, d.choose)); show(screen); }
+  if (d.choose) { picked = d.choose; keep(choose(save, d.choose)); show(screen); }
+  else if (d.again) again();
   else if (d.duel) startDuel(d.duel);
   else if (d.match) startDuel(d.match, {best: 3});
   else if (d.two) startDuel("two", {players: 2, best: Number(d.two)});
@@ -414,15 +464,17 @@ $("cover").addEventListener("click", () => act({type: "cover", slot: pick.troop}
 $("cancel").addEventListener("click", () => { pick = null; renderDuel(); });
 $("ready").addEventListener("click", () => { curtain = false; show("duel"); });
 $("leave").addEventListener("click", () => { curtain = false; show("camp"); });
+$("build").addEventListener("click", () => { picked = null; });
 // Before a result this replays the same deal. After one it is the next game, the rematch, or the way back.
-$("again").addEventListener("click", () => {
+function again() {
   if (!state.result) return deal();
   if (!outcome.matchOver) return nextGame();
   if (!solo()) return startDuel("two", {players: 2, best: game.match ? 3 : 1});
   // A Trail win moves on, and a finished bounty is gone: go back to camp to see what opened.
   if (outcome.won && (game.duel.kind === "trail" || !duelFor(save, game.duel.id))) return show("camp");
   startDuel(game.duel.id, {best: game.match ? 3 : 1});
-});
+}
+$("again").addEventListener("click", again);
 $("load").addEventListener("click", () => {
   const text = $("code").value.trim();
   let next = null;

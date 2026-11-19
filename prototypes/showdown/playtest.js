@@ -22,7 +22,7 @@ export function report(log, save) {
   return [
     "Showdown playtest report",
     `Finished ${log.length} duel${log.length === 1 ? "" : "s"} in ${minutes(total)} of play: won ${won}, lost ${log.length - won}.`,
-    `Reached: Trail ${Math.min(save.wins, TRAIL.length)} of ${TRAIL.length} won, rivals ${save.rivals.length} of ${RIVALS.length}, hunts ${hunts} of ${BOUNTIES.length * HUNTS}, even-match wins ${save.openWins}.`,
+    `Reached: Trail ${Math.min(save.wins, TRAIL.length)} of ${TRAIL.length} won, rivals ${save.rivals.length} of ${RIVALS.length}, Wanted hunts ${hunts} of ${BOUNTIES.length * HUNTS}, even-match wins ${save.openWins}.`,
     firstLoss < 0 ? "Never lost." : `First loss: duel ${firstLoss + 1}, ${log[firstLoss].name}.`,
     hardest ? `Lost most often: ${hardest[0]}, ${hardest[1]} time${hardest[1] === 1 ? "" : "s"}.` : "",
     `Opened "All the rules" during ${log.filter((entry) => entry.rules).length} of ${log.length} duels.`,

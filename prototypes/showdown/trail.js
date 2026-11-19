@@ -10,10 +10,10 @@ export const STARTER = Object.freeze({"cowboy-sheriff": 8, "cowboy-billy": 5, "c
 // The settings come from trail-sim.mjs: a sure win twice, then a ramp. The even match waits until after the Trail.
 // reward: [card earned, card it replaces, copies].
 export const TRAIL = Object.freeze([
-  {id: "boot-hill", name: "Boot Hill", lesson: "Pick one of your troops, then the enemy troop it hits. Clear the troops and strike the Base.",
+  {id: "boot-hill", name: "Boot Hill", lesson: "Win by removing every orb from the Wizard Base. You can strike it only when the Wizards have no troops: pick one of your troops, then the enemy troop it hits.",
     level: 0, base: 3, first: "cowboy", deck: {"wizard-skeleton": 16},
     reward: [["cowboy-covered-wagon", "cowboy-sheriff", 2]]},
-  {id: "raven-roost", name: "Raven Roost", lesson: "Their cards now have keywords. A Jack-o'-Lantern bites back when it falls.",
+  {id: "raven-roost", name: "Raven Roost", lesson: "Their cards now have keywords, listed under the board. A Jack-o'-Lantern has Last Stand: when it falls in a fight, your troop loses an orb.",
     level: 0, base: 4, first: "cowboy", deck: {"wizard-skeleton": 9, "wizard-raven-familiar": 4, "wizard-jack-o-lantern": 3},
     reward: [["cowboy-outrider", "cowboy-sheriff", 2]]},
   {id: "bone-fence", name: "The Bone Fence", lesson: "A Bone Wall has Guard: it must fall first. Their Wizard raises a Skeleton from the graveyard.",

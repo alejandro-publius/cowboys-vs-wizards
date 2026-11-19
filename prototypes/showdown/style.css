@@ -8,6 +8,8 @@ h2 { font-size: 1rem; margin: 1rem 0 .25rem; }
 #board { display: grid; gap: .5rem; }
 .side { display: grid; grid-template-columns: 9rem repeat(3, 1fr); gap: .5rem; align-items: stretch; }
 .base, .slot, .card { border: 1px solid var(--line); border-radius: 6px; padding: .6rem; background: #20222a; color: inherit; font: inherit; text-align: left; min-height: 5.25rem; }
+/* Tall enough for a preview line, so the board does not jump when a target is picked. */
+.side .base, .side .slot { min-height: 9rem; }
 .base strong, .slot strong, .card strong { display: block; }
 .wizard strong { color: var(--wizard); } .cowboy strong { color: var(--cowboy); }
 .orbs { letter-spacing: .12em; } .lost { opacity: .35; }
