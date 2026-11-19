@@ -1,4 +1,5 @@
-// Writes docs/cards.csv: one row per card in the catalog, as a spreadsheet GitHub can show.
+// Writes docs/cards.csv (one row per card) and docs/card-types.csv (one row per category),
+// as spreadsheets GitHub can show.
 //   node scripts/export-card-library.mjs          write the file
 //   node scripts/export-card-library.mjs --check  exit 1 if the file is out of date
 // Numbers, costs, copy limits, unlocks and deck counts come from the game's own data.
@@ -11,8 +12,10 @@ import {
   BILLY_POSSE, DEADEYE_CONTROL, DRAGON_POSSE, FRONTIER_UNLOCKS, IMP_DECK, IMP_NAME,
   NIGHT_RIDERS, STARGAZER_DECK, STARGAZER_NAME, WAGON_TRAIN, WRAITH_POSSE,
 } from "../src/game/deck-presets.js";
+import {FRAMES, frameOf} from "../src/ui/card-frames.js";
 
 const OUTPUT = new URL("../docs/cards.csv", import.meta.url);
+const TYPES_OUTPUT = new URL("../docs/card-types.csv", import.meta.url);
 const SPELL = "Remove one orb from an enemy troop.";
 const RIDE = "Ride: instead of summoning, move this troop one lane into an empty lane of yours.";
 
@@ -62,7 +65,25 @@ function howToGet(spec) {
   return unlock ? `Win ${unlock.wins} counted duels.` : "In your collection from the start.";
 }
 
-const HEADER = ["Card", "Faction", "Type", "Stars", "Tributes to summon", "Attack", "Orbs", "Effect", "Copy limit per deck", "How you get it", "Decks it is in", "Job", "How to answer it"];
+// The card's category decides its frame (docs/card-types.csv). A bounty card is a Boss:
+// Wanted while you hunt it, Captured once it is yours.
+const category = (spec) => FRAMES[frameOf(spec)].category;
+
+// What each category is, its deck rule, its border and its state. The mark and type line come from FRAMES.
+const TYPE_TEXT = {
+  troop: ["A fighter that stays on the board until it is defeated.", "Up to the card's copy limit.", "Single solid border in the faction's colour.", "In the game"],
+  spell: ["A one-time effect that goes to the graveyard after it resolves.", "Up to the card's copy limit.", "Double border.", "In the game"],
+  trap: ["A card set face down that answers the other side's move.", "Not deck-eligible yet.", "Dashed border.", "Prototype only"],
+  wanted: ["A unique enemy you hunt on the Wanted board.", "Cannot be added to a deck.", "Thick border with a WANTED banner across the top.", "In the game"],
+  captured: ["The boss's own card, earned by clearing its bounty five times.", "One copy per deck.", "The same thick border, with the banner reading CAPTURED.", "In the game"],
+};
+const TYPES_HEADER = ["Category", "What it is", "Deck rule", "Frame", "Corner mark", "Type line", "State"];
+export const cardTypeRows = () => Object.entries(FRAMES).map(([id, frame]) => {
+  const [what, deckRule, border, state] = TYPE_TEXT[id];
+  return [frame.category, what, deckRule, border, frame.mark, frame.line, state];
+});
+
+const HEADER = ["Card", "Faction", "Category", "Plays as", "Stars", "Tributes to summon", "Attack", "Orbs", "Effect", "Copy limit per deck", "How you get it", "Decks it is in", "Job", "How to answer it"];
 
 export function cardRows() {
   return CARD_SPECS.map((spec) => {
@@ -71,7 +92,7 @@ export function cardRows() {
     const troop = spec.kind === "troop";
     const decks = LISTS.filter(([, counts]) => counts[spec.type] > 0).map(([name, counts]) => `${name} x${counts[spec.type]}`);
     return [
-      spec.name, spec.side === "cowboy" ? "Cowboy" : "Wizard", troop ? "Troop" : "Spell",
+      spec.name, spec.side === "cowboy" ? "Cowboy" : "Wizard", category(spec), troop ? "Troop" : "Spell",
       troop ? spec.stars : "", troop ? tributeCost(spec.stars) : "", troop ? spec.attack : "", troop ? spec.health : "",
       text.effect, spec.side === "cowboy" ? cowboyCopyLimit(spec) : "", howToGet(spec),
       decks.join("; ") || "None", text.job, text.answer,
@@ -80,18 +101,21 @@ export function cardRows() {
 }
 
 const cell = (value) => (/[",\n]/.test(String(value)) ? `"${String(value).replaceAll('"', '""')}"` : String(value));
-export const cardLibraryCsv = () => [HEADER, ...cardRows()].map((row) => row.map(cell).join(",")).join("\n") + "\n";
+const toCsv = (rows) => rows.map((row) => row.map(cell).join(",")).join("\n") + "\n";
+export const cardLibraryCsv = () => toCsv([HEADER, ...cardRows()]);
+export const cardTypesCsv = () => toCsv([TYPES_HEADER, ...cardTypeRows()]);
 
 if (import.meta.main) {
-  const csv = cardLibraryCsv();
+  const files = [[OUTPUT, cardLibraryCsv(), "docs/cards.csv"], [TYPES_OUTPUT, cardTypesCsv(), "docs/card-types.csv"]];
   if (process.argv.includes("--check")) {
-    if (readFileSync(OUTPUT, "utf8") !== csv) {
-      console.error("docs/cards.csv is out of date. Run: node scripts/export-card-library.mjs");
+    const stale = files.filter(([url, csv]) => readFileSync(url, "utf8") !== csv).map(([, , name]) => name);
+    if (stale.length) {
+      console.error(`${stale.join(" and ")} out of date. Run: node scripts/export-card-library.mjs`);
       process.exit(1);
     }
-    console.log("docs/cards.csv is current");
+    console.log("docs/cards.csv and docs/card-types.csv are current");
   } else {
-    writeFileSync(OUTPUT, csv);
-    console.log(`Wrote docs/cards.csv (${CARD_SPECS.length} cards)`);
+    for (const [url, csv] of files) writeFileSync(url, csv);
+    console.log(`Wrote docs/cards.csv (${CARD_SPECS.length} cards) and docs/card-types.csv`);
   }
 }

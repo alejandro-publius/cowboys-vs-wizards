@@ -1,3 +1,4 @@
+import {frameOf, typeLine} from './card-frames.js';
 import {BOUNTY_REWARDS, COWBOY_CATALOG, DECK_SIZE, DEFAULT_COUNTS, FRONTIER_CATALOG, copyLimit, deckIds, validateDeck} from '../game/deck-builder.js';
 import {BILLY_POSSE, DEADEYE_CONTROL, DRAGON_POSSE, FRONTIER_UNLOCKS, IMP_NAME, NIGHT_RIDERS, STARGAZER_NAME, STARGAZER_WINS, WAGON_TRAIN, WRAITH_POSSE, frontierUnlocked} from '../game/deck-presets.js';
 import {CARDS, MAX_COWBOY_COPIES, tributeCost} from '../game/cards.js';
@@ -80,10 +81,11 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
     refresh();
   }
   for (const card of collectionCards) {
-    const tile = element('button', undefined, {type: 'button', class: 'deck-choice', 'data-card': card.type});
+    const tile = element('button', undefined, {type: 'button', class: 'deck-choice', 'data-card': card.type, 'data-frame': frameOf(card)});
     tile.append(
       element('span', undefined, {class: 'deck-art', 'data-card-type': card.type, role: 'img', 'aria-label': card.name + ' illustrated card'}),
       element('span', card.name, {class: 'deck-name'}),
+      element('span', typeLine(frameOf(card)), {class: 'plain-card-type'}),
       element('span', costOf(card), {class: 'deck-cost'}),
       element('span', '', {class: 'deck-badge'}));
     tile.addEventListener('click', () => {selected = card.type; refresh();});

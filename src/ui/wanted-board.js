@@ -1,5 +1,6 @@
 import {CARDS, tributeCost} from "../game/cards.js";
 import {BOSSES, clearedFor, HUNT_GOAL, HUNTS_BY_ID, rewardEarned} from "../game/bounty-hunt.js";
+import {typeLine} from "./card-frames.js";
 
 function element(tag, text, className) {
   const node = document.createElement(tag);
@@ -31,6 +32,7 @@ export function renderWantedBoard(content, profile, start, onPosse) {
     poster.append(
       element("p", "Wanted", "wanted-eyebrow"),
       element("h3", boss.name),
+      element("small", typeLine("wanted")),
       element("p", boss.id === "lantern-wraith" ? boss.brief + WRAITH_RIDE_NOTE : boss.brief),
       element("strong", `${Math.min(clearedFor(profile, boss), HUNT_GOAL)} / ${HUNT_GOAL} hunts cleared`, "wanted-progress"),
       element("p", earned

@@ -12,6 +12,7 @@
 // map from src/match/selection.js. With it every hand card gets
 // blockedReason, its text while input is accepted and the card is
 // unplayable, else null. Without it the hand cards keep their shape.
+import {frameOf} from "./card-frames.js";
 import {CARDS, tributeCost} from "../game/cards.js";
 import {SLOT_COUNT} from "../game/state.js";
 import {pendingDrift} from "../game/clash.js";
@@ -40,6 +41,7 @@ function front(cardId, selected, playable) {
     cardId,
     name: card.name,
     kind: card.kind,
+    frame: frameOf(card),
     stars: troop ? card.stars : "Spell",
     health: troop ? card.health : null,
     attack: troop ? card.attack : null,
@@ -57,7 +59,7 @@ function troopSummary(troop) {
   if (!troop) return null;
   const card = CARDS[troop.cardId];
   return {
-    name: card.name, health: troop.health, max: card.health,
+    name: card.name, health: troop.health, max: card.health, frame: frameOf(card),
     ...(troop.cardId.startsWith("wizard-imp-") ? {attack: card.attack, note: IMP_LINE} : {}),
   };
 }
