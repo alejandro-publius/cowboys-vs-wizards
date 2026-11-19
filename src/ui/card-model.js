@@ -45,6 +45,7 @@ function front(cardId, selected, playable) {
     attack: troop ? card.attack : null,
     selected,
     playable,
+    ...(troop && card.rides === true && {rides: true}),
   };
 }
 
@@ -110,7 +111,8 @@ export function cardModel({displayed = null, options = null, status = "idle", se
       wizard: accepting ? [...(options?.enemySlots ?? [])] : [],
     },
     tributes: [...(options?.tributes ?? [])],
-    ...(displayed?.rideOut?.enabled && {ride: {
+    // Hunts and opt-in Ride Out always; a standard duel only while a ride is legal or being chosen.
+    ...((displayed?.rideOut?.enabled || (accepting && (options?.canRideOut || options?.step?.startsWith("ride-")))) && {ride: {
       available: accepting && Boolean(options?.canRideOut),
       choosing: accepting && Boolean(options?.step?.startsWith("ride-")),
       from: options?.rideFrom ?? null,

@@ -64,6 +64,7 @@ function plainCard(card) {
     el("strong", {class: "plain-card-name"}, card.name),
     el("span", {class: "plain-card-stats"}, troop ? `${card.attack} attack · ${card.health} life` : "Removes one enemy orb"),
     el("small", {class: "plain-card-cost"}, troop ? (cost ? `${cost} tribute${cost === 1 ? "" : "s"}` : "Free summon") : "Spell"),
+    card.rides ? el("small", {class: "plain-card-ride"}, "Ride") : null,
   ];
 }
 
@@ -88,11 +89,11 @@ function cardButton(card, enabled, inFlight, plain) {
     class: "card-front card-stage" + (inFlight ? " in-flight" : ""),
     "data-card-id": card.cardId,
     "data-playable": card.playable,
-    "aria-label": describeCard(card) + (card.playable ? ", playable now" : ""),
+    "aria-label": describeCard(card) + (card.rides ? ", Ride" : "") + (card.playable ? ", playable now" : ""),
     "aria-describedby": reasonId,
     "aria-pressed": String(card.selected),
     disabled: !enabled,
-  }, ...(plain ? plainCard(card) : [createCardBody(card)]),
+  }, ...(plain ? plainCard(card) : [createCardBody(card), card.rides ? el("small", {class: "plain-card-ride"}, "Ride") : null]),
   reason ? el("small", {class: "plain-card-reason", id: reasonId}, reason) : null);
 }
 // `forecast` is one lane preview, named by `preview` in the label: a summon's
