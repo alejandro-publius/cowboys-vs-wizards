@@ -105,8 +105,6 @@ const MARK_TEXT = {
   blocked: "Wraith's marked lane is taken: it holds",
   rebuild: "Rebuilds here after your turn",
 };
-// Fire arc only: a play into the marked lane is told the rival still acts.
-const STILL_ACTS = "The Bonewright still acts.";
 const markedLane = (fireArc) => (Number.isInteger(fireArc?.mark) && fireArc.mark >= 0 && fireArc.mark <= 2 ? fireArc.mark : null);
 function slotButton(side, slot, troop, clickable, chosen, plain, forecast, preview = "Clash preview", wanted = false, mark = null) {
   const owner = side === "cowboy" ? "Your" : "Wizard";
@@ -486,7 +484,7 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
       forecast.hidden = !nextClash;
       if (nextClash) {
         setText(forecastBases, nextClash.bases);
-        setText(forecastTiming, nextClash.timing);
+        setText(forecastTiming, nextClash.rebuild ?? nextClash.timing);
         setText(forecastLosses, nextClash.losses);
         setText(forecastPass, nextClash.pass);
         forecastLosses.hidden = !nextClash.losses;
@@ -553,13 +551,12 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
 
     const refocus = focusedKey(root);
     const fireMark = markedLane(model.fireArc);
-    const still = (lane, text) => (text && lane === fireMark ? `${text} · ${STILL_ACTS}` : text);
     lanes.replaceChildren(...model.lanes.flatMap(({lane, cowboy, wizard, wanted, mark}) => [
       slotButton("wizard", lane, wizard, model.slots.wizard.includes(lane), false, plain,
-        plain ? still(lane, model.spellForecasts?.[lane]) : null, "Shot preview", wanted, mark ?? (lane === fireMark && wizard ? "rebuild" : null)),
+        plain ? model.spellForecasts?.[lane] : null, "Shot preview", wanted, mark ?? (lane === fireMark && wizard ? "rebuild" : null)),
       slotButton("cowboy", lane, cowboy, model.slots.cowboy.includes(lane),
         model.tributes.includes(lane) || model.ride?.from === lane || model.ride?.destination === lane, plain,
-        still(lane, model.rideForecasts?.[lane] ?? model.summonForecasts?.[lane])),
+        model.rideForecasts?.[lane] ?? model.summonForecasts?.[lane]),
     ]));
     hand.replaceChildren(...model.cowboy.hand.map((card, index) => {
       const node=cardButton(card,model.buttons.hand,moving(card.cardId,index),plain);

@@ -277,18 +277,18 @@ const controller = createController({
         : (model.ride?.available || model.ride?.choosing) && "Summon or Ride this turn. You can cast a spell afterward.",
       lessonChoice && "Hold the lane, ride into the open lane, or tribute the wounded Sheriff for Billy.",
     ].filter(Boolean).join(" ");
-    model.clashForecast = status === "accepting_input" ? clashForecast(displayed, options) : null;
+    model.clashForecast = status === "accepting_input" ? clashForecast(displayed, options, model.fireArc) : null;
     Object.assign(model, status === "terminal" ? resultExtras(displayed, saved, boss) : {});
     // Only a Base loss has a lane cause; round-limit and bounty results get none.
     model.resultCause = status === "terminal" && displayed.result.reason === "base-destroyed" && latestBreaks.length > 0
       ? latestBreaks.join(" ") : null;
     resultGo = model.resultGo ?? null;
-    model.summonForecasts = status === "accepting_input" ? summonForecasts(displayed, options) : {};
+    model.summonForecasts = status === "accepting_input" ? summonForecasts(displayed, options, model.fireArc) : {};
     if (Object.keys(model.summonForecasts).length > 0) {
       model.prompt += " Clash preview assumes the rest of the board stays as shown.";
     }
-    model.rideForecasts = status === "accepting_input" ? rideForecasts(displayed, options) : {};
-    model.spellForecasts = status === "accepting_input" ? spellForecasts(displayed, options) : {};
+    model.rideForecasts = status === "accepting_input" ? rideForecasts(displayed, options, model.fireArc) : {};
+    model.spellForecasts = status === "accepting_input" ? spellForecasts(displayed, options, model.fireArc) : {};
     if (Object.keys(model.spellForecasts).length > 0) {
       model.prompt += " Shot preview assumes no Wizard reply before the clash.";
     }
