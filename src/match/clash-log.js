@@ -36,6 +36,22 @@ function sentence(event) {
   return null;
 }
 
+// baseBreaks(events) -> string[]: one sentence per Base that this clash took to
+// zero orbs, naming the lane and attacker from the damage event. Empty when no
+// Base fell or the events hold no clash. Both Bases give two sentences.
+export function baseBreaks(events) {
+  if (!events.some((event) => event.type === "clash")) return [];
+  const fallen = new Set();
+  const lines = [];
+  for (const event of events) {
+    if (event.type !== "damage" || event.target.kind !== "base" || event.after !== 0) continue;
+    if (fallen.has(event.target.side)) continue;
+    fallen.add(event.target.side);
+    lines.push(`Lane ${event.lane + 1}: ${troop(event.attacker.side, event.attacker.cardId, true)} broke ${base(event.target.side)}.`);
+  }
+  return lines;
+}
+
 export function clashLog(events) {
   const clash = events.findLast((event) => event.type === "clash");
   if (!clash) return null;

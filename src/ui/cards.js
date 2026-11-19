@@ -236,6 +236,8 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
   // Plain (graybox) result with rematch handlers: Replay this deal and New duel
   // replace Restart. The illustrated result keeps its Restart.
   const resultNote = el("p", {hidden: true});
+  // Plain result only: model.resultCause names the lane and attacker that broke a Base.
+  const resultCause = el("p", {class: "result-cause", hidden: true});
   // Plain result only: model.resultGo = {label} adds one primary button before the rematch buttons.
   const resultGo = el("button", {type: "button", "data-action": "result-go", hidden: true});
   const rematch = plain && handlers.onReplayDeal && handlers.onNewDuel ? {
@@ -247,7 +249,7 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
     ? el("div", {class: "match-buttons result-actions"}, resultGo, rematch.replay, rematch.fresh)
     : resultRestart;
   const result = el("section", {class: "match-result", "aria-label": "Match result", hidden: true},
-    resultTitle, resultText, resultNote, resultActions);
+    resultTitle, resultText, resultCause, resultNote, resultActions);
 
   viewArt.hidden = plain;
   root.replaceChildren(top,own,lanes,phaseControl,bottom,...(plain ? [] : [viewer]),result);
@@ -583,6 +585,8 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
     if (model.result) {
       setText(resultTitle, model.result.label);
       setText(resultText, resultDetail(model.result));
+      setText(resultCause, model.resultCause ?? "");
+      resultCause.hidden = !model.resultCause;
       setText(resultNote, model.resultNote ?? "");
       resultNote.hidden = !model.resultNote;
       if (rematch) {

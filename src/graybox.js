@@ -5,7 +5,7 @@ import {deckIds, validateDeck} from "./game/deck-builder.js";
 import {BILLY_POSSE, DEADEYE_CONTROL, DRAGON_POSSE, IMP_DECK, IMP_NAME, STARGAZER_DECK, STARGAZER_WINS, STARGAZER_NAME, WRAITH_POSSE, frontierUnlocked} from "./game/deck-presets.js";
 import {GRAYBOX_OPENINGS, openingMatch, parseOpeningParams} from "./game/opening-policy.js";
 import {clashForecast, rideForecasts} from "./match/clash-forecast.js";
-import {clashLog} from "./match/clash-log.js";
+import {baseBreaks, clashLog} from "./match/clash-log.js";
 import {createController, FABLE_ENGINE} from "./match/controller.js";
 import {guideLine, guideProgress, trackGuide} from "./match/guide.js";
 import {DEFAULT_PAUSES} from "./match/presenter.js";
@@ -65,6 +65,8 @@ let roundEvents = [];
 let latestClash = null;
 // Completed clash summaries of this deal, oldest first; reset in createMatch.
 let clashHistory = [];
+// Base-break sentences of the latest clash; reset in createMatch.
+let latestBreaks = [];
 // Each match captures its configuration. Replay and draft starts can supply
 // a configuration for exactly one call to createMatch.
 let deal = null;
@@ -98,6 +100,7 @@ const engine = {
     progress = guideProgress();
     roundEvents = [];
     clashHistory = [];
+    latestBreaks = [];
     latestClash = {title: "Latest clash", lines: ["End the turn to view both sides’ attacks."]};
     deal = nextDeal ? {...nextDeal, seed} : freshDeal(seed);
     nextDeal = null;
@@ -117,6 +120,7 @@ const engine = {
     const log = clashLog(roundEvents);
     if (log) {
       latestClash = log;
+      latestBreaks = baseBreaks(roundEvents);
       clashHistory.push(log);
       roundEvents = [];
     }
@@ -237,6 +241,9 @@ const controller = createController({
     ].filter(Boolean).join(" ");
     model.clashForecast = status === "accepting_input" ? clashForecast(displayed, options) : null;
     Object.assign(model, status === "terminal" ? resultExtras(displayed, saved, boss) : {});
+    // Only a Base loss has a lane cause; round-limit and bounty results get none.
+    model.resultCause = status === "terminal" && displayed.result.reason === "base-destroyed" && latestBreaks.length > 0
+      ? latestBreaks.join(" ") : null;
     resultGo = model.resultGo ?? null;
     model.summonForecasts = status === "accepting_input" ? summonForecasts(displayed, options) : {};
     if (Object.keys(model.summonForecasts).length > 0) {
