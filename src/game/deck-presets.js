@@ -12,6 +12,14 @@ export const DEADEYE_CONTROL = Object.freeze({
   }),
 });
 
+export const WRAITH_POSSE = Object.freeze({
+  "cowboy-sheriff": 5,
+  "cowboy-billy": 3,
+  "cowboy-mounted-billy": 1,
+  "cowboy-deadeye": 2,
+  "cowboy-captured-wraith": 1,
+});
+
 // Frontier (content pack 1): one card per counted duel win, starting at the
 // second win. `wins` is profile.stats.wins, which skips hunts, drafts and lessons.
 export const FRONTIER_UNLOCKS = Object.freeze([

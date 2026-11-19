@@ -1,5 +1,5 @@
 import {BOUNTY_REWARDS, COWBOY_CATALOG, DECK_SIZE, DEFAULT_COUNTS, FRONTIER_CATALOG, copyLimit, deckIds, validateDeck} from '../game/deck-builder.js';
-import {BILLY_POSSE, DEADEYE_CONTROL, FRONTIER_UNLOCKS, NIGHT_RIDERS, WAGON_TRAIN, frontierUnlocked} from '../game/deck-presets.js';
+import {BILLY_POSSE, DEADEYE_CONTROL, FRONTIER_UNLOCKS, NIGHT_RIDERS, WAGON_TRAIN, WRAITH_POSSE, frontierUnlocked} from '../game/deck-presets.js';
 import {MAX_COWBOY_COPIES, tributeCost} from '../game/cards.js';
 import {openingDroughtRate} from '../game/opening-policy.js';
 import {earnedRewards} from '../game/bounty-hunt.js';
@@ -143,7 +143,7 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
   }
   if (entitlement.rewards.includes("cowboy-captured-wraith")) {
     actions.append(button("Load Wraith Posse", () => {
-      counts = {...DEFAULT_COUNTS, "cowboy-sheriff": DEFAULT_COUNTS["cowboy-sheriff"] - 1, "cowboy-captured-wraith": 1};
+      counts = {...WRAITH_POSSE};
       selected = "cowboy-captured-wraith";
       refresh();
       feedback.textContent = "Wraith Posse loaded. Try the draft or save it for your next duel.";

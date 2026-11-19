@@ -1,8 +1,8 @@
 import {chooseAction, cpuFor} from "./game/cpu.js";
 import {bossOfHunt, clearedFor, createHunt, earnedRewards, HUNT_GOAL, HUNTS_BY_ID, rewardEarned} from "./game/bounty-hunt.js";
-import {CARDS} from "./game/cards.js";
+import {CARDS, tributeCost} from "./game/cards.js";
 import {deckIds, validateDeck} from "./game/deck-builder.js";
-import {BILLY_POSSE, DEADEYE_CONTROL, frontierUnlocked} from "./game/deck-presets.js";
+import {BILLY_POSSE, DEADEYE_CONTROL, WRAITH_POSSE, frontierUnlocked} from "./game/deck-presets.js";
 import {GRAYBOX_OPENINGS, openingMatch, parseOpeningParams} from "./game/opening-policy.js";
 import {clashForecast, rideForecasts} from "./match/clash-forecast.js";
 import {clashLog} from "./match/clash-log.js";
@@ -18,6 +18,7 @@ import {createProfileStore} from "./profile/player-profile.js";
 import {cardModel} from "./ui/card-model.js";
 import {mountCards} from "./ui/cards.js";
 import {mountTitleMenu} from "./ui/title-menu.js";
+import {WRAITH_NOTICE_ORDER} from "./ui/wanted-board.js";
 
 const node = (id) => document.getElementById(id);
 const arena = node("arena");
@@ -34,6 +35,10 @@ const RIDE_OUT_NOTE = "Summon or Ride Out this turn. You can cast a spell afterw
 // (Fable 5.2 first-session brief, .artifacts/coordination/first-ten-minutes-kiro-brief.md).
 // Seed 60 and every other seed stay reachable by ?seed= and the seed links.
 const GUIDED_SEED = "690";
+// Fable 5.2 first-session brief §3: an unsaved, entitled draft on a fixed deal. No Ride Out.
+const POSSE_SEED = "2328";
+const POSSE_NOTE = "Wraith Posse: Captured Wraith joins in place of one Sheriff. It is free to summon, hits for 2 and has 2 orbs. Troops hold their lanes; only cards marked Ride can Ride.";
+const WRAITH_NOTICE_TEXT = "A notice is up on the Wanted board: the Lantern Wraith.";
 const chosenCpu = cpuFor(params.get("cpu"));
 const requestedDeck = params.get("deck");
 const pinnedPreset = new Map([["billy-posse", BILLY_POSSE], ["deadeye-control", DEADEYE_CONTROL]]).get(requestedDeck);
@@ -54,6 +59,10 @@ let latestClash = null;
 // a configuration for exactly one call to createMatch.
 let deal = null;
 let nextDeal = null;
+// The run whose capture first finished all five Wraith notices.
+let wraithFinishedRun = null;
+let capturedRun = null;
+let resultGo = null;
 
 // Only the rewards this profile has earned may enter a deck.
 const deckEntitlement = () => {
@@ -102,12 +111,36 @@ const engine = {
     return result;
   },
 };
+// Result-screen line and primary button for the Wraith arc (Fable 5.2 first-session brief §2-3).
+function resultExtras(displayed, hunted, boss) {
+  const reward = CARDS["cowboy-captured-wraith-1"];
+  if (deal.hunt && boss.id === "lantern-wraith" && displayed.result.reason === "bounty-captured") {
+    if (wraithFinishedRun === run) {
+      return {
+        resultNote: `${reward.name} joins your collection: ${tributeCost(reward.stars) ? `${tributeCost(reward.stars)} tribute` : "free to summon"}, ${reward.attack} attack, ${reward.health} orbs.`,
+        resultGo: {label: "Duel with the Wraith Posse", start: startPosse},
+      };
+    }
+    const next = WRAITH_NOTICE_ORDER.find((id) => !hunted.clearedHunts.includes(id));
+    return next ? {resultGo: {label: `Next notice: ${HUNTS_BY_ID.get(next).name}`, start: () => startHunt(next)}} : {};
+  }
+  if (deal.posse) {
+    return displayed.result.outcome === "win" ? {resultNote: "Next on the Wanted board: the Graveyard Dragon."} : {};
+  }
+  // The first counted result of the profile, any outcome, before any hunt is cleared.
+  const saved = profile.get();
+  if (!deal.hunt && !deal.isDraft && !deal.rideLesson && saved.stats.matches === 1 && saved.clearedHunts.length === 0) {
+    return {resultNote: WRAITH_NOTICE_TEXT, resultGo: {label: "Take the notice", start: () => startHunt(WRAITH_NOTICE_ORDER[0])}};
+  }
+  return {};
+}
+
 const controller = createController({
   engine, renderer, scheduler, pauses, cpuDelay: 0,
   chooseCpuAction(view) {
     // The notice shows the whole enemy formation. Monsters strike at the clash.
     if (deal?.hunt) return FABLE_ENGINE.legalActions(view, "wizard").at(-1);
-    return (guided ? chooseAction : chosenCpu)(view);
+    return (guided || deal?.posse ? chooseAction : chosenCpu)(view);
   },
   onChange() {
     const displayed = controller.displayed();
@@ -115,6 +148,14 @@ const controller = createController({
     const status = controller.status();
     if (status === "terminal") {
       if (deal.hunt && displayed.result.reason === "bounty-captured") {
+        // Decide once per run, before recording, whether this capture finishes the Wraith's five.
+        if (capturedRun !== run) {
+          capturedRun = run;
+          const before = profile.get();
+          const wraith = bossOfHunt(deal.hunt.id);
+          wraithFinishedRun = wraith.id === "lantern-wraith" && !before.clearedHunts.includes(deal.hunt.id)
+            && clearedFor(before, wraith) === HUNT_GOAL - 1 ? run : null;
+        }
         profile.recordBounty(deal.hunt.id, {clean: displayed.sides.cowboy.baseOrbs === deal.hunt.cowboyBase});
       } else if (!deal.hunt && !deal.isDraft && !deal.rideLesson) {
         profile.record("match-complete", {matchId: run, won: displayed.result.outcome === "win"});
@@ -143,12 +184,15 @@ const controller = createController({
     model.openingNote = [
       model.bounty && `${deal.hunt.name}. ${huntProgress}`,
       deal?.isDraft && "Trying an unsaved deck.",
+      deal?.posse && displayed?.round === 1 && POSSE_NOTE,
       deal?.opening?.opening === "freeOpener" && FREE_OPENER_NOTE,
       displayed?.rideOut?.enabled ? RIDE_OUT_NOTE
         : (model.ride?.available || model.ride?.choosing) && "Summon or Ride this turn. You can cast a spell afterward.",
       lessonChoice && "Hold the lane, ride into the open lane, or tribute the wounded Sheriff for Billy.",
     ].filter(Boolean).join(" ");
     model.clashForecast = status === "accepting_input" ? clashForecast(displayed, options) : null;
+    Object.assign(model, status === "terminal" ? resultExtras(displayed, saved, boss) : {});
+    resultGo = model.resultGo ?? null;
     model.summonForecasts = status === "accepting_input" ? summonForecasts(displayed, options) : {};
     if (Object.keys(model.summonForecasts).length > 0) {
       model.prompt += " Clash preview assumes the rest of the board stays as shown.";
@@ -213,6 +257,7 @@ const overlay = mountCards(match, {
   },
   onReplayDeal: replayDeal,
   onNewDuel: newDuel,
+  onResultGo: () => resultGo?.start(),
 }, {plain: true});
 
 function tryRideOut() {
@@ -233,6 +278,21 @@ function startHunt(id) {
   guided = false;
   if (!startWithDeal({hunt, guided, options: {rideOut: true}}, () => controller.start(hunt.seed))) {
     throw new Error("The hunt could not start.");
+  }
+  menu.hide();
+  arena.hidden = false;
+  node("home").focus();
+}
+
+function startPosse() {
+  if (!["idle", "terminal"].includes(controller.status())) return;
+  const entitlement = deckEntitlement();
+  // Explicit options: no hunt-wide or ?rideOut=1 setting carries into this standard duel.
+  const posse = {seed: POSSE_SEED, guided: false, opening: null, isDraft: true, posse: true,
+    options: {rideOut: false, cowboyDeck: deckIds(WRAITH_POSSE, entitlement)}};
+  guided = false;
+  if (!startWithDeal(posse, () => controller.start(POSSE_SEED))) {
+    throw new Error("The Wraith Posse duel could not start.");
   }
   menu.hide();
   arena.hidden = false;
