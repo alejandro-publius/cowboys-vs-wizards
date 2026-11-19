@@ -31,6 +31,7 @@ import {grip, pose, rigActor} from "./rig.js";
 import {createBaseOrbs, createTroopOrbs} from "./orbs.js";
 import {SHERIFF_HEIGHT, SHERIFF_LANDING, buildSheriff, idleSheriff, landSheriff, restSheriff} from "./sheriff.js";
 import {WIZARD_HEIGHT, buildWizard, idleWizard} from "./wizard.js";
+import {CARD_MODELS, CODE_RIGGED, cardType} from "./presentation-manifest.js";
 
 // How long a Sheriff holds the rest pose after losing an orb, so the idle does not shake
 // his head through the hit. It is the attack cue's impact time.
@@ -44,18 +45,8 @@ export const CUES = Object.freeze({
   move: Object.freeze({end: 700}),
 });
 
-// Cards with a rigged model, and the heights the demo uses for them.
-const RIGGED = {Billy: {kind: "billy", height: 1.93}, Wizard: {kind: "wizard", height: WIZARD_HEIGHT}, Sheriff: {kind: "sheriff", height: SHERIFF_HEIGHT}};
-// Imported troops. The Dragon's head is +X natively (yaw -PI/2 faces +Z);
-// Mounted Billy's horse is +Z natively (yaw PI faces the Wizards at -Z).
-// The Skeleton faces +Z natively, toward the Cowboys from the Wizard side (yaw 0).
-const IMPORTED = {
-  Dragon: {kind: "dragon", asset: "dragon", height: 1.25, footprint: 2.1, yaw: -Math.PI / 2,
-    rig: {clip: "dragon_attack", impactFrame: 18}},
-  "Mounted Billy": {kind: "mounted-billy", asset: "mounted-billy", height: 1.7, footprint: 2.05, yaw: Math.PI,
-    rig: {clip: "mounted_attack", impactFrame: 20}},
-  Skeleton: {kind: "skeleton", asset: "skeleton", height: 1.2, footprint: 1.2, yaw: 0},
-};
+// Heights the demo uses for the code-rigged characters (CODE_RIGGED in the manifest).
+const RIG_HEIGHT = {billy: 1.93, wizard: WIZARD_HEIGHT, sheriff: SHERIFF_HEIGHT};
 // Both candidate clips are authored at 30 fps. The impact frames come from the
 // authors' receipts: the Dragon's node extras and Mounted Billy's rig_meta.json.
 const CLIP_FPS = 30;
@@ -262,7 +253,8 @@ export async function createMatchBoard({models, scheduler} = {}) {
     root.add(body);
     const piece = {side, slot, cardId, name: card.name, kind: "token", temporary: false, acting: false, gone: false, holdUntil: -Infinity, root, body, height: 0,
       actor: null, gun: null, holster: null, staff: null, token: null, orbs: null, hitbox: null, owned: []};
-    const rigged = RIGGED[card.name];
+    const type = cardType(cardId), imported = CARD_MODELS[type];
+    const rigged = CODE_RIGGED[type] && {kind: CODE_RIGGED[type], height: RIG_HEIGHT[CODE_RIGGED[type]]};
     if (rigged?.kind === "sheriff") {
       Object.assign(piece, buildSheriff(models), rigged);
       piece.owned.push(piece.actor.body.geometry, piece.actor.body.skeleton);
@@ -276,8 +268,8 @@ export async function createMatchBoard({models, scheduler} = {}) {
       });
       idles(piece, idleWizard);
       body.add(piece.actor.root);
-    } else if (IMPORTED[card.name] && models[IMPORTED[card.name].asset]) {
-      const {kind, asset, height, footprint: limit, yaw, rig} = IMPORTED[card.name];
+    } else if (imported && models[imported.asset]) {
+      const {kind, asset, height, footprint: limit, yaw, rig} = imported;
       const source = models[asset];
       const clip = rig && source.animations.find((one) => one.name === rig.clip);
       const mesh = fit(source, {height, yaw});
