@@ -1,5 +1,5 @@
-// Usage: node prototypes/playtest-lab/build.mjs <abs dragon-fire.html> <abs wraith-drift.html> <abs first-duel.html>
-// Copies the organizer, report and three offline builds into dist/playtest-lab/.
+// Usage: node prototypes/playtest-lab/build.mjs <abs dragon-fire.html> <abs wraith-drift.html> <abs first-duel.html> [<abs frontier.html>]
+// Copies the organizer, report and offline builds into dist/playtest-lab/.
 import {copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync} from 'node:fs';
 import {isAbsolute, join, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -10,7 +10,7 @@ const launcher = join(here, 'index.html');
 const report = join(here, '..', 'playtest-report', 'index.html');
 
 // Attribute values that point at another file or the network break a moved page.
-const EXTERNAL_ATTR = /\b(?:src|href|poster|data)\s*=\s*["']?\s*(?!data:|blob:|#|about:|mailto:|javascript:)([^"'\s>]+)/gi;
+const EXTERNAL_ATTR = /\b(?:src|href|poster|data)\s*=\s*["']?\s*(?!data:|blob:|#|\?|about:|mailto:|javascript:)([^"'\s>]+)/gi;
 const EXTERNAL_CSS = /url\(\s*["']?\s*(?!data:|blob:|#)([^"')\s]+)/gi;
 
 function fail(message) {
@@ -38,18 +38,27 @@ function validate(label, path) {
   }
 }
 
-const [dragonPath, wraithPath, duelPath, ...extra] = process.argv.slice(2);
-if (extra.length) fail('expected exactly three arguments, got ' + (3 + extra.length));
+const [dragonPath, wraithPath, duelPath, arcPath, ...extra] = process.argv.slice(2);
+if (extra.length) fail('expected three or four arguments, got ' + (4 + extra.length));
 validate('Dragon Fire', dragonPath);
 validate('Wraith Drift', wraithPath);
 validate('First duel', duelPath);
 validate('Playtest report', report);
-const resolved = [dragonPath, wraithPath, duelPath].map((p) => resolve(p));
+if (arcPath) validate('Frontier and Fire arc', arcPath);
+const resolved = [dragonPath, wraithPath, duelPath, ...(arcPath ? [arcPath] : [])].map((p) => resolve(p));
 if (new Set(resolved).size !== resolved.length) fail('two arguments point to the same file');
 if (!existsSync(launcher)) fail('launcher missing: ' + launcher);
 
 mkdirSync(outDir, {recursive: true});
-copyFileSync(launcher, join(outDir, 'index.html'));
+const launcherMarkup = readFileSync(launcher, 'utf8');
+const arcCard = arcPath ? `
+    <article class="card">
+      <h2>Ember Gulch and the Bonewright</h2>
+      <p>Survive Dragon Fire, then choose when to use it against a rival that rebuilds wounded blockers.</p>
+      <a class="btn" href="./frontier.html?mode=fire-arc" target="_blank" rel="noopener">Play the Fire arc</a>
+    </article>` : '';
+writeFileSync(join(outDir, 'index.html'), launcherMarkup.replace('<!-- FIRE_ARC -->', arcCard));
+if (arcPath) copyFileSync(arcPath, join(outDir, 'frontier.html'));
 copyFileSync(dragonPath, join(outDir, 'dragon-fire.html'));
 copyFileSync(wraithPath, join(outDir, 'wraith-drift.html'));
 copyFileSync(duelPath, join(outDir, 'first-duel.html'));
@@ -64,6 +73,7 @@ const readme = [
   '1. Open a fresh browser profile or a new private/incognito window for each participant.',
   '2. In that window, open index.html from this folder (double-click it, or drag it into the window).',
   '3. Use the launch links. The first duel has a guided link (bare address) and a standard link (?seed=690).',
+  ...(arcPath ? ['4. Choose Play the Fire arc for Ember Gulch and both Bonewright positions.'] : []),
   '',
   'Observe',
   '- Optional: press Start in the Observer timer when the participant begins, then use the Mark buttons.',
@@ -80,8 +90,9 @@ writeFileSync(join(outDir, 'README.txt'), readme);
 
 // The index links to each bundled page; confirm every target exists. The first duel is linked twice (bare and ?seed=690).
 const index = readFileSync(join(outDir, 'index.html'), 'utf8');
-for (const name of ['dragon-fire.html', 'wraith-drift.html', 'first-duel.html', 'report.html']) {
-  if (!index.includes('href="./' + name + '"')) fail('index.html does not link to ./' + name);
+for (const name of ['dragon-fire.html', 'wraith-drift.html', 'first-duel.html', 'report.html', ...(arcPath ? ['frontier.html'] : [])]) {
+  const href = name === "frontier.html" ? name + "?mode=fire-arc" : name;
+  if (!index.includes('href="./' + href + '"')) fail('index.html does not link to ./' + name);
   if (!existsSync(join(outDir, name))) fail('missing output: ' + name);
 }
 if (!index.includes('href="./first-duel.html?seed=690"')) fail('index.html does not link to ./first-duel.html?seed=690');
