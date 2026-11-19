@@ -484,5 +484,9 @@ document.addEventListener("keydown", (event) => {
 if (params.get("mode") === "ride-out") tryRideOut();
 else if (params.get("mode") === "practice-dynamiter") startPractice("dynamiter");
 else if (params.get("mode") === "practice-tribute") startPractice("tribute");
-else if (params.get("mode") === "fire-arc") startFireArc("ember-gulch");
+else if (params.get("mode") === "fire-arc") {
+  // Only these two stage names are read from the URL; anything else starts Ember Gulch. The URL carries no state.
+  const stage = params.get("stage");
+  startFireArc(stage === "position-a" || stage === "position-b" ? stage : "ember-gulch");
+}
 else if (params.get("mode") === "match") node("menu-play").click();
