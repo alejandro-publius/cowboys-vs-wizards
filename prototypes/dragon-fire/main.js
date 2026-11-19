@@ -1,4 +1,4 @@
-// Play one clash with the production rules, then apply Dragon Fire in this page only.
+// Play one clash on a dragonFire match; the engine applies Dragon Fire.
 import { CARDS } from "../../src/game/cards.js";
 import { createMatch } from "../../src/game/state.js";
 import { resolveClash, resultAfterClash } from "../../src/game/clash.js";
@@ -44,7 +44,7 @@ const CHOICES = {
 
 function setup(position) {
   const p = POSITIONS[position];
-  const state = createMatch(0);
+  const state = createMatch(0, { dragonFire: true });
   state.round = 5;
   state.startingSide = "wizard";
   state.activeSide = "cowboy";
@@ -90,21 +90,20 @@ function play(position, choice, shot = null, summoned = summon(position, choice)
   const blocker = dragonLane >= 0 ? state.sides.wizard.board[dragonLane] : null;
   const blockerBefore = blocker ? { cardId: blocker.cardId, health: blocker.health } : null;
 
+  // Same board with the rule switched off, resolved on a scratch copy.
+  const scratch = structuredClone(state);
+  scratch.dragonFire = { ...scratch.dragonFire, enabled: false };
+
   resolveClash(state, (event) => events.push(event));
 
-  // Dragon Fire: attack above the blocker's remaining orbs burns through after the clash.
+  // The engine reports Dragon Fire as a damage event marked fire:true.
   let fire = null;
   let withoutFire = null;
-  if (blockerBefore) {
-    const excess = CARDS[DRAGON].attack - blockerBefore.health;
-    if (excess > 0) {
-      withoutFire = { result: resultAfterClash(state), cowboyBase: state.sides.cowboy.baseOrbs, wizardBase: state.sides.wizard.baseOrbs };
-      const before = state.sides.wizard.baseOrbs;
-      const after = Math.max(0, before - excess);
-      state.sides.wizard.baseOrbs = after;
-      fire = { lane: dragonLane, excess, before, after };
-      events.push({ type: "fire", ...fire });
-    }
+  const burn = events.find((e) => e.type === "damage" && e.fire === true);
+  if (burn) {
+    resolveClash(scratch, () => {});
+    withoutFire = { result: resultAfterClash(scratch), cowboyBase: scratch.sides.cowboy.baseOrbs, wizardBase: scratch.sides.wizard.baseOrbs };
+    fire = { lane: burn.lane, excess: burn.amount, before: burn.before, after: burn.after };
   }
   return { state, events, result: resultAfterClash(state), fire, withoutFire, blockerBefore, dragonLane, openLanes };
 }
@@ -115,13 +114,13 @@ const name = (cardId) => CARDS[cardId].name;
 function describe(events) {
   return events.flatMap((e) => {
     if (e.type === "spell") return [{ text: `Deadeye hit Enemy ${name(e.target.cardId)} in lane ${e.target.slot + 1}, ${e.before} to ${e.after}.` }];
+    if (e.type === "damage" && e.fire) return [{ text: `Dragon Fire burned through: ${e.target.side === "cowboy" ? "Your" : "Wizard"} Base ${e.before} to ${e.after}.`, fire: true }];
     if (e.type === "damage") {
       const hitter = `${who(e.attacker.side)} ${name(e.attacker.cardId)}`;
       const target = e.target.kind === "base" ? `${who(e.target.side)} Base` : `${who(e.target.side)} ${name(e.target.cardId)}`;
       return [{ text: `Lane ${e.lane + 1}: ${hitter} hit ${target}, ${e.before} to ${e.after}.` }];
     }
     if (e.type === "defeat") return [{ text: `${who(e.side)} ${name(e.cardId)} was defeated.` }];
-    if (e.type === "fire") return [{ text: `Dragon Fire burned through: Wizard Base ${e.before} to ${e.after}.`, fire: true }];
     return [];
   });
 }
