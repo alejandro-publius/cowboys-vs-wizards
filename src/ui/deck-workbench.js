@@ -1,5 +1,5 @@
 import {BOUNTY_REWARDS, COWBOY_CATALOG, DECK_SIZE, DEFAULT_COUNTS, FRONTIER_CATALOG, copyLimit, deckIds, validateDeck} from '../game/deck-builder.js';
-import {BILLY_POSSE, DEADEYE_CONTROL, FRONTIER_UNLOCKS, NIGHT_RIDERS, WAGON_TRAIN, WRAITH_POSSE, frontierUnlocked} from '../game/deck-presets.js';
+import {BILLY_POSSE, DEADEYE_CONTROL, FRONTIER_UNLOCKS, IMP_NAME, NIGHT_RIDERS, STARGAZER_NAME, STARGAZER_WINS, WAGON_TRAIN, WRAITH_POSSE, frontierUnlocked} from '../game/deck-presets.js';
 import {MAX_COWBOY_COPIES, tributeCost} from '../game/cards.js';
 import {openingDroughtRate} from '../game/opening-policy.js';
 import {earnedRewards} from '../game/bounty-hunt.js';
@@ -21,10 +21,11 @@ const ruleOf = card => card.kind === 'spell'
 // Collection + chosen-deck workbench. Uses the approved card art as CSS backgrounds
 // (.deck-art), the existing validation and profile.saveDeck; no new rules.
 // `presets` comes from the graybox title-screen marker and adds Load Deadeye Control
-// and Load Billy Posse. Optional `tryDraft(counts, opener)` adds Try draft, which
+// and Load Billy Posse. Optional `tryDraft(counts, opener, opponent)` adds Try draft, which
 // plays a copy of the current legal draft and leaves the saved deck unchanged.
-export function renderDeckWorkbench({content, profile, say, savedMessage, button, presets = false, tryDraft, draft = null, bounties = false}) {
+export function renderDeckWorkbench({content, profile, say, savedMessage, button, presets = false, tryDraft, draft = null, trialOpponent = null, bounties = false}) {
   const saved = profile.get();
+  const wins = Number(saved?.stats?.wins) || 0;
   // Each Wanted reward joins the collection only after its own boss is cleared.
   // Frontier cards (zero starter copies) join the collection at their win counts.
   const frontierCards = frontierUnlocked(saved);
@@ -120,15 +121,25 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
   const actions = element('div', undefined, {class: 'menu-actions'});
   actions.append(save, revert);
   const notes = [];
-  let trial = null;
+  let trial = null, opponentSelect = null;
   if (tryDraft) {
     trial = button('Try draft', async () => {
       const result = validateDeck(counts, entitlement);
       if (!result.ok) {say(result.error); feedback.textContent = result.error; refresh(); return;}
       feedback.textContent = '';
-      await tryDraft({...counts}, trial);
+      await tryDraft({...counts}, trial, opponentSelect?.value || null);
       refresh();
     }, {id: 'try-draft', 'aria-describedby': 'wb-try-summary'});
+    if (wins >= STARGAZER_WINS) {
+      opponentSelect = element('select', undefined, {id: 'try-draft-opponent'});
+      for (const [value, label] of [['', 'Default Wizard'], ['stargazer', STARGAZER_NAME], ['imp', IMP_NAME]]) {
+        opponentSelect.append(element('option', label, {value}));
+      }
+      opponentSelect.value = ['stargazer', 'imp'].includes(trialOpponent) ? trialOpponent : '';
+      const field = element('label', 'Trial opponent ', {for: 'try-draft-opponent', class: 'detail-line'});
+      field.append(opponentSelect);
+      actions.append(field);
+    }
     actions.append(trial);
     notes.push(element('p', 'Play a trial duel with this draft. Your saved deck is kept.', {id: 'wb-try-summary', class: 'detail-line'}));
   }
@@ -151,7 +162,6 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
   }
   // Frontier lists appear once every card in them is earned. Loading replaces
   // only the draft, like the other presets.
-  const wins = Number(saved?.stats?.wins) || 0;
   for (const [preset, id, text] of [
     [WAGON_TRAIN, 'load-wagon-train', 'Wagon Train: hold lanes behind Covered Wagons, clear with Lasso and Deadeyes, then tribute two troops for the Gatling Crew.'],
     [NIGHT_RIDERS, 'load-night-riders', 'Night Riders: seven free troops, Dynamiter bursts and riders that change lanes. No two-tribute card.'],

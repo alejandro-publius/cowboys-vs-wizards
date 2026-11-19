@@ -102,15 +102,15 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings,onTryDraft,onTryR
     ])steps.append(element('li',text));
     content.append(steps,element('p','Escape cancels a card selection. Main menu pauses your match. Play resumes it. Restart starts a fresh match.',{class:'menu-hint'}));
   }
-  function deck(opener,draft){
+  function deck(opener,draft,trialOpponent=null){
     open('Build Deck',opener);
     page.classList.add('deck-page');
     // Try draft plays a copy of the current draft without saving it. Offered only
     // when the host supplies onTryDraft and no paused duel would be replaced.
     const tryDraft=typeof onTryDraft==='function'&&!paused
-      ?(counts,opener)=>start(opener,()=>onTryDraft(counts))
+      ?(counts,opener,opponent=null)=>start(opener,()=>onTryDraft(counts,opponent))
       :undefined;
-    renderDeckWorkbench({content,profile,say,savedMessage,button,presets,tryDraft,draft,bounties:Boolean(onHunt)});
+    renderDeckWorkbench({content,profile,say,savedMessage,button,presets,tryDraft,draft,trialOpponent,bounties:Boolean(onHunt)});
   }
   function wanted(opener){
     open('Wanted',opener);
@@ -144,11 +144,11 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings,onTryDraft,onTryR
       this.show();
       how(entry);
     },
-    editDraft(counts){
+    editDraft(counts,opponent=null){
       const entry=$(root,'[data-menu-page="deck"]');
       if(!entry)return;
       this.show();
-      deck(entry,counts);
+      deck(entry,counts,opponent);
     },
     status:say
   };
