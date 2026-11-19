@@ -2,7 +2,7 @@ import {chooseAction, cpuFor} from "./game/cpu.js";
 import {bossOfHunt, clearedFor, createHunt, earnedRewards, HUNT_GOAL, HUNTS_BY_ID, rewardEarned} from "./game/bounty-hunt.js";
 import {CARDS} from "./game/cards.js";
 import {deckIds, validateDeck} from "./game/deck-builder.js";
-import {BILLY_POSSE, DEADEYE_CONTROL} from "./game/deck-presets.js";
+import {BILLY_POSSE, DEADEYE_CONTROL, frontierUnlocked} from "./game/deck-presets.js";
 import {GRAYBOX_OPENINGS, openingMatch, parseOpeningParams} from "./game/opening-policy.js";
 import {clashForecast, rideForecasts} from "./match/clash-forecast.js";
 import {clashLog} from "./match/clash-log.js";
@@ -56,7 +56,10 @@ let deal = null;
 let nextDeal = null;
 
 // Only the rewards this profile has earned may enter a deck.
-const deckEntitlement = () => ({rewards: earnedRewards(profile.get())});
+const deckEntitlement = () => {
+  const saved = profile.get();
+  return {rewards: earnedRewards(saved), frontierCards: frontierUnlocked(saved)};
+};
 
 // Read at match creation, so a deck saved mid-match only affects later deals.
 function freshDeal(seed) {

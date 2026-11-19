@@ -1,5 +1,5 @@
 import {BOUNTY_REWARDS, COWBOY_CATALOG, DECK_SIZE, DEFAULT_COUNTS, copyLimit, deckIds, validateDeck} from '../game/deck-builder.js';
-import {BILLY_POSSE, DEADEYE_CONTROL} from '../game/deck-presets.js';
+import {BILLY_POSSE, DEADEYE_CONTROL, FRONTIER_UNLOCKS, NIGHT_RIDERS, WAGON_TRAIN, frontierUnlocked, ownedCounts} from '../game/deck-presets.js';
 import {MAX_COWBOY_COPIES, tributeCost} from '../game/cards.js';
 import {openingDroughtRate} from '../game/opening-policy.js';
 import {earnedRewards} from '../game/bounty-hunt.js';
@@ -26,14 +26,17 @@ const ruleOf = card => card.kind === 'spell'
 export function renderDeckWorkbench({content, profile, say, savedMessage, button, presets = false, tryDraft, bounties = false}) {
   const saved = profile.get();
   // Each Wanted reward joins the collection only after its own boss is cleared.
-  const entitlement = {rewards: bounties ? earnedRewards(saved) : []};
-  const collectionCards = [...COWBOY_CATALOG, ...BOUNTY_REWARDS.filter(card => entitlement.rewards.includes(card.type))];
+  // Frontier cards (zero starter copies) join the collection at their win counts.
+  const frontierCards = frontierUnlocked(saved);
+  const entitlement = {rewards: bounties ? earnedRewards(saved) : [], frontierCards};
+  const owned = card => card.copies > 0 || frontierCards.includes(card.type);
+  const collectionCards = [...COWBOY_CATALOG.filter(owned), ...BOUNTY_REWARDS.filter(card => entitlement.rewards.includes(card.type))];
   const stored = saved.deck;
-  let counts = {...(stored && validateDeck(stored, entitlement).ok ? stored : DEFAULT_COUNTS)};
-  let selected = COWBOY_CATALOG[0].type;
+  let counts = ownedCounts({...(stored && validateDeck(stored, entitlement).ok ? stored : DEFAULT_COUNTS)}, frontierCards);
+  let selected = collectionCards[0].type;
   const count = type => counts[type] ?? 0;
 
-  content.append(element('p', `Pick a card to read it. Build exactly ${DECK_SIZE} cards, up to ${MAX_COWBOY_COPIES} copies of each, with at least 1 Sheriff.`, {class: 'menu-intro'}));
+  content.append(element('p', `Pick a card to read it. Build exactly ${DECK_SIZE} cards, up to ${MAX_COWBOY_COPIES} copies of most cards (each card shows its own limit), with at least 1 Sheriff.`, {class: 'menu-intro'}));
   const layout = element('div', undefined, {class: 'workbench'});
   const collection = element('section', undefined, {class: 'wb-panel wb-collection', 'aria-labelledby': 'wb-collection-title'});
   collection.append(element('h3', 'Card collection', {id: 'wb-collection-title'}));
@@ -85,7 +88,7 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
     feedback.textContent = msg;
   }, {id: 'save-deck'});
   const reset = button('Restore starter deck', () => {
-    counts = {...DEFAULT_COUNTS};
+    counts = ownedCounts({...DEFAULT_COUNTS}, frontierCards);
     refresh();
     say('Starter deck restored. Choose Save deck to keep it.');
     feedback.textContent = 'Starter deck restored. Choose Save deck to keep it.';
@@ -110,17 +113,32 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
     // Loading replaces only this unsaved draft. The saved profile deck and the
     // current match stay as they are until Save deck.
     actions.append(button(`Load ${DEADEYE_CONTROL.name}`, () => {
-      counts = {...DEADEYE_CONTROL.counts};
+      counts = ownedCounts({...DEADEYE_CONTROL.counts}, frontierCards);
       refresh();
       feedback.textContent = `${DEADEYE_CONTROL.name} draft loaded. Save deck to use it in your next match.`;
     }, {id: 'load-deadeye-control', 'aria-describedby': 'wb-preset-summary'}));
     notes.push(element('p', 'Adds one Deadeye in place of Mounted Billy, the two-tribute finisher.', {id: 'wb-preset-summary', class: 'detail-line'}));
     actions.append(button(`Load ${BILLY_POSSE.name}`, () => {
-      counts = {...BILLY_POSSE.counts};
+      counts = ownedCounts({...BILLY_POSSE.counts}, frontierCards);
       refresh();
       feedback.textContent = `${BILLY_POSSE.name} draft loaded. Save deck to use it in your next match.`;
     }, {id: 'load-billy-posse', 'aria-describedby': 'wb-billy-posse-summary'}));
     notes.push(element('p', 'Billy Posse: hold or pressure lanes with Sheriffs, then trade one Sheriff as tribute for Billy to strengthen that lane. A fourth Billy replaces Mounted Billy.', {id: 'wb-billy-posse-summary', class: 'detail-line'}));
+  }
+  // Frontier lists appear once every card in them is earned. Loading replaces
+  // only the draft, like the other presets.
+  const wins = Number(saved?.stats?.wins) || 0;
+  for (const [preset, id, text] of [
+    [WAGON_TRAIN, 'load-wagon-train', 'Wagon Train: hold lanes behind Covered Wagons, clear with Lasso and Deadeyes, then tribute two troops for the Gatling Crew.'],
+    [NIGHT_RIDERS, 'load-night-riders', 'Night Riders: seven free troops, Dynamiter bursts and riders that change lanes. No two-tribute card.'],
+  ]) {
+    if (wins < preset.wins) continue;
+    actions.append(button(`Load ${preset.name}`, () => {
+      counts = {...preset.counts};
+      refresh();
+      feedback.textContent = `${preset.name} draft loaded. Try the draft or save it for your next duel.`;
+    }, {id, 'aria-describedby': `${id}-summary`}));
+    notes.push(element('p', text, {id: `${id}-summary`, class: 'detail-line'}));
   }
   if (entitlement.rewards.includes("cowboy-captured-wraith")) {
     actions.append(button("Load Wraith Posse", () => {
@@ -138,7 +156,8 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
       feedback.textContent = "Dragon Posse loaded. Try the draft or save it for your next duel.";
     }, {id: "load-dragon-posse"}));
   }
-  chosen.append(total, openingOdds, rows, validation, actions, ...notes, feedback);
+  const frontierLine = element('p', `Frontier cards earned: ${frontierCards.length} of ${FRONTIER_UNLOCKS.length}. Each counted duel win from the second earns the next one.`, {class: 'detail-line'});
+  chosen.append(frontierLine, total, openingOdds, rows, validation, actions, ...notes, feedback);
   collection.append(grid);
   layout.append(collection, detail, chosen);
   content.append(layout);
@@ -171,7 +190,9 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
     detail.replaceChildren(
       element('h3', card.name),
       element('p', `${costOf(card)} · ${statsOf(card)}`, {class: 'detail-line'}),
-      element('p', ruleOf(card), {class: 'detail-rule'}),
+      element('p', ruleOf(card)
+        + (card.rides ? ' Ride: instead of summoning, move this troop one lane into an empty lane of yours.' : '')
+        + (card.relocates ? ' If it survives, you may drag it one lane into an empty lane.' : ''), {class: 'detail-rule'}),
       element('p', `${n} of up to ${copyLimit(card)} in your deck.`, {class: 'detail-line'}));
   }
   refresh();
