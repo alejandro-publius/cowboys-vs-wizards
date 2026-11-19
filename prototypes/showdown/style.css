@@ -26,3 +26,11 @@ button { cursor: pointer; } button:disabled { cursor: default; opacity: .55; }
 .key { display: inline-block; font-size: .78rem; border: 1px solid var(--line); border-radius: 4px; padding: 0 .3rem; margin-top: .15rem; }
 /* Card kinds read by their border, as in the graybox: spell double, trap dashed. */
 .card.spell { border-style: double; border-width: 4px; } .card.trap { border-style: dashed; border-width: 2px; }
+#trail { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr)); gap: .4rem; margin: 0 0 .6rem; padding: 0; }
+#trail li { border: 1px solid var(--line); border-radius: 6px; padding: .4rem .5rem; font-size: .88rem; }
+#trail li.now { border-color: var(--cowboy); } #trail li.ahead { opacity: .6; } #trail li.won strong { color: #9fe09f; }
+#lesson { font-size: 1.05rem; margin: .4rem 0; }
+details { margin-bottom: .5rem; color: #c8c9d1; } summary { cursor: pointer; font-size: .9rem; }
+#reward { display: flex; gap: .5rem; flex-wrap: wrap; align-items: stretch; margin-bottom: .5rem; }
+#reward h2 { flex-basis: 100%; margin: 0; color: var(--cowboy); }
+.earned { width: 13rem; border-color: var(--cowboy); }

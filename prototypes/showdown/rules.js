@@ -36,16 +36,18 @@ function random(seed) {
   };
 }
 
-export function createShowdown(seed, {baseOrbs = 5, first, secondPlayerCards = SECOND_PLAYER_CARDS} = {}) {
+// baseOrbs is one number for both sides or {cowboy, wizard}; decks is {cowboy, wizard} card counts (cards.js DECKS by default).
+export function createShowdown(seed, {baseOrbs = 5, first, secondPlayerCards = SECOND_PLAYER_CARDS, decks = {}} = {}) {
   const next = random(seed);
   const sides = {};
   for (const side of ["cowboy", "wizard"]) {
-    const deck = deckIds(side);
+    const deck = deckIds(side, decks[side]);
+    const base = baseOrbs[side] ?? baseOrbs;
     for (let i = deck.length - 1; i > 0; i--) {
       const j = Math.floor(next() * (i + 1));
       [deck[i], deck[j]] = [deck[j], deck[i]];
     }
-    sides[side] = {base: baseOrbs, hand: [], deck, board: Array(BOARD_SIZE).fill(null), traps: [], discard: []};
+    sides[side] = {base, baseMax: base, hand: [], deck, board: Array(BOARD_SIZE).fill(null), traps: [], discard: []};
   }
   const starter = next() < .5 ? "cowboy" : "wizard";
   first ??= starter;
@@ -297,16 +299,44 @@ export function planTurn(state) {
   return best.plan;
 }
 
-// Plays the active side's whole turn with the bot. A sprung trap changes the board, so the rest is planned again.
-export function playTurn(state) {
+// A weaker opponent's next action, for a new player's first duels.
+// Level 0 takes any legal action it has. Level 1 takes the single action that looks best right now.
+function simpleStep(state, level) {
   const side = state.active;
+  const blind = structuredClone(state);
+  blind.sides[opponent(side)].traps = [];
+  const moves = legalActions(blind).filter((action) => action.type !== "end");
+  if (level === 0) {
+    if (!moves.length) return {type: "end"};
+    // The position picks the action, so a deal replays the same way.
+    let hash = 0;
+    for (const char of JSON.stringify(blind.sides)) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+    return moves[hash % moves.length];
+  }
+  let best = {type: "end"};
+  let value = evaluate(blind, side);
+  for (const action of moves) {
+    const after = evaluate(applyAction(blind, action).state, side);
+    if (after > value) [best, value] = [action, after];
+  }
+  return best;
+}
+
+// Plays the active side's whole turn with the bot. Level 2 plans the whole turn; 0, 1 and 1.5 are weaker opponents.
+// A sprung trap changes the board, so the rest of a plan is made again.
+export function playTurn(state, level = 2) {
+  const side = state.active;
+  // Level 1.5 plans every other turn of its own and plays the rest as level 1.
+  if (level === 1.5) level = Math.floor(state.turn / 2) % 2 ? 1 : 2;
   const events = [];
-  let plan = planTurn(state);
+  let plan = level === 2 ? planTurn(state) : [simpleStep(state, level)];
   while (plan.length && !state.result && state.active === side) {
     const applied = applyAction(state, plan.shift());
     state = applied.state;
     events.push(...applied.events);
-    if (!state.result && applied.events.some((event) => event.type === "trap")) plan = planTurn(state);
+    if (state.result || state.active !== side) break;
+    if (level !== 2) plan = [simpleStep(state, level)];
+    else if (applied.events.some((event) => event.type === "trap")) plan = planTurn(state);
   }
   return {state, events};
 }

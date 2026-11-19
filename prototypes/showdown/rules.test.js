@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {DECKS, EFFECTS, KEYWORDS, TYPES, cardOf, deckIds} from "./cards.js";
 import {cardsCsv} from "./export-cards.mjs";
+import {GRIT_CAP, STARTER, TRAIL, afterDuel, currentDuel, deckAfter, duelOptions, newProgress} from "./trail.js";
+import {winRate} from "./trail-sim.mjs";
 import {HAND_CAP, OPENING_HAND, applyAction, attackOutcome, canAttack, createShowdown, legalActions, playTurn} from "./rules.js";
 
 const troop = (type, health = TYPES[type].health, extra = {}) => ({cardId: `${type}-1`, health, attacked: false, stunned: false, arrived: 0, ...extra});
@@ -216,4 +218,49 @@ test("bot games are legal and end with a fallen Base", () => {
 
 test("cards.csv matches the card table", () => {
   assert.equal(readFileSync(new URL("cards.csv", import.meta.url), "utf8"), cardsCsv(), "run: node prototypes/showdown/export-cards.mjs");
+});
+
+const total = (deck) => Object.values(deck).reduce((sum, copies) => sum + copies, 0);
+
+test("the Trail: sixteen-card decks throughout, every win pays a new Cowboy card, and the starter has no keywords", () => {
+  assert.ok(Object.keys(STARTER).every((type) => !(TYPES[type].keys ?? []).length));
+  const owned = new Set(Object.keys(STARTER));
+  TRAIL.forEach((duel, wins) => {
+    assert.equal(total(duel.deck), 16, duel.name);
+    assert.ok(Object.keys(duel.deck).every((type) => TYPES[type].side === "wizard"), duel.name);
+    assert.equal(total(deckAfter(wins + 1)), 16, `deck after ${duel.name}`);
+    for (const [earned] of duel.reward) {
+      assert.equal(TYPES[earned].side, "cowboy");
+      assert.ok(!owned.has(earned), `${duel.name} pays ${earned}, which the player already has`);
+      owned.add(earned);
+    }
+  });
+});
+
+test("the Trail: a win moves on, a loss adds one Base orb to the rematch, twice at most, and the even match comes last", () => {
+  let progress = newProgress();
+  assert.equal(currentDuel(progress).id, "boot-hill");
+  assert.deepEqual(duelOptions(progress).baseOrbs, {cowboy: 5, wizard: 3});
+  progress = afterDuel(afterDuel(afterDuel(progress, false), false), false);
+  assert.deepEqual(duelOptions(progress).baseOrbs, {cowboy: 5 + GRIT_CAP, wizard: 3});
+  progress = afterDuel(progress, true);
+  assert.deepEqual(progress, {wins: 1, losses: 0});
+  assert.equal(duelOptions(progress).decks.cowboy["cowboy-covered-wagon"], 2);
+  const done = {wins: TRAIL.length, losses: 0};
+  assert.equal(currentDuel(done), null);
+  assert.deepEqual(Object.keys(duelOptions(done)), ["decks"], "after the Trail: default Bases and a random first seat");
+  assert.deepEqual(afterDuel(done, true), done);
+});
+
+test("the Trail is a cushion, then a ramp: bot players on 150 deals", () => {
+  const deals = 150;
+  // Any legal play wins the first two duels.
+  for (const wins of [0, 1]) assert.ok(winRate(wins, 0, deals) >= .95, `duel ${wins + 1} is not a sure win for careless play`);
+  // A player who plans the turn wins most of every Trail duel, and the last one is the hardest.
+  const careful = TRAIL.map((_, wins) => winRate(wins, 2, deals));
+  careful.forEach((rate, wins) => assert.ok(rate >= .7, `duel ${wins + 1}: a careful player wins only ${rate}`));
+  assert.equal(Math.min(...careful), careful.at(-1));
+  // The even match after the Trail is harder than any Trail duel, and still winnable.
+  const open = winRate(TRAIL.length, 2, deals);
+  assert.ok(open < careful.at(-1) && open >= .45, `the even match: ${open}`);
 });

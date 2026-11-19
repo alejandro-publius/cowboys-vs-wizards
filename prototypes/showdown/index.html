@@ -9,23 +9,29 @@
 </head>
 <body>
   <main>
-    <h1>Showdown rules <small>prototype</small></h1>
-    <ol class="rules">
-      <li>You choose every attack: pick your troop, then the enemy troop it hits.</li>
-      <li>Damage beyond a troop's last orb hits its owner's Base. A troop that survives hits back.</li>
-      <li>A Base can be struck directly only when its side has no troops.</li>
-      <li>Play first, then attack: one troop, one spell and one trap a turn. A free troop rests on the turn it arrives; a tribute troop strikes at once.</li>
-      <li>A trap waits face down and springs on the next enemy attack.</li>
-      <li>An empty deck costs your Base an orb each turn.</li>
-    </ol>
+    <h1>Showdown <small>prototype</small></h1>
+    <ol id="trail" aria-label="The Trail"></ol>
+    <p id="lesson"></p>
+    <details>
+      <summary>All the rules</summary>
+      <ol class="rules">
+        <li>You choose every attack: pick your troop, then the enemy troop it hits.</li>
+        <li>Damage beyond a troop's last orb hits its owner's Base. A troop that survives hits back.</li>
+        <li>A Base can be struck directly only when its side has no troops.</li>
+        <li>Play first, then attack: one troop, one spell and one trap a turn. A free troop rests on the turn it arrives; a tribute troop strikes at once.</li>
+        <li>A trap waits face down and springs on the next enemy attack.</li>
+        <li>An empty deck costs your Base an orb each turn.</li>
+      </ol>
+    </details>
     <p id="status" role="status"></p>
+    <div id="reward" aria-live="polite"></div>
     <section id="board" aria-label="Board"></section>
     <p id="prompt"></p>
     <div id="actions">
       <button type="button" id="end">End turn</button>
       <button type="button" id="cancel">Cancel</button>
-      <button type="button" id="again">Replay this deal</button>
-      <button type="button" id="fresh">New deal</button>
+      <button type="button" id="again">Restart this duel</button>
+      <button type="button" id="reset">Start the Trail over</button>
     </div>
     <section id="hand" aria-label="Your hand"></section>
     <section aria-label="What happened"><h2>What happened</h2><ol id="log"></ol></section>

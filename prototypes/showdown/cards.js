@@ -79,4 +79,4 @@ export const DECKS = Object.freeze({
   wizard: {"wizard-skeleton": 4, "wizard-jack-o-lantern": 1, "wizard-raven-familiar": 1, "wizard-imp": 1, "wizard-bone-wall": 2,
     "wizard-wizard": 2, "wizard-headless-horseman": 1, "wizard-dragon": 1, "wizard-singularity": 1, "wizard-hellfire": 1, "wizard-hex": 1},
 });
-export const deckIds = (side) => Object.entries(DECKS[side]).flatMap(([type, count]) => Array.from({length: count}, (_, i) => `${type}-${i + 1}`));
+export const deckIds = (side, counts = DECKS[side]) => Object.entries(counts).flatMap(([type, count]) => Array.from({length: count}, (_, i) => `${type}-${i + 1}`));

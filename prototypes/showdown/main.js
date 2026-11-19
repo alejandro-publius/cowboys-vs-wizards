@@ -1,6 +1,7 @@
 // Screen for the Showdown rules prototype. You are the Cowboys; the Wizards plan each turn in rules.js.
-import {EFFECTS, KEYWORDS, cardOf, tributes} from "./cards.js";
+import {EFFECTS, KEYWORDS, TYPES, cardOf, tributes} from "./cards.js";
 import {applyAction, attackOutcome, canAttack, createShowdown, legalActions, playTurn} from "./rules.js";
+import {GRIT_CAP, TRAIL, afterDuel, currentDuel, duelOptions, newProgress} from "./trail.js";
 
 const $ = (id) => document.getElementById(id);
 const name = (cardId) => cardOf(cardId).name;
@@ -11,7 +12,17 @@ const MARK = {troop: "●", spell: "✦", trap: "▲"};
 const typeLine = (card) => `<span class="type">${MARK[card.kind]} ${card.kind === "troop" ? `Troop · ${card.tag}` : card.kind === "spell" ? "Spell" : "Trap"}</span>`;
 const keywords = (card) => (card.keys ?? []).map((key) => `<span class="key" title="${KEYWORDS[key][1]}">${KEYWORDS[key][0]}</span>`).join(" ");
 
-let seed = Number(new URLSearchParams(location.search).get("seed") ?? 690);
+// A seed in the address fixes the first deal only; after that every duel is a fresh deal.
+let seed = Number(new URLSearchParams(location.search).get("seed") ?? Math.floor(Math.random() * 100000));
+const SAVE = "cvw-showdown-trail-v1";
+let progress = newProgress();
+try {
+  const saved = JSON.parse(localStorage.getItem(SAVE));
+  if (Number.isInteger(saved?.wins) && Number.isInteger(saved?.losses)) progress = {wins: Math.min(Math.max(saved.wins, 0), TRAIL.length), losses: Math.max(saved.losses, 0)};
+} catch { /* no saved progress, or storage is blocked: start the Trail from the top */ }
+const save = () => { try { localStorage.setItem(SAVE, JSON.stringify(progress)); } catch { /* play on without saving */ } };
+let duel; // the Trail duel being played, or null for the even match after the Trail
+let outcome; // set once the duel ends: {won, earned}
 let state;
 let lines; // log lines, oldest first
 // What the player is in the middle of: nothing, a card (with tributes picked so far), or an attacker.
@@ -46,9 +57,16 @@ function say(events) {
 // The Wizards take their whole turn at once.
 function wizardsPlay() {
   while (!state.result && state.active === "wizard") {
-    const played = playTurn(state);
+    const played = playTurn(state, duel?.level ?? 2);
     state = played.state;
     say(played.events);
+  }
+  // Record the result once: a Trail win pays its cards and opens the next duel.
+  if (state.result && !outcome) {
+    const won = state.result.winner === "cowboy";
+    outcome = {won, earned: won && duel ? duel.reward : []};
+    if (duel) progress = afterDuel(progress, won);
+    save();
   }
 }
 
@@ -63,7 +81,9 @@ function act(action) {
 
 function start(newSeed) {
   seed = newSeed;
-  state = createShowdown(seed);
+  duel = currentDuel(progress);
+  outcome = null;
+  state = createShowdown(seed, duelOptions(progress));
   lines = [{turn: `Turn 1: ${state.active === "cowboy" ? "you" : "the Wizards"}`}];
   pick = null;
   wizardsPlay();
@@ -118,7 +138,7 @@ function render() {
     const baseOpen = !own && aims.has("base");
     const traps = own ? (s.traps.length ? `Set: ${s.traps.map(name).join(", ")}` : "No trap set") : s.traps.length ? `${s.traps.length} card${s.traps.length > 1 ? "s" : ""} face down` : "Nothing face down";
     const base = `<button type="button" class="base ${side}${baseOpen ? " can" : ""}" ${baseOpen ? 'data-enemy="base"' : "disabled"}>
-      <strong>${own ? "Your" : "Wizard"} Base</strong>${orbs(s.base, 5)}
+      <strong>${own ? "Your" : "Wizard"} Base</strong>${orbs(s.base, s.baseMax)}
       <span class="note">Hand ${s.hand.length} · Deck ${s.deck.length} · Graveyard ${s.discard.length}</span>
       <span class="note">▲ ${traps}</span>${baseOpen ? preview("base") : ""}</button>`;
     const slots = s.board.map((troop, slot) => {
@@ -157,9 +177,23 @@ function render() {
   }).join("");
 
   const r = state.result;
+  const next = currentDuel(progress);
   $("status").innerHTML = r
     ? `<span class="result ${r.winner === "cowboy" ? "good" : "warn"}">${r.winner === "cowboy" ? "You win: the Wizard Base fell." : r.winner === "wizard" ? "You lose: your Base fell." : "Draw."}</span>`
-    : `Turn ${state.turn} · your turn · seed ${seed}`;
+    : `${duel ? duel.name : "Open range"} · turn ${state.turn} · your turn`;
+  // After a win: the cards just earned, each with what it does. After a loss: what the rematch gives.
+  $("reward").innerHTML = !outcome ? "" : outcome.earned.length
+    ? `<h2>New in your deck</h2>${outcome.earned.map(([type, , copies]) => `<div class="card cowboy ${TYPES[type].kind} earned"><strong>${TYPES[type].name}${copies > 1 ? ` ×${copies}` : ""}</strong>${typeLine(TYPES[type])}
+        ${TYPES[type].kind === "troop" ? `${TYPES[type].attack} attack · ${TYPES[type].health} orbs<span class="note">${TYPES[type].keys.map((key) => `<strong>${KEYWORDS[key][0]}.</strong> ${KEYWORDS[key][1]}`).join(" ") || "No keyword."}</span>` : `<span class="note">${EFFECTS[TYPES[type].effect].text}</span>`}</div>`).join("")}`
+    : !outcome.won && duel ? `<p class="note">${progress.losses <= GRIT_CAP ? `Grit: your Base starts the rematch with ${5 + progress.losses} orbs.` : `Your Base keeps its ${5 + GRIT_CAP} orbs for the rematch.`}</p>`
+    : outcome.won && !next && duel ? `<p class="note">The Trail is done. From here the Wizards play their best and the match is even.</p>` : "";
+  $("again").textContent = !r ? "Restart this duel" : !outcome.won ? "Rematch" : next ? `Next duel: ${next.name}` : "Play again";
+  $("lesson").textContent = duel ? duel.lesson : "An even match against the whole coven. The Wizards plan every turn.";
+  $("trail").innerHTML = TRAIL.map((step, i) => {
+    const earned = step.reward.map(([type, , copies]) => `${TYPES[type].name}${copies > 1 ? ` ×${copies}` : ""}`).join(", ");
+    const cls = i < progress.wins ? "won" : i === progress.wins ? "now" : "ahead";
+    return `<li class="${cls}"><strong>${i < progress.wins ? "✓ " : ""}${step.name}</strong><span class="note">${i < progress.wins ? `Earned ${earned}` : `Win to earn ${earned}`}</span></li>`;
+  }).join("") + `<li class="${progress.wins === TRAIL.length ? "now" : "ahead"}"><strong>Open range</strong><span class="note">The even match</span></li>`;
   const guarded = state.sides.wizard.board.some((troop) => troop && cardOf(troop.cardId).keys.includes("guard"));
   $("prompt").textContent = r ? "" : pick?.tributes ? `Choose ${tributes(pick.card)} of your troops to pay for ${name(pick.card)}.`
     : casting ? `Choose an enemy troop for ${name(pick.card)}.`
@@ -173,9 +207,13 @@ function render() {
   for (const side of ["cowboy", "wizard"]) {
     $(`${side}-graveyard`).textContent = state.sides[side].discard.map(name).join(", ") || "empty";
   }
+  // Only the keywords on cards in this duel, so a new player reads a short list.
+  const decks = duelOptions({wins: duel ? TRAIL.indexOf(duel) : TRAIL.length, losses: 0}).decks;
+  const inPlay = new Set([...Object.keys(decks.cowboy), ...Object.keys(decks.wizard)].flatMap((type) => TYPES[type].keys ?? []));
+  $("keywords").innerHTML = Object.entries(KEYWORDS).filter(([key]) => inPlay.has(key)).map(([, [word, rule]]) => `<li><strong>${word}.</strong> ${rule}</li>`).join("")
+    || "<li>No keywords in this duel yet.</li>";
 }
 
-$("keywords").innerHTML = Object.values(KEYWORDS).map(([word, rule]) => `<li><strong>${word}.</strong> ${rule}</li>`).join("");
 document.addEventListener("click", (event) => {
   const b = event.target.closest("button");
   if (!b || b.disabled) return;
@@ -185,6 +223,11 @@ document.addEventListener("click", (event) => {
 });
 $("end").addEventListener("click", () => act({type: "end"}));
 $("cancel").addEventListener("click", () => { pick = null; render(); });
-$("again").addEventListener("click", () => start(seed));
-$("fresh").addEventListener("click", () => start(Math.floor(Math.random() * 100000)));
+// Restarting an unfinished duel replays the same deal; after a result the next duel gets a fresh one.
+$("again").addEventListener("click", () => start(state.result ? Math.floor(Math.random() * 100000) : seed));
+$("reset").addEventListener("click", () => {
+  progress = newProgress();
+  save();
+  start(Math.floor(Math.random() * 100000));
+});
 start(seed);
