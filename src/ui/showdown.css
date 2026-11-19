@@ -1,0 +1,31 @@
+/* Showdown duel (issue 143 slice 1), scoped to #showdown. Layout from prototypes/showdown/style.css;
+   troop, spell and trap borders come from the [data-frame] rules in graybox.css. */
+#showdown { max-width: 920px; margin: auto; padding: clamp(1rem, 3vw, 2rem); display: grid; gap: .5rem; }
+#showdown h2 { font-size: 1rem; margin: .75rem 0 .25rem; }
+#sd-lesson { font-size: 1.05rem; }
+#sd-status { font-weight: 600; }
+#sd-feedback { min-height: 1.4rem; color: var(--muted); font-size: .92rem; }
+#sd-board { display: grid; gap: .5rem; }
+.sd-side { display: grid; grid-template-columns: 9rem repeat(3, 1fr); gap: .5rem; align-items: stretch; }
+.sd-base, .sd-slot, .sd-card { padding: .6rem; text-align: left; min-height: 9rem; display: block; }
+.sd-card { width: 9rem; min-height: 5.25rem; }
+.sd-base strong, .sd-slot strong, .sd-card strong { display: block; }
+.wizard strong { color: var(--wizard); } .cowboy strong { color: var(--cowboy); }
+.sd-orbs { letter-spacing: .12em; } .sd-lost { opacity: .35; }
+.sd-pick { outline: 2px solid #fff; } .sd-can { border-color: #8fd18f; } .sd-chosen { outline: 2px solid var(--cowboy); }
+.sd-note { display: block; font-size: .82rem; color: var(--muted); margin-top: .2rem; }
+.sd-warn { color: #f0a08a; } .sd-good { color: #9fe09f; }
+.sd-type { display: block; font-size: .78rem; letter-spacing: .03em; color: var(--muted); }
+.sd-key { display: inline-block; font-size: .78rem; border: 1px solid var(--line); border-radius: 4px; padding: 0 .3rem; }
+.sd-result { font-size: 1.2rem; }
+.sd-backs { display: flex; gap: 2px; margin-top: .2rem; }
+.sd-backs .card-back { width: 14px; height: 20px; border: 1px solid var(--line); border-radius: 2px; }
+#sd-prompt { min-height: 1.5rem; }
+.sd-row, #sd-hand { display: flex; gap: .5rem; flex-wrap: wrap; }
+#sd-log { list-style: none; margin: 0; padding: 0; font-size: .92rem; color: var(--muted); max-height: 14rem; overflow: auto; }
+#sd-log .sd-turn { margin-top: .35rem; font-weight: 600; color: inherit; }
+#sd-keywords { margin: 0; padding-left: 1.25rem; font-size: .92rem; }
+/* Gear and locations by their border, as in the reference screen. */
+#showdown [data-frame=gear] { border-style: dotted; border-width: 3px; }
+#showdown [data-frame=location] { border-width: 1px 1px 5px; }
+@media (max-width: 40rem) { .sd-side { grid-template-columns: 1fr 1fr; } }
