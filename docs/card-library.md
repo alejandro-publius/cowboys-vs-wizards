@@ -1,6 +1,6 @@
 # Cowboys vs. Wizards card library
 
-This covers the graybox at `4741d47`. Each row is a distinct card type. The current game has **6 collectible Cowboy types**, **4 Wizard deck types used by the CPU**, and **1 additional Wizard boss**. The [generated catalog](../src/game/card-specs.generated.js) supplies the stats. The [deck builder](../src/game/deck-builder.js) defines collection access and copy limits.
+This covers the local Frontier graybox. Each row is a distinct card type. It has **12 collectible Cowboy types**, **4 Wizard deck types used by the CPU**, and **1 additional Wizard boss**. The [generated catalog](../src/game/card-specs.generated.js) supplies the stats. The [deck builder](../src/game/deck-builder.js) defines collection access and copy limits.
 
 ## Cowboy collection
 
@@ -8,10 +8,18 @@ This covers the graybox at `4741d47`. Each row is a distinct card type. The curr
 | --- | ---: | ---: | ---: | --- |
 | Sheriff | 2 | 1 / 3 | 0 | Starter. Cheap blocker that can pressure an open lane. Every Cowboy deck needs at least one. |
 | Billy | 5 | 2 / 4 | 1 | Starter. Turns one friendly troop into a sturdier lane threat. |
-| Mounted Billy | 7 | 3 / 5 | 2 | Starter. Concentrates the value of two troops into one lane. |
+| Mounted Billy | 7 | 3 / 5 | 2 | Starter. Concentrates the value of two troops into one lane. Has Ride. |
 | Deadeye | Spell | — | — | Starter. Removes one orb from an enemy troop. A useful way to finish a wounded blocker. |
 | Captured Dragon | 5 | 3 / 2 | 1 | Clear all five distinct Graveyard Dragon hunts. Hits hard and can fall quickly. Limit one. |
 | Captured Wraith | 3 | 2 / 2 | 0 | Clear all five distinct Lantern Wraith hunts. Starts pressure faster than Sheriff, with fewer orbs. Limit one. |
+| Lasso | Spell | — | — | 2 counted duel wins. Remove one orb, then optionally pull the survivor into an adjacent empty lane. Limit two. |
+| Covered Wagon | 4 | 1 / 4 | 0 | 3 counted duel wins. Survives a Dragon attack on one orb. Limit two. |
+| Outrider | 3 | 1 / 3 | 0 | 4 counted duel wins. Free troop with Ride. Limit two. |
+| Dynamiter | 3 | 3 / 1 | 0 | 5 counted duel wins. Can take three Base orbs through an open lane. Limit two. |
+| Ranger | 5 | 2 / 4 | 1 | 6 counted duel wins. Holds a lane and can Ride into an empty neighbor. Limit two. |
+| Gatling Crew | 7 | 4 / 4 | 2 | 7 counted duel wins. Can defeat a full-orb Wizard in one clash. Limit one. |
+
+Ride moves an eligible troop into an adjacent empty friendly lane and spends the turn’s summon. It comes before a spell. In hunts and opt-in Ride Out, every troop can move under the original rules.
 
 ## Wizard opponents
 
@@ -32,6 +40,8 @@ This covers the graybox at `4741d47`. Each row is a distinct card type. The curr
 | Billy Posse | 6 Sheriff, 4 Billy, 2 Deadeye | Load in Build Deck |
 | Dragon Posse | 6 Sheriff, 3 Billy, 1 Captured Dragon, 2 Deadeye | After the Dragon unlock |
 | Wraith Posse | 5 Sheriff, 3 Billy, 1 Mounted Billy, 1 Captured Wraith, 2 Deadeye | After the Wraith unlock |
+| Wagon Train | 3 Sheriff, 2 Covered Wagon, 2 Billy, 1 Gatling Crew, 2 Deadeye, 2 Lasso | 7 counted duel wins |
+| Night Riders | 3 Sheriff, 2 Outrider, 2 Dynamiter, 2 Ranger, 2 Deadeye, 1 Lasso | 6 counted duel wins |
 
 ## References for Fable’s expansion
 

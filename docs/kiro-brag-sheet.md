@@ -2,6 +2,10 @@
 
 [Judge-facing brag sheet, eight Devpost answers and recording register](submission/kiro-brag-sheet.md)
 
+## November 18 Frontier pack
+
+Fable 5.2 designed six unlockable cards, two 12-card decks, and Ride. Kiro CLI implemented the card specs and engine changes, added the unlocks and deck presets, and reused the existing Ride Out controls. Codex integrated the changes and checked the scripted deals and the Chrome play path. The recording comparison uses Night Riders at seed 244. Choosing to Ride in round 4 creates a round-6 win where the authored no-Ride route draws in round 9. [Recording steps and results](evidence/kiro-frontier-pack.md).
+
 ## November 18 Wanted progression
 
 - **From one bounty to two.** Kiro IDE (Claude Opus 5.5) built Lantern Wraith's five fights, a lane telegraph that follows the rules engine, independent bounty progress, and the playable Captured Wraith reward. Kiro reported 343 passing game and match tests. Codex independently cleared all five hunts in Safari, checked that a repeat clear and a loss give no extra progress, and summoned Captured Wraith after reloading and trying Wraith Posse on seed 15. The Dragon stayed locked in that fresh profile. [Before and after, exact moves and checks](evidence/kiro-lantern-wraith.md).

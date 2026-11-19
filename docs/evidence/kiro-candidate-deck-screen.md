@@ -14,7 +14,8 @@ node --test tests/game/screen-cowboy-decks.test.js tests/game/deck-builder.test.
 
 All 10 focused tests passed. Passing the starter as the candidate produced
 identical results on both difficulties. Default and `--isolate` output
-matched the SHA-256 hashes of their output at `91c7d7a`.
+matched the SHA-256 hashes of their output at `91c7d7a` before the Frontier
+rules were integrated.
 
 Deadeye Control also ran successfully on seeds 72000 through 72999. Each row
 ran 2,000 matches. On Normal, the starter won 891 and Deadeye Control won

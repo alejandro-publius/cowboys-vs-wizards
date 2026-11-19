@@ -152,7 +152,7 @@
      "type": "summon",
      "side": "cowboy",
      "cardId": "cowboy-mounted-billy-5",
-     "slot": 0,
+     "slot": 1,
      "tributes": [
       0,
       2
@@ -262,7 +262,7 @@
      "type": "summon",
      "side": "cowboy",
      "cardId": "cowboy-mounted-billy-5",
-     "slot": 0,
+     "slot": 1,
      "tributes": [
       0,
       2

@@ -18,6 +18,7 @@ To play or build the game, start at the [project README](../README.md). To work 
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Current | How the rules engine, controller, presenter and 3D scene fit together, and which code owns what. |
 | [JUDGE-GUIDE.md](JUDGE-GUIDE.md) | Current | A short route for a hackathon judge: what to play, what to inspect, where the evidence is. |
 | [PROJECT-STATUS.md](PROJECT-STATUS.md) | Current | A dated snapshot of what is built and verified. Check its date against the live branch. |
+| [card-library.md](card-library.md) | Current | Playable cards, deck lists, unlock thresholds, and research references for new cards. |
 | [kiro-brag-sheet.md](kiro-brag-sheet.md) | Current | How Kiro was used on the project, feature by feature, with links to the evidence for each claim. |
 | [kiro-closeout-queue.md](kiro-closeout-queue.md) | Current | The ledger of closeout items (K01 and up) with owner, result and blocker. The handoff issues cite its item numbers; new work still goes in the issue list. |
 | [character-animation-plan.md](character-animation-plan.md) | Record | The November 14 plan for rigging and animating the characters. `AGENTS.md` still asks you to read it before animation work, but its authoring steps are an earlier proposal. |
