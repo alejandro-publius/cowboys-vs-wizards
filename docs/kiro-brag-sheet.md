@@ -2,6 +2,15 @@
 
 [Judge-facing brag sheet, eight Devpost answers and recording register](submission/kiro-brag-sheet.md)
 
+## November 18 duel feedback and deck building
+
+| Before | After | Record it |
+| --- | --- | --- |
+| A result named the round, with the lane explanation in the clash log. | The result names the troop and lane that broke the Base. | End every turn on seed 4 in a fresh profile. Compare the round-three result before and after the Kiro CLI change. [Reproduction](evidence/kiro-decisive-lane.md) |
+| The deck builder showed the odds of an opening without a free summon. | You can deal the actual four opening cards from a draft and see which seed you dealt. | Build Deck → Preview opening hand → Deal another opening. Record seeds 0 and 1 and change a card in the draft. [Reproduction](evidence/kiro-opening-hand-preview.md) |
+
+Kiro CLI implemented the two improvements in parallel. Codex integrated them and verified both routes in Chrome. The browser evidence covers the changes above. Native Kiro footage is still to be recorded.
+
 ## November 18 Frontier pack
 
 Fable 5.2 designed six unlockable cards, two 12-card decks, and Ride. Kiro CLI implemented the card specs and engine changes, added the unlocks and deck presets, and reused the existing Ride Out controls. Codex integrated the changes and checked the scripted deals and the Chrome play path. The recording comparison uses Night Riders at seed 244. Choosing to Ride in round 4 creates a round-6 win where the authored no-Ride route draws in round 9. [Recording steps and results](evidence/kiro-frontier-pack.md).
