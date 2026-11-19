@@ -181,3 +181,8 @@ export const FRAMES = Object.freeze({
   "Location": "The same plum field, but the edge is weathered timber planks on the left half and rune-carved stone on the right half, meeting at the top centre under a small lantern. Thicker along the bottom, like a foundation.",
   "Boss (Wanted and Captured)": "No plum field: the whole card is a torn, yellowed poster nailed to timber, with a rough inked border, a wide blank band at the top for one word, and a blank band at the bottom. A captured boss uses the same poster with a broken wax seal and a brass star pinned over one corner.",
 });
+
+// Troops with no 3D model yet, in the order a new player meets them on the Trail, then the rivals, then the bounties.
+// The Sheriff, Billy, the Wizard, Mounted Billy, the Skeleton and the Dragon already have one in assets/models/.
+export const MODEL_ORDER = Object.freeze(["cowboy-covered-wagon", "wizard-raven-familiar", "wizard-jack-o-lantern", "cowboy-outrider", "wizard-bone-wall",
+  "cowboy-ranger", "wizard-imp", "cowboy-dynamiter", "wizard-headless-horseman", "cowboy-gatling-crew", "wizard-lantern-wraith", "cowboy-captured-wraith", "cowboy-captured-dragon"]);

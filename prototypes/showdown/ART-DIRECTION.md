@@ -502,14 +502,102 @@ A single polished teal glass orb the size of a marble, with a soft inner glow an
 
 ## 5. Model sheets for 3D
 
-For a troop, a piece of gear or a boss that will become a 3D model, keep the card's `Subject` line and replace the rest of its block with this framing. A model generator needs the whole figure, a plain background and flat light.
+A model generator needs the whole figure, a plain background and flat light, so a model sheet keeps a card's subject and drops its scene. These are the 13 troops with no model yet, in the order to make them: the order a new player meets them. Paste each after the style. [3D-DAY.md](3D-DAY.md) has the steps from picture to a model on the board.
+
+Subjects that are see-through or made of light on their card (the two Wraiths, the witch-fire on the Headless Horseman) are drawn solid and pale here. The glow and the mist are added in the game.
+
+**1. Covered Wagon**
 
 ```text
 Model sheet for 3D modelling. The same subject and the same colours and materials, but: the whole figure in frame from head to feet including any weapon or mount, standing in a neutral relaxed pose with arms slightly away from the body, three-quarter front view, alone and centred on a plain flat mid-grey background, soft even lighting from all sides, no cast shadow, no scenery, no smoke, glow, sparks, mist or motion effects, nothing transparent.
-Subject: (the Subject line from the card)
+Subject: A prairie schooner turned into a barricade: a patched cream canvas bonnet over curved hoops, heavy timber sides reinforced with riveted iron plates and a row of plank shields, tall iron-rimmed wheels chocked with stones. A driver in a slouch hat crouches behind the seat with a shotgun, only his hat and the barrels showing.
 ```
 
-Subjects that are see-through or made of light on their card (the two Wraiths, the witch-fire on the Headless Horseman) should be drawn solid and pale on the model sheet. The glow and the mist are added in the game.
+**2. Raven Familiar**
+
+```text
+Model sheet for 3D modelling. The same subject and the same colours and materials, but: the whole figure in frame from head to feet including any weapon or mount, standing in a neutral relaxed pose with arms slightly away from the body, three-quarter front view, alone and centred on a plain flat mid-grey background, soft even lighting from all sides, no cast shadow, no scenery, no smoke, glow, sparks, mist or motion effects, nothing transparent.
+Subject: A large raven with glossy black feathers that shine violet at the edges, one eye glowing green. A thin silver ring etched with a rune circles one leg, and a small rolled scroll tied with violet thread is held in its beak.
+```
+
+**3. Jack-o'-Lantern**
+
+```text
+Model sheet for 3D modelling. The same subject and the same colours and materials, but: the whole figure in frame from head to feet including any weapon or mount, standing in a neutral relaxed pose with arms slightly away from the body, three-quarter front view, alone and centred on a plain flat mid-grey background, soft even lighting from all sides, no cast shadow, no scenery, no smoke, glow, sparks, mist or motion effects, nothing transparent.
+Subject: A knee-high scarecrow creature with a carved pumpkin for a head, lit from inside by green fire through a jagged grin and triangle eyes. A ragged burlap body stuffed with straw, twig arms and legs, and a curling stem on top that burns like a fuse.
+```
+
+**4. Outrider**
+
+```text
+Model sheet for 3D modelling. The same subject and the same colours and materials, but: the whole figure in frame from head to feet including any weapon or mount, standing in a neutral relaxed pose with arms slightly away from the body, three-quarter front view, alone and centred on a plain flat mid-grey background, soft even lighting from all sides, no cast shadow, no scenery, no smoke, glow, sparks, mist or motion effects, nothing transparent.
+Subject: A lean deputy scout riding low over the neck of a slim grey pinto horse at a flat gallop. A long tan duster streams behind; a rust-red bandana is pulled up over the nose; a small brass deputy star is pinned to the duster; a carbine sits in a saddle scabbard. Light tack, no baggage.
+```
+
+**5. Bone Wall**
+
+```text
+Model sheet for 3D modelling. The same subject and the same colours and materials, but: the whole figure in frame from head to feet including any weapon or mount, standing in a neutral relaxed pose with arms slightly away from the body, three-quarter front view, alone and centred on a plain flat mid-grey background, soft even lighting from all sides, no cast shadow, no scenery, no smoke, glow, sparks, mist or motion effects, nothing transparent.
+Subject: A wall built of stacked skulls, ribs and thigh bones, bound with rusted iron bands and lit from within by a faint violet glow in the gaps. Skeletal arms reach out of it holding broken tomb slabs as shields.
+```
+
+**6. Ranger**
+
+```text
+Model sheet for 3D modelling. The same subject and the same colours and materials, but: the whole figure in frame from head to feet including any weapon or mount, standing in a neutral relaxed pose with arms slightly away from the body, three-quarter front view, alone and centred on a plain flat mid-grey background, soft even lighting from all sides, no cast shadow, no scenery, no smoke, glow, sparks, mist or motion effects, nothing transparent.
+Subject: A tall, weathered tracker with a long dark braid and a calm, narrowed gaze. A wide flat-brimmed hat with a small brass star on the band; a long olive-brown duster; a rifle slung across the back; a brass spyglass raised to one eye; a coiled rope and a canteen at the hip.
+```
+
+**7. Imp**
+
+```text
+Model sheet for 3D modelling. The same subject and the same colours and materials, but: the whole figure in frame from head to feet including any weapon or mount, standing in a neutral relaxed pose with arms slightly away from the body, three-quarter front view, alone and centred on a plain flat mid-grey background, soft even lighting from all sides, no cast shadow, no scenery, no smoke, glow, sparks, mist or motion effects, nothing transparent.
+Subject: A small wiry imp with magenta-violet skin, bat ears, two stubby horns, a barbed tail and a grin full of needle teeth. Ember-green eyes. It is caught mid-leap with both clawed hands stretched forward, trailing green sparks.
+```
+
+**8. Dynamiter**
+
+```text
+Model sheet for 3D modelling. The same subject and the same colours and materials, but: the whole figure in frame from head to feet including any weapon or mount, standing in a neutral relaxed pose with arms slightly away from the body, three-quarter front view, alone and centred on a plain flat mid-grey background, soft even lighting from all sides, no cast shadow, no scenery, no smoke, glow, sparks, mist or motion effects, nothing transparent.
+Subject: A wiry, grinning miner turned outlaw with a soot-smudged face, a singed ginger beard and a dented bowler hat. A bandolier of red dynamite sticks crosses his chest; more are tucked in his belt. He holds one stick high with its fuse spitting sparks, and shields his eyes from it with a scorched leather glove.
+```
+
+**9. Headless Horseman**
+
+```text
+Model sheet for 3D modelling. The same subject and the same colours and materials, but: the whole figure in frame from head to feet including any weapon or mount, standing in a neutral relaxed pose with arms slightly away from the body, three-quarter front view, alone and centred on a plain flat mid-grey background, soft even lighting from all sides, no cast shadow, no scenery, no smoke, glow, sparks, mist or motion effects, nothing transparent.
+Subject: A rider in a high-collared black-violet greatcoat with tarnished silver buttons and no head: green witch-fire flares up out of the empty collar. One gauntlet holds a curved cavalry sabre. The horse is black and skeletal at the ribs, with green flame for eyes and green fire around its hooves.
+```
+
+**10. Gatling Crew**
+
+```text
+Model sheet for 3D modelling. The same subject and the same colours and materials, but: the whole figure in frame from head to feet including any weapon or mount, standing in a neutral relaxed pose with arms slightly away from the body, three-quarter front view, alone and centred on a plain flat mid-grey background, soft even lighting from all sides, no cast shadow, no scenery, no smoke, glow, sparks, mist or motion effects, nothing transparent.
+Subject: A brass multi-barrelled Gatling gun on a two-wheeled timber carriage, crewed by two Cowboys: a broad gunner in a leather apron cranking the handle with his teeth bared, and a wiry loader feeding a tall brass magazine. Barrels blurred with spin, brass casings tumbling out.
+```
+
+**11. Lantern Wraith**
+
+```text
+Model sheet for 3D modelling. The same subject and the same colours and materials, but: the whole figure in frame from head to feet including any weapon or mount, standing in a neutral relaxed pose with arms slightly away from the body, three-quarter front view, alone and centred on a plain flat mid-grey background, soft even lighting from all sides, no cast shadow, no scenery, no smoke, glow, sparks, mist or motion effects, nothing transparent.
+Subject: A tall, thin phantom in a long tattered shroud of grey-violet, its hood holding only darkness and two green points of light. One skeletal hand lifts a wrought-iron lantern on a chain, and the green flame inside is the brightest thing in the picture. It has no legs: the shroud frays into mist.
+```
+
+**12. Captured Wraith**
+
+```text
+Model sheet for 3D modelling. The same subject and the same colours and materials, but: the whole figure in frame from head to feet including any weapon or mount, standing in a neutral relaxed pose with arms slightly away from the body, three-quarter front view, alone and centred on a plain flat mid-grey background, soft even lighting from all sides, no cast shadow, no scenery, no smoke, glow, sparks, mist or motion effects, nothing transparent.
+Subject: The Lantern Wraith, bound: a tall hooded phantom in a tattered grey-violet shroud with no face, only two points of light in the dark of the hood. It rises out of a brass railroad lantern like smoke from a bottle, and loops of pale rope hold its wrists. Its light has turned from green to warm amber.
+```
+
+**13. Captured Dragon**
+
+```text
+Model sheet for 3D modelling. The same subject and the same colours and materials, but: the whole figure in frame from head to feet including any weapon or mount, standing in a neutral relaxed pose with arms slightly away from the body, three-quarter front view, alone and centred on a plain flat mid-grey background, soft even lighting from all sides, no cast shadow, no scenery, no smoke, glow, sparks, mist or motion effects, nothing transparent.
+Subject: The Graveyard Dragon, tamed: the same great horned beast with dark purple scales and a ridged neck, now in Cowboy colours. A heavy harness of brown leather and brass studs crosses its chest; a rust-red bandana is knotted around one horn; a brass star tag hangs from the collar. Its throat and belly glow amber instead of green, and the fire in its jaws is gold.
+```
+
+For any other card, keep its `Subject` line and put the model-sheet framing from section 2 in front of it.
 
 ## 6. Card frames
 

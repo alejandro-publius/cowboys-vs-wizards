@@ -10,8 +10,10 @@ Fable 5.2, November 18, 2026. This hands the Showdown engine to Kiro for integra
 
 ## What is not decided
 
-- Whether slices 1 and 2 ship in the December 4 entry or after it. That is Alex's call, and it should follow the [playtest](../../prototypes/showdown/PLAYTEST.md).
-- Card names, keyword wording and the six frame looks. They are first drafts. Do not put the eleven new cards through the card pipeline until Alex has approved their names.
+- Whether slices 1 and 2 ship in the December 4 entry or after it. Alex approved building them on November 18; what ships follows the [playtest](../../prototypes/showdown/PLAYTEST.md).
+- Keyword wording and the six frame looks. They are first drafts.
+
+Alex approved the eleven new card names as written on November 18, so they can go through the card pipeline.
 
 ## The contract
 
@@ -69,7 +71,7 @@ Rivals, bounties, packs, the deck builder with a side deck, best of three and tw
 
 ## The card pipeline
 
-The eleven new cards and the new fields on the old ones live in an overlay in `cards.js` today, because the catalog has no place for them. After Alex approves the names:
+The eleven new cards and the new fields on the old ones live in an overlay in `cards.js` today, because the catalog has no place for them. The names are approved:
 
 - Add `rarity`, `tag`, `keys` and `effect` to the card spec format and to all 29 cards.
 - **Done when** `OVERLAY` and `FRESH` are gone from `cards.js`, the catalog is the only source, and `prototypes/showdown/cards.csv` regenerates byte for byte.
@@ -93,7 +95,7 @@ The rules will keep changing until the playtest passes. These make the 3D layer 
 - **Board.** Three slots a side map onto the three tiles a side the board already has. There are no lanes: an attack runs from any slot to any slot, which the existing attack cue already supports.
 - **Cues.** The board has cues for arriving, attacking, a spell and leaving. Showdown needs ten more: take cover, a trap revealed, gear attached, the location changing, a troop raised, sweep, last stand, a card set face down, a burned draw and fatigue. Give each a placeholder first (a flash and the log line), so no rule waits on an animation.
 - **Models.** The manifest from pull request 141 is keyed by card type and works unchanged. Six of the nineteen troops have a model or rig today. Make the rest in the order a new player meets them: Covered Wagon, Raven Familiar, Jack-o'-Lantern, Outrider, Bone Wall, Ranger, Imp, Dynamiter, Headless Horseman, Gatling Crew, then the two Wraiths and the Captured Dragon.
-- **Look.** [`ART-DIRECTION.md`](../../prototypes/showdown/ART-DIRECTION.md) has the subject text and a model-sheet framing for each.
+- **Look.** [`ART-DIRECTION.md`](../../prototypes/showdown/ART-DIRECTION.md) has a model-sheet block for each, and [`3D-DAY.md`](../../prototypes/showdown/3D-DAY.md) is the runbook from picture to a model on the board.
 
 ## Out of scope
 

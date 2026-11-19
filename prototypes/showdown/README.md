@@ -75,5 +75,5 @@ These are all bot numbers. No person has played these rules.
 - The side deck is only used against the Wizards; two-player games use the starter decks.
 - Which trap springs and which Undead returns are fixed by order, not chosen.
 - The bot can see the top of its own deck when it plays a Scout.
-- Card names, keyword wording, duel names and reward order are first drafts.
+- Alex approved the eleven new card names on November 18. Keyword wording, duel names, reward order and the frame looks are still first drafts.
 - Nothing here is in the main game yet. Its deck builder, bounties and rivals still run on the lane duel.

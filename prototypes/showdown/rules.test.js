@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {DECKS, EFFECTS, KEYWORDS, RARITY, TYPES, cardOf, deckIds} from "./cards.js";
 import {cardsCsv} from "./export-cards.mjs";
-import {FRAMES, FRAME_BASE, FRAMING, LOOK, PLACES, STYLE} from "./art.js";
+import {FRAMES, FRAME_BASE, FRAMING, LOOK, MODEL_ORDER, PLACES, STYLE} from "./art.js";
 import {artDirection} from "./export-art.mjs";
 import {HAND_CAP, OPENING_HAND, applyAction, attackOf, attackOutcome, canAttack, createShowdown, legalActions, playTurn} from "./rules.js";
 
@@ -321,5 +321,8 @@ test("art direction: every card has a subject, a scene and a cue, and the page i
   for (const text of [STYLE, FRAME_BASE, ...Object.values(FRAMES), ...Object.values(FRAMING), ...Object.values(PLACES), ...Object.values(LOOK).flatMap((look) => Object.values(look))]) {
     assert.doesNotMatch(text, /in the style of|yu-?gi-?oh|pok[eé]mon|magic: the gathering|hearthstone|disney|pixar/i);
   }
+  // The model list is every troop except the six that already have a model, each once.
+  const modelled = ["cowboy-sheriff", "cowboy-billy", "cowboy-mounted-billy", "wizard-wizard", "wizard-skeleton", "wizard-dragon"];
+  assert.deepEqual([...MODEL_ORDER].sort(), Object.keys(TYPES).filter((type) => TYPES[type].kind === "troop" && !modelled.includes(type)).sort());
   assert.equal(readFileSync(new URL("ART-DIRECTION.md", import.meta.url), "utf8"), artDirection(), "run: node prototypes/showdown/export-art.mjs");
 });

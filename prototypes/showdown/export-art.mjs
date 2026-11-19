@@ -2,7 +2,7 @@
 //   node prototypes/showdown/export-art.mjs
 import {writeFileSync} from "node:fs";
 import {EFFECTS, KEYWORDS, RARITY, TYPES} from "./cards.js";
-import {FRAMES, FRAME_BASE, FRAMING, LOOK, PLACES, STYLE} from "./art.js";
+import {FRAMES, FRAME_BASE, FRAMING, LOOK, MODEL_ORDER, PLACES, STYLE} from "./art.js";
 
 const block = (text) => "```text\n" + text + "\n```";
 const KIND = {troop: "Troop", spell: "Spell", trap: "Trap", gear: "Gear", location: "Location"};
@@ -66,11 +66,12 @@ Paste after the style. Every place is one corner of the same map: the town at on
 ${Object.entries(PLACES).map(([name, text]) => `### ${name}\n\n${block(`${FRAMING.place}\n${text}`)}\n`).join("\n")}
 ## 5. Model sheets for 3D
 
-For a troop, a piece of gear or a boss that will become a 3D model, keep the card's \`Subject\` line and replace the rest of its block with this framing. A model generator needs the whole figure, a plain background and flat light.
+A model generator needs the whole figure, a plain background and flat light, so a model sheet keeps a card's subject and drops its scene. These are the ${MODEL_ORDER.length} troops with no model yet, in the order to make them: the order a new player meets them. Paste each after the style. [3D-DAY.md](3D-DAY.md) has the steps from picture to a model on the board.
 
-${block(`${FRAMING.model}\nSubject: (the Subject line from the card)`)}
+Subjects that are see-through or made of light on their card (the two Wraiths, the witch-fire on the Headless Horseman) are drawn solid and pale here. The glow and the mist are added in the game.
 
-Subjects that are see-through or made of light on their card (the two Wraiths, the witch-fire on the Headless Horseman) should be drawn solid and pale on the model sheet. The glow and the mist are added in the game.
+${MODEL_ORDER.map((type, i) => `**${i + 1}. ${TYPES[type].name}**\n\n${block(`${FRAMING.model}\nSubject: ${LOOK[type].subject}`)}\n`).join("\n")}
+For any other card, keep its \`Subject\` line and put the model-sheet framing from section 2 in front of it.
 
 ## 6. Card frames
 
