@@ -1,7 +1,8 @@
 import {BOUNTY_REWARDS, COWBOY_CATALOG, DECK_SIZE, DEFAULT_COUNTS, FRONTIER_CATALOG, copyLimit, deckIds, validateDeck} from '../game/deck-builder.js';
 import {BILLY_POSSE, DEADEYE_CONTROL, DRAGON_POSSE, FRONTIER_UNLOCKS, IMP_NAME, NIGHT_RIDERS, STARGAZER_NAME, STARGAZER_WINS, WAGON_TRAIN, WRAITH_POSSE, frontierUnlocked} from '../game/deck-presets.js';
-import {MAX_COWBOY_COPIES, tributeCost} from '../game/cards.js';
-import {openingDroughtRate} from '../game/opening-policy.js';
+import {CARDS, MAX_COWBOY_COPIES, tributeCost} from '../game/cards.js';
+import {isFree, openingDroughtRate} from '../game/opening-policy.js';
+import {createMatch} from '../game/state.js';
 import {earnedRewards} from '../game/bounty-hunt.js';
 
 const element = (tag, text, attrs = {}) => {
@@ -57,6 +58,15 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
   chosen.append(element('h3', 'Your deck', {id: 'wb-chosen-title'}));
   const total = element('p', '', {class: 'deck-total'});
   const openingOdds = element('p', '', {class: 'detail-line'});
+  // Optional opening-hand preview: the Cowboy's first four cards from the
+  // existing createMatch deal. The seed stays put while the draft is edited.
+  let previewSeed = 0;
+  const preview = element('details', undefined, {class: 'wb-preview'});
+  const previewHand = element('ul', undefined, {class: 'deck-rows', 'aria-label': 'Opening hand preview'});
+  const previewInfo = element('p', '', {class: 'detail-line', role: 'status'});
+  const previewHelp = element('p', '', {class: 'detail-line'});
+  const previewDeal = button('Deal another opening', () => {previewSeed += 1; refresh();}, {id: 'preview-deal'});
+  preview.append(element('summary', 'Preview opening hand'), previewHelp, previewInfo, previewHand, previewDeal);
   const rows = element('ul', undefined, {class: 'deck-rows'});
   const validation = element('p', '', {class: 'deck-validation', role: 'status'});
   const feedback = element('p', '', {class: 'deck-feedback', role: 'status'});
@@ -199,7 +209,7 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
     frontierText = `Next Frontier card: ${name} in ${left} counted duel ${left === 1 ? 'win' : 'wins'} (${frontierCards.length} of ${FRONTIER_UNLOCKS.length} earned).`;
   }
   const frontierLine = element('p', frontierText, {class: 'detail-line'});
-  chosen.append(frontierLine, total, openingOdds, playState, rows, validation, actions, ...notes, feedback);
+  chosen.append(frontierLine, total, openingOdds, preview, playState, rows, validation, actions, ...notes, feedback);
   if (draft) feedback.textContent = 'Your trial draft is back. Save deck to keep it, or Revert changes.';
   collection.append(grid);
   layout.append(collection, detail, chosen);
@@ -213,6 +223,18 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
     if (result.ok) {
       const rate = (100 * openingDroughtRate(deckIds(counts, entitlement))).toFixed(1);
       openingOdds.textContent = `${rate}% chance of no free summon in a standard opening hand.`;
+    }
+    previewDeal.disabled = !result.ok;
+    previewHand.hidden = previewInfo.hidden = !result.ok;
+    if (result.ok) {
+      const hand = createMatch(previewSeed, {cowboyDeck: deckIds(counts, entitlement)}).sides.cowboy.hand;
+      const free = hand.filter(isFree).length;
+      previewHelp.textContent = 'Your first four cards from this draft. Nothing is saved.';
+      previewInfo.textContent = `Seed ${previewSeed} · ${free} free ${free === 1 ? 'troop' : 'troops'}${free === 0 ? ' · No free summon in this opening.' : ''}`;
+      previewHand.replaceChildren(...hand.map(id => element('li', CARDS[id].name, {class: 'deck-row'})));
+    } else {
+      previewHelp.textContent = `Finish a legal ${DECK_SIZE}-card deck to preview an opening.`;
+      previewHand.replaceChildren();
     }
     validation.textContent = result.ok ? 'Ready to save.' : result.error;
     validation.dataset.ok = String(result.ok);
