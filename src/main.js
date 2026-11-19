@@ -19,6 +19,7 @@ import {mountTitleMenu} from "./ui/title-menu.js";
 import {createProfileStore} from "./profile/player-profile.js";
 import {createMatch} from "./game/state.js";
 import {deckIds,validateDeck} from "./game/deck-builder.js";
+import {frontierUnlocked} from "./game/deck-presets.js";
 const get=id=>document.getElementById(id);
 const profile=createProfileStore();
 let game=null,launching=null;
@@ -253,7 +254,9 @@ async function launch(guided){
       guideState=guideProgress();
       if(logOn){roundEvents=[];clashNext=clashShown={title:"",lines:[]};}
       const counts=guidedMatch||params.get("deck")==="starter"?null:profile.get().deck;
-      const options=counts&&validateDeck(counts).ok?{cowboyDeck:deckIds(counts)}:{};
+      // Bounty entitlement stays as before (none here); Frontier IDs come from the profile's wins.
+      const entitlement={frontierCards:frontierUnlocked(profile.get())};
+      const options=counts&&validateDeck(counts,entitlement).ok?{cowboyDeck:deckIds(counts,entitlement)}:{};
       return opening&&!guidedMatch?openingMatch(seed,opening.opening,opening.first,options):createMatch(seed,options);
     },
     applyAction(state,action){
