@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Showdown rules | Cowboys vs. Wizards prototype</title>
+  <link rel="icon" href="data:,">
+  <style>@@STYLE@@</style>
+</head>
+<body>
+  <main>
+    <h1>Showdown rules <small>prototype</small></h1>
+    <ol class="rules">
+      <li>You choose every attack: pick your troop, then the enemy troop it hits.</li>
+      <li>Damage beyond a troop's last orb hits its owner's Base. A troop that survives hits back.</li>
+      <li>A Base can be struck directly only when its side has no troops.</li>
+      <li>Summon and cast first, then attack. A free troop rests on the turn it arrives; a tribute troop strikes at once.</li>
+    </ol>
+    <p id="status" role="status"></p>
+    <section id="board" aria-label="Board"></section>
+    <p id="prompt"></p>
+    <div id="actions">
+      <button type="button" id="end">End turn</button>
+      <button type="button" id="cancel">Cancel</button>
+      <button type="button" id="again">Replay this deal</button>
+      <button type="button" id="fresh">New deal</button>
+    </div>
+    <section id="hand" aria-label="Your hand"></section>
+    <section aria-label="What happened"><h2>What happened</h2><ol id="log"></ol></section>
+  </main>
+  <script>@@SCRIPT@@</script>
+</body>
+</html>
