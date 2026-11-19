@@ -1,36 +1,54 @@
 # Cowboys vs. Wizards
 
-**A haunted-Western card duel where gunslingers, skeletal armies and dragons fight across three 3D lanes.** Choose illustrated cards, sacrifice troops to summon stronger allies, and watch life orbs fall as the Wizard CPU answers.
+**A haunted-Western card duel: cowboys against wizards across three lanes.** It takes what long-running card games already proved (tribute summons, spells that answer a board, a graveyard, a deck you build) and keeps a duel short and easy to read.
 
-**[Play now](https://alejandro-publius.github.io/cowboys-vs-wizards/)** · **[Watch the opening (seed 0)](https://alejandro-publius.github.io/cowboys-vs-wizards/?mode=match&deck=starter&seed=0)** · **[Reach the Dragon showdown (seed 60)](https://alejandro-publius.github.io/cowboys-vs-wizards/?mode=match&deck=starter&seed=60)** · **[Judge's 90-second guide](docs/JUDGE-GUIDE.md)**
+## Status on November 18, 2026
 
-![Real browser capture of the Cowboys vs. Wizards 3D match](docs/evidence/combined-demo/result.png)
+The rules are being built first, in a plain "graybox" page: a flat board, text cards, life orbs and a clash log. The 3D models, animation and board go on top once the rules are locked, because motion is expensive to change. An earlier illustrated 3D duel is still [live in the browser](https://alejandro-publius.github.io/cowboys-vs-wizards/). It predates most of what is listed below, so this page shows no screenshots until the 3D layer matches the current rules.
 
-*The illustrated card game is playable in a browser. The screenshots are captured from the actual game, not generated mockups.* 
+No first-time human player has tested the current rules yet. Every balance figure in this repository comes from bot play. The [release line and scoreboard](docs/design/release-line.md) says what is in the game, what is waiting on a playtest, and what was cut.
 
-## Main menu
+## What is playable in the graybox
 
-![Approved illustrated main menu, used by the playable game](assets/menu/title-screen.webp)
-
-Play or resume a match, read the rules, save settings, view earned achievements, or build a 12-card Cowboy deck. Settings and progress stay in this browser. The approved title artwork is still; controls are native keyboard/touch buttons.
+- **The duel.** Twelve-card decks, three lanes, one summon and one spell a turn, tributes for stronger troops, and both sides striking at once. Eighteen cards: twelve Cowboy, six Wizard.
+- **A guided first duel** on a fixed, forgiving deal.
+- **Wanted bounties.** Five notices each for the Lantern Wraith and the Graveyard Dragon. Clearing a boss earns its card and a showcase duel.
+- **The Frontier cards.** Six Cowboy cards unlocked by wins, including riders that can change lanes, and two ready-made decks.
+- **Rivals.** The Stargazer and the Imp, each built to make one deck rethink its plan.
+- **Practice decisions.** Two short positions that open on the turn of a choice.
+- **The Dragon Fire arc.** A boss fight that teaches a move, then a rival, the Bonewright, who answers it.
+- **A deck builder** with drafts you can try before saving.
 
 ## Play
 
-[Play Cowboys vs. Wizards in your browser](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Seed 0 opening](https://alejandro-publius.github.io/cowboys-vs-wizards/?mode=match&deck=starter&seed=0) · [Seed 60 showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/?mode=match&deck=starter&seed=60)
-
-For the local working graybox, use Node.js 22.18 or later. Install dependencies with `npm ci`, then build.
+Use Node.js 22.18 or later.
 
 ```sh
+npm ci
 npm run build
 ```
 
-Open `dist/cowboys-vs-wizards-board-duel.html` in a desktop browser. The graybox uses a flat board, text cards, health orbs and a clash log. Turns resolve immediately. Use **How to Play → Start guided duel** for the starter opening or enter a seed in the duel menu. The same deck and seed give the same opening.
+Open `dist/cowboys-vs-wizards-board-duel.html` in a desktop browser. Turns resolve immediately. Useful address endings:
 
-Run `npm run build:art` to build the illustrated game and attack demo at the same path. That build requires WebGL 2 and includes models, card art and a fallback recording. Use `?mode=match&deck=starter&seed=0` for the free Sheriff opening or `?mode=demo` for the original Billy and Wizard exchange.
+| Ending | Opens |
+| --- | --- |
+| none | The main menu. **How to Play → Start guided duel** is the best first match. |
+| `?mode=match&deck=starter&seed=690` | The guided deal without hints |
+| `?mode=fire-arc` | The Dragon Fire arc |
+| `?mode=practice-dynamiter`, `?mode=practice-tribute` | The two practice decisions |
+| `?mode=ride-out` | The Ride Out lesson |
 
-For a static website, `npm run build -- --web` writes the self-contained graybox to `dist/web/index.html`. `npm run build:art -- --web` writes the illustrated build and its content-hashed assets there. The Pages workflow uses the illustrated build.
+`npm run build -- --web` writes the self-contained graybox to `dist/web/index.html`.
 
-Follow the tested seed 60 route to the Mounted Billy and Dragon clash. [Seed 60 play-through](docs/morning-handoff.md#the-duel-to-film)
+`npm run build:art` builds the illustrated 3D duel and attack demo at the same path. That build needs WebGL 2 and includes the models and card art. `npm run build:art -- --web` writes it with content-hashed assets, and the Pages workflow publishes that build.
+
+## How it is made
+
+Three tools share the work, and each is credited for what it did.
+
+- **Fable (Claude Code)** leads the design: mechanics, progression and engine contracts. Its briefs are in [docs/design](docs/design/README.md).
+- **Kiro** builds those briefs, integrates them and runs the checks. See [Built with Kiro](#built-with-kiro).
+- **Codex** coordinates, reviews and verifies in the browser.
 
 ## Verify
 
@@ -93,4 +111,4 @@ Dragon and Mounted Billy play articulated Blender attack clips. Skeleton uses it
 
 The build includes Three.js (MIT) and Rapier (Apache-2.0) notices. The pinned Lucca Cerf references and their MIT license are in [docs/references/lucca-character-factory](docs/references/lucca-character-factory). The [build log](docs/kiro-build-log.md) attributes work by Kiro, Fable, Codex, Tripo and the user.
 
-[Watch the 59-second menu and gameplay preview](docs/evidence/gameplay-demo/menu-and-gameplay-preview.mp4) · [Verified closeout deployment](docs/evidence/kiro-closeout-deployment.md)
+[Verified closeout deployment](docs/evidence/kiro-closeout-deployment.md)
