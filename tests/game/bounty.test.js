@@ -2,11 +2,12 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {DRAGON_HUNTS} from "../../src/game/bounty-notices.js";
 import {createDragonHunt, dragonRewardEarned} from "../../src/game/bounty-hunt.js";
-import {CARDS, DECKS} from "../../src/game/cards.js";
+import {CARDS, DECKS, tributeCost} from "../../src/game/cards.js";
 import {DEFAULT_COUNTS, deckIds, validateDeck, validateDeckIds} from "../../src/game/deck-builder.js";
 import {applyAction} from "../../src/game/actions.js";
-import {resultAfterClash} from "../../src/game/clash.js";
+import {resolveClash, resultAfterClash} from "../../src/game/clash.js";
 import {legalActions} from "../../src/game/legal.js";
+import {createMatch} from "../../src/game/state.js";
 import {createProfileStore} from "../../src/profile/player-profile.js";
 
 test("the five different hunts use legal pieces from the starter decks", () => {
@@ -62,4 +63,25 @@ test("five different captures unlock one playable reward across reloads", () => 
   assert.equal(validateDeckIds(ids).ok, true);
   assert.ok(ids.includes("cowboy-captured-dragon-1"));
   assert.equal(validateDeck({...rewardDeck, "cowboy-captured-dragon": 2}, {bountyReward: true}).ok, false);
+});
+
+test("the Captured Dragon hits an open Base for four and trades with a Wizard", () => {
+  const id = "cowboy-captured-dragon-1";
+  const card = CARDS[id];
+  assert.equal(tributeCost(card.stars), 1);
+  assert.equal(card.health, 2);
+  for (const [enemy, cowboyHealth, wizardHealth, wizardBase] of [
+    [null, 2, null, 1],
+    ["wizard-skeleton-1", 1, null, 5],
+    ["wizard-wizard-1", null, null, 5],
+    ["wizard-dragon-1", null, 1, 5],
+  ]) {
+    const state = createMatch(468);
+    state.sides.cowboy.board[0] = {cardId: id, health: card.health};
+    if (enemy) state.sides.wizard.board[0] = {cardId: enemy, health: CARDS[enemy].health};
+    resolveClash(state, () => {});
+    assert.equal(state.sides.cowboy.board[0]?.health ?? null, cowboyHealth);
+    assert.equal(state.sides.wizard.board[0]?.health ?? null, wizardHealth);
+    assert.equal(state.sides.wizard.baseOrbs, wizardBase);
+  }
 });
