@@ -19,6 +19,8 @@ button[aria-pressed="true"] { background: #7a5a2a; border-color: #d8a24a; }
 .card.wizard { background: #3b2f52; border-color: #8a72b8; }
 .card.cowboy { background: #4d3f22; border-color: #c9a24f; }
 .card.mark { outline: 2px solid #e8dfd0; }
+.lane.marked { border: 2px solid #d8a24a; background: #2c2438; }
+#outcome button { margin-top: 4px; }
 .empty { color: #6f6656; padding-top: 24px; }
 .orbs { letter-spacing: 2px; color: #e8b84a; }
 .orbs .lost { color: #5a5242; }
