@@ -21,7 +21,7 @@ if (replayMode && (!/^-?\d+$/.test(replayValue) || !Number.isSafeInteger(Number(
 }
 const SEEDS = replayMode ? [Number(replayValue)] : Array.from({ length: 200 }, (_, seed) => seed);
 const PAIRINGS = [["cpu", "cpu"], ["cpu", "random"], ["random", "cpu"], ["random", "random"]];
-const DESCRIBED = new Set(["spell", "damage", "defeat"]);
+const DESCRIBED = new Set(["spell", "damage", "defeat", "ride-out"]);
 const CARD_NAMES = [...new Set(Object.values(CARDS).map((card) => card.name))];
 
 function deepFreeze(value) {
@@ -68,17 +68,28 @@ function allowed(event) {
     if (event.destination !== undefined) numbers.push(event.destination + 1);
     return { names: [event.spell, named(event.target.cardId)], numbers };
   }
+  if (event.type === "ride-out") {
+    return { names: [named(event.cardId)], numbers: [event.slot + 1, event.destination + 1] };
+  }
   return { names: [named(event.cardId)], numbers: [event.slot + 1] };
+}
+
+// The exact Ride line: "Your Sheriff rode from lane 1 to lane 2", or with
+// "drifted" for a Wanted drift; the Wizard's troop has no "Your" and no "the".
+function rideLine(event) {
+  const who = event.side === "cowboy" ? `Your ${named(event.cardId)}` : named(event.cardId);
+  return `${who} ${event.drift ? "drifted" : "rode"} from lane ${event.slot + 1} to lane ${event.destination + 1}`;
 }
 
 test("generated clash batches cover each event kind and both simultaneous directions", {skip: replayMode ? "Coverage belongs to the full corpus; replay runs the five behavior properties." : false}, () => {
   assert.ok(ALL.length >= 800, `only ${ALL.length} clash batches generated`);
-  const seen = { baseHit: 0, troopHit: 0, spell: 0, move: 0, defeat: 0, simultaneous: 0 };
+  const seen = { baseHit: 0, troopHit: 0, spell: 0, move: 0, defeat: 0, ride: 0, simultaneous: 0 };
   for (const { events } of ALL) {
     for (const event of events) {
       if (event.type === "damage") seen[event.target.kind === "base" ? "baseHit" : "troopHit"]++;
       if (event.type === "spell") seen[event.destination === undefined ? "spell" : "move"]++;
       if (event.type === "defeat") seen.defeat++;
+      if (event.type === "ride-out") seen.ride++;
     }
     const damages = events.filter((event) => event.type === "damage");
     if (damages.some((a) => damages.some((b) => a.lane === b.lane && a.attacker.side !== b.attacker.side))) seen.simultaneous++;
@@ -111,7 +122,8 @@ test("property: one line per described event, in order, with only that event's l
       const ctx = where(c, `event#${at}=${JSON.stringify(event)} line=${JSON.stringify(line)}`);
       const { names, numbers } = allowed(event);
       assert.deepEqual(integers(line), numbers, ctx); // lane, before, after (and destination), nothing else
-      if (event.type === "defeat") assert.match(line, /was defeated$/, ctx);
+      if (event.type === "ride-out") assert.equal(line, rideLine(event), ctx);
+      else if (event.type === "defeat") assert.match(line, /was defeated$/, ctx);
       else assert.match(line, new RegExp(`${event.before} → ${event.after} orbs?`), ctx);
       // Every card name on the line belongs to this event: strip them, then no other card name may remain.
       let rest = line.replace(/the Wizard Base/g, "");

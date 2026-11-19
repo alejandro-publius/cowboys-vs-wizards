@@ -16,6 +16,7 @@ import { RESULT_LABELS, cardModel } from "../../src/ui/card-model.js";
 
 const SEEDS = Array.from({ length: 100 }, (_, seed) => seed);
 const MAX_STEPS = 500;
+const ridersSeen = new Set(); // rider cards that reached a model's hand
 
 function forEachSeed(run) {
   for (const seed of SEEDS) {
@@ -52,7 +53,14 @@ function checkModel(model, { view, state, options, status, seed }) {
       attack: data.attack ?? null,
       selected: data.id === selected,
       playable: playable.some((action) => action.cardId === data.id),
+      ...(data.kind === "troop" && data.rides === true && { rides: true }),
     });
+    // `rides` is present, and true, only on rider troop cards.
+    assert.equal(Object.hasOwn(card, "rides"), data.kind === "troop" && data.rides === true, `${card.cardId}: rides flag`);
+    if (Object.hasOwn(card, "rides")) {
+      assert.equal(card.rides, true);
+      ridersSeen.add(card.cardId);
+    }
   }
 
   // The Wizard side is counts only, and no card of the hidden Wizard hand
@@ -71,6 +79,17 @@ function checkModel(model, { view, state, options, status, seed }) {
   });
 
   const accepting = status === "accepting_input";
+  // The ride block appears in a standard duel only while a ride is legal or being chosen.
+  const rideShown = Boolean(view.rideOut?.enabled || (accepting && (options?.canRideOut || options?.step?.startsWith("ride-"))));
+  assert.equal(Object.hasOwn(model, "ride"), rideShown, "ride block presence");
+  if (rideShown) {
+    assert.deepEqual(model.ride, {
+      available: accepting && Boolean(options?.canRideOut),
+      choosing: accepting && Boolean(options?.step?.startsWith("ride-")),
+      from: options?.rideFrom ?? null,
+      destination: options?.rideDestination ?? null,
+    });
+  }
   assert.deepEqual(model.buttons, {
     hand: accepting,
     confirm: accepting && Boolean(options?.canConfirm),
@@ -99,7 +118,9 @@ test("card model: counts, one front per held card, no Wizard card identity, outc
       // While the Cowboy acts, the card it is about to play is selected, so
       // the selected flag is checked; every third step has no options at all.
       let selection = emptySelection;
-      if (status === "accepting_input" && action.type !== "end-phase") {
+      if (status === "accepting_input" && action.type === "ride-out") {
+        selection = selectionStep(emptySelection, { type: "ride-out" }, view, { accepting: true }).selection;
+      } else if (status === "accepting_input" && action.type !== "end-phase") {
         selection = selectionStep(emptySelection, { type: "card", cardId: action.cardId }, view, { accepting: true }).selection;
       }
       const options = step % 3 === 2 ? null : selectionOptions(selection, view);
@@ -119,6 +140,7 @@ test("card model: counts, one front per held card, no Wizard card identity, outc
     }
   });
   for (const [outcome, count] of Object.entries(outcomes)) assert.ok(count > 0, `no ${outcome} in seeds 0-99`);
+  assert.ok(ridersSeen.size > 0, "no rider card reached a hand in seeds 0-99");
   t.diagnostic(`Cowboy outcomes: ${JSON.stringify(outcomes)}`);
 });
 

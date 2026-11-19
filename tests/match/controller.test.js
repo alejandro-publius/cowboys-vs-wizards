@@ -133,7 +133,7 @@ function harness({ cpu = chooseAction, randomSeed } = {}) {
   const scheduler = createScheduler();
   const renderer = recordingRenderer(scheduler);
   const { engine, log } = recordingEngine();
-  const h = { scheduler, renderer, log, cpuCalls: 0, onChange: null };
+  const h = { scheduler, renderer, log, cpuCalls: 0, onChange: null, rideSelections: 0 };
   h.controller = createController({
     engine,
     chooseCpuAction: (...args) => {
@@ -168,6 +168,23 @@ function actCowboy(h, seed) {
     else controller.submit(action);
   } else if (!byClicks) {
     controller.submit(action);
+  } else if (action.type === "ride-out") {
+    // Ride Out -> choose the source (skipped when exactly one troop can ride)
+    // -> choose the destination -> confirm.
+    const sources = [...new Set(legalActions(view, "cowboy").filter((legal) => legal.type === "ride-out").map((legal) => legal.slot))];
+    assert.ok(sources.includes(action.slot), `revision ${view.revision}: the chosen ride is not among the legal ride sources`);
+    controller.input({ type: "ride-out" });
+    if (sources.length === 1) {
+      assert.equal(controller.selection().step, "ride-destination", `revision ${view.revision}: a single source is chosen automatically`);
+    } else {
+      assert.equal(controller.selection().step, "ride-source", `revision ${view.revision}: several sources need a choice`);
+      controller.input({ type: "slot", side: "cowboy", slot: action.slot });
+    }
+    assert.equal(controller.selection().step, "ride-destination", `revision ${view.revision}`);
+    controller.input({ type: "slot", side: "cowboy", slot: action.destination });
+    assert.equal(controller.selection().step, "ride-confirm", `revision ${view.revision}`);
+    controller.input({ type: "confirm" });
+    h.rideSelections += 1;
   } else {
     controller.input({ type: "card", cardId: action.cardId });
     if (action.type === "summon") {
@@ -505,14 +522,17 @@ test("seeds 14, 27 and 47 keep the createMatch opening hands and play to a resul
 
 test("seeds 0-99 finish with the displayed outcome equal to the Engine result", (t) => {
   const outcomes = { win: 0, loss: 0, draw: 0 };
+  let rideSelections = 0;
   forEachSeed((seed) => {
     const h = started(seed);
     play(h);
+    rideSelections += h.rideSelections;
     assert.equal(h.controller.status(), "terminal");
     const { outcome } = publicState(h.log.latest, "cowboy").result;
     assert.equal(h.controller.displayed().result.outcome, outcome);
     assert.deepEqual(h.controller.displayed(), publicState(h.log.latest, "cowboy"));
     outcomes[outcome] += 1;
   });
-  t.diagnostic(`Cowboy outcomes: ${JSON.stringify(outcomes)}`);
+  assert.ok(rideSelections > 0, "no standard-duel Ride Out was selected");
+  t.diagnostic(`Cowboy outcomes: ${JSON.stringify(outcomes)}; Ride Out selections: ${rideSelections}`);
 });
