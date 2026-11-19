@@ -27,9 +27,13 @@ export function summonForecasts(view, options) {
     if (blocker) sides[enemy].board[slot] = {...blocker};
     for (const lane of exposed) sides[enemy].board[lane] = {...enemyBoard[lane]};
     const hits = [];
-    resolveClash({sides}, (event) => {
+    resolveClash({sides, dragonFire: view.dragonFire}, (event) => {
       if (event.type !== "damage" || event.lane !== slot) return;
       const {target, before, after} = event;
+      if (event.fire === true) {
+        hits.push(`Dragon Fire: ${target.side === own ? "your" : "enemy"} Base ${before} → ${after}`);
+        return;
+      }
       const name = target.kind === "base" ? "Enemy base" : CARDS[target.cardId].name;
       hits.push(`${name} ${before} → ${after}`);
     });

@@ -28,9 +28,13 @@ export function clashForecast(view, options) {
   }));
   const losses = [];
   // A Lantern Wraith hunt's marked move runs inside the same resolver.
-  const hunt = {round: view.round, bountyTarget: view.bountyTarget, bountyDrift: view.bountyDrift};
+  const hunt = {round: view.round, bountyTarget: view.bountyTarget, bountyDrift: view.bountyDrift, ...(view.dragonFire && {dragonFire: view.dragonFire})};
   const drift = pendingDrift({...hunt, sides});
+  const fires = [];
   resolveClash({...hunt, sides}, (event) => {
+    if (event.type === "damage" && event.fire === true) {
+      fires.push(`lane ${event.lane + 1}: ${event.target.side === view.viewer ? "your" : "enemy"} Base ${event.before} → ${event.after}`);
+    }
     if (event.type !== "defeat") return;
     const owner = event.side === view.viewer ? "Your" : "Enemy";
     losses.push(`${owner} ${CARDS[event.cardId].name} (lane ${event.slot + 1})`);
@@ -58,6 +62,7 @@ export function clashForecast(view, options) {
       baseLine("Enemy Base", view.sides[enemy].baseOrbs, sides[enemy].baseOrbs),
     ].join(" · "),
     losses: losses.length ? `Troops that fall: ${losses.join(", ")}.` : "",
+    ...(fires.length && {fire: `Dragon Fire burns through (${fires.join("; ")}).`}),
     timing,
     pass: options.playableCardIds.length === 0 && !options.canRideOut ? "No cards can be played. Select End turn." : "",
   };
