@@ -19,7 +19,7 @@ const CUSTOM_COUNTS = Object.freeze({
 });
 
 test("catalog and defaults retain all existing stats and default ID order", () => {
-  assert.deepEqual(COWBOY_CATALOG, CARD_SPECS.filter((spec) => spec.side === "cowboy" && !spec.bounty));
+  assert.deepEqual(COWBOY_CATALOG, CARD_SPECS.filter((spec) => spec.side === "cowboy" && spec.copies > 0));
   assert.deepEqual(DEFAULT_COUNTS, {
     "cowboy-sheriff": 6, "cowboy-billy": 3, "cowboy-mounted-billy": 1, "cowboy-deadeye": 2,
   });
@@ -30,16 +30,17 @@ test("catalog and defaults retain all existing stats and default ID order", () =
   assert(Object.isFrozen(DEFAULT_COUNTS));
 });
 
-test("the Cowboy pool has six copies per type without expanding the Wizard pool", () => {
+test("the Cowboy pool has its copy limit per type (six unless a spec sets one) without expanding the Wizard pool", () => {
   for (const { type, order, copies, ...card } of COWBOY_CATALOG) {
-    for (let copy = 1; copy <= 6; copy++) {
+    const limit = card.limit ?? 6;
+    for (let copy = 1; copy <= limit; copy++) {
       const id = `${type}-${copy}`;
       assert.deepEqual(CARDS[id], { id, ...card });
       assert(Object.isFrozen(CARDS[id]));
     }
-    assert.equal(Object.hasOwn(CARDS, `${type}-7`), false);
+    assert.equal(Object.hasOwn(CARDS, `${type}-${limit + 1}`), false);
   }
-  assert.equal(Object.values(CARDS).filter(({ side, bounty }) => side === "cowboy" && !bounty).length, 24);
+  assert.equal(Object.values(CARDS).filter(({ side, bounty }) => side === "cowboy" && !bounty).length, 35);
   assert.deepEqual(Object.values(CARDS).filter(({ side, bounty }) => side === "wizard" && !bounty).map(({ id }) => id), DEFAULT_WIZARD_IDS);
   assert.equal(Object.hasOwn(CARDS, "wizard-dragon-2"), false);
 });

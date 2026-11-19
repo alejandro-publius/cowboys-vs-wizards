@@ -1,4 +1,4 @@
-import { CARDS, SPELL_DAMAGE, opponent, tributeCost } from "./cards.js";
+import { CARDS, SPELL_DAMAGE, canRide, opponent, tributeCost } from "./cards.js";
 import { MAX_ROUNDS } from "./state.js";
 import { resolveClash, resultAfterClash } from "./clash.js";
 import { adjacentLanes, isSlot, shiftDestinations, shiftTroop } from "./lanes.js";
@@ -56,14 +56,15 @@ function spellRejection(state, action) {
   return legalMove ? null : "invalid-destination";
 }
 
-// Ride Out experiment (.kiro/specs/ride-out, RO-4): the move uses the summon
-// allowance, so it shares the summon's reason and, like a summon, cannot
-// follow a spell. Reached only on a match created with rideOut: true.
-function rideOutRejection(state, action) {
+// Ride Out: the move uses the summon allowance, so it shares the summon's
+// reason and, like a summon, cannot follow a spell. Every troop may ride on a
+// rideOut match; otherwise only troops whose card has `rides`.
+function rideOutRejection(state, action, cards) {
+  const { board } = state.sides[action.side];
+  if (state.rideOut?.enabled !== true && !canRide(state, board[action.slot]?.cardId, cards)) return "invalid-action";
   const { summonUsed, castUsed } = state.allowances[action.side];
   if (summonUsed) return "summon-used";
   if (castUsed) return "ride-out-after-spell";
-  const { board } = state.sides[action.side];
   if (!isSlot(action.slot) || board[action.slot] === null) return "invalid-slot";
   if (!adjacentLanes(action.slot).includes(action.destination)) return "invalid-destination";
   if (board[action.destination] !== null) return "destination-occupied";
@@ -95,8 +96,10 @@ const REJECTIONS = {
 function rejection(state, action, cards) {
   if (state.result) return "match-over";
   if (action === null || typeof action !== "object" || !Object.hasOwn(REJECTIONS, action.type)) return "invalid-action";
-  // Without the flag the move does not exist: same reason and order as an unknown type.
-  if (action.type === "ride-out" && state.rideOut?.enabled !== true) return "invalid-action";
+  // Without the flag the move does not exist unless one of the side's troops rides:
+  // then it has the same reason and order as an unknown type.
+  if (action.type === "ride-out" && state.rideOut?.enabled !== true &&
+      !state.sides[action.side]?.board.some((troop) => troop !== null && canRide(state, troop.cardId, cards))) return "invalid-action";
   const { actionId } = action;
   if (actionId !== undefined) {
     if (typeof actionId !== "string" || actionId === "") return "invalid-action";

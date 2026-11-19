@@ -20,10 +20,14 @@ export const CARDS = {};
 // Unshuffled 12-card deck of IDs per side.
 export const DECKS = {};
 
+// Copy limit of a Cowboy card: its spec's `limit`, else one for a bounty card,
+// else MAX_COWBOY_COPIES. Registration and deck validation both use it.
+export const cowboyCopyLimit = (card) => card.limit ?? (card.bounty ? 1 : MAX_COWBOY_COPIES);
+
 for (const side of SIDES) {
   DECKS[side] = [];
   for (const { type, order, copies, ...card } of CARD_SPECS.filter((spec) => spec.side === side)) {
-    const available = card.bounty ? 1 : side === "cowboy" ? MAX_COWBOY_COPIES : copies;
+    const available = side === "cowboy" ? cowboyCopyLimit(card) : card.bounty ? 1 : copies;
     for (let copy = 1; copy <= available; copy++) {
       const id = `${type}-${copy}`;
       CARDS[id] = Object.freeze({ id, side, ...card });
@@ -34,6 +38,10 @@ for (const side of SIDES) {
 }
 Object.freeze(CARDS);
 Object.freeze(DECKS);
+
+// Ride Out: every troop on a hunt, lesson or rideOut match; otherwise only
+// troops whose card says `rides`.
+export const canRide = (state, cardId, cards = CARDS) => state.rideOut?.enabled === true || cards[cardId]?.rides === true;
 
 // Friendly troops a summon must sacrifice: 1-4 stars none, 5-6 one, 7+ two.
 export function tributeCost(stars) {

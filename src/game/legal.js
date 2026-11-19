@@ -1,4 +1,4 @@
-import { CARDS, SPELL_DAMAGE, opponent, tributeCost } from "./cards.js";
+import { CARDS, SPELL_DAMAGE, canRide, opponent, tributeCost } from "./cards.js";
 import { MAX_ROUNDS } from "./state.js";
 import { shiftDestinations } from "./lanes.js";
 
@@ -62,10 +62,11 @@ export function legalActions(state, side, { cards = CARDS } = {}) {
     }
   }
 
-  // Ride Out experiment: the move takes the summon allowance and cannot follow a spell.
-  if (state.rideOut?.enabled === true && !summonUsed && !castUsed) {
+  // Ride Out: the move takes the summon allowance and cannot follow a spell. It is
+  // listed for every troop when the match enables it, else only for troops whose card rides.
+  if (!summonUsed && !castUsed) {
     for (const slot of slots) {
-      if (board[slot] === null) continue;
+      if (board[slot] === null || !canRide(state, board[slot].cardId, cards)) continue;
       for (const destination of shiftDestinations(board, slot)) actions.push({ type: "ride-out", ...base, slot, destination });
     }
   }

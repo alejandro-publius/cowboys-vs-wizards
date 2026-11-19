@@ -23,7 +23,7 @@ test("registry holds available copies; default decks retain each spec's copies a
   for (const side of SIDES) {
     const expectedDeck = [];
     for (const { type, order, copies, ...fields } of sideSpecs(side)) {
-      const availableCopies = fields.bounty ? 1 : side === "cowboy" ? 6 : copies;
+      const availableCopies = fields.limit ?? (fields.bounty ? 1 : side === "cowboy" ? 6 : copies);
       for (let copy = 1; copy <= availableCopies; copy++) {
         const id = idOf({ type }, copy);
         expectedRegistry.push(id);
@@ -36,8 +36,9 @@ test("registry holds available copies; default decks retain each spec's copies a
     assert.deepEqual(DECKS[side], expectedDeck);
     assert.ok(Object.isFrozen(DECKS[side]));
   }
-  // 35 starter instances plus one Captured Dragon, one Captured Wraith and one Lantern Wraith boss.
-  assert.equal(expectedRegistry.length, 39);
+  // 36 starter-pool instances, eleven Frontier-pack instances (2+2+2+2+1+2),
+  // plus one Captured Dragon, one Captured Wraith and one Lantern Wraith boss.
+  assert.equal(expectedRegistry.length, 50);
   assert.deepEqual(Object.keys(CARDS).sort(), expectedRegistry.sort());
   assert.ok(Object.isFrozen(CARDS) && Object.isFrozen(DECKS));
 });
