@@ -8,10 +8,20 @@ function element(tag, text, className) {
   return node;
 }
 
+// Fable's first-session order (.artifacts/coordination/fable-first-session.md §2).
+// Display order only: BOSSES and the canonical hunt data stay as they are.
+export const WRAITH_NOTICE_ORDER = Object.freeze([
+  "gallows-lantern", "ferry-crossing", "blacksmith-forge", "lamplighter-row", "chapel-bell-tower",
+]);
+const WRAITH_RIDE_NOTE = " On a hunt your troops can Ride Out. In a standard duel only cards marked Ride can Ride.";
+const posterOrder = (boss) => (boss.id === "lantern-wraith" ? WRAITH_NOTICE_ORDER : boss.hunts);
+// Wraith poster first, then the Dragon.
+const firstWraith = (a, b) => (b.id === "lantern-wraith") - (a.id === "lantern-wraith");
+
 // One poster and hunt list per boss. Each boss counts only its own hunts.
 export function renderWantedBoard(content, profile, start) {
   const {clearedHunts} = profile;
-  for (const boss of BOSSES) {
+  for (const boss of [...BOSSES].sort(firstWraith)) {
     const earned = rewardEarned(profile, boss);
     const reward = CARDS[`${boss.reward}-1`];
     const achievement = boss.achievement === "bounty-hunter" ? "Bounty Hunter" : "Lantern Snuffer";
@@ -20,7 +30,7 @@ export function renderWantedBoard(content, profile, start) {
     poster.append(
       element("p", "Wanted", "wanted-eyebrow"),
       element("h3", boss.name),
-      element("p", boss.brief),
+      element("p", boss.id === "lantern-wraith" ? boss.brief + WRAITH_RIDE_NOTE : boss.brief),
       element("strong", `${Math.min(clearedFor(profile, boss), HUNT_GOAL)} / ${HUNT_GOAL} hunts cleared`, "wanted-progress"),
       element("p", earned
         ? `${achievement} earned. ${reward.name} is ready in Build Deck.`
@@ -29,7 +39,7 @@ export function renderWantedBoard(content, profile, start) {
     );
     const list = element("ul", null, "wanted-hunts");
     list.setAttribute("aria-label", `${boss.name} hunts`);
-    for (const id of boss.hunts) {
+    for (const id of posterOrder(boss)) {
       const hunt = HUNTS_BY_ID.get(id);
       const row = element("li");
       const cleared = clearedHunts.includes(hunt.id);

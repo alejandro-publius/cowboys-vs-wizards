@@ -17,7 +17,7 @@ import {createCardBody, describeCard} from "./card-art.js";
 import {CARDS, tributeCost} from "../game/cards.js";
 
 const ACTIONS = {confirm: "onConfirm", "ride-out": "onRideOut", cancel: "onCancel", skip: "onSkip", "end-phase": "onEndPhase", restart: "onRestart"};
-const REMATCH = {"replay-deal": "onReplayDeal", "new-duel": "onNewDuel"};
+const REMATCH = {"replay-deal": "onReplayDeal", "new-duel": "onNewDuel", "result-go": "onResultGo"};
 // Public catalog: the first copy of each of the eight card names.
 const catalog = Object.values(CARDS).filter((card) => !card.bounty).filter((card, i, all) => all.findIndex((each) => each.name === card.name) === i);
 const catalogId = (card) => catalog.find((each) => each.name === card.name).id;
@@ -229,15 +229,19 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
   const resultRestart = el("button", {type: "button", "data-action": "restart"}, "Restart");
   // Plain (graybox) result with rematch handlers: Replay this deal and New duel
   // replace Restart. The illustrated result keeps its Restart.
+  const resultNote = el("p", {hidden: true});
+  // Plain result only: model.resultGo = {label} adds one primary button before the rematch buttons.
+  const resultGo = el("button", {type: "button", "data-action": "result-go", hidden: true});
   const rematch = plain && handlers.onReplayDeal && handlers.onNewDuel ? {
+    go: resultGo,
     replay: el("button", {type: "button", "data-action": "replay-deal"}, "Replay this deal"),
     fresh: el("button", {type: "button", "data-action": "new-duel"}, "New duel"),
   } : null;
   const resultActions = rematch
-    ? el("div", {class: "match-buttons result-actions"}, rematch.replay, rematch.fresh)
+    ? el("div", {class: "match-buttons result-actions"}, resultGo, rematch.replay, rematch.fresh)
     : resultRestart;
   const result = el("section", {class: "match-result", "aria-label": "Match result", hidden: true},
-    resultTitle, resultText, resultActions);
+    resultTitle, resultText, resultNote, resultActions);
 
   viewArt.hidden = plain;
   root.replaceChildren(top,own,lanes,phaseControl,bottom,...(plain ? [] : [viewer]),result);
@@ -548,6 +552,13 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
     if (model.result) {
       setText(resultTitle, model.result.label);
       setText(resultText, resultDetail(model.result));
+      setText(resultNote, model.resultNote ?? "");
+      resultNote.hidden = !model.resultNote;
+      if (rematch) {
+        rematch.go.hidden = !model.resultGo;
+        rematch.go.disabled = !model.buttons.restart;
+        if (model.resultGo) setText(rematch.go, model.resultGo.label);
+      }
       result.dataset.outcome = model.result.outcome;
     }
   }
