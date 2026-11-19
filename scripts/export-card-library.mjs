@@ -62,7 +62,11 @@ function howToGet(spec) {
   return unlock ? `Win ${unlock.wins} counted duels.` : "In your collection from the start.";
 }
 
-const HEADER = ["Card", "Faction", "Type", "Stars", "Tributes to summon", "Attack", "Orbs", "Effect", "Copy limit per deck", "How you get it", "Decks it is in", "Job", "How to answer it"];
+// The card's category decides its frame (docs/card-types.csv). A bounty card is a Boss:
+// Wanted while you hunt it, Captured once it is yours.
+const category = (spec) => (spec.bounty ? `Boss (${spec.side === "wizard" ? "Wanted" : "Captured"})` : spec.kind === "troop" ? "Troop" : "Spell");
+
+const HEADER = ["Card", "Faction", "Category", "Plays as", "Stars", "Tributes to summon", "Attack", "Orbs", "Effect", "Copy limit per deck", "How you get it", "Decks it is in", "Job", "How to answer it"];
 
 export function cardRows() {
   return CARD_SPECS.map((spec) => {
@@ -71,7 +75,7 @@ export function cardRows() {
     const troop = spec.kind === "troop";
     const decks = LISTS.filter(([, counts]) => counts[spec.type] > 0).map(([name, counts]) => `${name} x${counts[spec.type]}`);
     return [
-      spec.name, spec.side === "cowboy" ? "Cowboy" : "Wizard", troop ? "Troop" : "Spell",
+      spec.name, spec.side === "cowboy" ? "Cowboy" : "Wizard", category(spec), troop ? "Troop" : "Spell",
       troop ? spec.stars : "", troop ? tributeCost(spec.stars) : "", troop ? spec.attack : "", troop ? spec.health : "",
       text.effect, spec.side === "cowboy" ? cowboyCopyLimit(spec) : "", howToGet(spec),
       decks.join("; ") || "None", text.job, text.answer,

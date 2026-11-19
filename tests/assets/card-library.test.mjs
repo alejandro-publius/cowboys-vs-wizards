@@ -13,5 +13,5 @@ test("card library: docs/cards.csv matches the catalog", () => {
 test("card library: one row per card, each with an effect, a job and an answer", () => {
   const rows = cardRows();
   assert.deepEqual(rows.map((row) => row[0]), CARD_SPECS.map((spec) => spec.name));
-  for (const row of rows) for (const column of [7, 9, 11, 12]) assert.ok(String(row[column]).length > 3, `${row[0]} column ${column}`);
+  for (const row of rows) for (const column of [2, 8, 10, 12, 13]) assert.ok(String(row[column]).length > 3, `${row[0]} column ${column}`);
 });

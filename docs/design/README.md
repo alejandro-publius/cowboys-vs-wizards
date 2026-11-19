@@ -19,5 +19,6 @@ Every number in these briefs comes from bot runs on scratch copies of the rules,
 | [First player](first-player-kiro-brief.md) | First Play opens the guided duel; three-minute playtest | Built on a branch, waiting on the playtest |
 | [Captured boss moves](captured-boss-moves-kiro-brief.md) | Dragon Fire and Ghost Walk pitches | Dragon Fire built as an arc |
 | [Depth arc](depth-arc-kiro-brief.md) | Ember Gulch and the Bonewright | Built and merged, waiting on a person |
+| [Card types and bounties](card-types-and-bounties.md) | The frame says the type; bosses are their own category; bounties as a Kiro and Tripo pipeline | Rule written, look waiting on approval, pipeline parked |
 | [Cover Swap](cover-swap-handoff.md) | Opt-in Ride Out variant | Cut; stays an experiment |
 | [Mounted Billy decision](mounted-billy-decision-handoff.md), [playtest boards](mounted-billy-playtest-handoff.md) | Attack 3 against 4 lab | Cut |
