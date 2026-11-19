@@ -33,6 +33,12 @@ jobs:
 
       - run: npm run build:art -- --web
 
+      - name: Add the rules-first graybox at /graybox/
+        run: |
+          npm run build
+          mkdir -p dist/web/graybox
+          cp dist/cowboys-vs-wizards-board-duel.html dist/web/graybox/index.html
+
       - name: Write dist/web/build.json
         run: node scripts/write-build-identity.mjs --commit "$GITHUB_SHA"
 

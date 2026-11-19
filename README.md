@@ -4,7 +4,7 @@
 
 ## Status on November 18, 2026
 
-The rules are being built first, in a plain "graybox" page: a flat board, text cards, life orbs and a clash log. The 3D models, animation and board go on top once the rules are locked, because motion is expensive to change. An earlier illustrated 3D duel is still [live in the browser](https://alejandro-publius.github.io/cowboys-vs-wizards/). It predates most of what is listed below, so this page shows no screenshots until the 3D layer matches the current rules.
+The rules are being built first, in a plain "graybox" page: a flat board, text cards, life orbs and a clash log. [Play the graybox in the browser](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/). The 3D models, animation and board go on top once the rules are locked, because motion is expensive to change. An earlier illustrated 3D duel is still [live in the browser](https://alejandro-publius.github.io/cowboys-vs-wizards/). It predates most of what is listed below, so this page shows no screenshots until the 3D layer matches the current rules.
 
 No first-time human player has tested the current rules yet. Every balance figure in this repository comes from bot play. The [release line and scoreboard](docs/design/release-line.md) says what is in the game, what is waiting on a playtest, and what was cut.
 
