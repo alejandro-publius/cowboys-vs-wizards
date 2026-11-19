@@ -95,7 +95,7 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings,onTryDraft,onTryR
     ])steps.append(element('li',text));
     content.append(steps,element('p','Escape cancels a card selection. Main menu pauses your match. Play resumes it. Restart starts a fresh match.',{class:'menu-hint'}));
   }
-  function deck(opener){
+  function deck(opener,draft){
     open('Build Deck',opener);
     page.classList.add('deck-page');
     // Try draft plays a copy of the current draft without saving it. Offered only
@@ -103,7 +103,7 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings,onTryDraft,onTryR
     const tryDraft=typeof onTryDraft==='function'&&!paused
       ?(counts,opener)=>start(opener,()=>onTryDraft(counts))
       :undefined;
-    renderDeckWorkbench({content,profile,say,savedMessage,button,presets,tryDraft,bounties:Boolean(onHunt)});
+    renderDeckWorkbench({content,profile,say,savedMessage,button,presets,tryDraft,draft,bounties:Boolean(onHunt)});
   }
   function wanted(opener){
     open('Wanted',opener);
@@ -131,6 +131,12 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings,onTryDraft,onTryR
   return {
     show({resume=false}={}){guidedAvailable=false;paused=Boolean(resume);root.hidden=false;home();syncStargazer();play.setAttribute('aria-label',resume?'Resume match':'Play');say(resume?'Match paused · Play to resume':'');play.focus();},
     hide(){root.hidden=true;},
+    editDraft(counts){
+      const entry=$(root,'[data-menu-page="deck"]');
+      if(!entry)return;
+      this.show();
+      deck(entry,counts);
+    },
     status:say
   };
 }

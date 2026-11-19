@@ -142,6 +142,15 @@ function resultExtras(displayed, hunted, boss) {
   if (!deal.hunt && !deal.isDraft && !deal.rideLesson && saved.stats.matches === 1 && saved.clearedHunts.length === 0) {
     return {resultNote: WRAITH_NOTICE_TEXT, resultGo: {label: "Take the notice", start: () => startHunt(WRAITH_NOTICE_ORDER[0])}};
   }
+  // A real Try Draft match: reopen its unsaved recipe. Nothing is saved here.
+  if (deal.draftCounts && deal.isDraft && !deal.hunt && !deal.rideLesson) {
+    const draft = deal.draftCounts;
+    return {resultGo: {label: "Edit this draft", start: () => {
+      if (controller.status() !== "terminal") return;
+      arena.hidden = true;
+      menu.editDraft(draft);
+    }}};
+  }
   return {};
 }
 
@@ -327,6 +336,8 @@ const menu = mountTitleMenu(node("title-screen"), {
     const trial = freshDeal(null);
     trial.isDraft = true;
     trial.options.cowboyDeck = deckIds(counts, entitlement);
+    // Exact draft recipe, so the result screen can reopen it in the Deck Workbench.
+    trial.draftCounts = {...counts};
     if (!startWithDeal(trial, () => controller.start(params.get("seed") ?? undefined) || controller.start())) {
       throw new Error("The trial duel could not start.");
     }
