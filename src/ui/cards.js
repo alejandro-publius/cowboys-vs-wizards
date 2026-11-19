@@ -180,8 +180,12 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
     endPhase: el("button", {type: "button", "data-action": "end-phase"}, "End phase"),
   };
   const selectionActions=el("div",{class:"match-buttons selection-actions"},buttons.confirm,buttons.cancel,buttons.skip);
+  // Plain only: tributes and destination chosen so far. Kept in the DOM so its
+  // live region announces text changes; hidden outside an active tribute summon.
+  const summonPreview = plain ? el("p", {class: "summon-preview match-muted", role: "status", "aria-live": "polite", "aria-atomic": "true", hidden: true}) : null;
   const selectionPanel=el("div",{class:"selection-panel",hidden:true},
     prompt,
+    ...(summonPreview ? [summonPreview] : []),
     selectionActions);
   const handCount=el("span",{class:"hand-count"});
   const viewArt=el("button",{class:"view-art",type:"button","data-action":"view-art"},"Card art");
@@ -496,6 +500,10 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
     if (riding) buttons.confirm.textContent = "Confirm Ride Out";
     else if (selected) buttons.confirm.textContent = selected.kind === "spell" ? "Cast" : "Summon";
     setText(prompt, model.prompt);
+    if (summonPreview) {
+      summonPreview.hidden = !model.summonPreview;
+      setText(summonPreview, model.summonPreview ?? "");
+    }
     if (model.clashLog) {
       if (!clashLog) {
         clashLog = {title: el("strong"), list: el("ul"), shown: ""};
