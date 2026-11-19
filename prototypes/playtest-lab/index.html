@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orb Duel First Duel Pilot</title>
+<style>
+  :root{--bg:#14110f;--panel:#1e1a17;--line:#4a3f36;--ink:#e9dfd0;--dim:#a39786;--accent:#d9a441;--focus:#f2c96b}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 ui-monospace,Menlo,Consolas,monospace}
+  main{max-width:880px;margin:0 auto;padding:28px 16px 48px}
+  h1{margin:0 0 4px;font-size:1.5rem;letter-spacing:.04em;text-transform:uppercase}
+  h2{margin:0 0 8px;font-size:1.1rem;color:var(--accent)}
+  p{margin:0 0 12px}
+  ol{margin:0 0 12px;padding-left:1.4rem}
+  summary{cursor:pointer;margin-bottom:8px}
+  .dim{color:var(--dim)}
+  .card{background:var(--panel);border:2px solid var(--line);border-radius:4px;padding:16px;margin-top:20px}
+  .tag{display:inline-block;margin-bottom:8px;font-size:.75rem;color:var(--dim);text-transform:uppercase}
+  .btn,button{display:inline-block;background:var(--accent);color:#1a1208;border:2px solid #7a5a1c;border-radius:3px;padding:8px 14px;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
+  button.secondary{background:transparent;color:var(--ink);border-color:var(--line)}
+  .btn:hover,button:hover{filter:brightness(1.1)}
+  a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+  label,legend{display:block;margin:12px 0 4px;font-weight:700}
+  #session-record{margin-top:20px;border-top:2px solid var(--line);padding-top:8px}
+  input[type=number]{width:100%;background:#0f0d0b;color:var(--ink);border:2px solid var(--line);border-radius:3px;padding:8px;font:inherit}
+  textarea,select{width:100%;background:#0f0d0b;color:var(--ink);border:2px solid var(--line);border-radius:3px;padding:8px;font:inherit}
+  textarea{min-height:64px;resize:vertical}
+  .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;align-items:center}
+  #observer-timer{border-top:2px solid var(--line);padding-top:8px}
+  #timer-display{font-size:2rem;font-weight:700;color:var(--accent)}
+  #timer-status,#rec-status{min-height:1.4em;color:var(--dim)}
+  button:disabled{opacity:.5;cursor:not-allowed;filter:none}
+</style>
+</head>
+<body>
+<main>
+  <h1>Orb Duel First Duel Pilot</h1>
+  <p class="dim">Local only. Nothing is sent anywhere, and no account is needed.</p>
+
+  <section class="card" id="organizer" aria-labelledby="org-title">
+    <span class="tag">Organizer</span>
+    <h2 id="org-title">First duel release pilot</h2>
+    <p class="dim">Both links open the same bundled build (first-duel.html). Only the address differs, and both play seed 690 in that build. Open each link in a fresh private window for one participant, so every session starts fresh. Never reuse a participant.</p>
+    <p><a class="btn" id="launch-first-duel-guided" href="./first-duel.html" target="_blank" rel="noopener">Guided first duel (bare address)</a></p>
+    <p><a class="btn" id="launch-first-duel-standard" href="./first-duel.html?seed=690" target="_blank" rel="noopener">Standard first duel (?seed=690)</a></p>
+    <p><a class="btn" href="./report.html" target="_blank" rel="noopener">Compare exported sessions</a></p>
+
+    <details id="moderator" open>
+      <summary><strong>Moderator instructions and session script</strong></summary>
+      <p><strong>Three overall is a pilot.</strong> The release line names a three-player pilot. The original A/B decision brief requires at least three per arm. Three players in total can show where first-time players stall. They cannot decide between the two links. Report counts, never percentages.</p>
+      <p><strong>Before.</strong> Use a desktop browser and a new private window. Note the commit, browser and screen. Ask consent before recording voice or screen. Pick the guided or standard link for this participant and set the Assignment field to match.</p>
+      <p><strong>Say exactly.</strong> "This is a card game. Play it for three minutes. I can't answer questions while you play. Please say what you're thinking out loud."</p>
+      <p><strong>Run.</strong> Give no task, goal or prompt. Press Start in the timer when the page is visible. Press the two Mark buttons as each event happens. Stop at 3:00 whatever is on screen.</p>
+      <p><strong>After the clock stops.</strong> Ask these two questions and write the answers down word for word. 1. "What are you trying to do in this game?" 2. "What happened in the last clash you saw, and why?" Put answer 1 in the goal field and answer 2 in the observations field.</p>
+      <p><strong>The four observations.</strong></p>
+      <ol>
+        <li>Time to the first summon, in seconds.</li>
+        <li>Time to the first End turn, in seconds, and whether it came before any summon.</li>
+        <li>Round reached, or the result, at 3:00.</li>
+        <li>What they say the goal is, word for word.</li>
+      </ol>
+      <p class="dim">Download one session file per participant, then open Compare exported sessions and load the files.</p>
+    </details>
+
+    <div id="observer-timer" role="group" aria-labelledby="timer-title">
+      <h2 id="timer-title">Observer timer (optional)</h2>
+      <p class="dim">Press Start when the participant begins. Marks fill the two time fields below. You can always type the numbers instead.</p>
+      <p><span id="timer-display" role="timer" aria-label="Elapsed time">0:00</span></p>
+      <div class="row">
+        <button type="button" id="timer-start">Start</button>
+        <button type="button" id="timer-mark-summon" disabled>Mark first summon</button>
+        <button type="button" id="timer-mark-endturn" disabled>Mark first End turn</button>
+        <button type="button" id="timer-reset" class="secondary">Reset timer</button>
+      </div>
+      <p id="timer-status" role="status" aria-live="polite"></p>
+    </div>
+
+    <form id="session-record" aria-labelledby="rec-title">
+      <h2 id="rec-title">Session record</h2>
+      <p class="dim">Saved as a local JSON file. Leave any field blank.</p>
+
+      <label for="rec-assignment">Assignment (which link)</label>
+      <select id="rec-assignment" name="assignment">
+        <option value="">Not recorded</option>
+        <option value="guided">Guided (bare address)</option>
+        <option value="standard">Standard (?seed=690)</option>
+      </select>
+
+      <label for="rec-summon">Time to first summon (seconds)</label>
+      <input id="rec-summon" name="timeToFirstSummonSeconds" type="number" min="0" step="1" inputmode="numeric">
+
+      <label for="rec-endturn">Time to first End turn (seconds)</label>
+      <input id="rec-endturn" name="timeToFirstEndTurnSeconds" type="number" min="0" step="1" inputmode="numeric">
+
+      <label for="rec-round">Round reached</label>
+      <input id="rec-round" name="roundReached" type="number" min="0" step="1" inputmode="numeric">
+
+      <label for="rec-goal">What do they say the goal is?</label>
+      <textarea id="rec-goal" name="statedGoal" maxlength="500"></textarea>
+      <label for="rec-notes">Last clash and other observations</label>
+      <textarea id="rec-notes" name="observations" maxlength="1200" aria-describedby="rec-notes-help"></textarea>
+      <p class="dim" id="rec-notes-help">Record the last-clash answer, where they paused, and any result at 3:00. Use anonymous notes.</p>
+
+      <div class="row">
+        <button type="submit">Download session record (.json)</button>
+        <button type="reset" class="secondary">Clear</button>
+      </div>
+      <p id="rec-status" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+</main>
+<script>
+(function () {
+  var display = document.getElementById('timer-display');
+  var note = document.getElementById('timer-status');
+  var startBtn = document.getElementById('timer-start');
+  var summonBtn = document.getElementById('timer-mark-summon');
+  var endBtn = document.getElementById('timer-mark-endturn');
+  var resetBtn = document.getElementById('timer-reset');
+  var summonField = document.getElementById('rec-summon');
+  var endField = document.getElementById('rec-endturn');
+  var startedAt = null;
+  var ticker = null;
+
+  function elapsed() { return Math.floor((performance.now() - startedAt) / 1000); }
+  function show(seconds) {
+    var s = seconds % 60;
+    display.textContent = Math.floor(seconds / 60) + ':' + (s < 10 ? '0' : '') + s;
+  }
+  function tick() { show(elapsed()); }
+  function mark(button, field, label) {
+    if (startedAt === null) { note.textContent = 'Press Start first.'; return; }
+    var seconds = elapsed();
+    field.value = String(seconds);
+    button.disabled = true;
+    note.textContent = 'Marked ' + label + ' at ' + seconds + ' s.';
+  }
+  startBtn.addEventListener('click', function () {
+    if (startedAt !== null) return;
+    startedAt = performance.now();
+    startBtn.disabled = true;
+    summonBtn.disabled = false;
+    endBtn.disabled = false;
+    ticker = setInterval(tick, 250);
+    tick();
+    note.textContent = 'Timer running.';
+  });
+  summonBtn.addEventListener('click', function () { mark(summonBtn, summonField, 'first summon'); });
+  endBtn.addEventListener('click', function () { mark(endBtn, endField, 'first End turn'); });
+  resetBtn.addEventListener('click', function () {
+    if (ticker !== null) clearInterval(ticker);
+    ticker = null;
+    startedAt = null;
+    show(0);
+    startBtn.disabled = false;
+    summonBtn.disabled = true;
+    endBtn.disabled = true;
+    note.textContent = 'Timer reset. Field values were left as they are.';
+  });
+})();
+
+(function () {
+  var form = document.getElementById('session-record');
+  var status = document.getElementById('rec-status');
+  function num(value) {
+    var text = String(value || '').trim();
+    if (!text) return null;
+    var n = Number(text);
+    return isFinite(n) && n >= 0 ? n : null;
+  }
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+    var data = new FormData(form);
+    var assignment = String(data.get('assignment') || '');
+    var goal = String(data.get('statedGoal') || '').trim();
+    var observations = String(data.get('observations') || '').trim();
+    var summon = num(data.get('timeToFirstSummonSeconds'));
+    var endTurn = num(data.get('timeToFirstEndTurnSeconds'));
+    var round = num(data.get('roundReached'));
+    if (!assignment && !goal && !observations && summon === null && endTurn === null && round === null) {
+      status.textContent = 'Nothing to save yet. Fill in at least one field.';
+      return;
+    }
+    var now = new Date();
+    var record = {
+      schema: 'orb-duel-first-duel-session/1',
+      recordedAt: now.toISOString(),
+      assignment: assignment || null,
+      timeToFirstSummonSeconds: summon,
+      timeToFirstEndTurnSeconds: endTurn,
+      roundReached: round,
+      statedGoal: goal,
+      observations: observations
+    };
+    var stamp = now.toISOString().replace(/[:.]/g, '-');
+    var blob = new Blob([JSON.stringify(record, null, 2) + '\n'], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = 'first-duel-session-' + stamp + '.json';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    status.textContent = 'Saved ' + link.download + ' to your downloads folder.';
+  });
+  form.addEventListener('reset', function () { status.textContent = ''; });
+})();
+</script>
+</body>
+</html>
