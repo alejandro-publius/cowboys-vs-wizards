@@ -8,6 +8,7 @@ import { legalActions } from "../../src/game/legal.js";
 import { publicState } from "../../src/game/view.js";
 import { CPU_LEVELS, chooseAction, cpuFor } from "../../src/game/cpu.js";
 import { MAX_STEPS, playMatch } from "../../scripts/play-match.mjs";
+import { HISTORICAL_CARDS, historicalBot } from "../../scripts/compare-ride-out.mjs";
 
 // Issue #95, trap T5: the trap-aware CPU (contract section 6). The shipped
 // catalog has no trap card, so these tests use fixture IDs that exist only in
@@ -27,6 +28,8 @@ const TEST_CARDS = Object.freeze({
   [TRAP_C2]: fixtureTrap(TRAP_C2, "cowboy"),
 });
 const OPT = { cards: TEST_CARDS };
+// The same fixture catalog read as before card-level rides: no card has `rides`.
+const HISTORICAL_OPT = { cards: Object.freeze({ ...HISTORICAL_CARDS, ...Object.fromEntries([TRAP_W, TRAP_W2, TRAP_C, TRAP_C2].map((id) => [id, TEST_CARDS[id]])) }) };
 
 const wizardChoice = (state) => chooseAction(publicState(state, "wizard"), OPT);
 
@@ -207,6 +210,9 @@ test("fixture trap matches on seeds 0-49 and 60: legal, one tactical action, ord
       }
       if (action.type === "spell") assert.equal(phase.includes("set-trap"), false, `seed ${seed}: cast after a set`);
       if (action.type === "summon") assert.equal(phase.includes("set-trap"), false, `seed ${seed}: summon after a set`);
+      // A ride-out spends the summon allowance only: it opens a phase, and no cast or set precedes it.
+      if (action.type === "summon") assert.equal(phase.includes("ride-out"), false, `seed ${seed}: summon after a ride-out`);
+      if (action.type === "ride-out") assert.deepEqual(phase, [], `seed ${seed} round ${round}: ride-out after ${phase}`);
       phase.push(action.type);
     }
     if (first.state.sides.wizard.discard.includes(TRAP_W)) triggers += 1;
@@ -218,7 +224,8 @@ test("fixture trap matches on seeds 0-49 and 60: legal, one tactical action, ord
 
 // SHA-256 of [actions, result] for Cowboy normal against Wizard <level> on
 // seeds 0-199, recorded before this change (main 1f6f80c), flag off and flag
-// on with no trap dealt: the two were already equal.
+// on with no trap dealt: the two were already equal. Both sides play the
+// pre-Ride policy (historicalBot): the recording predates card-level rides.
 const BASELINE = {
   easy: "1e8249bb9df6e5919d125eba0453c0394a0f0623fa686ce8c7f395c5286a0298",
   normal: "e6867ef19b9c11edb39e2f6364035987b19ba666b71edc42e3d80b68e1a1508c",
@@ -231,13 +238,65 @@ for (const level of CPU_LEVELS) {
       const hash = createHash("sha256");
       for (let seed = 0; seed < 200; seed++) {
         const opening = createMatch(seed, traps ? { traps: true } : undefined);
-        const { log, state } = playMatch(seed, { cowboy: cpuFor("normal"), wizard: cpuFor(level) }, opening);
+        const { log, state } = playMatch(seed, { cowboy: historicalBot(cpuFor("normal")), wizard: historicalBot(cpuFor(level)) }, opening);
+        assert.equal(log.some(({ action }) => action.type === "ride-out"), false, `seed ${seed}`);
         hash.update(JSON.stringify([log.map(({ action }) => action), state.result]));
       }
       assert.equal(hash.digest("hex"), BASELINE[level], `traps ${traps}`);
     }
   });
+
+  test(`${level}: with traps on and none dealt, current play equals traps off and leaves the historical trace only at a ride-out, seeds 0-199`, () => {
+    for (let seed = 0; seed < 200; seed++) {
+      const bots = { cowboy: cpuFor("normal"), wizard: cpuFor(level) };
+      const off = playMatch(seed, bots, createMatch(seed));
+      const on = playMatch(seed, bots, createMatch(seed, { traps: true }));
+      const actions = (run) => run.log.map(({ action }) => action);
+      assert.deepEqual(actions(on), actions(off), `seed ${seed}: flag changes the actions`);
+      assert.deepEqual(on.state.result, off.state.result, `seed ${seed}: flag changes the result`);
+      const old = playMatch(seed, { cowboy: historicalBot(bots.cowboy), wizard: historicalBot(bots.wizard) }, createMatch(seed, { traps: true }));
+      const first = on.log.findIndex(({ action }) => action.type === "ride-out");
+      if (first === -1) {
+        assert.deepEqual(actions(on), actions(old), `seed ${seed}: differs from the old trace with no ride-out`);
+        assert.deepEqual(on.state.result, old.state.result, `seed ${seed}: result`);
+      } else {
+        assert.deepEqual(actions(on).slice(0, first), actions(old).slice(0, first), `seed ${seed}: differs before the first ride-out`);
+        assert.equal(on.log[first].side, "cowboy", `seed ${seed}: only the Cowboy has a rider`);
+      }
+    }
+  });
 }
+
+test("a ride-out on a trap match uses the summon allowance only, so a set may follow it but never precede it", () => {
+  const stage = () => {
+    const state = structuredClone(createMatch(0, { traps: true }));
+    state.startingSide = state.activeSide = "cowboy";
+    state.sides.cowboy.hand = [TRAP_C];
+    state.sides.cowboy.board = [null, { cardId: "cowboy-mounted-billy-1", health: 5 }, null];
+    return state;
+  };
+  const types = (state) => legalActions(state, "cowboy", OPT).map(({ type, slot, destination }) => (type === "ride-out" ? `ride-out ${slot}>${destination}` : type));
+  const state = stage();
+  assert.deepEqual(types(state), ["set-trap", "ride-out 1>0", "ride-out 1>2", "end-phase"]);
+
+  // Ride first: only the summon allowance is spent; the set is still open, and the zone and tactical slot are untouched.
+  const rode = accept(state, { type: "ride-out", side: "cowboy", revision: state.revision, slot: 1, destination: 2 });
+  assert.deepEqual(rode.allowances.cowboy, { summonUsed: true, castUsed: false, tactical: null });
+  assert.deepEqual(rode.sides.cowboy.board, [null, null, { cardId: "cowboy-mounted-billy-1", health: 5 }]);
+  assert.equal(rode.sides.cowboy.trap, null);
+  assert.deepEqual(types(rode), ["set-trap", "end-phase"]);
+  const set = accept(rode, { type: "set-trap", side: "cowboy", revision: rode.revision, cardId: TRAP_C });
+  assert.deepEqual(set.allowances.cowboy, { summonUsed: true, castUsed: true, tactical: "trap" });
+  assert.deepEqual(set.sides.cowboy.trap, { cardId: TRAP_C, setRound: 1 });
+
+  // Set first: the cast allowance is spent, so the ride-out is neither listed nor accepted.
+  const trapped = accept(stage(), { type: "set-trap", side: "cowboy", revision: 0, cardId: TRAP_C });
+  assert.deepEqual(types(trapped), ["end-phase"]);
+  const late = applyAction(trapped, { type: "ride-out", side: "cowboy", revision: trapped.revision, slot: 1, destination: 0 }, OPT);
+  assert.equal(late.ok, false);
+  assert.equal(late.reason, "ride-out-after-spell");
+  assert.equal(late.state, trapped);
+});
 
 test("seeds 0 and 60: off, on, and on with the fixture catalog but no trap dealt replay the same actions and result", () => {
   for (const seed of [0, 60]) {
@@ -246,10 +305,20 @@ test("seeds 0 and 60: off, on, and on with the fixture catalog but no trap dealt
       const { log, state } = playMatch(seed, Object.fromEntries(SIDES.map((side) => [side, bot])), opening);
       return { actions: log.map(({ action }) => action), result: state.result };
     };
+    // Current policy: the three runs agree, and no trap is ever set.
     const off = run(createMatch(seed));
     assert.deepEqual(run(createMatch(seed, { traps: true })), off, `seed ${seed}`);
     assert.deepEqual(run(createMatch(seed, { traps: true }), OPT), off, `seed ${seed} fixture catalog`);
     assert.equal(off.actions.some(({ type }) => type === "set-trap"), false);
+    // Pre-Ride policy (no card-level rides): the same three-way parity, with no ride-out anywhere.
+    const old = run(createMatch(seed), HISTORICAL_OPT);
+    assert.deepEqual(run(createMatch(seed, { traps: true }), HISTORICAL_OPT), old, `seed ${seed} historical, traps on`);
+    assert.deepEqual(run(createMatch(seed, { traps: true }), { cards: HISTORICAL_CARDS }), old, `seed ${seed} historical, plain catalog`);
+    assert.equal(old.actions.some(({ type }) => type === "set-trap" || type === "ride-out"), false);
+    // Current against old trace: equal up to the first ride-out, and wholly equal when there is none.
+    const first = off.actions.findIndex(({ type }) => type === "ride-out");
+    if (first === -1) assert.deepEqual(off, old, `seed ${seed}: no ride-out, so the old trace`);
+    else assert.deepEqual(off.actions.slice(0, first), old.actions.slice(0, first), `seed ${seed}: before the first ride-out`);
   }
   assert.equal(chooseAction(publicState(createMatch(0), opponent(createMatch(0).activeSide)), OPT), null);
 });

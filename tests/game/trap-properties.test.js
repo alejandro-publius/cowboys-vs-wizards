@@ -15,13 +15,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { CARDS, SIDES, opponent } from "../../src/game/cards.js";
+import { CARDS, DECKS, SIDES, opponent } from "../../src/game/cards.js";
 import { createMatch, BASE_ORBS, MAX_ROUNDS, SLOT_COUNT } from "../../src/game/state.js";
 import { applyAction } from "../../src/game/actions.js";
 import { legalActions } from "../../src/game/legal.js";
 import { publicEvents, publicState } from "../../src/game/view.js";
 import { chooseAction } from "../../src/game/cpu.js";
 import { DEFAULT_PAUSES } from "../../src/match/presenter.js";
+import { HISTORICAL_CARDS } from "../../scripts/compare-ride-out.mjs";
 
 // Two copies of one anonymous fixture trap type per side, so the fixture
 // itself has a legitimately repeated card type.
@@ -35,11 +36,14 @@ const TEST_CARDS = Object.freeze({
   ),
 });
 const OPT = { cards: TEST_CARDS };
+// The fixture catalog read as before card-level rides (no card has `rides`):
+// the policy behind the recorded seed 0 and 60 traces.
+const HISTORICAL_OPT = { cards: Object.freeze({ ...HISTORICAL_CARDS, ...Object.fromEntries(SIDES.flatMap((side) => FIXTURE_OF[side].map((id) => [id, TEST_CARDS[id]]))) }) };
 const FIXTURE_IDS = SIDES.flatMap((side) => FIXTURE_OF[side]);
 
-// Event types the T6 presenter plays: the four animated ones plus every
-// timed pause (presenter.js builds its EVENT_TYPES the same way).
-const PRESENTER_TYPES = new Set(["summon", "spell", "damage", "defeat", ...Object.keys(DEFAULT_PAUSES)]);
+// Event types the T6 presenter plays: the four animated ones, the card-level
+// ride-out, and every timed pause (presenter.js builds its EVENT_TYPES the same way).
+const PRESENTER_TYPES = new Set(["summon", "spell", "ride-out", "damage", "defeat", ...Object.keys(DEFAULT_PAUSES)]);
 const SIDE_KEYS = ["baseOrbs", "board", "deck", "discard", "hand", "trap"];
 // Nine rounds, two phases, at most summon + one tactical action + end-phase.
 const MAX_STEPS = MAX_ROUNDS * SIDES.length * 3;
@@ -166,6 +170,24 @@ function assertStep(prev, action, next, events, label) {
     assert.deepEqual(next.sides[action.side].trap, { cardId: action.cardId, setRound: prev.round }, `${label}: zone after set`);
     assert.equal(next.allowances[action.side].tactical, "trap", label);
   }
+  if (action.type === "ride-out") {
+    // Modelled from the rule: the troop (card and health) changes lane; the
+    // summon allowance is spent; no zone, trap, allowance or revision beyond that moves.
+    const { board } = prev.sides[action.side];
+    const troop = board[action.slot];
+    assert.equal(TEST_CARDS[troop.cardId].rides, true, `${label}: ${troop.cardId} does not ride`);
+    assert.equal(Math.abs(action.slot - action.destination), 1, `${label}: not one lane`);
+    assert.equal(board[action.destination], null, `${label}: destination occupied`);
+    assert.equal(prev.allowances[action.side].summonUsed || prev.allowances[action.side].castUsed, false, `${label}: ride after another action`);
+    const expected = structuredClone(prev);
+    expected.sides[action.side].board[action.destination] = expected.sides[action.side].board[action.slot];
+    expected.sides[action.side].board[action.slot] = null;
+    expected.allowances[action.side].summonUsed = true;
+    expected.revision += 1;
+    if (action.actionId !== undefined) expected.actionIds.push(action.actionId);
+    assert.deepEqual(next, expected, `${label}: ride-out state`);
+    assert.deepEqual(events.map(strip), [{ type: "ride-out", side: action.side, cardId: troop.cardId, slot: action.slot, destination: action.destination, health: troop.health }], `${label}: ride-out events`);
+  }
   if (action.type !== "end-phase") {
     // Only an end-phase can spend or move a trap of the other side.
     assert.deepEqual(next.sides[opponent(action.side)].trap, prev.sides[opponent(action.side)].trap, `${label}: opponent zone changed`);
@@ -210,14 +232,26 @@ function hiddenVariant(state, side) {
 }
 
 // Injected opening: one fixture trap in each hand and the second copy at a
-// seed-dependent deck position. Both sides then hold 14 cards.
-function opening(seed) {
+// seed-dependent deck position. Both sides then hold 14 cards. `staged` also
+// puts the default deck's card-level rider on the Cowboy board in lane
+// seed % 3 (a fixture: it is taken from the hand, swapping with a hand card
+// if it is in the deck, so the census is unchanged).
+function opening(seed, staged = false) {
   const state = structuredClone(createMatch(seed, { traps: true }));
   for (const side of SIDES) {
     const own = state.sides[side];
     const [inHand, inDeck] = FIXTURE_OF[side];
     own.hand.push(inHand);
     own.deck.splice((seed + (side === "wizard" ? 3 : 0)) % (own.deck.length + 1), 0, inDeck);
+  }
+  if (staged) {
+    const own = state.sides.cowboy;
+    const id = DECKS.cowboy.find((each) => CARDS[each].rides === true);
+    assert.ok(id, "the default Cowboy deck holds a card-level rider");
+    const at = own.deck.indexOf(id);
+    if (at !== -1) [own.deck[at], own.hand[0]] = [own.hand[0], own.deck[at]];
+    own.hand.splice(own.hand.indexOf(id), 1);
+    own.board[seed % SLOT_COUNT] = { cardId: id, health: CARDS[id].health };
   }
   return state;
 }
