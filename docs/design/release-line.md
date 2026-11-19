@@ -8,6 +8,16 @@ This file is the one place that says what is in the game, what is waiting, and w
 
 Cowboys vs. Wizards: the proven parts of Yu-Gi-Oh (mostly), Magic and Pokémon, themed, quick to play and easy to read. The graybox is the game while the rules are still soft. Models, animation and the board go on top once a release is locked.
 
+## The fight: Showdown, decided November 18
+
+Alex played the lane duel that night and found it was not fun: strong troops did not protect the Base and he never chose an attack. He chose the Showdown fight for the deeper rules: you pick each attack, troops shield the Base, turns alternate.
+
+Showdown is a prototype in [`prototypes/showdown/`](../../prototypes/showdown/README.md) with its own keywords, type tags, traps and 25 cards. The lane duel stays the main game until its features are moved over. Until then:
+
+- No new lane content is written. Ride, Wraith Drift, Dragon Fire and lane previews are redesigned for Showdown or dropped when they are moved.
+- The playtest of November 19 to 22 should put first-time players on Showdown as well as the first-session flow.
+- Which fight is the December 4 entry is still Alex's decision.
+
 ## Three finish lines, in order
 
 Alex chose all three scopes. They are built one after another, never together.

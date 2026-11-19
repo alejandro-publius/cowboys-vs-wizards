@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Showdown | Cowboys vs. Wizards prototype</title>
+  <link rel="icon" href="data:,">
+  <style>@@STYLE@@</style>
+</head>
+<body>
+  <main>
+    <h1>Showdown <small>prototype</small></h1>
+
+    <section id="camp" aria-label="Camp">
+      <div id="claim" aria-live="polite"></div>
+      <h2>The Trail</h2>
+      <ol id="trail" class="ladder"></ol>
+      <h2>Rivals</h2>
+      <ol id="rivals" class="ladder"></ol>
+      <h2>Wanted</h2>
+      <ol id="bounties" class="ladder"></ol>
+      <h2>Open range</h2>
+      <div class="row" id="open"></div>
+      <h2>Your cards</h2>
+      <p id="collection" class="note"></p>
+      <div class="row"><button type="button" id="build">Build deck</button></div>
+      <details>
+        <summary>Save code</summary>
+        <p class="note">Progress is saved in this browser. Copy this code to move it, or paste one and press Load.</p>
+        <textarea id="code" rows="3" aria-label="Save code" spellcheck="false"></textarea>
+        <div class="row">
+          <button type="button" id="load">Load</button>
+          <button type="button" id="reset">Start over</button>
+          <span id="code-note" class="note" role="status"></span>
+        </div>
+      </details>
+      <details>
+        <summary>Playtest report</summary>
+        <p class="note">What you played and how it went. Select all of it, copy it and send it to whoever asked you to play.</p>
+        <textarea id="report" rows="10" readonly aria-label="Playtest report"></textarea>
+      </details>
+    </section>
+
+    <section id="builder" aria-label="Deck builder" hidden>
+      <h2 id="builder-title">Build deck</h2>
+      <p id="builder-note" class="note"></p>
+      <div id="builder-rows"></div>
+      <p id="builder-problems" role="status"></p>
+      <div class="row">
+        <button type="button" id="builder-save">Save deck</button>
+        <button type="button" id="builder-cancel">Cancel</button>
+      </div>
+    </section>
+
+    <section id="duel" aria-label="Duel" hidden>
+      <p id="lesson"></p>
+      <details id="rules">
+        <summary>All the rules</summary>
+        <ol class="rules">
+          <li>You choose every attack: pick your troop, then the enemy troop it hits.</li>
+          <li>Damage beyond a troop's last orb hits its owner's Base. A troop that survives hits back.</li>
+          <li>A Base can be struck directly only when its side has no troops.</li>
+          <li>Play first, then act: one troop, one other card (spell, gear or location) and one trap a turn. A free troop rests on the turn it arrives; a tribute troop strikes at once.</li>
+          <li>Instead of attacking, a troop can take cover: damage past its last orb stays off your Base, but it does not hit back.</li>
+          <li>A trap waits face down and springs on the next enemy attack.</li>
+          <li>Gear stays on one troop. One location is in play for the whole table; a new one replaces it.</li>
+          <li>An empty deck costs your Base an orb each turn.</li>
+        </ol>
+      </details>
+      <p id="status" role="status"></p>
+      <div id="reward" aria-live="polite"></div>
+      <p id="location" class="note"></p>
+      <section id="board" aria-label="Board"></section>
+      <p id="prompt"></p>
+      <div class="row" id="actions">
+        <button type="button" id="end">End turn</button>
+        <button type="button" id="cover">Take cover</button>
+        <button type="button" id="cancel">Cancel</button>
+        <button type="button" id="again">Restart this duel</button>
+        <button type="button" id="leave">Back to camp</button>
+      </div>
+      <section id="hand" aria-label="Hand"></section>
+      <section aria-label="What happened"><h2>What happened</h2><ol id="log"></ol></section>
+      <section aria-label="Graveyards"><h2>Graveyards</h2>
+        <p class="note">Cowboys: <span id="cowboy-graveyard"></span></p>
+        <p class="note">Wizards: <span id="wizard-graveyard"></span></p>
+      </section>
+      <section aria-label="Keywords"><h2>Keywords</h2><ul id="keywords" class="rules"></ul></section>
+    </section>
+
+    <section id="curtain" aria-label="Pass the screen" hidden>
+      <p id="curtain-text"></p>
+      <button type="button" id="ready">I'm ready</button>
+    </section>
+  </main>
+  <script>@@SCRIPT@@</script>
+</body>
+</html>

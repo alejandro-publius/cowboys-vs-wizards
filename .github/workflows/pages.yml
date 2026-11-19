@@ -39,6 +39,12 @@ jobs:
           mkdir -p dist/web/graybox
           cp dist/cowboys-vs-wizards-board-duel.html dist/web/graybox/index.html
 
+      - name: Add the Showdown prototype at /showdown/
+        run: |
+          node prototypes/showdown/build.mjs
+          mkdir -p dist/web/showdown
+          cp dist/showdown.html dist/web/showdown/index.html
+
       - name: Write dist/web/build.json
         run: node scripts/write-build-identity.mjs --commit "$GITHUB_SHA"
 

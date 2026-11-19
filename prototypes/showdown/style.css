@@ -1,0 +1,50 @@
+:root { color-scheme: dark; --cowboy: #e8b46a; --wizard: #c4a9f0; --line: #3a3d46; }
+body { margin: 0; background: #17181c; color: #e9e9ee; font: 16px/1.45 system-ui, sans-serif; }
+main { max-width: 56rem; margin: 0 auto; padding: 1.25rem; }
+h1 { margin: 0 0 .5rem; font-size: 1.6rem; } h1 small { font-size: .9rem; color: #9a9ca6; font-weight: 400; }
+h2 { font-size: 1rem; margin: 1rem 0 .25rem; }
+.rules { margin: 0 0 .75rem; padding-left: 1.25rem; color: #c8c9d1; font-size: .92rem; }
+#status { font-weight: 600; margin: .5rem 0; }
+#board { display: grid; gap: .5rem; }
+.side { display: grid; grid-template-columns: 9rem repeat(3, 1fr); gap: .5rem; align-items: stretch; }
+.base, .slot, .card { border: 1px solid var(--line); border-radius: 6px; padding: .6rem; background: #20222a; color: inherit; font: inherit; text-align: left; min-height: 5.25rem; }
+/* Tall enough for a preview line, so the board does not jump when a target is picked. */
+.side .base, .side .slot { min-height: 9rem; }
+.base strong, .slot strong, .card strong { display: block; }
+.wizard strong { color: var(--wizard); } .cowboy strong { color: var(--cowboy); }
+.orbs { letter-spacing: .12em; } .lost { opacity: .35; }
+button { cursor: pointer; } button:disabled { cursor: default; opacity: .55; }
+.pick { outline: 2px solid #fff; } .can { border-color: #8fd18f; } .chosen { outline: 2px solid var(--cowboy); }
+.note { display: block; font-size: .82rem; color: #b9bbc6; margin-top: .2rem; }
+.warn { color: #f0a08a; } .good { color: #9fe09f; }
+#prompt { min-height: 1.5rem; margin: .6rem 0; }
+#hand { display: flex; gap: .5rem; flex-wrap: wrap; } #hand .card { width: 9rem; }
+#log { list-style: none; margin: 0; padding-left: 0; font-size: .92rem; color: #c8c9d1; max-height: 14rem; overflow: auto; }
+#log li.turn { margin: .35rem 0 .1rem; font-weight: 600; color: #e9e9ee; }
+.result { font-size: 1.2rem; }
+.type { display: block; font-size: .78rem; letter-spacing: .03em; color: #9a9ca6; }
+.key { display: inline-block; font-size: .78rem; border: 1px solid var(--line); border-radius: 4px; padding: 0 .3rem; margin-top: .15rem; }
+/* Card kinds read by their border, as in the graybox: spell double, trap dashed. */
+.card.spell { border-style: double; border-width: 4px; } .card.trap { border-style: dashed; border-width: 2px; }
+.row { display: flex; gap: .5rem; flex-wrap: wrap; align-items: stretch; margin-bottom: .75rem; }
+.row > button:not(.card), #actions button { padding: .5rem .9rem; border-radius: 6px; border: 1px solid var(--line); background: #2a2d37; color: inherit; font: inherit; }
+.ladder { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: .4rem; margin: 0 0 .6rem; padding: 0; }
+.tile { width: 100%; height: 100%; text-align: left; border: 1px solid var(--line); border-radius: 6px; padding: .45rem .55rem; background: #20222a; color: inherit; font: inherit; font-size: .9rem; }
+.tile strong { display: block; } .tile.open { border-color: var(--cowboy); } .tile.won strong { color: #9fe09f; }
+#lesson { font-size: 1.05rem; margin: .4rem 0; }
+details { margin-bottom: .5rem; color: #c8c9d1; } summary { cursor: pointer; font-size: .9rem; }
+#reward h2, #claim h2 { margin: .25rem 0; color: var(--cowboy); }
+.earned { width: 13rem; }
+/* Gear and locations by their border, like spells and traps. */
+.card.gear { border-style: dotted; border-width: 3px; } .card.location { border-style: solid; border-width: 1px 1px 5px; }
+/* Rarity is a stripe down the left edge, so it reads whatever the card kind is. */
+.card.uncommon { box-shadow: inset 4px 0 #8fb6d9; } .card.rare { box-shadow: inset 4px 0 #e8c14a; } .card.legendary { box-shadow: inset 4px 0 #d07ce8, 0 0 0 1px #d07ce8; }
+.pack { font-size: 1.05rem; border-color: var(--cowboy) !important; }
+.build-row { display: grid; grid-template-columns: 14rem 9rem 9rem 1fr; gap: .75rem; align-items: center; margin-bottom: .4rem; }
+.build-row .card { min-height: 0; } .build-row button { width: 2rem; height: 2rem; border-radius: 6px; border: 1px solid var(--line); background: #2a2d37; color: inherit; font: inherit; }
+.build-row div > .note { margin: 0 0 .15rem; }
+textarea { width: 100%; box-sizing: border-box; background: #20222a; color: inherit; border: 1px solid var(--line); border-radius: 6px; font: .8rem ui-monospace, monospace; }
+#curtain { text-align: center; padding: 4rem 1rem; } #curtain p { font-size: 1.3rem; }
+#curtain button { padding: .7rem 1.4rem; border-radius: 6px; border: 1px solid var(--cowboy); background: #2a2d37; color: inherit; font: inherit; font-size: 1.1rem; }
+[hidden] { display: none !important; }
+@media (max-width: 40rem) { .side { grid-template-columns: 1fr 1fr; } .build-row { grid-template-columns: 1fr 1fr; } }
