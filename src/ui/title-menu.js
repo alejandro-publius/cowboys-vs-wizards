@@ -11,7 +11,7 @@ function element(tag, text, attrs={}) {
   return node;
 }
 
-export function mountTitleMenu(root,{profile,onPlay,onSettings,onTryDraft,onTryRideOut,onHunt}) {
+export function mountTitleMenu(root,{profile,onPlay,onSettings,onTryDraft,onTryRideOut,onPractice,practiceChallenges=[],onHunt}) {
   const scene=$(root,'.title-scene'),page=$(root,'.menu-page'),content=$(root,'.menu-page-content');
   const heading=$(root,'#menu-page-title'),notice=$(root,'#menu-notice'),play=$(root,'#menu-play');
   // Only the graybox title screen carries data-deck-presets="true"; the illustrated builder has no marker.
@@ -84,6 +84,13 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings,onTryDraft,onTryR
       const ride=button('Try Ride Out',()=>start(ride,onTryRideOut),{id:'menu-ride-out','aria-describedby':'menu-ride-out-summary'});
       content.append(ride,element('p','Start at a wounded Sheriff and choose to stay, move, or summon Billy.',{id:'menu-ride-out-summary',class:'menu-guide-summary'}));
     }
+    // Practice snapshots need every Frontier card owned (7 counted wins) and no paused duel.
+    if(onPractice&&stargazerOpen()){
+      for(const {id,title,summary} of practiceChallenges){
+        const practice=button(title,()=>start(practice,()=>onPractice(id)),{id:'menu-practice-'+id,'aria-describedby':'menu-practice-'+id+'-summary'});
+        content.append(practice,element('p',summary+' Earns no wins or rewards.',{id:'menu-practice-'+id+'-summary',class:'menu-guide-summary'}));
+      }
+    }
     const steps=element('ol',undefined,{class:'how-steps'});
     for(const text of [
       'Choose a glowing card, pick a lane, then confirm your summon.',
@@ -131,6 +138,12 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings,onTryDraft,onTryR
   return {
     show({resume=false}={}){guidedAvailable=false;paused=Boolean(resume);root.hidden=false;home();syncStargazer();play.setAttribute('aria-label',resume?'Resume match':'Play');say(resume?'Match paused · Play to resume':'');play.focus();},
     hide(){root.hidden=true;},
+    openHow(){
+      const entry=$(root,'[data-menu-page="how"]');
+      if(!entry)return;
+      this.show();
+      how(entry);
+    },
     editDraft(counts){
       const entry=$(root,'[data-menu-page="deck"]');
       if(!entry)return;
