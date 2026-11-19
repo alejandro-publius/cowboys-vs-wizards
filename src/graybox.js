@@ -375,6 +375,7 @@ const menu = mountTitleMenu(node("title-screen"), {
   onPractice: startPractice,
   practiceChallenges: Object.values(PRACTICE_CHALLENGES),
   onHunt: startHunt,
+  onPosse: startPosse,
   onTryDraft(counts, opponent = null) {
     const entitlement = deckEntitlement();
     if (!["idle", "terminal"].includes(controller.status()) || !validateDeck(counts, entitlement).ok) {
