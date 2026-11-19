@@ -57,6 +57,8 @@ let progress = guideProgress();
 let run = 0;
 let roundEvents = [];
 let latestClash = null;
+// Completed clash summaries of this deal, oldest first; reset in createMatch.
+let clashHistory = [];
 // Each match captures its configuration. Replay and draft starts can supply
 // a configuration for exactly one call to createMatch.
 let deal = null;
@@ -88,6 +90,7 @@ const engine = {
     run++;
     progress = guideProgress();
     roundEvents = [];
+    clashHistory = [];
     latestClash = {title: "Latest clash", lines: ["End the turn to view both sides’ attacks."]};
     deal = nextDeal ? {...nextDeal, seed} : freshDeal(seed);
     nextDeal = null;
@@ -106,6 +109,7 @@ const engine = {
     const log = clashLog(roundEvents);
     if (log) {
       latestClash = log;
+      clashHistory.push(log);
       roundEvents = [];
     }
     if (!deal.isDraft && !deal.rideLesson && !deal.hunt && action.side === "cowboy" && ["summon", "spell"].includes(action.type)) {
@@ -173,6 +177,8 @@ const controller = createController({
       // Each unplayable hand card shows the reason a click on it would give.
       blockedReasons: status === "accepting_input" && displayed ? blockedReasons(displayed) : {},
     });
+    // Every completed clash but the latest, newest first (the latest stays in its own summary).
+    model.clashHistory = clashHistory.slice(0, -1).reverse();
     model.prompt = model.prompt.replace("glowing card", "highlighted card");
     const lessonChoice = deal?.rideLesson && displayed?.round === 2
       && !displayed.allowances.cowboy.summonUsed && !displayed.allowances.cowboy.castUsed;
