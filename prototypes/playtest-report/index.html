@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'">
+<title>Orb Duel first-duel playtest report</title>
+<style>
+  body { font: 16px/1.5 system-ui, sans-serif; max-width: 52rem; margin: 1.5rem auto; padding: 0 1rem; color: #222; background: #faf7f2; }
+  h1 { font-size: 1.4rem; } h2 { font-size: 1.1rem; margin-top: 1.5rem; }
+  #drop { border: 2px dashed #8a6d3b; padding: 1.25rem; text-align: center; background: #fff; }
+  #drop.over { background: #f3e9d2; }
+  pre { background: #fff; border: 1px solid #ccc; padding: .75rem; white-space: pre-wrap; word-break: break-word; font-size: 14px; }
+  button, input[type=file] { font: inherit; min-height: 44px; }
+  .note { font-size: 14px; color: #555; }
+</style>
+</head>
+<body>
+<h1>Orb Duel first-duel playtest report</h1>
+<p class="note">Opens exports with schema <code>orb-duel-first-duel-session/1</code>. Everything is read and computed in this page. Nothing is uploaded, stored or sent. Output is descriptive counts, medians and quoted answers only.</p>
+
+<div id="drop">
+  <p><label for="files">Choose one or more session JSON files, or drop them here.</label></p>
+  <input id="files" type="file" accept=".json,application/json" multiple>
+  <button id="clear" type="button">Clear</button>
+</div>
+
+<h2>Report</h2>
+<pre id="report" aria-live="polite">No files loaded.</pre>
+
+<script>
+"use strict";
+var SCHEMA = "orb-duel-first-duel-session/1";
+
+/*
+ * Export shape (orb-duel-first-duel-session/1), read directly:
+ *   assignment                "guided" | "standard" | null
+ *   timeToFirstSummonSeconds  number | null
+ *   timeToFirstEndTurnSeconds number | null
+ *   roundReached              number | null
+ *   statedGoal                string (may be empty)
+ * Any other value in these fields is treated as not recorded.
+ */
+var GROUPS = ["guided", "standard", "not recorded"];
+
+var seen = Object.create(null);   // raw text -> first file name
+var sessions = [];                // accepted sessions
+var skipped = [];                 // {name, reason}
+
+function numOrNull(v) { return typeof v === "number" && isFinite(v) && v >= 0 ? v : null; }
+
+function parseSession(name, text) {
+  var data;
+  try { data = JSON.parse(text); } catch (e) { return { error: "not valid JSON" }; }
+  if (data === null || typeof data !== "object" || Array.isArray(data)) return { error: "top level is not an object" };
+  if (data.schema !== SCHEMA) return { error: "schema is " + (typeof data.schema === "string" ? JSON.stringify(data.schema) : "missing") + ", expected " + SCHEMA };
+  return { session: {
+    name: name,
+    group: data.assignment === "guided" || data.assignment === "standard" ? data.assignment : "not recorded",
+    summon: numOrNull(data.timeToFirstSummonSeconds),
+    endTurn: numOrNull(data.timeToFirstEndTurnSeconds),
+    round: numOrNull(data.roundReached),
+    goal: typeof data.statedGoal === "string" ? data.statedGoal : ""
+  } };
+}
+
+function median(nums) {
+  if (!nums.length) return null;
+  var a = nums.slice().sort(function (x, y) { return x - y; });
+  var m = a.length >> 1;
+  return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2;
+}
+function fmt(n) { return String(Math.round(n * 1000) / 1000); }
+
+function addText(name, text) {
+  var key = text.replace(/^\uFEFF/, "").trim();
+  if (Object.prototype.hasOwnProperty.call(seen, key)) {
+    skipped.push({ name: name, reason: "duplicate contents of " + seen[key] });
+    return;
+  }
+  seen[key] = name;
+  var r = parseSession(name, key);
+  if (r.error) { skipped.push({ name: name, reason: r.error }); return; }
+  sessions.push(r.session);
+}
+
+function buildReport() {
+  if (!sessions.length && !skipped.length) return "No files loaded.";
+  var L = [];
+  L.push("Sessions accepted: " + sessions.length + "   Files skipped: " + skipped.length);
+  GROUPS.forEach(function (g) {
+    var n = sessions.filter(function (s) { return s.group === g; }).length;
+    if (g !== "not recorded" || n) L.push("  " + g + ": " + n);
+  });
+
+  L.push("", "TIMINGS (median seconds of recorded values; missing values are left out, not counted as zero)");
+  [["Time to first summon", "summon"], ["Time to first End turn", "endTurn"]].forEach(function (t) {
+    L.push("  " + t[0]);
+    GROUPS.forEach(function (g) {
+      var inG = sessions.filter(function (s) { return s.group === g; });
+      if (g === "not recorded" && !inG.length) return;
+      var vals = inG.filter(function (s) { return s[t[1]] !== null; }).map(function (s) { return s[t[1]]; });
+      L.push("    " + g + ": " + (vals.length ? "median " + fmt(median(vals)) + " s" : "no seconds recorded") +
+        "  (recorded " + vals.length + ", missing " + (inG.length - vals.length) + ")");
+    });
+  });
+
+  L.push("", "ROUND REACHED (one line per session)");
+  sessions.forEach(function (s) {
+    L.push("  [" + s.group + "] " + s.name + ": " + (s.round === null ? "missing" : s.round));
+  });
+  if (!sessions.length) L.push("  none");
+
+  L.push("", "STATED GOAL (exact text, quoted)");
+  sessions.forEach(function (s) {
+    L.push("  [" + s.group + "] " + s.name + ": " + (s.goal === "" ? "missing" : JSON.stringify(s.goal)));
+  });
+  if (!sessions.length) L.push("  none");
+
+  L.push("", "SKIPPED FILES");
+  if (!skipped.length) L.push("  none");
+  skipped.forEach(function (k) { L.push("  " + k.name + ": " + k.reason); });
+
+  L.push("", "These are descriptive counts from the loaded files only. They are not scores and carry no claim about demand or preference.");
+  return L.join("\n");
+}
+
+function render() { document.getElementById("report").textContent = buildReport(); }
+
+function readFiles(fileList) {
+  var files = Array.prototype.slice.call(fileList);
+  files.sort(function (a, b) { return a.name < b.name ? -1 : a.name > b.name ? 1 : 0; });
+  var pending = files.length;
+  if (!pending) return;
+  var texts = new Array(files.length);
+  files.forEach(function (f, i) {
+    var fr = new FileReader();
+    fr.onload = function () { texts[i] = String(fr.result); done(); };
+    fr.onerror = function () { texts[i] = null; done(); };
+    fr.readAsText(f);
+  });
+  function done() {
+    if (--pending) return;
+    files.forEach(function (f, i) {
+      if (texts[i] === null) skipped.push({ name: f.name, reason: "could not be read" });
+      else addText(f.name, texts[i]);
+    });
+    render();
+  }
+}
+
+var input = document.getElementById("files");
+input.addEventListener("change", function () { readFiles(input.files); input.value = ""; });
+document.getElementById("clear").addEventListener("click", function () {
+  seen = Object.create(null); sessions = []; skipped = []; render();
+});
+var drop = document.getElementById("drop");
+["dragenter", "dragover"].forEach(function (t) {
+  drop.addEventListener(t, function (e) { e.preventDefault(); drop.className = "over"; });
+});
+["dragleave", "drop"].forEach(function (t) {
+  drop.addEventListener(t, function (e) { e.preventDefault(); drop.className = ""; });
+});
+drop.addEventListener("drop", function (e) { if (e.dataTransfer) readFiles(e.dataTransfer.files); });
+</script>
+</body>
+</html>
