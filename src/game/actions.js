@@ -99,7 +99,7 @@ function rejection(state, action, cards) {
   // Without the flag the move does not exist unless one of the side's troops rides:
   // then it has the same reason and order as an unknown type.
   if (action.type === "ride-out" && state.rideOut?.enabled !== true &&
-      !state.sides[action.side]?.board.some((troop) => troop !== null && canRide(state, troop.cardId, cards))) return "invalid-action";
+      !state.sides[action.side]?.board?.some((troop) => troop !== null && canRide(state, troop.cardId, cards))) return "invalid-action";
   const { actionId } = action;
   if (actionId !== undefined) {
     if (typeof actionId !== "string" || actionId === "") return "invalid-action";

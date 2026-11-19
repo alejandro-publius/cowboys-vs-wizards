@@ -49,7 +49,8 @@ with four Base orbs.
   choosing Play dealt the expected four cards. The round-4 Ride control
   moved the Ranger to lane 1 and then hid for the rest of that turn. Chrome
   reached Victory in round 6 on the Ride route and Draw in round 9 on the
-  Hold route.
+  Hold route. The Wagon Train run also reached Victory in round 5 in
+  Chrome, including both tributes for Gatling Crew.
 - Engine replays reproduced all three scripted outcomes. Starter deck IDs,
   guided seed 690, Wraith Posse seed 2328, and all ten fight openings matched
   `91c7d7a`. Each bounty reward still needed five distinct clears.
