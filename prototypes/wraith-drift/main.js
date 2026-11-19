@@ -25,10 +25,14 @@ const POSITIONS = {
     cowboyBase: 1,
     wizardBase: 5,
   },
+  splitTrail: {
+    goal: "Your Wraith can hold or drift into either open lane. Your Base has 5 orbs; the Wizard's Base has 2.",
+    cowboyBase: 5,
+    wizardBase: 2,
+  },
 };
 
-// Same lanes in both positions: Wraith and Billy face a Skeleton and a Wizard;
-// lane 0 is empty on both sides.
+// Split Trail leaves both lanes next to the Wraith available.
 function setup(position) {
   if (position === "gallows") return createHunt(HUNTS_BY_ID.get("gallows-lantern"));
   const { cowboyBase, wizardBase } = POSITIONS[position];
@@ -36,7 +40,9 @@ function setup(position) {
   state.round = 5;
   state.sides.cowboy.baseOrbs = cowboyBase;
   state.sides.wizard.baseOrbs = wizardBase;
-  state.sides.cowboy.board = [null, troop(WRAITH), troop("cowboy-billy-1")];
+  state.sides.cowboy.board = position === "splitTrail"
+    ? [null, troop(WRAITH), null]
+    : [null, troop(WRAITH), troop("cowboy-billy-1")];
   state.sides.wizard.board = [null, troop("wizard-skeleton-1"), troop("wizard-wizard-1")];
   return state;
 }
@@ -56,8 +62,9 @@ function play(position, choice) {
     resolveClash(state, (event) => events.push(event));
     return { state, events, result: resultAfterClash(state) };
   }
-  if (choice === "drift") {
-    const [destination] = shiftDestinations(state.sides.cowboy.board, WRAITH_LANE);
+  if (choice === "drift" || choice.startsWith("drift:")) {
+    const destination = choice === "drift" ? shiftDestinations(state.sides.cowboy.board, WRAITH_LANE)[0] : Number(choice.slice(6));
+    if (!shiftDestinations(state.sides.cowboy.board, WRAITH_LANE).includes(destination)) throw new Error(`Illegal drift to lane ${destination + 1}`);
     shiftTroop(state.sides.cowboy.board, WRAITH_LANE, destination);
     events.push({ type: "drift", destination });
   }
@@ -96,7 +103,18 @@ function huntVerdict(state, result) {
   return { cls: "", text: "The Wraith survived the clash." };
 }
 
-function why(position, choice) {
+// Split Trail copy comes from the clash events, so it states what happened.
+function splitWhy(events) {
+  const lines = [];
+  for (const e of events) {
+    if (e.type === "damage" && e.target.kind === "base") lines.push(`${who(e.target.side)} Base took ${e.amount} in lane ${e.lane + 1}.`);
+    if (e.type === "damage" && e.target.kind === "troop") lines.push(`${who(e.target.side)} ${name(e.target.cardId)} absorbed the hit in lane ${e.lane + 1}.`);
+  }
+  return lines.join(" ") || "No Base was hit.";
+}
+
+function why(position, choice, events) {
+  if (position === "splitTrail") return splitWhy(events);
   if (position === "gallows") {
     return choice === "drift"
       ? "Billy was already in lane 1 when the Wraith drifted in, so they fought each other there."
@@ -143,10 +161,14 @@ function render() {
   $("blurb").textContent = gallows
     ? "Learn the Lantern Wraith's move by fighting it."
     : "You captured the Lantern Wraith. Its drift is a one-clash prototype power here.";
+  const split = position === "splitTrail";
+  const dests = shiftDestinations(state.sides.cowboy.board, WRAITH_LANE);
   $("drift").textContent = gallows
     ? "Ride Billy to lane 1"
-    : `Drift to lane ${shiftDestinations(state.sides.cowboy.board, WRAITH_LANE)[0] + 1}`;
-  $("hold").disabled = $("drift").disabled = false;
+    : `Drift to lane ${dests[0] + 1}`;
+  $("drift2").hidden = !split;
+  if (split) $("drift2").textContent = `Drift to lane ${dests[1] + 1}`;
+  $("hold").disabled = $("drift").disabled = $("drift2").disabled = false;
   $("outcome").innerHTML = gallows
     ? "Before the first clash, the Wraith drifts into marked lane 1 if that lane is empty. Then everything attacks."
     : "The Wizard has committed. The drift happens before attacks.";
@@ -159,20 +181,21 @@ function choose(choice) {
   played = choice;
   const { state, events, result } = play(position, choice);
   renderBoard(state);
-  $("hold").disabled = $("drift").disabled = true;
-  const other = choice === "hold" ? "drift" : "hold";
-  const alt = play(position, other);
+  $("hold").disabled = $("drift").disabled = $("drift2").disabled = true;
   const gallows = position === "gallows";
-  const v = gallows ? huntVerdict(state, result) : verdict(result);
-  const av = gallows ? huntVerdict(alt.state, alt.result) : verdict(alt.result);
-  const otherName = gallows ? (other === "drift" ? "ride Billy to lane 1" : "hold lane") : other;
+  const choiceName = (c) => (c === "hold" ? "hold lane" : c === "drift" ? (gallows ? "ride Billy to lane 1" : "drift") : `drift to lane ${Number(c.slice(6)) + 1}`);
+  const verdictOf = (r) => (gallows ? huntVerdict(r.state, r.result) : verdict(r.result));
+  const options = position === "splitTrail" ? ["hold", "drift:0", "drift:2"] : ["hold", "drift"];
+  const v = verdictOf({ state, result });
+  const others = options.filter((c) => c !== choice)
+    .map((c) => `<p><b>Other choice (${choiceName(c)}):</b> ${verdictOf(play(position, c)).text}</p>`).join("");
   const next = gallows && result?.reason === "bounty-captured"
     ? `<p><button type="button" data-goto="raid">Use the captured Wraith</button></p>`
     : position === "raid" ? `<p><button type="button" data-goto="lastStand">Optional: try Last stand</button></p>` : "";
   $("outcome").innerHTML = `<strong class="${v.cls}">${v.text}</strong>
     <ul>${describe(events).map((line) => `<li>${line}</li>`).join("")}</ul>
-    <p><b>Why:</b> ${why(position, choice)}</p>
-    <p><b>Other choice (${otherName}):</b> ${av.text}</p>${next}`;
+    <p><b>Why:</b> ${why(position, choice, events)}</p>
+    ${others}${next}`;
 }
 
 for (const b of document.querySelectorAll("[data-position]")) {
@@ -183,6 +206,7 @@ $("outcome").addEventListener("click", (e) => {
   if (go) { position = go.dataset.goto; render(); }
 });
 $("hold").addEventListener("click", () => choose("hold"));
-$("drift").addEventListener("click", () => choose("drift"));
+$("drift").addEventListener("click", () => choose(position === "splitTrail" ? `drift:${shiftDestinations(setup(position).sides.cowboy.board, WRAITH_LANE)[0]}` : "drift"));
+$("drift2").addEventListener("click", () => choose(`drift:${shiftDestinations(setup(position).sides.cowboy.board, WRAITH_LANE)[1]}`));
 $("reset").addEventListener("click", render);
 render();
