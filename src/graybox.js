@@ -150,7 +150,7 @@ function resultExtras(displayed, hunted, boss) {
     return {resultGo: {label: "Edit this draft", start: () => {
       if (controller.status() !== "terminal") return;
       arena.hidden = true;
-      menu.editDraft(draft);
+      menu.editDraft(draft, deal.opponent);
     }}};
   }
   return {};
@@ -278,8 +278,8 @@ function newDuel() {
     return;
   }
   guided = false;
-  // New duel keeps the finished duel's opponent; after a draft or the posse it is the default.
-  startWithDeal(freshDeal(null, deal.opponent), () => controller.start());
+  // A counted duel keeps its opponent. A draft returns to the default.
+  startWithDeal(freshDeal(null, deal.isDraft ? null : deal.opponent), () => controller.start());
 }
 const overlay = mountCards(match, {
   onCard: (cardId) => input({type: "card", cardId}),
@@ -358,13 +358,14 @@ const menu = mountTitleMenu(node("title-screen"), {
   onPractice: startPractice,
   practiceChallenges: Object.values(PRACTICE_CHALLENGES),
   onHunt: startHunt,
-  onTryDraft(counts) {
+  onTryDraft(counts, opponent = null) {
     const entitlement = deckEntitlement();
     if (!["idle", "terminal"].includes(controller.status()) || !validateDeck(counts, entitlement).ok) {
       throw new Error("A deck draft requires a legal deck and no match in progress.");
     }
     guided = false;
-    const trial = freshDeal(null);
+    // Only an optional Wizard opponent (null = default) is passed; the profile is untouched.
+    const trial = freshDeal(null, opponent);
     trial.isDraft = true;
     trial.options.cowboyDeck = deckIds(counts, entitlement);
     // Exact draft recipe, so the result screen can reopen it in the Deck Workbench.
