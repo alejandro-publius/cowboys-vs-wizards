@@ -33,9 +33,17 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
     ...BOUNTY_REWARDS.filter(card => entitlement.rewards.includes(card.type)),
     ...FRONTIER_CATALOG.filter(card => frontierCards.includes(card.type))];
   const stored = saved.deck;
-  let counts = {...(stored && validateDeck(stored, entitlement).ok ? stored : DEFAULT_COUNTS)};
+  // Baseline: the recipe Play uses, i.e. the latest legal saved deck or the
+  // starter. Only Save deck moves it; loading, restoring and Try draft do not.
+  const savedLegal = Boolean(stored && validateDeck(stored, entitlement).ok);
+  let baseline = {...(savedLegal ? stored : DEFAULT_COUNTS)};
+  let baselineSaved = savedLegal;
+  let counts = {...baseline};
   let selected = collectionCards[0].type;
   const count = type => counts[type] ?? 0;
+  // Compare actual card counts: an omitted type and an explicit 0 are the same.
+  const isDirty = () => [...new Set([...Object.keys(counts), ...Object.keys(baseline)])]
+    .some(type => (counts[type] ?? 0) !== (baseline[type] ?? 0));
 
   content.append(element('p', `Pick a card to read it. Build exactly ${DECK_SIZE} cards, up to ${MAX_COWBOY_COPIES} copies of most cards (each card shows its own limit), with at least 1 Sheriff.`, {class: 'menu-intro'}));
   const layout = element('div', undefined, {class: 'workbench'});
@@ -50,6 +58,7 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
   const rows = element('ul', undefined, {class: 'deck-rows'});
   const validation = element('p', '', {class: 'deck-validation', role: 'status'});
   const feedback = element('p', '', {class: 'deck-feedback', role: 'status'});
+  const playState = element('p', '', {class: 'detail-line', id: 'wb-play-state'});
 
   const tiles = new Map(), deckRows = new Map();
   function change(type, delta) {
@@ -83,7 +92,10 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
   const save = button('Save deck', () => {
     const result = validateDeck(counts, entitlement);
     if (!result.ok) {say(result.error); feedback.textContent = result.error; return;}
-    profile.saveDeck(counts);
+    const after = profile.saveDeck(counts);
+    baseline = {...(after.deck ?? counts)};
+    baselineSaved = true;
+    refresh();
     const msg = profile.isPersistent() ? 'Deck saved. Your next match will use these cards.' : 'Saved for this session only. Browser storage is unavailable.';
     savedMessage('Deck saved. Your next match will use these cards.');
     feedback.textContent = msg;
@@ -94,8 +106,18 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
     say('Starter deck restored. Choose Save deck to keep it.');
     feedback.textContent = 'Starter deck restored. Choose Save deck to keep it.';
   });
+  // Reverts the draft to the baseline in memory only; nothing is written to the profile.
+  const revert = button('Revert changes', () => {
+    counts = {...baseline};
+    refresh();
+    // Revert disables itself; keep keyboard focus in the action row.
+    save.focus();
+    const msg = baselineSaved ? 'Changes reverted to your saved deck.' : 'Changes reverted to the starter deck.';
+    say(msg);
+    feedback.textContent = msg;
+  }, {id: 'revert-deck', 'aria-describedby': 'wb-play-state'});
   const actions = element('div', undefined, {class: 'menu-actions'});
-  actions.append(save);
+  actions.append(save, revert);
   const notes = [];
   let trial = null;
   if (tryDraft) {
@@ -157,8 +179,16 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
       feedback.textContent = "Dragon Posse loaded. Try the draft or save it for your next duel.";
     }, {id: "load-dragon-posse"}));
   }
-  const frontierLine = element('p', `Frontier cards earned: ${frontierCards.length} of ${FRONTIER_UNLOCKS.length}. Each counted duel win from the second earns the next one.`, {class: 'detail-line'});
-  chosen.append(frontierLine, total, openingOdds, rows, validation, actions, ...notes, feedback);
+  // Next Frontier reward from FRONTIER_UNLOCKS, named from the catalog.
+  const nextUnlock = FRONTIER_UNLOCKS.find(unlock => wins < unlock.wins);
+  let frontierText = `All ${FRONTIER_UNLOCKS.length} Frontier cards earned.`;
+  if (nextUnlock) {
+    const name = FRONTIER_CATALOG.find(card => card.type === nextUnlock.type)?.name ?? nextUnlock.type;
+    const left = nextUnlock.wins - wins;
+    frontierText = `Next Frontier card: ${name} in ${left} counted duel ${left === 1 ? 'win' : 'wins'} (${frontierCards.length} of ${FRONTIER_UNLOCKS.length} earned).`;
+  }
+  const frontierLine = element('p', frontierText, {class: 'detail-line'});
+  chosen.append(frontierLine, total, openingOdds, playState, rows, validation, actions, ...notes, feedback);
   collection.append(grid);
   layout.append(collection, detail, chosen);
   content.append(layout);
@@ -176,6 +206,12 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
     validation.dataset.ok = String(result.ok);
     save.disabled = !result.ok;
     if (trial) trial.disabled = !result.ok;
+    const dirty = isDirty(), source = baselineSaved ? 'saved deck' : 'starter deck';
+    playState.textContent = dirty
+      ? `Unsaved changes. Play still uses your ${source}.`
+      : `Matches your ${source}. Play uses these cards.`;
+    playState.dataset.dirty = String(dirty);
+    revert.disabled = !dirty;
     for (const card of collectionCards) {
       const n = count(card.type), tile = tiles.get(card.type), r = deckRows.get(card.type);
       tile.setAttribute('aria-pressed', String(card.type === selected));
