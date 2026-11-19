@@ -254,6 +254,7 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
   // Opt-in clash log (?log=1): made on the first render that carries one, so
   // the default page gains no element. A polite live region, latest clash only.
   let clashLog = null; // {title, list, shown}
+  let clashHistory = null; // {node, summary, list, shown}: model.clashHistory, newest first
   let flight = null; // {cardId, node, animation}
   let drawFlight = null; // {key, handIndex, node, animation, turn}
   let drawKey = null; // model.draw.key of the latest draw seen, so each draw flies once
@@ -503,6 +504,26 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
         clashLog.shown = shownNow;
         setText(clashLog.title, model.clashLog.title);
         clashLog.list.replaceChildren(...model.clashLog.lines.map((line) => el("li", {}, line)));
+      }
+    }
+    // Earlier clashes: a closed native disclosure outside the live region, so
+    // older summaries are never announced. Made once and kept, so its open
+    // state and focus survive unrelated renders; hidden until one clash is older.
+    const earlier = model.clashLog ? model.clashHistory ?? [] : [];
+    if (earlier.length > 0 && !clashHistory) {
+      clashHistory = {summary: el("summary"), list: el("ol"), shown: ""};
+      clashHistory.node = el("details", {class: "match-clash-history", "aria-label": "Earlier clashes"}, clashHistory.summary, clashHistory.list);
+      root.append(clashHistory.node);
+    }
+    if (clashHistory) {
+      clashHistory.node.hidden = earlier.length === 0;
+      if (earlier.length === 0) clashHistory.node.open = false;
+      const shownEarlier = JSON.stringify(earlier);
+      if (clashHistory.shown !== shownEarlier) {
+        clashHistory.shown = shownEarlier;
+        setText(clashHistory.summary, `Earlier clashes (${earlier.length})`);
+        clashHistory.list.replaceChildren(...earlier.map((entry) =>
+          el("li", {}, el("strong", {}, entry.title), el("ul", {}, ...entry.lines.map((line) => el("li", {}, line))))));
       }
     }
     setText(message, model.message);
