@@ -1,5 +1,5 @@
 import {BOUNTY_REWARDS, COWBOY_CATALOG, DECK_SIZE, DEFAULT_COUNTS, FRONTIER_CATALOG, copyLimit, deckIds, validateDeck} from '../game/deck-builder.js';
-import {BILLY_POSSE, DEADEYE_CONTROL, FRONTIER_UNLOCKS, IMP_NAME, NIGHT_RIDERS, STARGAZER_NAME, STARGAZER_WINS, WAGON_TRAIN, WRAITH_POSSE, frontierUnlocked} from '../game/deck-presets.js';
+import {BILLY_POSSE, DEADEYE_CONTROL, DRAGON_POSSE, FRONTIER_UNLOCKS, IMP_NAME, NIGHT_RIDERS, STARGAZER_NAME, STARGAZER_WINS, WAGON_TRAIN, WRAITH_POSSE, frontierUnlocked} from '../game/deck-presets.js';
 import {MAX_COWBOY_COPIES, tributeCost} from '../game/cards.js';
 import {openingDroughtRate} from '../game/opening-policy.js';
 import {earnedRewards} from '../game/bounty-hunt.js';
@@ -184,7 +184,7 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
   }
   if (entitlement.rewards.includes("cowboy-captured-dragon")) {
     actions.append(button("Load Dragon Posse", () => {
-      counts = {...DEFAULT_COUNTS, "cowboy-mounted-billy": 0, "cowboy-captured-dragon": 1};
+      counts = {...DRAGON_POSSE};
       selected = "cowboy-captured-dragon";
       refresh();
       feedback.textContent = "Dragon Posse loaded. Try the draft or save it for your next duel.";

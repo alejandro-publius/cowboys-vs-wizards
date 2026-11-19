@@ -38,7 +38,7 @@ Ride moves an eligible troop into an adjacent empty friendly lane and spends the
 | Starter | 6 Sheriff, 3 Billy, 1 Mounted Billy, 2 Deadeye | Starting deck |
 | Deadeye Control | 6 Sheriff, 3 Billy, 3 Deadeye | Load in Build Deck |
 | Billy Posse | 6 Sheriff, 4 Billy, 2 Deadeye | Load in Build Deck |
-| Dragon Posse | 6 Sheriff, 3 Billy, 1 Captured Dragon, 2 Deadeye | After the Dragon unlock |
+| Dragon Posse | 6 Sheriff, 2 Billy, 3 Deadeye, 1 Captured Dragon | After the Dragon unlock |
 | Wraith Posse | 5 Sheriff, 3 Billy, 1 Mounted Billy, 1 Captured Wraith, 2 Deadeye | After the Wraith unlock |
 | Wagon Train | 3 Sheriff, 2 Covered Wagon, 2 Billy, 1 Gatling Crew, 2 Deadeye, 2 Lasso | 7 counted duel wins |
 | Night Riders | 3 Sheriff, 2 Outrider, 2 Dynamiter, 2 Ranger, 2 Deadeye, 1 Lasso | 6 counted duel wins |

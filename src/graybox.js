@@ -2,7 +2,7 @@ import {chooseAction, cpuFor} from "./game/cpu.js";
 import {bossOfHunt, clearedFor, createHunt, earnedRewards, HUNT_GOAL, HUNTS_BY_ID, rewardEarned} from "./game/bounty-hunt.js";
 import {CARDS, tributeCost} from "./game/cards.js";
 import {deckIds, validateDeck} from "./game/deck-builder.js";
-import {BILLY_POSSE, DEADEYE_CONTROL, IMP_DECK, IMP_NAME, STARGAZER_DECK, STARGAZER_NAME, WRAITH_POSSE, frontierUnlocked} from "./game/deck-presets.js";
+import {BILLY_POSSE, DEADEYE_CONTROL, DRAGON_POSSE, IMP_DECK, IMP_NAME, STARGAZER_DECK, STARGAZER_NAME, WRAITH_POSSE, frontierUnlocked} from "./game/deck-presets.js";
 import {GRAYBOX_OPENINGS, openingMatch, parseOpeningParams} from "./game/opening-policy.js";
 import {clashForecast, rideForecasts} from "./match/clash-forecast.js";
 import {clashLog} from "./match/clash-log.js";
@@ -43,6 +43,8 @@ const GUIDED_SEED = "690";
 // Fable 5.2 first-session brief §3: an unsaved, entitled draft on a fixed deal. No Ride Out.
 const POSSE_SEED = "2328";
 const POSSE_NOTE = "Wraith Posse: Captured Wraith joins in place of one Sheriff. It is free to summon, hits for 2 and has 2 orbs. Troops hold their lanes; only cards marked Ride can Ride.";
+const DRAGON_POSSE_SEED = "264";
+const DRAGON_POSSE_NOTE = "Dragon Posse: Captured Dragon rides in place of Mounted Billy. It costs one tribute, hits for 3 and has 2 orbs.";
 const WRAITH_NOTICE_TEXT = "A notice is up on the Wanted board: the Lantern Wraith.";
 const chosenCpu = cpuFor(params.get("cpu"));
 const requestedDeck = params.get("deck");
@@ -66,8 +68,8 @@ let clashHistory = [];
 // a configuration for exactly one call to createMatch.
 let deal = null;
 let nextDeal = null;
-// The run whose capture first finished all five Wraith notices.
-let wraithFinishedRun = null;
+// The run whose capture completed a bounty poster.
+let bountyFinishedRun = null;
 let capturedRun = null;
 let resultGo = null;
 
@@ -127,7 +129,7 @@ const engine = {
 function resultExtras(displayed, hunted, boss) {
   const reward = CARDS["cowboy-captured-wraith-1"];
   if (deal.hunt && boss.id === "lantern-wraith" && displayed.result.reason === "bounty-captured") {
-    if (wraithFinishedRun === run) {
+    if (bountyFinishedRun === run) {
       return {
         resultNote: `${reward.name} joins your collection: ${tributeCost(reward.stars) ? `${tributeCost(reward.stars)} tribute` : "free to summon"}, ${reward.attack} attack, ${reward.health} orbs.`,
         resultGo: {label: "Duel with the Wraith Posse", start: startPosse},
@@ -136,7 +138,13 @@ function resultExtras(displayed, hunted, boss) {
     const next = WRAITH_NOTICE_ORDER.find((id) => !hunted.clearedHunts.includes(id));
     return next ? {resultGo: {label: `Next notice: ${HUNTS_BY_ID.get(next).name}`, start: () => startHunt(next)}} : {};
   }
-  if (deal.posse) {
+  if (deal.hunt && boss.id === "graveyard-dragon" && displayed.result.reason === "bounty-captured" && bountyFinishedRun === run) {
+    return {
+      resultNote: "Bounty Hunter earned. Captured Dragon joins your collection.",
+      resultGo: {label: "Duel with the Dragon Posse", start: () => startPosse("dragon")},
+    };
+  }
+  if (deal.posse === "wraith") {
     return displayed.result.outcome === "win" ? {resultNote: "Next on the Wanted board: the Graveyard Dragon."} : {};
   }
   // The first counted result of the profile, any outcome, before any hunt is cleared.
@@ -171,13 +179,13 @@ const controller = createController({
     const status = controller.status();
     if (status === "terminal") {
       if (deal.hunt && displayed.result.reason === "bounty-captured") {
-        // Decide once per run, before recording, whether this capture finishes the Wraith's five.
+        // Read the profile before recording the capture so replays never earn a second showcase.
         if (capturedRun !== run) {
           capturedRun = run;
           const before = profile.get();
-          const wraith = bossOfHunt(deal.hunt.id);
-          wraithFinishedRun = wraith.id === "lantern-wraith" && !before.clearedHunts.includes(deal.hunt.id)
-            && clearedFor(before, wraith) === HUNT_GOAL - 1 ? run : null;
+          const capturedBoss = bossOfHunt(deal.hunt.id);
+          bountyFinishedRun = !before.clearedHunts.includes(deal.hunt.id)
+            && clearedFor(before, capturedBoss) === HUNT_GOAL - 1 ? run : null;
         }
         profile.recordBounty(deal.hunt.id, {clean: displayed.sides.cowboy.baseOrbs === deal.hunt.cowboyBase});
       } else if (!deal.hunt && !deal.isDraft && !deal.rideLesson) {
@@ -214,7 +222,7 @@ const controller = createController({
       practice && displayed?.round === practice.round && practice.note,
       practice && PRACTICE_NO_REWARD_NOTE,
       deal?.isDraft && !practice && "Trying an unsaved deck.",
-      deal?.posse && displayed?.round === 1 && POSSE_NOTE,
+      deal?.posse && displayed?.round === 1 && (deal.posse === "dragon" ? DRAGON_POSSE_NOTE : POSSE_NOTE),
       deal?.opening?.opening === "freeOpener" && FREE_OPENER_NOTE,
       displayed?.rideOut?.enabled ? RIDE_OUT_NOTE
         : (model.ride?.available || model.ride?.choosing) && "Summon or Ride this turn. You can cast a spell afterward.",
@@ -337,15 +345,17 @@ function startHunt(id) {
   node("home").focus();
 }
 
-function startPosse() {
+function startPosse(kind = "wraith") {
   if (!["idle", "terminal"].includes(controller.status())) return;
-  const entitlement = deckEntitlement();
-  // Explicit options: no hunt-wide or ?rideOut=1 setting carries into this standard duel.
-  const posse = {seed: POSSE_SEED, guided: false, opening: null, isDraft: true, posse: true,
-    options: {rideOut: false, cowboyDeck: deckIds(WRAITH_POSSE, entitlement)}};
+  const dragon = kind === "dragon";
+  const seed = dragon ? DRAGON_POSSE_SEED : POSSE_SEED;
+  const counts = dragon ? DRAGON_POSSE : WRAITH_POSSE;
+  // These fixed draft deals use the default Wizard and standard rules.
+  const posse = {seed, guided: false, opening: null, isDraft: true, posse: kind,
+    options: {rideOut: false, cowboyDeck: deckIds(counts, deckEntitlement())}};
   guided = false;
-  if (!startWithDeal(posse, () => controller.start(POSSE_SEED))) {
-    throw new Error("The Wraith Posse duel could not start.");
+  if (!startWithDeal(posse, () => controller.start(seed))) {
+    throw new Error("The Posse duel could not start.");
   }
   menu.hide();
   arena.hidden = false;
