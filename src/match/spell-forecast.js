@@ -48,6 +48,19 @@ export function spellForecasts(view, options) {
         parts.push(`Lane ${lane + 1} opens: Enemy Base ${event.before} → ${event.after}${falls}`);
       });
     }
+    // Dragon Fire arc: a wounded blocker that survives the shot may still not absorb your attacker.
+    const yours = view.sides[own].board[lane];
+    if (after > 0 && yours && view.dragonFire?.enabled) {
+      const sides = Object.fromEntries(SIDES.map((side) => [side, {
+        baseOrbs: view.sides[side].baseOrbs, board: Array(SLOT_COUNT).fill(null), discard: [],
+      }]));
+      sides[own].board[lane] = {...yours};
+      sides[enemy].board[lane] = {...troop, health: after};
+      resolveClash({sides, dragonFire: view.dragonFire}, (event) => {
+        if (event.type !== "damage" || event.fire !== true) return;
+        parts.push(`Dragon Fire: ${event.target.side === own ? "your" : "enemy"} Base ${event.before} → ${event.after}${event.after === 0 ? " (falls)" : ""}`);
+      });
+    }
     return [[lane, parts.join(" · ")]];
   }));
 }

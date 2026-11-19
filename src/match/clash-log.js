@@ -21,6 +21,9 @@ function troop(side, cardId, first = false) {
 function sentence(event) {
   if (event.type === "damage") {
     const { attacker, target } = event;
+    if (event.fire === true) {
+      return `Dragon Fire burned through: ${target.side === "cowboy" ? "your" : "Wizard"} Base ${event.before} → ${event.after}.`;
+    }
     const hit = target.kind === "base" ? base(target.side) : troop(target.side, target.cardId);
     return `${troop(attacker.side, attacker.cardId, true)} in ${lane(event.lane)} hit ${hit}: ${orbs(event.before, event.after)}`;
   }

@@ -149,4 +149,6 @@ dialog::backdrop { background: #0009; }
 .match-slot[data-wanted][data-side=wizard] { color: #ffdb95; border-color: #b98a4f; }
 .match-slot[data-mark=drift][data-side=wizard] { outline: 3px dashed #ffdb95; outline-offset: -5px; }
 .match-slot[data-mark=blocked][data-side=wizard] { outline: 2px dotted #8c6b4b; outline-offset: -5px; }
+.match-slot[data-mark=rebuild][data-side=wizard] { outline: 3px dashed #ffdb95; outline-offset: -5px; }
+.clash-forecast .clash-fire { color: #ffdb95; }
 .match-slot .wraith-mark { color: #ffdb95; font-size: .78rem; }

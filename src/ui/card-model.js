@@ -79,7 +79,7 @@ function summonPreview(accepting, options, board) {
   return parts.join(" ");
 }
 
-export function cardModel({displayed = null, options = null, status = "idle", seed = null, seedPinned = false, message = null, clashLog = null, guide = null, blockedReasons = null} = {}) {
+export function cardModel({displayed = null, options = null, status = "idle", seed = null, seedPinned = false, message = null, clashLog = null, guide = null, blockedReasons = null, fireArc = null} = {}) {
   const accepting = status === "accepting_input";
   const cowboy = displayed?.sides.cowboy ?? null;
   const wizard = displayed?.sides.wizard ?? null;
@@ -122,6 +122,8 @@ export function cardModel({displayed = null, options = null, status = "idle", se
     guideShown: accepting && Boolean(guide),
     message: message ?? "",
     clashLog,
+    // Fire arc only ({stage, note, mark, lossCause?}); absent otherwise.
+    ...(fireArc && {fireArc}),
     lanes: Array.from({length: SLOT_COUNT}, (_, lane) => ({
       lane,
       cowboy: troopSummary(cowboy?.board[lane]),

@@ -102,7 +102,11 @@ function cardButton(card, enabled, inFlight, plain) {
 const MARK_TEXT = {
   drift: "Wraith drifts here before the clash",
   blocked: "Wraith's marked lane is taken: it holds",
+  rebuild: "Rebuilds here after your turn",
 };
+// Fire arc only: a play into the marked lane is told the rival still acts.
+const STILL_ACTS = "The Bonewright still acts.";
+const markedLane = (fireArc) => (Number.isInteger(fireArc?.mark) && fireArc.mark >= 0 && fireArc.mark <= 2 ? fireArc.mark : null);
 function slotButton(side, slot, troop, clickable, chosen, plain, forecast, preview = "Clash preview", wanted = false, mark = null) {
   const owner = side === "cowboy" ? "Your" : "Wizard";
   const name = wanted ? `Wanted ${troop.name}` : troop?.name;
@@ -198,9 +202,10 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
   const forecastLosses = el("p");
   const forecastTiming = el("p", {class: "match-muted"});
   const forecastPass = el("p");
+  const forecastFire = el("p", {class: "clash-fire"});
   const forecast = plain ? el("div", {class: "clash-forecast", role: "status", hidden: true},
     el("p", {}, el("strong", {}, "Next clash"), forecastBases),
-    forecastLosses, forecastTiming, forecastPass) : null;
+    forecastLosses, forecastFire, forecastTiming, forecastPass) : null;
   const ride = handlers.onRideOut
     ? el("button", {type: "button", "data-action": "ride-out", hidden: true}, "Ride Out") : null;
   const phaseControl=el("div",{class:"match-buttons phase-control"},forecast,ride,buttons.endPhase);
@@ -455,8 +460,9 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
     setText(seedKind, model.seed.value === null ? "" : model.seed.pinned ? "(pinned)" : "(generated)");
     if (summary) setText(summary, `${round.textContent} · ${model.phase} · Seed ${model.seed.text}`);
     if (openingNote) {
-      openingNote.hidden = !model.openingNote;
-      setText(openingNote, model.openingNote ?? "");
+      const noteText = model.fireArc?.note || model.openingNote;
+      openingNote.hidden = !noteText;
+      setText(openingNote, noteText ?? "");
     }
 
     wizardDeck.set(model.wizard.deckCount);
@@ -482,6 +488,8 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
         setText(forecastLosses, nextClash.losses);
         setText(forecastPass, nextClash.pass);
         forecastLosses.hidden = !nextClash.losses;
+        setText(forecastFire, nextClash.fire ?? "");
+        forecastFire.hidden = !nextClash.fire;
         forecastPass.hidden = !nextClash.pass;
       }
     }
@@ -542,12 +550,14 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
     message.hidden = !model.message || (selected && model.status!=="error");
 
     const refocus = focusedKey(root);
+    const fireMark = markedLane(model.fireArc);
+    const still = (lane, text) => (text && lane === fireMark ? `${text} · ${STILL_ACTS}` : text);
     lanes.replaceChildren(...model.lanes.flatMap(({lane, cowboy, wizard, wanted, mark}) => [
       slotButton("wizard", lane, wizard, model.slots.wizard.includes(lane), false, plain,
-        plain ? model.spellForecasts?.[lane] : null, "Shot preview", wanted, mark),
+        plain ? still(lane, model.spellForecasts?.[lane]) : null, "Shot preview", wanted, mark ?? (lane === fireMark && wizard ? "rebuild" : null)),
       slotButton("cowboy", lane, cowboy, model.slots.cowboy.includes(lane),
         model.tributes.includes(lane) || model.ride?.from === lane || model.ride?.destination === lane, plain,
-        model.rideForecasts?.[lane] ?? model.summonForecasts?.[lane]),
+        still(lane, model.rideForecasts?.[lane] ?? model.summonForecasts?.[lane])),
     ]));
     hand.replaceChildren(...model.cowboy.hand.map((card, index) => {
       const node=cardButton(card,model.buttons.hand,moving(card.cardId,index),plain);
@@ -587,8 +597,10 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
       setText(resultText, resultDetail(model.result));
       setText(resultCause, model.resultCause ?? "");
       resultCause.hidden = !model.resultCause;
-      setText(resultNote, model.resultNote ?? "");
-      resultNote.hidden = !model.resultNote;
+      const lossCause = model.result.outcome === "loss" ? model.fireArc?.lossCause : null;
+      const noteText = lossCause || model.resultNote;
+      setText(resultNote, noteText ?? "");
+      resultNote.hidden = !noteText;
       if (rematch) {
         rematch.go.hidden = !model.resultGo;
         rematch.go.disabled = !model.buttons.restart;
