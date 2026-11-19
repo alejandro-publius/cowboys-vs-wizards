@@ -144,7 +144,8 @@ const controller = createController({
       model.bounty && `${deal.hunt.name}. ${huntProgress}`,
       deal?.isDraft && "Trying an unsaved deck.",
       deal?.opening?.opening === "freeOpener" && FREE_OPENER_NOTE,
-      displayed?.rideOut?.enabled && RIDE_OUT_NOTE,
+      displayed?.rideOut?.enabled ? RIDE_OUT_NOTE
+        : (model.ride?.available || model.ride?.choosing) && "Summon or Ride this turn. You can cast a spell afterward.",
       lessonChoice && "Hold the lane, ride into the open lane, or tribute the wounded Sheriff for Billy.",
     ].filter(Boolean).join(" ");
     model.clashForecast = status === "accepting_input" ? clashForecast(displayed, options) : null;

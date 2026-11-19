@@ -195,7 +195,7 @@ export function mountCards(root, handlers = {}, {plain = false} = {}) {
   const forecast = plain ? el("div", {class: "clash-forecast", role: "status", hidden: true},
     el("p", {}, el("strong", {}, "Next clash"), forecastBases),
     forecastLosses, forecastTiming, forecastPass) : null;
-  const ride = plain && handlers.onRideOut
+  const ride = handlers.onRideOut
     ? el("button", {type: "button", "data-action": "ride-out", hidden: true}, "Ride Out") : null;
   const phaseControl=el("div",{class:"match-buttons phase-control"},forecast,ride,buttons.endPhase);
   const viewerCard=el("div",{class:"card-preview card-stage"});

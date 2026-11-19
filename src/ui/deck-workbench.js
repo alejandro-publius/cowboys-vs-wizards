@@ -1,5 +1,5 @@
-import {BOUNTY_REWARDS, COWBOY_CATALOG, DECK_SIZE, DEFAULT_COUNTS, copyLimit, deckIds, validateDeck} from '../game/deck-builder.js';
-import {BILLY_POSSE, DEADEYE_CONTROL, FRONTIER_UNLOCKS, NIGHT_RIDERS, WAGON_TRAIN, frontierUnlocked, ownedCounts} from '../game/deck-presets.js';
+import {BOUNTY_REWARDS, COWBOY_CATALOG, DECK_SIZE, DEFAULT_COUNTS, FRONTIER_CATALOG, copyLimit, deckIds, validateDeck} from '../game/deck-builder.js';
+import {BILLY_POSSE, DEADEYE_CONTROL, FRONTIER_UNLOCKS, NIGHT_RIDERS, WAGON_TRAIN, frontierUnlocked} from '../game/deck-presets.js';
 import {MAX_COWBOY_COPIES, tributeCost} from '../game/cards.js';
 import {openingDroughtRate} from '../game/opening-policy.js';
 import {earnedRewards} from '../game/bounty-hunt.js';
@@ -29,10 +29,11 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
   // Frontier cards (zero starter copies) join the collection at their win counts.
   const frontierCards = frontierUnlocked(saved);
   const entitlement = {rewards: bounties ? earnedRewards(saved) : [], frontierCards};
-  const owned = card => card.copies > 0 || frontierCards.includes(card.type);
-  const collectionCards = [...COWBOY_CATALOG.filter(owned), ...BOUNTY_REWARDS.filter(card => entitlement.rewards.includes(card.type))];
+  const collectionCards = [...COWBOY_CATALOG,
+    ...BOUNTY_REWARDS.filter(card => entitlement.rewards.includes(card.type)),
+    ...FRONTIER_CATALOG.filter(card => frontierCards.includes(card.type))];
   const stored = saved.deck;
-  let counts = ownedCounts({...(stored && validateDeck(stored, entitlement).ok ? stored : DEFAULT_COUNTS)}, frontierCards);
+  let counts = {...(stored && validateDeck(stored, entitlement).ok ? stored : DEFAULT_COUNTS)};
   let selected = collectionCards[0].type;
   const count = type => counts[type] ?? 0;
 
@@ -88,7 +89,7 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
     feedback.textContent = msg;
   }, {id: 'save-deck'});
   const reset = button('Restore starter deck', () => {
-    counts = ownedCounts({...DEFAULT_COUNTS}, frontierCards);
+    counts = {...DEFAULT_COUNTS};
     refresh();
     say('Starter deck restored. Choose Save deck to keep it.');
     feedback.textContent = 'Starter deck restored. Choose Save deck to keep it.';
@@ -113,13 +114,13 @@ export function renderDeckWorkbench({content, profile, say, savedMessage, button
     // Loading replaces only this unsaved draft. The saved profile deck and the
     // current match stay as they are until Save deck.
     actions.append(button(`Load ${DEADEYE_CONTROL.name}`, () => {
-      counts = ownedCounts({...DEADEYE_CONTROL.counts}, frontierCards);
+      counts = {...DEADEYE_CONTROL.counts};
       refresh();
       feedback.textContent = `${DEADEYE_CONTROL.name} draft loaded. Save deck to use it in your next match.`;
     }, {id: 'load-deadeye-control', 'aria-describedby': 'wb-preset-summary'}));
     notes.push(element('p', 'Adds one Deadeye in place of Mounted Billy, the two-tribute finisher.', {id: 'wb-preset-summary', class: 'detail-line'}));
     actions.append(button(`Load ${BILLY_POSSE.name}`, () => {
-      counts = ownedCounts({...BILLY_POSSE.counts}, frontierCards);
+      counts = {...BILLY_POSSE.counts};
       refresh();
       feedback.textContent = `${BILLY_POSSE.name} draft loaded. Save deck to use it in your next match.`;
     }, {id: 'load-billy-posse', 'aria-describedby': 'wb-billy-posse-summary'}));

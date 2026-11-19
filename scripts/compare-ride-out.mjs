@@ -32,6 +32,15 @@ const SOURCES = [
   ...["actions", "card-specs.generated", "cards", "clash", "cpu", "deck-builder", "lanes", "legal", "opening-policy", "state", "view"].map((file) => `src/game/${file}.js`),
 ];
 
+// Historical baseline: the study compares all troops moving with no moves, so
+// both bots read CARDS with card-level rides removed (read-only clone). Newer
+// card-level rides (e.g. Mounted Billy) stay legal in the engine but are never chosen.
+export const HISTORICAL_CARDS = Object.freeze(Object.fromEntries(Object.entries(CARDS).map(([id, card]) => {
+  const { rides, ...rest } = card;
+  return [id, Object.freeze(rest)];
+})));
+export const historicalBot = (choose) => (view) => choose(view, { cards: HISTORICAL_CARDS });
+
 const name = (cardId) => CARDS[cardId].name;
 const pct = (n, of) => Number(((100 * n) / of).toFixed(2));
 const fixed = (x, digits = 3) => Number(x.toFixed(digits));
@@ -150,7 +159,7 @@ const bump = (counts, key) => {
 };
 
 export function run({ from, count, cpu, lane = null }) {
-  const choose = cpuFor(cpu);
+  const choose = historicalBot(cpuFor(cpu));
   const bots = { cowboy: choose, wizard: choose };
   const arm = () => ({
     matches: 0, firstSeatWins: 0, secondSeatWins: 0, draws: 0, drawsByReason: { "base-destroyed": 0, "round-limit": 0 },
@@ -388,7 +397,7 @@ const BASE_LOG_SHA256 = {
 // Seeds 0 and 60 with their own first seat: shipped parity with 55a395e, and
 // whether the ride-out arm leaves the shipped route, and where.
 export function preservation(cpu) {
-  const choose = cpuFor(cpu);
+  const choose = historicalBot(cpuFor(cpu));
   const bots = { cowboy: choose, wizard: choose };
   const sha = (log) => createHash("sha256").update(JSON.stringify(log)).digest("hex");
   return [0, 60].map((seed) => {

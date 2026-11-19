@@ -229,6 +229,7 @@ async function launch(guided){
     onConfirm:()=>controller.input({type:"confirm"}),
     onCancel:()=>controller.input({type:"cancel"}),
     onSkip:()=>controller.input({type:"skip"}),
+    onRideOut:()=>controller.input({type:"ride-out"}),
     onEndPhase:()=>controller.endPhase(),
     onRestart:()=>controller.restart(),
     onReplaySeed:text=>controller.start(text),

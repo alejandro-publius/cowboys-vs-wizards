@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {FRONTIER_UNLOCKS, NIGHT_RIDERS, WAGON_TRAIN, frontierUnlocked, ownedCounts} from "../../src/game/deck-presets.js";
+import {FRONTIER_UNLOCKS, NIGHT_RIDERS, WAGON_TRAIN, frontierUnlocked} from "../../src/game/deck-presets.js";
+import {validateDeck} from "../../src/game/deck-builder.js";
 
 const total = (counts) => Object.values(counts).reduce((sum, n) => sum + n, 0);
 const withWins = (wins) => ({stats: {wins}});
@@ -49,8 +50,10 @@ test("presets are immutable", () => {
   assert.ok(Object.isFrozen(FRONTIER_UNLOCKS));
 });
 
-test("ownedCounts drops only locked Frontier types", () => {
-  const counts = {"cowboy-sheriff": 6, "cowboy-lasso": 0, "cowboy-ranger": 0};
-  assert.deepEqual(ownedCounts(counts, ["cowboy-lasso"]), {"cowboy-sheriff": 6, "cowboy-lasso": 0});
-  assert.deepEqual(ownedCounts(counts, []), {"cowboy-sheriff": 6});
+test("the duel entrypoint accepts each preset as soon as it unlocks", () => {
+  for (const preset of [NIGHT_RIDERS, WAGON_TRAIN]) {
+    const entitlementAt = (wins) => ({frontierCards: frontierUnlocked(withWins(wins))});
+    assert.equal(validateDeck(preset.counts, entitlementAt(preset.wins - 1)).ok, false);
+    assert.equal(validateDeck(preset.counts, entitlementAt(preset.wins)).ok, true);
+  }
 });

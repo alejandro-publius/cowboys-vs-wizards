@@ -14,7 +14,7 @@ import { legalActions } from "../../src/game/legal.js";
 import { publicState } from "../../src/game/view.js";
 import { cpuFor } from "../../src/game/cpu.js";
 import { MAX_STEPS, playMatch } from "../../scripts/play-match.mjs";
-import { LANES, run } from "../../scripts/compare-ride-out.mjs";
+import { LANES, historicalBot, run } from "../../scripts/compare-ride-out.mjs";
 
 // Matching cards per faction: the troop stats are the same on both sides.
 const CARD = {
@@ -457,7 +457,7 @@ test("seed 0 and seed 60 default output equals 55a395e", () => {
   const sha = (value) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
   for (const seed of [0, 60]) {
     const got = { opening: sha(createMatch(seed)) };
-    for (const level of ["normal", "hard"]) got[level] = sha(playMatch(seed, { cowboy: cpuFor(level), wizard: cpuFor(level) }).log);
+    for (const level of ["normal", "hard"]) got[level] = sha(playMatch(seed, { cowboy: historicalBot(cpuFor(level)), wizard: historicalBot(cpuFor(level)) }).log);
     let state = createMatch(seed);
     const firstLegal = [];
     while (!state.result) {
@@ -469,10 +469,11 @@ test("seed 0 and seed 60 default output equals 55a395e", () => {
     got.firstLegal = sha(firstLegal);
     assert.deepEqual(got, BASE[seed], `seed ${seed}`);
   }
-  // Hard against Hard, every action on seeds 0-199 (Normal is pinned in cpu.test.js).
+  // Hard against Hard on the historical baseline (card-level rides ignored), every action on seeds 0-199 (Normal is pinned in cpu.test.js).
   const hash = createHash("sha256");
+  const historicalHard = historicalBot(cpuFor("hard"));
   for (let seed = 0; seed < 200; seed++) {
-    hash.update(JSON.stringify(playMatch(seed, { cowboy: cpuFor("hard"), wizard: cpuFor("hard") }).log.map(({ action }) => action)));
+    hash.update(JSON.stringify(playMatch(seed, { cowboy: historicalHard, wizard: historicalHard }).log.map(({ action }) => action)));
   }
   assert.equal(hash.digest("hex"), "4c2159ab1f77d1b46f7963962316f546667a6a81636122498e767de7fa61aeed");
 });

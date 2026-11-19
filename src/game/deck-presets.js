@@ -31,13 +31,6 @@ export function frontierUnlocked(saved) {
   return FRONTIER_UNLOCKS.filter((card) => count >= card.wins).map((card) => card.type);
 }
 
-// Drop counts for Frontier cards the profile has not earned, so a draft built
-// from the all-types catalog counts only names cards the player owns.
-export function ownedCounts(counts, frontierCards) {
-  const locked = new Set(FRONTIER_UNLOCKS.map((card) => card.type).filter((type) => !frontierCards.includes(type)));
-  return Object.fromEntries(Object.entries(counts).filter(([type]) => !locked.has(type)));
-}
-
 // Wagon Train needs every card in it (Gatling Crew, 7 wins). Night Riders
 // needs Ranger (6 wins).
 export const WAGON_TRAIN = Object.freeze({
@@ -46,12 +39,8 @@ export const WAGON_TRAIN = Object.freeze({
   counts: Object.freeze({
     "cowboy-sheriff": 3,
     "cowboy-billy": 2,
-    "cowboy-mounted-billy": 0,
     "cowboy-deadeye": 2,
     "cowboy-covered-wagon": 2,
-    "cowboy-outrider": 0,
-    "cowboy-dynamiter": 0,
-    "cowboy-ranger": 0,
     "cowboy-gatling-crew": 1,
     "cowboy-lasso": 2,
   }),
@@ -62,14 +51,10 @@ export const NIGHT_RIDERS = Object.freeze({
   wins: 6,
   counts: Object.freeze({
     "cowboy-sheriff": 3,
-    "cowboy-billy": 0,
-    "cowboy-mounted-billy": 0,
     "cowboy-deadeye": 2,
-    "cowboy-covered-wagon": 0,
     "cowboy-outrider": 2,
     "cowboy-dynamiter": 2,
     "cowboy-ranger": 2,
-    "cowboy-gatling-crew": 0,
     "cowboy-lasso": 1,
   }),
 });
