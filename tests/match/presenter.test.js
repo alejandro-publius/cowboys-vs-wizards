@@ -180,11 +180,15 @@ function assertOrbsShown(view, renderer) {
   }
 }
 
-// One summon, spell and move cue per event, carrying the event's data.
+// One summon, spell and move cue per event, carrying the event's data. A
+// ride-out event (a Ride Out or a Wanted drift) gives one move cue with the
+// event's side, slot and destination.
 function assertCues({ events, to }, calls) {
   const expected = [];
   for (const event of events) {
-    if (event.type === "summon") {
+    if (event.type === "ride-out") {
+      expected.push({ op: "move", args: { side: event.side, from: event.slot, to: event.destination } });
+    } else if (event.type === "summon") {
       const health = to.sides[event.side].board[event.slot].health;
       expected.push({ op: "summon", args: { side: event.side, slot: event.slot, cardId: event.cardId, health } });
     } else if (event.type === "spell") {
@@ -237,7 +241,8 @@ function expectedOrbCalls({ events, to }, calls) {
   return expected.sort((a, b) => a.at - b.at);
 }
 
-test("Feature: orb-duel, Property 2: Presenter fidelity", () => {
+test("Feature: orb-duel, Property 2: Presenter fidelity", (t) => {
+  let rideCues = 0;
   forEachSeed((seed) =>
     playMatch(seed, {
       change(copy, { renderer }) {
@@ -250,10 +255,13 @@ test("Feature: orb-duel, Property 2: Presenter fidelity", () => {
         assertPublicOnly(displayed);
         const made = calls();
         assertCues(batch, made);
+        rideCues += batch.events.filter((event) => event.type === "ride-out").length;
         assert.deepEqual(made.filter(isOrbCall), expectedOrbCalls(batch, made), "orb setter calls");
       },
     }),
   );
+  assert.ok(rideCues > 0, "the walks never produced a ride-out event");
+  t.diagnostic(`ride-out events: ${rideCues}`);
 });
 
 // ---- Property 3 ----
