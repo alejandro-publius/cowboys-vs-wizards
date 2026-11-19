@@ -1,6 +1,7 @@
 import {ACHIEVEMENTS} from '../profile/player-profile.js';
 import {renderDeckWorkbench} from './deck-workbench.js';
 import {renderWantedBoard} from './wanted-board.js';
+import {STARGAZER_WINS} from '../game/deck-presets.js';
 
 const $ = (root, selector) => root.querySelector(selector);
 function element(tag, text, attrs={}) {
@@ -21,13 +22,16 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings,onTryDraft,onTryR
   const say=text=>{notice.textContent=text;notice.hidden=!text;};
   const savedMessage=text=>say(profile.isPersistent()?text:'Saved for this session only. Browser storage is unavailable.');
   const button=(text,fn,attrs={})=>{const b=element('button',text,{type:'button',...attrs});b.addEventListener('click',fn);return b;};
+  const stargazer=$(root,'#menu-stargazer');
+  const stargazerOpen=()=>!paused&&Number(profile.get()?.stats?.wins)>=STARGAZER_WINS;
+  const syncStargazer=()=>{if(stargazer)stargazer.hidden=!stargazerOpen();};
   async function start(opener,launch=()=>onPlay(false)){
     if(loading)return;
-    loading=true;play.disabled=opener.disabled=true;say('Loading the board…');
+    loading=true;play.disabled=opener.disabled=true;if(stargazer)stargazer.disabled=true;say('Loading the board…');
     try{await launch();say('');}
     catch(error){console.error(error);say('The board could not load. Please try again.');}
     finally{
-      loading=false;play.disabled=opener.disabled=false;
+      loading=false;play.disabled=opener.disabled=false;if(stargazer)stargazer.disabled=false;
       if(!root.hidden&&opener.getClientRects().length)opener.focus();
     }
   }
@@ -113,16 +117,18 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings,onTryDraft,onTryR
   for(const item of root.querySelectorAll('[data-menu-page]'))item.addEventListener('click',()=>actions[item.dataset.menuPage](item));
   $(root,'#menu-back').addEventListener('click',home);
   play.addEventListener('click',()=>start(play));
+  if(stargazer)stargazer.addEventListener('click',()=>{if(stargazerOpen())start(stargazer,()=>onPlay(false,true));});
   root.addEventListener('keydown',event=>{
     if(event.key==='Escape'&&!page.hidden){event.preventDefault();home();return;}
     if(!page.hidden||!['ArrowDown','ArrowUp','ArrowRight','ArrowLeft'].includes(event.key))return;
-    const buttons=[...root.querySelectorAll('.menu-hotspot')];const at=buttons.indexOf(document.activeElement);
+    const buttons=[...root.querySelectorAll('.menu-hotspot:not([hidden])')];const at=buttons.indexOf(document.activeElement);
     if(at<0)return;event.preventDefault();const delta=['ArrowUp','ArrowLeft'].includes(event.key)?-1:1;
     buttons[(at+delta+buttons.length)%buttons.length].focus();
   });
+  syncStargazer();
   root.dataset.ready="true";
   return {
-    show({resume=false}={}){guidedAvailable=false;paused=Boolean(resume);root.hidden=false;home();play.setAttribute('aria-label',resume?'Resume match':'Play');say(resume?'Match paused · Play to resume':'');play.focus();},
+    show({resume=false}={}){guidedAvailable=false;paused=Boolean(resume);root.hidden=false;home();syncStargazer();play.setAttribute('aria-label',resume?'Resume match':'Play');say(resume?'Match paused · Play to resume':'');play.focus();},
     hide(){root.hidden=true;},
     status:say
   };

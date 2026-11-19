@@ -84,7 +84,7 @@ test("AC1: Start guided duel deals seed 690; seed links and ?seed= stay ordinary
   // The guided deal keeps the starter deck, Normal Wizard and no Ride Out.
   assert.match(graybox, /const counts = guided \|\| requestedDeck === "starter" \? null/);
   assert.match(graybox, /rideOut: !guided &&/);
-  assert.match(graybox, /\(guided \? chooseAction : chosenCpu\)\(view\)/);
+  assert.match(graybox, /\(guided(?: \|\| deal\?\.posse)? \? chooseAction : chosenCpu\)\(view\)/);
 });
 
 test("AC1: seed 690 first input: round 1, Wizard acted, Skeleton (3 orbs) in lane 1, hand Sheriff, Sheriff, Deadeye, Billy, opener tip", () => {
