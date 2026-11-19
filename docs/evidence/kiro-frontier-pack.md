@@ -43,6 +43,9 @@ with four Base orbs.
 
 ## Verification
 
+- `node scripts/verify-duel.mjs` passed 415 tests and both GLB structure
+  checks on the local Frontier branch at `3099463`. Both build recipes
+  compiled.
 - Chrome displayed four collectible cards at one counted win and granted
   Lasso at two. Night Riders appeared at six and Wagon Train at seven.
   Loading a preset kept the saved deck unchanged. Saving Night Riders and
