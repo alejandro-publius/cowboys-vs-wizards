@@ -7,14 +7,15 @@ import {opponent} from "./rules.js";
 
 // The state as `side` may see it. Its own hand and traps are listed; the other side's are
 // counts. Neither deck's order is visible to anyone. Boards, Bases, graveyards and the
-// location are public.
+// location are public, and so is a boss due to land.
 export function viewFor(state, side) {
   const seen = (name) => {
     const {hand, deck, traps, ...open} = state.sides[name];
     return {...structuredClone(open), handCount: hand.length, deckCount: deck.length, trapCount: traps.length,
       ...(name === side ? {hand: [...hand], traps: [...traps]} : {})};
   };
-  const {sides, ...table} = state;
+  // The seed is left out: with it, anyone could deal the game again and read both hands and both decks.
+  const {sides, seed, ...table} = state;
   return {...structuredClone(table), viewer: side, sides: {[side]: seen(side), [opponent(side)]: seen(opponent(side))}};
 }
 
@@ -26,7 +27,7 @@ export const EVENTS = Object.freeze({
   burn: {fields: ["side", "cardId"], shows: "That side's hand was full: the drawn card is shown and goes to its graveyard."},
   fatigue: {fields: ["side"], shows: "That side's deck is empty: its Base loses one orb."},
   tribute: {fields: ["side", "cardId"], shows: "One of that side's troops leaves the board for the graveyard as payment."},
-  summon: {fields: ["side", "cardId"], shows: "A troop arrives on that side's first empty slot."},
+  summon: {fields: ["side", "cardId"], shows: "A troop arrives on that side's first empty slot: played from the hand, or a boss landing on its turn."},
   raise: {fields: ["side", "cardId"], shows: "A troop returns from that side's graveyard to its first empty slot with 1 orb."},
   spell: {fields: ["side", "cardId", "target", "left", "stunned"], shows: "A spell hits one troop: it drops to `left` orbs (defeated at 0), or is stunned. One event per troop hit."},
   gear: {fields: ["side", "cardId", "target"], shows: "A piece of gear is fixed to one of that side's troops and stays on it."},
@@ -34,7 +35,7 @@ export const EVENTS = Object.freeze({
   set: {fields: ["side"], shows: "That side puts one card face down in a trap slot. The card is not named."},
   cover: {fields: ["side", "cardId"], shows: "A troop takes cover until its owner's next turn."},
   trap: {fields: ["side", "cardId", "target", "left", "stopped"], shows: "A face-down card of `side` is revealed and springs on the attacking troop. `stopped` means the attack never lands."},
-  attack: {fields: ["side", "cardId", "target", "covered", "hitBack", "baseDamage", "targetLeft", "attackerLeft"], shows: "A troop strikes a troop or the Base. The target drops to `targetLeft`, a surviving target outside cover hits back for `hitBack` orbs, and `baseDamage` orbs leave the defending Base."},
+  attack: {fields: ["side", "cardId", "target", "covered", "hitBack", "baseDamage", "targetLeft", "attackerLeft"], shows: "A troop strikes a troop or the Base. The target drops to `targetLeft`, a surviving target outside cover hits back with its attack, `hitBack`, and `baseDamage` orbs leave the defending Base."},
   laststand: {fields: ["side", "cardId", "target", "left"], shows: "A troop defeated in a fight takes one orb off the troop that fought it."},
   sweep: {fields: ["side", "cardId", "count"], shows: "After its attack, the troop's sweep takes one orb from each of the other enemy troops."},
 });

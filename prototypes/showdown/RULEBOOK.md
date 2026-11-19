@@ -111,14 +111,15 @@ Instead of attacking, a troop may take cover, even on the turn it arrives. Until
 - **Single duel.** One game.
 - **Best of three.** First to win two games. The loser of a game goes first in the next. Between games you may swap cards between your deck and your side deck, one for one.
 - **Side deck.** Up to 4 cards. Rarity limits count the deck and the side deck together.
-- **Two players.** One screen, passed between turns. Each side plays the starter deck for its faction.
+- **Two players.** One screen, passed between turns. Each side plays the even-match deck for its faction.
 
 ## 12. Earning cards
 
-- **The Trail.** Six duels, each a little harder, against opponents below full strength. The first win of each pays a new card.
-- **Every win** offers a choice of two cards; you keep one.
-- **Rivals.** Four, met in order after the Trail. The first win against each pays a pack, and two of them pay a new kind of card.
-- **Bounties.** A Wanted boss must be beaten five times. The fifth win captures its card, which is Legendary.
+- **The Trail.** Six duels, each a little harder, against opponents below full strength. The first win of each pays a new card, and finishing the Trail pays a pack.
+- **Every win** offers a choice of two cards; you keep one. The choice has to be made before the next duel. When fewer than two cards are left to earn, nothing is offered.
+- **Rivals.** Four, met in order after the Trail. The first win against each pays a pack (the last pays two), and two of them pay a new kind of card. Those two cards cannot be earned anywhere else until their rival is beaten.
+- **Bounties.** A Wanted boss must be beaten five times. The fifth win captures its card, which is Legendary. The Lantern Wraith stands on the board from the start. The Graveyard Dragon lands by itself at the start of the Wizards' second turn, or the first turn after with a free slot, and rests the turn it lands. Each hunt gives the boss more orbs.
+- **The even match** pays a pack every third win.
 - **Packs** hold three cards, at least one of them Uncommon or better while one is left to earn. Packs are won, never bought.
 - **A lost duel** on the Trail, against a rival or on a bounty gives your Base one more orb in the rematch, twice at most.
 

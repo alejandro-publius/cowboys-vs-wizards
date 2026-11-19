@@ -294,6 +294,16 @@ test("cover: no damage reaches the Base and the troop does not hit back, until i
   assert.equal(act(sturdy, {type: "end"}).sides.cowboy.board[0].cover, false);
 });
 
+test("the hit back an attack reports is the defender's attack, and the bot leaves a finished game alone", () => {
+  // A 1-orb Skeleton attacks Mounted Billy: it is hit back for 3, not for the 1 orb it had.
+  const applied = applyAction(position([troop("cowboy-mounted-billy")], [troop("wizard-skeleton", 1)], "wizard"), {type: "attack", slot: 0, target: 0});
+  assert.equal(applied.events.find((event) => event.type === "attack").hitBack, 3);
+  const cover = applyAction(position([troop("cowboy-mounted-billy", 5, {cover: true})], [troop("wizard-skeleton")], "wizard"), {type: "attack", slot: 0, target: 0});
+  assert.equal(cover.events.find((event) => event.type === "attack").hitBack, 0);
+  const over = {...createShowdown(1), result: {winner: "cowboy", reason: "base"}};
+  for (const level of [0, 1, 1.5, 2]) assert.deepEqual(playTurn(over, level), {state: over, events: []});
+});
+
 test("a bounty's boss opens on the board with the orbs the hunt gives it", () => {
   const state = createShowdown(4, {first: "cowboy", opening: {wizard: [{type: "wizard-lantern-wraith", health: 6}]}});
   assert.deepEqual(state.sides.wizard.board.map((t) => t && [cardOf(t.cardId).name, t.health]), [["Lantern Wraith", 6], null, null]);

@@ -64,6 +64,7 @@ test("a side's view names its own hand and traps and nothing hidden of the other
       assert.deepEqual(view.sides[opponent(side)].board, other.board);
       assert.deepEqual(view.sides[opponent(side)].discard, other.discard);
       assert.deepEqual(view.location, state.location);
+      assert.ok(!("seed" in view), "the seed would let a viewer deal the game again and read every hidden card");
       checked += 1;
     }
   });

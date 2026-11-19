@@ -103,7 +103,8 @@ function renderCamp() {
     : save.packs ? `${hint}<h2>${plural(save.packs, "pack")} to open</h2><div class="row"><button type="button" class="pack can" id="pack">Open a pack: three cards</button></div>`
     : `${hint}${next ? `<p id="next">${save.wins === 0 && !log.length ? "Start here" : "Next"}: click <strong>${next.name}</strong> to play ${save.wins === 0 ? "your first duel" : "it"}.</p>` : ""}`;
 
-  const tile = (duel, note, off = duel.state !== "open") => `<li><button type="button" class="tile ${duel.state}" ${off ? "disabled" : `data-duel="${duel.id}"`}>
+  // While a card is on offer nothing else can be started: the choice comes first.
+  const tile = (duel, note, off = duel.state !== "open") => `<li><button type="button" class="tile ${duel.state}" ${off || save.offer ? "disabled" : `data-duel="${duel.id}"`}>
     <strong>${duel.state === "won" ? "✓ " : ""}${duel.name}</strong><span class="note">${note}</span></button></li>`;
   const pays = (cards) => cards.map(([type, copies]) => `${TYPES[type].name}${copies > 1 ? ` ×${copies}` : ""}`).join(", ");
   $("trail").innerHTML = list.filter((duel) => duel.kind === "trail").map((duel) => {
@@ -121,7 +122,7 @@ function renderCamp() {
     return tile(duel, duel.state === "won" ? `Captured: ${TYPES[bounty.reward].name}` : duel.state === "locked" ? "After the Trail"
       : `${duel.cleared} of ${HUNTS} hunts won. Five capture ${TYPES[bounty.reward].name}.`);
   }).join("");
-  const open = trailDone(save);
+  const open = trailDone(save) && !save.offer;
   $("open").innerHTML = `<button type="button" data-duel="open" ${open ? "" : "disabled"}>The even match${open ? "" : " (after the Trail)"}</button>
     <button type="button" data-match="open" ${open ? "" : "disabled"}>Best of three, with your side deck</button>
     <button type="button" data-two="1">Two players, one screen</button>
@@ -256,6 +257,7 @@ function deal() {
   show("duel");
 }
 function startDuel(id, {players = 1, best = 1} = {}) {
+  if (players === 1 && save.offer) return show("camp");
   const duel = players === 1 ? duelFor(save, id) : {id: "two", kind: "two", name: "Two players", lesson: "Two players on one screen, each with a starter deck. Pass the screen when the turn ends."};
   if (!duel) return;
   game = {duel, players, seed: freshSeed(), match: best > 1 ? {wins: {cowboy: 0, wizard: 0}, game: 1, deck: {...save.deck}, side: {...save.side}, first: null} : null};
@@ -345,11 +347,12 @@ function renderDuel() {
   const carriers = new Set(kind === "gear" ? playsOf(pick.card).map((a) => a.slot) : []);
   // The board is drawn from what this player may see, so the other hand, traps and both deck orders never reach the page.
   const view = viewFor(state, own);
+  const shared = !solo() && Boolean(state.result);
   const row = (side) => {
     const s = view.sides[side];
     const isOwn = side === own;
     const baseOpen = !isOwn && aims.has("base");
-    const traps = isOwn ? (s.traps.length ? `Set: ${s.traps.map(name).join(", ")}` : "No trap set") : s.trapCount ? `${plural(s.trapCount, "card")} face down` : "Nothing face down";
+    const traps = isOwn && !shared ? (s.traps.length ? `Set: ${s.traps.map(name).join(", ")}` : "No trap set") : s.trapCount ? `${plural(s.trapCount, "card")} face down` : "Nothing face down";
     const base = `<button type="button" class="base ${side}${baseOpen ? " can" : ""}" ${baseOpen ? 'data-enemy="base"' : "disabled"}>
       <strong>${solo() ? (isOwn ? "Your" : "Wizard") : faction(side)} Base</strong>${orbs(s.base, s.baseMax)}
       <span class="note">Hand ${s.handCount} · Deck ${s.deckCount} · Graveyard ${s.discard.length}</span>
@@ -379,10 +382,11 @@ function renderDuel() {
     return `<div class="side">${base}${slots}</div>`;
   };
   $("board").innerHTML = row(foe) + row(own);
-  $("location").textContent = state.location ? `■ Location: ${name(state.location.cardId)} (${whose(state.location.side).toLowerCase()}). ${EFFECTS[cardOf(state.location.cardId).effect].text.replace("Location. ", "")}` : "";
+  const landing = state.arrivals.map((due) => `${TYPES[due.type].name} lands at the start of turn ${Math.max(due.turn, state.turn + (state.active === due.side ? 2 : 1))}.`).join(" ");
+  $("location").textContent = landing + (landing && state.location ? " " : "") + (state.location ? `■ Location: ${name(state.location.cardId)} (${whose(state.location.side).toLowerCase()}). ${EFFECTS[cardOf(state.location.cardId).effect].text.replace("Location. ", "")}` : "");
 
   const playable = new Set(options.filter((a) => a.cardId).map((a) => name(a.cardId)));
-  $("hand").innerHTML = view.sides[own].hand.map((cardId) => {
+  $("hand").innerHTML = (shared ? [] : view.sides[own].hand).map((cardId) => {
     const card = cardOf(cardId);
     const on = playable.has(card.name);
     return `<button type="button" class="card ${card.side} ${card.kind} ${card.rarity}${pick?.card === cardId ? " pick" : on ? " can" : ""}" data-card="${cardId}" ${on ? "" : "disabled"}>
@@ -483,7 +487,7 @@ $("load").addEventListener("click", () => {
   try { next = migrate(JSON.parse(atob(text))); } catch { /* not a save code */ }
   // migrate() answers anything it cannot trust with a new save, so a new save from any other code means the code was bad.
   const bad = !next || (JSON.stringify(next) === JSON.stringify(newSave()) && text !== btoa(JSON.stringify(newSave())));
-  if (!bad) { keep(next); opened = null; renderCamp(); }
+  if (!bad) { keep(next); opened = picked = null; renderCamp(); }
   $("code-note").textContent = bad ? "That is not a save code. Nothing was changed." : "Loaded.";
 });
 $("rules").addEventListener("toggle", () => { if ($("rules").open && game) game.rules = true; });
@@ -491,7 +495,7 @@ $("reset").addEventListener("click", () => {
   if (!confirm("Start over? Your cards, progress and playtest report in this browser are erased.")) return;
   keep(newSave());
   keepLog([]);
-  opened = null;
+  opened = picked = null;
   renderCamp();
   $("code-note").textContent = "Started over.";
 });

@@ -28,17 +28,19 @@ export const RIVALS = Object.freeze([
 ]);
 
 // Bounties: a Wanted boss you must beat five times; the fifth win pays its card.
-// The Wraith stands on the board from the start with `orbs` orbs. The Dragon starts in the Wizards'
-// hand and needs two troops paid for it. hunts: one entry per hunt, each a little harder.
+// The Wraith stands on the board from the start with `orbs` orbs. The Dragon lands by itself at the
+// start of the Wizards' turn `lands`, so the player has a few turns to get ready and always meets it.
+// hunts: one entry per hunt, each a little harder.
 export const BOUNTIES = Object.freeze([
   {id: "lantern-wraith", name: "The Lantern Wraith", boss: "wizard-lantern-wraith", reward: "cowboy-captured-wraith", entrance: "board",
     lesson: "Wanted: the Lantern Wraith. It stands on the board from the start, and spells cannot touch it.",
     hunts: [{level: 1, base: 4, orbs: 4}, {level: 1, base: 4, orbs: 5}, {level: 1.5, base: 4, orbs: 6}, {level: 1.5, base: 4, orbs: 7}, {level: 2, base: 4, orbs: 8}],
     deck: {"wizard-skeleton": 6, "wizard-jack-o-lantern": 3, "wizard-raven-familiar": 2, "wizard-bone-wall": 2, "wizard-singularity": 2, "wizard-hex": 1}},
-  {id: "graveyard-dragon", name: "The Graveyard Dragon", boss: "wizard-dragon", reward: "cowboy-captured-dragon", entrance: "hand",
-    lesson: "Wanted: the Graveyard Dragon. The Wizards hold it from the start and must pay two troops to bring it out. Its fire sweeps your whole line.",
-    hunts: [{level: 1, base: 3}, {level: 1, base: 4}, {level: 1.5, base: 4}, {level: 1.5, base: 5}, {level: 2, base: 5}],
-    deck: {"wizard-skeleton": 6, "wizard-wizard": 3, "wizard-bone-wall": 2, "wizard-imp": 2, "wizard-singularity": 2, "wizard-hellfire": 1}},
+  {id: "graveyard-dragon", name: "The Graveyard Dragon", boss: "wizard-dragon", reward: "cowboy-captured-dragon", entrance: "lands", lands: 4,
+    lesson: "Wanted: the Graveyard Dragon. It lands on the Wizards' second turn. Get troops out before it does: its fire sweeps your whole line.",
+    hunts: [{level: 1, base: 4, orbs: 2}, {level: 1, base: 4, orbs: 3}, {level: 1.5, base: 4, orbs: 3}, {level: 1.5, base: 4, orbs: 4}, {level: 2, base: 4, orbs: 4}],
+    // No Guard troop in this escort: a Bone Wall in front of the Dragon made the hunt close to unwinnable.
+    deck: {"wizard-skeleton": 9, "wizard-raven-familiar": 2, "wizard-jack-o-lantern": 2, "wizard-wizard": 2, "wizard-singularity": 1}},
 ]);
 export const HUNTS = 5;
 
@@ -61,6 +63,7 @@ export function deckProblems(save, deck, side = {}) {
   for (const type of new Set([...Object.keys(deck), ...Object.keys(side)])) {
     const copies = (deck[type] ?? 0) + (side[type] ?? 0);
     const card = TYPES[type];
+    if (![deck[type] ?? 0, side[type] ?? 0].every((count) => Number.isInteger(count) && count >= 0)) problems.push(`${type}: a deck holds whole cards.`);
     if (!card || card.side !== "cowboy") problems.push(`${type} is not a Cowboy card.`);
     else if (copies > owned(save, type)) problems.push(`You own ${owned(save, type)} ${card.name}, not ${copies}.`);
     else if (copies > cap(type)) problems.push(`${card.name} is ${RARITY[card.rarity][0]}: at most ${cap(type)} in a deck and its side deck.`);
@@ -91,7 +94,9 @@ export function duelList(save) {
 
 // Everything the screen and the bot need to play duel `id`, or null when it is locked or finished.
 // deck is the Cowboy deck to play; it defaults to the saved one.
+// A card on offer has to be taken first, so a second win can never replace an unclaimed choice.
 export function duelFor(save, id, deck = save.deck) {
+  if (save.offer) return null;
   const [kind, key] = id.split(":");
   const grit = Math.min(save.losses[id] ?? 0, GRIT_CAP);
   if (kind === "trail") {
@@ -114,7 +119,8 @@ export function duelFor(save, id, deck = save.deck) {
     const hunt = bounty.hunts[cleared];
     return {id, kind, name: `${bounty.name}, hunt ${cleared + 1} of ${HUNTS}`, lesson: bounty.lesson, level: hunt.level,
       options: {decks: {cowboy: deck, wizard: bounty.deck}, baseOrbs: {cowboy: 5 + grit, wizard: hunt.base}, first: "cowboy",
-        ...(bounty.entrance === "board" ? {opening: {wizard: [{type: bounty.boss, health: hunt.orbs}]}} : {openingHand: {wizard: [bounty.boss]}})}};
+        ...(bounty.entrance === "board" ? {opening: {wizard: [{type: bounty.boss, health: hunt.orbs}]}}
+          : {arrivals: {wizard: [{type: bounty.boss, turn: bounty.lands, health: hunt.orbs}]}})}};
   }
   return kind === "open" ? {id, kind, name: "Open range", lesson: "An even match against the whole coven. The Wizards plan every turn.", level: 2,
     options: {decks: {cowboy: deck, wizard: DECKS.wizard}}} : null;
@@ -122,9 +128,11 @@ export function duelFor(save, id, deck = save.deck) {
 
 // Cards that can still be earned from an offer or a pack: Cowboy, not basic, not legendary, not yet at the deck limit.
 // On the Trail an offer holds only cards the player has already met, so a new card always arrives with its lesson.
+// A card that an unbeaten rival pays is held back, so gear and locations arrive with the rival that teaches them.
 function pool(save, {met = false} = {}) {
+  const held = RIVALS.filter((rival) => !save.rivals.includes(rival.id)).flatMap((rival) => rival.reward);
   return Object.keys(TYPES).filter((type) => TYPES[type].side === "cowboy" && !["basic", "legendary"].includes(TYPES[type].rarity)
-    && owned(save, type) < cap(type) && (!met || owned(save, type) > 0));
+    && owned(save, type) < cap(type) && (!met || owned(save, type) > 0) && !held.includes(type));
 }
 const WEIGHT = {common: 6, uncommon: 3, rare: 1};
 function pick(types, roll) {
@@ -208,7 +216,7 @@ export function migrate(raw) {
   try {
     if (raw && raw.v === undefined && Number.isInteger(raw.wins)) {
       let save = newSave();
-      for (let i = 0; i < Math.min(Math.max(raw.wins, 0), TRAIL.length); i++) save = {...settle(save, "trail", true).save, offer: null, packs: 0};
+      for (let i = 0; i < Math.min(Math.max(raw.wins, 0), TRAIL.length); i++) save = {...settle(save, "trail", true).save, offer: null};
       return save;
     }
     const counts = (value) => Object.entries(value).every(([type, copies]) => TYPES[type] && Number.isInteger(copies) && copies >= 0);
@@ -222,7 +230,14 @@ export function migrate(raw) {
       || !(raw.offer === null || (Array.isArray(raw.offer) && raw.offer.length === 2 && raw.offer.every((type) => TYPES[type]?.side === "cowboy")))) return newSave();
     const save = {v: 2, wins: raw.wins, losses: raw.losses, collection: raw.collection, deck: raw.deck, side: raw.side, rivals: raw.rivals,
       hunts: raw.hunts, openWins: raw.openWins, packs: raw.packs, rolls: raw.rolls, offer: raw.offer};
-    return deckProblems(save, save.deck, save.side).length ? newSave() : save;
+    // The parts have to agree with each other: nothing a player could not have earned.
+    const earnable = (type) => TYPES[type].side === "cowboy" && TYPES[type].rarity !== "basic";
+    const captured = (type) => BOUNTIES.some((bounty) => bounty.reward === type && save.hunts[bounty.id] === HUNTS);
+    const agrees = Object.entries(save.collection).every(([type, copies]) => earnable(type) && copies <= cap(type) && (TYPES[type].rarity !== "legendary" || copies === 0 || captured(type)))
+      && save.rivals.every((id, i) => id === RIVALS[i].id)
+      && (trailDone(save) || (!save.rivals.length && !Object.values(save.hunts).some(Boolean) && !save.openWins))
+      && (!save.offer || save.offer.every((type) => earnable(type) && TYPES[type].rarity !== "legendary"));
+    return !agrees || deckProblems(save, save.deck, save.side).length ? newSave() : save;
   } catch {
     return newSave();
   }

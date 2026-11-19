@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {RARITY, TYPES} from "./cards.js";
-import {createShowdown} from "./rules.js";
+import {applyAction, canAttack, createShowdown} from "./rules.js";
 import {BOUNTIES, DECK_SIZE, HUNTS, OPEN_WINS_PER_PACK, PACK_SIZE, RIVALS, choose, deckProblems, duelFor, duelList, migrate, newSave, openPack, owned, settle, trailDone, withDeck} from "./progress.js";
 import {GRIT_CAP, STARTER, TRAIL, deckAfter} from "./trail.js";
 import {LADDER, saveAt, winRate} from "./trail-sim.mjs";
@@ -53,6 +53,8 @@ test("a Trail win pays its card into the deck and offers a choice of two cards t
   const chosen = choose(save, "cowboy-deadeye");
   assert.equal(owned(chosen, "cowboy-deadeye"), 4);
   assert.equal(chosen.offer, null);
+  assert.equal(duelFor(save, "trail"), null, "no duel starts while a card is on offer");
+  assert.equal(duelFor(chosen, "trail").name, "Raven Roost");
   assert.throws(() => choose(save, "cowboy-gatling-crew"), /not on offer/);
   assert.throws(() => choose(chosen, "cowboy-deadeye"), /not on offer/);
   // A player who rebuilt the deck keeps it: the new card replaces only the plain cards still there.
@@ -70,6 +72,7 @@ test("a loss gives the rematch one more Base orb, twice at most, and a win clear
   }
   assert.equal(5 + GRIT_CAP, 7);
   ({save} = win(save, "trail"));
+  save = choose(save, save.offer[0]);
   assert.equal(base(), 5);
   const open = saveAt();
   assert.deepEqual(settle(open, "open", false).save, open, "a lost even match changes nothing");
@@ -107,16 +110,27 @@ test("a bounty: five hunts, each harder, and the fifth win captures the boss's c
     orbs.push(state.sides.wizard.board[0].health);
     const done = win(save, "hunt:lantern-wraith");
     assert.equal(done.earned.captured, hunt === HUNTS ? "cowboy-captured-wraith" : null);
-    save = done.save;
+    save = choose(done.save, done.save.offer[0]);
   }
   assert.deepEqual(orbs, [4, 5, 6, 7, 8]);
   assert.equal(owned(save, "cowboy-captured-wraith"), 1);
   assert.equal(duelFor(save, "hunt:lantern-wraith"), null);
   assert.equal(states(save)["hunt:lantern-wraith"], "won");
-  // The Dragon is held in the Wizards' hand instead.
-  const dragon = createShowdown(1, duelFor(save, "hunt:graveyard-dragon").options);
-  assert.ok(dragon.sides.wizard.hand.includes("wizard-dragon-0"));
-  assert.deepEqual(dragon.sides.wizard.board, [null, null, null]);
+  // The Dragon lands by itself on the Wizards' second turn, resting, and costs them no card.
+  let dragon = createShowdown(1, duelFor(save, "hunt:graveyard-dragon").options);
+  assert.deepEqual(dragon.arrivals, [{side: "wizard", type: "wizard-dragon", turn: 4, health: 2}]);
+  assert.equal(dragon.sides.wizard.hand.length, 5);
+  for (let i = 0; i < 2; i++) dragon = applyAction(dragon, {type: "end"}).state;
+  assert.deepEqual(dragon.sides.wizard.board, [null, null, null], "not before turn 4");
+  const landed = applyAction(dragon, {type: "end"});
+  // The Wizards have only passed in this test, so their hand is full and the turn's draw is discarded.
+  assert.deepEqual(landed.events.map((event) => event.type), ["turn", "summon", "burn"]);
+  assert.deepEqual(landed.state.sides.wizard.board.map((t) => t && [t.cardId, t.health, canAttack(landed.state, t)]), [["wizard-dragon-0", 2, false], null, null]);
+  assert.deepEqual(landed.state.arrivals, []);
+  // With no free slot it waits for the next Wizard turn.
+  const filler = (id) => ({cardId: id, health: 3, attacked: false, stunned: false, cover: false, gear: [], arrived: 0, ready: false});
+  dragon.sides.wizard.board = ["wizard-skeleton-1", "wizard-skeleton-2", "wizard-skeleton-3"].map(filler);
+  assert.equal(applyAction(dragon, {type: "end"}).state.arrivals.length, 1);
 });
 
 test("the even match pays a pack every third win", () => {
@@ -131,7 +145,7 @@ test("the even match pays a pack every third win", () => {
 });
 
 test("offers and packs: the same save gives the same cards, never a basic or legendary card, never past the deck limit", () => {
-  const save = {...saveAt(), packs: 40};
+  const save = {...saveAt({rivals: RIVALS.length}), packs: 40};
   assert.deepEqual(openPack(save), openPack(save));
   assert.deepEqual(win(save, "open").save.offer, win(save, "open").save.offer);
   assert.equal(win(save, "open").save.rolls, save.rolls + 1, "each offer uses up a roll, so the next one differs");
@@ -158,6 +172,28 @@ test("offers and packs: the same save gives the same cards, never a basic or leg
   assert.equal(win(next, "open").save.offer, null, "nothing left to offer");
 });
 
+test("a rival's own reward cannot be earned before that rival is beaten, and never goes past its limit", () => {
+  const held = (save) => {
+    const cards = [];
+    for (let next = {...save, packs: 30}; next.packs > 0;) {
+      const pack = openPack(next);
+      cards.push(...pack.cards);
+      next = pack.save;
+    }
+    return ["cowboy-six-shooter", "cowboy-sheriffs-office"].filter((type) => cards.includes(type));
+  };
+  assert.deepEqual(held(saveAt()), [], "thirty packs before any rival");
+  assert.deepEqual(held(saveAt({rivals: 1})), ["cowboy-six-shooter"]);
+  assert.deepEqual(held(saveAt({rivals: 2})), ["cowboy-six-shooter", "cowboy-sheriffs-office"]);
+  // So the reward is always the first copy.
+  let save = saveAt();
+  for (const rival of RIVALS) {
+    for (let next = {...save, packs: 30}; next.packs > 0; save = next) next = openPack(next).save;
+    for (const type of rival.reward) assert.equal(owned(save, type), 0, `${type} before ${rival.name}`);
+    save = {...win(save, `rival:${rival.id}`).save, offer: null};
+  }
+});
+
 test("deck rules: sixteen cards, only what you own, rarity limits across deck and side deck, four in the side deck", () => {
   const save = {...saveAt(), collection: {"cowboy-deadeye": 4, "cowboy-lasso": 3, "cowboy-mounted-billy": 2, "cowboy-captured-wraith": 1, "cowboy-covered-wagon": 2}};
   const ok = {"cowboy-sheriff": 9, "cowboy-deadeye": 4, "cowboy-mounted-billy": 2, "cowboy-captured-wraith": 1};
@@ -172,6 +208,8 @@ test("deck rules: sixteen cards, only what you own, rarity limits across deck an
   const rich = {...save, collection: {...save.collection, "cowboy-mounted-billy": 3}};
   assert.match(deckProblems(rich, {...ok, "cowboy-sheriff": 8, "cowboy-mounted-billy": 3}).join(" "), /Mounted Billy is Rare: at most 2/);
   assert.throws(() => withDeck(save, {...ok, "cowboy-sheriff": 8}), /exactly 16/);
+  assert.match(problem({...ok, "cowboy-sheriff": 13, "cowboy-deadeye": -4}), /whole cards/);
+  assert.match(problem({...ok, "cowboy-sheriff": 8.5, "cowboy-billy": .5}), /whole cards/);
 });
 
 test("saves: the first version is carried over, a round trip is exact, and anything untrustworthy starts fresh", () => {
@@ -179,10 +217,15 @@ test("saves: the first version is carried over, a round trip is exact, and anyth
   assert.equal(old.wins, 3);
   assert.deepEqual(old.deck, deckAfter(3));
   assert.deepEqual([old.offer, old.packs], [null, 0]);
+  assert.equal(migrate({wins: 6, losses: 0}).packs, 1, "the Trail's pack survives the old format");
   let save = win(saveAt({rivals: 2, hunts: {"lantern-wraith": 3}}), "open").save;
   assert.deepEqual(migrate(JSON.parse(JSON.stringify(save))), save);
   for (const bad of [null, "x", {v: 2}, {...save, wins: 99}, {...save, deck: {...save.deck, "cowboy-gatling-crew": 4}}, {...save, rivals: ["nobody"]},
-    {...save, hunts: {"lantern-wraith": 9}}, {...save, offer: ["wizard-imp", "cowboy-lasso"]}, {...save, packs: -1}, {...save, collection: {"no-such-card": 1}}]) {
+    {...save, hunts: {"lantern-wraith": 9}}, {...save, offer: ["wizard-imp", "cowboy-lasso"]}, {...save, packs: -1}, {...save, collection: {"no-such-card": 1}},
+    // Parts that do not agree with each other: nothing a player could not have earned.
+    {...save, collection: {...save.collection, "cowboy-captured-dragon": 1}}, {...save, collection: {...save.collection, "cowboy-gatling-crew": 9}},
+    {...save, collection: {...save.collection, "wizard-imp": 1}}, {...save, rivals: ["imp", "stargazer"]}, {...save, rivals: ["stargazer", "stargazer"]},
+    {...save, offer: ["cowboy-captured-wraith", "cowboy-captured-dragon"]}, {...newSave(), openWins: 3}, {...newSave(), hunts: {"lantern-wraith": 5}}]) {
     assert.deepEqual(migrate(bad), newSave());
   }
 });
@@ -201,6 +244,25 @@ test("the playtest report says how far a player got, where they first lost and w
   let long = [];
   for (let i = 0; i < LOG_LIMIT + 5; i++) long = logged(long, {name: `duel ${i}`, won: true, turns: 1, seconds: 1, rules: false});
   assert.deepEqual([long.length, long[0].name], [LOG_LIMIT, "duel 5"]);
+});
+
+test("no save reached by play is ever refused: 150 random careers", () => {
+  let x = 7;
+  const rnd = (n) => { x = (Math.imul(x, 1103515245) + 12345) >>> 0; return (x >>> 12) % n; };
+  for (let career = 0; career < 150; career++) {
+    let save = newSave();
+    for (let step = 0; step < 60; step++) {
+      if (save.offer) save = rnd(5) ? choose(save, save.offer[rnd(2)]) : save;
+      else if (save.packs && rnd(2)) save = openPack(save).save;
+      else {
+        const open = duelList(save).filter((duel) => duel.state === "open" || (duel.kind === "rival" && duel.state === "won"));
+        const duel = open[rnd(open.length)];
+        if (duelFor(save, duel.id)) save = settle(save, duel.id, rnd(3) > 0).save;
+      }
+      assert.deepEqual(migrate(JSON.parse(JSON.stringify(save))), save, `career ${career}, step ${step}`);
+      assert.deepEqual(deckProblems(save, save.deck, save.side), []);
+    }
+  }
 });
 
 test("a cushion, then a ramp, all the way to the even match: bot players on 80 deals", () => {

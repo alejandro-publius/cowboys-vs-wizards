@@ -43,8 +43,8 @@ const arrive = (cardId, turn, {health = cardOf(cardId).health, paid = false} = {
 
 // baseOrbs is one number for both sides or {cowboy, wizard}; decks is {cowboy, wizard} card counts (cards.js DECKS by default).
 // opening is {cowboy, wizard} lists of {type, health} troops already on the board, for a bounty's boss.
-// openingHand is {cowboy, wizard} lists of card types added to the opening hand, for a boss that has to be summoned.
-export function createShowdown(seed, {baseOrbs = 5, first, secondPlayerCards = SECOND_PLAYER_CARDS, decks = {}, opening = {}, openingHand = {}} = {}) {
+// arrivals is {cowboy, wizard} lists of {type, turn, health}: a boss that lands by itself at the start of its side's turn `turn`, or the first turn after with a free slot.
+export function createShowdown(seed, {baseOrbs = 5, first, secondPlayerCards = SECOND_PLAYER_CARDS, decks = {}, opening = {}, arrivals = {}} = {}) {
   const next = random(seed);
   const sides = {};
   for (const side of ["cowboy", "wizard"]) {
@@ -63,9 +63,9 @@ export function createShowdown(seed, {baseOrbs = 5, first, secondPlayerCards = S
   first ??= starter;
   for (const side of ["cowboy", "wizard"]) {
     sides[side].hand = sides[side].deck.splice(0, OPENING_HAND + (side === first ? 0 : secondPlayerCards));
-    sides[side].hand.push(...(openingHand[side] ?? []).map((type) => `${type}-0`));
   }
-  return {seed, turn: 1, active: first, first, summonUsed: false, castUsed: false, setUsed: false, attacking: false, location: null, result: null, sides};
+  const landing = ["cowboy", "wizard"].flatMap((side) => (arrivals[side] ?? []).map((arrival) => ({side, ...arrival})));
+  return {seed, turn: 1, active: first, first, summonUsed: false, castUsed: false, setUsed: false, attacking: false, location: null, arrivals: landing, result: null, sides};
 }
 
 // A troop's attack now: its card, its gear, and the location if the location names its tag.
@@ -206,7 +206,8 @@ function attack(next, action, events) {
   }
   const outcome = attackOutcome(next, action.slot, action.target);
   events.push({type: "attack", side, cardId: attacker.cardId, target: action.target === "base" ? "base" : enemy.board[action.target].cardId,
-    covered: action.target !== "base" && enemy.board[action.target].cover, hitBack: attacker.health - outcome.attackerLeft, ...outcome});
+    covered: action.target !== "base" && enemy.board[action.target].cover,
+    hitBack: action.target !== "base" && outcome.targetLeft > 0 && !enemy.board[action.target].cover ? attackOf(next, enemy.board[action.target]) : 0, ...outcome});
   if (action.target !== "base") {
     const defender = enemy.board[action.target];
     defender.health = outcome.targetLeft;
@@ -303,6 +304,13 @@ export function applyAction(state, action) {
     // The side whose turn begins stands its troops up: they may act again and leave cover.
     for (const troop of enemy.board) if (troop) troop.attacked = troop.cover = false;
     events.push({type: "turn", side: enemySide, turn: next.turn});
+    // A boss due this turn lands on the first free slot. It was not paid for, so it rests like any free troop.
+    for (const due of next.arrivals.filter((arrival) => arrival.side === enemySide && arrival.turn <= next.turn)) {
+      if (!enemy.board.includes(null)) break;
+      enemy.board[enemy.board.indexOf(null)] = arrive(`${due.type}-0`, next.turn, {health: due.health});
+      next.arrivals = next.arrivals.filter((arrival) => arrival !== due);
+      events.push({type: "summon", side: enemySide, cardId: `${due.type}-0`});
+    }
     if (next.turn > TURN_CAP) {
       const [a, b] = [next.sides.cowboy.base, next.sides.wizard.base];
       next.result = {winner: a === b ? null : a > b ? "cowboy" : "wizard", reason: "turn-cap"};
@@ -395,6 +403,7 @@ function simpleStep(state, level) {
 // Plays the active side's whole turn with the bot. Level 2 plans the whole turn; 0, 1 and 1.5 are weaker opponents.
 // A sprung trap changes the board, so the rest of a plan is made again.
 export function playTurn(state, level = 2) {
+  if (state.result) return {state, events: []};
   const side = state.active;
   // Level 1.5 plans every other turn of its own and plays the rest as level 1.
   if (level === 1.5) level = Math.floor(state.turn / 2) % 2 ? 1 : 2;

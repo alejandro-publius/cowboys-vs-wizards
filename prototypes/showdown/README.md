@@ -31,7 +31,7 @@ To test it on people, follow [PLAYTEST.md](PLAYTEST.md). To build it into the ga
 - **The Trail:** six duels that start as a sure win and get harder one step at a time. Each first win pays a new card.
 - **A choice after every win:** two cards are offered and you keep one.
 - **Rivals:** four, met in order, bridging to the even match. They pay packs and the first gear and location.
-- **Bounties:** the Lantern Wraith and the Graveyard Dragon. Beat one five times and its Legendary card is yours.
+- **Bounties:** the Lantern Wraith and the Graveyard Dragon. Beat one five times and its Legendary card is yours. The Wraith stands on the board from the start; the Dragon lands on the Wizards' second turn.
 - **Packs:** three cards, won and never bought.
 - **A softer rematch:** a loss gives your Base one more orb next time, twice at most.
 
@@ -59,7 +59,7 @@ How often a bot player wins each duel on the first try, 300 deals each, November
 | Rival 3. The Bonewright | 11% | 37% | 91% |
 | Rival 4. The Graveyard Coven | 8% | 12% | 56% |
 | Lantern Wraith, hunts 1 to 5 | 89% to 15% | 91% to 38% | 97% to 62% |
-| Graveyard Dragon, hunts 1 to 5 | 28% to 4% | 58% to 9% | 86% to 49% |
+| Graveyard Dragon, hunts 1 to 5 | 51% to 6% | 60% to 20% | 95% to 55% |
 | Open range (the even match) | 10% | 14% | 65% |
 
 A test holds the shape: a sure win twice, a careful player winning most of every Trail duel and of the first three rivals, the last rival as the wall, and each bounty ending harder than it starts.
@@ -68,12 +68,19 @@ A test holds the shape: a sure win twice, a careful player winning most of every
 
 These are all bot numbers. No person has played these rules.
 
+## Reviewed by two fresh agents, November 18
+
+Neither had seen the code being written. One checked the rules against the rulebook and fuzzed 2,590 games; it found the fight engine clean and eleven defects around it, all fixed and tested since. Among them: a card offer could be lost by starting another duel, gear and locations could arrive before the rival that teaches them, the view meant to hide cards carried the deal's seed, a finished two-player game showed the other hand, and the Dragon almost never appeared in its own bounty. The other played three duels knowing only what the screen showed; its notes led to the plain-words cost lines, the reasons on greyed cards and the reward confirmation.
+
 ## Known gaps
 
 - The simple player model falls off sharply at the first rival and the last one. Real players may find the same wall.
 - Two players means one screen. There is no play over a network: that needs a server.
 - The side deck is only used against the Wizards; two-player games use the starter decks.
 - Which trap springs and which Undead returns are fixed by order, not chosen.
+- A save code is checked for agreement between its parts, not for how it was earned. It is a local save, not a ledger.
+- "Restart this duel" replays the same deal, so a player can look at the Wizards' plays and start again.
+- The bot can take most of a second to plan a turn on a full board; the page pauses for that long.
 - The bot can see the top of its own deck when it plays a Scout.
 - Alex approved the eleven new card names on November 18. Keyword wording, duel names, reward order and the frame looks are still first drafts.
 - Nothing here is in the main game yet. Its deck builder, bounties and rivals still run on the lane duel.
