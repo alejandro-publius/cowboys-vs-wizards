@@ -2,7 +2,7 @@ import {chooseAction, cpuFor} from "./game/cpu.js";
 import {bossOfHunt, clearedFor, createHunt, earnedRewards, HUNT_GOAL, HUNTS_BY_ID, rewardEarned} from "./game/bounty-hunt.js";
 import {CARDS, tributeCost} from "./game/cards.js";
 import {deckIds, validateDeck} from "./game/deck-builder.js";
-import {BILLY_POSSE, DEADEYE_CONTROL, STARGAZER_DECK, STARGAZER_NAME, WRAITH_POSSE, frontierUnlocked} from "./game/deck-presets.js";
+import {BILLY_POSSE, DEADEYE_CONTROL, IMP_DECK, IMP_NAME, STARGAZER_DECK, STARGAZER_NAME, WRAITH_POSSE, frontierUnlocked} from "./game/deck-presets.js";
 import {GRAYBOX_OPENINGS, openingMatch, parseOpeningParams} from "./game/opening-policy.js";
 import {clashForecast, rideForecasts} from "./match/clash-forecast.js";
 import {clashLog} from "./match/clash-log.js";
@@ -29,8 +29,10 @@ const params = new URLSearchParams(location.search);
 const opening = parseOpeningParams(params, GRAYBOX_OPENINGS);
 const FREE_OPENER_NOTE = "Free-opener test: an opening hand with no free summon swaps its last card for the top free troop in that deck.";
 const hints = params.get("guide") === "1";
-// ?wizard=stargazer is an explicit test/replay selection, separate from the menu entitlement.
-const queryStargazer = params.get("wizard") === "stargazer";
+// ?wizard=stargazer and ?wizard=imp are explicit test/replay selections, separate from the menu entitlement.
+// Optional Wizard opponents: the validated wizardDeck list and its name.
+const OPPONENTS = {stargazer: {deck: STARGAZER_DECK, name: STARGAZER_NAME}, imp: {deck: IMP_DECK, name: IMP_NAME}};
+const queryOpponent = params.get("wizard");
 const wantsRideOut = params.get("rideOut") === "1";
 const RIDE_OUT_NOTE = "Summon or Ride Out this turn. You can cast a spell afterward.";
 // How to Play → Start guided duel: starter deck, seed 690, Normal Wizard
@@ -75,13 +77,14 @@ const deckEntitlement = () => {
 };
 
 // Read at match creation, so a deck saved mid-match only affects later deals.
-function freshDeal(seed, stargazer = false) {
+function freshDeal(seed, opponent = null) {
   const counts = guided || requestedDeck === "starter" ? null : pinnedPreset?.counts ?? profile.get().deck;
   const options = {rideOut: !guided && (wantsRideOut || (!deal?.hunt && deal?.options.rideOut === true))};
-  if (stargazer && !guided) options.wizardDeck = STARGAZER_DECK;
+  const challenger = !guided && Object.hasOwn(OPPONENTS, opponent) ? opponent : null;
+  if (challenger) options.wizardDeck = OPPONENTS[challenger].deck;
   const entitlement = deckEntitlement();
   if (counts && validateDeck(counts, entitlement).ok) options.cowboyDeck = deckIds(counts, entitlement);
-  return {seed, guided, opening: guided ? null : opening, options};
+  return {seed, guided, opening: guided ? null : opening, options, opponent: challenger};
 }
 
 const engine = {
@@ -192,7 +195,7 @@ const controller = createController({
         + (deal?.hunt?.markLane !== undefined ? " Watch the marked Wizard lane before the first clash." : "");
     model.openingNote = [
       model.bounty && `${deal.hunt.name}. ${huntProgress}`,
-      deal?.options?.wizardDeck && `Opponent: ${STARGAZER_NAME}.`,
+      deal?.opponent && `Opponent: ${OPPONENTS[deal.opponent].name}.`,
       deal?.isDraft && "Trying an unsaved deck.",
       deal?.posse && displayed?.round === 1 && POSSE_NOTE,
       deal?.opening?.opening === "freeOpener" && FREE_OPENER_NOTE,
@@ -252,7 +255,7 @@ function newDuel() {
   }
   guided = false;
   // New duel keeps the finished duel's opponent; after a draft or the posse it is the default.
-  startWithDeal(freshDeal(null, Boolean(deal.options.wizardDeck)), () => controller.start());
+  startWithDeal(freshDeal(null, deal.opponent), () => controller.start());
 }
 const overlay = mountCards(match, {
   onCard: (cardId) => input({type: "card", cardId}),
@@ -331,12 +334,12 @@ const menu = mountTitleMenu(node("title-screen"), {
     arena.hidden = false;
     node("home").focus();
   },
-  onPlay(startGuided, stargazer = false) {
+  onPlay(startGuided, opponent = null) {
     menu.hide();
     arena.hidden = false;
     if (startGuided || ["idle", "terminal"].includes(controller.status())) {
       guided = startGuided;
-      startWithDeal(freshDeal(null, stargazer || queryStargazer), () => {
+      startWithDeal(freshDeal(null, opponent ?? queryOpponent), () => {
         if (!controller.start(guided ? GUIDED_SEED : params.get("seed") ?? undefined)) controller.start();
       });
     }

@@ -40,7 +40,7 @@ test("registry holds available copies; default decks retain each spec's copies a
   expectedRegistry.push(extraSingularity);
   assert.deepEqual(CARDS[extraSingularity], {...CARDS["wizard-singularity-2"], id: extraSingularity});
   assert.ok(Object.isFrozen(CARDS[extraSingularity]));
-  assert.equal(expectedRegistry.length, 51);
+  assert.equal(expectedRegistry.length, 52);
   assert.deepEqual(Object.keys(CARDS).sort(), expectedRegistry.sort());
   assert.ok(Object.isFrozen(CARDS) && Object.isFrozen(DECKS));
 });

@@ -49,10 +49,17 @@ function front(cardId, selected, playable) {
   };
 }
 
+// The Imp's public stats and card line, shown on its lane tile. Other troops
+// keep the name and orbs only.
+const IMP_LINE = "Hits for three. One orb.";
+
 function troopSummary(troop) {
   if (!troop) return null;
   const card = CARDS[troop.cardId];
-  return {name: card.name, health: troop.health, max: card.health};
+  return {
+    name: card.name, health: troop.health, max: card.health,
+    ...(troop.cardId.startsWith("wizard-imp-") ? {attack: card.attack, note: IMP_LINE} : {}),
+  };
 }
 
 export function cardModel({displayed = null, options = null, status = "idle", seed = null, seedPinned = false, message = null, clashLog = null, guide = null, blockedReasons = null} = {}) {

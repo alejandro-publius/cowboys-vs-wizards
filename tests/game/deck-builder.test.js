@@ -30,7 +30,7 @@ test("catalog and defaults retain all existing stats and default ID order", () =
   assert(Object.isFrozen(DEFAULT_COUNTS));
 });
 
-test("card pools register Cowboy copy limits and the extra Stargazer Singularity", () => {
+test("card pools register Cowboy copy limits and the two optional Wizard additions", () => {
   for (const { type, order, copies, ...card } of COWBOY_CATALOG) {
     const limit = card.limit ?? 6;
     for (let copy = 1; copy <= limit; copy++) {
@@ -42,7 +42,7 @@ test("card pools register Cowboy copy limits and the extra Stargazer Singularity
   }
   assert.equal(Object.values(CARDS).filter(({ side, bounty }) => side === "cowboy" && !bounty).length, 35);
   const wizardIds = Object.values(CARDS).filter(({ side, bounty }) => side === "wizard" && !bounty).map(({ id }) => id);
-  assert.deepEqual(wizardIds.sort(), [...DEFAULT_WIZARD_IDS, "wizard-singularity-3"].sort());
+  assert.deepEqual(wizardIds.sort(), [...DEFAULT_WIZARD_IDS, "wizard-singularity-3", "wizard-imp-1"].sort());
   assert.equal(Object.hasOwn(CARDS, "wizard-dragon-2"), false);
 });
 
