@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orb Duel Playtest Lab</title>
+<style>
+  :root{--bg:#14110f;--panel:#1e1a17;--line:#4a3f36;--ink:#e9dfd0;--dim:#a39786;--accent:#d9a441;--focus:#f2c96b}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 ui-monospace,Menlo,Consolas,monospace}
+  main{max-width:880px;margin:0 auto;padding:28px 16px 48px}
+  h1{margin:0 0 4px;font-size:1.5rem;letter-spacing:.04em;text-transform:uppercase}
+  h2{margin:0 0 8px;font-size:1.1rem;color:var(--accent)}
+  p{margin:0 0 12px}
+  .dim{color:var(--dim)}
+  .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin:20px 0}
+  .card,.feedback{background:var(--panel);border:2px solid var(--line);border-radius:4px;padding:16px}
+  .tag{display:inline-block;margin-bottom:8px;font-size:.75rem;color:var(--dim);text-transform:uppercase}
+  .btn,button{display:inline-block;background:var(--accent);color:#1a1208;border:2px solid #7a5a1c;border-radius:3px;padding:8px 14px;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
+  button.secondary{background:transparent;color:var(--ink);border-color:var(--line)}
+  .btn:hover,button:hover{filter:brightness(1.1)}
+  a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+  label,legend{display:block;margin:12px 0 4px;font-weight:700}
+  fieldset{border:0;padding:0;margin:0}
+  textarea,select{width:100%;background:#0f0d0b;color:var(--ink);border:2px solid var(--line);border-radius:3px;padding:8px;font:inherit}
+  textarea{min-height:64px;resize:vertical}
+  .radios label{display:inline-block;margin:0 14px 0 0;font-weight:400}
+  .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;align-items:center}
+  #status{min-height:1.4em;color:var(--dim)}
+</style>
+</head>
+<body>
+<main>
+  <h1>Orb Duel Playtest Lab</h1>
+  <p class="dim">Local only. Each prototype opens in a new tab. Nothing is sent anywhere, and no account is needed.</p>
+
+  <section class="grid" aria-label="Prototypes">
+    <article class="card">
+      <span class="tag">Prototype</span>
+      <h2>Dragon Fire</h2>
+      <p><strong>Play goal:</strong> Use Dragon Fire once and watch the orbs on the target troop. Notice what you thought it would do before you played it.</p>
+      <a class="btn" id="launch-dragon" href="./dragon-fire.html" target="_blank" rel="noopener">Launch Dragon Fire</a>
+    </article>
+    <article class="card">
+      <span class="tag">Prototype</span>
+      <h2>Wraith Drift</h2>
+      <p><strong>Play goal:</strong> Use Wraith Drift once and notice where the troop ends up and what changes on the board. Note whether the result matched your plan.</p>
+      <a class="btn" id="launch-wraith" href="./wraith-drift.html" target="_blank" rel="noopener">Launch Wraith Drift</a>
+    </article>
+  </section>
+
+  <form class="feedback" id="feedback" aria-labelledby="fb-title">
+    <h2 id="fb-title">Feedback (optional)</h2>
+    <p class="dim">Three short questions. Skip any you like.</p>
+
+    <label for="fb-proto">Which prototype?</label>
+    <select id="fb-proto" name="prototype">
+      <option value="dragon-fire">Dragon Fire</option>
+      <option value="wraith-drift">Wraith Drift</option>
+    </select>
+
+    <label for="fb-expected">1. What did you expect the move to do?</label>
+    <textarea id="fb-expected" name="expected" maxlength="500"></textarea>
+
+    <label for="fb-happened">2. What happened?</label>
+    <textarea id="fb-happened" name="happened" maxlength="500"></textarea>
+
+    <fieldset class="radios">
+      <legend>3. Would you take it again?</legend>
+      <label><input type="radio" name="again" value="yes"> Yes</label>
+      <label><input type="radio" name="again" value="maybe"> Maybe</label>
+      <label><input type="radio" name="again" value="no"> No</label>
+    </fieldset>
+
+    <div class="row">
+      <button type="submit">Download observation (.json)</button>
+      <button type="reset" class="secondary">Clear</button>
+    </div>
+    <p id="status" role="status" aria-live="polite"></p>
+  </form>
+</main>
+<script>
+(function () {
+  var form = document.getElementById('feedback');
+  var status = document.getElementById('status');
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+    var data = new FormData(form);
+    var again = data.get('again');
+    var expected = String(data.get('expected') || '').trim();
+    var happened = String(data.get('happened') || '').trim();
+    if (!expected && !happened && !again) {
+      status.textContent = 'Nothing to save yet. Answer at least one question.';
+      return;
+    }
+    var prototype = String(data.get('prototype'));
+    var now = new Date();
+    var record = {
+      schema: 'orb-duel-playtest-observation/1',
+      prototype: prototype,
+      recordedAt: now.toISOString(),
+      expected: expected,
+      happened: happened,
+      takeItAgain: again || null
+    };
+    var stamp = now.toISOString().replace(/[:.]/g, '-');
+    var blob = new Blob([JSON.stringify(record, null, 2) + '\n'], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = prototype + '-observation-' + stamp + '.json';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    status.textContent = 'Saved ' + link.download + ' to your downloads folder.';
+  });
+  form.addEventListener('reset', function () { status.textContent = ''; });
+})();
+</script>
+</body>
+</html>
