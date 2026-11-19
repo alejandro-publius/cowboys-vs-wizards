@@ -12,9 +12,11 @@
 // map from src/match/selection.js. With it every hand card gets
 // blockedReason, its text while input is accepted and the card is
 // unplayable, else null. Without it the hand cards keep their shape.
+// On a Dragon Fire match (displayed.dragonFire) a Captured Dragon hand card
+// and a Dragon or Captured Dragon lane troop also carry `fire`, FIRE_TEXT.
 import {CARDS, tributeCost} from "../game/cards.js";
 import {SLOT_COUNT} from "../game/state.js";
-import {pendingDrift} from "../game/clash.js";
+import {isFireCard, pendingDrift} from "../game/clash.js";
 
 export const RESULT_LABELS = Object.freeze({win: "Victory", loss: "Defeat", draw: "Draw"});
 
@@ -33,7 +35,13 @@ function phase(displayed) {
   return displayed.activeSide === "cowboy" ? "Cowboy phase (you)" : "Wizard phase (CPU)";
 }
 
-function front(cardId, selected, playable) {
+// Dragon Fire matches only (view.dragonFire): the line on the Captured Dragon
+// in hand and on a Dragon or Captured Dragon on the board. The same card test
+// as the clash (isFireCard). Other matches never carry a `fire` key.
+export const FIRE_TEXT = "Dragon Fire: damage beyond the blocker's remaining orbs hits the Base";
+const fireLine = (fire, cardId) => (fire && isFireCard(cardId) ? {fire: FIRE_TEXT} : {});
+
+function front(cardId, selected, playable, fire = false) {
   const card = CARDS[cardId];
   const troop = card.kind === "troop";
   return {
@@ -46,6 +54,7 @@ function front(cardId, selected, playable) {
     selected,
     playable,
     ...(troop && card.rides === true && {rides: true}),
+    ...fireLine(fire, cardId),
   };
 }
 
@@ -53,12 +62,13 @@ function front(cardId, selected, playable) {
 // keep the name and orbs only.
 const IMP_LINE = "Hits for three. One orb.";
 
-function troopSummary(troop) {
+function troopSummary(troop, fire = false) {
   if (!troop) return null;
   const card = CARDS[troop.cardId];
   return {
     name: card.name, health: troop.health, max: card.health,
     ...(troop.cardId.startsWith("wizard-imp-") ? {attack: card.attack, note: IMP_LINE} : {}),
+    ...fireLine(fire, troop.cardId),
   };
 }
 
@@ -85,7 +95,8 @@ export function cardModel({displayed = null, options = null, status = "idle", se
   const wizard = displayed?.sides.wizard ?? null;
   const selected = options?.cardId ?? null;
   const playable = new Set(accepting ? options?.playableCardIds : []);
-  const hand = (cowboy?.hand ?? []).map((cardId) => front(cardId, cardId === selected, playable.has(cardId)));
+  const fire = displayed?.dragonFire?.enabled === true;
+  const hand = (cowboy?.hand ?? []).map((cardId) => front(cardId, cardId === selected, playable.has(cardId), fire));
   if (blockedReasons) {
     for (const card of hand) card.blockedReason = accepting && !card.playable ? blockedReasons[card.cardId] ?? null : null;
   }
@@ -126,8 +137,8 @@ export function cardModel({displayed = null, options = null, status = "idle", se
     ...(fireArc && {fireArc}),
     lanes: Array.from({length: SLOT_COUNT}, (_, lane) => ({
       lane,
-      cowboy: troopSummary(cowboy?.board[lane]),
-      wizard: troopSummary(wizard?.board[lane]),
+      cowboy: troopSummary(cowboy?.board[lane], fire),
+      wizard: troopSummary(wizard?.board[lane], fire),
       ...(displayed?.bountyTarget && {wanted: wizard?.board[lane]?.cardId === displayed.bountyTarget}),
       ...(lane === mark?.lane && {mark: mark.state}),
     })),
