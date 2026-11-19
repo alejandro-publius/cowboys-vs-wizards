@@ -2,12 +2,13 @@
 // prototypes/showdown/main.js, solo only. Everything drawn comes from session.view() (viewFor),
 // session.legal() (legalActions for this seat) and presentEvent text. The full state never
 // reaches this module, and no Wizard hand, trap or deck card id is written into the page.
-import {EFFECTS, KEYWORDS, RARITY, TRAP_SLOTS, TYPES, attackOf, attackOutcome, canAttack, cardOf, opponent, presentEvent, tributes} from "../match/showdown-engine.js";
+import {EFFECTS, KEYWORDS, RARITY, TYPES, cardOf, has, tributes, typeOf} from "../game/showdown/cards.js";
+import {presentEvent} from "../game/showdown/presenter.js";
+import {TRAP_SLOTS, attackOf, attackOutcome, canAttack, opponent} from "../game/showdown/rules.js";
 import {createShowdownSession} from "../match/showdown-session.js";
 import {FRAMES} from "./card-frames.js";
 
 const name = (cardId) => cardOf(cardId).name;
-const typeOf = (cardId) => cardId.replace(/-\d+$/, "");
 const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
 const orbs = (now, max) => `<span class="sd-orbs" role="img" aria-label="${now} of ${Math.max(now, max)} orbs">${"●".repeat(now)}<span class="sd-lost">${"○".repeat(Math.max(0, max - now))}</span></span>`;
 // Troop, spell and trap use the pull request 139 frames; gear and location add the reference screen's marks.
@@ -55,7 +56,7 @@ export function mountShowdown(root, {onHome}) {
   let session, duel, seed, lines, latest, pick;
 
   function record(events) {
-    latest = events.map(presentEvent);
+    latest = events.map((event) => presentEvent(event));
     for (const [i, event] of events.entries()) lines.push({turn: event.type === "turn", text: latest[i]});
   }
   function start(nextDuel, nextSeed) {
@@ -121,7 +122,7 @@ export function mountShowdown(root, {onHome}) {
     const o = attackOutcome(view, pick.troop, target);
     const foe = view.sides[opponent(session.seat)];
     if (target === "base") return `<span class="sd-note sd-good">${foe.board.some(Boolean) ? "Ride past: " : ""}Hit the Base for ${o.baseDamage}</span>`;
-    const lastStand = o.targetLeft === 0 && cardOf(foe.board[target].cardId).keys.includes("laststand") ? ". Its Last Stand costs yours 1 orb" : "";
+    const lastStand = o.targetLeft === 0 && has(foe.board[target].cardId, "laststand") ? ". Its Last Stand costs yours 1 orb" : "";
     if (o.targetLeft === 0) return `<span class="sd-note sd-good">Defeated${o.baseDamage ? `, ${o.baseDamage} through to the Base` : foe.board[target].cover ? ", nothing reaches the Base" : ""}${lastStand}</span>`;
     if (foe.board[target].cover) return `<span class="sd-note">Survives on ${o.targetLeft}. It is in cover and does not hit back.</span>`;
     if (attackOf(view, foe.board[target]) === 0) return `<span class="sd-note">Survives on ${o.targetLeft}. It has no attack, so yours is unharmed.</span>`;
@@ -197,7 +198,7 @@ export function mountShowdown(root, {onHome}) {
       <button type="button" id="sd-menu">Main menu</button></div>` : "";
 
     const canCover = attacking && options.some((a) => a.type === "cover" && a.slot === pick.troop);
-    const guarded = view.sides[foe].board.some((troop) => troop && cardOf(troop.cardId).keys.includes("guard"));
+    const guarded = view.sides[foe].board.some((troop) => troop && has(troop.cardId, "guard"));
     $("sd-prompt").textContent = r ? "" : pick?.tributes ? `Choose ${tributes(pick.card)} of your troops to send to the graveyard as payment for ${name(pick.card)}.`
       : kind === "gear" ? `Choose one of your troops to carry ${name(pick.card)}.`
       : kind === "spell" ? `Choose an enemy troop for ${name(pick.card)}.`

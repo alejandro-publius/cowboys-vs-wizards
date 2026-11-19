@@ -1,6 +1,9 @@
 // One solo Showdown duel for the graybox screen. The full state stays inside this closure:
 // the screen only ever receives viewFor(state, seat), the seat's legal actions and the events.
-import {STARTER, TRAIL, applyAction, createShowdown, legalActions, playTurn, viewFor} from "./showdown-engine.js";
+import {viewFor} from "../game/showdown/contract.js";
+import {applyAction, createShowdown, legalActions, playTurn} from "../game/showdown/rules.js";
+// The Trail stays in the prototype until slice 2 moves it; trail.js reads the same canonical cards.
+import {STARTER, TRAIL} from "../../prototypes/showdown/trail.js";
 
 // Trail duel 1 for a player with nothing saved, as prototypes/showdown/progress.js duelFor builds it
 // for newSave() (starter deck, no rematch grit). Progress is not stored in slice 1.

@@ -223,3 +223,12 @@ Kiro CLI 3.4.0 V3 completed #35 in two passes (`48ecea9`, `32ba790`). The first 
 Kiro's #54 commit `2966298` adds build.json plus independent live commit/hash verification. PR #55 merged as `4c0723d`; its real Pages build, deployment and verify-live jobs passed. [Receipt](evidence/kiro-build-identity.md). Session credit observations for ten earlier jobs are now published as exact session values with source hashes, never an account total. [Usage](evidence/kiro-session-usage-20261116.md).
 
 The next substantial Kiro task is #56, boundary generation, failure reduction and requirement mapping. It is dispatched, not completed. User asks for alternate-prompt check-ins instead of continuous worker polling.
+
+### 2026-11-19 — Issue 143 slice 1 integration (Kiro, America/Los_Angeles, 15:23 PST)
+
+- **State** — verified locally on the combined branch. Not pushed or merged.
+- **Performed in** — Kiro agent session (Claude Opus 5.5) as the integration worker. The five worker commits came from Kiro CLI 3.5.0 workers.
+- **Change** — cherry-picked the screen (`9cbc086`), pilot kit (`122421a`), 3D starter kit (`030d129`) and save-migration experiment (`d2efc98`) onto the engine commit `9686810`. Removed the screen's temporary adapter `src/match/showdown-engine.js` and its stand-in presenter. The screen and session now import `src/game/showdown/{rules,cards,contract,presenter}.js` directly, and the screen uses the canonical `typeOf` and `has`.
+- **Debugging result** — the first Chrome run on the combined build timed out after the first summon. `events.map(presentEvent)` passed the array index as the canonical `presenters` argument, so every event threw "No presenter". The fix calls `presentEvent(event)`. The browser check now asserts the canonical wording ("The Cowboys' … arrived.", "the Wizards' Base").
+- **Verification** — `npm test` 512 of 512 and both GLB checks. Showdown browser check 12 of 12 on the offline and web builds (seed 0) and on seed 7. Pilot smoke check 16 of 16 on the baseline playtest ZIP. Compat experiment 11 of 11. Links 0 broken. [Receipts](evidence/kiro-143-integration/README.md) · [Screen evidence](evidence/kiro-143-showdown-graybox.md)
+- **Remaining** — first-time human playtests (PLAYTEST.md) and the first Tripo models are still pending. The pilot packer refuses to pack on this branch because `prototypes/showdown/` now re-exports the moved engine. The 735cb09 playtest ZIP is kept as the baseline.

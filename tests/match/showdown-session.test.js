@@ -2,12 +2,13 @@
 // seat's legal actions and presentable events.
 import assert from "node:assert/strict";
 import test from "node:test";
-import {EVENTS, PRESENTED, presentEvent} from "../../src/match/showdown-engine.js";
+import {EVENTS} from "../../src/game/showdown/contract.js";
+import {PRESENTERS, presentEvent} from "../../src/game/showdown/presenter.js";
 import {bootHill, createShowdownSession} from "../../src/match/showdown-session.js";
 
-test("the temporary presenter has a handler for every EVENTS entry and throws on anything else", () => {
-  assert.deepEqual([...PRESENTED].sort(), Object.keys(EVENTS).sort());
-  assert.throws(() => presentEvent({type: "not-an-event"}), /no presenter/);
+test("the screen's presenter is the canonical one: a handler for every EVENTS entry, throws on anything else", () => {
+  assert.deepEqual(Object.keys(PRESENTERS).sort(), Object.keys(EVENTS).sort());
+  assert.throws(() => presentEvent({type: "not-an-event"}), /Unknown Showdown event type/);
 });
 
 test("Boot Hill is Trail duel 1 for a new player: starter deck, Cowboys open, Wizard Base 3", () => {

@@ -182,7 +182,7 @@ try {
     board:[...document.querySelectorAll('#sd-board [data-side=cowboy] .sd-slot strong')].map(n=>n.textContent),
     refused:[...document.querySelectorAll('#sd-hand [data-card]:disabled')].map(n=>[n.dataset.card,n.querySelector('.sd-warn')?.textContent]),
     slotNote:document.querySelector('#sd-board [data-side=cowboy] .sd-slot[data-frame=troop]')?.textContent})`);
-  assert.match(afterSummon.feedback, /^Last: Cowboy [A-Za-z ]+ arrived\.$/);
+  assert.match(afterSummon.feedback, /^Last: The Cowboys' [A-Za-z ]+ arrived\.$/);
   assert.equal(afterSummon.log, logBefore + 1);
   assert.equal(afterSummon.board.length, 1);
   const troopRefusals = afterSummon.refused.filter(([id]) => /cowboy-(sheriff|billy|deadeye)/.test(id));
@@ -245,7 +245,7 @@ try {
     hand:document.querySelectorAll('#sd-hand [data-card]:not(:disabled)').length,end:document.getElementById('sd-end').hidden,targets:document.querySelectorAll('[data-enemy],[data-own]').length})`);
   assert.equal(finish.status, "You win: the Wizard Base fell.");
   assert.match(finish.wizardBase, /^0 of 3 orbs$/);
-  assert.match(finish.feedback, /struck the Wizard Base for \d+/);
+  assert.match(finish.feedback, /struck the Wizards' Base for \d+/);
   assert.deepEqual([finish.hand, finish.end, finish.targets], [0, true, 0], "nothing is playable after the result");
   assert.ok(sawPreview, "every offered target showed an attack preview");
   assert.ok(sawWizardTurn, "the Wizard turns were shown in the log");

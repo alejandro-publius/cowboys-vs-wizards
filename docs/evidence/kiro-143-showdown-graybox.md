@@ -13,10 +13,10 @@ Scope was the graybox entry, its UI and build, and a browser acceptance check. T
   (`match`, `ride-out`, `practice-dynamiter`, `practice-tribute`, `fire-arc`). The lane menu gains a
   "Showdown (new rules)" link. The Wanted, Build Deck, How to Play, Achievements, rival and fire-arc entries
   are hidden on the Showdown entry and remain on `?mode=lanes`.
-- [`src/match/showdown-engine.js`](../../src/match/showdown-engine.js) is the **temporary import adapter**. It
-  re-exports the prototype engine and holds a stand-in `presentEvent(event)`. At integration the coordinator
-  rebinds it to `src/game/showdown/{rules,cards,contract,presenter}.js` and drops the stand-in presenter.
-  `TRAIL` and `STARTER` stay on `prototypes/showdown/trail.js` until slice 2.
+- The worker's temporary import adapter (`src/match/showdown-engine.js`) was removed at integration. The screen
+  and session import `src/game/showdown/{rules,cards,contract,presenter}.js` directly, and every visible log
+  line comes from the canonical `presentEvent`. `TRAIL` and `STARTER` stay on `prototypes/showdown/trail.js`
+  until slice 2.
 - [`src/match/showdown-session.js`](../../src/match/showdown-session.js) keeps the full state in a closure. The
   screen receives only `viewFor(state, "cowboy")`, the seat's `legalActions` and events. `bootHill()` builds
   the options that `duelFor(newSave(), "trail:boot-hill")` builds. No progress is saved (slice 2).
@@ -64,7 +64,7 @@ plays every enabled card each turn and wins. No product change came from this.
 
 ## Pending and handoff
 
-- Coordinator: rebind `src/match/showdown-engine.js` to the canonical `src/game/showdown/` modules.
+- Done at integration: the adapter is gone and the screen uses the canonical modules and presenter.
   The canonical presenter test covers done-when 2.
 - Coordinator: add a `docs/kiro-build-log.md` entry. The log is coordinator-owned, so this worker did not edit it.
 - Not run: the existing lane browser scripts. Those that build their own URL with `?mode=match` keep
