@@ -1,9 +1,10 @@
 // Writes prototypes/showdown/cards.csv, a spreadsheet of every Showdown card that GitHub can show.
 //   node prototypes/showdown/export-cards.mjs
 import {writeFileSync} from "node:fs";
+import {LOOK} from "./art.js";
 import {DECKS, EFFECTS, KEYWORDS, RARITY, TYPES, tributes} from "./cards.js";
 
-const HEADER = ["Card", "Faction", "Kind", "Type", "Rarity", "Copies per deck", "Stars", "Tributes to summon", "Attack", "Orbs", "Keywords", "What it does", "Copies in the even-match deck", "New in Showdown"];
+const HEADER = ["Card", "Faction", "Kind", "Type", "Rarity", "Copies per deck", "Stars", "Tributes to summon", "Attack", "Orbs", "Keywords", "What it does", "Copies in the even-match deck", "New in Showdown", "Visual direction"];
 const cell = (value) => (/[",\n]/.test(String(value)) ? `"${String(value).replaceAll('"', '""')}"` : String(value));
 export function cardsCsv() {
   const rows = Object.entries(TYPES).map(([type, card]) => {
@@ -12,7 +13,8 @@ export function cardsCsv() {
     return [card.name, card.side === "cowboy" ? "Cowboy" : "Wizard", card.kind[0].toUpperCase() + card.kind.slice(1), troop ? card.tag : "",
       RARITY[card.rarity][0], Number.isFinite(RARITY[card.rarity][1]) ? RARITY[card.rarity][1] : "Any number",
       troop ? card.stars : "", troop ? tributes(`${type}-1`) : "", troop ? card.attack : "", troop ? card.health : "",
-      troop ? card.keys.map((key) => KEYWORDS[key][0]).join(", ") : "", text, DECKS[card.side][type] ?? 0, card.fresh ? "Yes" : "No"];
+      troop ? card.keys.map((key) => KEYWORDS[key][0]).join(", ") : "", text, DECKS[card.side][type] ?? 0, card.fresh ? "Yes" : "No",
+      `${LOOK[type].subject} ${LOOK[type].scene} ${LOOK[type].cue}`];
   });
   return [HEADER, ...rows].map((row) => row.map(cell).join(",")).join("\n") + "\n";
 }

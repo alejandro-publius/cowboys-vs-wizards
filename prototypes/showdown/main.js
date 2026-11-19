@@ -20,7 +20,7 @@ function face(type, {full = false, extra = ""} = {}) {
   const card = TYPES[type];
   const rules = card.kind !== "troop" ? EFFECTS[card.effect].text
     : full ? card.keys.map((key) => `<strong>${KEYWORDS[key][0]}.</strong> ${KEYWORDS[key][1]}`).join(" ") || "No keyword." : "";
-  return `<strong>${card.name}</strong>${typeLine(card)}${card.kind === "troop" ? `${card.attack} attack · ${card.health} orbs ${full ? "" : keywords(card)}` : ""}
+  return `<strong>${card.name}</strong>${typeLine(card)}${card.kind === "troop" ? `${card.attack} attack · ${plural(card.health, "orb")} ${full ? "" : keywords(card)}` : ""}
     ${rules ? `<span class="note">${rules}</span>` : ""}${extra}`;
 }
 const cardClass = (type) => `card cowboy ${TYPES[type].kind} ${TYPES[type].rarity}`;

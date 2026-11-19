@@ -8,9 +8,10 @@ node --test prototypes/showdown/*.test.js
 node prototypes/showdown/sim.mjs 1000     # the even match, each deal played from both seats
 node prototypes/showdown/trail-sim.mjs    # how often three kinds of player win every duel on the ladder
 node prototypes/showdown/export-cards.mjs # rewrites cards.csv after a card change
+node prototypes/showdown/export-art.mjs   # rewrites ART-DIRECTION.md after a change to art.js
 ```
 
-The full rules are in [RULEBOOK.md](RULEBOOK.md). Every card is in [cards.csv](cards.csv).
+The full rules are in [RULEBOOK.md](RULEBOOK.md). Every card is in [cards.csv](cards.csv). The look of every card and place, written for an image generator, is in [ART-DIRECTION.md](ART-DIRECTION.md).
 
 ## What is in it
 

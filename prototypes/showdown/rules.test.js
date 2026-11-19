@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {DECKS, EFFECTS, KEYWORDS, RARITY, TYPES, cardOf, deckIds} from "./cards.js";
 import {cardsCsv} from "./export-cards.mjs";
+import {FRAMES, FRAME_BASE, FRAMING, LOOK, PLACES, STYLE} from "./art.js";
+import {artDirection} from "./export-art.mjs";
 import {HAND_CAP, OPENING_HAND, applyAction, attackOf, attackOutcome, canAttack, createShowdown, legalActions, playTurn} from "./rules.js";
 
 const troop = (type, health = TYPES[type].health, extra = {}) => ({cardId: `${type}-1`, health, attacked: false, stunned: false, cover: false, gear: [], arrived: 0, ...extra});
@@ -307,4 +309,17 @@ test("the rulebook names every keyword with its exact rule, and every card kind"
   for (const [word, rule] of Object.values(KEYWORDS)) assert.ok(book.includes(`| ${word} | ${rule} |`), `RULEBOOK.md is out of date for ${word}`);
   for (const kind of new Set(Object.values(TYPES).map((card) => card.kind))) assert.match(book, new RegExp(`\\| ${kind[0].toUpperCase()}${kind.slice(1)} \\|`), kind);
   for (const [label, copies] of Object.values(RARITY)) assert.ok(book.includes(`${label} ${Number.isFinite(copies) ? copies : "any number"}`), `rarity ${label}`);
+});
+
+test("art direction: every card has a subject, a scene and a cue, and the page is current", () => {
+  assert.deepEqual(Object.keys(LOOK).sort(), Object.keys(TYPES).sort());
+  for (const [type, look] of Object.entries(LOOK)) {
+    for (const part of ["subject", "scene", "cue"]) assert.ok(look[part]?.length > 40, `${type} has no ${part}`);
+    assert.ok(FRAMING[TYPES[type].kind], `${type}: no framing for ${TYPES[type].kind}`);
+  }
+  // The words go to an image generator: no living artist, studio or other game is named as a style.
+  for (const text of [STYLE, FRAME_BASE, ...Object.values(FRAMES), ...Object.values(FRAMING), ...Object.values(PLACES), ...Object.values(LOOK).flatMap((look) => Object.values(look))]) {
+    assert.doesNotMatch(text, /in the style of|yu-?gi-?oh|pok[eé]mon|magic: the gathering|hearthstone|disney|pixar/i);
+  }
+  assert.equal(readFileSync(new URL("ART-DIRECTION.md", import.meta.url), "utf8"), artDirection(), "run: node prototypes/showdown/export-art.mjs");
 });
