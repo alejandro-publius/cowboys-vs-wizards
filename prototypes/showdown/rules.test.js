@@ -1,11 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
-import {DECKS, EFFECTS, KEYWORDS, RARITY, TYPES, cardOf, deckIds} from "./cards.js";
+import {DECKS, EFFECTS, KEYWORDS, RARITY, TYPES, cardOf, deckIds} from "../../src/game/showdown/cards.js";
 import {cardsCsv} from "./export-cards.mjs";
 import {FRAMES, FRAME_BASE, FRAMING, LOOK, MODEL_ORDER, PLACES, STYLE} from "./art.js";
 import {artDirection} from "./export-art.mjs";
-import {HAND_CAP, OPENING_HAND, applyAction, attackOf, attackOutcome, canAttack, createShowdown, legalActions, playTurn} from "./rules.js";
+import {HAND_CAP, OPENING_HAND, applyAction, attackOf, attackOutcome, canAttack, createShowdown, legalActions, playTurn} from "../../src/game/showdown/rules.js";
 
 const troop = (type, health = TYPES[type].health, extra = {}) => ({cardId: `${type}-1`, health, attacked: false, stunned: false, cover: false, gear: [], arrived: 0, ...extra});
 // Turn 4, Cowboy to act, nothing spent, boards as given, empty hands.
