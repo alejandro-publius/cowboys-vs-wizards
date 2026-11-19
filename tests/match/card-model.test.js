@@ -3,6 +3,7 @@
 // step the model is built from publicState(state, "cowboy") and checked
 // against that view and against the full state's Wizard hand, which the
 // model must never reveal.
+import { frameOf } from "../../src/ui/card-frames.js";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { CARDS, SIDES, tributeCost } from "../../src/game/cards.js";
@@ -28,7 +29,7 @@ function forEachSeed(run) {
   }
 }
 
-const summary = (troop) => troop && { name: CARDS[troop.cardId].name, health: troop.health, max: CARDS[troop.cardId].health };
+const summary = (troop) => troop && { name: CARDS[troop.cardId].name, health: troop.health, max: CARDS[troop.cardId].health, frame: frameOf(CARDS[troop.cardId]) };
 
 function checkModel(model, { view, state, options, status, seed }) {
   const own = view.sides.cowboy;
@@ -48,6 +49,7 @@ function checkModel(model, { view, state, options, status, seed }) {
       cardId: data.id,
       name: data.name,
       kind: data.kind,
+      frame: frameOf(data),
       stars: data.kind === "troop" ? data.stars : "Spell",
       health: data.health ?? null,
       attack: data.attack ?? null,

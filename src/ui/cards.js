@@ -14,6 +14,7 @@
 // render() sets root.dataset.status to the controller status.
 
 import {createCardBody, describeCard} from "./card-art.js";
+import {FRAMES, typeLine} from "./card-frames.js";
 import {CARDS, tributeCost} from "../game/cards.js";
 
 const ACTIONS = {confirm: "onConfirm", "ride-out": "onRideOut", cancel: "onCancel", skip: "onSkip", "end-phase": "onEndPhase", restart: "onRestart"};
@@ -62,8 +63,9 @@ function plainCard(card) {
   const cost = troop ? tributeCost(card.stars) : 0;
   return [
     el("strong", {class: "plain-card-name"}, card.name),
+    el("small", {class: "plain-card-type"}, typeLine(card.frame)),
     el("span", {class: "plain-card-stats"}, troop ? `${card.attack} attack · ${card.health} life` : "Removes one enemy orb"),
-    el("small", {class: "plain-card-cost"}, troop ? (cost ? `${cost} tribute${cost === 1 ? "" : "s"}` : "Free summon") : "Spell"),
+    troop ? el("small", {class: "plain-card-cost"}, cost ? `${cost} tribute${cost === 1 ? "" : "s"}` : "Free summon") : null, // the type line already says Spell
     card.rides ? el("small", {class: "plain-card-ride"}, "Ride") : null,
   ];
 }
@@ -89,7 +91,8 @@ function cardButton(card, enabled, inFlight, plain) {
     class: "card-front card-stage" + (inFlight ? " in-flight" : ""),
     "data-card-id": card.cardId,
     "data-playable": card.playable,
-    "aria-label": describeCard(card) + (card.rides ? ", Ride" : "") + (card.playable ? ", playable now" : ""),
+    "data-frame": plain ? card.frame : null,
+    "aria-label": describeCard(card) + (plain ? `, ${FRAMES[card.frame].line}` : "") + (card.rides ? ", Ride" : "") + (card.playable ? ", playable now" : ""),
     "aria-describedby": reasonId,
     "aria-pressed": String(card.selected),
     disabled: !enabled,
@@ -112,15 +115,18 @@ function slotButton(side, slot, troop, clickable, chosen, plain, forecast, previ
   const name = wanted ? `Wanted ${troop.name}` : troop?.name;
   const contents = troop ? `${name}, ${troop.health} of ${troop.max} health${troop.note ? `, ${troop.attack} attack. ${troop.note}` : ""}` : "empty";
   const note = mark ? MARK_TEXT[mark] : null;
+  // A hunt's target shows the Wanted frame even when its card is an ordinary troop.
+  const frame = troop ? (wanted ? "wanted" : troop.frame) : null;
   const face = plain
     ? [el("small", {}, `Lane ${slot + 1}`), el("strong", {}, name ?? "Empty"),
+      troop ? el("small", {class: "plain-card-type"}, typeLine(frame)) : null,
       troop?.note ? el("small", {class: "plain-card-stats"}, `${troop.attack} attack · ${troop.health} life`) : null,
       troop?.note ? el("small", {}, troop.note) : null,
       troop ? orbs(troop.health, troop.max) : null,
       note ? el("small", {class: "wraith-mark"}, note) : null,
       forecast ? el("small", {class: "plain-forecast"}, forecast) : null]
     : [troop ? `${troop.name} ${troop.health}/${troop.max}` : "Empty"];
-  return el("button", {type: "button", class: "match-slot", "data-wanted": wanted, "data-mark": mark, "data-side": side, "data-slot": slot, disabled: !clickable,
+  return el("button", {type: "button", class: "match-slot", "data-frame": plain ? frame : null, "data-wanted": wanted, "data-mark": mark, "data-side": side, "data-slot": slot, disabled: !clickable,
     "aria-pressed": chosen ? "true" : null,
     "aria-label": `${owner} lane ${slot + 1}: ${contents}${note ? `. ${note}` : ""}${forecast ? `. ${preview}: ${forecast}` : ""}`}, ...face);
 }

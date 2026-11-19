@@ -19,20 +19,14 @@ The categories and their frames are in [card-types.csv](../card-types.csv). Ever
 
 The colours and exact shapes are a proposal. They are Alex's to approve before anything is drawn.
 
-## Brief for Kiro: show the category in the graybox
+## In the graybox
 
-Small, and independent of which fight the game ends up with.
+Built on November 18: hand cards, board tiles and the deck builder show the type line, the corner mark and the border style, and each Wanted poster carries the boss type line. A hunt's target shows the Wanted frame. The frame data is `src/ui/card-frames.js`, and both spreadsheets are generated from it.
 
-- Every hand card, board tile, deck builder row and Wanted poster shows the card's border style, corner mark and type line from `docs/card-types.csv`.
-- The category comes from the catalog: a bounty card is a Boss, otherwise the card's kind.
-- Screen readers hear the type line in the card's label.
+Still to do:
 
-**Done when:**
-
-1. In one duel a person can name the category of every card on screen with the page in grayscale.
-2. Captured Dragon and Captured Wraith show the boss frame in the hand, on the board and in Build Deck.
-3. The Lantern Wraith and the Graveyard Dragon show the Wanted state in a hunt.
-4. A test fails if a card in the catalog has no category or a category has no frame entry.
+- The illustrated 3D build is unchanged.
+- No person has checked that the categories read at a glance.
 
 ## Bounties as a pipeline
 
