@@ -40,6 +40,19 @@ Cowboys vs. Wizards is a haunted-Western browser card duel. Pick a card, place a
 
 Rules call for project footage and a public YouTube demo under three minutes. The [official judging criteria](https://kiroween.devpost.com/) ask how skillfully and impactfully Kiro was used. The main cut gives judges a complete battle and three visible changes. The proof reel below is for review and the build story. [Official rules](https://kiroween.devpost.com/rules) · [2025 winner comparisons](kiroween-competitive-benchmark.md) · [Official Kiro video library](https://kiro.dev/videos/)
 
+## Current Frontier proof · 60-second capture
+
+Record the local Frontier build at `47ab956`. The gameplay routes have browser receipts. Native Kiro footage and human playtests are pending.
+
+| Time | Capture | Path and attribution | Receipt |
+| --- | --- | --- | --- |
+| 0:00–0:12 | Finish the fifth distinct Graveyard Dragon capture. Show Bounty Hunter and choose **Duel with the Dragon Posse**. | Fable 5.2 designed the deck and reward duel. Kiro CLI connected the showcase to the capture. | [Dragon payoff](../evidence/kiro-dragon-payoff.md) |
+| 0:12–0:31 | Show the wounded Sheriff, the tribute and the open lane on seed 264. Cut to the two results. The Dragon line wins in round four with one Base orb. Keeping the Sheriff wins in round six with two. | Kiro CLI built the shared preset and seeded deal. Codex unified the capture tracker and verified both lines. | [Exact routes](../evidence/kiro-dragon-payoff.md#two-routes-to-record) · 47 tests |
+| 0:31–0:43 | Open `?mode=practice-tribute` at the round-four decision. Cut to a finished Stargazer trial and choose **Edit this draft** to show the restored opponent and recipe. | Fable 5.2 designed the challenges and rivals. Kiro CLI built the practice opener and draft picker. Codex verified the routes and keyboard flow. | [Practice](../evidence/kiro-practice-challenges.md) · [Draft trials](../evidence/kiro-draft-opponents.md) |
+| 0:43–1:00 | Show Kiro CLI's implementation evidence. Show the installed Orb Duel Review Power returning pass for a historical receipt on matching HTML, then stale on changed HTML. | The saved calls ran in an installed-only Kiro session. Label them as historical inputs. | [Power package proof](../evidence/kiro-power-package-fix.md#actual-installed-only-verification) |
+
+Dragon Posse's score share rose from 41.5% to 51.5% against Normal and from 44.1% to 52.3% against Hard over 12,000 bot matches. Score share counts a draw as half a win. Those figures compare the two complete lists. Human balance is untested.
+
 ## Recording register
 
 | Clip | Start with | Capture the Kiro moment | End with | Footage state |
