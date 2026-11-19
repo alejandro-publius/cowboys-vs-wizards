@@ -30,8 +30,17 @@
 // one tactical action. It reads only its own hand and zone; the opponent's
 // face-down trap is never consulted. With traps off, or on with no trap in
 // hand, the choice is the one above, unchanged.
+//
+// Ride Out matches only (view.rideOut.enabled, .kiro/specs/ride-out RO-8):
+// legalActions also lists ride-outs, after every shipped action type. Step 1
+// above becomes "the best summon or ride-out", scored by the same one-clash
+// projection with the troop in its new lane. Summons are listed first and a
+// later action must score strictly higher, so a summon wins a tie. A spell may
+// still follow a ride-out. Off, or with no ride-out listed, nothing changes.
 import { CARDS, SPELL_DAMAGE, opponent } from "./cards.js";
 import { legalActions } from "./legal.js";
+import { shiftTroop } from "./lanes.js";
+import { fireBurn } from "./clash.js";
 import { MAX_ROUNDS } from "./state.js";
 
 const OWN_ORB = 5;
@@ -53,6 +62,8 @@ function boardsAfter(view, action) {
     theirs[action.target] = null;
     troop.health -= SPELL_DAMAGE;
     if (troop.health > 0) theirs[action.destination ?? action.target] = troop;
+  } else if (action.type === "ride-out") {
+    shiftTroop(mine, action.slot, action.destination);
   }
   return { mine, theirs };
 }
@@ -62,6 +73,7 @@ function score(view, action) {
   let ownBase = view.sides[view.viewer].baseOrbs;
   let enemyBase = view.sides[opponent(view.viewer)].baseOrbs;
   let total = 0;
+  const fire = view.dragonFire?.enabled === true;
   for (let lane = 0; lane < mine.length; lane++) {
     const own = mine[lane];
     const enemy = theirs[lane];
@@ -71,6 +83,12 @@ function score(view, action) {
     else ownBase -= enemyAttack;
     if (enemy) total -= worth(enemy.cardId, enemy.health - ownAttack);
     else enemyBase -= ownAttack;
+    if (fire) {
+      if (own && enemy) {
+        ownBase -= fireBurn(true, enemy.cardId, own.health);
+        enemyBase -= fireBurn(true, own.cardId, enemy.health);
+      }
+    }
   }
   ownBase = Math.max(0, ownBase);
   enemyBase = Math.max(0, enemyBase);
@@ -80,12 +98,12 @@ function score(view, action) {
   return total;
 }
 
-// First action of `type` with the highest score, if that score reaches `floor`.
-function best(view, actions, type, floor) {
+// First action of one of `types` with the highest score, if that score reaches `floor`.
+function best(view, actions, types, floor) {
   let pick = null;
   let top = floor;
   for (const action of actions) {
-    if (action.type !== type) continue;
+    if (!types.includes(action.type)) continue;
     const value = score(view, action);
     if (pick === null ? value >= top : value > top) [pick, top] = [action, value];
   }
@@ -111,9 +129,9 @@ export function chooseAction(view, { cards = CARDS } = {}) {
   const end = actions.at(-1); // end-phase is always listed last
   const stay = score(view, end);
   return (
-    best(view, actions, "summon", stay + 1) ??
+    best(view, actions, ["summon", "ride-out"], stay + 1) ??
     trapSet(view, actions, cards) ??
-    best(view, actions, "spell", stay + SPELL_MIN_GAIN) ??
+    best(view, actions, ["spell"], stay + SPELL_MIN_GAIN) ??
     end
   );
 }
@@ -131,6 +149,9 @@ export function chooseAction(view, { cards = CARDS } = {}) {
 //   phase. And it weighs the enemy Base slightly above its own (5 against 4),
 //   where normal does the reverse. The weights were chosen on seeds 0-999;
 //   docs/evidence/cpu-difficulty.md reports other seeds.
+//   On a Ride Out match a ride-out is valued like a summon (alone, or with the
+//   best spell that may follow). It comes last in the loop, so it replaces the
+//   pick only with a strictly higher value.
 //
 // Every level takes the same optional `{ cards }` as chooseAction (issue
 // #112); only tests pass it, with fixture trap cards. On a trap match:
@@ -160,8 +181,9 @@ function viewAfter(view, action) {
   const { mine, theirs } = boardsAfter(view, action);
   own.board = mine;
   next.sides[opponent(next.viewer)].board = theirs;
-  own.hand.splice(own.hand.indexOf(action.cardId), 1);
-  next.allowances[next.viewer][action.type === "summon" ? "summonUsed" : "castUsed"] = true;
+  // A ride-out plays no card and uses the summon allowance.
+  if (action.type !== "ride-out") own.hand.splice(own.hand.indexOf(action.cardId), 1);
+  next.allowances[next.viewer][action.type === "spell" ? "castUsed" : "summonUsed"] = true;
   return next;
 }
 
@@ -172,6 +194,7 @@ function hardScore(view) {
   let ownBase = view.sides[view.viewer].baseOrbs;
   let enemyBase = view.sides[opponent(view.viewer)].baseOrbs;
   let total = 0;
+  const fire = view.dragonFire?.enabled === true;
   for (let clash = 0; clash < HARD_CLASHES; clash++) {
     const hit = (board, other) => board.map((troop, lane) => {
       if (!troop) return null;
@@ -181,6 +204,10 @@ function hardScore(view) {
     mine.forEach((own, lane) => {
       if (!own && theirs[lane]) ownBase -= CARDS[theirs[lane].cardId].attack;
       if (own && !theirs[lane]) enemyBase -= CARDS[own.cardId].attack;
+      if (fire && own && theirs[lane]) {
+        ownBase -= fireBurn(true, theirs[lane].cardId, own.health);
+        enemyBase -= fireBurn(true, own.cardId, theirs[lane].health);
+      }
     });
     [mine, theirs] = [hit(mine, theirs), hit(theirs, mine)];
     ownBase = Math.max(0, ownBase);

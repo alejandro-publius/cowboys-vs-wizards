@@ -1,3 +1,5 @@
+import {bossOfHunt, HUNTS_BY_ID, rewardEarned} from '../game/bounty-hunt.js';
+
 const STORAGE_KEY = 'cvw-player-v1';
 const DEFAULT_SETTINGS = Object.freeze({
   sound: false,
@@ -13,6 +15,9 @@ export const ACHIEVEMENTS = Object.freeze([
   { id: 'first-match', name: 'First Match', description: 'Finish your first match.' },
   { id: 'first-win', name: 'First Victory', description: 'Win your first match.' },
   { id: 'deck-builder', name: 'Deck Builder', description: 'Save a custom deck.' },
+  { id: 'bounty-hunter', name: 'Bounty Hunter', description: 'Clear all five Graveyard Dragon hunts.' },
+  { id: 'clean-capture', name: 'Clean Capture', description: 'Win a bounty without losing a Base orb.' },
+  { id: 'lantern-snuffer', name: 'Lantern Snuffer', description: 'Clear all five Lantern Wraith hunts.' },
 ].map(Object.freeze));
 
 function isRecord(value) {
@@ -49,6 +54,7 @@ function emptyProfile() {
     settings: { ...DEFAULT_SETTINGS },
     deck: null,
     achievements: {},
+    clearedHunts: [],
     stats: { matches: 0, wins: 0, summons: 0, spells: 0 },
   };
 }
@@ -58,6 +64,9 @@ function validatedProfile(value) {
   if (!isRecord(value)) return profile;
   Object.assign(profile.settings, settingsPatch(value.settings));
   profile.deck = validatedDeck(value.deck);
+  if (Array.isArray(value.clearedHunts)) {
+    profile.clearedHunts = [...new Set(value.clearedHunts.filter((id) => HUNTS_BY_ID.has(id)))];
+  }
   if (isRecord(value.stats)) {
     for (const key of STAT_KEYS) {
       const count = Object.hasOwn(value.stats, key) ? value.stats[key] : undefined;
@@ -83,6 +92,7 @@ function frozenSnapshot(profile) {
     settings: Object.freeze({ ...profile.settings }),
     deck: profile.deck === null ? null : Object.freeze({ ...profile.deck }),
     achievements: Object.freeze({ ...profile.achievements }),
+    clearedHunts: Object.freeze([...profile.clearedHunts]),
     stats: Object.freeze({ ...profile.stats }),
   });
 }
@@ -162,6 +172,17 @@ export function createProfileStore(storage = defaultStorage()) {
       if (deck === null) return get();
       profile.deck = deck;
       unlock('deck-builder');
+      return persist();
+    },
+    recordBounty(huntId, {clean = false} = {}) {
+      if (!HUNTS_BY_ID.has(huntId)) return get();
+      const cleared = profile.clearedHunts.includes(huntId);
+      if (cleared && (!clean || profile.achievements['clean-capture'])) return get();
+      if (!cleared) profile.clearedHunts.push(huntId);
+      if (clean === true) unlock('clean-capture');
+      // Each boss counts only its own hunts toward its achievement and reward.
+      const boss = bossOfHunt(huntId);
+      if (rewardEarned(profile, boss)) unlock(boss.achievement);
       return persist();
     },
     record(event, detail = {}) {

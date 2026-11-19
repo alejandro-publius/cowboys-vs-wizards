@@ -12,7 +12,7 @@ import { parseArgs } from "node:util";
 import { CARDS, DECKS, SIDES } from "../src/game/cards.js";
 import { createMatch, RULES_VERSION } from "../src/game/state.js";
 import { VARIANTS, drought, openingMatch } from "../src/game/opening-policy.js";
-import { chooseAction } from "../src/game/cpu.js";
+import { chooseAction, cpuFor } from "../src/game/cpu.js";
 import { playMatch, wholeNumber } from "./play-match.mjs";
 
 const SORTED_DECKS = Object.fromEntries(SIDES.map((side) => [side, [...DECKS[side]].sort()]));
@@ -28,11 +28,11 @@ const CPU_BOTS = { cowboy: chooseAction, wizard: chooseAction };
 
 // Each variant starts from the same shuffled deck, with both seats measured.
 export { VARIANTS };
-export function playVariant(seed, starter, variant) {
+export function playVariant(seed, starter, variant, bots = CPU_BOTS) {
   const opening = openingMatch(seed, variant, starter);
   const label = `seed ${seed} ${variant}`;
   assertConserved(opening, `${label} opening`);
-  const { state, log } = playMatch(seed, CPU_BOTS, opening);
+  const { state, log } = playMatch(seed, bots, opening);
   for (const [index, step] of log.entries()) {
     assertConserved(step.state, `${label} action ${index}`);
   }
@@ -43,12 +43,12 @@ const names = (ids) => ids.map((id) => CARDS[id].name);
 const pct = (n, of) => Number(((100 * n) / of).toFixed(2));
 
 // How one seed's opening and CPU-vs-CPU route differ from shipped, with the seed's own first seat.
-export function preservation(seed) {
+export function preservation(seed, bots = CPU_BOTS) {
   const starter = createMatch(seed).startingSide;
-  const base = playVariant(seed, starter, "shipped");
+  const base = playVariant(seed, starter, "shipped", bots);
   const out = { seed, firstSeat: starter };
   for (const variant of Object.keys(VARIANTS)) {
-    const run = playVariant(seed, starter, variant);
+    const run = playVariant(seed, starter, variant, bots);
     const firstDiff = run.actions.findIndex((action, i) => JSON.stringify(action) !== JSON.stringify(base.actions[i]));
     const same = firstDiff === -1 && run.actions.length === base.actions.length;
     out[variant] = {
@@ -62,7 +62,9 @@ export function preservation(seed) {
   return out;
 }
 
-export function run({ from, count }) {
+export function run({ from, count, cpu = "normal" }) {
+  const choose = cpuFor(cpu);
+  const bots = { cowboy: choose, wizard: choose };
   const variants = Object.keys(VARIANTS);
   const matches = []; // raw rows: one per (seed, first seat)
   const summary = {};
@@ -89,10 +91,10 @@ export function run({ from, count }) {
     for (const starter of SIDES) {
       const row = { seed, firstSeat: starter, naturalFirstSeat: starter === natural, outcome: {}, rounds: {} };
       for (const variant of variants) {
-        const { opening, state, actions } = playVariant(seed, starter, variant);
+        const { opening, state, actions } = playVariant(seed, starter, variant, bots);
         if (variant === "shipped" && starter === natural) {
           // The harness must be the released game: same final state as the existing runner.
-          assert.deepEqual(state, playMatch(seed, { cowboy: chooseAction, wizard: chooseAction }).state, `seed ${seed}: differs from playMatch`);
+          assert.deepEqual(state, playMatch(seed, bots).state, `seed ${seed}: differs from playMatch`);
           replayChecked += 1;
         }
         const winner = state.result.winner;
@@ -174,26 +176,30 @@ export function run({ from, count }) {
 
   return {
     rulesVersion: RULES_VERSION,
-    bots: "src/game/cpu.js chooseAction on both sides",
+    bots: cpu === "normal" ? "src/game/cpu.js chooseAction on both sides" : `src/game/cpu.js ${cpu} on both sides`,
     seeds: { from, to: from + count - 1, count },
     matchesPerVariant: matches.length,
     checks: { cardConservationAfterEveryAction: "passed", actionsAccepted: "passed", shippedRunsEqualToPlayMatch: replayChecked },
     summary,
     pairedVsShipped: paired,
-    preservation: [0, 60].map(preservation),
+    preservation: [0, 60].map((seed) => preservation(seed, bots)),
     matches,
   };
 }
 
 if (import.meta.main) {
-  const { values } = parseArgs({ options: { from: { type: "string", default: "1000" }, count: { type: "string", default: "2000" }, out: { type: "string" } } });
+  const { values } = parseArgs({ options: {
+    from: { type: "string", default: "1000" }, count: { type: "string", default: "2000" },
+    cpu: { type: "string", default: "normal" }, out: { type: "string" },
+  } });
   const from = wholeNumber(values.from);
   const count = wholeNumber(values.count);
-  if (from === null || !count || count < 2 || count > 10000 || !Number.isSafeInteger(from + count - 1)) {
-    console.error("usage: node scripts/compare-opening-policies.mjs [--from <integer >= 0>] [--count <2-10000>] [--out <file>]");
+  if (from === null || !count || count < 2 || count > 10000 || !Number.isSafeInteger(from + count - 1)
+    || !["normal", "hard"].includes(values.cpu)) {
+    console.error("usage: node scripts/compare-opening-policies.mjs [--from <integer >= 0>] [--count <2-10000>] [--cpu normal|hard] [--out <file>]");
     process.exit(2);
   }
-  const report = run({ from, count });
+  const report = run({ from, count, cpu: values.cpu });
   if (values.out) {
     mkdirSync(path.dirname(values.out), { recursive: true });
     writeFileSync(values.out, JSON.stringify(report) + "\n");

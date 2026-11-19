@@ -5,6 +5,10 @@
       "args": [
         ".kiro/powers/orb-duel-review/server.mjs"
       ]
+    },
+    "tripo": {
+      "command": "npx",
+      "args": ["-y", "tripo-cli", "mcp"]
     }
   }
 }

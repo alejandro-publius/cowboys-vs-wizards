@@ -17,6 +17,9 @@
 .menu-page-header button {font-size:17px;padding-left:0}
 .menu-page-content {max-width:1050px;margin:0 auto;font-family:system-ui,sans-serif}
 .menu-intro {font-size:17px;line-height:1.65;max-width:800px;margin:0 0 26px;color:#ead7c6}
+#title-screen .menu-guide-button {min-height:44px;padding:8px 16px;border:1px solid #c99a58;background:#34293a;color:#ffe0a4;font:600 16px system-ui;cursor:pointer}
+#title-screen .menu-guide-button:disabled {opacity:.55;cursor:default}
+.menu-guide-summary {margin:8px 0 22px;color:#cdbccb;font-size:14px;line-height:1.5}
 .menu-hint {font-size:13px;line-height:1.6;color:#bca9ba;margin-top:26px}
 .setting-row {display:flex;align-items:center;justify-content:space-between;gap:28px;padding:23px 0;border-bottom:1px solid #dac3b12b;max-width:740px}
 .setting-row span,.achievement-list li>span:first-child {display:grid;gap:7px}

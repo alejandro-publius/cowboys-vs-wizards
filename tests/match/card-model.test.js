@@ -5,17 +5,18 @@
 // model must never reveal.
 import test from "node:test";
 import assert from "node:assert/strict";
-import { CARDS, SIDES } from "../../src/game/cards.js";
+import { CARDS, SIDES, tributeCost } from "../../src/game/cards.js";
 import { createMatch } from "../../src/game/state.js";
 import { applyAction } from "../../src/game/actions.js";
 import { publicState } from "../../src/game/view.js";
 import { legalActions } from "../../src/game/legal.js";
 import { chooseAction } from "../../src/game/cpu.js";
-import { emptySelection, selectionOptions, selectionStep } from "../../src/match/selection.js";
+import { blockedReasons, emptySelection, selectionOptions, selectionStep } from "../../src/match/selection.js";
 import { RESULT_LABELS, cardModel } from "../../src/ui/card-model.js";
 
 const SEEDS = Array.from({ length: 100 }, (_, seed) => seed);
 const MAX_STEPS = 500;
+const ridersSeen = new Set(); // rider cards that reached a model's hand
 
 function forEachSeed(run) {
   for (const seed of SEEDS) {
@@ -52,7 +53,14 @@ function checkModel(model, { view, state, options, status, seed }) {
       attack: data.attack ?? null,
       selected: data.id === selected,
       playable: playable.some((action) => action.cardId === data.id),
+      ...(data.kind === "troop" && data.rides === true && { rides: true }),
     });
+    // `rides` is present, and true, only on rider troop cards.
+    assert.equal(Object.hasOwn(card, "rides"), data.kind === "troop" && data.rides === true, `${card.cardId}: rides flag`);
+    if (Object.hasOwn(card, "rides")) {
+      assert.equal(card.rides, true);
+      ridersSeen.add(card.cardId);
+    }
   }
 
   // The Wizard side is counts only, and no card of the hidden Wizard hand
@@ -71,6 +79,17 @@ function checkModel(model, { view, state, options, status, seed }) {
   });
 
   const accepting = status === "accepting_input";
+  // The ride block appears in a standard duel only while a ride is legal or being chosen.
+  const rideShown = Boolean(view.rideOut?.enabled || (accepting && (options?.canRideOut || options?.step?.startsWith("ride-"))));
+  assert.equal(Object.hasOwn(model, "ride"), rideShown, "ride block presence");
+  if (rideShown) {
+    assert.deepEqual(model.ride, {
+      available: accepting && Boolean(options?.canRideOut),
+      choosing: accepting && Boolean(options?.step?.startsWith("ride-")),
+      from: options?.rideFrom ?? null,
+      destination: options?.rideDestination ?? null,
+    });
+  }
   assert.deepEqual(model.buttons, {
     hand: accepting,
     confirm: accepting && Boolean(options?.canConfirm),
@@ -99,7 +118,9 @@ test("card model: counts, one front per held card, no Wizard card identity, outc
       // While the Cowboy acts, the card it is about to play is selected, so
       // the selected flag is checked; every third step has no options at all.
       let selection = emptySelection;
-      if (status === "accepting_input" && action.type !== "end-phase") {
+      if (status === "accepting_input" && action.type === "ride-out") {
+        selection = selectionStep(emptySelection, { type: "ride-out" }, view, { accepting: true }).selection;
+      } else if (status === "accepting_input" && action.type !== "end-phase") {
         selection = selectionStep(emptySelection, { type: "card", cardId: action.cardId }, view, { accepting: true }).selection;
       }
       const options = step % 3 === 2 ? null : selectionOptions(selection, view);
@@ -119,6 +140,7 @@ test("card model: counts, one front per held card, no Wizard card identity, outc
     }
   });
   for (const [outcome, count] of Object.entries(outcomes)) assert.ok(count > 0, `no ${outcome} in seeds 0-99`);
+  assert.ok(ridersSeen.size > 0, "no rider card reached a hand in seeds 0-99");
   t.diagnostic(`Cowboy outcomes: ${JSON.stringify(outcomes)}`);
 });
 
@@ -147,4 +169,38 @@ test("card model: no match yet, the result labels and the message", () => {
     assert.equal(model.buttons.endPhase, false);
     assert.deepEqual(model.seed, { value: 3, pinned: false, text: "3" });
   }
+});
+
+test("card model: opt-in blocked reasons appear on unplayable cards only while accepting input (seed 14)", (t) => {
+  const view = publicState(createMatch(14), "cowboy");
+  const options = selectionOptions(emptySelection, view);
+  const reasons = blockedReasons(view);
+  const input = { displayed: view, options, seed: 14, seedPinned: true, message: null };
+  assert.deepEqual(options.playableCardIds, [], "seed 14 opens with zero legal plays");
+
+  const shown = cardModel({ ...input, status: "accepting_input", blockedReasons: reasons });
+  assert.deepEqual(shown.cowboy.hand.map((card) => card.blockedReason), view.sides.cowboy.hand.map((cardId) => reasons[cardId]));
+  assert.ok(shown.cowboy.hand.every((card) => !card.playable && typeof card.blockedReason === "string"), "every seed-14 card has a reason");
+  for (const card of shown.cowboy.hand) {
+    const cost = tributeCost(card.stars);
+    t.diagnostic(`seed 14 ${card.cardId}: ${card.name} | ${card.attack} attack · ${card.health} life | ${cost} tribute${cost === 1 ? "" : "s"} | ${card.blockedReason}`);
+  }
+
+  // Opting in adds only blockedReason; without it the shared hand cards keep their shape.
+  const shared = cardModel({ ...input, status: "accepting_input" });
+  assert.ok(shared.cowboy.hand.every((card) => !("blockedReason" in card)));
+  const stripped = shown.cowboy.hand.map(({ blockedReason, ...card }) => card);
+  assert.deepEqual({ ...shown, cowboy: { ...shown.cowboy, hand: stripped } }, shared);
+
+  // No reason outside player input, nor on a card the options call playable.
+  for (const status of ["submitting", "playing", "cpu_turn", "terminal"]) {
+    const waiting = cardModel({ ...input, status, blockedReasons: reasons });
+    assert.ok(waiting.cowboy.hand.every((card) => card.blockedReason === null), status);
+  }
+  const [first, ...rest] = view.sides.cowboy.hand;
+  const mixed = cardModel({ ...input, options: { ...options, playableCardIds: [first] }, status: "accepting_input", blockedReasons: reasons });
+  assert.deepEqual(
+    mixed.cowboy.hand.map((card) => [card.playable, card.blockedReason]),
+    [[true, null], ...rest.map((cardId) => [false, reasons[cardId]])],
+  );
 });

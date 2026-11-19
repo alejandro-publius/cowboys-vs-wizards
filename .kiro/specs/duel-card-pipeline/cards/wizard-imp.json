@@ -1,0 +1,1 @@
+{ "type": "wizard-imp", "side": "wizard", "order": 6, "name": "Imp", "kind": "troop", "stars": 2, "health": 1, "attack": 3, "copies": 0, "limit": 1 }

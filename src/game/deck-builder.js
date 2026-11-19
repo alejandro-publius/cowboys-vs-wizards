@@ -1,37 +1,50 @@
 import { CARD_SPECS } from "./card-specs.generated.js";
-import { CARDS, MAX_COWBOY_COPIES } from "./cards.js";
+import { CARDS, cowboyCopyLimit } from "./cards.js";
 
 export const DECK_SIZE = 12;
 export const COWBOY_CATALOG = Object.freeze(
-  CARD_SPECS.filter((spec) => spec.side === "cowboy").map((spec) => Object.freeze({ ...spec })),
+  CARD_SPECS.filter((spec) => spec.side === "cowboy" && spec.copies > 0).map((spec) => Object.freeze({ ...spec })),
+);
+export const FRONTIER_CATALOG = Object.freeze(
+  CARD_SPECS.filter((spec) => spec.side === "cowboy" && !spec.bounty && spec.copies === 0).map(Object.freeze),
 );
 export const DEFAULT_COUNTS = Object.freeze(
   Object.fromEntries(COWBOY_CATALOG.map(({ type, copies }) => [type, copies])),
 );
 
-const types = new Set(COWBOY_CATALOG.map(({ type }) => type));
-const typeById = new Map(COWBOY_CATALOG.flatMap(({ type }) =>
-  Array.from({ length: MAX_COWBOY_COPIES }, (_, index) => [`${type}-${index + 1}`, type]),
+export const BOUNTY_REWARDS = Object.freeze(CARD_SPECS.filter((spec) => spec.side === "cowboy" && spec.bounty).map(Object.freeze));
+export const copyLimit = cowboyCopyLimit;
+const catalog = [...COWBOY_CATALOG, ...BOUNTY_REWARDS, ...FRONTIER_CATALOG].sort((a, b) => a.order - b.order);
+const typeById = new Map(catalog.flatMap((card) =>
+  Array.from({ length: copyLimit(card) }, (_, index) => [`${card.type}-${index + 1}`, card.type]),
 ));
 const invalid = (error, total = 0) => ({ ok: false, error, total });
 
 // Missing known types count as zero. Unknown types and coerced numbers are
 // rejected so stored or user-provided selections cannot change the catalog.
-export function validateDeck(counts) {
+// `rewards` lists the unlocked Wanted reward types; `bountyReward: true`
+// admits every collectible (engine and simulator only).
+export function validateDeck(counts, {bountyReward = false, rewards = [], frontierCards = []} = {}) {
   if (!counts || typeof counts !== "object" || Array.isArray(counts) ||
       ![Object.prototype, null].includes(Object.getPrototypeOf(counts))) {
     return invalid("Choose card counts for your Cowboy deck.");
   }
-  if (Object.keys(counts).some((type) => !types.has(type))) {
-    return invalid("Only Cowboy cards can be added to this deck.");
+  const available = bountyReward ? catalog
+    : [...COWBOY_CATALOG,
+      ...BOUNTY_REWARDS.filter((card) => rewards.includes(card.type)),
+      ...FRONTIER_CATALOG.filter((card) => frontierCards.includes(card.type))];
+  if (Object.keys(counts).some((type) => !available.some((card) => card.type === type))) {
+    return invalid("Choose cards from your unlocked Cowboy collection.");
   }
-  const entries = COWBOY_CATALOG.map(({ type, name }) => ({
-    name, copies: Object.hasOwn(counts, type) ? counts[type] : 0,
+  const entries = available.map((card) => ({
+    ...card, copies: Object.hasOwn(counts, card.type) ? counts[card.type] : 0,
   }));
   const total = entries.reduce((sum, { copies }) => sum + (Number.isFinite(copies) ? copies : 0), 0);
-  for (const { name, copies } of entries) {
-    if (!Number.isInteger(copies) || copies < 0 || copies > MAX_COWBOY_COPIES) {
-      return invalid(`${name} must have between 0 and ${MAX_COWBOY_COPIES} whole copies.`, total);
+  for (const card of entries) {
+    const {name, copies} = card;
+    const limit = copyLimit(card);
+    if (!Number.isInteger(copies) || copies < 0 || copies > limit) {
+      return invalid(`${name} must have between 0 and ${limit} whole copies.`, total);
     }
   }
   if (total !== DECK_SIZE) return invalid(`Choose exactly ${DECK_SIZE} cards.`, total);
@@ -43,10 +56,10 @@ export function validateDeck(counts) {
 
 // Stable catalog order preserves the seeded default shuffle when the user
 // saves the original counts. Each call returns a new list of distinct IDs.
-export function deckIds(counts) {
-  const result = validateDeck(counts);
+export function deckIds(counts, options) {
+  const result = validateDeck(counts, options);
   if (!result.ok) throw new TypeError(result.error);
-  return COWBOY_CATALOG.flatMap(({ type }) =>
+  return catalog.flatMap(({ type }) =>
     Array.from({ length: Object.hasOwn(counts, type) ? counts[type] : 0 }, (_, index) => `${type}-${index + 1}`),
   );
 }
@@ -57,7 +70,7 @@ export function validateDeckIds(ids) {
   if (!Array.isArray(ids)) return invalid("The Cowboy deck must be a list of card IDs.");
   if (ids.length !== DECK_SIZE) return invalid(`Choose exactly ${DECK_SIZE} cards.`, ids.length);
   const seen = new Set();
-  const counts = Object.fromEntries(COWBOY_CATALOG.map(({ type }) => [type, 0]));
+  const counts = Object.fromEntries(catalog.map(({ type }) => [type, 0]));
   for (const id of ids) {
     if (typeof id !== "string" || !Object.hasOwn(CARDS, id) || CARDS[id].side !== "cowboy" || !typeById.has(id)) {
       return invalid("The Cowboy deck contains an unknown or non-Cowboy card.", ids.length);
@@ -66,5 +79,5 @@ export function validateDeckIds(ids) {
     seen.add(id);
     counts[typeById.get(id)]++;
   }
-  return validateDeck(counts);
+  return validateDeck(counts, {bountyReward: true});
 }

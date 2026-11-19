@@ -1,0 +1,1 @@
+{ "type": "cowboy-outrider", "side": "cowboy", "order": 8, "name": "Outrider", "kind": "troop", "stars": 3, "health": 3, "attack": 1, "copies": 0, "limit": 2, "rides": true }

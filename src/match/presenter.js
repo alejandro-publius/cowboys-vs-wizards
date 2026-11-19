@@ -59,7 +59,7 @@ export const DEFAULT_PAUSES = Object.freeze({
 // deck to its hand position and settle before the next event.
 export const VISIBLE_DRAW_PAUSE = 450;
 
-const EVENT_TYPES = new Set(["summon", "spell", "damage", "defeat", ...Object.keys(DEFAULT_PAUSES)]);
+const EVENT_TYPES = new Set(["summon", "spell", "ride-out", "damage", "defeat", ...Object.keys(DEFAULT_PAUSES)]);
 
 // The first path where two plain JSON values differ, with both values there,
 // or null when they are deep-equal. A key missing on one side is a difference.
@@ -294,14 +294,18 @@ export function createPresenter({ scheduler, renderer, pauses = {}, onChange, on
     later(gen, Math.max(impact, cueTime(cue, "end", "spell")), () => {
       if (destination == null) return play(gen, next);
       // A Singularity survivor moves only after the spell has finished.
-      const move = renderer.move({ side: target.side, from: target.slot, to: destination });
-      if (!live(gen)) return;
-      later(gen, cueTime(move, "end", "move"), () => {
-        const { board } = displayed.sides[target.side];
-        board[destination] = board[target.slot];
-        board[target.slot] = null;
-        if (changed(gen)) play(gen, next);
-      });
+      playMove(gen, target.side, target.slot, destination, next);
+    });
+  }
+
+  function playMove(gen, side, slot, destination, next) {
+    const cue = renderer.move({ side, from: slot, to: destination });
+    if (!live(gen)) return;
+    later(gen, cueTime(cue, "end", "move"), () => {
+      const { board } = displayed.sides[side];
+      board[destination] = board[slot];
+      board[slot] = null;
+      if (changed(gen)) play(gen, next);
     });
   }
 
@@ -367,6 +371,12 @@ export function createPresenter({ scheduler, renderer, pauses = {}, onChange, on
     const event = events[index];
     if (event.type === "summon") return playSummon(gen, event, index + 1);
     if (event.type === "spell") return playSpell(gen, event, index + 1);
+    if (event.type === "ride-out") {
+      const { side, slot, destination } = event;
+      // A Wanted Wraith's drift uses no allowance.
+      if (!event.drift) displayed.allowances[side] = structuredClone(batch.to.allowances[side]);
+      return playMove(gen, side, slot, destination, index + 1);
+    }
     if (event.type === "damage") return playClash(gen, index);
     if (event.type === "defeat") return playDefeats(gen, index);
     return playPause(gen, event, index + 1);

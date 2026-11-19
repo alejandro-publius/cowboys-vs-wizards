@@ -23,7 +23,7 @@ test("registry holds available copies; default decks retain each spec's copies a
   for (const side of SIDES) {
     const expectedDeck = [];
     for (const { type, order, copies, ...fields } of sideSpecs(side)) {
-      const availableCopies = side === "cowboy" ? 6 : copies;
+      const availableCopies = fields.limit ?? (fields.bounty ? 1 : side === "cowboy" ? 6 : copies);
       for (let copy = 1; copy <= availableCopies; copy++) {
         const id = idOf({ type }, copy);
         expectedRegistry.push(id);
@@ -36,7 +36,11 @@ test("registry holds available copies; default decks retain each spec's copies a
     assert.deepEqual(DECKS[side], expectedDeck);
     assert.ok(Object.isFrozen(DECKS[side]));
   }
-  assert.equal(expectedRegistry.length, 36);
+  const extraSingularity = "wizard-singularity-3";
+  expectedRegistry.push(extraSingularity);
+  assert.deepEqual(CARDS[extraSingularity], {...CARDS["wizard-singularity-2"], id: extraSingularity});
+  assert.ok(Object.isFrozen(CARDS[extraSingularity]));
+  assert.equal(expectedRegistry.length, 52);
   assert.deepEqual(Object.keys(CARDS).sort(), expectedRegistry.sort());
   assert.ok(Object.isFrozen(CARDS) && Object.isFrozen(DECKS));
 });

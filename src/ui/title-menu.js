@@ -1,5 +1,7 @@
 import {ACHIEVEMENTS} from '../profile/player-profile.js';
 import {renderDeckWorkbench} from './deck-workbench.js';
+import {renderWantedBoard} from './wanted-board.js';
+import {STARGAZER_WINS} from '../game/deck-presets.js';
 
 const $ = (root, selector) => root.querySelector(selector);
 function element(tag, text, attrs={}) {
@@ -9,13 +11,30 @@ function element(tag, text, attrs={}) {
   return node;
 }
 
-export function mountTitleMenu(root,{profile,onPlay,onSettings}) {
+export function mountTitleMenu(root,{profile,onPlay,onSettings,onTryDraft,onTryRideOut,onPractice,practiceChallenges=[],onHunt,onPosse}) {
   const scene=$(root,'.title-scene'),page=$(root,'.menu-page'),content=$(root,'.menu-page-content');
   const heading=$(root,'#menu-page-title'),notice=$(root,'#menu-notice'),play=$(root,'#menu-play');
+  // Only the graybox title screen carries data-deck-presets="true"; the illustrated builder has no marker.
+  const presets=root.dataset.deckPresets==='true';
   let returnFocus=play;
+  // paused tracks show({resume}) on its own; guidedAvailable turns off after any show().
+  let guidedAvailable=true,loading=false,paused=false;
   const say=text=>{notice.textContent=text;notice.hidden=!text;};
   const savedMessage=text=>say(profile.isPersistent()?text:'Saved for this session only. Browser storage is unavailable.');
   const button=(text,fn,attrs={})=>{const b=element('button',text,{type:'button',...attrs});b.addEventListener('click',fn);return b;};
+  const stargazer=$(root,'#menu-stargazer'),imp=$(root,'#menu-imp');
+  const stargazerOpen=()=>!paused&&Number(profile.get()?.stats?.wins)>=STARGAZER_WINS;
+  const syncStargazer=()=>{if(stargazer)stargazer.hidden=!stargazerOpen();if(imp)imp.hidden=!stargazerOpen();};
+  async function start(opener,launch=()=>onPlay(false)){
+    if(loading)return;
+    loading=true;play.disabled=opener.disabled=true;if(stargazer)stargazer.disabled=true;if(imp)imp.disabled=true;say('Loading the board…');
+    try{await launch();say('');}
+    catch(error){console.error(error);say('The board could not load. Please try again.');}
+    finally{
+      loading=false;play.disabled=opener.disabled=false;if(stargazer)stargazer.disabled=false;if(imp)imp.disabled=false;
+      if(!root.hidden&&opener.getClientRects().length)opener.focus();
+    }
+  }
   function home(){page.hidden=true;page.classList.remove('deck-page');scene.hidden=false;say('');returnFocus.focus();}
   function open(title,opener){
     page.classList.remove('deck-page');returnFocus=opener;scene.hidden=true;page.hidden=false;heading.textContent=title;
@@ -57,6 +76,21 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings}) {
   function how(opener){
     open('How to Play',opener);
     content.append(element('p','You lead the Cowboys. The computer commands the Wizards. Break the enemy Base before yours falls.',{class:'menu-intro'}));
+    if(guidedAvailable){
+      const guided=button('Start guided duel',()=>start(guided,()=>onPlay(true)),{id:'menu-guide',class:'menu-guide-button','aria-describedby':'menu-guide-summary'});
+      content.append(guided,element('p','Play a starter-deck match with short hints as you take your first turns.',{id:'menu-guide-summary',class:'menu-guide-summary'}));
+    }
+    if(onTryRideOut&&!paused){
+      const ride=button('Try Ride Out',()=>start(ride,onTryRideOut),{id:'menu-ride-out','aria-describedby':'menu-ride-out-summary'});
+      content.append(ride,element('p','Start at a wounded Sheriff and choose to stay, move, or summon Billy.',{id:'menu-ride-out-summary',class:'menu-guide-summary'}));
+    }
+    // Practice snapshots need every Frontier card owned (7 counted wins) and no paused duel.
+    if(onPractice&&stargazerOpen()){
+      for(const {id,title,summary} of practiceChallenges){
+        const practice=button(title,()=>start(practice,()=>onPractice(id)),{id:'menu-practice-'+id,'aria-describedby':'menu-practice-'+id+'-summary'});
+        content.append(practice,element('p',summary+' Earns no wins or rewards.',{id:'menu-practice-'+id+'-summary',class:'menu-guide-summary'}));
+      }
+    }
     const steps=element('ol',undefined,{class:'how-steps'});
     for(const text of [
       'Choose a glowing card, pick a lane, then confirm your summon.',
@@ -66,32 +100,57 @@ export function mountTitleMenu(root,{profile,onPlay,onSettings}) {
       'End your turn when ready. The Wizards act, then opposing troops strike at the same time: both deal damage even if one falls. An unblocked troop attacks the enemy Base.',
       'Each orb is one life. Both Bases start at five. After nine rounds, more Base orbs wins; equal Base orbs is a draw.'
     ])steps.append(element('li',text));
-    content.append(steps,element('p','Escape cancels a card selection. Main menu pauses your match; Play resumes it. Restart begins a new match with your saved deck.',{class:'menu-hint'}));
+    content.append(steps,element('p','Escape cancels a card selection. Main menu pauses your match. Play resumes it. Restart starts a fresh match.',{class:'menu-hint'}));
   }
-  function deck(opener){
+  function deck(opener,draft,trialOpponent=null){
     open('Build Deck',opener);
     page.classList.add('deck-page');
-    renderDeckWorkbench({content,profile,say,savedMessage,button});
+    // Try draft plays a copy of the current draft without saving it. Offered only
+    // when the host supplies onTryDraft and no paused duel would be replaced.
+    const tryDraft=typeof onTryDraft==='function'&&!paused
+      ?(counts,opener,opponent=null)=>start(opener,()=>onTryDraft(counts,opponent))
+      :undefined;
+    renderDeckWorkbench({content,profile,say,savedMessage,button,presets,tryDraft,draft,trialOpponent,bounties:Boolean(onHunt)});
   }
-  const actions={settings,achievements,how,deck};
+  function wanted(opener){
+    open('Wanted',opener);
+    if(paused){
+      content.append(element('p','Finish your paused duel before starting a hunt.',{class:'menu-hint'}));
+      return;
+    }
+    renderWantedBoard(content,profile.get(),(opener,id)=>start(opener,()=>onHunt(id)),
+      typeof onPosse==='function'?(opener,kind)=>start(opener,()=>onPosse(kind)):undefined);
+  }
+  const actions={settings,achievements,how,deck,wanted};
   for(const item of root.querySelectorAll('[data-menu-page]'))item.addEventListener('click',()=>actions[item.dataset.menuPage](item));
   $(root,'#menu-back').addEventListener('click',home);
-  play.addEventListener('click',async()=>{
-    play.disabled=true;say('Loading the board…');
-    try{await onPlay();say('');}catch(error){console.error(error);say('The board could not load. Please try Play again.');}
-    finally{play.disabled=false;}
-  });
+  play.addEventListener('click',()=>start(play));
+  if(stargazer)stargazer.addEventListener('click',()=>{if(stargazerOpen())start(stargazer,()=>onPlay(false,'stargazer'));});
+  if(imp)imp.addEventListener('click',()=>{if(stargazerOpen())start(imp,()=>onPlay(false,'imp'));});
   root.addEventListener('keydown',event=>{
     if(event.key==='Escape'&&!page.hidden){event.preventDefault();home();return;}
     if(!page.hidden||!['ArrowDown','ArrowUp','ArrowRight','ArrowLeft'].includes(event.key))return;
-    const buttons=[...root.querySelectorAll('.menu-hotspot')];const at=buttons.indexOf(document.activeElement);
+    const buttons=[...root.querySelectorAll('.menu-hotspot:not([hidden])')];const at=buttons.indexOf(document.activeElement);
     if(at<0)return;event.preventDefault();const delta=['ArrowUp','ArrowLeft'].includes(event.key)?-1:1;
     buttons[(at+delta+buttons.length)%buttons.length].focus();
   });
+  syncStargazer();
   root.dataset.ready="true";
   return {
-    show({resume=false}={}){root.hidden=false;home();play.setAttribute('aria-label',resume?'Resume match':'Play');say(resume?'Match paused · Play to resume':'');play.focus();},
+    show({resume=false}={}){guidedAvailable=false;paused=Boolean(resume);root.hidden=false;home();syncStargazer();play.setAttribute('aria-label',resume?'Resume match':'Play');say(resume?'Match paused · Play to resume':'');play.focus();},
     hide(){root.hidden=true;},
+    openHow(){
+      const entry=$(root,'[data-menu-page="how"]');
+      if(!entry)return;
+      this.show();
+      how(entry);
+    },
+    editDraft(counts,opponent=null){
+      const entry=$(root,'[data-menu-page="deck"]');
+      if(!entry)return;
+      this.show();
+      deck(entry,counts,opponent);
+    },
     status:say
   };
 }

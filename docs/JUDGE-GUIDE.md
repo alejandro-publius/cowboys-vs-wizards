@@ -4,11 +4,11 @@
 
 ## Experience the game
 
-1. **Start in the browser:** [Seed 0](https://alejandro-publius.github.io/cowboys-vs-wizards/?seed=0). Select an illustrated Sheriff card, choose a legal lane and watch the Skeleton counterattack. Life orbs change when a hit lands.
+1. **Play a guided opening.** [Open seed 0 with the starter deck and hints](https://alejandro-publius.github.io/cowboys-vs-wizards/?seed=0&deck=starter&guide=1). Press Play, select Sheriff, pick a lit lane, then confirm the summon. End the turn and watch each life orb disappear at impact.
 2. **See the bigger mechanic:** [Seed 60](https://alejandro-publius.github.io/cowboys-vs-wizards/?seed=60). Use two tribute summons to bring in Mounted Billy, then watch Singularity move him into the Dragon's lane. The clash is simultaneous: Billy still gets his attack even though he is defeated. [Exact five-round input route](morning-handoff.md#the-duel-to-film).
 3. **Inspect the character craft:** Sheriff draws his revolver, Wizard casts, Dragon and Mounted Billy use authored attack clips, Skeleton uses an optimized model. [Asset and animation evidence](evidence/kiro-character-assets.md).
 4. **Inspect the required Kiro work:** [Orb Duel Spec](../.kiro/specs/orb-duel/requirements.md), [agent](../.kiro/agents/duel-presenter.json), [steering](../.kiro/steering/), [hooks](../.kiro/hooks/), [replay Workflow](../.kiro/workflows/orb-duel-replay.workflow.json), and [Power + MCP](../.kiro/powers/orb-duel-review/). [Proof of actual runs](kiro-brag-sheet.md).
-5. **Check verifiability:** [Release preflight](evidence/kiro-submission-preflight.md) links browser receipts, hashes, a property-based regression and the deployed build. The live release and historical receipts should be checked against the current commit when reviewing newer changes.
+5. **Check verifiability.** [Release evidence](evidence/kiro-release-review-892cada.md) binds the live SHA to the served page and identifies the later native workflow and MCP comparison. [Competitive benchmark](submission/kiroween-competitive-benchmark.md) maps the demo to the five judging criteria.
 
 ## Demo script and playtest protocol
 

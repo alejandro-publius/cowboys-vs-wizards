@@ -26,7 +26,10 @@ For simulations, record seeds, deck/rules versions, case count, bot strategy, dr
 
 For orb-duel, generate properties around unique card ownership, valid sacrifice payments, one action applied once, health-orb bounds, and deterministic replay. Connect each property to a requirement and retain any real failing seed with the fix.
 
-Preserve the current project goal of an understandable haunted-Western card game with one to five visible health orbs per living character. Treat the proposed numeric balance as subject to requirements review and playtesting.
+Follow the [game design R&D rule](../../AGENTS.md#game-design-rd) in design and
+playtest work. Surface simpler or stronger candidates as research uncovers
+them, including replacements for existing cards and mechanics. The current
+duel gives each candidate a playable comparison.
 
 When implementing hooks, use the installed Kiro version's supported configuration. Verify a real trigger and record its result. Update one entry for its task and avoid recursive log-triggered execution or duplicate entries.
 

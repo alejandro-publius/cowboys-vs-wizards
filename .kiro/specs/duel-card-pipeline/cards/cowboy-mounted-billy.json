@@ -1,1 +1,1 @@
-{ "type": "cowboy-mounted-billy", "side": "cowboy", "order": 3, "name": "Mounted Billy", "kind": "troop", "stars": 7, "health": 5, "attack": 3, "copies": 1 }
+{ "type": "cowboy-mounted-billy", "side": "cowboy", "order": 3, "name": "Mounted Billy", "kind": "troop", "stars": 7, "health": 5, "attack": 3, "copies": 1, "rides": true }

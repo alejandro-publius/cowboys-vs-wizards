@@ -1,7 +1,7 @@
 // Clash log: plain sentences for what one round's spells and clash did, for
 // the opt-in ?log=1 list. Pure: no DOM, no timers. Every number, lane and
 // card comes from the Engine event; nothing here computes damage. Only
-// spell, damage and defeat events are described, and each names a troop on
+// move, spell, damage and defeat events are described, and each names a troop on
 // the board or a spell as it is cast, so no hidden Wizard card can appear.
 //
 // clashLog(events) -> { title, lines } | null
@@ -21,6 +21,9 @@ function troop(side, cardId, first = false) {
 function sentence(event) {
   if (event.type === "damage") {
     const { attacker, target } = event;
+    if (event.fire === true) {
+      return `Dragon Fire burned through: ${target.side === "cowboy" ? "your" : "Wizard"} Base ${event.before} → ${event.after}.`;
+    }
     const hit = target.kind === "base" ? base(target.side) : troop(target.side, target.cardId);
     return `${troop(attacker.side, attacker.cardId, true)} in ${lane(event.lane)} hit ${hit}: ${orbs(event.before, event.after)}`;
   }
@@ -29,8 +32,27 @@ function sentence(event) {
     const moved = event.destination === undefined ? "" : `, then moved it to ${lane(event.destination)}`;
     return `${event.caster === "cowboy" ? "Your " : ""}${event.spell} hit ${troop(target.side, target.cardId)} in ${lane(target.slot)}: ${orbs(event.before, event.after)}${moved}`;
   }
+  if (event.type === "ride-out") {
+    return `${troop(event.side, event.cardId, true)} ${event.drift ? "drifted" : "rode"} from ${lane(event.slot)} to ${lane(event.destination)}`;
+  }
   if (event.type === "defeat") return `${troop(event.side, event.cardId, true)} in ${lane(event.slot)} was defeated`;
   return null;
+}
+
+// baseBreaks(events) -> string[]: one sentence per Base that this clash took to
+// zero orbs, naming the lane and attacker from the damage event. Empty when no
+// Base fell or the events hold no clash. Both Bases give two sentences.
+export function baseBreaks(events) {
+  if (!events.some((event) => event.type === "clash")) return [];
+  const fallen = new Set();
+  const lines = [];
+  for (const event of events) {
+    if (event.type !== "damage" || event.target.kind !== "base" || event.after !== 0) continue;
+    if (fallen.has(event.target.side)) continue;
+    fallen.add(event.target.side);
+    lines.push(`Lane ${event.lane + 1}: ${troop(event.attacker.side, event.attacker.cardId, true)} broke ${base(event.target.side)}.`);
+  }
+  return lines;
 }
 
 export function clashLog(events) {

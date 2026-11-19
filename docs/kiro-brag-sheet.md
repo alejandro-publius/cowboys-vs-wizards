@@ -1,5 +1,33 @@
 # How we used Kiro on Cowboys vs. Wizards: evidence map
 
+[Judge-facing brag sheet, eight Devpost answers and recording register](submission/kiro-brag-sheet.md)
+
+## November 18 Dragon Fire arc
+
+Fable 5.2 designed the boards and the Bonewright's Rebuild. Kiro CLI built the opt-in rules, the three-stage draft and the board cues in three worktrees. The same Dragon Fire combo wins in round 7 when the rival has already moved and loses in round 8 when it can rebuild. Record both outcomes, then replay the marked board and wait to use the Dragon. The winning delayed line ends in round 9. [Exact Chrome routes and attribution](evidence/kiro-dragon-fire-arc.md).
+
+## November 18 duel feedback and deck building
+
+| Before | After | Record it |
+| --- | --- | --- |
+| A result named the round, with the lane explanation in the clash log. | The result names the troop and lane that broke the Base. | End every turn on seed 4 in a fresh profile. Compare the round-three result before and after the Kiro CLI change. [Reproduction](evidence/kiro-decisive-lane.md) |
+| The deck builder showed the odds of an opening without a free summon. | You can deal the actual four opening cards from a draft and see which seed you dealt. | Build Deck → Preview opening hand → Deal another opening. Record seeds 0 and 1 and change a card in the draft. [Reproduction](evidence/kiro-opening-hand-preview.md) |
+
+Kiro CLI implemented the two improvements in parallel. Codex integrated them and verified both routes in Chrome. The browser evidence covers the changes above. Native Kiro footage is still to be recorded.
+
+## November 18 Frontier pack
+
+Fable 5.2 designed six unlockable cards, two 12-card decks, and Ride. Kiro CLI implemented the card specs and engine changes, added the unlocks and deck presets, and reused the existing Ride Out controls. Codex integrated the changes and checked the scripted deals and the Chrome play path. The recording comparison uses Night Riders at seed 244. Choosing to Ride in round 4 creates a round-6 win where the authored no-Ride route draws in round 9. [Recording steps and results](evidence/kiro-frontier-pack.md).
+
+## November 18 Wanted progression
+
+- **From one bounty to two.** Kiro IDE (Claude Opus 5.5) built Lantern Wraith's five fights, a lane telegraph that follows the rules engine, independent bounty progress, and the playable Captured Wraith reward. Kiro reported 343 passing game and match tests. Codex independently cleared all five hunts in Safari, checked that a repeat clear and a loss give no extra progress, and summoned Captured Wraith after reloading and trying Wraith Posse on seed 15. The Dragon stayed locked in that fresh profile. [Before and after, exact moves and checks](evidence/kiro-lantern-wraith.md).
+- **Reusable bounty draft.** In a separate IDE session, Kiro updated the `bounty-designer` agent for the shared boss registry. Its draft package includes five encounters with winning and losing lines, a one-copy deck reward, and briefs for a shared portrait and matching GLB. The written profile limits the agent to local drafts. Running a new candidate through the revised profile and scheduling weekly runs are pending. [Agent profile](../.kiro/agents/bounty-designer.json).
+
+## November 17 steering follow-up
+
+Four fresh Kiro CLI V3 sessions verified that rules, rendering and interface guidance loads on matching file reads. The control read of `package.json` loaded only the always-on guidance. Each response followed the format supplied by the loaded files in the test fixture. [Activation evidence and scope](evidence/kiro-scoped-steering-hook.md#file-scoped-activation-verified-on-november-17-2026-pacific).
+
 ## Current evidence (November 17, 2026, Pacific; main `e214e8d`)
 
 Text audit only; nothing was re-run. Full reconciliation: [evidence note](evidence/kiro-verified-evidence-reconciliation.md). Judge-facing table: [Kiro feature evidence table](submission/kiro-feature-evidence-table.md). The dated sections below are historical snapshots and are kept as written.

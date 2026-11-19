@@ -2,10 +2,21 @@
 // opening state returned by createMatch; nothing here runs unless a caller
 // opts in. scripts/compare-opening-policies.mjs uses the same functions.
 import { CARDS, SIDES, opponent, tributeCost } from "./cards.js";
-import { createMatch } from "./state.js";
+import { createMatch, OPENING_HAND } from "./state.js";
 
 export const isFree = (id) => CARDS[id].kind === "troop" && tributeCost(CARDS[id].stars) === 0;
 export const drought = (hand) => !hand.some(isFree);
+
+// Chance that all standard opening draws miss the deck's free troops.
+export function openingDroughtRate(deck) {
+  const otherCards = deck.filter((id) => !isFree(id)).length;
+  if (otherCards < OPENING_HAND) return 0;
+  let rate = 1;
+  for (let draw = 0; draw < OPENING_HAND; draw++) {
+    rate *= (otherCards - draw) / (deck.length - draw);
+  }
+  return rate;
+}
 
 // A hand with no free troop trades its last-dealt card for the topmost free
 // troop in its own deck. Sizes and deck order are otherwise unchanged.
@@ -13,7 +24,8 @@ export function guaranteeFree(state) {
   for (const side of SIDES) {
     const { hand, deck } = state.sides[side];
     if (!drought(hand)) continue;
-    const at = deck.findIndex(isFree); // six free troops per deck, four cards dealt: always found
+    const at = deck.findIndex(isFree); // stock decks: six free troops, four dealt, always found
+    if (at < 0) continue; // An invalid deck with no free troop keeps its hand.
     [hand[hand.length - 1], deck[at]] = [deck[at], hand[hand.length - 1]];
   }
 }
@@ -40,12 +52,17 @@ export function openingMatch(seed, variant, starter, options) {
   return state;
 }
 
-// Reads ?opening=shipped|both and ?first=cowboy|wizard. Returns null (default
-// game) unless opening is recognized; first is ignored without it, and an
-// unknown first falls back to the seeded first seat.
-export function parseOpeningParams(params) {
+// Openings each entry accepts. The illustrated entry uses the default; the
+// graybox also accepts the guaranteed-free-opener experiment.
+export const DEFAULT_OPENINGS = ["shipped", "both"];
+export const GRAYBOX_OPENINGS = [...DEFAULT_OPENINGS, "freeOpener"];
+
+// Reads ?opening=<one of openings> and ?first=cowboy|wizard. Returns null
+// (default game) unless opening is recognized; first is ignored without it,
+// and an unknown first falls back to the seeded first seat.
+export function parseOpeningParams(params, openings = DEFAULT_OPENINGS) {
   const opening = params.get("opening");
-  if (opening !== "shipped" && opening !== "both") return null;
+  if (!openings.includes(opening)) return null;
   const first = params.get("first");
   return { opening, first: SIDES.includes(first) ? first : undefined };
 }

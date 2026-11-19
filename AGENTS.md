@@ -4,14 +4,33 @@ Read the task, this file and the owned files. Use docs/AGENT-ROUTER.md to
 locate relevant paths and focused tests; read it only when orientation is needed.
 Read imports one level at a time. Never dump the repo or reference collection.
 
+## Game design R&D
+
+Fable 5.2 leads core mechanics, progression design and engine contracts. It
+hands off a decision, acceptance cases and any reference prototype. Kiro
+implements that brief, integrates it, and runs the checks. Route unresolved
+gameplay and engine policy decisions back to Fable.
+
+Treat every card, stat, deck and mechanic as a design hypothesis. Propose
+simpler or stronger ideas whenever research or playtests reveal them, even
+when the current version already works. Consider tuning, replacing or cutting
+an idea as readily as adding one.
+
+Explain which player decision improves, what evidence prompted the idea, and
+what it costs in rules or learning time. When prototyping, compare the smallest
+playable alternative with the current graybox using the same matchup where
+possible. Use human playtests to judge clarity and fun.
+
+## Working constraints
+
 - Source new art and motion from the user’s Tripo exports or finished assets
   and animation clips in GitHub repos they supplied. Confirm reuse rights
   and record the source. Plan any new design, asset or animation with the
   user before creating it. Apply this to Blender, in-game visual effects and
   poses, and work delegated to Fable or Kiro.
 - Preserve the approved haunted Western art and existing attack demo.
-- Build a small browser card game: visible deck/hand, three lanes per side,
-  tribute summons and one-to-five life orbs per living troop.
+- The current browser duel uses visible decks and hands, three lanes per
+  side, tribute summons and one-to-five life orbs per living troop.
 - Draft numeric rules and known spec contradictions are in docs/kiro-task-01.md.
   Do not invent mechanics to fill asset gaps.
 - Keep plain JavaScript, Three.js, Rapier and esbuild. Rules in src/game/ must

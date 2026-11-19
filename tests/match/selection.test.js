@@ -12,7 +12,7 @@ import { applyAction } from "../../src/game/actions.js";
 import { legalActions } from "../../src/game/legal.js";
 import { publicState } from "../../src/game/view.js";
 import { chooseAction } from "../../src/game/cpu.js";
-import { emptySelection, selectionOptions, selectionStep } from "../../src/match/selection.js";
+import { blockedReasons, emptySelection, selectionOptions, selectionStep } from "../../src/match/selection.js";
 
 const SEEDS = Array.from({ length: 100 }, (_, seed) => seed); // includes 14, 27 and 47
 const ACTING_SEQUENCES = 3;
@@ -417,6 +417,64 @@ test("a used allowance blocks the card with its reason", () => {
   assert.equal(late.message, "A spell was cast this round, and summons must come first.");
   assert.equal(second.message, "You have already cast a spell this round.");
   assert.equal(second.selection, emptySelection);
+});
+
+// The message a click gives for each hand card without a legal entry.
+function clickMessages(view) {
+  const playable = selectionOptions(emptySelection, view).playableCardIds;
+  const blocked = view.sides[view.viewer].hand.filter((cardId) => !playable.includes(cardId));
+  return Object.fromEntries(blocked.map((cardId) => [cardId, run(view, [card(cardId)])[0].message]));
+}
+
+test("blocked reasons: every unplayable hand card has its click message before a click, playable cards none", () => {
+  // Seed 14, starter deck: three Billy cards and Mounted Billy, and zero legal plays.
+  const opening = publicState(createMatch(14), "cowboy");
+  const hand = opening.sides.cowboy.hand;
+  assert.deepEqual(hand.map((cardId) => CARDS[cardId].name).sort(), ["Billy", "Billy", "Billy", "Mounted Billy"]);
+  assert.deepEqual(selectionOptions(emptySelection, opening).playableCardIds, []);
+  assert.deepEqual(blockedReasons(opening), Object.fromEntries(hand.map((cardId) => [cardId, CARDS[cardId].name === "Billy"
+    ? "Billy needs 1 tribute troop; you have 0 on the board."
+    : "Mounted Billy needs 2 tribute troops; you have 0 on the board."])));
+
+  // Full board: the free Sheriff has no open tile; Billy tributes into a vacated slot.
+  const full = publicState(position("cowboy", {
+    cowboy: { board: ["cowboy-sheriff-1", "cowboy-sheriff-2", "cowboy-mounted-billy-1"], hand: ["cowboy-sheriff-3", "cowboy-billy-1"] },
+  }), "cowboy");
+  assert.deepEqual(blockedReasons(full), { "cowboy-sheriff-3": "No open tile for Sheriff." });
+
+  // Used actions: a second summon, a summon after a spell and a second spell.
+  const state = position("cowboy", {
+    cowboy: { hand: ["cowboy-sheriff-1", "cowboy-sheriff-2", "cowboy-deadeye-1", "cowboy-deadeye-2"] },
+    wizard: { board: ["wizard-skeleton-1", "wizard-wizard-1", null] },
+  });
+  const summon = { type: "summon", side: "cowboy", revision: 0, cardId: "cowboy-sheriff-1", slot: 0, tributes: [] };
+  const summoned = publicState(applyAction(state, summon).state, "cowboy");
+  assert.equal(blockedReasons(summoned)["cowboy-sheriff-2"], "You have already summoned this round.");
+  const spell = { type: "spell", side: "cowboy", revision: 0, cardId: "cowboy-deadeye-1", target: 1 };
+  const cast = publicState(applyAction(state, spell).state, "cowboy");
+  assert.deepEqual(blockedReasons(cast), {
+    "cowboy-sheriff-1": "A spell was cast this round, and summons must come first.",
+    "cowboy-sheriff-2": "A spell was cast this round, and summons must come first.",
+    "cowboy-deadeye-2": "You have already cast a spell this round.",
+  });
+
+  // A spell with no enemy troop to target, next to a playable free troop.
+  const noTarget = publicState(position("cowboy", { cowboy: { hand: ["cowboy-deadeye-1", "cowboy-sheriff-1"] }, wizard: {} }), "cowboy");
+  assert.deepEqual(blockedReasons(noTarget), { "cowboy-deadeye-1": "Deadeye has no target: the enemy has no troops on the board." });
+
+  // The reason is the existing click message, never on a playable card, and the view is untouched.
+  for (const view of [opening, full, summoned, cast, noTarget]) {
+    const before = structuredClone(view);
+    const reasons = blockedReasons(view);
+    assert.deepEqual(reasons, clickMessages(view));
+    for (const cardId of selectionOptions(emptySelection, view).playableCardIds) assert.equal(cardId in reasons, false, cardId);
+    assert.deepEqual(view, before);
+  }
+
+  // Nothing to explain outside the viewer's phase (seed 27 opens with the Wizards) or after the result.
+  assert.deepEqual(blockedReasons(publicState(createMatch(27), "cowboy")), {});
+  const over = { ...opening, result: { winner: "wizard", loser: "cowboy", reason: "round-limit", round: 9, outcome: "loss" } };
+  assert.deepEqual(blockedReasons(over), {});
 });
 
 test("input is ignored outside the viewer's phase, after the result, or while not accepting", () => {

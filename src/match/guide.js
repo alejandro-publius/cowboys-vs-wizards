@@ -7,9 +7,11 @@
 // guideLine({view, options, progress}) -> string | null
 //   view: publicState(state, "cowboy"); options: selectionOptions(...) output;
 //   progress: from guideProgress() / trackGuide().
+//   opener: true only for the menu's guided duel (seed 690); it enables the
+//   one block-or-trade tip on its first idle decision. ?guide=1 leaves it off.
 // The guide stops once round two is over and the first Cowboy tribute summon
 // has happened (whichever is later), and at the match result.
-import { CARDS, tributeCost } from "../game/cards.js";
+import { CARDS, opponent, tributeCost } from "../game/cards.js";
 import { clashLog } from "./clash-log.js";
 
 export const guideProgress = () => Object.freeze({ events: Object.freeze([]), clash: null, tributeSummoned: false });
@@ -28,7 +30,28 @@ export function trackGuide(progress, events) {
 const lanes = (slots) => slots.map((slot) => `lane ${slot + 1}`).join(", ");
 const plural = (count, word) => `${count} ${word}${count === 1 ? "" : "s"}`;
 
-function idleLine(view, options, progress) {
+export const OPENER_TIP = "Put Sheriff across from the Skeleton to protect your Base, or choose an open lane to trade Base damage.";
+
+// The block-or-trade choice of the guided opener (starter deck, seed 690; seed 60 opens the same way), read
+// only from the public board: round 1, the viewer acts second, nothing used yet,
+// an empty friendly board, exactly one opposing troop and it is a Skeleton, and
+// a playable Sheriff. Called at the idle step only.
+function openerChoice(view, options) {
+  if (view.round !== 1 || view.startingSide === view.viewer) return false;
+  const { summonUsed, castUsed } = view.allowances[view.viewer];
+  if (summonUsed || castUsed) return false;
+  const own = view.sides[view.viewer].board;
+  const enemy = view.sides[opponent(view.viewer)].board.filter(Boolean);
+  return (
+    own.every((troop) => !troop) &&
+    enemy.length === 1 &&
+    CARDS[enemy[0].cardId]?.name === "Skeleton" &&
+    options.playableCardIds.some((id) => CARDS[id].name === "Sheriff")
+  );
+}
+
+function idleLine(view, options, progress, opener) {
+  if (opener && openerChoice(view, options)) return OPENER_TIP;
   const { summonUsed, castUsed } = view.allowances[view.viewer];
   if (view.round === 2 && progress.clash && !summonUsed && !castUsed) {
     const { lines } = progress.clash;
@@ -48,10 +71,10 @@ function idleLine(view, options, progress) {
   return "Glowing cards in your hand can be played as a troop or a spell.";
 }
 
-export function guideLine({ view, options, progress }) {
+export function guideLine({ view, options, progress, opener = false }) {
   if (!view || !options || !progress || view.result || view.activeSide !== view.viewer) return null;
   if (view.round >= 3 && progress.tributeSummoned) return null;
-  if (options.step === "idle") return idleLine(view, options, progress);
+  if (options.step === "idle") return idleLine(view, options, progress, opener);
   const card = CARDS[options.cardId];
   switch (options.step) {
     case "tribute":

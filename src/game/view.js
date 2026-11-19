@@ -13,6 +13,9 @@ function checkSide(side) {
 // side's `trap` zone (own: { cardId, setRound }; opponent: { faceDown: true,
 // setRound }; empty: null) and only the viewer's own `tactical` allowance.
 // Flag off, the view is exactly what it was before T4.
+// On a Ride Out match (`state.rideOut.enabled`) the view also holds `rideOut`,
+// so legalActions on the view lists the move. A ride-out is a visible board
+// change, so nothing else is added or hidden.
 export function publicState(state, side) {
   checkSide(side);
   const traps = state.traps?.enabled === true;
@@ -48,7 +51,12 @@ export function publicState(state, side) {
     result: result && { ...result, outcome },
     sides,
   };
+  if (state.bountyTarget) view.bountyTarget = state.bountyTarget;
+  // A Lantern Wraith hunt's marked move is public: the board shows it.
+  if (state.bountyDrift) view.bountyDrift = state.bountyDrift;
   if (traps) view.traps = { enabled: true, rulesVersion: state.traps.rulesVersion };
+  if (state.dragonFire?.enabled === true) view.dragonFire = { enabled: true, rulesVersion: state.dragonFire.rulesVersion };
+  if (state.rideOut?.enabled === true) view.rideOut = { enabled: true, rulesVersion: state.rideOut.rulesVersion };
   return structuredClone(view);
 }
 

@@ -4,6 +4,8 @@
 
 Goal: opt-in `?guide=1` adds one short line of advice at each step of the first two rounds, in the existing prompt's place.
 
+Menu follow-up by Codex. An explicit action in How to Play opens the same guidance with the starter deck and seed 0. The original query route remains available.
+
 | ID | Requirement | Executable check |
 | --- | --- | --- |
 | GF-1 | On `?mode=match&deck=starter&seed=0&guide=1` THE guide SHALL cover, in order: choose a card, choose a lane, confirm, end the phase, what the first clash did, the first summon that needs a sacrifice. | `tests/match/guide.test.js` walks the real seed 0 match through the selection states and asserts the ordered steps. |
@@ -15,3 +17,4 @@ Goal: opt-in `?guide=1` adds one short line of advice at each step of the first 
 | GF-7 | WITHOUT `?guide=1` the prompt text SHALL be identical to today's. | Model test plus the actual browser check comparing guide-off and guide=0 against the original 965bd70 build at twelve steps; both passed. See the dated evidence for browser and scope. |
 | GF-8 | THE guide SHALL address points where real players got stuck in issues #19 and #20, if notes exist. | Coordinator checked issues #19 and #20: no player notes were available for this run. No human findings or acceptance are invented; future feedback remains open. |
 | GF-9 | `node scripts/verify-duel.mjs` SHALL pass; no art, panel, arrow or animation added. | Command and `git diff --stat`. |
+| GF-10 | WHEN the player chooses Start guided duel before the first match, THE game SHALL start a seed-0 starter duel with hints, preserve the saved deck, and resume the same match from the main menu. Ordinary Play after the guided match ends SHALL use the normal opening settings. | `scripts/browser-menu-check.mjs` exercises keyboard start, starter hand, visible hints, saved-deck retention and pause/resume. Desktop Safari also exercised returning to ordinary Play after the guided match ended. |

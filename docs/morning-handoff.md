@@ -14,7 +14,7 @@ The first command checks game rules, the match UI and assets. The second also bu
 Capture the verified route from the project root.
 
 ```sh
-npm run build
+npm run build:art
 node scripts/browser-match-check.mjs --showcase --summary
 ```
 

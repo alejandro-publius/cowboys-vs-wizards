@@ -16,6 +16,10 @@ const FIELDS = {
   troop: ["type", "side", "order", "name", "kind", "stars", "health", "attack", "copies"],
   spell: ["type", "side", "order", "name", "kind", "relocates", "copies"],
 };
+// Optional fields, written after the required ones when present. `limit` is a
+// Cowboy collectible's copy limit (1 to 6); `rides` marks a troop that may Ride.
+const OPTIONAL = { troop: ["limit", "rides"], spell: ["limit"] };
+const MAX_LIMIT = 6;
 const isInt = (value, min, max = Infinity) => Number.isSafeInteger(value) && value >= min && value <= max;
 
 function validateSpec(file, spec) {
@@ -25,7 +29,9 @@ function validateSpec(file, spec) {
 
   if (!Object.hasOwn(FIELDS, spec.kind)) return [`${file}: kind must be "troop" or "spell"`];
   const fields = FIELDS[spec.kind];
-  for (const key of Object.keys(spec)) if (!fields.includes(key)) fail(`unknown field "${key}" for a ${spec.kind}`);
+  for (const key of Object.keys(spec)) {
+    if (!fields.includes(key) && !OPTIONAL[spec.kind].includes(key) && key !== "bounty") fail(`unknown field "${key}" for a ${spec.kind}`);
+  }
   for (const key of fields) if (!(key in spec)) fail(`missing field "${key}"`);
 
   if (typeof spec.type !== "string" || !/^[a-z]+(-[a-z]+)*$/.test(spec.type)) fail("type must be lowercase words joined by '-'");
@@ -34,7 +40,24 @@ function validateSpec(file, spec) {
   else if (typeof spec.type === "string" && !spec.type.startsWith(`${spec.side}-`)) fail(`type must start with "${spec.side}-"`);
   if (!isInt(spec.order, 1)) fail("order must be a positive integer");
   if (typeof spec.name !== "string" || spec.name.trim() === "") fail("name must be a non-empty string");
-  if (!isInt(spec.copies, 1, DECK_SIZE)) fail(`copies must be an integer from 1 to ${DECK_SIZE}`);
+  if (Object.hasOwn(spec, "bounty")) {
+    // A Cowboy bounty card is a one-copy Wanted reward; a Wizard one is a Wanted boss.
+    // Neither is in a starter deck.
+    if (spec.bounty !== true || spec.kind !== "troop" || spec.copies !== 0) {
+      fail("a bounty card must be a troop with zero starter copies");
+    }
+    if (Object.hasOwn(spec, "limit")) fail("a bounty card has a fixed limit of one");
+  } else if (spec.copies === 0 && spec.side === "cowboy" && Object.hasOwn(spec, "limit")) {
+    // A new Cowboy collectible: no starter copies, owned only through unlocks.
+  } else if (spec.copies === 0 && spec.side === "wizard" && spec.kind === "troop" && spec.limit === 1) {
+    // An optional Wizard troop (the Imp): registered, in no default deck.
+  } else if (!isInt(spec.copies, 1, DECK_SIZE)) fail(`copies must be an integer from 1 to ${DECK_SIZE} (0 only for a Cowboy card with a limit, or a one-limit Wizard troop)`);
+  if (Object.hasOwn(spec, "limit")) {
+    if (spec.side !== "cowboy" && !(spec.side === "wizard" && spec.kind === "troop" && spec.limit === 1 && spec.copies === 0)) fail("limit is only for Cowboy cards (or a zero-copy Wizard troop with limit 1)");
+    if (!isInt(spec.limit, 1, MAX_LIMIT)) fail(`limit must be an integer from 1 to ${MAX_LIMIT}`);
+    else if (Number.isSafeInteger(spec.copies) && spec.copies > spec.limit) fail("copies must not exceed limit");
+  }
+  if (Object.hasOwn(spec, "rides") && spec.rides !== true) fail("rides must be true when present");
   if (spec.kind === "troop") {
     if (!isInt(spec.stars, 1)) fail("stars must be a positive integer");
     if (!isInt(spec.health, 1, MAX_HEALTH)) fail(`health must be an integer from 1 to ${MAX_HEALTH}`);
@@ -83,6 +106,8 @@ function loadSpecs() {
 function render(specs) {
   const lines = specs.map((spec) => {
     const ordered = Object.fromEntries(FIELDS[spec.kind].map((key) => [key, spec[key]]));
+    for (const key of OPTIONAL[spec.kind]) if (Object.hasOwn(spec, key)) ordered[key] = spec[key];
+    if (spec.bounty) ordered.bounty = true;
     return `  ${JSON.stringify(ordered)},`;
   });
   return [
