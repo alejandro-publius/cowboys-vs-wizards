@@ -3,6 +3,7 @@ import {bossOfHunt, clearedFor, createHunt, earnedRewards, HUNT_GOAL, HUNTS_BY_I
 import {CARDS, tributeCost} from "./game/cards.js";
 import {deckIds, validateDeck} from "./game/deck-builder.js";
 import {BILLY_POSSE, DEADEYE_CONTROL, DRAGON_POSSE, IMP_DECK, IMP_NAME, STARGAZER_DECK, STARGAZER_WINS, STARGAZER_NAME, WRAITH_POSSE, frontierUnlocked} from "./game/deck-presets.js";
+import {CLOSING_LINE, createFireArcStage, EARN_LINE, FIRE_ARC, fireArcView, rebuildLane, rebuildLossCause, rivalAction} from "./game/fire-arc.js";
 import {GRAYBOX_OPENINGS, openingMatch, parseOpeningParams} from "./game/opening-policy.js";
 import {clashForecast, rideForecasts} from "./match/clash-forecast.js";
 import {baseBreaks, clashLog} from "./match/clash-log.js";
@@ -75,6 +76,11 @@ let nextDeal = null;
 let bountyFinishedRun = null;
 let capturedRun = null;
 let resultGo = null;
+// Fire arc draft (?mode=fire-arc): the latest full state (read only for the public Rebuild mark),
+// the round and lane of the Bonewright's Rebuild, and the loss cause once that Rebuild is tied to a defeat.
+let arcState = null;
+let arcRebuild = null;
+let arcLoss = null;
 
 // Only the rewards this profile has earned may enter a deck.
 const deckEntitlement = () => {
@@ -104,6 +110,8 @@ const engine = {
     latestClash = {title: "Latest clash", lines: ["End the turn to view both sides’ attacks."]};
     deal = nextDeal ? {...nextDeal, seed} : freshDeal(seed);
     nextDeal = null;
+    arcRebuild = arcLoss = null;
+    if (deal.arc) return arcState = createFireArcStage(deal.arc);
     if (deal.rideLesson) return createRideOutLesson();
     if (deal.practice) return createPractice(deal.practice);
     if (deal.hunt) return createHunt(deal.hunt);
@@ -115,6 +123,13 @@ const engine = {
   applyAction(state, action) {
     const result = FABLE_ENGINE.applyAction(state, action);
     if (!result.ok) return result;
+    if (deal.arc) {
+      const lane = rebuildLane(state, action);
+      if (lane !== null) arcRebuild = {round: state.round, lane};
+      arcState = result.state;
+      const final = result.state.result;
+      if (final?.winner === "wizard" && arcRebuild?.round === final.round) arcLoss = rebuildLossCause(result.events, arcRebuild.lane);
+    }
     if (guided || hints) progress = trackGuide(progress, result.events);
     roundEvents.push(...result.events);
     const log = clashLog(roundEvents);
@@ -132,6 +147,7 @@ const engine = {
 };
 // Result-screen line and primary button for the Wraith arc (Fable 5.2 first-session brief §2-3).
 function resultExtras(displayed, hunted, boss) {
+  if (deal.arc) return arcResultExtras(displayed);
   const reward = CARDS["cowboy-captured-wraith-1"];
   if (deal.hunt && boss.id === "lantern-wraith" && displayed.result.reason === "bounty-captured") {
     if (bountyFinishedRun === run) {
@@ -175,9 +191,21 @@ function resultExtras(displayed, hunted, boss) {
   return {};
 }
 
+// Fire arc draft: the earn line and the next stage. No reward, no counted result.
+function arcResultExtras(displayed) {
+  if (deal.arc === "ember-gulch") {
+    return displayed.result.reason === "bounty-captured"
+      ? {resultNote: EARN_LINE, resultGo: {label: "Face the Bonewright", start: () => startFireArc("position-a")}} : {};
+  }
+  if (deal.arc === "position-a") return {resultGo: {label: "Same board, you move first", start: () => startFireArc("position-b")}};
+  return displayed.result.outcome === "loss" ? {} : {resultNote: CLOSING_LINE};
+}
+
 const controller = createController({
   engine, renderer, scheduler, pauses, cpuDelay: 0,
   chooseCpuAction(view) {
+    // Fire arc: Ember Gulch's boss only ends its turn; the Bonewright rebuilds, else plays Normal.
+    if (deal?.arc) return deal.arc === "ember-gulch" ? FABLE_ENGINE.legalActions(view, "wizard").at(-1) : rivalAction(view);
     // The notice shows the whole enemy formation. Monsters strike at the clash.
     if (deal?.hunt) return FABLE_ENGINE.legalActions(view, "wizard").at(-1);
     // Practice routes hold only against the Normal bot, whatever ?cpu says.
@@ -218,6 +246,14 @@ const controller = createController({
     const lessonChoice = deal?.rideLesson && displayed?.round === 2
       && !displayed.allowances.cowboy.summonUsed && !displayed.allowances.cowboy.castUsed;
     model.bounty = Boolean(deal?.hunt);
+    if (deal?.arc) {
+      const earned = status === "terminal" && deal.arc === "ember-gulch" && displayed.result.reason === "bounty-captured";
+      model.fireArc = fireArcView({
+        stage: earned ? "earn" : deal.arc,
+        state: status === "accepting_input" ? arcState : null,
+        lossCause: status === "terminal" && displayed.result.outcome === "loss" ? arcLoss : null,
+      });
+    }
     model.practice = Boolean(deal?.practice);
     const practice = deal?.practice ? PRACTICE_CHALLENGES[deal.practice] : null;
     const saved = model.bounty ? profile.get() : null;
@@ -229,6 +265,7 @@ const controller = createController({
         + (deal?.hunt?.markLane !== undefined ? " Watch the marked Wizard lane before the first clash." : "");
     model.openingNote = [
       model.bounty && `${deal.hunt.name}. ${huntProgress}`,
+      deal?.arc && `${FIRE_ARC[deal.arc].note} Draft: no reward, no counted result.`,
       deal?.opponent && `Opponent: ${OPPONENTS[deal.opponent].name}.`,
       practice && displayed?.round === practice.round && practice.note,
       practice && PRACTICE_NO_REWARD_NOTE,
@@ -274,7 +311,7 @@ function startWithDeal(configuration, start) {
   }
 }
 function restartCurrent(start) {
-  const useCurrentDeal = deal?.isDraft || deal?.rideLesson || deal?.hunt || deal?.options.wizardDeck;
+  const useCurrentDeal = deal?.isDraft || deal?.rideLesson || deal?.hunt || deal?.arc || deal?.options.wizardDeck;
   return useCurrentDeal ? startWithDeal(deal, start) : play(start);
 }
 // Result screen: the completed match's seed, deck, CPU/opening and guided setting.
@@ -291,6 +328,11 @@ function newDuel() {
     guided = false;
     arena.hidden = true;
     menu.openHow();
+    return;
+  }
+  if (deal.arc) {
+    arena.hidden = true;
+    menu.show();
     return;
   }
   if (deal.hunt) {
@@ -313,7 +355,7 @@ const overlay = mountCards(match, {
   onEndPhase: () => play(() => controller.endPhase()),
   onRestart: () => restartCurrent(() => controller.restart()),
   onReplaySeed: (seed) => {
-    if (deal?.hunt || deal?.practice) return;
+    if (deal?.hunt || deal?.practice || deal?.arc) return;
     return deal?.rideLesson ? play(() => controller.start(seed)) : restartCurrent(() => controller.start(seed));
   },
   onReplayDeal: replayDeal,
@@ -353,6 +395,19 @@ function startHunt(id) {
   guided = false;
   if (!startWithDeal({hunt, guided, options: {rideOut: true}}, () => controller.start(hunt.seed))) {
     throw new Error("The hunt could not start.");
+  }
+  menu.hide();
+  arena.hidden = false;
+  node("home").focus();
+}
+
+function startFireArc(id) {
+  if (!FIRE_ARC[id] || !["idle", "terminal"].includes(controller.status())) return;
+  guided = false;
+  // A draft deal: no match, win, summon or spell is recorded, and no reward is earned.
+  const arc = {seed: FIRE_ARC[id].seed, guided: false, opening: null, isDraft: true, arc: id, options: {rideOut: false}};
+  if (!startWithDeal(arc, () => controller.start(arc.seed))) {
+    throw new Error("The fire arc stage could not start.");
   }
   menu.hide();
   arena.hidden = false;
@@ -428,4 +483,5 @@ document.addEventListener("keydown", (event) => {
 if (params.get("mode") === "ride-out") tryRideOut();
 else if (params.get("mode") === "practice-dynamiter") startPractice("dynamiter");
 else if (params.get("mode") === "practice-tribute") startPractice("tribute");
+else if (params.get("mode") === "fire-arc") startFireArc("ember-gulch");
 else if (params.get("mode") === "match") node("menu-play").click();
