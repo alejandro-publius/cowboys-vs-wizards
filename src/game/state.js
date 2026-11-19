@@ -14,6 +14,9 @@ export const TRAP_RULES_VERSION = `${RULES_VERSION}+traps`;
 // Rule set of the opt-in Ride Out experiment (.kiro/specs/ride-out). Stored in
 // `state.rideOut` only on matches created with `rideOut: true`.
 export const RIDE_OUT_RULES_VERSION = `${RULES_VERSION}+ride-out`;
+// Rule set of the opt-in Dragon Fire arc. Stored in `state.dragonFire` only on
+// matches created with `dragonFire: true`.
+export const DRAGON_FIRE_RULES_VERSION = `${RULES_VERSION}+dragon-fire`;
 
 // mulberry32 step. The whole generator is one uint32, so it lives in the
 // match state as a plain number and replays from a seed are identical.
@@ -61,8 +64,9 @@ function validateWizardDeck(ids) {
 // extra RNG and leaves decks and hands unchanged. Off (the default) adds nothing.
 // `rideOut: true` adds only `rideOut: { enabled, rulesVersion }`: no RNG draw,
 // no allowance key. The two experiments cannot be combined.
-export function createMatch(seed, { cowboyDeck, wizardDeck, traps = false, rideOut = false } = {}) {
+export function createMatch(seed, { cowboyDeck, wizardDeck, traps = false, rideOut = false, dragonFire = false } = {}) {
   if (!Number.isInteger(seed)) throw new TypeError("seed must be an integer");
+  if (typeof dragonFire !== "boolean") throw new TypeError("dragonFire must be a boolean");
   if (typeof traps !== "boolean") throw new TypeError("traps must be a boolean");
   if (typeof rideOut !== "boolean") throw new TypeError("rideOut must be a boolean");
   if (traps && rideOut) throw new TypeError("rideOut cannot be combined with traps");
@@ -106,5 +110,6 @@ export function createMatch(seed, { cowboyDeck, wizardDeck, traps = false, rideO
   };
   if (traps) match.traps = { enabled: true, rulesVersion: TRAP_RULES_VERSION };
   if (rideOut) match.rideOut = { enabled: true, rulesVersion: RIDE_OUT_RULES_VERSION };
+  if (dragonFire) match.dragonFire = { enabled: true, rulesVersion: DRAGON_FIRE_RULES_VERSION };
   return match;
 }

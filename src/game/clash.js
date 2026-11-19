@@ -15,6 +15,16 @@ export function pendingDrift(state) {
   return { slot, destination: drift.destination };
 }
 
+// Dragon Fire (opt-in, `state.dragonFire.enabled`): the Wizard's Dragon and the
+// Captured Dragon send the part of an attack their blocker cannot absorb to
+// the blocker's Base. An open lane and every other card are unchanged.
+export const isFireCard = (cardId) => /^(wizard-dragon|cowboy-captured-dragon)-\d+$/.test(cardId);
+
+// Damage that burns past a blocker with `blockerHealth` orbs, or 0.
+export function fireBurn(enabled, cardId, blockerHealth) {
+  return enabled === true && isFireCard(cardId) ? Math.max(0, CARDS[cardId].attack - blockerHealth) : 0;
+}
+
 // One simultaneous clash on `state`, which must be the working copy inside
 // applyAction (it is changed in place). Every number a renderer needs is
 // computed here once and reported through `emit`.
@@ -61,6 +71,21 @@ export function resolveClash(state, emit) {
       before,
       after,
     });
+    const burn = blocker ? fireBurn(state.dragonFire?.enabled, cardId, before) : 0;
+    if (burn > 0) {
+      const baseBefore = enemy.baseOrbs;
+      enemy.baseOrbs = Math.max(0, baseBefore - burn);
+      emit({
+        type: "damage",
+        lane,
+        attacker: { side, slot: lane, cardId },
+        target: { kind: "base", side: enemySide },
+        amount: burn,
+        before: baseBefore,
+        after: enemy.baseOrbs,
+        fire: true,
+      });
+    }
   }
 
   for (let lane = 0; lane < SLOT_COUNT; lane++) {
