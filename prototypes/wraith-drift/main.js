@@ -35,10 +35,14 @@ const POSITIONS = {
     cowboyBase: 5,
     wizardBase: 2,
   },
+  rematch: {
+    goal: "Two clashes, one drift for both. Both Bases have 3 orbs. After clash 2 the higher Base wins; equal Bases are a draw.",
+  },
 };
 
 // Split Trail leaves both lanes next to the Wraith available.
 function setup(position) {
+  if (position === "rematch") return rematchSetup();
   if (position === "gallows") return createHunt(HUNTS_BY_ID.get("gallows-lantern"));
   if (position === "blacksmith") return createHunt(HUNTS_BY_ID.get("blacksmith-forge"));
   const { cowboyBase, wizardBase } = POSITIONS[position];
@@ -93,11 +97,105 @@ function play(position, choice) {
 const who = (side) => (side === "cowboy" ? "Your" : "Enemy");
 const name = (cardId) => CARDS[cardId].name;
 
+// Rematch: rounds 8 and 9 of a real match, so the production clash and the
+// round-limit result decide it. The drift is the prototype power from above.
+// Cowboy: Sheriff (lane 1), Wraith (lane 2). Wizard: Skeleton in lanes 1 and 2,
+// one Skeleton in hand. Both Bases 3. The Wizard has already acted in round 8.
+function rematchSetup() {
+  const state = createMatch(0);
+  state.round = 8;
+  state.startingSide = "wizard";
+  state.activeSide = "cowboy";
+  const { cowboy, wizard } = state.sides;
+  cowboy.baseOrbs = wizard.baseOrbs = 3;
+  cowboy.hand = []; cowboy.deck = [];
+  wizard.hand = ["wizard-skeleton-3"]; wizard.deck = [];
+  cowboy.board = [troop("cowboy-sheriff-1"), troop(WRAITH), null];
+  wizard.board = [troop("wizard-skeleton-1"), troop("wizard-skeleton-2"), null];
+  return state;
+}
+
+// The Rival's reply policy, stated on the page: if one of your troops faces an
+// open Wizard lane, summon the Skeleton there (strongest attacker first);
+// otherwise keep it in hand. Returns a legal summon action or null.
+function rivalReply(state) {
+  const { cowboy, wizard } = state.sides;
+  const open = [0, 1, 2].filter((i) => cowboy.board[i] && !wizard.board[i])
+    .sort((a, b) => CARDS[cowboy.board[b].cardId].attack - CARDS[cowboy.board[a].cardId].attack);
+  if (!open.length) return null;
+  return legalActions(state, "wizard").find((a) => a.type === "summon" && a.slot === open[0] && a.tributes.length === 0) ?? null;
+}
+
+// Replays the rematch from the fixture. picks: up to two of "hold" | "drift".
+// The drift can be used once; a second "drift" is refused.
+function runRematch(picks) {
+  let state = rematchSetup();
+  const out = { stage: "first", clashes: [], reply: null, drifted: false, state, result: null };
+  const apply = (action) => {
+    const r = applyAction(state, action);
+    if (!r.ok) throw new Error(`${action.type} rejected: ${r.reason}`);
+    state = r.state;
+    return r.events;
+  };
+  const end = (side) => apply({ type: "end-phase", side, revision: state.revision });
+  const clash = (pick, side) => {
+    const events = [];
+    if (pick === "drift") {
+      if (out.drifted) throw new Error("The drift is already spent");
+      const board = state.sides.cowboy.board;
+      const slot = board.findIndex((t) => t?.cardId === WRAITH);
+      const to = shiftDestinations(board, slot)[0];
+      if (to === undefined) throw new Error("No open lane to drift into");
+      shiftTroop(board, slot, to);
+      events.push({ type: "drift", destination: to });
+      out.drifted = true;
+    }
+    events.push(...end(side));
+    out.clashes.push({ events, cowboyBase: state.sides.cowboy.baseOrbs, wizardBase: state.sides.wizard.baseOrbs });
+  };
+  const finish = () => { out.state = state; return out; };
+  if (picks.length < 1) return finish();
+  clash(picks[0], "cowboy"); // round 8 ends with the Cowboy phase
+  end("cowboy"); // round 9: you pass, the Wizard replies
+  const reply = rivalReply(state);
+  out.reply = reply ? { events: apply(reply), lane: reply.slot } : { events: [], lane: null };
+  out.stage = "second";
+  if (picks.length < 2) return finish();
+  clash(picks[1], "wizard"); // the Wizard's end runs clash 2
+  out.stage = "done";
+  out.result = state.result;
+  return finish();
+}
+
+const REMATCH_PLANS = [
+  { picks: ["drift", "hold"], label: "drift at once" },
+  { picks: ["hold", "drift"], label: "hold, then drift after the reply" },
+  { picks: ["hold", "hold"], label: "never drift" },
+];
+
+function rematchVerdict(run) {
+  const { cowboy, wizard } = run.state.sides;
+  const score = `Bases ${cowboy.baseOrbs} to ${wizard.baseOrbs}`;
+  const r = run.result;
+  if (!r || r.winner === null) return { cls: "", text: `Draw: ${score}. Neither side is ahead.` };
+  const how = r.reason === "base-destroyed" ? "a Base is destroyed" : "the round limit";
+  return r.winner === "cowboy"
+    ? { cls: "win", text: `You win at ${how}: ${score}.` }
+    : { cls: "lose", text: `You lose at ${how}: ${score}.` };
+}
+
+function rematchWhy(picks) {
+  if (picks[0] === "drift") return "The Wraith hit the Wizard's Base at once, but lane 2 stood open for both clashes, so a Skeleton hit your Base twice. The Rival then blocked lane 3 and the Wraith never hit a Base again.";
+  if (picks[1] === "drift") return "Clash 1 was blocked everywhere. No lane of yours faced an open lane, so the Rival kept its Skeleton and left lane 3 open. The drift landed unanswered and lane 2 stood open for only one clash.";
+  return "Nothing reached a Base: every lane stayed blocked, and the Wraith and the Skeleton in lane 2 defeated each other.";
+}
+
 function describe(events) {
   return events.flatMap((e) => {
     if (e.type === "ride-out") return [e.side === "wizard" ? `The Lantern Wraith drifted to lane ${e.destination + 1}.` : `Billy rode to lane ${e.destination + 1}.`];
     if (e.type === "spell") return [`${e.spell} hit the Enemy ${name(e.target.cardId)} in lane ${e.target.slot + 1}, ${e.before} to ${e.after}.`];
     if (e.type === "drift") return [`Captured Wraith drifted to lane ${e.destination + 1}.`];
+    if (e.type === "summon") return [`${who(e.side)} ${name(e.cardId)} was summoned into lane ${e.slot + 1}.`];
     if (e.type === "damage") {
       const hitter = `${who(e.attacker.side)} ${name(e.attacker.cardId)}`;
       const target = e.target.kind === "base" ? `${who(e.target.side)} Base` : `${who(e.target.side)} ${name(e.target.cardId)}`;
@@ -161,6 +259,50 @@ function why(position, choice, events) {
 const $ = (id) => document.getElementById(id);
 let position = "gallows";
 let played = null; // choice already made this round
+let picks = []; // Rematch choices so far, one per clash
+
+function renderRematch() {
+  const run = runRematch(picks);
+  renderBoard(run.state);
+  const spent = run.drifted;
+  const dest = run.stage === "done" ? undefined : shiftDestinations(run.state.sides.cowboy.board, run.state.sides.cowboy.board.findIndex((t) => t?.cardId === WRAITH))[0];
+  $("goal").textContent = POSITIONS.rematch.goal;
+  $("blurb").textContent = "You captured the Lantern Wraith. You get one drift for the whole rematch, and two clashes to use it in.";
+  $("reset").textContent = "Restart rematch";
+  $("drift2").hidden = true;
+  $("hold").textContent = run.stage === "second" && spent ? "Continue to clash 2 (drift spent)" : run.stage === "first" ? "Hold: Wraith stays in lane 2" : "Hold: Wraith stays put";
+  $("drift").textContent = run.stage === "second" && spent ? "Drift (spent)" : dest === undefined ? "Drift (no open lane)" : `Drift to lane ${dest + 1}`;
+  $("hold").disabled = run.stage === "done";
+  $("drift").disabled = run.stage === "done" || spent || dest === undefined;
+  for (const b of document.querySelectorAll("[data-position]")) b.setAttribute("aria-pressed", String(b.dataset.position === position));
+  const base = (side) => run.state.sides[side].baseOrbs;
+  const clashHtml = run.clashes.map((c, i) => `<p><b>Clash ${i + 1} of 2</b>: ${picks[i] === "drift" ? "you drifted" : "you held"}.</p>
+    <ul>${describe(c.events).map((line) => `<li>${line}</li>`).join("")}</ul>
+    <p>Bases after clash ${i + 1}: yours ${c.cowboyBase}, Wizard's ${c.wizardBase}.</p>`);
+  const replyHtml = run.reply
+    ? `<p><b>Rival reply:</b> ${run.reply.lane === null
+      ? "No troop of yours faced an open lane, so the Wizard kept its Skeleton and passed."
+      : `Your Wraith faced open lane ${run.reply.lane + 1}, so the Wizard summoned a Skeleton there.`}</p>`
+    : "";
+  const status = `Clash ${Math.min(picks.length + 1, 2)} of 2 · Drift: ${spent ? "spent" : "saved"} · Bases: yours ${base("cowboy")}, Wizard's ${base("wizard")}`;
+  if (run.stage === "done") {
+    const v = rematchVerdict(run);
+    const others = REMATCH_PLANS.filter((p) => p.picks.join() !== picks.join())
+      .map((p) => `<p><b>Other line (${p.label}):</b> ${rematchVerdict(runRematch(p.picks)).text}</p>`).join("");
+    $("outcome").innerHTML = `<strong class="${v.cls}">${v.text}</strong>${clashHtml.join("")}${replyHtml}
+      <p><b>Why:</b> ${rematchWhy(picks)}</p>${others}
+      <p><button type="button" data-goto="rematch">Restart rematch</button></p>`;
+    return;
+  }
+  if (run.stage === "first") {
+    $("outcome").innerHTML = `<p class="status">${status}</p>
+      <p>Round 8 of 9. The Wizard has committed. Lane 3 is empty on both sides. The drift happens before attacks, and you can use it only once.</p>
+      <p>The Rival answers a troop that faces an open lane by summoning its Skeleton there. Otherwise it passes.</p>`;
+    return;
+  }
+  $("outcome").innerHTML = `<p class="status">${status}</p>${clashHtml.join("")}${replyHtml}
+    <p>Round 9 of 9, the last clash. ${spent ? "The drift is spent, so only holding is left." : "Drift now, or hold and take the Bases as they stand."}</p>`;
+}
 
 function orbs(now, max) {
   return `<span class="orbs" role="img" aria-label="${now} of ${max} orbs">${"●".repeat(now)}<span class="lost">${"○".repeat(Math.max(0, max - now))}</span></span>`;
@@ -182,6 +324,10 @@ function renderBoard(state) {
 }
 
 function render() {
+  played = null;
+  picks = [];
+  if (position === "rematch") return renderRematch();
+  $("reset").textContent = "Reset";
   const state = setup(position);
   renderBoard(state);
   $("goal").textContent = POSITIONS[position].goal;
@@ -226,11 +372,17 @@ function choose(choice) {
     .map((c) => `<p><b>Other choice (${choiceName(c)}):</b> ${verdictOf(play(position, c)).text}</p>`).join("");
   const next = hunt && result?.reason === "bounty-captured"
     ? `<p><button type="button" data-goto="raid">Use the captured Wraith</button></p>`
-    : position === "raid" ? `<p><button type="button" data-goto="lastStand">Optional: try Last stand</button></p>` : "";
+    : position === "raid" ? `<p><button type="button" data-goto="lastStand">Optional: try Last stand</button></p>` : position === "lastStand" ? `<p><button type="button" data-goto="rematch">Optional: play the two-clash Rematch</button></p>` : "";
   $("outcome").innerHTML = `<strong class="${v.cls}">${v.text}</strong>
     <ul>${describe(events).map((line) => `<li>${line}</li>`).join("")}</ul>
     <p><b>Why:</b> ${why(position, choice, events)}</p>
     ${others}${next}`;
+}
+
+function pick(choice) {
+  if (picks.length >= 2) return;
+  picks.push(choice);
+  renderRematch();
 }
 
 for (const b of document.querySelectorAll("[data-position]")) {
@@ -240,8 +392,11 @@ $("outcome").addEventListener("click", (e) => {
   const go = e.target.closest("[data-goto]");
   if (go) { position = go.dataset.goto; render(); }
 });
-$("hold").addEventListener("click", () => choose("hold"));
-$("drift").addEventListener("click", () => choose(position === "blacksmith" ? "deadeye" : position === "splitTrail" ? `drift:${shiftDestinations(setup(position).sides.cowboy.board, WRAITH_LANE)[0]}` : "drift"));
+$("hold").addEventListener("click", () => (position === "rematch" ? pick("hold") : choose("hold")));
+$("drift").addEventListener("click", () => {
+  if (position === "rematch") return pick("drift");
+  choose(position === "blacksmith" ? "deadeye" : position === "splitTrail" ? `drift:${shiftDestinations(setup(position).sides.cowboy.board, WRAITH_LANE)[0]}` : "drift");
+});
 $("drift2").addEventListener("click", () => choose(`drift:${shiftDestinations(setup(position).sides.cowboy.board, WRAITH_LANE)[1]}`));
 $("reset").addEventListener("click", render);
 render();

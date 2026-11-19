@@ -7,7 +7,8 @@ button { font: inherit; padding: 8px 14px; border: 1px solid #6b5f4c; background
 button:hover:not(:disabled) { background: #4a4235; }
 button:disabled { opacity: .45; cursor: default; }
 button[aria-pressed="true"] { background: #7a5a2a; border-color: #d8a24a; }
-#positions { display: flex; gap: 8px; margin-bottom: 8px; }
+#positions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+#outcome .status { color: #d8a24a; margin: 0 0 6px; }
 #goal { margin: 0 0 12px; }
 #board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .base { grid-column: 1 / -1; padding: 8px; text-align: center; border: 1px solid #6b5f4c; border-radius: 4px; }
