@@ -82,7 +82,8 @@ function blockedReason(view, card) {
   const troops = board.filter((troop) => troop !== null).length;
   const cost = tributeCost(card.stars);
   if (troops < cost) return `${card.name} needs ${plural(cost, "tribute troop")}; you have ${troops} on the board.`;
-  if (summonUsed) return view.rideOut?.enabled
+  const canRide = view.rideOut?.enabled || board.some((troop) => troop !== null && CARDS[troop.cardId]?.rides === true);
+  if (summonUsed) return canRide
     ? "You already summoned or rode out this round."
     : "You have already summoned this round.";
   if (castUsed && tactical === "trap") return "You set a trap this round, so you cannot summon. Summon first next time.";
@@ -246,8 +247,10 @@ export function selectionOptions(current, view, { cards = CARDS } = {}) {
     canCancel: current.step !== "idle",
     prompt: "",
   };
-  if (view.rideOut?.enabled) {
-    const rides = rideActions(actions);
+  // Hunts and opt-in Ride Out always carry the Ride fields. A standard duel
+  // carries them only while a legal ride-out exists or a ride is being chosen.
+  const rides = rideActions(actions);
+  if (view.rideOut?.enabled || rides.length > 0 || current.step.startsWith("ride-")) {
     options.canRideOut = current.step === "idle" && rides.length > 0;
     if (current.step.startsWith("ride-")) {
       options.rideFrom = current.slot ?? null;
