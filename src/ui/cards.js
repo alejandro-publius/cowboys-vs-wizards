@@ -65,6 +65,7 @@ function plainCard(card) {
     el("span", {class: "plain-card-stats"}, troop ? `${card.attack} attack · ${card.health} life` : "Removes one enemy orb"),
     el("small", {class: "plain-card-cost"}, troop ? (cost ? `${cost} tribute${cost === 1 ? "" : "s"}` : "Free summon") : "Spell"),
     card.rides ? el("small", {class: "plain-card-ride"}, "Ride") : null,
+    card.fire ? el("small", {class: "plain-card-fire"}, card.fire) : null,
   ];
 }
 
@@ -89,7 +90,7 @@ function cardButton(card, enabled, inFlight, plain) {
     class: "card-front card-stage" + (inFlight ? " in-flight" : ""),
     "data-card-id": card.cardId,
     "data-playable": card.playable,
-    "aria-label": describeCard(card) + (card.rides ? ", Ride" : "") + (card.playable ? ", playable now" : ""),
+    "aria-label": describeCard(card) + (card.rides ? ", Ride" : "") + (card.fire ? `. ${card.fire}` : "") + (card.playable ? ", playable now" : ""),
     "aria-describedby": reasonId,
     "aria-pressed": String(card.selected),
     disabled: !enabled,
@@ -110,13 +111,14 @@ const markedLane = (fireArc) => (Number.isInteger(fireArc?.mark) && fireArc.mark
 function slotButton(side, slot, troop, clickable, chosen, plain, forecast, preview = "Clash preview", wanted = false, mark = null) {
   const owner = side === "cowboy" ? "Your" : "Wizard";
   const name = wanted ? `Wanted ${troop.name}` : troop?.name;
-  const contents = troop ? `${name}, ${troop.health} of ${troop.max} health${troop.note ? `, ${troop.attack} attack. ${troop.note}` : ""}` : "empty";
+  const contents = troop ? `${name}, ${troop.health} of ${troop.max} health${troop.note ? `, ${troop.attack} attack. ${troop.note}` : ""}${troop.fire ? `. ${troop.fire}` : ""}` : "empty";
   const note = mark ? MARK_TEXT[mark] : null;
   const face = plain
     ? [el("small", {}, `Lane ${slot + 1}`), el("strong", {}, name ?? "Empty"),
       troop?.note ? el("small", {class: "plain-card-stats"}, `${troop.attack} attack · ${troop.health} life`) : null,
       troop?.note ? el("small", {}, troop.note) : null,
       troop ? orbs(troop.health, troop.max) : null,
+      troop?.fire ? el("small", {class: "plain-card-fire"}, troop.fire) : null,
       note ? el("small", {class: "wraith-mark"}, note) : null,
       forecast ? el("small", {class: "plain-forecast"}, forecast) : null]
     : [troop ? `${troop.name} ${troop.health}/${troop.max}` : "Empty"];
