@@ -40,6 +40,7 @@
 import { CARDS, SPELL_DAMAGE, opponent } from "./cards.js";
 import { legalActions } from "./legal.js";
 import { shiftTroop } from "./lanes.js";
+import { fireBurn } from "./clash.js";
 import { MAX_ROUNDS } from "./state.js";
 
 const OWN_ORB = 5;
@@ -72,6 +73,7 @@ function score(view, action) {
   let ownBase = view.sides[view.viewer].baseOrbs;
   let enemyBase = view.sides[opponent(view.viewer)].baseOrbs;
   let total = 0;
+  const fire = view.dragonFire?.enabled === true;
   for (let lane = 0; lane < mine.length; lane++) {
     const own = mine[lane];
     const enemy = theirs[lane];
@@ -81,6 +83,12 @@ function score(view, action) {
     else ownBase -= enemyAttack;
     if (enemy) total -= worth(enemy.cardId, enemy.health - ownAttack);
     else enemyBase -= ownAttack;
+    if (fire) {
+      if (own && enemy) {
+        ownBase -= fireBurn(true, enemy.cardId, own.health);
+        enemyBase -= fireBurn(true, own.cardId, enemy.health);
+      }
+    }
   }
   ownBase = Math.max(0, ownBase);
   enemyBase = Math.max(0, enemyBase);
@@ -186,6 +194,7 @@ function hardScore(view) {
   let ownBase = view.sides[view.viewer].baseOrbs;
   let enemyBase = view.sides[opponent(view.viewer)].baseOrbs;
   let total = 0;
+  const fire = view.dragonFire?.enabled === true;
   for (let clash = 0; clash < HARD_CLASHES; clash++) {
     const hit = (board, other) => board.map((troop, lane) => {
       if (!troop) return null;
@@ -195,6 +204,10 @@ function hardScore(view) {
     mine.forEach((own, lane) => {
       if (!own && theirs[lane]) ownBase -= CARDS[theirs[lane].cardId].attack;
       if (own && !theirs[lane]) enemyBase -= CARDS[own.cardId].attack;
+      if (fire && own && theirs[lane]) {
+        ownBase -= fireBurn(true, theirs[lane].cardId, own.health);
+        enemyBase -= fireBurn(true, own.cardId, theirs[lane].health);
+      }
     });
     [mine, theirs] = [hit(mine, theirs), hit(theirs, mine)];
     ownBase = Math.max(0, ownBase);
