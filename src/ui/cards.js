@@ -19,7 +19,7 @@ import {CARDS, tributeCost} from "../game/cards.js";
 const ACTIONS = {confirm: "onConfirm", "ride-out": "onRideOut", cancel: "onCancel", skip: "onSkip", "end-phase": "onEndPhase", restart: "onRestart"};
 const REMATCH = {"replay-deal": "onReplayDeal", "new-duel": "onNewDuel", "result-go": "onResultGo"};
 // Public catalog: the first copy of each of the eight card names.
-const catalog = Object.values(CARDS).filter((card) => !card.bounty).filter((card, i, all) => all.findIndex((each) => each.name === card.name) === i);
+const catalog = Object.values(CARDS).filter((card) => !card.bounty && !card.id.startsWith("wizard-imp-")).filter((card, i, all) => all.findIndex((each) => each.name === card.name) === i);
 const catalogId = (card) => catalog.find((each) => each.name === card.name).id;
 
 function el(tag, attributes = {}, ...children) {
@@ -106,10 +106,12 @@ const MARK_TEXT = {
 function slotButton(side, slot, troop, clickable, chosen, plain, forecast, preview = "Clash preview", wanted = false, mark = null) {
   const owner = side === "cowboy" ? "Your" : "Wizard";
   const name = wanted ? `Wanted ${troop.name}` : troop?.name;
-  const contents = troop ? `${name}, ${troop.health} of ${troop.max} health` : "empty";
+  const contents = troop ? `${name}, ${troop.health} of ${troop.max} health${troop.note ? `, ${troop.attack} attack. ${troop.note}` : ""}` : "empty";
   const note = mark ? MARK_TEXT[mark] : null;
   const face = plain
     ? [el("small", {}, `Lane ${slot + 1}`), el("strong", {}, name ?? "Empty"),
+      troop?.note ? el("small", {class: "plain-card-stats"}, `${troop.attack} attack · ${troop.health} life`) : null,
+      troop?.note ? el("small", {}, troop.note) : null,
       troop ? orbs(troop.health, troop.max) : null,
       note ? el("small", {class: "wraith-mark"}, note) : null,
       forecast ? el("small", {class: "plain-forecast"}, forecast) : null]

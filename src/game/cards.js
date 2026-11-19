@@ -27,7 +27,7 @@ export const cowboyCopyLimit = (card) => card.limit ?? (card.bounty ? 1 : MAX_CO
 for (const side of SIDES) {
   DECKS[side] = [];
   for (const { type, order, copies, ...card } of CARD_SPECS.filter((spec) => spec.side === side)) {
-    const available = side === "cowboy" ? cowboyCopyLimit(card) : card.bounty ? 1 : copies;
+    const available = side === "cowboy" ? cowboyCopyLimit(card) : card.bounty ? 1 : (card.limit ?? copies);
     for (let copy = 1; copy <= available; copy++) {
       const id = `${type}-${copy}`;
       CARDS[id] = Object.freeze({ id, side, ...card });

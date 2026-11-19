@@ -18,4 +18,5 @@ export const CARD_SPECS = [
   {"type":"wizard-dragon","side":"wizard","order":3,"name":"Dragon","kind":"troop","stars":8,"health":5,"attack":3,"copies":1},
   {"type":"wizard-singularity","side":"wizard","order":4,"name":"Singularity","kind":"spell","relocates":true,"copies":2},
   {"type":"wizard-lantern-wraith","side":"wizard","order":5,"name":"Lantern Wraith","kind":"troop","stars":6,"health":4,"attack":2,"copies":0,"bounty":true},
+  {"type":"wizard-imp","side":"wizard","order":6,"name":"Imp","kind":"troop","stars":2,"health":1,"attack":3,"copies":0,"limit":1},
 ];
