@@ -19,6 +19,8 @@ No first-time human player has tested the current rules yet. Every balance figur
 - **The Dragon Fire arc.** A boss fight that teaches a move, then a rival, the Bonewright, who answers it.
 - **A deck builder** with drafts you can try before saving.
 
+Every card is listed in the [card spreadsheet](docs/cards.csv), and the rules in the [rules sheet](docs/rules.csv).
+
 ## Play
 
 Use Node.js 22.18 or later.

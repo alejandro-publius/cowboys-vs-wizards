@@ -1,0 +1,17 @@
+Area,Rule
+Goal,Break the enemy Base before yours falls. Each Base has 5 orbs.
+Decks,Each side plays a 12-card deck. A Cowboy deck needs at least one Sheriff and must respect each card's copy limit.
+Setup,Each side draws 4 cards. A seed decides the shuffle and who acts first in round 1. The first seat alternates every round.
+Board,Each side has three lanes. A lane holds one troop.
+Your turn,"Summon up to one troop and cast up to one spell. Both are optional. If you want both, summon first."
+Tribute,"Troops with 1 to 4 stars are free. 5 or 6 stars cost one of your troops. 7 or more cost two. The new troop may take a lane a tribute left."
+Spells,"A spell removes one orb from an enemy troop. Lasso and Singularity may also move a surviving troop one lane into an empty lane."
+Ride,"A troop whose card says Ride may move one lane into an empty lane of yours instead of summoning. It keeps its orbs, and a spell may follow."
+Clash,"After both sides act, every troop strikes the troop across from it at the same time. A troop brought to zero orbs still lands its hit."
+Open lanes,A troop with no enemy across from it hits the enemy Base for its attack.
+Blockers,"A blocker absorbs the whole hit, however few orbs it has. Nothing spills over to the Base."
+Drawing,Each side draws one card at the start of every round after the first. An empty deck draws nothing.
+Ending,"The duel ends when a Base reaches zero. If both fall in the same clash it is a draw. After round 9 the side with more Base orbs wins, and equal orbs is a draw."
+Bounties,"In a Wanted hunt the boss side holds its lanes and only strikes at the clash, and every one of your troops may Ride. Defeat the boss while your Base stands."
+Unlocks,Clearing all five hunts of a boss earns its card. Six Frontier cards unlock at 2 to 7 counted duel wins. Practice and hunts do not count as wins.
+Dragon Fire,"Only in the Dragon Fire arc: a Dragon's damage beyond its blocker's last orb hits that side's Base."
