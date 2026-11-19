@@ -12,7 +12,7 @@
 // map from src/match/selection.js. With it every hand card gets
 // blockedReason, its text while input is accepted and the card is
 // unplayable, else null. Without it the hand cards keep their shape.
-import {CARDS} from "../game/cards.js";
+import {CARDS, tributeCost} from "../game/cards.js";
 import {SLOT_COUNT} from "../game/state.js";
 import {pendingDrift} from "../game/clash.js";
 
@@ -60,6 +60,23 @@ function troopSummary(troop) {
     name: card.name, health: troop.health, max: card.health,
     ...(troop.cardId.startsWith("wizard-imp-") ? {attack: card.attack, note: IMP_LINE} : {}),
   };
+}
+
+// Plain graybox summon preview: the tributes and destination chosen so far for
+// a troop that costs tributes. null outside that choice (spells, free troops,
+// Ride Out, no selection, input closed). Built from public board data only.
+function summonPreview(accepting, options, board) {
+  const card = options?.cardId ? CARDS[options.cardId] : null;
+  if (!accepting || card?.kind !== "troop" || !["tribute", "slot", "confirm"].includes(options.step)) return null;
+  const cost = tributeCost(card.stars);
+  if (cost === 0) return null;
+  const chosen = [...(options.tributes ?? [])].sort((a, b) => a - b);
+  const names = chosen.map((lane) => `${board[lane] ? CARDS[board[lane].cardId].name : "Troop"} in lane ${lane + 1}`);
+  const missing = Math.max(0, cost - chosen.length);
+  const parts = [names.length ? `Tribute ${names.join(" and ")}.` : "Choose the troops to tribute."];
+  if (missing > 0) parts.push(`Choose ${missing} more tribute${missing === 1 ? "" : "s"}.`);
+  else parts.push(Number.isInteger(options.slot) ? `Summon to lane ${options.slot + 1}.` : "Choose a lane to summon to.");
+  return parts.join(" ");
 }
 
 export function cardModel({displayed = null, options = null, status = "idle", seed = null, seedPinned = false, message = null, clashLog = null, guide = null, blockedReasons = null} = {}) {
@@ -118,6 +135,7 @@ export function cardModel({displayed = null, options = null, status = "idle", se
       wizard: accepting ? [...(options?.enemySlots ?? [])] : [],
     },
     tributes: [...(options?.tributes ?? [])],
+    summonPreview: summonPreview(accepting, options, cowboy?.board ?? []),
     // Hunts and opt-in Ride Out always; a standard duel only while a ride is legal or being chosen.
     ...((displayed?.rideOut?.enabled || (accepting && (options?.canRideOut || options?.step?.startsWith("ride-")))) && {ride: {
       available: accepting && Boolean(options?.canRideOut),
