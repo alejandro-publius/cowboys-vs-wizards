@@ -14,6 +14,8 @@ Added by Kiro (Kiro CLI, coordinator job `graywave-assemble`) from GitHub `main`
 
 **November 20 sprint handoff.** Camp records the finishing build per duel, including offline play. Untagged history stays unattributed. The scheduled rival recalled the two Dragon targets. Native Night Shift rejected the staged Sheriff buff on both the tuning and holdout sets. Two native steering controls confirmed different guidance for engine and UI reads. [Camp export and migration check](../evidence/showdown-build-identity-k087.md) · [scheduled Crew receipt](../evidence/showdown-rival-checkin.md) · [native Sheriff review](../evidence/night-shift-native-showdown.md) · [native steering controls](../evidence/showdown-scoped-steering.md).
 
+**Bone Fence evidence for Fable.** In 1,000 paired third-duel deals, the greedy Cowboy policy took 1,258 of 1,328 offered rides and won 50 fewer games than its matched Sheriff control. Declining rides reproduced all 1,000 controls. Players can now inspect the Guard reason on the focused target. The private Dragon cut is ready for Alex. First-time play, human assistive-technology feedback and the public video remain open. [Outrider paired study](../../experiments/showdown-outrider/README.md) · [Guard accessibility check](../evidence/showdown-guard-access/README.md) · [judge script](../submission/judge-demo-script.md).
+
 **Milestones.**
 
 | State | What |

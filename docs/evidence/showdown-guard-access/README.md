@@ -49,3 +49,5 @@ Chrome check. It logs one line per dispatch.
 - First probe without `--agent-engine`: `--no-interactive` defaults to the V2 engine, which does not load
   `.kiro/hooks/*.json`; no dispatch was logged. [kiro-cli-v2-probe-transcript.txt](kiro-cli-v2-probe-transcript.txt).
 - Script-only runs by hand (piped JSON, not Kiro): README.md → skipped; showdown-screen.js → passed.
+
+**Source references.** Last Rites runs an accessibility audit when a matching scare file changes. InteractionKit described hooks tied to a newly defined gesture. Showdown checks the targeted presenter edit against one playable Guard turn. [Last Rites hook, X-043](https://github.com/dismality/last-rites/blob/37932b0e95be5f9707db5178ab31d06a5c8a628b/.kiro/hooks/scare-accessibility-audit.json) · [Kiroween Hackathon Wrapped, video 11 at 25:14, X-047](https://www.youtube.com/watch?v=q8-bONv7G7E&t=1514s).

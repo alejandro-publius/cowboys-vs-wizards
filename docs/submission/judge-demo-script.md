@@ -41,8 +41,8 @@ About 150 words for 85 seconds. The video is complete without it.
 - **Human voice:** not chosen or recorded. No synthesized speech is used.
 - **First-time feedback:** none. The three first-time tests in [the playtest guide](../../prototypes/showdown/PLAYTEST.md) are still pending.
 - **Public video:** no YouTube or other public upload exists. Do not put a placeholder link in the Devpost form.
-- **Rendered review:** pending. No person or agent has watched the cut. Legibility rests on page font sizes (board text 15 px, smallest 11.7 px at 1280×720) and frame statistics in the receipt.
-- **Live build:** the cut shows `96adf60`, not the live `755df56`.
+- **Rendered review:** Codex checked the encoded file, sampled the Camp, both boards and the Ledger, and read the fixed-policy caption at native width. The captions distinguish scripted moves from human play. Alex’s full viewing and final editorial choice remain open.
+- **Live build:** the cut shows `96adf60`. The [public manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) identifies the current game.
 - **Fable:** owns the wording of the Camp and experiment labels, and whether this turn becomes an official bounty.
 
 ---

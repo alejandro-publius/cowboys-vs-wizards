@@ -147,3 +147,5 @@ hold under the exact comparison, and the primary identical count stays 443. The 
 are in the secondary arm's identical counts under the stricter comparison: 51 to 46 for
 treatment vs control, and 148 to 130 for its relabel control. The replay is still seed 0,
 turn 7, legal, and seed 17 is still a null result.
+
+**Source reference (X-044).** TradeWizard computes two configurations on the same input and stores the shadow result for later comparison. Here the unit of comparison is the same deal with two card substitutions. This experiment uses the Showdown engine. [TradeWizard source, module header](https://github.com/balojey/tradewizard-kiroween/blob/32e6e6c45ca0f8ea02a49e9b4c39b545bcac936d/infra/services/analysis-lambda/lib/shadow-consensus.ts#L1-L38).
