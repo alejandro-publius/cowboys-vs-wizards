@@ -1,6 +1,6 @@
 # The Night Shift: receipts for the combined loop
 
-Kiro CLI coordinator job `graywave-night-join` (Claude Opus 5.5), November 19–20, 2026, America/Los_Angeles. Branch `kiro/graywave-night-join` from GitHub `main` `6b6caef` (pull request 161, the slice 3 cutover). The branch merges `kiro/graywave-night-meter` (`526a2c2`), `kiro/graywave-night-review` (`c399fb6`), `kiro/graywave-night-ledger` (`7ec928b`), `kiro/graywave-showdown-mcp` (`0871a45`) and `kiro/graywave-showdown-audit` (`67627a2`). Each worker's own note: [meter](../../apps/night-watch/README.md#target-band-lean-and-receipts), [review](night-shift-review.md), [ledger](night-shift-sheriffs-ledger.md), [MCP](kiro-showdown-mcp.md).
+Kiro CLI coordinator job `graywave-night-join` (Claude Opus 5.5), November 19–20, 2026, America/Los_Angeles. Pull request [#163](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/163), branch `kiro/graywave-night-join` from GitHub `main` `6b6caef` (pull request 161, the slice 3 cutover). The branch merges `kiro/graywave-night-meter` (`526a2c2`), `kiro/graywave-night-review` (`c399fb6`), `kiro/graywave-night-ledger` (`7ec928b`), `kiro/graywave-showdown-mcp` (`0871a45`) and `kiro/graywave-showdown-audit` (`67627a2`). Each worker's own note: [meter](../../apps/night-watch/README.md#target-band-lean-and-receipts), [review](night-shift-review.md), [ledger](night-shift-sheriffs-ledger.md), [MCP](kiro-showdown-mcp.md).
 
 No card, rule, reward, deck, Scout or wording change. Everything below is CPU-vs-CPU play under the stated seeds and bot. No human played.
 

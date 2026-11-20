@@ -15,7 +15,7 @@ Added by Kiro (Kiro CLI, coordinator job `graywave-assemble`) from GitHub `main`
 | State | What |
 | --- | --- |
 | Merged to `main` | Pull requests 144 to 161, including slice 1 (144), the 29-card catalog (145), slice 2's Trail and Camp (148), the hosted graybox bootstrap (157) and slice 3 (161, `6b6caef`: Camp modes, lane retirement, Showdown at `/`) |
-| In review | The Night Shift (`kiro/graywave-night-join`, one pull request against `main`): the Sheriff's Ledger at the end of the Camp, Night Watch's target-band check with an opt-in scheduled issue path, and the Night Shift reviewer. Also the Showdown MCP seat tools and the judge write-up refresh. It changes no card, rule, reward or wording. Receipts and what has not run: [Night Shift evidence](../evidence/night-shift.md). |
+| In review | The Night Shift ([pull request 163](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/163), `kiro/graywave-night-join`): the Sheriff's Ledger at the end of the Camp, Night Watch's target-band check with an opt-in scheduled issue path, and the Night Shift reviewer. Also the Showdown MCP seat tools and the judge write-up refresh. It changes no card, rule, reward or wording. Receipts and what has not run: [Night Shift evidence](../evidence/night-shift.md). |
 | Pending, human | Three first-time playtests (below). Fable's approval of first-draft wording: the Camp and mode labels, the `/3d/` label and the Sheriff's Ledger text. Fable/Alex: whether Night Watch gets a target band, and any card change a Night Shift review proposes. |
 
 **Site layout after slice 3** (built by `node scripts/stage-pages.mjs`, checked by `node scripts/check-pages-tree.mjs`):

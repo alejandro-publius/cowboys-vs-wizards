@@ -340,7 +340,7 @@ The next substantial Kiro task is #56, boundary generation, failure reduction an
 
 ### 2026-11-20 — The Night Shift, integrated (Kiro CLI, America/Los_Angeles, 23:40 PST Nov 19 onward)
 
-- **State**: one branch `kiro/graywave-night-join` from `main` `6b6caef` (after #161), one PR against `main`. Not merged; the coordinator merges.
+- **State**: one branch `kiro/graywave-night-join` from `main` `6b6caef` (after #161), PR [#163](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/163) against `main`. Not merged; the coordinator merges.
 - **Performed in**: a Kiro CLI coordinator session (Claude Opus 5.5). It merges the night-meter, night-review, night-ledger, showdown-mcp and showdown-audit worker branches.
 - **Problem**: the meter, the reviewer and the Ledger were built on three branches with no connection between them. The meter's issues used the `kiro` label, which assigns Kiro Web. The Ledger showed an older run on `3dd47f1` and no review state.
 - **Change**:
