@@ -1,0 +1,1111 @@
+[
+ {
+  "label": "case-a",
+  "view": {
+   "turn": 7,
+   "active": "cowboy",
+   "first": "cowboy",
+   "summonUsed": false,
+   "castUsed": false,
+   "setUsed": false,
+   "attacking": false,
+   "location": null,
+   "arrivals": [],
+   "result": null,
+   "viewer": "cowboy",
+   "sides": {
+    "cowboy": {
+     "base": 5,
+     "baseMax": 5,
+     "board": [
+      {
+       "cardId": "cowboy-covered-wagon-1",
+       "health": 1,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 1,
+       "ready": false
+      },
+      {
+       "cardId": "cowboy-outrider-2",
+       "health": 3,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 3,
+       "ready": false
+      },
+      {
+       "cardId": "cowboy-sheriff-2",
+       "health": 3,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 5,
+       "ready": false
+      }
+     ],
+     "discard": [
+      "cowboy-deadeye-3"
+     ],
+     "handCount": 3,
+     "deckCount": 9,
+     "trapCount": 0,
+     "hand": [
+      "cowboy-billy-2",
+      "cowboy-billy-4",
+      "cowboy-deadeye-2"
+     ],
+     "traps": []
+    },
+    "wizard": {
+     "base": 4,
+     "baseMax": 4,
+     "board": [
+      {
+       "cardId": "wizard-wizard-2",
+       "health": 3,
+       "attacked": true,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 6,
+       "ready": true
+      },
+      {
+       "cardId": "wizard-skeleton-7",
+       "health": 1,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 6,
+       "ready": false
+      },
+      null
+     ],
+     "discard": [
+      "wizard-singularity-2",
+      "wizard-bone-wall-1"
+     ],
+     "handCount": 4,
+     "deckCount": 8,
+     "trapCount": 0
+    }
+   }
+  },
+  "choices": {
+   "ride": {
+    "type": "attack",
+    "slot": 1,
+    "target": "base"
+   },
+   "fight": {
+    "type": "attack",
+    "slot": 1,
+    "target": 0
+   }
+  },
+  "cues": {
+   "turn": 7,
+   "cowboyBase": 5,
+   "wizardBase": 4,
+   "baseGap": 1,
+   "cowboyTroops": 3,
+   "wizardTroops": 2,
+   "troopGap": 1,
+   "cowboyPower": 3,
+   "wizardPower": 3,
+   "riderHealth": 3,
+   "targetHealth": 3,
+   "targetAttack": 2,
+   "fightKills": 0,
+   "riderSurvivesFight": 1,
+   "cowboyHand": 3,
+   "wizardHand": 4,
+   "wizardTraps": 0,
+   "target": "Wizard"
+  }
+ },
+ {
+  "label": "case-b",
+  "view": {
+   "turn": 3,
+   "active": "cowboy",
+   "first": "cowboy",
+   "summonUsed": false,
+   "castUsed": false,
+   "setUsed": false,
+   "attacking": false,
+   "location": null,
+   "arrivals": [],
+   "result": null,
+   "viewer": "cowboy",
+   "sides": {
+    "cowboy": {
+     "base": 5,
+     "baseMax": 5,
+     "board": [
+      {
+       "cardId": "cowboy-outrider-1",
+       "health": 3,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 1,
+       "ready": false
+      },
+      null,
+      null
+     ],
+     "discard": [],
+     "handCount": 4,
+     "deckCount": 11,
+     "trapCount": 0,
+     "hand": [
+      "cowboy-billy-1",
+      "cowboy-sheriff-4",
+      "cowboy-outrider-2",
+      "cowboy-covered-wagon-2"
+     ],
+     "traps": []
+    },
+    "wizard": {
+     "base": 4,
+     "baseMax": 4,
+     "board": [
+      {
+       "cardId": "wizard-skeleton-5",
+       "health": 3,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 2,
+       "ready": false
+      },
+      null,
+      null
+     ],
+     "discard": [],
+     "handCount": 5,
+     "deckCount": 10,
+     "trapCount": 0
+    }
+   }
+  },
+  "choices": {
+   "ride": {
+    "type": "attack",
+    "slot": 0,
+    "target": "base"
+   },
+   "fight": {
+    "type": "attack",
+    "slot": 0,
+    "target": 0
+   }
+  },
+  "cues": {
+   "turn": 3,
+   "cowboyBase": 5,
+   "wizardBase": 4,
+   "baseGap": 1,
+   "cowboyTroops": 1,
+   "wizardTroops": 1,
+   "troopGap": 0,
+   "cowboyPower": 1,
+   "wizardPower": 1,
+   "riderHealth": 3,
+   "targetHealth": 3,
+   "targetAttack": 1,
+   "fightKills": 0,
+   "riderSurvivesFight": 1,
+   "cowboyHand": 4,
+   "wizardHand": 5,
+   "wizardTraps": 0,
+   "target": "Skeleton"
+  }
+ },
+ {
+  "label": "case-c",
+  "view": {
+   "turn": 3,
+   "active": "cowboy",
+   "first": "cowboy",
+   "summonUsed": false,
+   "castUsed": false,
+   "setUsed": false,
+   "attacking": false,
+   "location": null,
+   "arrivals": [],
+   "result": null,
+   "viewer": "cowboy",
+   "sides": {
+    "cowboy": {
+     "base": 5,
+     "baseMax": 5,
+     "board": [
+      {
+       "cardId": "cowboy-outrider-2",
+       "health": 2,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 1,
+       "ready": false
+      },
+      null,
+      null
+     ],
+     "discard": [],
+     "handCount": 4,
+     "deckCount": 11,
+     "trapCount": 0,
+     "hand": [
+      "cowboy-deadeye-3",
+      "cowboy-billy-4",
+      "cowboy-sheriff-1",
+      "cowboy-billy-1"
+     ],
+     "traps": []
+    },
+    "wizard": {
+     "base": 4,
+     "baseMax": 4,
+     "board": [
+      {
+       "cardId": "wizard-skeleton-3",
+       "health": 3,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 2,
+       "ready": false
+      },
+      null,
+      null
+     ],
+     "discard": [
+      "wizard-singularity-1"
+     ],
+     "handCount": 4,
+     "deckCount": 10,
+     "trapCount": 0
+    }
+   }
+  },
+  "choices": {
+   "ride": {
+    "type": "attack",
+    "slot": 0,
+    "target": "base"
+   },
+   "fight": {
+    "type": "attack",
+    "slot": 0,
+    "target": 0
+   }
+  },
+  "cues": {
+   "turn": 3,
+   "cowboyBase": 5,
+   "wizardBase": 4,
+   "baseGap": 1,
+   "cowboyTroops": 1,
+   "wizardTroops": 1,
+   "troopGap": 0,
+   "cowboyPower": 1,
+   "wizardPower": 1,
+   "riderHealth": 2,
+   "targetHealth": 3,
+   "targetAttack": 1,
+   "fightKills": 0,
+   "riderSurvivesFight": 1,
+   "cowboyHand": 4,
+   "wizardHand": 4,
+   "wizardTraps": 0,
+   "target": "Skeleton"
+  }
+ },
+ {
+  "label": "case-d",
+  "view": {
+   "turn": 7,
+   "active": "cowboy",
+   "first": "cowboy",
+   "summonUsed": false,
+   "castUsed": false,
+   "setUsed": false,
+   "attacking": false,
+   "location": null,
+   "arrivals": [],
+   "result": null,
+   "viewer": "cowboy",
+   "sides": {
+    "cowboy": {
+     "base": 5,
+     "baseMax": 5,
+     "board": [
+      {
+       "cardId": "cowboy-covered-wagon-1",
+       "health": 1,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 1,
+       "ready": false
+      },
+      {
+       "cardId": "cowboy-covered-wagon-2",
+       "health": 2,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 3,
+       "ready": false
+      },
+      {
+       "cardId": "cowboy-outrider-2",
+       "health": 3,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 5,
+       "ready": false
+      }
+     ],
+     "discard": [
+      "cowboy-deadeye-3"
+     ],
+     "handCount": 3,
+     "deckCount": 9,
+     "trapCount": 0,
+     "hand": [
+      "cowboy-billy-2",
+      "cowboy-billy-5",
+      "cowboy-billy-1"
+     ],
+     "traps": []
+    },
+    "wizard": {
+     "base": 4,
+     "baseMax": 4,
+     "board": [
+      {
+       "cardId": "wizard-wizard-1",
+       "health": 3,
+       "attacked": true,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 6,
+       "ready": true
+      },
+      {
+       "cardId": "wizard-skeleton-1",
+       "health": 1,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 6,
+       "ready": false
+      },
+      null
+     ],
+     "discard": [
+      "wizard-singularity-2",
+      "wizard-wizard-3"
+     ],
+     "handCount": 4,
+     "deckCount": 8,
+     "trapCount": 0
+    }
+   }
+  },
+  "choices": {
+   "ride": {
+    "type": "attack",
+    "slot": 2,
+    "target": "base"
+   },
+   "fight": {
+    "type": "attack",
+    "slot": 2,
+    "target": 0
+   }
+  },
+  "cues": {
+   "turn": 7,
+   "cowboyBase": 5,
+   "wizardBase": 4,
+   "baseGap": 1,
+   "cowboyTroops": 3,
+   "wizardTroops": 2,
+   "troopGap": 1,
+   "cowboyPower": 3,
+   "wizardPower": 3,
+   "riderHealth": 3,
+   "targetHealth": 3,
+   "targetAttack": 2,
+   "fightKills": 0,
+   "riderSurvivesFight": 1,
+   "cowboyHand": 3,
+   "wizardHand": 4,
+   "wizardTraps": 0,
+   "target": "Wizard"
+  }
+ },
+ {
+  "label": "case-e",
+  "view": {
+   "turn": 3,
+   "active": "cowboy",
+   "first": "cowboy",
+   "summonUsed": false,
+   "castUsed": false,
+   "setUsed": false,
+   "attacking": false,
+   "location": null,
+   "arrivals": [],
+   "result": null,
+   "viewer": "cowboy",
+   "sides": {
+    "cowboy": {
+     "base": 5,
+     "baseMax": 5,
+     "board": [
+      {
+       "cardId": "cowboy-outrider-2",
+       "health": 2,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 1,
+       "ready": false
+      },
+      null,
+      null
+     ],
+     "discard": [],
+     "handCount": 4,
+     "deckCount": 11,
+     "trapCount": 0,
+     "hand": [
+      "cowboy-billy-5",
+      "cowboy-billy-1",
+      "cowboy-deadeye-2",
+      "cowboy-outrider-1"
+     ],
+     "traps": []
+    },
+    "wizard": {
+     "base": 4,
+     "baseMax": 4,
+     "board": [
+      {
+       "cardId": "wizard-skeleton-1",
+       "health": 3,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 2,
+       "ready": false
+      },
+      null,
+      null
+     ],
+     "discard": [
+      "wizard-singularity-1"
+     ],
+     "handCount": 4,
+     "deckCount": 10,
+     "trapCount": 0
+    }
+   }
+  },
+  "choices": {
+   "ride": {
+    "type": "attack",
+    "slot": 0,
+    "target": "base"
+   },
+   "fight": {
+    "type": "attack",
+    "slot": 0,
+    "target": 0
+   }
+  },
+  "cues": {
+   "turn": 3,
+   "cowboyBase": 5,
+   "wizardBase": 4,
+   "baseGap": 1,
+   "cowboyTroops": 1,
+   "wizardTroops": 1,
+   "troopGap": 0,
+   "cowboyPower": 1,
+   "wizardPower": 1,
+   "riderHealth": 2,
+   "targetHealth": 3,
+   "targetAttack": 1,
+   "fightKills": 0,
+   "riderSurvivesFight": 1,
+   "cowboyHand": 4,
+   "wizardHand": 4,
+   "wizardTraps": 0,
+   "target": "Skeleton"
+  }
+ },
+ {
+  "label": "case-f",
+  "view": {
+   "turn": 3,
+   "active": "cowboy",
+   "first": "cowboy",
+   "summonUsed": false,
+   "castUsed": false,
+   "setUsed": false,
+   "attacking": false,
+   "location": null,
+   "arrivals": [],
+   "result": null,
+   "viewer": "cowboy",
+   "sides": {
+    "cowboy": {
+     "base": 5,
+     "baseMax": 5,
+     "board": [
+      {
+       "cardId": "cowboy-outrider-1",
+       "health": 3,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 1,
+       "ready": false
+      },
+      null,
+      null
+     ],
+     "discard": [],
+     "handCount": 4,
+     "deckCount": 11,
+     "trapCount": 0,
+     "hand": [
+      "cowboy-deadeye-2",
+      "cowboy-billy-5",
+      "cowboy-billy-1",
+      "cowboy-covered-wagon-1"
+     ],
+     "traps": []
+    },
+    "wizard": {
+     "base": 4,
+     "baseMax": 4,
+     "board": [
+      {
+       "cardId": "wizard-skeleton-2",
+       "health": 3,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 2,
+       "ready": false
+      },
+      null,
+      null
+     ],
+     "discard": [],
+     "handCount": 5,
+     "deckCount": 10,
+     "trapCount": 0
+    }
+   }
+  },
+  "choices": {
+   "ride": {
+    "type": "attack",
+    "slot": 0,
+    "target": "base"
+   },
+   "fight": {
+    "type": "attack",
+    "slot": 0,
+    "target": 0
+   }
+  },
+  "cues": {
+   "turn": 3,
+   "cowboyBase": 5,
+   "wizardBase": 4,
+   "baseGap": 1,
+   "cowboyTroops": 1,
+   "wizardTroops": 1,
+   "troopGap": 0,
+   "cowboyPower": 1,
+   "wizardPower": 1,
+   "riderHealth": 3,
+   "targetHealth": 3,
+   "targetAttack": 1,
+   "fightKills": 0,
+   "riderSurvivesFight": 1,
+   "cowboyHand": 4,
+   "wizardHand": 5,
+   "wizardTraps": 0,
+   "target": "Skeleton"
+  }
+ },
+ {
+  "label": "case-g",
+  "view": {
+   "turn": 3,
+   "active": "cowboy",
+   "first": "cowboy",
+   "summonUsed": false,
+   "castUsed": false,
+   "setUsed": false,
+   "attacking": false,
+   "location": null,
+   "arrivals": [],
+   "result": null,
+   "viewer": "cowboy",
+   "sides": {
+    "cowboy": {
+     "base": 5,
+     "baseMax": 5,
+     "board": [
+      {
+       "cardId": "cowboy-outrider-1",
+       "health": 3,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 1,
+       "ready": false
+      },
+      null,
+      null
+     ],
+     "discard": [],
+     "handCount": 4,
+     "deckCount": 11,
+     "trapCount": 0,
+     "hand": [
+      "cowboy-deadeye-1",
+      "cowboy-deadeye-3",
+      "cowboy-deadeye-2",
+      "cowboy-sheriff-3"
+     ],
+     "traps": []
+    },
+    "wizard": {
+     "base": 4,
+     "baseMax": 4,
+     "board": [
+      {
+       "cardId": "wizard-skeleton-2",
+       "health": 3,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 2,
+       "ready": false
+      },
+      null,
+      null
+     ],
+     "discard": [],
+     "handCount": 5,
+     "deckCount": 10,
+     "trapCount": 0
+    }
+   }
+  },
+  "choices": {
+   "ride": {
+    "type": "attack",
+    "slot": 0,
+    "target": "base"
+   },
+   "fight": {
+    "type": "attack",
+    "slot": 0,
+    "target": 0
+   }
+  },
+  "cues": {
+   "turn": 3,
+   "cowboyBase": 5,
+   "wizardBase": 4,
+   "baseGap": 1,
+   "cowboyTroops": 1,
+   "wizardTroops": 1,
+   "troopGap": 0,
+   "cowboyPower": 1,
+   "wizardPower": 1,
+   "riderHealth": 3,
+   "targetHealth": 3,
+   "targetAttack": 1,
+   "fightKills": 0,
+   "riderSurvivesFight": 1,
+   "cowboyHand": 4,
+   "wizardHand": 5,
+   "wizardTraps": 0,
+   "target": "Skeleton"
+  }
+ },
+ {
+  "label": "case-h",
+  "view": {
+   "turn": 7,
+   "active": "cowboy",
+   "first": "cowboy",
+   "summonUsed": false,
+   "castUsed": false,
+   "setUsed": false,
+   "attacking": false,
+   "location": null,
+   "arrivals": [],
+   "result": null,
+   "viewer": "cowboy",
+   "sides": {
+    "cowboy": {
+     "base": 5,
+     "baseMax": 5,
+     "board": [
+      {
+       "cardId": "cowboy-covered-wagon-2",
+       "health": 2,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 5,
+       "ready": false
+      },
+      {
+       "cardId": "cowboy-outrider-2",
+       "health": 3,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 3,
+       "ready": false
+      },
+      null
+     ],
+     "discard": [
+      "cowboy-deadeye-1",
+      "cowboy-covered-wagon-1"
+     ],
+     "handCount": 3,
+     "deckCount": 9,
+     "trapCount": 0,
+     "hand": [
+      "cowboy-billy-3",
+      "cowboy-sheriff-2",
+      "cowboy-sheriff-4"
+     ],
+     "traps": []
+    },
+    "wizard": {
+     "base": 4,
+     "baseMax": 4,
+     "board": [
+      {
+       "cardId": "wizard-wizard-3",
+       "health": 3,
+       "attacked": true,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 4,
+       "ready": true
+      },
+      {
+       "cardId": "wizard-skeleton-5",
+       "health": 3,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 6,
+       "ready": false
+      },
+      null
+     ],
+     "discard": [
+      "wizard-singularity-1",
+      "wizard-singularity-2",
+      "wizard-bone-wall-3"
+     ],
+     "handCount": 3,
+     "deckCount": 8,
+     "trapCount": 0
+    }
+   }
+  },
+  "choices": {
+   "ride": {
+    "type": "attack",
+    "slot": 1,
+    "target": "base"
+   },
+   "fight": {
+    "type": "attack",
+    "slot": 1,
+    "target": 0
+   }
+  },
+  "cues": {
+   "turn": 7,
+   "cowboyBase": 5,
+   "wizardBase": 4,
+   "baseGap": 1,
+   "cowboyTroops": 2,
+   "wizardTroops": 2,
+   "troopGap": 0,
+   "cowboyPower": 2,
+   "wizardPower": 3,
+   "riderHealth": 3,
+   "targetHealth": 3,
+   "targetAttack": 2,
+   "fightKills": 0,
+   "riderSurvivesFight": 1,
+   "cowboyHand": 3,
+   "wizardHand": 3,
+   "wizardTraps": 0,
+   "target": "Wizard"
+  }
+ },
+ {
+  "label": "case-i",
+  "view": {
+   "turn": 3,
+   "active": "cowboy",
+   "first": "cowboy",
+   "summonUsed": false,
+   "castUsed": false,
+   "setUsed": false,
+   "attacking": false,
+   "location": null,
+   "arrivals": [],
+   "result": null,
+   "viewer": "cowboy",
+   "sides": {
+    "cowboy": {
+     "base": 5,
+     "baseMax": 5,
+     "board": [
+      {
+       "cardId": "cowboy-outrider-2",
+       "health": 2,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 1,
+       "ready": false
+      },
+      null,
+      null
+     ],
+     "discard": [],
+     "handCount": 4,
+     "deckCount": 11,
+     "trapCount": 0,
+     "hand": [
+      "cowboy-deadeye-3",
+      "cowboy-sheriff-2",
+      "cowboy-sheriff-3",
+      "cowboy-sheriff-4"
+     ],
+     "traps": []
+    },
+    "wizard": {
+     "base": 4,
+     "baseMax": 4,
+     "board": [
+      {
+       "cardId": "wizard-skeleton-8",
+       "health": 3,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 2,
+       "ready": false
+      },
+      null,
+      null
+     ],
+     "discard": [
+      "wizard-singularity-2"
+     ],
+     "handCount": 4,
+     "deckCount": 10,
+     "trapCount": 0
+    }
+   }
+  },
+  "choices": {
+   "ride": {
+    "type": "attack",
+    "slot": 0,
+    "target": "base"
+   },
+   "fight": {
+    "type": "attack",
+    "slot": 0,
+    "target": 0
+   }
+  },
+  "cues": {
+   "turn": 3,
+   "cowboyBase": 5,
+   "wizardBase": 4,
+   "baseGap": 1,
+   "cowboyTroops": 1,
+   "wizardTroops": 1,
+   "troopGap": 0,
+   "cowboyPower": 1,
+   "wizardPower": 1,
+   "riderHealth": 2,
+   "targetHealth": 3,
+   "targetAttack": 1,
+   "fightKills": 0,
+   "riderSurvivesFight": 1,
+   "cowboyHand": 4,
+   "wizardHand": 4,
+   "wizardTraps": 0,
+   "target": "Skeleton"
+  }
+ },
+ {
+  "label": "case-j",
+  "view": {
+   "turn": 7,
+   "active": "cowboy",
+   "first": "cowboy",
+   "summonUsed": false,
+   "castUsed": false,
+   "setUsed": false,
+   "attacking": false,
+   "location": null,
+   "arrivals": [],
+   "result": null,
+   "viewer": "cowboy",
+   "sides": {
+    "cowboy": {
+     "base": 5,
+     "baseMax": 5,
+     "board": [
+      {
+       "cardId": "cowboy-outrider-2",
+       "health": 3,
+       "attacked": false,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 5,
+       "ready": false
+      },
+      null,
+      null
+     ],
+     "discard": [
+      "cowboy-sheriff-4",
+      "cowboy-deadeye-1",
+      "cowboy-sheriff-2"
+     ],
+     "handCount": 3,
+     "deckCount": 9,
+     "trapCount": 0,
+     "hand": [
+      "cowboy-billy-2",
+      "cowboy-outrider-1",
+      "cowboy-deadeye-3"
+     ],
+     "traps": []
+    },
+    "wizard": {
+     "base": 4,
+     "baseMax": 4,
+     "board": [
+      {
+       "cardId": "wizard-wizard-1",
+       "health": 3,
+       "attacked": true,
+       "stunned": false,
+       "cover": false,
+       "gear": [],
+       "arrived": 4,
+       "ready": true
+      },
+      null,
+      null
+     ],
+     "discard": [
+      "wizard-singularity-2",
+      "wizard-singularity-1",
+      "wizard-bone-wall-1"
+     ],
+     "handCount": 4,
+     "deckCount": 8,
+     "trapCount": 0
+    }
+   }
+  },
+  "choices": {
+   "ride": {
+    "type": "attack",
+    "slot": 0,
+    "target": "base"
+   },
+   "fight": {
+    "type": "attack",
+    "slot": 0,
+    "target": 0
+   }
+  },
+  "cues": {
+   "turn": 7,
+   "cowboyBase": 5,
+   "wizardBase": 4,
+   "baseGap": 1,
+   "cowboyTroops": 1,
+   "wizardTroops": 1,
+   "troopGap": 0,
+   "cowboyPower": 1,
+   "wizardPower": 2,
+   "riderHealth": 3,
+   "targetHealth": 3,
+   "targetAttack": 2,
+   "fightKills": 0,
+   "riderSurvivesFight": 1,
+   "cowboyHand": 3,
+   "wizardHand": 4,
+   "wizardTraps": 0,
+   "target": "Wizard"
+  }
+ }
+]

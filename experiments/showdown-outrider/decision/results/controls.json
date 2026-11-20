@@ -1,0 +1,62 @@
+{
+ "case-a": {
+  "deterministic": true,
+  "rideVsRide": true,
+  "branchIdentical": true,
+  "armsDiffer": true
+ },
+ "case-b": {
+  "deterministic": true,
+  "rideVsRide": true,
+  "branchIdentical": true,
+  "armsDiffer": true
+ },
+ "case-c": {
+  "deterministic": true,
+  "rideVsRide": true,
+  "branchIdentical": true,
+  "armsDiffer": true
+ },
+ "case-d": {
+  "deterministic": true,
+  "rideVsRide": true,
+  "branchIdentical": true,
+  "armsDiffer": true
+ },
+ "case-e": {
+  "deterministic": true,
+  "rideVsRide": true,
+  "branchIdentical": true,
+  "armsDiffer": true
+ },
+ "case-f": {
+  "deterministic": true,
+  "rideVsRide": true,
+  "branchIdentical": true,
+  "armsDiffer": true
+ },
+ "case-g": {
+  "deterministic": true,
+  "rideVsRide": true,
+  "branchIdentical": true,
+  "armsDiffer": true
+ },
+ "case-h": {
+  "deterministic": true,
+  "rideVsRide": true,
+  "branchIdentical": true,
+  "armsDiffer": true
+ },
+ "case-i": {
+  "deterministic": true,
+  "rideVsRide": true,
+  "branchIdentical": true,
+  "armsDiffer": true
+ },
+ "case-j": {
+  "deterministic": true,
+  "rideVsRide": true,
+  "branchIdentical": true,
+  "armsDiffer": true
+ }
+}

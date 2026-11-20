@@ -1,0 +1,152 @@
+{
+ "case-a": {
+  "ride": {
+   "winner": "cowboy",
+   "reason": "base",
+   "turn": 24,
+   "decisions": 20
+  },
+  "fight": {
+   "winner": "wizard",
+   "reason": "base",
+   "turn": 16,
+   "decisions": 11
+  },
+  "kind": "ride-only"
+ },
+ "case-b": {
+  "ride": {
+   "winner": "cowboy",
+   "reason": "base",
+   "turn": 15,
+   "decisions": 14
+  },
+  "fight": {
+   "winner": "wizard",
+   "reason": "base",
+   "turn": 24,
+   "decisions": 24
+  },
+  "kind": "ride-only"
+ },
+ "case-c": {
+  "ride": {
+   "winner": "cowboy",
+   "reason": "base",
+   "turn": 11,
+   "decisions": 16
+  },
+  "fight": {
+   "winner": "wizard",
+   "reason": "base",
+   "turn": 10,
+   "decisions": 8
+  },
+  "kind": "ride-only"
+ },
+ "case-d": {
+  "ride": {
+   "winner": "cowboy",
+   "reason": "base",
+   "turn": 24,
+   "decisions": 23
+  },
+  "fight": {
+   "winner": "wizard",
+   "reason": "base",
+   "turn": 14,
+   "decisions": 9
+  },
+  "kind": "ride-only"
+ },
+ "case-e": {
+  "ride": {
+   "winner": "wizard",
+   "reason": "base",
+   "turn": 10,
+   "decisions": 7
+  },
+  "fight": {
+   "winner": "cowboy",
+   "reason": "base",
+   "turn": 23,
+   "decisions": 24
+  },
+  "kind": "fight-only"
+ },
+ "case-f": {
+  "ride": {
+   "winner": "cowboy",
+   "reason": "base",
+   "turn": 13,
+   "decisions": 15
+  },
+  "fight": {
+   "winner": "wizard",
+   "reason": "base",
+   "turn": 18,
+   "decisions": 18
+  },
+  "kind": "ride-only"
+ },
+ "case-g": {
+  "ride": {
+   "winner": "wizard",
+   "reason": "base",
+   "turn": 10,
+   "decisions": 9
+  },
+  "fight": {
+   "winner": "cowboy",
+   "reason": "base",
+   "turn": 13,
+   "decisions": 18
+  },
+  "kind": "fight-only"
+ },
+ "case-h": {
+  "ride": {
+   "winner": "wizard",
+   "reason": "base",
+   "turn": 14,
+   "decisions": 7
+  },
+  "fight": {
+   "winner": "cowboy",
+   "reason": "base",
+   "turn": 23,
+   "decisions": 20
+  },
+  "kind": "fight-only"
+ },
+ "case-i": {
+  "ride": {
+   "winner": "wizard",
+   "reason": "base",
+   "turn": 14,
+   "decisions": 13
+  },
+  "fight": {
+   "winner": "cowboy",
+   "reason": "base",
+   "turn": 17,
+   "decisions": 24
+  },
+  "kind": "fight-only"
+ },
+ "case-j": {
+  "ride": {
+   "winner": "wizard",
+   "reason": "base",
+   "turn": 20,
+   "decisions": 14
+  },
+  "fight": {
+   "winner": "cowboy",
+   "reason": "base",
+   "turn": 21,
+   "decisions": 25
+  },
+  "kind": "fight-only"
+ }
+}
