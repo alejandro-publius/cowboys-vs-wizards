@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "check-showdown-guard-access",
+      "description": "After a write tool edits src/ui/showdown-screen.js or src/game/showdown/presenter.js, rebuild the graybox and run the Chrome Guard target accessibility check. Other paths are skipped by the script.",
+      "trigger": "PostToolUse",
+      "matcher": "write",
+      "timeout": 180,
+      "action": {
+        "type": "command",
+        "command": "node scripts/showdown-guard-access-hook.mjs"
+      }
+    }
+  ]
+}

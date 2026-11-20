@@ -276,6 +276,9 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     const aims = new Set(attacking ? options.filter((a) => a.type === "attack" && a.slot === pick.troop).map((a) => a.target)
       : kind === "spell" ? playsOf(pick.card).map((a) => a.target) : []);
     const carriers = new Set(kind === "gear" ? playsOf(pick.card).map((a) => a.slot) : []);
+    // While an attack or spell is being aimed, each enemy troop and Base takes the prompt as its
+    // description, so a keyboard or screen-reader user hears why a target can or cannot be chosen.
+    const aiming = attacking || kind === "spell" ? ' aria-describedby="sd-prompt"' : "";
 
     const row = (side) => {
       const s = view.sides[side];
@@ -284,7 +287,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
       const traps = isOwn && !shared ? (s.traps.length ? `Set: ${s.traps.map(name).join(", ")}` : "No trap set") : s.trapCount ? `${plural(s.trapCount, "card")} face down` : "Nothing face down";
       // The other seat's hand is card backs (the deck back's .card-back element) and a count, never faces.
       const backs = isOwn ? "" : `<span class="sd-backs" role="img" aria-label="${FACTION[side]} hand: ${plural(s.handCount, "card")}, face down">${'<span class="card-back" aria-hidden="true"></span>'.repeat(s.handCount)}</span>`;
-      const base = `<button type="button" class="sd-base ${side}${baseOpen ? " sd-can" : ""}" ${baseOpen ? 'data-enemy="base"' : "disabled"} data-base="${side}">
+      const base = `<button type="button" class="sd-base ${side}${baseOpen ? " sd-can" : ""}" ${baseOpen ? 'data-enemy="base"' : "disabled"}${isOwn ? "" : aiming} data-base="${side}">
         <strong>${whoseBase(side)} Base</strong>${orbs(s.base, s.baseMax)}
         <span class="sd-note">Hand ${s.handCount} · Deck ${s.deckCount} · Graveyard ${s.discard.length}</span>${backs}
         <span class="sd-note">▲ ${traps}</span>${baseOpen ? preview(view, "base") : ""}</button>`;
@@ -307,7 +310,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
           if (kind === "spell") note = cardOf(pick.card).effect === "tie" ? "Would be stunned" : troop.health === 1 ? "Would be defeated" : `Would drop to ${troop.health - 1}`;
         }
         const attack = attackOf(view, troop);
-        return `<button type="button" class="sd-slot ${side}${cls}" data-frame="troop" data-slot="${side}-${slot}" ${data}><strong>${card.name}</strong><span class="sd-type">${FRAME.troop.mark} Troop · ${card.tag}</span>
+        return `<button type="button" class="sd-slot ${side}${cls}" data-frame="troop" data-slot="${side}-${slot}" ${data}${isOwn ? "" : aiming}><strong>${card.name}</strong><span class="sd-type">${FRAME.troop.mark} Troop · ${card.tag}</span>
           ${attack} attack${attack !== card.attack ? ` (+${attack - card.attack})` : ""} ${orbs(troop.health, card.health)} ${keywords(card)}
           ${troop.gear.length ? `<span class="sd-note">◆ ${troop.gear.map(name).join(", ")}</span>` : ""}${note ? `<span class="sd-note">${note}</span>` : ""}${!isOwn && attacking && aims.has(slot) ? preview(view, slot) : ""}</button>`;
       }).join("");
