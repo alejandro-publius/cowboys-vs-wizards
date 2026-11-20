@@ -41,7 +41,7 @@ test("current page at this head: link, separate judge-only lines for both choice
   const out = await inspectRideDecision(root, ID);
   assert.equal(out.verdict, "pass", JSON.stringify(out.reasons));
   assert.equal(out.game.sourceLabel, git(root, "rev-parse", "HEAD").slice(0, 12));
-  assert.match(out.links.local.url, /^http:\/\/127\.0\.0\.1:8765\/\?outrider=case-e$/);
+  assert.match(out.links.local.url, /^http:\/\/127\.0\.0\.1:47391\/\?outrider=case-e$/);
   assert.equal(out.links.public.url, "https://alejandro-publius.github.io/cowboys-vs-wizards/?outrider=case-e");
   assert.deepEqual([out.judgeOnly.ride.winner, out.judgeOnly.decline.winner], ["wizard", "cowboy"]);
   assert.deepEqual([out.advice.allowed, out.advice.scope, out.advice.general], [true, "this example only", false]);

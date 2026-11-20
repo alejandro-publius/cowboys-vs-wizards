@@ -16,7 +16,8 @@ export const PAGES = [
   {id: "hosted", path: "dist/web/index.html", build: "node scripts/build-graybox.mjs --hosted", serve: "dist/web", at: "/"},
   {id: "standalone", path: "dist/cowboys-vs-wizards-board-duel.html", build: "npm run build", serve: "dist", at: "/cowboys-vs-wizards-board-duel.html"},
 ];
-export const LOCAL_PORT = 8765;
+// Uncommon on purpose: 8765 was already held by an unrelated long-running server on this Mac (K-039 stage 3).
+export const LOCAL_PORT = 47391;
 
 // esbuild's minified form of the JSON the build defines (identifier keys unquoted, no spaces).
 export function minified(value) {
