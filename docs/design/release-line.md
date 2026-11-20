@@ -12,6 +12,8 @@ Added by Kiro (Kiro CLI, coordinator job `graywave-assemble`) from GitHub `main`
 
 **Experiment for Fable.** Camp opens two save-isolated experiments. In the [first position](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5) the Ranger fights alongside the Dynamiter. In the [second Dragon position](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5-70) it fights alongside the Covered Wagon. Compare the Dragon and Jack as targets on each deal. [Decision and replay evidence](../../experiments/showdown-dragon-strategy/rival-README.md). Fable owns promotion into an official bounty.
 
+**November 20 sprint handoff.** Camp records the finishing build per duel, including offline play. Untagged history stays unattributed. The scheduled rival recalled the two Dragon targets. Native Night Shift rejected the staged Sheriff buff on both the tuning and holdout sets. Two native steering controls confirmed different guidance for engine and UI reads. [Camp export and migration check](../evidence/showdown-build-identity-k087.md) · [scheduled Crew receipt](../evidence/showdown-rival-checkin.md) · [native Sheriff review](../evidence/night-shift-native-showdown.md) · [native steering controls](../evidence/showdown-scoped-steering.md).
+
 **Milestones.**
 
 | State | What |

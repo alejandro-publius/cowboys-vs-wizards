@@ -1,6 +1,6 @@
 # Night Shift review as a native Kiro workflow (K-071, K-048, K-050, K-082)
 
-November 20, 2026, America/Los_Angeles. Worker: Kiro (IDE client, model claude-opus-5.5), session
+November 20, 2026, America/Los_Angeles. Worker: Kiro CLI (V3, model claude-opus-5.5), session
 `sess_c0312de9-92fe-466e-b6cc-688b13fa4b58`, branch `kiro/showdown-sprint-night-native` at
 `4069bf99cf8d37e1cb96b5720b88995df00540ed`.
 
