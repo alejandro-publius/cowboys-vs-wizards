@@ -1,0 +1,1 @@
+{ "type": "cowboy-bear-trap", "side": "cowboy", "order": 13, "name": "Bear Trap", "kind": "trap", "showdownOnly": true, "showdown": { "rarity": "uncommon", "effect": "snare" } }

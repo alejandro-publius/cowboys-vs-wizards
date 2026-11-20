@@ -1,0 +1,1 @@
+{ "type": "cowboy-six-shooter", "side": "cowboy", "order": 14, "name": "Six-Shooter", "kind": "gear", "showdownOnly": true, "showdown": { "rarity": "uncommon", "effect": "sixshooter" } }
