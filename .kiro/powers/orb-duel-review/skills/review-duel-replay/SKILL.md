@@ -42,3 +42,6 @@ Report `verdict` with each `reasons` entry, `receipt.engine.sha256` against `cur
 - `unbound`: an older proof with no engine fingerprint; replay agrees, but it cannot show which engine it was played on.
 - `rejected`, `malformed`, `absent`, `unavailable`: the proof does not support a claim.
 A pass shows rules-level reproducibility of one seat's decisions on one seed. It is not a Chrome replay and says nothing about appearance, clarity or fun.
+
+## Ride decisions (v1.4.0)
+Questions about taking or declining an Outrider ride use the `showdown-ride-decision` skill and `inspect_ride_decision`.

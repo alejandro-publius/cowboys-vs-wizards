@@ -1,0 +1,49 @@
+{
+  "what": "Infrastructure case only: the Outrider experiment's own verified replay (README 'Replay (--replay)'), the lowest seed in 0-999 where a ride past troops is offered. It is not a strategy case from the ride search.",
+  "status": "infrastructure-only",
+  "scope": "Re-derives one Cowboy decision point from the bound project's Outrider experiment code and checks the ride is legal there. It carries no outcome for taking or declining this ride and supports no advice.",
+  "derive": {
+    "source": "experiments/showdown-outrider/compare.js replay(seed)",
+    "seed": 0
+  },
+  "route": {
+    "turn": null
+  },
+  "evidence": {
+    "source": "experiments/showdown-outrider/README.md",
+    "sha256": "c78e484e5b29a1653d9858f01312b35237e6ffb44c7c98ee8f39f18e83e26e97",
+    "pairedOutcomes": null,
+    "note": "The README's paired results are aggregate deck comparisons under a greedy bot. They are not ride-vs-decline outcomes for this position."
+  },
+  "recorded": {
+    "commit": "bf510f305058850a03cdcf9e7b7181a428f38288",
+    "closure": {
+      "sha256": "5b817be44072d435c25e5f26ba59c1d166187961c88dc754a830328c1a4fe140",
+      "fileCount": 8,
+      "files": {
+        "experiments/showdown-outrider/compare.js": "3b7906fdce59008976af724f8331b884443b6810bf9e3d20c8abb05322bca084",
+        "src/game/card-specs.generated.js": "187bb9ca71516227e67edd9f6e248e038ae20028e7e3333b6fa28bdf18b40a8b",
+        "src/game/showdown/cards.js": "2e9c3c7df707c43bc61b6481b801211de4fabd6ada87d9aa35d52330b868ffe1",
+        "src/game/showdown/contract.js": "85a356ee3ff9b530162cca870eefead5fb773e45d857b95cfed125e942f1b2be",
+        "src/game/showdown/progress.js": "6eec06618efbfb13d7b965d5d3bce9a7b9d0f4f5f54cd3e11aac41e0de5ef1d0",
+        "src/game/showdown/rules.js": "096eb8a22dced7ca527cd2ebc27b6d1c36922884f0570662a7c0762d62d5b61a",
+        "src/game/showdown/trail.js": "8fa27db59ee2d6cceaecd72012c198c6ef00d98c88994866509cfe51704fd528",
+        "src/match/showdown-turn.js": "f3ca9c067a61c5b6a3444d7a92d081e167c3f992262f3d0fe36f6eba32645e6a"
+      }
+    }
+  },
+  "decision": {
+    "turn": 7,
+    "positionSha256": "350cc041b3a6408c70648f4161f4c497ff64d63561843dc0cbcce4f62bfae947",
+    "ride": {
+      "type": "attack",
+      "slot": 1,
+      "target": "base"
+    },
+    "policyChose": {
+      "type": "attack",
+      "slot": 1,
+      "target": "base"
+    }
+  }
+}

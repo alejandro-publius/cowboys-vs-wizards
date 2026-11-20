@@ -1,7 +1,8 @@
 // MCP server (newline-delimited JSON-RPC over stdio) for reviewing the Orb Duel Chrome replay
 // receipt and the board character GLBs (earlier lane build and its 3D assets), for playing
 // one seat of a Showdown Trail duel in memory (showdown.mjs), and for replaying a recorded
-// Showdown proof against the current Showdown engine fingerprint. It reads only fixed files under
+// Showdown proof against the current Showdown engine fingerprint, and for checking a recorded
+// Outrider ride decision (ride.mjs) before any ride advice is given. It reads only fixed files under
 // this repo: no arbitrary paths, writes, network, shell or database.
 import {createHash} from "node:crypto";
 import {readFileSync, realpathSync} from "node:fs";
@@ -10,8 +11,9 @@ import {createInterface} from "node:readline";
 import {fileURLToPath} from "node:url";
 import {parseGlb} from "./glb.mjs";
 import {createTable, engineFingerprint, inspectShowdownReceipt, loadEngine} from "./showdown.mjs";
+import {RIDE_CASES, inspectRideDecision} from "./ride.mjs";
 
-const VERSION = "1.3.0";
+const VERSION = "1.4.0";
 
 // Project binding: with PLUGIN_DATA set, only PLUGIN_DATA/project.json (written by setup.mjs)
 // names the project. Never inferred. Without PLUGIN_DATA (workspace MCP), the source checkout.
@@ -208,6 +210,17 @@ async function showdownReceipt(id) {
   return {...base, receiptSha256: createHash("sha256").update(file.bytes).digest("hex"), ...inspectShowdownReceipt(engine, current, receipt)};
 }
 
+const RIDE_TOOL = {
+  name: "inspect_ride_decision",
+  description: `Check a recorded Showdown Outrider ride decision (ride past enemy troops to the Base, or decline) against the bound game: game commit, decision code fingerprint, built page hash, replay URL if the game routes it, the Cowboy seat's public position, and whether ride advice is supported. Optional case: ${Object.keys(RIDE_CASES).join(", ")}.`,
+  inputSchema: {type: "object", properties: {case: {type: "string", enum: Object.keys(RIDE_CASES), default: Object.keys(RIDE_CASES)[0]}}, additionalProperties: false},
+};
+async function rideDecision(id) {
+  const base = {power: {name: "orb-duel-review", version: VERSION}};
+  if (unavailable) return {...base, caseId: id, kind: "showdown-ride-decision", verdict: "unavailable", reasons: [unavailable], advice: {allowed: false, reasons: ["project not bound"]}};
+  return {...base, ...(await inspectRideDecision(root, id))};
+}
+
 const SHOWDOWN_KEYS = {start_showdown_duel: ["duel"], observe_showdown: ["session"], act_showdown: ["session", "revision", "intent"]};
 
 async function showdownCall(name, args) {
@@ -233,7 +246,7 @@ function handle(msg) {
     case "ping":
       return reply(msg.id, {});
     case "tools/list":
-      return reply(msg.id, {tools: [TOOL, CHARACTER_TOOL, ...SHOWDOWN_TOOLS, RECEIPT_TOOL]});
+      return reply(msg.id, {tools: [TOOL, CHARACTER_TOOL, ...SHOWDOWN_TOOLS, RECEIPT_TOOL, RIDE_TOOL]});
     case "tools/call": {
       const params = msg.params;
       if (Object.hasOwn(SHOWDOWN_KEYS, params?.name ?? "")) {
@@ -246,6 +259,15 @@ function handle(msg) {
         if (params.name === "act_showdown" && (typeof args.revision !== "string" || !Number.isInteger(args.intent))) return fail(msg.id, -32602, "revision must be a string and intent an integer");
         return showdownCall(params.name, args).then(
           (body) => reply(msg.id, {content: [{type: "text", text: JSON.stringify(body)}], ...(body.error && {isError: true})}),
+          (error) => reply(msg.id, {content: [{type: "text", text: JSON.stringify({error: error.message})}], isError: true}));
+      }
+      if (params?.name === RIDE_TOOL.name) {
+        const args = params.arguments ?? {};
+        if (typeof args !== "object" || args === null || Array.isArray(args)) return fail(msg.id, -32602, "inspect_ride_decision takes an object");
+        if (Object.keys(args).some((key) => key !== "case")) return fail(msg.id, -32602, "Only the case input is accepted");
+        const id = args.case ?? Object.keys(RIDE_CASES)[0];
+        if (typeof id !== "string" || !Object.hasOwn(RIDE_CASES, id)) return fail(msg.id, -32602, `case must be one of: ${Object.keys(RIDE_CASES).join(", ")}`);
+        return rideDecision(id).then((body) => reply(msg.id, {content: [{type: "text", text: JSON.stringify(body, null, 2)}]}),
           (error) => reply(msg.id, {content: [{type: "text", text: JSON.stringify({error: error.message})}], isError: true}));
       }
       if (params?.name === RECEIPT_TOOL.name) {
