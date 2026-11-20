@@ -1,0 +1,66 @@
+{
+  "engine": "chrome",
+  "seed": 0,
+  "page": "graybox build over loopback HTTP",
+  "driver": "Playwright 1.64.1 (scripted bot + keyboard presses)",
+  "accessibility": "Chrome accessibility tree via CDP",
+  "human": false,
+  "checks": [
+    {
+      "name": "Normal entry: Play opens the Camp",
+      "passed": true,
+      "detail": {
+        "url": "/game.html?seed=0"
+      }
+    },
+    {
+      "name": "Bot won Boot Hill by clicks and took the first offered card",
+      "passed": true,
+      "detail": {
+        "attempts": 1
+      }
+    },
+    {
+      "name": "Bot won Raven Roost by clicks and took the first offered card",
+      "passed": true,
+      "detail": {
+        "attempts": 1
+      }
+    },
+    {
+      "name": "The Bone Fence opens from its Camp tile",
+      "passed": true,
+      "detail": {
+        "lesson": "A Bone Wall has Guard: it must fall first. Their Wizard raises a Skeleton from the graveyard."
+      }
+    },
+    {
+      "name": "Legal Guard turn reached: a ready Cowboy troop and a Bone Wall on the Wizard side",
+      "passed": true,
+      "detail": {
+        "status": "The Bone Fence · turn 11 · your turn"
+      }
+    },
+    {
+      "name": "Enter on the ready troop moves focus to the Bone Wall, named with Guard",
+      "passed": true,
+      "detail": {
+        "name": "Bone Wall ● Troop · Undead 0 attack 4 of 4 orbs Guard Survives on 3. It has no attack, so yours is unharmed."
+      }
+    }
+  ],
+  "errors": [],
+  "version": "158.0.8127.37",
+  "before": {
+    "tabsToTroop": 1,
+    "prompt": "A Guard stands in the way: attack it first. Or take cover: until your next turn it keeps extra damage off your Base, but it will not hit back.",
+    "focused": {
+      "role": "button",
+      "name": "Bone Wall ● Troop · Undead 0 attack 4 of 4 orbs Guard Survives on 3. It has no attack, so yours is unharmed.",
+      "description": "",
+      "disabled": false,
+      "focusable": true
+    }
+  },
+  "failure": "focused target description \"\" gives no Guard reason"
+}

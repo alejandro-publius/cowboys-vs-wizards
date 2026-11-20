@@ -1,0 +1,12 @@
+[tool] Creating hook-probe-unrelated.txt
+[tool] status: Completed
+Edit 1 hook result: the tool returned only "Successfully created ... (1 lines)". It showed no hook output (no pass, skip or failure text).
+[tool] Editing showdown-screen.js
+[tool] status: Completed
+Edit 2 hook result: the tool returned only "Successfully replaced 1 occurrence(s)". It showed no hook output (no pass, skip or failure text).
+[tool] Editing showdown-screen.js
+[tool] status: Completed
+Edit 3 hook result: the tool returned only "Successfully replaced 1 occurrence(s)". It showed no hook output (no pass, skip or failure text).
+
+I made the three edits in order, with no other changes. None of the three tool results included any hook output. I can't tell whether the PostToolUse hook ran, was skipped, or failed silently.
+exit=0

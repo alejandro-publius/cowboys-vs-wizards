@@ -1,0 +1,18 @@
+[tool] Write File
+[tool] status: Pending
+[tool] status: Completed
+[tool] Read File
+[tool] status: InProgress
+[tool] status: Completed
+[tool] Replace in File
+[tool] status: Pending
+[tool] status: Completed
+Edit 2 hook result: the tool returned only "Replaced text in …/src/ui/showdown-screen.js". No hook output (pass, skip or failure) came back.
+[tool] Replace in File
+[tool] status: Pending
+[tool] status: Completed
+Edit 3 hook result: the tool returned only "Replaced text in …/src/ui/showdown-screen.js". No hook output (pass, skip or failure) came back, so the restore is confirmed only by the successful replace.
+
+None of the three edits produced any hook output, so I can't say the PostToolUse hook fired.[INFO] [KRS] <-- GenerateAssistantResponseCommand done totalEvents=25
+
+exit=0
