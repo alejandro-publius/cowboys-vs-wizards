@@ -6,8 +6,9 @@ import {readFileSync} from "node:fs";
 import {SHOWDOWN_SPECS} from "../../src/game/card-specs.generated.js";
 import {DECKS} from "../../src/game/showdown/cards.js";
 import {LEDGER} from "../../src/ui/sheriffs-ledger.data.js";
-import {ledgerHtml, ledgerRows, reviewLines, rulesetSummary} from "../../src/ui/sheriffs-ledger.js";
-import {DEFAULT_RECEIPT, R1_1_CARDS, buildLedger, defaultInputs, matchReviews, reviewBundles, laTime, latestShowdownRun, matchPerCard, render, runFromReceipt} from "../../scripts/build-sheriffs-ledger.mjs";
+import {bundleSealIntact, sealBundle} from "../../scripts/night-review.mjs";
+import {ledgerHtml, ledgerRows, packageLines, reviewLines, rulesetSummary} from "../../src/ui/sheriffs-ledger.js";
+import {DEFAULT_RECEIPT, PACKAGE_SCHEMA, R1_1_CARDS, buildLedger, defaultInputs, matchPackages, matchReviews, packageBundles, reviewBundles, laTime, latestShowdownRun, matchPerCard, render, runFromReceipt} from "../../scripts/build-sheriffs-ledger.mjs";
 
 const REPORT_PATH = "docs/evidence/night-watch-showdown/scout-pair-reports.json";
 const reports = JSON.parse(readFileSync(REPORT_PATH, "utf8"));
@@ -124,4 +125,23 @@ test("a night-watch-receipt/1 receipt feeds the same ruleset line; per-card clai
   assert.ok(ledgerRows(ledger).every((row) => row.latest === "Not observed"));
   assert.throws(() => buildLedger({receipt: {...receipt, cards: {measured: true}}}), /per-card/);
   assert.throws(() => buildLedger({receipt: {...receipt, mode: "lanes"}}), /Showdown/);
+});
+
+// TEST-ONLY SAMPLE in the night-review/package@1 shape. Not a measured package review; it checks that the Ledger
+// shows a package's own recorded verdict, including a failed gate, and drops a broken seal.
+test("a sealed rules-package review shows its recorded verdict, failed or passed (test-only sample)", () => {
+  const set = (from, first, cowboy) => ({seeds: {from, to: from + 999, deals: 1000},
+    baseline: {games: 2000, firstShare: 57.1, cowboyShare: 59.4}, candidate: {games: 2000, firstShare: first, cowboyShare: cowboy}});
+  const bundle = sealBundle({schema: PACKAGE_SCHEMA, kind: "rules-package", id: "package-test", createdAt: "2026-11-20T18:00:00Z",
+    source: {base: {commit: "a".repeat(40)}, candidate: {commit: "b".repeat(40)}, attribution: {commits: [{commit: "b".repeat(40), author: "Test", subject: "s"}]}},
+    sets: {tune: set(0, 49.5, 51.8), holdout: set(1000, 51.4, 55.6)}, trail: {deals: {candidate: 300}, maxGatedMovePp: 1.2},
+    policy: {band: [45, 55], trailTolerancePp: 3}, decision: {verdict: "failed", reasons: ["holdout: Cowboy share 55.60% is outside 45–55%"], meaning: "Stop."}});
+  const [shown] = matchPackages([{path: "test-only/bundle.json", bundle}]);
+  assert.equal(shown.verdict, "failed");
+  const ledger = {...LEDGER, packages: [shown]};
+  assert.match(packageLines(ledger)[0], /^Rules package aaaaaaa → bbbbbbb, November 20, 2026, 10:00 AM PST: gate failed\. Tune deals 0–999: first player 57\.1% → 49\.5%, Cowboys 59\.4% → 51\.8%; holdout deals 1000–1999: .*Cowboys 59\.4% → 55\.6% \(band 45–55%\)\. Largest Trail, rival or hunt move 1\.2 points \(limit 3\)\. holdout: Cowboy share 55\.60% is outside 45–55%\.$/);
+  assert.match(ledgerHtml(ledger), /id="ledger-package"[^]*seal <code>/);
+  assert.equal(matchPackages([{path: "x", bundle: {...bundle, decision: {...bundle.decision, verdict: "passed"}}}]).length, 0, "a broken seal is dropped");
+  assert.ok(reviewBundles().every(({bundle: b}) => b.schema !== PACKAGE_SCHEMA), "one-card reviews never include packages");
+  assert.deepEqual(LEDGER.packages.map((p) => p.source), packageBundles().filter(({bundle: b}) => bundleSealIntact(b)).map((b) => b.path));
 });

@@ -37,10 +37,28 @@ export function reviewLines(ledger = LEDGER) {
   return (ledger.reviews ?? []).map((v) => `${v.card} ${v.field} ${v.from} → ${v.to}: ${v.verdict}. ${v.reasons.join("; ")}.`);
 }
 
+// Pure: one line per sealed rules-package review, with its pinned commits and its recorded verdict (passed or failed).
+export function packageLines(ledger = LEDGER) {
+  const p1 = (n) => `${n.toFixed(1)}%`;
+  const set = (name, s) => `${name} deals ${s.from}–${s.to}: first player ${p1(s.firstBefore)} → ${p1(s.first)}, Cowboys ${p1(s.cowboyBefore)} → ${p1(s.cowboy)}`;
+  return (ledger.packages ?? []).map((v) => `Rules package ${short(v.base)} → ${short(v.candidate)}, ${v.local}: gate ${v.verdict}. `
+    + `${set("Tune", v.tune)}; ${set("holdout", v.holdout)} (band ${v.band[0]}–${v.band[1]}%). `
+    + `Largest Trail, rival or hunt move ${v.trail.maxMovePp.toFixed(1)} points (limit ${v.trail.limitPp}).`
+    + (v.reasons.length ? ` ${v.reasons.join("; ")}.` : ""));
+}
+
+function packageHtml(ledger) {
+  const lines = packageLines(ledger);
+  if (!lines.length) return `<p class="sd-note" id="ledger-package">Rules package review: none sealed.</p>`;
+  return `<h3 id="ledger-package-title">Rules package review</h3>
+  <ul class="sd-ledger-props" id="ledger-package">${lines.map((line, i) => `<li>${esc(line)} <code>${esc(ledger.packages[i].source)}</code> seal <code>${esc(ledger.packages[i].seal)}</code></li>`).join("")}</ul>
+  <p class="sd-note">Measured by the local Night Shift CLI on pinned commits. A passed gate is not a merge or a release; Fable and Alex decide.</p>`;
+}
+
 function reviewHtml(ledger) {
   const lines = reviewLines(ledger);
   if (!lines.length) return `<p class="sd-note" id="ledger-review">Night Shift review: none recorded for this run.</p>`;
-  return `<h3 id="ledger-review-title">Night Shift review</h3>
+  return `<h3 id="ledger-review-title">Night Shift review (one-card candidates)</h3>
   <ul class="sd-ledger-props" id="ledger-review">${lines.map((line, i) => `<li>${esc(line)} <code>${esc(ledger.reviews[i].source)}</code></li>`).join("")}</ul>
   <p class="sd-note">Draft candidates only. None is applied to the cards; Fable and Alex decide.</p>`;
 }
@@ -54,6 +72,7 @@ export function ledgerHtml(ledger = LEDGER) {
   <p id="ledger-run" class="sd-note">${esc(rulesetSummary(ledger))}</p>
   ${r ? `<p class="sd-note">Estimates for ${esc(r.bot)} on these seeds only. Commits after ${short(r.revision)} are not measured here. Method: <code>${esc(r.method)}</code>; records: <code>${esc(r.source)}</code>.</p>` : ""}
   ${reviewHtml(ledger)}
+  ${packageHtml(ledger)}
   <p class="sd-note">Engine properties tested over every card (<code>${esc(ledger.properties.source)}</code>):</p>
   <ul class="sd-ledger-props">${ledger.properties.list.map((p) => `<li><strong>${esc(p.id)}</strong> ${esc(p.title)}</li>`).join("")}</ul>
   <p class="sd-note">Each card has one spec under ${esc(ledger.requirement.id)} ${esc(ledger.requirement.title)} (<code>${esc(ledger.requirement.path)}</code>), checked by <code>${esc(ledger.requirement.check)}</code>. R1.1 marks the eight cards it names.</p>
