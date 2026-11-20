@@ -13,6 +13,7 @@ import * as oldTrail from "../../prototypes/showdown/trail.js";
 import * as oldPlaytest from "../../prototypes/showdown/playtest.js";
 import {LADDER, winRate} from "../../prototypes/showdown/trail-sim.mjs";
 
+// FH-R1.1 (.kiro/specs/showdown-first-hour/requirements.md)
 test("the prototype paths export exactly the canonical modules", () => {
   for (const [canonical, old] of [[progress, oldProgress], [trail, oldTrail], [playtest, oldPlaytest]]) {
     assert.deepEqual(Object.keys(old).sort(), Object.keys(canonical).sort());
@@ -20,6 +21,7 @@ test("the prototype paths export exactly the canonical modules", () => {
   }
 });
 
+// FH-R4.3 (.kiro/specs/showdown-first-hour/requirements.md)
 test("the ramp's cushion: any legal play wins Trail 1 and 2 on 80 deals", () => {
   for (const label of ["Trail 1", "Trail 2"]) {
     const [, save, id] = LADDER.find(([each]) => each.startsWith(label));
