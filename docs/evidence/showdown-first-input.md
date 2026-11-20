@@ -2,7 +2,7 @@
 
 Kiro CLI (native, macOS), November 20, 2026, Pacific. QA instrumentation only. `src/` is unchanged.
 Harness: [`scripts/browser-showdown-first-input.mjs`](../../scripts/browser-showdown-first-input.mjs).
-Arithmetic test: [`tests/showdown-first-input.test.js`](../../tests/showdown-first-input.test.js).
+Arithmetic test: [`tests/match/showdown-first-input.test.js`](../../tests/match/showdown-first-input.test.js).
 
 ## Question
 
@@ -121,7 +121,7 @@ This run used the same build, browser and command while other workers were activ
 git checkout <commit containing this file>
 npm ci
 node scripts/build-graybox.mjs --hosted
-node --test tests/showdown-first-input.test.js
+node --test tests/match/showdown-first-input.test.js
 node scripts/browser-showdown-first-input.mjs --controls          # must print "pass": true
 node scripts/browser-showdown-first-input.mjs --samples 20 --out /tmp/first-input.json
 ```

@@ -1,7 +1,7 @@
 // K-089 / K-090 harness arithmetic (scripts/browser-showdown-first-input.mjs). The browser run itself is not repeated here.
 import assert from "node:assert/strict";
 import test from "node:test";
-import {parseArgs, percentile, routeOrder, summarize, ROUTES} from "../scripts/browser-showdown-first-input.mjs";
+import {parseArgs, percentile, routeOrder, summarize, ROUTES} from "../../scripts/browser-showdown-first-input.mjs";
 
 test("p95 is nearest-rank: index ceil(0.95 n) - 1", () => {
   const v = Array.from({length: 20}, (_, i) => i + 1);
