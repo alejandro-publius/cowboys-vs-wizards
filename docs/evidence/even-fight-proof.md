@@ -2,7 +2,7 @@
 
 Kiro CLI worker `even-proof`, November 20, 2026 (America/Los_Angeles), branch `kiro/showdown-sprint-even-proof`.
 Native local CLI runs only: no browser, no human play, no Kiro Web or Crew. Brief: Fable's
-[even-fight brief](../design/showdown-even-fight-kiro-brief.md) at `f079fdc` ("Done when" 1, 2 and 5).
+[even-fight brief](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/f079fdcafb066ba5142dc2be2f1c1fc74b2bce12/docs/design/showdown-even-fight-kiro-brief.md) at `f079fdc` ("Done when" 1, 2 and 5).
 
 ## Tool
 
