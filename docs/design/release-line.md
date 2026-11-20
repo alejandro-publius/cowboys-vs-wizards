@@ -6,7 +6,7 @@ Fable 5.2, Wednesday November 18, 2026, Pacific. Based on Alex's four decisions 
 
 ## Current status, November 20 (supersedes the November 19, 10:15 p.m. handoff)
 
-Added by Kiro (Kiro CLI, coordinator job `graywave-assemble`) from GitHub `main` `4d52642`, the merge of pull request 148. It records state and quotes Fable's decisions; it makes none. Fable's text further down is unchanged and reads as of its own date. Where it differs, this section and the latest Fable comment on [issue 143](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143) are current. The 10:15 p.m. handoff that stood here is replaced: slice 2 (148) has merged, and slice 3 is built and in review.
+Added by Kiro (Kiro CLI, coordinator job `graywave-assemble`) from GitHub `main` `4d52642`, the merge of pull request 148; milestones refreshed by job `graywave-night-join` from `main` `6b6caef`. It records state and quotes Fable's decisions; it makes none. Fable's text further down is unchanged and reads as of its own date. Where it differs, this section and the latest Fable comment on [issue 143](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143) are current. The 10:15 p.m. handoff that stood here is replaced: slice 2 (148) has merged, and slice 3 is built and in review.
 
 **Target.** Showdown is the December 4 fight and the game being built. It is the only game in the graybox.
 
@@ -14,9 +14,9 @@ Added by Kiro (Kiro CLI, coordinator job `graywave-assemble`) from GitHub `main`
 
 | State | What |
 | --- | --- |
-| Merged to `main` | Pull requests 144 to 158, including slice 1 (144), the 29-card catalog (145), slice 2's Trail and Camp (148) and the hosted graybox bootstrap (157) |
-| In review | Slice 3 on one release-candidate branch, `kiro/graywave-assemble`, in one combined pull request linked from issue 143. It contains the Camp modes (pull request 159, which it supersedes), the lane retirement as its own commit, the site layout, and the graybox CSS and old-harness cleanup. The coordinator merges after review. |
-| Pending, human | Three first-time playtests (below). Fable's approval of first-draft wording: the Camp and mode labels, and the `/3d/` label. |
+| Merged to `main` | Pull requests 144 to 161, including slice 1 (144), the 29-card catalog (145), slice 2's Trail and Camp (148), the hosted graybox bootstrap (157) and slice 3 (161, `6b6caef`: Camp modes, lane retirement, Showdown at `/`) |
+| In review | The Night Shift (`kiro/graywave-night-join`, one pull request against `main`): the Sheriff's Ledger at the end of the Camp, Night Watch's target-band check with an opt-in scheduled issue path, and the Night Shift reviewer. Also the Showdown MCP seat tools and the judge write-up refresh. It changes no card, rule, reward or wording. Receipts and what has not run: [Night Shift evidence](../evidence/night-shift.md). |
+| Pending, human | Three first-time playtests (below). Fable's approval of first-draft wording: the Camp and mode labels, the `/3d/` label and the Sheriff's Ledger text. Fable/Alex: whether Night Watch gets a target band, and any card change a Night Shift review proposes. |
 
 **Site layout after slice 3** (built by `node scripts/stage-pages.mjs`, checked by `node scripts/check-pages-tree.mjs`):
 

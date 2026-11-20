@@ -337,3 +337,27 @@ The next substantial Kiro task is #56, boundary generation, failure reduction an
 - **Change**: `docs/submission/kiro-brag-sheet.md` opens with replay commands and results on `4d52642`, adds #148/#149, #154, #156 and #157, fixes the Play → Camp → Boot Hill route, adds a five-criteria evidence/gap table and drops the unreceipted Kiro IDE fact-check claim. `devpost-packet.md` and `build-story.md` gain a lane-era banner; their text is unchanged. The 110-row resource classification for the workbook is outside the repo (`../graywave-showdown-register.json`).
 - **Verification** on `4d52642`: `npm test` 595 pass, 0 fail; `showdown-properties` 16/16; offline build SHA-256 `602055b0…8269`; `browser-showdown-check` 23/23; `browser-showdown-trail-check` 16/16; `browser-showdown-keyboard-check` 6/6; `browser-showdown-cues-check` 5/5; Night Watch backend 12/12; `check-links` 0 broken. Live `build.json` names `4d52642`, and live `/graybox/` matches a local `--hosted` build byte for byte (`0f52d719…d3c4`).
 - **Remaining**: human playtest, Showdown video, MCP/Power/Workflow and scheduled Night Watch on Showdown. Several register receipts (resume, parallel review, skill, usage ledger, startup measure) exist only on `kiro/video-swarm-integration`.
+
+### 2026-11-20 — The Night Shift, integrated (Kiro CLI, America/Los_Angeles, 23:40 PST Nov 19 onward)
+
+- **State**: one branch `kiro/graywave-night-join` from `main` `6b6caef` (after #161), one PR against `main`. Not merged; the coordinator merges.
+- **Performed in**: a Kiro CLI coordinator session (Claude Opus 5.5). It merges the night-meter, night-review, night-ledger, showdown-mcp and showdown-audit worker branches.
+- **Problem**: the meter, the reviewer and the Ledger were built on three branches with no connection between them. The meter's issues used the `kiro` label, which assigns Kiro Web. The Ledger showed an older run on `3dd47f1` and no review state.
+- **Change**:
+  - Camp conflict resolved to keep the slice 3 modes and the Ledger.
+  - New Night Watch setting `autoIssues` (default `off`). With `lean`, a scheduled run gates each issue on `night-review.mjs check`.
+  - Issues are labelled `night-watch`, never `kiro`, and text Kiro Web would read as a `/kiro` command is refused. They are deduplicated across open and closed issues, with at most two per run.
+  - The Ledger reads one checked-in receipt and shows sealed reviews bound to that run.
+  - The ledger browser check gained a review assertion and opt-in `--frames`.
+  - Judge guide, release line and brag sheet aligned.
+- **Verification**:
+  - `npm test` 595/595; Night Watch 29/29; MCP plus properties 26/26.
+  - Browser checks: showdown 22, ledger 12, modes 13, trail 16, keyboard 6, cues pass. Pages tree 4.
+  - Real on-demand run on `e813ae8`: 2,000 games, first player 57.10%, Cowboys 59.40%.
+  - Three staged scheduled runs (stub `gh`, illustrative band 45–55): created, exists, resolved.
+  - Guard: Sheriff health 3→4 rejected, skew 9.40 → 13.60 pp tune and 11.05 → 15.30 pp holdout.
+  - Receipts: [Night Shift evidence](evidence/night-shift.md).
+- **Remaining**:
+  - No clock-triggered Showdown run yet (Crew job `62736a74`) and no published issue.
+  - No approved band (Fable/Alex). Ledger wording is Fable's.
+  - Installed Power is still 1.1.0. Kiro Web is not used.

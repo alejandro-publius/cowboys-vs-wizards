@@ -4,7 +4,11 @@
 
 ## Experience the game
 
-*Kiro, November 20 (issue 143 slice 3, once merged and deployed):* the site root is now the graybox Showdown game; Play opens its Camp. Current paths and the remaining human gate are in the [release line](design/release-line.md). Steps 1 to 3 below describe the earlier illustrated 3D lane build, so their links now point at `/3d/`. The rest of this guide is unchanged history.
+The game is **Showdown**, served at the [site root](https://alejandro-publius.github.io/cowboys-vs-wizards/). The first click is **Play**, which opens the Camp. In the Camp, click **Boot Hill**, the first Trail duel. Current paths and the remaining human gate are in the [release line](design/release-line.md). Commands that replay the current build are in the [judge write-up](submission/kiro-brag-sheet.md#proof-on-the-current-build).
+
+- **The Night Shift loop.** At the end of the Camp, open **Sheriff's Ledger**. It lists all 29 cards and the latest Night Watch check of the ruleset: commit, seeds 0–999, 2,000 bot games, first-player and Cowboy shares. It also shows the Night Shift review of one draft one-card, one-number candidate for that run, with its verdict. Night Watch (the [Crew app in this repository](../apps/night-watch/README.md)) measures. The [reviewer](evidence/night-shift-review.md) checks a candidate on paired and holdout seeds. Nothing is applied to the cards; Fable and Alex decide. [Receipts and what has and has not run](evidence/night-shift.md).
+
+**Earlier illustrated 3D build (lane duel, history).** Steps 1 to 3 below are the earlier three-lane game at `/3d/`. The rest of this guide describes that build.
 
 1. **Play a guided opening.** [Open seed 0 with the starter deck and hints](https://alejandro-publius.github.io/cowboys-vs-wizards/3d/?seed=0&deck=starter&guide=1). Press Play, select Sheriff, pick a lit lane, then confirm the summon. End the turn and watch each life orb disappear at impact.
 2. **See the bigger mechanic:** [Seed 60](https://alejandro-publius.github.io/cowboys-vs-wizards/3d/?seed=60). Use two tribute summons to bring in Mounted Billy, then watch Singularity move him into the Dragon's lane. The clash is simultaneous: Billy still gets his attack even though he is defeated. [Exact five-round input route](morning-handoff.md#the-duel-to-film).
@@ -20,7 +24,7 @@
 
 The illustrated main menu opens instructions, saved settings, achievements and the deck workbench. Build a twelve-card Cowboy deck with large illustrated choices, select a card to read its rules, adjust counts and save. [Readability checks](evidence/kiro-readable-deck-workbench.md) include desktop and phone-sized Chrome views; actual phone/Safari review is still pending.
 
-[Watch the menu and gameplay preview](evidence/gameplay-demo/menu-and-gameplay-preview.mp4) (58.73 seconds: current deck/menu, then real gameplay recorded at `599450a`). [Current closeout ledger](kiro-closeout-queue.md) distinguishes newly checked work, historical receipts and remaining blockers. [Night Watch source](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch) is a separate app. Night Watch is installed at 0.1.2. Separately, the Crew relay answered a basic no-tool chat; Night Watch itself remains disabled pending human trust approval, so its UI report and real schedule remain unverified ([receipt](evidence/kiro-crew-repair.md)). No unattended scheduled operation is claimed.
+[Watch the menu and gameplay preview](evidence/gameplay-demo/menu-and-gameplay-preview.mp4) (58.73 seconds: current deck/menu, then real gameplay recorded at `599450a`). [Current closeout ledger](kiro-closeout-queue.md) distinguishes newly checked work, historical receipts and remaining blockers. Night Watch lives in this repository at [`apps/night-watch`](../apps/night-watch/README.md). The separate [Night Watch repository](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch) is a submission mirror. Its Showdown runs so far are on-demand and staged; no clock-triggered scheduled Showdown run has completed, and no Kiro Web session has been used ([status](evidence/night-shift.md#what-ran-and-what-did-not)).
 
 ## What is distinctive
 
