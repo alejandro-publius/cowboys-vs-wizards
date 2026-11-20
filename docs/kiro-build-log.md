@@ -274,3 +274,6 @@ The next substantial Kiro task is #56, boundary generation, failure reduction an
   - Save-code portability of inherited cards is open.
   - Wording approval is pending.
   - Human playtests are pending.
+  - The PR 147 brief orders the Scout fix `7e8e6eb` before slice 2. It is not on this branch.
+  - The slice 2 Requirements-First spec has not been written.
+  - `github/main` `a9aa828` (PRs 145–147) was merged in; the change was docs-only. `npm test` passed again, and the built pages kept the same hashes.

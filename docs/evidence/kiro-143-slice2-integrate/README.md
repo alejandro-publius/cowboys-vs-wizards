@@ -60,10 +60,21 @@ The pilot packaging commit `bc8390f` was not merged. It is independent and its d
 - The same 14 fixtures against the persisted record, with the lane key removed before reload: 14 of 14 list exactly the lane captures, once each. [table](inherited-record-cases.md)
 - 3D/art untouched: no file under `assets/`, models, render or animation code changed against `github/main`.
 
+## Later main merge
+
+`github/main` advanced to `a9aa828` while this ran. It brings PRs 145 and 146, which are the same catalog and cues commits already merged here, and PR 147, which is docs only. Merging it changed only `README.md` and two `docs/design/` files. After the merge:
+
+- `npm test` passed 556 of 556 again.
+- The three built pages are byte-identical to the hashes above, so the Chrome results apply to them. The Chrome suites were not re-run for the docs-only change.
+
 ## Open
 
 - **Fable (smallest decision):** may a lane-captured Legendary count in the Showdown progress collection, and so be equippable, before the Trail is done? If yes, what does that boss's Showdown bounty pay? (F1/F2 in the compat handoff.)
   - Until Fable decides, A1 fails, and ownership is display plus a separate persisted record.
 - F3–F5 remain open: partial lane hunts, lane frontier cards, and Start over/save-code portability of inherited cards.
 - Wording added here and by the workers is Fable's to approve.
+- **Order (PR 147 brief):** Fable now asks for the Scout bot fix (`7e8e6eb`) *before* slice 2.
+  - This branch does not include it. Scout was not changed, per this job's instructions.
+  - Land the Scout fix first, then re-check this PR.
+- The PR 147 brief also asks for a Requirements-First spec for slice 2 (tools A to C). None is included here.
 - Human playtests: none run, none claimed.
