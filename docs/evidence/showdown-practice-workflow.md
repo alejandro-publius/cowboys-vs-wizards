@@ -55,6 +55,22 @@ storage digest `da2e2cd1…` before and after on every route. Chrome 158.0.8127.
 Before the merge, the same harness on the base build `ce5d224` failed (no `#camp-practice`), as it should.
 Receipts are under `.artifacts/practice/wf/` (ignored, not committed).
 
+## Join fix and confirming run
+
+A torn receipt (still `pass: true`) was accepted when its camp route's `storage.after` differed from
+`storage.before`, or when `routes.direct.failures` held a failure (Codex's challenge, reproduced here:
+`changed-save ACCEPTED`, `route-reports-failure ACCEPTED`). The join now checks each route with
+`routeContradiction` (no failure, errors or off-loopback requests; equal well-formed storage digests;
+the first action changed hand, board and log; Camp unchanged) and turns any thrown shape error into a
+refusal. Four controls were added: `changed-save`, `route-reports-failure`, `no-storage`, `null-route`.
+
+Confirming run `wf_384b3083ff34881b`, completed, at frozen source `24b581ad758094393c383baed1d38cf731cc398c`
+(this fix merged with the final entry head `0031e07`): build (`sess_702f2885-…`) exit 0, clean, build
+`24b581ad7580`, HTML SHA-256 `ac1ff64e52753cc01d171f38143711d0421cc7264acf9e630665ad6d7256a9ed`; seed-0
+(`sess_8e8482d4-…`) and seed-60 (`sess_6f49b3ce-…`) exit 0 PASS, fingerprints unchanged; join
+(`sess_5a234bc1-…`) PASS, controls 10/10 (genuine accepted, nine refused). The challenge script in strict
+mode then refused both cases on these receipts.
+
 ## Limits
 
 - Scripted Chrome only; no human played. Nothing here supports clarity or fun claims.
