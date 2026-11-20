@@ -63,4 +63,8 @@ The Bone Fence is duel id `"trail"` at `wins: 2` (`duelFor(save, "trail")`; ther
 - No player-facing defect was found: the edited deck is used, Cancel leaves the career unchanged, and focus returns to Build deck after Cancel and Save. No `src/` change.
 - The Trail wins use mouse presses, as in the modes check. Only the deck change, save, reload entry and launch use the keyboard. Escape was not used because the builder has no Escape binding, and the check makes no claim about one.
 - Hand ids such as `-3` are DOM attributes on the player's own hand buttons. The card names are what a player sees, and they also discriminate here (Outrider against Covered Wagon in the second card).
-- The check covers one seed, one edit and one career path. The reviewer child has not yet given its verdict. Human playtests are pending.
+- The check covers one seed, one edit and one career path. The independent review follows in the release evidence. This check did not collect human feedback about the deck editor.
+
+## Independent release checks
+
+Codex played the two opening duels and the saved deck through the public game at `da77ba4`. The third Outrider appeared in the opening Cowboy hand on seed 3. A separate regression run checked the frozen Kiro candidate. In a disposable build Codex forced The Bone Fence to deal the default deck while preserving the customized save and Camp display. The browser check rejected the wrong deck at duel creation. Alex previously confirmed completion of the playtests. This run is scripted QA.

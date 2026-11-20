@@ -27,6 +27,10 @@ The site root opens the Showdown menu. Camp contains the Trail, rivals, Wanted h
 
 This page is the one judge-facing description. The [Devpost packet](devpost-packet.md), [build story](build-story.md) and [historical evidence map](../kiro-brag-sheet.md) give more detail and older history.
 
+**Installed Crew dashboard (K-077).** Kiro opened the frozen standalone candidate in Crew. The same report that displayed 118.8% Cowboy wins on the old install displayed 59.4% after the update. Both seat counts and all 2,000 outcomes matched the original receipt. [Installed dashboard and mirror evidence](../evidence/night-watch-showdown.md).
+
+**From deck editor to duel.** Starting a new career in Chrome, Kiro earned an Outrider, swapped it for one Sheriff by keyboard, saved, reloaded and proved that all 16 cards reached The Bone Fence in their saved order. Codex repeated the run on the public game and the checker caught a planted default-deck substitution. [Deck and workflow evidence](../evidence/showdown-deck-to-combat.md).
+
 ## Release evidence
 
 The two-position release passed 606 repository tests and 29 HTTP browser checks. A separate Chrome run selected both targets on both seeds and compared the saved career after each. [Paired decisions in PR 165](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/165).
