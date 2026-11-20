@@ -1,14 +1,16 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "orb-duel-review",
-  "version": "1.3.0",
-  "description": "Independent, read-only review of the Cowboys vs. Wizards Chrome replay receipt against the current built page, plus Showdown seat play and engine-bound Showdown proof replay.",
+  "version": "1.4.0",
+  "description": "Independent, read-only review of the Cowboys vs. Wizards Chrome replay receipt against the current built page, plus Showdown seat play and engine-bound Showdown proof replay, and a check of the evidence behind Showdown Outrider ride decisions (why take or decline a ride past enemy troops).",
   "author": {
     "name": "Cowboys vs. Wizards"
   },
   "keywords": [
     "orb duel replay review",
     "cowboys vs wizards",
-    "showdown boot hill proof"
+    "showdown boot hill proof",
+    "outrider ride",
+    "decline this ride"
   ]
 }

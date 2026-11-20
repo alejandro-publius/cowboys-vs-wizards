@@ -18,9 +18,9 @@ const IMPORT = /(?:^|\n)\s*(?:import|export)\b[^;]*?\bfrom\s*["'](\.{1,2}\/[^"']
 // SHA-256 of every source file the Showdown replay executes: the static relative-import closure of
 // ENGINE_ENTRIES, each file hashed by bytes, then the sorted "path sha256" lines hashed together.
 // Binds a gameplay proof to Showdown rules code, not to a built page.
-export function engineFingerprint(root) {
+export function engineFingerprint(root, entries = ENGINE_ENTRIES) {
   const files = {};
-  const queue = [...ENGINE_ENTRIES];
+  const queue = [...entries];
   while (queue.length) {
     const rel = queue.shift();
     if (rel in files) continue;
