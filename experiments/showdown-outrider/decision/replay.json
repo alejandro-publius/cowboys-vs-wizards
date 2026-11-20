@@ -1,0 +1,386 @@
+{
+ "case-a": {
+  "seed": 1053,
+  "prefix": [
+   {
+    "type": "summon",
+    "cardId": "cowboy-covered-wagon-1",
+    "tributes": []
+   },
+   {
+    "type": "end"
+   },
+   {
+    "type": "summon",
+    "cardId": "cowboy-outrider-2",
+    "tributes": []
+   },
+   {
+    "type": "spell",
+    "cardId": "cowboy-deadeye-3",
+    "target": 0
+   },
+   {
+    "type": "attack",
+    "slot": 0,
+    "target": 0
+   },
+   {
+    "type": "end"
+   },
+   {
+    "type": "summon",
+    "cardId": "cowboy-sheriff-2",
+    "tributes": []
+   },
+   {
+    "type": "attack",
+    "slot": 0,
+    "target": 0
+   },
+   {
+    "type": "attack",
+    "slot": 1,
+    "target": 0
+   },
+   {
+    "type": "end"
+   }
+  ],
+  "at": 7,
+  "choices": {
+   "ride": {
+    "type": "attack",
+    "slot": 1,
+    "target": "base"
+   },
+   "fight": {
+    "type": "attack",
+    "slot": 1,
+    "target": 0
+   }
+  }
+ },
+ "case-b": {
+  "seed": 1088,
+  "prefix": [
+   {
+    "type": "summon",
+    "cardId": "cowboy-outrider-1",
+    "tributes": []
+   },
+   {
+    "type": "end"
+   }
+  ],
+  "at": 3,
+  "choices": {
+   "ride": {
+    "type": "attack",
+    "slot": 0,
+    "target": "base"
+   },
+   "fight": {
+    "type": "attack",
+    "slot": 0,
+    "target": 0
+   }
+  }
+ },
+ "case-c": {
+  "seed": 1164,
+  "prefix": [
+   {
+    "type": "summon",
+    "cardId": "cowboy-outrider-2",
+    "tributes": []
+   },
+   {
+    "type": "end"
+   }
+  ],
+  "at": 3,
+  "choices": {
+   "ride": {
+    "type": "attack",
+    "slot": 0,
+    "target": "base"
+   },
+   "fight": {
+    "type": "attack",
+    "slot": 0,
+    "target": 0
+   }
+  }
+ },
+ "case-d": {
+  "seed": 1112,
+  "prefix": [
+   {
+    "type": "summon",
+    "cardId": "cowboy-covered-wagon-1",
+    "tributes": []
+   },
+   {
+    "type": "end"
+   },
+   {
+    "type": "summon",
+    "cardId": "cowboy-covered-wagon-2",
+    "tributes": []
+   },
+   {
+    "type": "spell",
+    "cardId": "cowboy-deadeye-3",
+    "target": 0
+   },
+   {
+    "type": "end"
+   },
+   {
+    "type": "summon",
+    "cardId": "cowboy-outrider-2",
+    "tributes": []
+   },
+   {
+    "type": "attack",
+    "slot": 0,
+    "target": 1
+   },
+   {
+    "type": "end"
+   }
+  ],
+  "at": 7,
+  "choices": {
+   "ride": {
+    "type": "attack",
+    "slot": 2,
+    "target": "base"
+   },
+   "fight": {
+    "type": "attack",
+    "slot": 2,
+    "target": 0
+   }
+  }
+ },
+ "case-e": {
+  "seed": 1181,
+  "prefix": [
+   {
+    "type": "summon",
+    "cardId": "cowboy-outrider-2",
+    "tributes": []
+   },
+   {
+    "type": "end"
+   }
+  ],
+  "at": 3,
+  "choices": {
+   "ride": {
+    "type": "attack",
+    "slot": 0,
+    "target": "base"
+   },
+   "fight": {
+    "type": "attack",
+    "slot": 0,
+    "target": 0
+   }
+  }
+ },
+ "case-f": {
+  "seed": 1106,
+  "prefix": [
+   {
+    "type": "summon",
+    "cardId": "cowboy-outrider-1",
+    "tributes": []
+   },
+   {
+    "type": "end"
+   }
+  ],
+  "at": 3,
+  "choices": {
+   "ride": {
+    "type": "attack",
+    "slot": 0,
+    "target": "base"
+   },
+   "fight": {
+    "type": "attack",
+    "slot": 0,
+    "target": 0
+   }
+  }
+ },
+ "case-g": {
+  "seed": 1002,
+  "prefix": [
+   {
+    "type": "summon",
+    "cardId": "cowboy-outrider-1",
+    "tributes": []
+   },
+   {
+    "type": "end"
+   }
+  ],
+  "at": 3,
+  "choices": {
+   "ride": {
+    "type": "attack",
+    "slot": 0,
+    "target": "base"
+   },
+   "fight": {
+    "type": "attack",
+    "slot": 0,
+    "target": 0
+   }
+  }
+ },
+ "case-h": {
+  "seed": 1052,
+  "prefix": [
+   {
+    "type": "summon",
+    "cardId": "cowboy-covered-wagon-1",
+    "tributes": []
+   },
+   {
+    "type": "end"
+   },
+   {
+    "type": "summon",
+    "cardId": "cowboy-outrider-2",
+    "tributes": []
+   },
+   {
+    "type": "spell",
+    "cardId": "cowboy-deadeye-1",
+    "target": 0
+   },
+   {
+    "type": "attack",
+    "slot": 0,
+    "target": 0
+   },
+   {
+    "type": "end"
+   },
+   {
+    "type": "summon",
+    "cardId": "cowboy-covered-wagon-2",
+    "tributes": []
+   },
+   {
+    "type": "attack",
+    "slot": 1,
+    "target": 1
+   },
+   {
+    "type": "end"
+   }
+  ],
+  "at": 7,
+  "choices": {
+   "ride": {
+    "type": "attack",
+    "slot": 1,
+    "target": "base"
+   },
+   "fight": {
+    "type": "attack",
+    "slot": 1,
+    "target": 0
+   }
+  }
+ },
+ "case-i": {
+  "seed": 1102,
+  "prefix": [
+   {
+    "type": "summon",
+    "cardId": "cowboy-outrider-2",
+    "tributes": []
+   },
+   {
+    "type": "end"
+   }
+  ],
+  "at": 3,
+  "choices": {
+   "ride": {
+    "type": "attack",
+    "slot": 0,
+    "target": "base"
+   },
+   "fight": {
+    "type": "attack",
+    "slot": 0,
+    "target": 0
+   }
+  }
+ },
+ "case-j": {
+  "seed": 1068,
+  "prefix": [
+   {
+    "type": "summon",
+    "cardId": "cowboy-sheriff-4",
+    "tributes": []
+   },
+   {
+    "type": "end"
+   },
+   {
+    "type": "summon",
+    "cardId": "cowboy-sheriff-2",
+    "tributes": []
+   },
+   {
+    "type": "attack",
+    "slot": 0,
+    "target": 0
+   },
+   {
+    "type": "end"
+   },
+   {
+    "type": "summon",
+    "cardId": "cowboy-outrider-2",
+    "tributes": []
+   },
+   {
+    "type": "spell",
+    "cardId": "cowboy-deadeye-1",
+    "target": 0
+   },
+   {
+    "type": "attack",
+    "slot": 1,
+    "target": 1
+   },
+   {
+    "type": "end"
+   }
+  ],
+  "at": 7,
+  "choices": {
+   "ride": {
+    "type": "attack",
+    "slot": 0,
+    "target": "base"
+   },
+   "fight": {
+    "type": "attack",
+    "slot": 0,
+    "target": 0
+   }
+  }
+ }
+}
