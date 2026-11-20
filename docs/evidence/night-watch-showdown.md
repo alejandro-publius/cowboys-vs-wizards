@@ -51,3 +51,11 @@ Raw records: [night-watch-showdown/scout-pair-reports.json](night-watch-showdown
 
 - No scheduled Crew job was registered or triggered on this machine; the nightly command is covered by a unit test only.
 - The Crew UI was not opened in a browser.
+
+### Installed Night Watch dashboard
+
+Kiro updated the existing Crew app from the [standalone mirror candidate](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch/pull/1) at `bb37f6f9720e8710e62ec656d8d4102768f68207`. Ten shipped files matched the [canonical game source](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/171) by Git blob and file mode. The standalone Python suite passed all 29 tests. The CLI was 0.13.0 and the running gateway was 0.12.2.
+
+For existing scheduled Showdown report `4195c6c07cda`, the authenticated gateway returned HTTP 200 and an unauthenticated request returned 403. Kiro opened the dashboard and reloaded the report. Its 1,000 deals, seeds 0–999, were played from both seats. Cowboys won 1,188 of 2,000 games (59.4%) and the first player won 1,142 (57.1%). The on-disk report, gateway response and rendered percentages agreed. Codex independently matched the full recorded revisions, both sets of win counts, the seed range and the simulator hash to the receipt. The earlier 0.1.2 panel showed 118.8% and 114.2% for that same report because it divided wins by the number of deals.
+
+This was an update of an existing install. Kiro restored its original source and verified that settings, history and grants were preserved. The tested mirror revision remains available in the [standalone PR](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch/pull/1). First-time installation and Devpost submission have separate evidence requirements.
