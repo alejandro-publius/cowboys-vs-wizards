@@ -1,5 +1,7 @@
 # Judge demo script and first-time playtest protocol
 
+> **Historical, lane duel.** Part 1 scripts the earlier three-lane duel (seed 60), written before Showdown became the December 4 fight on November 19. The current entry and its build labels are in the [Kiro write-up](kiro-brag-sheet.md). A Showdown video script is not written yet. Part 2's protocol has not been run on either fight.
+
 Prepared November 16, 2026 by Fable as a docs-only pass. This script has not been recorded or narrated, and the human protocol is unrun. Existing source footage is listed below; no final YouTube upload is claimed. Authorship and limits: [fable-judge-story.md](../evidence/fable-judge-story.md). Every figure and game event in Part 1 was later checked against the receipts and a replay of seed 60: [fable-story-receipt-check.md](../evidence/fable-story-receipt-check.md).
 
 ## Part 1: Demo video

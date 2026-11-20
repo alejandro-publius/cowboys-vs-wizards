@@ -43,8 +43,12 @@ function OutcomeBar({ label, revision, count }) {
       }))));
 }
 
+// Showdown counts carry a game total (each deal played from both seats); lane counts are one match per seed.
+const gamesOf = (report) => report.candidate?.counts?.games ?? report.count;
+
 function ComparisonTable({ metrics, report, caption }) {
-  const { baseline, candidate, count } = report;
+  const { baseline, candidate } = report;
+  const count = gamesOf(report);
   return h("div", { className: "table-scroll" },
     h("table", { "aria-label": caption },
       h("thead", null, h("tr", null,
@@ -76,7 +80,9 @@ function Report({ report }) {
       h(Revision, { label: "Candidate", revision: report.candidate }),
       h("div", { className: "revision run-seeds" },
         h("span", null, "Identical seeds"),
-        h("strong", null, number.format(report.count) + " per revision"),
+        h("strong", null, report.mode === "showdown"
+          ? number.format(report.count) + " Showdown deals, both seats"
+          : number.format(report.count) + " lane matches per revision"),
         h("code", null, number.format(report.firstSeed) + "–" + number.format(report.firstSeed + report.count - 1)))),
     h("div", { className: "comparison-layout" },
       h("section", { className: "panel outcome-panel" },
@@ -86,8 +92,8 @@ function Report({ report }) {
         ready
           ? h("div", null,
             h("div", { className: "outcome-bars" },
-              h(OutcomeBar, { label: "Baseline", revision: report.baseline, count: report.count }),
-              h(OutcomeBar, { label: "Candidate", revision: report.candidate, count: report.count })),
+              h(OutcomeBar, { label: "Baseline", revision: report.baseline, count: gamesOf(report) }),
+              h(OutcomeBar, { label: "Candidate", revision: report.candidate, count: gamesOf(report) })),
             h(ComparisonTable, { metrics: factionMetrics, report, caption: "Faction win share and draws" }))
           : h("p", { className: "panel-message" }, "The run stopped before both simulations completed.")),
       h("section", { className: "panel findings-panel", "aria-label": "Review findings" },
@@ -140,15 +146,15 @@ function Settings({ config, save, busy }) {
     { key: "repo", label: "Duel checkout", className: "wide", placeholder: "/path/to/cowboys-vs-wizards" },
     { key: "baseline", label: "Baseline Git ref" },
     { key: "candidate", label: "Candidate Git ref" },
-    { key: "count", label: "Matches per revision", min: 1, max: 10000 },
+    { key: "count", label: "Deals or matches per revision", min: 1, max: 10000 },
     { key: "firstSeed", label: "First seed", min: 0, max: 4294967295 },
     { key: "threshold", label: "Alert threshold (pp)", min: 1, max: 100, step: "0.1" },
   ];
   function submit(event) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    save(Object.fromEntries(fields.map(({ key, min }) =>
-      [key, min === undefined ? String(data.get(key)).trim() : Number(data.get(key))])));
+    save({ ...Object.fromEntries(fields.map(({ key, min }) =>
+      [key, min === undefined ? String(data.get(key)).trim() : Number(data.get(key))])), mode: String(data.get("mode")) });
   }
   return h("section", { className: "settings panel", id: "night-watch-settings" },
     h("header", { className: "panel-heading" }, h("h2", null, "Comparison settings")),
@@ -159,7 +165,12 @@ function Settings({ config, save, busy }) {
           h("input", {
             name: key, defaultValue: config[key], placeholder, required: true,
             type: min === undefined ? "text" : "number", min, max, step,
-          })))),
+          }))),
+        h("label", { key: "mode" },
+          h("span", null, "Mode"),
+          h("select", { name: "mode", defaultValue: config.mode || "lanes" },
+            h("option", { value: "showdown" }, "Showdown (each deal from both seats)"),
+            h("option", { value: "lanes" }, "Lane duel")))),
       h("p", { className: "settings-note quiet" }, "Night Watch runs the engine from commits in this local checkout."),
       h("button", { type: "submit", className: "action primary", disabled: Boolean(busy) },
         busy === "save" ? "Saving…" : "Save settings")));

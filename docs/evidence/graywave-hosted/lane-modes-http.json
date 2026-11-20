@@ -1,0 +1,190 @@
+{
+ "requests": [
+  {
+   "phase": "?mode=ride-out",
+   "url": "http://127.0.0.1:48731/cowboys-vs-wizards/graybox/?mode=ride-out",
+   "type": "Document",
+   "status": 200,
+   "mimeType": "text/html",
+   "contentType": "text/html; charset=utf-8",
+   "fromCache": false,
+   "encodedDataLength": 55518
+  },
+  {
+   "phase": "?mode=ride-out",
+   "url": "http://127.0.0.1:48731/cowboys-vs-wizards/graybox/chunks/lanes-0dbfbd1b.js",
+   "type": "Script",
+   "status": 200,
+   "mimeType": "text/javascript",
+   "contentType": "text/javascript; charset=utf-8",
+   "fromCache": false,
+   "encodedDataLength": 118410
+  },
+  {
+   "phase": "?mode=practice-dynamiter",
+   "url": "http://127.0.0.1:48731/cowboys-vs-wizards/graybox/?mode=practice-dynamiter",
+   "type": "Document",
+   "status": 200,
+   "mimeType": "text/html",
+   "contentType": "text/html; charset=utf-8",
+   "fromCache": false,
+   "encodedDataLength": 55518
+  },
+  {
+   "phase": "?mode=practice-dynamiter",
+   "url": "http://127.0.0.1:48731/cowboys-vs-wizards/graybox/chunks/lanes-0dbfbd1b.js",
+   "type": "Script",
+   "status": 200,
+   "mimeType": "text/javascript",
+   "contentType": "text/javascript; charset=utf-8",
+   "fromCache": false,
+   "encodedDataLength": 118410
+  },
+  {
+   "phase": "?mode=practice-tribute",
+   "url": "http://127.0.0.1:48731/cowboys-vs-wizards/graybox/?mode=practice-tribute",
+   "type": "Document",
+   "status": 200,
+   "mimeType": "text/html",
+   "contentType": "text/html; charset=utf-8",
+   "fromCache": false,
+   "encodedDataLength": 55518
+  },
+  {
+   "phase": "?mode=practice-tribute",
+   "url": "http://127.0.0.1:48731/cowboys-vs-wizards/graybox/chunks/lanes-0dbfbd1b.js",
+   "type": "Script",
+   "status": 200,
+   "mimeType": "text/javascript",
+   "contentType": "text/javascript; charset=utf-8",
+   "fromCache": false,
+   "encodedDataLength": 118410
+  },
+  {
+   "phase": "?mode=fire-arc",
+   "url": "http://127.0.0.1:48731/cowboys-vs-wizards/graybox/?mode=fire-arc",
+   "type": "Document",
+   "status": 200,
+   "mimeType": "text/html",
+   "contentType": "text/html; charset=utf-8",
+   "fromCache": false,
+   "encodedDataLength": 55518
+  },
+  {
+   "phase": "?mode=fire-arc",
+   "url": "http://127.0.0.1:48731/cowboys-vs-wizards/graybox/chunks/lanes-0dbfbd1b.js",
+   "type": "Script",
+   "status": 200,
+   "mimeType": "text/javascript",
+   "contentType": "text/javascript; charset=utf-8",
+   "fromCache": false,
+   "encodedDataLength": 118410
+  },
+  {
+   "phase": "?mode=demo",
+   "url": "http://127.0.0.1:48731/cowboys-vs-wizards/graybox/?mode=demo",
+   "type": "Document",
+   "status": 200,
+   "mimeType": "text/html",
+   "contentType": "text/html; charset=utf-8",
+   "fromCache": false,
+   "encodedDataLength": 55518
+  },
+  {
+   "phase": "?mode=lanes&seed=60",
+   "url": "http://127.0.0.1:48731/cowboys-vs-wizards/graybox/?mode=lanes&seed=60",
+   "type": "Document",
+   "status": 200,
+   "mimeType": "text/html",
+   "contentType": "text/html; charset=utf-8",
+   "fromCache": false,
+   "encodedDataLength": 55518
+  },
+  {
+   "phase": "?mode=lanes&seed=60",
+   "url": "http://127.0.0.1:48731/cowboys-vs-wizards/graybox/chunks/lanes-0dbfbd1b.js",
+   "type": "Script",
+   "status": 200,
+   "mimeType": "text/javascript",
+   "contentType": "text/javascript; charset=utf-8",
+   "fromCache": false,
+   "encodedDataLength": 118410
+  }
+ ],
+ "page": "http://127.0.0.1:48731/cowboys-vs-wizards/graybox/",
+ "chrome": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+ "viewport": [
+  1440,
+  900
+ ],
+ "checks": [
+  {
+   "name": "?mode=ride-out lane chunk=true newErrors=0",
+   "passed": true,
+   "detail": {
+    "arena": true,
+    "showdownHidden": true,
+    "titleHidden": true,
+    "lanesLink": "?mode=lanes",
+    "showdownLink": "?"
+   }
+  },
+  {
+   "name": "?mode=practice-dynamiter lane chunk=true newErrors=0",
+   "passed": true,
+   "detail": {
+    "arena": true,
+    "showdownHidden": true,
+    "titleHidden": true,
+    "lanesLink": "?mode=lanes",
+    "showdownLink": "?"
+   }
+  },
+  {
+   "name": "?mode=practice-tribute lane chunk=true newErrors=0",
+   "passed": true,
+   "detail": {
+    "arena": true,
+    "showdownHidden": true,
+    "titleHidden": true,
+    "lanesLink": "?mode=lanes",
+    "showdownLink": "?"
+   }
+  },
+  {
+   "name": "?mode=fire-arc lane chunk=true newErrors=0",
+   "passed": true,
+   "detail": {
+    "arena": true,
+    "showdownHidden": true,
+    "titleHidden": true,
+    "lanesLink": "?mode=lanes",
+    "showdownLink": "?"
+   }
+  },
+  {
+   "name": "?mode=demo lane chunk=false newErrors=0",
+   "passed": true,
+   "detail": {
+    "arena": false,
+    "showdownHidden": true,
+    "titleHidden": false,
+    "lanesLink": "?mode=lanes",
+    "showdownLink": "?"
+   }
+  },
+  {
+   "name": "?mode=lanes&seed=60 lane chunk=true newErrors=0",
+   "passed": true,
+   "detail": {
+    "arena": false,
+    "showdownHidden": true,
+    "titleHidden": false,
+    "lanesLink": "?mode=lanes",
+    "showdownLink": "?"
+   }
+  }
+ ],
+ "errors": [],
+ "clicks": 0
+}

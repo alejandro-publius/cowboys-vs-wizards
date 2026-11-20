@@ -1,0 +1,120 @@
+[
+  {
+    "id": "201574dcbf32",
+    "at": "2026-11-20T05:45:40Z",
+    "source": "manual",
+    "firstSeed": 0,
+    "count": 1000,
+    "threshold": 10,
+    "mode": "lanes",
+    "state": "steady",
+    "message": "Faction results and first-seat growth stayed within the 10 pp alert threshold.",
+    "baseline": {
+      "ref": "a9aa8280e574bd662405bfe60454db5a81466afd",
+      "commit": "a9aa8280e574bd662405bfe60454db5a81466afd",
+      "counts": {
+        "cowboy": 424,
+        "wizard": 462,
+        "draw": 114,
+        "first": 578,
+        "second": 308
+      }
+    },
+    "candidate": {
+      "ref": "3dd47f1fb668f1b42edd72b50c898a0b1e622d74",
+      "commit": "3dd47f1fb668f1b42edd72b50c898a0b1e622d74",
+      "counts": {
+        "cowboy": 424,
+        "wizard": 462,
+        "draw": 114,
+        "first": 578,
+        "second": 308
+      }
+    },
+    "rules": {
+      "state": "passed",
+      "tests": 265
+    },
+    "changes": []
+  },
+  {
+    "id": "fa15c87e1701",
+    "at": "2026-11-20T05:43:40Z",
+    "source": "manual",
+    "firstSeed": 0,
+    "count": 1000,
+    "threshold": 10,
+    "mode": "showdown",
+    "state": "steady",
+    "message": "Faction results and first-seat growth stayed within the 10 pp alert threshold.",
+    "baseline": {
+      "ref": "a9aa8280e574bd662405bfe60454db5a81466afd",
+      "commit": "a9aa8280e574bd662405bfe60454db5a81466afd",
+      "counts": {
+        "games": 2000,
+        "cowboy": 1185,
+        "wizard": 815,
+        "draw": 0,
+        "first": 1149,
+        "second": 851
+      }
+    },
+    "candidate": {
+      "ref": "3dd47f1fb668f1b42edd72b50c898a0b1e622d74",
+      "commit": "3dd47f1fb668f1b42edd72b50c898a0b1e622d74",
+      "counts": {
+        "games": 2000,
+        "cowboy": 1188,
+        "wizard": 812,
+        "draw": 0,
+        "first": 1142,
+        "second": 858
+      }
+    },
+    "rules": {
+      "state": "passed",
+      "tests": 318
+    },
+    "changes": []
+  },
+  {
+    "id": "c7aee59425e7",
+    "at": "2026-11-20T05:42:44Z",
+    "source": "manual",
+    "firstSeed": 0,
+    "count": 1000,
+    "threshold": 10,
+    "mode": "showdown",
+    "state": "steady",
+    "message": "Faction results and first-seat growth stayed within the 10 pp alert threshold.",
+    "baseline": {
+      "ref": "a9aa8280e574bd662405bfe60454db5a81466afd",
+      "commit": "a9aa8280e574bd662405bfe60454db5a81466afd",
+      "counts": {
+        "games": 2000,
+        "cowboy": 1185,
+        "wizard": 815,
+        "draw": 0,
+        "first": 1149,
+        "second": 851
+      }
+    },
+    "candidate": {
+      "ref": "3dd47f1fb668f1b42edd72b50c898a0b1e622d74",
+      "commit": "3dd47f1fb668f1b42edd72b50c898a0b1e622d74",
+      "counts": {
+        "games": 2000,
+        "cowboy": 1188,
+        "wizard": 812,
+        "draw": 0,
+        "first": 1142,
+        "second": 858
+      }
+    },
+    "rules": {
+      "state": "passed",
+      "tests": 318
+    },
+    "changes": []
+  }
+]

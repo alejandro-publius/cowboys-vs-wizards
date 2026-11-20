@@ -6,7 +6,9 @@ fileMatchPattern: ["src/match/**", "src/render/**", "src/ui/**", "scripts/browse
 # Duel iteration
 
 Use for quick changes to match presentation, card art or the browser route.
-README.md has the build command and check table.
+README.md has the build command and check table. For Showdown screens and
+their checks, use the Showdown rows in `docs/AGENT-ROUTER.md`; the contracts
+below are the lane duel's and the illustrated build's.
 
 ## Contracts to keep
 

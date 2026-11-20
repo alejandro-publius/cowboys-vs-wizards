@@ -24,7 +24,12 @@ DEFAULT_CONFIG = {
     "firstSeed": 0,
     "count": 1000,
     "threshold": 10,
+    "mode": "lanes",
 }
+
+# "showdown" plays each deal twice with the first seat swapped (prototypes/showdown/sim.mjs);
+# "lanes" runs the lane duel through scripts/simulate-matches.mjs.
+MODES = ("showdown", "lanes")
 
 MAX_COUNT = 10000
 MAX_SEED = 2**32 - 1
@@ -35,8 +40,13 @@ MAX_ARCHIVE_BYTES = 50 * 1024 * 1024
 MAX_CHANGES = 50
 CARDS_DIR = ".kiro/specs/duel-card-pipeline/cards"
 
-REQUIRED_PATHS = ["package.json", "src/game", "scripts/play-match.mjs", "scripts/simulate-matches.mjs"]
-OPTIONAL_PATHS = ["tests/game", "src/profile", CARDS_DIR]
+REQUIRED_PATHS = {
+    "lanes": ["package.json", "src/game", "scripts/play-match.mjs", "scripts/simulate-matches.mjs"],
+    "showdown": ["package.json", "src/game", "prototypes/showdown/rules.js"],
+}
+# The candidate's tests import helpers, scripts, the Showdown prototype and one committed evidence file.
+OPTIONAL_PATHS = ["scripts", "tests", "src", "prototypes/showdown", "docs/evidence/boundary-properties", CARDS_DIR]
+SHOWDOWN_RUNNER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "showdown_sim.mjs")
 
 
 class ConfigError(Exception):
@@ -87,7 +97,11 @@ def validate_config(raw):
     if not 1 <= threshold <= 100:
         raise ConfigError("Threshold must be between 1 and 100 percentage points.")
 
-    config = {"repo": repo, "firstSeed": first_seed, "count": count, "threshold": threshold}
+    mode = merged["mode"]
+    if mode not in MODES:
+        raise ConfigError("Mode must be one of %s." % ", ".join(MODES))
+
+    config = {"repo": repo, "firstSeed": first_seed, "count": count, "threshold": threshold, "mode": mode}
     for name in ("baseline", "candidate"):
         ref = merged[name]
         if not isinstance(ref, str) or not ref.strip() or len(ref) > 200 or re.search(r"[\x00-\x1f\x7f]", ref):
@@ -174,15 +188,16 @@ def node_command():
 
 # ---------------------------------------------------------------- snapshots
 
-def extract_snapshot(repo, commit, dest):
+def extract_snapshot(repo, commit, dest, mode="lanes"):
     """Write only the needed files of one commit into dest, using git archive."""
     paths = []
-    for path in REQUIRED_PATHS + OPTIONAL_PATHS:
+    required = REQUIRED_PATHS[mode]
+    for path in required + [p for p in OPTIONAL_PATHS if p not in required]:
         code, out, _ = git(repo, ["ls-tree", "--name-only", commit, "--", path], "git")
         if code == 0 and out:
             paths.append(path)
-        elif path in REQUIRED_PATHS:
-            raise CheckError("Commit %s has no %s. Choose a ref that contains the game engine and simulator." % (commit[:10], path))
+        elif path in required:
+            raise CheckError("Commit %s has no %s. Choose a ref that contains the %s engine and simulator." % (commit[:10], path, mode))
     tar_path = dest + ".tar"
     with open(tar_path, "wb") as handle:
         result = run_command(["git", "-C", repo, "archive", "--format=tar", commit, "--"] + paths, None, GIT_TIMEOUT, "git archive", stdout=handle)
@@ -213,12 +228,14 @@ def extract_snapshot(repo, commit, dest):
     os.remove(tar_path)
 
 
-def run_game_tests(snapshot, node):
-    """Run the pure game tests of a snapshot. Returns (state, test count)."""
-    folder = os.path.join(snapshot, "tests", "game")
+def run_game_tests(snapshot, node, mode="lanes"):
+    """Run the pure game tests of a snapshot (plus the Showdown rule tests in Showdown mode). Returns (state, test count)."""
     files = []
-    for base, _, names in os.walk(folder):
+    for base, _, names in os.walk(os.path.join(snapshot, "tests", "game")):
         files += [os.path.relpath(os.path.join(base, n), snapshot) for n in sorted(names) if n.endswith((".js", ".mjs", ".cjs"))]
+    showdown = os.path.join(snapshot, "prototypes", "showdown")
+    if mode == "showdown" and os.path.isdir(showdown):
+        files += [os.path.join("prototypes", "showdown", n) for n in sorted(os.listdir(showdown)) if n.endswith(".test.js")]
     if not files:
         return "unavailable", None
     result = run_command([node, "--test"] + sorted(files), snapshot, TEST_TIMEOUT, "The game tests")
@@ -231,6 +248,8 @@ def run_game_tests(snapshot, node):
 
 
 def simulate(snapshot, node, config):
+    if config.get("mode") == "showdown":
+        return simulate_showdown(snapshot, node, config)
     out_file = os.path.join(os.path.dirname(snapshot), os.path.basename(snapshot) + "-report.json")
     argv = [
         node, "scripts/simulate-matches.mjs", "--from", str(config["firstSeed"]), "--count", str(config["count"]),
@@ -244,6 +263,37 @@ def simulate(snapshot, node, config):
             return parse_simulation(json.load(handle), config)
     except (OSError, ValueError, KeyError, TypeError):
         raise CheckError("The simulation report could not be read. Check that the simulator writes the expected JSON.")
+
+
+def simulate_showdown(snapshot, node, config):
+    out_file = os.path.join(os.path.dirname(snapshot), os.path.basename(snapshot) + "-showdown.json")
+    argv = [node, SHOWDOWN_RUNNER, snapshot, str(config["firstSeed"]), str(config["count"]), out_file]
+    result = run_command(argv, snapshot, SIM_TIMEOUT, "The Showdown simulation")
+    if result.returncode != 0:
+        raise CheckError("The Showdown simulation failed.", tail(text_of(result.stderr) + text_of(result.stdout)))
+    try:
+        with open(out_file, encoding="utf-8") as handle:
+            return parse_showdown(json.load(handle), config)
+    except (OSError, ValueError, KeyError, TypeError):
+        raise CheckError("The Showdown simulation report could not be read.")
+
+
+def parse_showdown(data, config):
+    """Counts over 2 x deals games: every deal once with each faction moving first."""
+    deals = config["count"]
+    seeds = data["seeds"]
+    if data["mode"] != "showdown" or seeds != {"from": config["firstSeed"], "to": config["firstSeed"] + deals - 1, "deals": deals}:
+        raise CheckError("The Showdown simulation covered different deals than requested.", json.dumps(seeds))
+    counts = {key: data[key] for key in ("games", "cowboy", "wizard", "draw", "first", "second")}
+    if any(isinstance(v, bool) or not isinstance(v, int) or v < 0 for v in counts.values()):
+        raise CheckError("The Showdown simulation report has counts that are not whole numbers.")
+    if counts["games"] != 2 * deals:
+        raise CheckError("The Showdown simulation did not play every deal from both seats.")
+    if counts["cowboy"] + counts["wizard"] + counts["draw"] != counts["games"]:
+        raise CheckError("The Showdown outcomes do not add up to %d games." % counts["games"])
+    if counts["first"] + counts["second"] != counts["cowboy"] + counts["wizard"]:
+        raise CheckError("The seat and faction results disagree on the number of wins.")
+    return counts
 
 
 def parse_simulation(data, config):
@@ -342,8 +392,10 @@ def issue_url(repo, record):
         "",
         "Baseline: %s" % base["commit"],
         "Candidate: %s" % cand["commit"],
-        "Shared seeds: %d–%d (%d matches per revision, CPU vs. CPU)" % (
-            record["firstSeed"], record["firstSeed"] + record["count"] - 1, record["count"],
+        "Shared seeds: %d–%d (%s, CPU vs. CPU)" % (
+            record["firstSeed"], record["firstSeed"] + record["count"] - 1,
+            "%d Showdown deals, each played from both seats" % record["count"] if record.get("mode") == "showdown"
+            else "%d lane matches per revision" % record["count"],
         ),
     ]
     for label, side in (("Baseline", base), ("Candidate", cand)):
@@ -361,7 +413,8 @@ def issue_url(repo, record):
 
 def judge(config, base, cand):
     """Return a status and the exact outcome shifts that crossed the threshold."""
-    count, limit = config["count"], config["threshold"]
+    # Showdown counts carry their game total (two games per deal); lane counts are one match per seed.
+    count, limit = cand.get("games", config["count"]), config["threshold"]
     hits = []
     for name, key in (("Cowboy", "cowboy"), ("Wizard", "wizard")):
         shift = 100 * (cand[key] - base[key]) / count
@@ -392,6 +445,7 @@ def build_report(config, source):
         "firstSeed": config["firstSeed"],
         "count": config["count"],
         "threshold": config["threshold"],
+        "mode": config.get("mode", "lanes"),
         "state": "failed",
         "message": "",
         "baseline": {"ref": config["baseline"], "commit": base_commit, "counts": None},
@@ -426,9 +480,10 @@ def compare(config, record, repo, work):
     node = node_command()
     base_commit, cand_commit = record["baseline"]["commit"], record["candidate"]["commit"]
     cand_dir = os.path.join(work, "candidate")
-    extract_snapshot(repo, cand_commit, cand_dir)
+    mode = config.get("mode", "lanes")
+    extract_snapshot(repo, cand_commit, cand_dir, mode)
     try:
-        record["rules"]["state"], record["rules"]["tests"] = run_game_tests(cand_dir, node)
+        record["rules"]["state"], record["rules"]["tests"] = run_game_tests(cand_dir, node, mode)
     except CheckError:
         record["rules"]["state"] = "failed"
         raise
@@ -438,7 +493,7 @@ def compare(config, record, repo, work):
         base_dir, base_counts = cand_dir, cand_counts
     else:
         base_dir = os.path.join(work, "baseline")
-        extract_snapshot(repo, base_commit, base_dir)
+        extract_snapshot(repo, base_commit, base_dir, mode)
         base_counts = simulate(base_dir, node, config)
     record["baseline"]["counts"] = base_counts
     record["changes"] = card_changes(base_dir, cand_dir)

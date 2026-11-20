@@ -278,6 +278,30 @@ The next substantial Kiro task is #56, boundary generation, failure reduction an
   - The slice 2 Requirements-First spec has not been written.
   - `github/main` `a9aa828` (PRs 145–147) was merged in; the change was docs-only. `npm test` passed again, and the built pages kept the same hashes.
 
+### 2026-11-19 — Judge page refresh for PR 152 (Kiro IDE, America/Los_Angeles, 21:54 PST)
+
+- **Problem**: the judge page in PR 152 described `main` at `a9aa828` and listed #149, #150, #151 and #154 in a status table that went stale once #150, #151 and #153 merged.
+- **Performed in**: a Kiro IDE agent session (Claude Opus 5.5) using the `gh` CLI for PR and CI states.
+- **Change**: [docs/submission/kiro-brag-sheet.md](submission/kiro-brag-sheet.md) now describes `main` at `6c14686`, adds #150 (Scout before/after), #151 (Night Watch Showdown, balance steady) and #153 (profile) with commit-pinned evidence and CI links, and replaces the status table with pinned links for #149 (merged into the candidate branch only), #148 and #154. Demo steps unchanged.
+- **Verification**: every link on the page resolved (local paths, anchors, and remote URLs with HTTP 200). The demo's four actions were replayed through `src/match/showdown-session.js` at `6c14686` in Node and gave the same events; no browser run on the new build.
+- **Not verified here**: a scheduled Crew run of Night Watch on Showdown, the #148 code, and any human play.
+
+### 2026-11-19 — Hosted /graybox/ loads Showdown without the lane duel (Kiro CLI, America/Los_Angeles, 22:02 PST)
+
+- **State**: verified locally on branch `kiro/graywave-hosted`, rebased onto `main` `ff84403`. PR opened for review, not merged.
+- **Performed in**: a Kiro CLI 3.5.0 worker session (Claude Opus 5.5).
+- **Change**: `scripts/build-graybox.mjs --hosted` writes `dist/web/graybox/` with the lane duel (`src/graybox.js`) as a separate hashed file that `src/app.js`'s existing dynamic import fetches only in lane modes. The Pages workflow uses it instead of copying the offline file. The offline and `--web` outputs are byte-identical to `main`'s. No `src/` change.
+- **Verification**: Showdown's first request fell from 174206 to 55327 raw bytes (58833 to 18496 gzip-9) on `main` `ff84403`. In real Chrome over local HTTP with cache disabled, the lane file was never requested during Boot Hill play, and `?mode=lanes`, `?mode=match` and the other lane modes fetched it and worked. The PR #148 head passed its own check (25 of 25) with this script. `npm test` passed 551 of 551. An ES-module splitting attempt was rejected because it showed the lane menu until the chunks arrived. [Evidence](evidence/graywave-hosted/README.md)
+- **Remaining**: live Pages and WebKit checks.
+
+### 2026-11-19 — PR 148 synced with main after #150, #154, #155, #156, #157 (Kiro CLI, America/Los_Angeles, 22:12–22:30 PST)
+
+- **Performed in**: a Kiro CLI sync worker session (Claude Opus 5.5). Two ordinary merges into `kiro/graywave-integrate` `998645a`: `github/main` `ff84403` (merge `c1943de`), then `046dbae` (#157, merge `681ba51`), which landed during the session. No new features, rules, wording or balance changes.
+- **Conflicts**: `src/ui/showdown-screen.js` click handler: kept #148's bonus-choice, Trail "again" and Camp lines, then appended #156's `pickStarted`/`refocus` lines (the resolution tested in the #156 worker report). This log: all entries kept.
+- **Verification** on the tree of `681ba51` (offline graybox build, SHA-256 `602055b0…8269`): `npm test` 577 of 577; card-spec check exit 0; `browser-showdown-keyboard-check` 6 of 6; `browser-showdown-check` 23 of 23 (includes `?mode=lanes` and `?mode=match` fallback); `browser-showdown-trail-check` 16 of 16 (first two duels by clicks, rewards across reloads); cue check 5 of 5. The same `browser-showdown-check`, only changed to accept an http URL, passed 23 of 23 on the `--hosted` build served under `/cowboys-vs-wizards/graybox/`. A temporary, uncommitted extension of the keyboard check took the bonus choice by Enter (focus landed on Back to camp), reloaded, and won Raven Roost by keyboard only; the Camp after a reload showed both rewards. `src/game/showdown/rules.js`, `cards.js` and the bot are identical to main; `sim.mjs 1000` and `trail-sim.mjs` reproduce #150's "after" numbers. All bot-driven; no human play.
+- **Fable F1/F2**: answered on PR 148 (F1 no, F2 no change; nothing from the lane game carries into Showdown progress). Not applied in this sync: the compat check A1 flip and the brief's second "done when" line, both of which Fable asked for in this PR.
+- **Remaining**: those two Fable edits, human playtests (keyboard, screen reader, first-time). Fable says the wording stays a first draft and does not block the merge.
+
 ### 2026-11-19 — Keepsake ruling for PR 148 (Kiro CLI, America/Los_Angeles)
 
 - **State**: committed on `kiro/graywave-keepsakes`, for PR 148's head `kiro/graywave-integrate`. Not merged.
