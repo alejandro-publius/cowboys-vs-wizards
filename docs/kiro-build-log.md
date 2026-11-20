@@ -223,3 +223,28 @@ Kiro CLI 3.4.0 V3 completed #35 in two passes (`48ecea9`, `32ba790`). The first 
 Kiro's #54 commit `2966298` adds build.json plus independent live commit/hash verification. PR #55 merged as `4c0723d`; its real Pages build, deployment and verify-live jobs passed. [Receipt](evidence/kiro-build-identity.md). Session credit observations for ten earlier jobs are now published as exact session values with source hashes, never an account total. [Usage](evidence/kiro-session-usage-20261116.md).
 
 The next substantial Kiro task is #56, boundary generation, failure reduction and requirement mapping. It is dispatched, not completed. User asks for alternate-prompt check-ins instead of continuous worker polling.
+
+### 2026-11-19 — Issue 143 slice 1 integration (Kiro, America/Los_Angeles, 15:23 PST)
+
+- **State** — verified locally on the combined branch. Not pushed or merged.
+- **Performed in** — Kiro agent session (Claude Opus 5.5) as the integration worker. The five worker commits came from Kiro CLI 3.5.0 workers.
+- **Change** — cherry-picked the screen (`9cbc086`), pilot kit (`122421a`), 3D starter kit (`030d129`) and save-migration experiment (`d2efc98`) onto the engine commit `9686810`. Removed the screen's temporary adapter `src/match/showdown-engine.js` and its stand-in presenter. The screen and session now import `src/game/showdown/{rules,cards,contract,presenter}.js` directly, and the screen uses the canonical `typeOf` and `has`.
+- **Debugging result** — the first Chrome run on the combined build timed out after the first summon. `events.map(presentEvent)` passed the array index as the canonical `presenters` argument, so every event threw "No presenter". The fix calls `presentEvent(event)`. The browser check now asserts the canonical wording ("The Cowboys' … arrived.", "the Wizards' Base").
+- **Verification** — `npm test` 512 of 512 and both GLB checks. Showdown browser check 12 of 12 on the offline and web builds (seed 0) and on seed 7. Pilot smoke check 16 of 16 on the baseline playtest ZIP. Compat experiment 11 of 11. Links 0 broken. [Receipts](evidence/kiro-143-integration/README.md) · [Screen evidence](evidence/kiro-143-showdown-graybox.md)
+- **Remaining** — first-time human playtests (PLAYTEST.md) and the first Tripo models are still pending. The pilot packer refuses to pack on this branch because `prototypes/showdown/` now re-exports the moved engine. The 735cb09 playtest ZIP is kept as the baseline.
+
+### 2026-11-19 — Issue 143 slice 1 on the PR 144 base (Kiro CLI, America/Los_Angeles, 20:38 PST)
+
+- **State**: verified locally on branch `kiro/144-integrate`. Not pushed, commented on or merged.
+- **Performed in**: a Kiro CLI integration worker session (Claude Opus 5.5).
+- **Change**: on PR 144 head `6819557`, cherry-picked only the engine move `9686810`, the graybox screen `54b78ab` and the integration fixes `40d1b8c`, with no conflicts. The pilot kit, 3D starter kit and save-migration experiment named in the entry above are not on this branch. No bot, rules, card text or test-body changes. No slice 2 work.
+- **Verification**: `npm test` passed 516 of 516, made up of PR 144's 507 tests (same names) and 9 new presenter/session tests, plus both GLB checks. The Showdown browser check passed 12 of 12 on the offline and web builds (seed 0, fresh Chrome profile): Play opens Boot Hill and is won by clicks, and `?mode=lanes` and `?mode=match` still load the lane duel. The PR 144 prototype browser checks passed for access, hotseat, savecode, bo3 and campaign. The onboarding check failed 2 layout checks here, and the same 2 fail on the untouched `6819557` base. That layout belongs to another worker. Rules static diff is in the receipt. [Receipts](evidence/kiro-144-slice1-integration/README.md)
+- **Remaining**: prototype onboarding layout (other worker), Fable decision on the issue 143 / PR 144 bot change, and human playtests.
+
+### 2026-11-19 — Final local integration with the onboarding layout fix (Kiro CLI, America/Los_Angeles, 20:51 PST)
+
+- **State**: verified locally on branch `kiro/144-integrate`, code at `6f2245a`. Not pushed, commented on or merged. Slice 2 not started.
+- **Performed in**: a Kiro CLI final-integration worker session (Claude Opus 5.5). The layout commit `f802687` was written by the Kiro CLI onboarding worker on `kiro/144-onboarding`.
+- **Change**: cherry-picked `f802687` (`prototypes/showdown/style.css` only, no copy, DOM, script or test change) with no conflicts. No rules, bot, card text or test changes.
+- **Verification**: `npm test` 516 of 516 plus both GLB checks. The offline and web graybox builds are byte-identical and unchanged. All six PR 144 Chrome checks pass on the combined `dist/showdown.html` with their original assertions, including onboarding (31 of 31), which failed 2 checks before this fix. The graybox Boot Hill and lane fallback check passed 12 of 12 on both builds. The rules files are identical to `735cb09`, and the bot trace and Scout oracle hashes match the 735cb09 prototype. [Receipts](evidence/kiro-144-final-integration/README.md)
+- **Remaining**: the Fable decision on the issue 143 / PR 144 Scout bot change, and human playtests. Short phones (375×667 and smaller) still need one scroll to reach the first card, per the onboarding worker's measurements. Those measurements were not re-run here.

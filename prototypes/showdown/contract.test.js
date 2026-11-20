@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {EVENTS, viewFor} from "./contract.js";
-import {applyAction, createShowdown, legalActions, opponent, planTurn, playTurn} from "./rules.js";
+import {EVENTS, viewFor} from "../../src/game/showdown/contract.js";
+import {applyAction, createShowdown, legalActions, opponent, planTurn, playTurn} from "../../src/game/showdown/rules.js";
 import {duelFor} from "./progress.js";
 import {LADDER} from "./trail-sim.mjs";
 

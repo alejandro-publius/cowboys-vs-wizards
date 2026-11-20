@@ -17,8 +17,10 @@ button { cursor: pointer; } button:disabled { cursor: default; opacity: .55; }
 .pick { outline: 2px solid #fff; } .can { border-color: #8fd18f; } .chosen { outline: 2px solid var(--cowboy); }
 .note { display: block; font-size: .82rem; color: #b9bbc6; margin-top: .2rem; }
 .warn { color: #f0a08a; } .good { color: #9fe09f; }
-#prompt { min-height: 1.5rem; margin: .6rem 0; }
-#hand { display: flex; gap: .5rem; flex-wrap: wrap; } #hand .card { width: 9rem; }
+#prompt { min-height: 1.5rem; margin: .4rem 0; }
+#hand { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .5rem; }
+/* Cards share the row's width (never narrower than 9rem), so a cost line wraps less and End turn stays on screen. */
+#hand .card { flex: 1 1 9rem; max-width: 13rem; }
 #log { list-style: none; margin: 0; padding-left: 0; font-size: .92rem; color: #c8c9d1; max-height: 14rem; overflow: auto; }
 #log li.turn { margin: .35rem 0 .1rem; font-weight: 600; color: #e9e9ee; }
 .result { font-size: 1.2rem; }
@@ -30,9 +32,9 @@ button { cursor: pointer; } button:disabled { cursor: default; opacity: .55; }
 .row > button:not(.card), #actions button { padding: .5rem .9rem; border-radius: 6px; border: 1px solid var(--line); background: #2a2d37; color: inherit; font: inherit; }
 .ladder { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: .4rem; margin: 0 0 .6rem; padding: 0; }
 .tile { width: 100%; height: 100%; text-align: left; border: 1px solid var(--line); border-radius: 6px; padding: .45rem .55rem; background: #20222a; color: inherit; font: inherit; font-size: .9rem; }
-.tile strong { display: block; } .tile.open { border-color: var(--cowboy); } .tile.won strong { color: #9fe09f; }
+.tile strong { display: block; } .tile .start { color: var(--cowboy); } .tile.open { border-color: var(--cowboy); } .tile.won strong { color: #9fe09f; }
 #lesson { font-size: 1.05rem; margin: .4rem 0; }
-details { margin-bottom: .5rem; color: #c8c9d1; } summary { cursor: pointer; font-size: .9rem; }
+details { margin-bottom: .5rem; color: #c8c9d1; } summary { cursor: pointer; font-size: .9rem; padding: .2rem 0; }
 #reward h2, #claim h2 { margin: .25rem 0; color: var(--cowboy); }
 .earned { width: 13rem; }
 /* Gear and locations by their border, like spells and traps. */
@@ -47,4 +49,16 @@ textarea { width: 100%; box-sizing: border-box; background: #20222a; color: inhe
 #curtain { text-align: center; padding: 4rem 1rem; } #curtain p { font-size: 1.3rem; }
 #curtain button { padding: .7rem 1.4rem; border-radius: 6px; border: 1px solid var(--cowboy); background: #2a2d37; color: inherit; font: inherit; font-size: 1.1rem; }
 [hidden] { display: none !important; }
-@media (max-width: 40rem) { .side { grid-template-columns: 1fr 1fr; } .build-row { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 40rem) { .build-row { grid-template-columns: 1fr 1fr; }
+  /* On a phone each side is its Base on one full-width line over its three troop slots, and an empty slot is short,
+     so the board leaves room for the hand above the turn's buttons. A slot with a troop keeps room for an attack
+     preview, so the board does not jump when a target is picked. */
+  .side { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .side .base { grid-column: 1 / -1; min-height: 0; } .side .base strong { display: inline; margin-right: .4rem; }
+  .side .slot { min-height: 4rem; } .side .slot:has(strong) { min-height: 13rem; }
+  /* A card is as tall as its own text, so a short playable card is not stretched under the turn's buttons. */
+  #hand { align-items: flex-start; }
+  /* On a phone the hand sits under the prompt, so the turn's buttons stay on screen at the bottom, and focus scrolls clear of them. */
+  #actions { position: sticky; bottom: 0; z-index: 1; margin: 0 -1.25rem .75rem; padding: .5rem 1.25rem; background: #17181c; border-top: 1px solid var(--line); gap: .4rem; }
+  #actions button { padding: .4rem .6rem; font-size: .9rem; }
+  html { scroll-padding-bottom: 7rem; } }

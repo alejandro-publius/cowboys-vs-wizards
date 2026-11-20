@@ -33,6 +33,13 @@
           <button type="button" id="reset">Start over</button>
           <span id="code-note" class="note" role="status"></span>
         </div>
+        <div id="code-preview" data-testid="save-import-preview" role="group" aria-labelledby="code-preview-text" hidden>
+          <p id="code-preview-text" class="note"></p>
+          <div class="row">
+            <button type="button" id="code-replace" data-testid="save-import-replace">Replace my progress</button>
+            <button type="button" id="code-cancel" data-testid="save-import-cancel">Cancel</button>
+          </div>
+        </div>
       </details>
       <details>
         <summary>Playtest report</summary>
@@ -71,7 +78,9 @@
       <div id="reward" aria-live="polite"></div>
       <p id="location" class="note"></p>
       <section id="board" aria-label="Board"></section>
-      <p id="prompt"></p>
+      <p id="prompt" aria-live="polite"></p>
+      <!-- The hand sits under the prompt that asks for it, before the turn's buttons. -->
+      <section id="hand" aria-label="Hand"></section>
       <div class="row" id="actions">
         <button type="button" id="end">End turn</button>
         <button type="button" id="cover">Take cover</button>
@@ -79,7 +88,6 @@
         <button type="button" id="again">Restart this duel</button>
         <button type="button" id="leave">Back to camp</button>
       </div>
-      <section id="hand" aria-label="Hand"></section>
       <section aria-label="What happened"><h2>What happened</h2><ol id="log"></ol></section>
       <section aria-label="Graveyards"><h2>Graveyards</h2>
         <p class="note">Cowboys: <span id="cowboy-graveyard"></span></p>

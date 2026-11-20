@@ -217,6 +217,8 @@ export function migrate(raw) {
     if (raw && raw.v === undefined && Number.isInteger(raw.wins)) {
       let save = newSave();
       for (let i = 0; i < Math.min(Math.max(raw.wins, 0), TRAIL.length); i++) save = {...settle(save, "trail", true).save, offer: null};
+      // The first version counted losses on the unfinished Trail duel only; they keep its grit.
+      if (!trailDone(save) && Number.isInteger(raw.losses) && raw.losses > 0) save = {...save, losses: {...save.losses, trail: raw.losses}};
       return save;
     }
     const counts = (value) => Object.entries(value).every(([type, copies]) => TYPES[type] && Number.isInteger(copies) && copies >= 0);

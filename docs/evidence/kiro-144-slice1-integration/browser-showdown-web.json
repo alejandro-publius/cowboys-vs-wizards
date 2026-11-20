@@ -1,0 +1,133 @@
+{
+  "page": "file:///Users/alexvintera/Documents/Codex/2026-11-19/can-you-pickup-after-my-kiro/work/takeover-integrate/dist/web/index.html",
+  "chrome": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "viewport": [
+    1440,
+    900
+  ],
+  "checks": [
+    {
+      "name": "Normal entry on a clean profile offers Play and the lane duel link only",
+      "passed": true,
+      "detail": [
+        "Play",
+        "Lane duel (previous rules)"
+      ]
+    },
+    {
+      "name": "Play on a clean profile opens Trail duel 1, Boot Hill (Showdown), not the lane duel",
+      "passed": true,
+      "detail": {
+        "status": "Boot Hill · turn 1 · your turn",
+        "lesson": "Win by removing every orb from the Wizard Base. You can strike it only when the Wizards have no troops: pick one of your troops, then the enemy troop it hits."
+      }
+    },
+    {
+      "name": "Main menu returns to the title",
+      "passed": true
+    },
+    {
+      "name": "Turn 1 offers only legal plays: no attacker, no target, Wizard Base disabled",
+      "passed": true,
+      "detail": {
+        "own": 0,
+        "enemy": 0,
+        "base": true,
+        "playable": [
+          "cowboy-sheriff-3",
+          "cowboy-sheriff-8"
+        ],
+        "prompt": "Play your cards: one troop a turn. Nobody attacks on the opening turn."
+      }
+    },
+    {
+      "name": "A summon shows its event line, and further troop cards are disabled with 'One troop a turn.'",
+      "passed": true,
+      "detail": {
+        "feedback": "Last: The Cowboys' Sheriff arrived.",
+        "log": 2,
+        "board": [
+          "Sheriff"
+        ],
+        "refused": [
+          [
+            "cowboy-billy-2",
+            "One troop a turn."
+          ],
+          [
+            "cowboy-billy-1",
+            "One troop a turn."
+          ],
+          [
+            "cowboy-sheriff-8",
+            "One troop a turn."
+          ]
+        ],
+        "slotNote": "Sheriff● Troop · Lawman\n          1 attack ●●● \n          Can take cover"
+      }
+    },
+    {
+      "name": "Clicking a disabled card applies nothing",
+      "passed": true
+    },
+    {
+      "name": "Boot Hill (?seed=0) won by clicks alone; inputs close after the result",
+      "passed": true,
+      "detail": {
+        "status": "You win: the Wizard Base fell.",
+        "result": "Play Boot Hill again Main menu",
+        "wizardBase": "0 of 3 orbs",
+        "feedback": "Last: The Cowboys' Sheriff struck the Wizards' Base for 1.",
+        "hand": 0,
+        "end": true,
+        "targets": 0,
+        "turns": 8,
+        "attacks": 15,
+        "clicks": 61
+      }
+    },
+    {
+      "name": "Seat privacy held at every checked step",
+      "passed": true,
+      "detail": {
+        "steps": 11
+      }
+    },
+    {
+      "name": "'Play Boot Hill again' deals a new Boot Hill",
+      "passed": true
+    },
+    {
+      "name": "?mode=lanes shows the lane menu, and Play opens the lane duel",
+      "passed": true,
+      "detail": {
+        "visible": [
+          "Play",
+          "Wanted",
+          "How to Play",
+          "Build Deck",
+          "Achievements",
+          "Fire arc (draft)",
+          "Showdown (new rules)"
+        ],
+        "showdown": true
+      }
+    },
+    {
+      "name": "?mode=match still auto-starts the lane duel used by the existing lane checks",
+      "passed": true
+    },
+    {
+      "name": "No page exceptions or console errors",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "boot-hill-opening.png",
+    "boot-hill-after-summon.png",
+    "boot-hill-won.png",
+    "lanes-play.png"
+  ],
+  "clicks": 63
+}

@@ -6,6 +6,7 @@ import {applyAction, attackOf, attackOutcome, canAttack, createShowdown, legalAc
 import {BOUNTIES, DECK_SIZE, HUNTS, RIVALS, SIDE_SIZE, choose, deckProblems, duelFor, duelList, migrate, newSave, openPack, owned, settle, trailDone, withDeck} from "./progress.js";
 import {logged, report} from "./playtest.js";
 import {GRIT_CAP, TRAIL} from "./trail.js";
+import {decodeSaveCode, describeSave, encodeSave, sameSave} from "./savecode.js";
 
 const $ = (id) => document.getElementById(id);
 const name = (cardId) => cardOf(cardId).name;
@@ -43,7 +44,25 @@ const stored = (key) => { try { return JSON.parse(localStorage.getItem(key)); } 
 let save = migrate(stored(SAVE) ?? stored(OLD_SAVE));
 function keep(next) {
   save = next;
-  try { localStorage.setItem(SAVE, JSON.stringify(save)); } catch { /* storage is blocked: play on without saving */ }
+  // Storage can be blocked or full: play on with the progress in memory, keep the last stored save, and say so.
+  let saved = true;
+  try { localStorage.setItem(SAVE, JSON.stringify(save)); } catch { saved = false; }
+  renderStorageNotice(saved);
+  return saved;
+}
+// One notice above every screen, shown while the browser refuses to save.
+function renderStorageNotice(saved) {
+  let notice = document.getElementById("storage-notice");
+  if (saved && !notice) return;
+  if (!notice) {
+    notice = Object.assign(document.createElement("p"), {id: "storage-notice", className: "note"});
+    notice.setAttribute("role", "status");
+    notice.dataset.testid = "storage-notice";
+    $("camp").before(notice);
+  }
+  notice.hidden = saved;
+  notice.textContent = saved ? "" : "This browser did not save your progress, so a reload will lose it. "
+    + "To keep it, open Save code in the Camp and copy the code.";
 }
 
 // One line per finished duel against the Wizards, for the playtest report in the camp.
@@ -82,13 +101,43 @@ const baseOf = (side) => (solo() ? (side === "cowboy" ? "your Base" : "the Wizar
 function show(next) {
   const visible = next === "duel" && curtain ? "curtain" : next;
   const moved = visible !== (screen === "duel" && !$("curtain").hidden ? "curtain" : screen);
+  const first = screen === null; // the page has just opened: leave focus where the browser puts it
+  const from = screen;
   screen = next;
+  if (next !== "camp") closePreview();
   for (const id of ["camp", "builder", "duel", "curtain"]) $(id).hidden = id !== visible;
   if (visible === "camp") renderCamp();
   if (visible === "builder") renderBuilder();
   if (visible === "duel") renderDuel();
   if (visible === "curtain") $("curtain-text").textContent = `Pass the screen to the ${faction(state.active)} player.`;
   if (moved) window.scrollTo(0, 0);
+  // Keyboard focus follows the screen instead of falling to the page behind a hidden control.
+  if (moved && visible === "curtain") $("ready").focus();
+  else if (moved && visible === "duel" && !$("end").hidden) $("end").focus({preventScroll: true});
+  else if (moved && visible === "builder") ($("builder-rows").querySelector("button:not(:disabled)") ?? $("builder-save")).focus({preventScroll: true});
+  else if (moved && visible === "camp" && from === "builder") $("build").focus({preventScroll: true}); // saved or cancelled: back where it opened
+  else if (moved && visible === "camp" && !first) {
+    // Back on the duel just left, or else the first control that can be used.
+    const back = game && (game.players === 1 ? `[data-duel="${game.duel.id}"]` : "[data-two]");
+    ($("camp").querySelector(`${back ?? "[data-duel]"}:not(:disabled)`) ?? $("camp").querySelector("button:not(:disabled)"))?.focus({preventScroll: true});
+  }
+}
+// A live region rewritten with the same words can be read out again, so each one is written only when it changes.
+const written = new WeakMap();
+function write(el, value, as = "innerHTML") {
+  if (written.get(el) === value) return;
+  el[as] = value;
+  written.set(el, value);
+}
+// The board and hand are redrawn after every move, which drops keyboard focus to the page. Put it back: on the
+// first target when a pick wants one, else on the same control if it is still usable, else on the turn's button.
+const focusKey = (el) => (el.id ? `#${el.id}` : ["card", "own", "enemy"].map((k) => el.dataset[k] !== undefined && `[data-${k}="${el.dataset[k]}"]`).find(Boolean));
+function refocus(key) {
+  const usable = (el) => el && !el.disabled && !el.hidden && el.getClientRects().length > 0;
+  const target = pick ? $("board").querySelector("button.can") : null;
+  const same = key ? $("duel").querySelector(key) : null;
+  const next = [target, same, $("end"), $("again"), $("reward").querySelector("[data-again]")].find(usable);
+  next?.focus();
 }
 
 // ---- Camp -----------------------------------------------------------------------------------
@@ -109,7 +158,8 @@ function renderCamp() {
   const pays = (cards) => cards.map(([type, copies]) => `${TYPES[type].name}${copies > 1 ? ` ×${copies}` : ""}`).join(", ");
   $("trail").innerHTML = list.filter((duel) => duel.kind === "trail").map((duel) => {
     const reward = pays(TRAIL[duel.index].reward.map(([type, , copies]) => [type, copies]));
-    return tile(duel, duel.state === "won" ? `Earned ${reward}` : `Win to earn ${reward}`);
+    // A clean save is told where to begin; the open tile is already the one that is outlined.
+    return tile(duel, duel.state === "won" ? `Earned ${reward}` : `Win to earn ${reward}`, undefined, duel.state === "open" && save.wins === 0 ? "Start here: your first duel." : "");
   }).join("");
   $("rivals").innerHTML = list.filter((duel) => duel.kind === "rival").map((duel, i) => {
     const rival = RIVALS[i];
@@ -130,7 +180,7 @@ function renderCamp() {
   const count = (counts) => Object.entries(counts).map(([type, copies]) => `${TYPES[type].name} ×${copies}`).join(", ");
   $("collection").innerHTML = `<strong>Deck:</strong> ${count(save.deck)}.${sum(save.side) ? ` <strong>Side deck:</strong> ${count(save.side)}.` : ""}
     <br><strong>Collection:</strong> Sheriff and Billy in any number${sum(save.collection) ? `, ${count(save.collection)}` : ""}.`;
-  $("code").value = btoa(JSON.stringify(save));
+  $("code").value = encodeSave(save);
   $("report").value = report(log, save);
 }
 
@@ -170,6 +220,10 @@ function buildStep(zone, type, by) {
   draft[zone] = {...draft[zone], [type]: (draft[zone][type] ?? 0) + by};
   if (draft.pool) draft[other] = {...draft[other], [type]: (draft[other][type] ?? 0) - by};
   renderBuilder();
+  // The rows are redrawn, which drops keyboard focus. Keep it on the same button so it can be pressed again; at a bound
+  // (that button now disabled) move to the other button of the same pile, then the other pile, then Save.
+  const button = (z, b) => $("builder-rows").querySelector(`[data-zone="${z}"][data-type="${type}"][data-by="${b}"]:not(:disabled)`);
+  (button(zone, by) ?? button(zone, -by) ?? button(other, by) ?? button(other, -by) ?? $("builder-save")).focus();
 }
 
 // ---- Duel -----------------------------------------------------------------------------------
@@ -335,8 +389,16 @@ function againLabel() {
   if (!outcome.won) return "Rematch";
   return game.duel.kind === "trail" || !duelFor(save, game.duel.id) ? "Back to camp" : "Play it again";
 }
+// Why one of your troops can take cover but not attack, in a few words (see canAttack in rules.js).
+const whyResting = (troop) => state.turn === 1 ? "Opening turn" : troop.stunned ? "Stunned"
+  : troop.arrived === state.turn && !troop.ready ? "Just arrived" : attackOf(state, troop) <= 0 ? "No attack" : "";
 
 function renderDuel() {
+  const focused = $("duel").contains(document.activeElement) ? focusKey(document.activeElement) : null;
+  drawDuel();
+  if (focused && !$("duel").hidden && !$("duel").contains(document.activeElement)) refocus(focused);
+}
+function drawDuel() {
   const mine = !state.result && (!solo() || state.active === "cowboy");
   const [own, foe] = [me(), opponent(me())];
   const attacking = pick?.troop !== undefined;
@@ -368,7 +430,7 @@ function renderDuel() {
         if (tribute) { cls = pick.tributes.includes(slot) ? " chosen" : " can"; data = `data-own="${slot}"`; note = "Tribute"; }
         else if (carriers.has(slot)) { cls = " can"; data = `data-own="${slot}"`; note = "Give it the gear"; }
         else if (pick?.troop === slot) { cls = " pick"; note = ready ? "Choose a target, or take cover" : "It can take cover"; }
-        else if (!pick && actable) { cls = " can"; data = `data-own="${slot}"`; note = ready ? "Can attack" : "Can take cover"; }
+        else if (!pick && actable) { cls = " can"; data = `data-own="${slot}"`; note = ready ? "Can attack" : [whyResting(troop), "can take cover"].filter(Boolean).join(" · ").replace(/^c/, "C"); }
         else if (troop.attacked && !troop.cover) note = "Has attacked";
       } else if (!isOwn && aims.has(slot)) {
         cls = " can"; data = `data-enemy="${slot}"`;
@@ -397,35 +459,41 @@ function renderDuel() {
   const match = game.match;
   const score = match ? ` · game ${match.game} of 3 · ${solo() ? `you ${match.wins.cowboy}, Wizards ${match.wins.wizard}` : `Cowboys ${match.wins.cowboy}, Wizards ${match.wins.wizard}`}` : "";
   const verdict = !r ? "" : r.winner === null ? "Draw." : solo() ? (r.winner === "cowboy" ? "You win: the Wizard Base fell." : "You lose: your Base fell.") : `The ${faction(r.winner)}s win: ${baseOf(opponent(r.winner))} fell.`;
-  $("status").innerHTML = r ? `<span class="result ${!solo() || r.winner === "cowboy" ? "good" : "warn"}">${verdict}</span>${score}`
-    : `${game.duel.name}${score} · turn ${state.turn} · ${solo() ? "your turn" : `the ${faction(state.active)}s' turn`}`;
+  write($("status"), r ? `<span class="result ${!solo() || r.winner === "cowboy" ? "good" : "warn"}">${verdict}</span>${score}`
+    : `${game.duel.name}${score} · turn ${state.turn} · ${solo() ? "your turn" : `the ${faction(state.active)}s' turn`}`);
 
   // After a win: what it paid, then the two cards to choose from. After a loss: what the rematch gives.
+  // Each part has its own box, so taking a card changes (and announces) only the choice.
   const earned = outcome?.earned;
   // A game inside a match and a two-player game pay nothing, but they still need the button that moves on.
   const moveOn = `<div class="row"><button type="button" class="can" data-again="1">${state.result ? againLabel() : ""}</button></div>`;
-  $("reward").innerHTML = !outcome ? "" : !earned ? moveOn : [
+  const parts = !outcome ? [] : !earned ? [moveOn] : [
     earned.captured ? `<h2>Captured</h2><div class="row"><div class="${cardClass(earned.captured)} earned">${face(earned.captured, {full: true})}</div></div>` : "",
     earned.cards.length ? `<h2>New in your collection</h2><div class="row">${earned.cards.map(([type, copies]) => `<div class="${cardClass(type)} earned">${face(type, {full: true, extra: copies > 1 ? `<span class="note">×${copies}</span>` : ""})}</div>`).join("")}</div>` : "",
     earned.packs ? `<p class="good">You earned ${plural(earned.packs, "pack")}. Open ${earned.packs > 1 ? "them" : "it"} in camp.</p>` : "",
     outcome.intoDeck.length ? `<p class="note">In your deck now: ${outcome.intoDeck.map(([type, copies, replaced]) => `${TYPES[type].name} ×${copies} in place of ${TYPES[replaced].name} ×${copies}`).join(", ")}.</p>` : "",
     earned.cards.length && !outcome.intoDeck.length ? `<p class="note">${earned.cards.length > 1 ? "They are" : "It is"} in your collection, not your deck yet: use Build deck in camp.</p>` : "",
-    outcome.won && save.offer ? `<h2>${OFFER_HEADING}</h2>${offerRow()}` : "",
-    picked ? `<p class="good">Added ${TYPES[picked].name}: you now own ${owned(save, picked)}. The new copy is not in your deck yet: use Build deck in camp.</p>` : "",
+    // The offer and the line that confirms the choice share one part, so choosing rewrites only that part.
+    outcome.won && save.offer ? `<h2>${OFFER_HEADING}</h2>${offerRow()}`
+      : picked ? `<p class="good">Added ${TYPES[picked].name}: you now own ${owned(save, picked)}. The new copy is not in your deck yet: use Build deck in camp.</p>` : "",
     !outcome.won && outcome.grit ? `<p class="note">Grit: your Base starts the rematch with ${5 + outcome.grit} orbs.</p>` : "",
     moveOn,
-  ].join("");
+  ];
+  // Each part has its own box, so taking a card changes (and announces) only the choice.
+  const boxes = [...$("reward").children];
+  parts.forEach((html, i) => write(boxes[i] ?? $("reward").appendChild(document.createElement("div")), html));
+  boxes.slice(parts.length).forEach((box) => box.remove());
 
   const canCover = attacking && options.some((a) => a.type === "cover" && a.slot === pick.troop);
   const guarded = state.sides[foe].board.some((troop) => troop && cardOf(troop.cardId).keys.includes("guard"));
-  $("prompt").textContent = r ? "" : pick?.tributes ? `Choose ${tributes(pick.card)} of your troops to send to the graveyard as payment for ${name(pick.card)}.`
+  write($("prompt"), r ? "" : pick?.tributes ? `Choose ${tributes(pick.card)} of your troops to send to the graveyard as payment for ${name(pick.card)}.`
     : kind === "gear" ? `Choose one of your troops to carry ${name(pick.card)}.`
     : kind === "spell" ? `Choose an enemy troop for ${name(pick.card)}.`
     : attacking ? `${aims.size === 0 ? "This troop cannot attack now." : guarded ? "A Guard stands in the way: attack it first." : aims.has("base") && aims.size === 1 ? "No enemy troops: strike the Base." : "Choose what to attack."}${
       canCover ? " Or take cover: until your next turn it keeps extra damage off your Base, but it will not hit back." : ""}`
     : state.attacking ? "No more cards this turn. Act with your other troops, or end the turn."
     : state.turn === 1 ? "Play your cards: one troop a turn. Nobody attacks on the opening turn."
-    : "First play cards (one troop, one other card). Then act with your troops. Once a troop acts, no more cards this turn.";
+    : "First play cards (one troop, one other card). Then act with your troops. Once a troop acts, no more cards this turn.", "textContent");
   $("end").hidden = Boolean(r);
   $("end").disabled = !mine;
   $("cover").hidden = !canCover;
@@ -450,7 +518,13 @@ document.addEventListener("click", (event) => {
   const b = event.target.closest("button");
   if (!b || b.disabled) return;
   const d = b.dataset;
-  if (d.choose) { picked = d.choose; keep(choose(save, d.choose)); show(screen); }
+  if (d.choose) {
+    // The offer is redrawn away, so focus moves on: to the button that moves on in the duel, else to what Camp offers next.
+    picked = d.choose;
+    keep(choose(save, d.choose));
+    show(screen);
+    (screen === "duel" ? $("reward").querySelector("[data-again]") : $("claim").querySelector("button") ?? $("camp").querySelector("[data-duel]:not(:disabled)"))?.focus();
+  }
   else if (d.again) again();
   else if (d.duel) startDuel(d.duel);
   else if (d.match) startDuel(d.match, {best: 3});
@@ -481,18 +555,40 @@ function again() {
   startDuel(game.duel.id, {best: game.match ? 3 : 1});
 }
 $("again").addEventListener("click", again);
+// A pasted code is read strictly, and a different save replaces this one only after Replace is pressed.
+// The preview belongs to the exact text it was read from: any edit withdraws it, and Replace re-checks the text.
+let pending = null;
+function closePreview() { pending = null; $("code-preview").hidden = true; }
+$("code").addEventListener("input", () => {
+  if (!pending) return;
+  closePreview();
+  $("code-note").textContent = "The code changed, so the preview was closed. Press Load to preview it. Nothing was changed.";
+});
 $("load").addEventListener("click", () => {
-  const text = $("code").value.trim();
-  let next = null;
-  try { next = migrate(JSON.parse(atob(text))); } catch { /* not a save code */ }
-  // migrate() answers anything it cannot trust with a new save, so a new save from any other code means the code was bad.
-  const bad = !next || (JSON.stringify(next) === JSON.stringify(newSave()) && text !== btoa(JSON.stringify(newSave())));
-  if (!bad) { keep(next); opened = picked = null; renderCamp(); }
-  $("code-note").textContent = bad ? "That is not a save code. Nothing was changed." : "Loaded.";
+  closePreview();
+  const read = decodeSaveCode($("code").value);
+  if (!read.ok) { $("code-note").textContent = `${read.reason} Nothing was changed.`; return; }
+  if (sameSave(read.save, save)) { $("code-note").textContent = "That code is the progress you already have. Nothing was changed."; return; }
+  pending = {save: read.save, text: $("code").value};
+  $("code-preview-text").textContent = `This code${read.legacy ? " (from an older version)" : ""} holds: ${describeSave(read.save)} You have: ${describeSave(save)} Replace your progress in this browser with it?`;
+  $("code-preview").hidden = false;
+  $("code-note").textContent = "";
+  $("code-cancel").focus();
+});
+$("code-cancel").addEventListener("click", () => { closePreview(); $("code-note").textContent = "Cancelled. Nothing was changed."; $("load").focus(); });
+$("code-replace").addEventListener("click", () => {
+  if (!pending) return;
+  const {save: next, text} = pending;
+  closePreview();
+  if ($("code").value !== text) { $("code-note").textContent = "The code changed, so the preview was closed. Press Load to preview it. Nothing was changed."; return; }
+  const saved = keep(next); opened = picked = null; renderCamp();
+  $("code-note").textContent = saved ? "Loaded." : "Loaded for this visit only: the browser did not save it.";
+  $("load").focus();
 });
 $("rules").addEventListener("toggle", () => { if ($("rules").open && game) game.rules = true; });
 $("reset").addEventListener("click", () => {
   if (!confirm("Start over? Your cards, progress and playtest report in this browser are erased.")) return;
+  closePreview();
   keep(newSave());
   keepLog([]);
   opened = picked = null;

@@ -10,6 +10,15 @@ node prototypes/showdown/trail-sim.mjs    # how often three kinds of player win 
 node prototypes/showdown/export-cards.mjs # rewrites cards.csv after a card change
 node prototypes/showdown/export-art.mjs   # rewrites ART-DIRECTION.md after a change to art.js
 ```
+Six checks drive the built page in headless Chrome (fresh profile, no network) and exit 1 on any failure. Each needs `build.mjs` first; set `CHROME` if Chrome is not in `/Applications`.
+```sh
+node prototypes/showdown/access-browser-check.mjs     # keyboard and phone path through a first win and its card offer
+node prototypes/showdown/onboarding-browser-check.mjs # a first session: Start here, the opening turn, cover, back to Camp
+node prototypes/showdown/hotseat-browser-check.mjs    # two players: the curtain, focus and hidden hands at each handoff
+node prototypes/showdown/savecode-browser-check.mjs   # save code: preview, Replace or Cancel, and blocked storage
+node prototypes/showdown/bo3-browser-check.mjs        # best of three, solo with the side deck and two players
+node prototypes/showdown/campaign-browser-check.mjs   # Trail, a rival, packs and a bounty, each move checked against rules.js
+```
 
 The full rules are in [RULEBOOK.md](RULEBOOK.md). Every card is in [cards.csv](cards.csv). The look of every card and place, written for an image generator, is in [ART-DIRECTION.md](ART-DIRECTION.md).
 
