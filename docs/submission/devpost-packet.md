@@ -1,4 +1,7 @@
 # Kiroween submission packet
+
+> **Lane-era draft (November 16–17, 2026).** It describes the three-lane duel. The December 4 entry is Showdown; its current Kiro answers and proof are in the [judge write-up](kiro-brag-sheet.md). Kept as history.
+
 Prepared November 16, 2026 and revised November 17, 2026 (Pacific time). Draft for the entrant's review. The latest recorded release checks ran against `892cadac5689290b8fd109ae6a51837cc6f1c31d`. Fields marked **OWNER** need facts that only the user or team can supply.
 
 ## Project
