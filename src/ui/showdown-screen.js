@@ -6,6 +6,7 @@
 // and the result shows what it paid and the card choice before the way back to Camp.
 import {EFFECTS, KEYWORDS, RARITY, TYPES, cardOf, has, tributes, typeOf} from "../game/showdown/cards.js";
 import {presentEvent} from "../game/showdown/presenter.js";
+import {newRunId} from "../match/showdown-playtest.js";
 import {TRAP_SLOTS, attackOf, attackOutcome, canAttack, opponent} from "../game/showdown/rules.js";
 import {createShowdownSession} from "../match/showdown-session.js";
 import {FRAMES} from "./card-frames.js";
@@ -58,10 +59,11 @@ export const offerRow = (offer, owned) => `<div class="sd-row">${offer.map((type
 export const pays = (cards) => cards.map(([type, copies]) => `${TYPES[type].name}${copies > 1 ? ` ×${copies}` : ""}`).join(", ");
 
 // campaign: settle(duel, won) once per finished duel, choose(type), progress(), owned(type), trailDuel().
-export function mountShowdown(root, {onHome, campaign}) {
+// playtest (optional): add(entry) once per finished duel; every duel on this screen is solo against the bot.
+export function mountShowdown(root, {onHome, campaign, playtest}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
-  let session, duel, seed, lines, latest, pick, outcome, picked;
+  let session, duel, seed, lines, latest, pick, outcome, picked, run, started;
 
   function record(events) {
     latest = events.map((event) => presentEvent(event));
@@ -75,6 +77,8 @@ export function mountShowdown(root, {onHome, campaign}) {
     pick = null;
     outcome = null;
     picked = null;
+    run = newRunId();
+    started = Date.now();
     record(session.opening);
     finish();
     render();
@@ -88,7 +92,11 @@ export function mountShowdown(root, {onHome, campaign}) {
   // The duel counts once it is decided: settled exactly once, then saved by the campaign.
   function finish() {
     const result = session.view().result;
-    if (result && !outcome) outcome = campaign.settle(duel, result.winner === session.seat);
+    if (!result || outcome) return;
+    outcome = campaign.settle(duel, result.winner === session.seat);
+    // The run id makes the log ignore a second report of this same finished duel.
+    playtest?.add({name: duel.name, won: result.winner === session.seat, turns: session.view().turn,
+      seconds: Math.round((Date.now() - started) / 1000), rules: false, run, duel: duel.id, seed});
   }
   const playsOf = (cardId) => session.legal().filter((a) => a.cardId && name(a.cardId) === name(cardId));
 

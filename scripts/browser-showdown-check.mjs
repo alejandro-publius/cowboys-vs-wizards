@@ -145,6 +145,9 @@ try {
     offer:[...document.querySelectorAll('#camp-claim [data-choose]')].map(n=>n.dataset.choose),next:document.getElementById('camp-next')?.textContent??null,
     cards:document.getElementById('camp-collection').textContent.replace(/\\s+/g,' ').trim(),storage:document.getElementById('camp-storage').hidden})`);
   const savedProgress = () => evaluate(`JSON.parse(localStorage.getItem('cvw-showdown-save-v2'))`);
+  // The playtest log, under the prototype key, and the Camp's plain-text report of it.
+  const savedLog = () => evaluate(`JSON.parse(localStorage.getItem('cvw-showdown-playtest-v1'))`);
+  const campReport = () => evaluate(`({text:document.getElementById('camp-report-text').value,unsaved:!document.getElementById('camp-report-storage').hidden})`);
 
   // 1. Normal entry on a clean profile: Play opens the Camp, and the Camp opens Boot Hill.
   await navigate("");
@@ -173,6 +176,8 @@ try {
   await click("#sd-home");
   await wait(`${shown("showdown-camp")}&&document.getElementById('showdown').hidden`);
   assert.equal(await evaluate(`localStorage.getItem('cvw-showdown-save-v2')`), null, "leaving an unfinished duel records nothing");
+  assert.equal(await savedLog(), null, "leaving an unfinished duel logs nothing");
+  assert.equal((await campReport()).text, "No duel has been finished yet.");
   await click("#camp-home");
   await wait(`${shown("title-screen")}&&document.getElementById('showdown-camp').hidden`);
   check("Back to camp leaves an unfinished duel unrecorded; Main menu returns to the title");
@@ -292,6 +297,12 @@ try {
   assert.deepEqual([afterWin1.deck["cowboy-covered-wagon"], afterWin1.deck["cowboy-sheriff"]], [2, 6]);
   assert.deepEqual(afterWin1.offer, won1.offer);
   check("Boot Hill win pays Covered Wagon ×2 in place of Sheriff ×2, saved with the two-card offer", {earned: won1.earned, offer: won1.offer, deck: afterWin1.deck});
+  const log1 = await savedLog();
+  assert.equal(log1.length, 1);
+  assert.deepEqual([log1[0].name, log1[0].won, log1[0].duel, log1[0].seed, log1[0].rules], ["Boot Hill", true, "trail", 0, false]);
+  assert.ok(Number.isInteger(log1[0].turns) && log1[0].turns > 1 && Number.isInteger(log1[0].seconds) && typeof log1[0].run === "string");
+  assert.deepEqual(Object.keys(log1[0]).sort(), ["duel", "name", "rules", "run", "seconds", "seed", "turns", "won"], "no other field is stored");
+  check("The Boot Hill win is logged once under cvw-showdown-playtest-v1, with no personal fields", log1[0]);
   // Choice in the result panel, then back to the Camp.
   const pick1 = won1.offer[0];
   await click(`#sd-result [data-choose="${pick1}"]`);
@@ -307,6 +318,7 @@ try {
   assert.equal(camp1.tiles[0].name, "✓ Boot Hill");
   assert.equal(camp1.tiles[1].name, "Raven Roost");
   check("The Camp marks Boot Hill won and opens Raven Roost", camp1.tiles.slice(0, 2));
+  assert.deepEqual(await savedLog(), log1, "choosing a card and returning to the Camp adds no log line");
 
   // Reload keeps the progress.
   await navigate("?seed=0");
@@ -316,6 +328,19 @@ try {
   assert.deepEqual(reloaded1.tiles, camp1.tiles);
   assert.match(reloaded1.cards, /Covered Wagon ×2/);
   check("After a reload the Camp keeps the Boot Hill win, the reward and the chosen card", reloaded1);
+  assert.deepEqual(await savedLog(), log1, "a reload adds no log line");
+  await click("#camp-report summary");
+  await wait(`document.getElementById('camp-report').open`);
+  const report1 = await campReport();
+  assert.equal(report1.unsaved, false);
+  assert.match(report1.text, new RegExp(`^Showdown playtest report\nFinished 1 duel in \\d+ (s|min) of play: won 1, lost 0\.\nReached: Trail 1 of 6 won,`));
+  assert.match(report1.text, new RegExp(`\n1\. Boot Hill: won in ${log1[0].turns} turns, `));
+  assert.doesNotMatch(report1.text, /Raven Roost: /);
+  await click("#camp-report-copy");
+  await wait(`/^(Copied\.|Selected: press Ctrl\+C or Cmd\+C to copy\.)$/.test(document.getElementById('camp-report-copied').textContent)`);
+  const copied = await text("#camp-report-copied");
+  await shot("camp-report-after-reload");
+  check("After a reload the Camp's Playtest report shows the one logged win as plain text; Copy report answers", {report: report1.text, copied});
 
   await click("#camp-trail [data-duel=trail]");
   const won2 = await winDuel("Raven Roost", 4);
@@ -325,6 +350,11 @@ try {
   assert.equal(afterWin2.collection["cowboy-outrider"], 2);
   assert.deepEqual([afterWin2.deck["cowboy-outrider"], afterWin2.deck["cowboy-sheriff"]], [2, 4]);
   check("Raven Roost win pays Outrider ×2 in place of Sheriff ×2", {earned: won2.earned, deck: afterWin2.deck});
+  const log2 = await savedLog();
+  assert.deepEqual(log2.slice(0, 1), log1);
+  assert.equal(log2.length, 2);
+  assert.deepEqual([log2[1].name, log2[1].won, log2[1].duel], ["Raven Roost", true, "trail"]);
+  assert.notEqual(log2[1].run, log1[0].run);
   // This time leave the choice for the Camp: it is still on offer there, and it blocks every duel.
   await click("#sd-camp");
   await wait(shown("showdown-camp"));
@@ -352,6 +382,11 @@ try {
   assert.ok(reloaded2.storage, "no storage warning while saving works");
   await shot("camp-after-two");
   check("The Camp choice clears the offer and opens The Bone Fence; a reload continues from there", reloaded2);
+  assert.deepEqual(await savedLog(), log2, "results, Camp choices and reloads never duplicate a log line");
+  const report2 = (await campReport()).text;
+  assert.match(report2, /Finished 2 duels in .* won 2, lost 0\./);
+  assert.match(report2, /\n1\. Boot Hill: won .*\n2\. Raven Roost: won /);
+  check("Two wins, three reloads: the log holds exactly two lines and the report lists both", {lines: log2.length});
   check("Seat privacy held at every checked step", {steps: privacyChecks});
 
   // 3. The lane duel stays reachable.
