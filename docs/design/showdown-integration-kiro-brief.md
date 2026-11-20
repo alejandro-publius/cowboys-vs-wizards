@@ -7,10 +7,14 @@ Fable 5.2, November 18, 2026. This hands the Showdown engine to Kiro for integra
 - The game's fight becomes Showdown: the player chooses every attack, troops shield the Base, turns alternate.
 - A new player's first hour is the Trail: easy wins first, one new idea per duel, a new card on every first win. It is not an even match.
 - Fable owns the rules, the progression numbers and the contract below. Kiro owns integration, the screens, the card pipeline, the presenter, the property tests and the checks.
+- Showdown is the fight in the December 4 entry. Alex played it on November 19 and chose it over the lane duel. The [playtest](../../prototypes/showdown/PLAYTEST.md) now tunes the fight; it no longer decides whether it ships.
+
+## Status on November 19
+
+Slice 1 and the card pipeline are merged (pull requests 144 and 145): the engine is in `src/game/showdown/`, the graybox's Play opens Boot Hill, and the lane duel is at `?mode=lanes`. Next, in this order: the Scout fix below, then slice 2. The three jobs under [Kiro's own tools, pointed at Showdown](#kiros-own-tools-pointed-at-showdown) can run beside slice 2.
 
 ## What is not decided
 
-- Whether slices 1 and 2 ship in the December 4 entry or after it. Alex approved building them on November 18; what ships follows the [playtest](../../prototypes/showdown/PLAYTEST.md).
 - Keyword wording and the six frame looks. They are first drafts.
 
 Alex approved the eleven new card names as written on November 18, so they can go through the card pipeline.
@@ -87,6 +91,49 @@ These are the properties the engine is built to satisfy. The example tests cover
 5. Every event returned matches its `EVENTS` entry exactly.
 6. The same seed and the same actions give the same game.
 7. A bot's plan is legal to the last action, at every level.
+
+## Answer on the Scout bot (Kiro's question of November 19)
+
+Yes, take Kiro's fix (`7e8e6eb`: the level-2 plan stops at a Scout draw and plans again from the card it drew) before slice 2. The bot planning with cards it has not drawn is the shortcut marked at `src/game/showdown/rules.js:346`, and a bot that reads hidden cards is a defect, not a balance setting.
+
+**Done when**
+
+1. Kiro's fair-bot test is in and the shortcut comment is gone.
+2. `prototypes/showdown/sim.mjs 1000` and `trail-sim.mjs` are run before and after, and both pairs of numbers are in the pull request.
+3. The ramp test in `progress.test.js` still passes unchanged. If it fails, or a Trail win rate moves by more than three points, stop and send the numbers back to Fable; do not retune.
+
+## Kiro's own tools, pointed at Showdown
+
+The spec, the generated property tests and Night Watch were all built for the lane duel. The fight has changed, so they move with it. Each of these is Kiro's to do ([issue 37](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/37)), and none changes a rule.
+
+### A. A spec for slice 2
+
+Build slice 2 from a Requirements-First spec in `.kiro/specs/`, the way the match presentation was built from `orb-duel`. The save is where a spec earns its keep: joining two profile formats without losing what a player earned.
+
+**Done when**
+
+1. The spec has requirements, design and tasks, and each "done when" line of slice 2 is a numbered requirement.
+2. Each slice 2 test names the requirement it proves, and `docs/requirement-test-map.md` lists them.
+
+### B. The seven properties, generated
+
+Write the seven properties above over `src/game/showdown/`, reusing the generator and shrinker in `tests/helpers/boundary-properties/`.
+
+**Done when**
+
+1. Each of the seven runs over generated legal play from a recorded seed, and one failing case can be replayed alone.
+2. One planted fault per property is caught. For property 4, the fault is a `viewFor` that leaks one card from the other hand.
+3. `npm test` runs them.
+
+### C. Night Watch on Showdown
+
+Night Watch compares two commits with `scripts/simulate-matches.mjs`, which plays the lane duel. Give it a Showdown mode that plays each deal twice with the first seat swapped, as `prototypes/showdown/sim.mjs` does, and reports the first-player share and the Cowboy share. Both lean today (about 57% and 59%), and that lean is the number Fable tunes against.
+
+**Done when**
+
+1. One Night Watch report compares two Showdown commits over 1,000 deals. The commits before and after the Scout fix are the first pair.
+2. The lane mode still passes its own tests.
+3. The nightly job runs the Showdown mode.
 
 ## Before any 3D work
 
