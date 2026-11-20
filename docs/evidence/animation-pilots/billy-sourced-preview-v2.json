@@ -1,0 +1,12 @@
+{
+  "source_commit": "9b2cafde540dc5ac79c38b66ad5c0dfd233f24f4",
+  "duration_seconds": 12.5,
+  "width": 1280,
+  "height": 720,
+  "fps": 30,
+  "sha256": "56a91349c5e04d47babf8bd492cfea4c241ed0b5d6e3fded6d877c5af7a81c60",
+  "source_clip": "Quaternius UAL Standard Pistol_Idle_Loop (CC0)",
+  "attack": "existing procedural cues.js drawAndFire, labelled in video",
+  "approval": "pending; preview only",
+  "production_src_changes": false
+}
