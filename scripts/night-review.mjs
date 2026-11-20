@@ -249,7 +249,7 @@ async function draft(opts) {
     if (!DECKS[spec.side]?.[card]) throw new InputError(`${card} is not in the Showdown ${spec.side} deck, so the even match cannot measure it`);
     let after;
     try { after = changeField(text, field, spec[field], to); } catch (error) { throw new InputError(error.message); }
-    const id = `${card}-${field}-${spec[field]}-to-${to}-${base.slice(0, 8)}`;
+    const id = `${card}-${field}-${spec[field]}-to-${to}-${base.slice(0, 8)}-f${finding.sha256.slice(0, 6)}`;
     const out = resolve(opts.out ?? join(ROOT, ".artifacts/night-review", id));
     mkdirSync(out, {recursive: true});
     const patch = `--- a/${cardPath}\n+++ b/${cardPath}\n@@ -1 +1 @@\n-${text.trimEnd()}\n+${after.trimEnd()}\n`;
