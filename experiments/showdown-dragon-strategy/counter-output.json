@@ -1,0 +1,1622 @@
+{
+ "experiment": "showdown-dragon-strategy/counter",
+ "engine": "src/game/showdown (unchanged)",
+ "encounter": "hunt:graveyard-dragon #5",
+ "cowboyPolicy": "planTurn on viewFor(cowboy) rebuild",
+ "wizardPolicy": "playTurn(state, hunt level)",
+ "wizardContract": {
+  "path": "experiments/showdown-dragon-strategy/contract.json",
+  "sha256": "c1c5a8d4da89b731c3a96fe13b211d86b79222dde530dfc88439df87bdeda33e"
+ },
+ "baseSeed": 3,
+ "checkpoints": [
+  {
+   "id": "s3-C3-before-landing",
+   "seed": 3,
+   "hunt": 5,
+   "cowboyTurn": 3,
+   "state": {
+    "turn": 3,
+    "active": "cowboy",
+    "bases": {
+     "cowboy": 5,
+     "wizard": 4
+    },
+    "cowboyBoard": "Covered Wagon 1/4 | - | -",
+    "wizardBoard": "Raven Familiar 1/1 | - | -",
+    "dragonOrbs": null,
+    "dragonDue": true,
+    "wizardTrapsFaceDown": 0,
+    "cowboyTraps": [
+     "Bear Trap"
+    ],
+    "cowboyHand": [
+     "Gatling Crew",
+     "Ranger",
+     "Dynamiter"
+    ]
+   },
+   "legalMovesAtChoice": [
+    "summon Ranger paying Covered Wagon",
+    "summon Dynamiter",
+    "Covered Wagon (slot 0) attacks Raven Familiar (slot 0)",
+    "Covered Wagon (slot 0) takes cover",
+    "end turn"
+   ],
+   "policyPlan": [
+    "{\"type\":\"summon\",\"cardId\":\"cowboy-ranger-1\",\"tributes\":[0]}"
+   ],
+   "sharedPrefix": [],
+   "atChoice": {
+    "turn": 3,
+    "active": "cowboy",
+    "bases": {
+     "cowboy": 5,
+     "wizard": 4
+    },
+    "cowboyBoard": "Covered Wagon 1/4 | - | -",
+    "wizardBoard": "Raven Familiar 1/1 | - | -",
+    "dragonOrbs": null,
+    "dragonDue": true,
+    "wizardTrapsFaceDown": 0,
+    "cowboyTraps": [
+     "Bear Trap"
+    ],
+    "cowboyHand": [
+     "Gatling Crew",
+     "Ranger",
+     "Dynamiter"
+    ]
+   },
+   "choices": [
+    {
+     "label": "A",
+     "action": "summon Dynamiter",
+     "raw": {
+      "type": "summon",
+      "cardId": "cowboy-dynamiter-1",
+      "tributes": []
+     },
+     "isPolicyChoice": false,
+     "outcome": {
+      "result": {
+       "winner": "wizard",
+       "reason": "base"
+      },
+      "turn": 14,
+      "bases": {
+       "cowboy": 0,
+       "wizard": 3
+      },
+      "dragonSweeps": {
+       "count": 0,
+       "orbs": 0
+      },
+      "afterNextWizardTurn": {
+       "turn": 5,
+       "active": "cowboy",
+       "bases": {
+        "cowboy": 5,
+        "wizard": 4
+       },
+       "cowboyBoard": "Covered Wagon 1/4 | Dynamiter 3/1 | -",
+       "wizardBoard": "Dragon 3/4 | Jack-o'-Lantern 1/1 cover | -",
+       "dragonOrbs": 4,
+       "dragonDue": false,
+       "wizardTrapsFaceDown": 0,
+       "cowboyTraps": [
+        "Bear Trap"
+       ],
+       "cowboyHand": [
+        "Gatling Crew",
+        "Ranger",
+        "Outrider"
+       ]
+      }
+     },
+     "trace": [
+      {
+       "turn": 3,
+       "side": "cowboy",
+       "actions": [
+        "summon Dynamiter",
+        "{\"type\":\"attack\",\"slot\":0,\"target\":0}",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 4,
+       "side": "wizard",
+       "events": [
+        "summon Jack-o'-Lantern"
+       ]
+      },
+      {
+       "turn": 5,
+       "side": "cowboy",
+       "actions": [
+        "summon Ranger paying Covered Wagon",
+        "{\"type\":\"attack\",\"slot\":0,\"target\":0}",
+        "{\"type\":\"attack\",\"slot\":1,\"target\":0}",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 6,
+       "side": "wizard",
+       "events": [
+        "summon Wizard",
+        "raise Skeleton",
+        "spell Singularity -> Dynamiter",
+        "trap Bear Trap -> Wizard",
+        "attack Wizard -> Ranger base-1"
+       ]
+      },
+      {
+       "turn": 7,
+       "side": "cowboy",
+       "actions": [
+        "summon Outrider",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 8,
+       "side": "wizard",
+       "events": [
+        "summon Skeleton",
+        "attack Wizard -> Outrider",
+        "attack Skeleton -> Outrider"
+       ]
+      }
+     ]
+    },
+    {
+     "label": "B",
+     "action": "summon Ranger paying Covered Wagon",
+     "raw": {
+      "type": "summon",
+      "cardId": "cowboy-ranger-1",
+      "tributes": [
+       0
+      ]
+     },
+     "isPolicyChoice": true,
+     "outcome": {
+      "result": {
+       "winner": "wizard",
+       "reason": "base"
+      },
+      "turn": 10,
+      "bases": {
+       "cowboy": 0,
+       "wizard": 3
+      },
+      "dragonSweeps": {
+       "count": 1,
+       "orbs": 1
+      },
+      "afterNextWizardTurn": {
+       "turn": 5,
+       "active": "cowboy",
+       "bases": {
+        "cowboy": 5,
+        "wizard": 3
+       },
+       "cowboyBoard": "Ranger 2/4 | - | -",
+       "wizardBoard": "Dragon 3/4 | Jack-o'-Lantern 1/1 cover | -",
+       "dragonOrbs": 4,
+       "dragonDue": false,
+       "wizardTrapsFaceDown": 0,
+       "cowboyTraps": [
+        "Bear Trap"
+       ],
+       "cowboyHand": [
+        "Gatling Crew",
+        "Dynamiter",
+        "Outrider",
+        "Billy"
+       ]
+      }
+     },
+     "trace": [
+      {
+       "turn": 3,
+       "side": "cowboy",
+       "actions": [
+        "summon Ranger paying Covered Wagon",
+        "{\"type\":\"attack\",\"slot\":0,\"target\":0}",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 4,
+       "side": "wizard",
+       "events": [
+        "summon Jack-o'-Lantern"
+       ]
+      },
+      {
+       "turn": 5,
+       "side": "cowboy",
+       "actions": [
+        "summon Dynamiter",
+        "{\"type\":\"attack\",\"slot\":0,\"target\":1}",
+        "{\"type\":\"cover\",\"slot\":1}",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 6,
+       "side": "wizard",
+       "events": [
+        "summon Skeleton",
+        "spell Singularity -> Ranger",
+        "trap Bear Trap -> Dragon",
+        "attack Dragon -> Ranger base-1",
+        "sweep Dragon x1"
+       ]
+      },
+      {
+       "turn": 7,
+       "side": "cowboy",
+       "actions": [
+        "summon Outrider",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 8,
+       "side": "wizard",
+       "events": [
+        "summon Wizard",
+        "raise Skeleton",
+        "attack Dragon -> Outrider",
+        "attack Wizard -> Base base-2"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s3-C5-dragon-resting",
+   "seed": 3,
+   "hunt": 5,
+   "cowboyTurn": 5,
+   "state": {
+    "turn": 5,
+    "active": "cowboy",
+    "bases": {
+     "cowboy": 5,
+     "wizard": 3
+    },
+    "cowboyBoard": "Ranger 2/4 | - | -",
+    "wizardBoard": "Dragon 3/4 | Jack-o'-Lantern 1/1 cover | -",
+    "dragonOrbs": 4,
+    "dragonDue": false,
+    "wizardTrapsFaceDown": 0,
+    "cowboyTraps": [
+     "Bear Trap"
+    ],
+    "cowboyHand": [
+     "Gatling Crew",
+     "Dynamiter",
+     "Outrider",
+     "Billy"
+    ]
+   },
+   "legalMovesAtChoice": [
+    "Ranger (slot 0) attacks Dragon (slot 0)",
+    "Ranger (slot 0) attacks Jack-o'-Lantern (slot 1)",
+    "Ranger (slot 0) takes cover",
+    "Dynamiter (slot 1) takes cover",
+    "end turn"
+   ],
+   "policyPlan": [
+    "{\"type\":\"summon\",\"cardId\":\"cowboy-dynamiter-1\",\"tributes\":[]}",
+    "{\"type\":\"attack\",\"slot\":0,\"target\":1}",
+    "{\"type\":\"cover\",\"slot\":1}",
+    "{\"type\":\"end\"}"
+   ],
+   "sharedPrefix": [
+    "{\"type\":\"summon\",\"cardId\":\"cowboy-dynamiter-1\",\"tributes\":[]}"
+   ],
+   "atChoice": {
+    "turn": 5,
+    "active": "cowboy",
+    "bases": {
+     "cowboy": 5,
+     "wizard": 3
+    },
+    "cowboyBoard": "Ranger 2/4 | Dynamiter 3/1 resting | -",
+    "wizardBoard": "Dragon 3/4 | Jack-o'-Lantern 1/1 cover | -",
+    "dragonOrbs": 4,
+    "dragonDue": false,
+    "wizardTrapsFaceDown": 0,
+    "cowboyTraps": [
+     "Bear Trap"
+    ],
+    "cowboyHand": [
+     "Gatling Crew",
+     "Outrider",
+     "Billy"
+    ]
+   },
+   "choices": [
+    {
+     "label": "A",
+     "action": "Ranger (slot 0) attacks Dragon (slot 0)",
+     "raw": {
+      "type": "attack",
+      "slot": 0,
+      "target": 0
+     },
+     "isPolicyChoice": false,
+     "outcome": {
+      "result": {
+       "winner": "cowboy",
+       "reason": "base"
+      },
+      "turn": 15,
+      "bases": {
+       "cowboy": 2,
+       "wizard": 0
+      },
+      "dragonSweeps": {
+       "count": 0,
+       "orbs": 0
+      },
+      "afterNextWizardTurn": {
+       "turn": 7,
+       "active": "cowboy",
+       "bases": {
+        "cowboy": 4,
+        "wizard": 3
+       },
+       "cowboyBoard": "- | Dynamiter 3/1 | -",
+       "wizardBoard": "- | Wizard 2/4 | Skeleton 1/1 cover",
+       "dragonOrbs": null,
+       "dragonDue": false,
+       "wizardTrapsFaceDown": 0,
+       "cowboyTraps": [],
+       "cowboyHand": [
+        "Gatling Crew",
+        "Outrider",
+        "Billy",
+        "Sheriff"
+       ]
+      }
+     },
+     "trace": [
+      {
+       "turn": 5,
+       "side": "cowboy",
+       "actions": [
+        "summon Dynamiter",
+        "{\"type\":\"attack\",\"slot\":0,\"target\":0}",
+        "{\"type\":\"cover\",\"slot\":1}",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 6,
+       "side": "wizard",
+       "events": [
+        "summon Wizard",
+        "raise Skeleton",
+        "trap Bear Trap -> Dragon",
+        "attack Wizard -> Ranger base-1"
+       ]
+      },
+      {
+       "turn": 7,
+       "side": "cowboy",
+       "actions": [
+        "summon Outrider",
+        "{\"type\":\"attack\",\"slot\":1,\"target\":2}",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 8,
+       "side": "wizard",
+       "events": [
+        "summon Skeleton",
+        "spell Singularity -> Outrider",
+        "attack Wizard -> Dynamiter base-1"
+       ]
+      },
+      {
+       "turn": 9,
+       "side": "cowboy",
+       "actions": [
+        "summon Sheriff",
+        "{\"type\":\"attack\",\"slot\":0,\"target\":\"base\"}",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 10,
+       "side": "wizard",
+       "events": [
+        "summon Skeleton",
+        "attack Skeleton -> Outrider",
+        "attack Wizard -> Outrider base-1"
+       ]
+      }
+     ]
+    },
+    {
+     "label": "B",
+     "action": "Ranger (slot 0) attacks Jack-o'-Lantern (slot 1)",
+     "raw": {
+      "type": "attack",
+      "slot": 0,
+      "target": 1
+     },
+     "isPolicyChoice": true,
+     "outcome": {
+      "result": {
+       "winner": "wizard",
+       "reason": "base"
+      },
+      "turn": 10,
+      "bases": {
+       "cowboy": 0,
+       "wizard": 3
+      },
+      "dragonSweeps": {
+       "count": 1,
+       "orbs": 1
+      },
+      "afterNextWizardTurn": {
+       "turn": 7,
+       "active": "cowboy",
+       "bases": {
+        "cowboy": 4,
+        "wizard": 3
+       },
+       "cowboyBoard": "- | - | -",
+       "wizardBoard": "Dragon 3/2 | Skeleton 1/3 | -",
+       "dragonOrbs": 2,
+       "dragonDue": false,
+       "wizardTrapsFaceDown": 0,
+       "cowboyTraps": [],
+       "cowboyHand": [
+        "Gatling Crew",
+        "Outrider",
+        "Billy",
+        "Sheriff"
+       ]
+      }
+     },
+     "trace": [
+      {
+       "turn": 5,
+       "side": "cowboy",
+       "actions": [
+        "summon Dynamiter",
+        "{\"type\":\"attack\",\"slot\":0,\"target\":1}",
+        "{\"type\":\"cover\",\"slot\":1}",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 6,
+       "side": "wizard",
+       "events": [
+        "summon Skeleton",
+        "spell Singularity -> Ranger",
+        "trap Bear Trap -> Dragon",
+        "attack Dragon -> Ranger base-1",
+        "sweep Dragon x1"
+       ]
+      },
+      {
+       "turn": 7,
+       "side": "cowboy",
+       "actions": [
+        "summon Outrider",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 8,
+       "side": "wizard",
+       "events": [
+        "summon Wizard",
+        "raise Skeleton",
+        "attack Dragon -> Outrider",
+        "attack Wizard -> Base base-2"
+       ]
+      },
+      {
+       "turn": 9,
+       "side": "cowboy",
+       "actions": [
+        "summon Sheriff",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 10,
+       "side": "wizard",
+       "events": [
+        "attack Dragon -> Sheriff",
+        "attack Wizard -> Base base-2"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s10-C3-before-landing",
+   "seed": 10,
+   "hunt": 5,
+   "cowboyTurn": 3,
+   "state": {
+    "turn": 3,
+    "active": "cowboy",
+    "bases": {
+     "cowboy": 5,
+     "wizard": 4
+    },
+    "cowboyBoard": "Dynamiter 3/1 | - | -",
+    "wizardBoard": "Raven Familiar 1/1 cover | - | -",
+    "dragonOrbs": null,
+    "dragonDue": true,
+    "wizardTrapsFaceDown": 0,
+    "cowboyTraps": [],
+    "cowboyHand": [
+     "Mounted Billy",
+     "Billy",
+     "Sheriff",
+     "Covered Wagon"
+    ]
+   },
+   "legalMovesAtChoice": [
+    "summon Billy paying Dynamiter",
+    "summon Sheriff",
+    "summon Covered Wagon",
+    "Dynamiter (slot 0) attacks Raven Familiar (slot 0)",
+    "Dynamiter (slot 0) takes cover",
+    "end turn"
+   ],
+   "policyPlan": [
+    "{\"type\":\"summon\",\"cardId\":\"cowboy-covered-wagon-2\",\"tributes\":[]}",
+    "{\"type\":\"attack\",\"slot\":0,\"target\":0}",
+    "{\"type\":\"end\"}"
+   ],
+   "sharedPrefix": [],
+   "atChoice": {
+    "turn": 3,
+    "active": "cowboy",
+    "bases": {
+     "cowboy": 5,
+     "wizard": 4
+    },
+    "cowboyBoard": "Dynamiter 3/1 | - | -",
+    "wizardBoard": "Raven Familiar 1/1 cover | - | -",
+    "dragonOrbs": null,
+    "dragonDue": true,
+    "wizardTrapsFaceDown": 0,
+    "cowboyTraps": [],
+    "cowboyHand": [
+     "Mounted Billy",
+     "Billy",
+     "Sheriff",
+     "Covered Wagon"
+    ]
+   },
+   "choices": [
+    {
+     "label": "A",
+     "action": "summon Sheriff",
+     "raw": {
+      "type": "summon",
+      "cardId": "cowboy-sheriff-2",
+      "tributes": []
+     },
+     "isPolicyChoice": false,
+     "outcome": {
+      "result": {
+       "winner": "cowboy",
+       "reason": "base"
+      },
+      "turn": 13,
+      "bases": {
+       "cowboy": 4,
+       "wizard": 0
+      },
+      "dragonSweeps": {
+       "count": 0,
+       "orbs": 0
+      },
+      "afterNextWizardTurn": {
+       "turn": 5,
+       "active": "cowboy",
+       "bases": {
+        "cowboy": 4,
+        "wizard": 4
+       },
+       "cowboyBoard": "- | Sheriff 1/3 | -",
+       "wizardBoard": "Wizard 2/3 | Skeleton 1/1 | -",
+       "dragonOrbs": null,
+       "dragonDue": false,
+       "wizardTrapsFaceDown": 0,
+       "cowboyTraps": [],
+       "cowboyHand": [
+        "Mounted Billy",
+        "Billy",
+        "Covered Wagon",
+        "Lasso"
+       ]
+      }
+     },
+     "trace": [
+      {
+       "turn": 3,
+       "side": "cowboy",
+       "actions": [
+        "summon Sheriff",
+        "{\"type\":\"attack\",\"slot\":0,\"target\":0}",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 4,
+       "side": "wizard",
+       "events": [
+        "summon Wizard",
+        "raise Skeleton",
+        "attack Wizard -> Dynamiter base-1"
+       ]
+      },
+      {
+       "turn": 5,
+       "side": "cowboy",
+       "actions": [
+        "summon Billy paying Sheriff",
+        "{\"type\":\"spell\",\"cardId\":\"cowboy-lasso-1\",\"target\":0}",
+        "{\"type\":\"attack\",\"slot\":0,\"target\":1}",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 6,
+       "side": "wizard",
+       "events": [
+        "summon Raven Familiar"
+       ]
+      },
+      {
+       "turn": 7,
+       "side": "cowboy",
+       "actions": [
+        "summon Covered Wagon",
+        "{\"type\":\"attack\",\"slot\":0,\"target\":1}",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 8,
+       "side": "wizard",
+       "events": [
+        "summon Skeleton",
+        "attack Wizard -> Covered Wagon"
+       ]
+      }
+     ]
+    },
+    {
+     "label": "B",
+     "action": "summon Billy paying Dynamiter",
+     "raw": {
+      "type": "summon",
+      "cardId": "cowboy-billy-1",
+      "tributes": [
+       0
+      ]
+     },
+     "isPolicyChoice": false,
+     "outcome": {
+      "result": {
+       "winner": "wizard",
+       "reason": "base"
+      },
+      "turn": 14,
+      "bases": {
+       "cowboy": 0,
+       "wizard": 4
+      },
+      "dragonSweeps": {
+       "count": 4,
+       "orbs": 5
+      },
+      "afterNextWizardTurn": {
+       "turn": 5,
+       "active": "cowboy",
+       "bases": {
+        "cowboy": 5,
+        "wizard": 4
+       },
+       "cowboyBoard": "Billy 2/4 | - | -",
+       "wizardBoard": "Dragon 3/4 | Skeleton 1/3 | -",
+       "dragonOrbs": 4,
+       "dragonDue": false,
+       "wizardTrapsFaceDown": 0,
+       "cowboyTraps": [],
+       "cowboyHand": [
+        "Mounted Billy",
+        "Sheriff",
+        "Covered Wagon",
+        "Lasso"
+       ]
+      }
+     },
+     "trace": [
+      {
+       "turn": 3,
+       "side": "cowboy",
+       "actions": [
+        "summon Billy paying Dynamiter",
+        "{\"type\":\"attack\",\"slot\":0,\"target\":0}",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 4,
+       "side": "wizard",
+       "events": [
+        "summon Skeleton"
+       ]
+      },
+      {
+       "turn": 5,
+       "side": "cowboy",
+       "actions": [
+        "summon Covered Wagon",
+        "{\"type\":\"spell\",\"cardId\":\"cowboy-lasso-1\",\"target\":0}",
+        "{\"type\":\"attack\",\"slot\":0,\"target\":1}",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 6,
+       "side": "wizard",
+       "events": [
+        "summon Wizard",
+        "raise Skeleton",
+        "attack Wizard -> Covered Wagon"
+       ]
+      },
+      {
+       "turn": 7,
+       "side": "cowboy",
+       "actions": [
+        "summon Covered Wagon",
+        "{\"type\":\"attack\",\"slot\":0,\"target\":1}",
+        "{\"type\":\"attack\",\"slot\":1,\"target\":1}",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 8,
+       "side": "wizard",
+       "events": [
+        "summon Raven Familiar",
+        "spell Singularity -> Covered Wagon",
+        "attack Dragon -> Covered Wagon base-2",
+        "sweep Dragon x2"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s19-C3-before-landing",
+   "seed": 19,
+   "hunt": 5,
+   "cowboyTurn": 3,
+   "state": {
+    "turn": 3,
+    "active": "cowboy",
+    "bases": {
+     "cowboy": 5,
+     "wizard": 4
+    },
+    "cowboyBoard": "Dynamiter 3/1 | - | -",
+    "wizardBoard": "Jack-o'-Lantern 1/1 cover | - | -",
+    "dragonOrbs": null,
+    "dragonDue": true,
+    "wizardTrapsFaceDown": 0,
+    "cowboyTraps": [],
+    "cowboyHand": [
+     "Ranger",
+     "Sheriff",
+     "Covered Wagon",
+     "Sheriff"
+    ]
+   },
+   "legalMovesAtChoice": [
+    "summon Ranger paying Dynamiter",
+    "summon Sheriff",
+    "summon Covered Wagon",
+    "Dynamiter (slot 0) attacks Jack-o'-Lantern (slot 0)",
+    "Dynamiter (slot 0) takes cover",
+    "end turn"
+   ],
+   "policyPlan": [
+    "{\"type\":\"summon\",\"cardId\":\"cowboy-covered-wagon-2\",\"tributes\":[]}",
+    "{\"type\":\"end\"}"
+   ],
+   "sharedPrefix": [],
+   "atChoice": {
+    "turn": 3,
+    "active": "cowboy",
+    "bases": {
+     "cowboy": 5,
+     "wizard": 4
+    },
+    "cowboyBoard": "Dynamiter 3/1 | - | -",
+    "wizardBoard": "Jack-o'-Lantern 1/1 cover | - | -",
+    "dragonOrbs": null,
+    "dragonDue": true,
+    "wizardTrapsFaceDown": 0,
+    "cowboyTraps": [],
+    "cowboyHand": [
+     "Ranger",
+     "Sheriff",
+     "Covered Wagon",
+     "Sheriff"
+    ]
+   },
+   "choices": [
+    {
+     "label": "A",
+     "action": "summon Sheriff",
+     "raw": {
+      "type": "summon",
+      "cardId": "cowboy-sheriff-2",
+      "tributes": []
+     },
+     "isPolicyChoice": false,
+     "outcome": {
+      "result": {
+       "winner": "wizard",
+       "reason": "base"
+      },
+      "turn": 10,
+      "bases": {
+       "cowboy": 0,
+       "wizard": 3
+      },
+      "dragonSweeps": {
+       "count": 1,
+       "orbs": 1
+      },
+      "afterNextWizardTurn": {
+       "turn": 5,
+       "active": "cowboy",
+       "bases": {
+        "cowboy": 4,
+        "wizard": 4
+       },
+       "cowboyBoard": "- | Sheriff 1/3 | -",
+       "wizardBoard": "Wizard 2/3 | Dragon 3/4 | -",
+       "dragonOrbs": 4,
+       "dragonDue": false,
+       "wizardTrapsFaceDown": 0,
+       "cowboyTraps": [],
+       "cowboyHand": [
+        "Ranger",
+        "Covered Wagon",
+        "Sheriff",
+        "Gatling Crew"
+       ]
+      }
+     },
+     "trace": [
+      {
+       "turn": 3,
+       "side": "cowboy",
+       "actions": [
+        "summon Sheriff",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 4,
+       "side": "wizard",
+       "events": [
+        "summon Wizard",
+        "attack Wizard -> Dynamiter base-1"
+       ]
+      },
+      {
+       "turn": 5,
+       "side": "cowboy",
+       "actions": [
+        "summon Covered Wagon",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 6,
+       "side": "wizard",
+       "events": [
+        "summon Skeleton",
+        "attack Wizard -> Covered Wagon",
+        "attack Dragon -> Covered Wagon base-1",
+        "sweep Dragon x1"
+       ]
+      },
+      {
+       "turn": 7,
+       "side": "cowboy",
+       "actions": [
+        "summon Ranger paying Sheriff",
+        "{\"type\":\"spell\",\"cardId\":\"cowboy-deadeye-1\",\"target\":0}",
+        "{\"type\":\"attack\",\"slot\":0,\"target\":0}",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 8,
+       "side": "wizard",
+       "events": [
+        "summon Skeleton",
+        "attack Dragon -> Ranger",
+        "attack Skeleton -> Ranger"
+       ]
+      }
+     ]
+    },
+    {
+     "label": "B",
+     "action": "summon Ranger paying Dynamiter",
+     "raw": {
+      "type": "summon",
+      "cardId": "cowboy-ranger-1",
+      "tributes": [
+       0
+      ]
+     },
+     "isPolicyChoice": false,
+     "outcome": {
+      "result": {
+       "winner": "cowboy",
+       "reason": "base"
+      },
+      "turn": 13,
+      "bases": {
+       "cowboy": 5,
+       "wizard": 0
+      },
+      "dragonSweeps": {
+       "count": 1,
+       "orbs": 1
+      },
+      "afterNextWizardTurn": {
+       "turn": 5,
+       "active": "cowboy",
+       "bases": {
+        "cowboy": 5,
+        "wizard": 4
+       },
+       "cowboyBoard": "Ranger 2/3 | - | -",
+       "wizardBoard": "Dragon 3/4 | Skeleton 1/3 | -",
+       "dragonOrbs": 4,
+       "dragonDue": false,
+       "wizardTrapsFaceDown": 0,
+       "cowboyTraps": [],
+       "cowboyHand": [
+        "Sheriff",
+        "Covered Wagon",
+        "Sheriff",
+        "Gatling Crew",
+        "Deadeye"
+       ]
+      }
+     },
+     "trace": [
+      {
+       "turn": 3,
+       "side": "cowboy",
+       "actions": [
+        "summon Ranger paying Dynamiter",
+        "{\"type\":\"attack\",\"slot\":0,\"target\":0}",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 4,
+       "side": "wizard",
+       "events": [
+        "summon Skeleton"
+       ]
+      },
+      {
+       "turn": 5,
+       "side": "cowboy",
+       "actions": [
+        "summon Covered Wagon",
+        "{\"type\":\"spell\",\"cardId\":\"cowboy-deadeye-1\",\"target\":1}",
+        "{\"type\":\"attack\",\"slot\":0,\"target\":1}",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 6,
+       "side": "wizard",
+       "events": [
+        "summon Jack-o'-Lantern",
+        "attack Dragon -> Covered Wagon",
+        "sweep Dragon x1"
+       ]
+      },
+      {
+       "turn": 7,
+       "side": "cowboy",
+       "actions": [
+        "summon Gatling Crew paying Ranger + Covered Wagon",
+        "{\"type\":\"attack\",\"slot\":0,\"target\":0}",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 8,
+       "side": "wizard",
+       "events": [
+        "summon Skeleton"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s18-C5-dragon-resting",
+   "seed": 18,
+   "hunt": 5,
+   "cowboyTurn": 5,
+   "state": {
+    "turn": 5,
+    "active": "cowboy",
+    "bases": {
+     "cowboy": 5,
+     "wizard": 4
+    },
+    "cowboyBoard": "Ranger 2/3 | - | -",
+    "wizardBoard": "Skeleton 1/1 cover | Dragon 3/4 | Raven Familiar 1/1 cover",
+    "dragonOrbs": 4,
+    "dragonDue": false,
+    "wizardTrapsFaceDown": 0,
+    "cowboyTraps": [],
+    "cowboyHand": [
+     "Gatling Crew",
+     "Billy",
+     "Dynamiter",
+     "Billy"
+    ]
+   },
+   "legalMovesAtChoice": [
+    "Ranger (slot 0) attacks Skeleton (slot 0)",
+    "Ranger (slot 0) attacks Dragon (slot 1)",
+    "Ranger (slot 0) attacks Raven Familiar (slot 2)",
+    "Ranger (slot 0) takes cover",
+    "Dynamiter (slot 1) takes cover",
+    "end turn"
+   ],
+   "policyPlan": [
+    "{\"type\":\"summon\",\"cardId\":\"cowboy-dynamiter-1\",\"tributes\":[]}",
+    "{\"type\":\"attack\",\"slot\":0,\"target\":2}",
+    "{\"type\":\"cover\",\"slot\":1}",
+    "{\"type\":\"end\"}"
+   ],
+   "sharedPrefix": [
+    "{\"type\":\"summon\",\"cardId\":\"cowboy-dynamiter-1\",\"tributes\":[]}"
+   ],
+   "atChoice": {
+    "turn": 5,
+    "active": "cowboy",
+    "bases": {
+     "cowboy": 5,
+     "wizard": 4
+    },
+    "cowboyBoard": "Ranger 2/3 | Dynamiter 3/1 resting | -",
+    "wizardBoard": "Skeleton 1/1 cover | Dragon 3/4 | Raven Familiar 1/1 cover",
+    "dragonOrbs": 4,
+    "dragonDue": false,
+    "wizardTrapsFaceDown": 0,
+    "cowboyTraps": [],
+    "cowboyHand": [
+     "Gatling Crew",
+     "Billy",
+     "Billy"
+    ]
+   },
+   "choices": [
+    {
+     "label": "A",
+     "action": "Ranger (slot 0) attacks Dragon (slot 1)",
+     "raw": {
+      "type": "attack",
+      "slot": 0,
+      "target": 1
+     },
+     "isPolicyChoice": false,
+     "outcome": {
+      "result": {
+       "winner": "wizard",
+       "reason": "base"
+      },
+      "turn": 6,
+      "bases": {
+       "cowboy": 0,
+       "wizard": 4
+      },
+      "dragonSweeps": {
+       "count": 0,
+       "orbs": 0
+      },
+      "afterNextWizardTurn": {
+       "turn": 6,
+       "active": "wizard",
+       "bases": {
+        "cowboy": 0,
+        "wizard": 4
+       },
+       "cowboyBoard": "- | - | -",
+       "wizardBoard": "Wizard 2/4 | Dragon 3/2 | -",
+       "dragonOrbs": 2,
+       "dragonDue": false,
+       "wizardTrapsFaceDown": 0,
+       "cowboyTraps": [],
+       "cowboyHand": [
+        "Gatling Crew",
+        "Billy",
+        "Billy"
+       ]
+      }
+     },
+     "trace": [
+      {
+       "turn": 5,
+       "side": "cowboy",
+       "actions": [
+        "summon Dynamiter",
+        "{\"type\":\"attack\",\"slot\":0,\"target\":1}",
+        "{\"type\":\"cover\",\"slot\":1}",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 6,
+       "side": "wizard",
+       "events": [
+        "summon Wizard",
+        "attack Raven Familiar -> Dynamiter",
+        "attack Wizard -> Base base-2",
+        "attack Dragon -> Base base-3"
+       ]
+      }
+     ]
+    },
+    {
+     "label": "B",
+     "action": "Ranger (slot 0) attacks Skeleton (slot 0)",
+     "raw": {
+      "type": "attack",
+      "slot": 0,
+      "target": 0
+     },
+     "isPolicyChoice": false,
+     "outcome": {
+      "result": {
+       "winner": "wizard",
+       "reason": "base"
+      },
+      "turn": 8,
+      "bases": {
+       "cowboy": 0,
+       "wizard": 4
+      },
+      "dragonSweeps": {
+       "count": 1,
+       "orbs": 1
+      },
+      "afterNextWizardTurn": {
+       "turn": 7,
+       "active": "cowboy",
+       "bases": {
+        "cowboy": 3,
+        "wizard": 4
+       },
+       "cowboyBoard": "- | - | -",
+       "wizardBoard": "Wizard 2/4 | Dragon 3/4 | Skeleton 1/1",
+       "dragonOrbs": 4,
+       "dragonDue": false,
+       "wizardTrapsFaceDown": 0,
+       "cowboyTraps": [],
+       "cowboyHand": [
+        "Gatling Crew",
+        "Billy",
+        "Billy",
+        "Outrider"
+       ]
+      }
+     },
+     "trace": [
+      {
+       "turn": 5,
+       "side": "cowboy",
+       "actions": [
+        "summon Dynamiter",
+        "{\"type\":\"attack\",\"slot\":0,\"target\":0}",
+        "{\"type\":\"cover\",\"slot\":1}",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 6,
+       "side": "wizard",
+       "events": [
+        "summon Wizard",
+        "raise Skeleton",
+        "attack Dragon -> Ranger",
+        "sweep Dragon x1",
+        "attack Wizard -> Base base-2"
+       ]
+      },
+      {
+       "turn": 7,
+       "side": "cowboy",
+       "actions": [
+        "summon Outrider",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 8,
+       "side": "wizard",
+       "events": [
+        "attack Wizard -> Outrider",
+        "attack Dragon -> Outrider base-2",
+        "attack Skeleton -> Base base-1"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "contract-hunt5-s1-t6-sweep-target-C7",
+   "fromContract": "hunt5-s1-t6-sweep-target",
+   "seed": 1,
+   "hunt": 5,
+   "cowboyTurn": 7,
+   "state": {
+    "turn": 7,
+    "active": "cowboy",
+    "bases": {
+     "cowboy": 5,
+     "wizard": 2
+    },
+    "cowboyBoard": "- | Sheriff 1/2 | -",
+    "wizardBoard": "Dragon 3/2 | Raven Familiar 1/1 | -",
+    "dragonOrbs": 2,
+    "dragonDue": false,
+    "wizardTrapsFaceDown": 0,
+    "cowboyTraps": [],
+    "cowboyHand": [
+     "Mounted Billy",
+     "Outrider"
+    ]
+   },
+   "legalMovesAtChoice": [
+    "Outrider (slot 0) takes cover",
+    "Sheriff (slot 1) attacks Dragon (slot 0)",
+    "Sheriff (slot 1) attacks Raven Familiar (slot 1)",
+    "Sheriff (slot 1) takes cover",
+    "end turn"
+   ],
+   "policyPlan": [
+    "{\"type\":\"summon\",\"cardId\":\"cowboy-outrider-1\",\"tributes\":[]}",
+    "{\"type\":\"attack\",\"slot\":1,\"target\":1}",
+    "{\"type\":\"end\"}"
+   ],
+   "sharedPrefix": [
+    "{\"type\":\"summon\",\"cardId\":\"cowboy-outrider-1\",\"tributes\":[]}"
+   ],
+   "atChoice": {
+    "turn": 7,
+    "active": "cowboy",
+    "bases": {
+     "cowboy": 5,
+     "wizard": 2
+    },
+    "cowboyBoard": "Outrider 1/3 resting | Sheriff 1/2 | -",
+    "wizardBoard": "Dragon 3/2 | Raven Familiar 1/1 | -",
+    "dragonOrbs": 2,
+    "dragonDue": false,
+    "wizardTrapsFaceDown": 0,
+    "cowboyTraps": [],
+    "cowboyHand": [
+     "Mounted Billy"
+    ]
+   },
+   "choices": [
+    {
+     "label": "A",
+     "action": "Sheriff (slot 1) attacks Dragon (slot 0)",
+     "raw": {
+      "type": "attack",
+      "slot": 1,
+      "target": 0
+     },
+     "isPolicyChoice": false,
+     "outcome": {
+      "result": {
+       "winner": "wizard",
+       "reason": "base"
+      },
+      "turn": 10,
+      "bases": {
+       "cowboy": 0,
+       "wizard": 2
+      },
+      "dragonSweeps": {
+       "count": 0,
+       "orbs": 0
+      },
+      "afterNextWizardTurn": {
+       "turn": 9,
+       "active": "cowboy",
+       "bases": {
+        "cowboy": 3,
+        "wizard": 2
+       },
+       "cowboyBoard": "- | - | -",
+       "wizardBoard": "Dragon 3/1 | Wizard 2/4 | -",
+       "dragonOrbs": 1,
+       "dragonDue": false,
+       "wizardTrapsFaceDown": 0,
+       "cowboyTraps": [],
+       "cowboyHand": [
+        "Mounted Billy",
+        "Gatling Crew"
+       ]
+      }
+     },
+     "trace": [
+      {
+       "turn": 7,
+       "side": "cowboy",
+       "actions": [
+        "summon Outrider",
+        "{\"type\":\"attack\",\"slot\":1,\"target\":0}",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 8,
+       "side": "wizard",
+       "events": [
+        "summon Wizard",
+        "attack Dragon -> Outrider",
+        "attack Wizard -> Base base-2"
+       ]
+      },
+      {
+       "turn": 9,
+       "side": "cowboy",
+       "actions": [
+        "end turn"
+       ]
+      },
+      {
+       "turn": 10,
+       "side": "wizard",
+       "events": [
+        "summon Skeleton",
+        "attack Dragon -> Base base-3"
+       ]
+      }
+     ]
+    },
+    {
+     "label": "B",
+     "action": "Sheriff (slot 1) attacks Raven Familiar (slot 1)",
+     "raw": {
+      "type": "attack",
+      "slot": 1,
+      "target": 1
+     },
+     "isPolicyChoice": true,
+     "outcome": {
+      "result": {
+       "winner": "wizard",
+       "reason": "base"
+      },
+      "turn": 12,
+      "bases": {
+       "cowboy": 0,
+       "wizard": 1
+      },
+      "dragonSweeps": {
+       "count": 1,
+       "orbs": 1
+      },
+      "afterNextWizardTurn": {
+       "turn": 9,
+       "active": "cowboy",
+       "bases": {
+        "cowboy": 4,
+        "wizard": 2
+       },
+       "cowboyBoard": "Outrider 1/2 | - | -",
+       "wizardBoard": "Dragon 3/2 | Skeleton 1/3 | -",
+       "dragonOrbs": 2,
+       "dragonDue": false,
+       "wizardTrapsFaceDown": 0,
+       "cowboyTraps": [],
+       "cowboyHand": [
+        "Mounted Billy",
+        "Gatling Crew"
+       ]
+      }
+     },
+     "trace": [
+      {
+       "turn": 7,
+       "side": "cowboy",
+       "actions": [
+        "summon Outrider",
+        "{\"type\":\"attack\",\"slot\":1,\"target\":1}",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 8,
+       "side": "wizard",
+       "events": [
+        "summon Skeleton",
+        "attack Dragon -> Sheriff base-1",
+        "sweep Dragon x1"
+       ]
+      },
+      {
+       "turn": 9,
+       "side": "cowboy",
+       "actions": [
+        "Outrider (slot 0) attacks Wizard Base (ride past)",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 10,
+       "side": "wizard",
+       "events": [
+        "summon Wizard",
+        "raise Skeleton",
+        "attack Dragon -> Outrider base-1",
+        "attack Wizard -> Base base-2"
+       ]
+      },
+      {
+       "turn": 11,
+       "side": "cowboy",
+       "actions": [
+        "summon Outrider",
+        "{\"type\":\"end\"}"
+       ]
+      },
+      {
+       "turn": 12,
+       "side": "wizard",
+       "events": [
+        "summon Wizard",
+        "attack Wizard -> Outrider",
+        "attack Wizard -> Outrider base-1"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "deckSample": {
+  "seeds": "0-19",
+  "first": "cowboy",
+  "trail-complete": {
+   "deck": {
+    "cowboy-sheriff": 3,
+    "cowboy-billy": 2,
+    "cowboy-deadeye": 1,
+    "cowboy-covered-wagon": 2,
+    "cowboy-outrider": 2,
+    "cowboy-ranger": 1,
+    "cowboy-lasso": 1,
+    "cowboy-dynamiter": 1,
+    "cowboy-bear-trap": 1,
+    "cowboy-mounted-billy": 1,
+    "cowboy-gatling-crew": 1
+   },
+   "cases": 20,
+   "cowboyWins": 10,
+   "wizardWins": 10,
+   "draws": 0,
+   "reasons": {
+    "base": 20
+   },
+   "sweeps": 19,
+   "perSeed": [
+    "0:w8",
+    "1:w12",
+    "2:w10",
+    "3:w10",
+    "4:w10",
+    "5:w10",
+    "6:c19",
+    "7:c11",
+    "8:c5",
+    "9:w8",
+    "10:c9",
+    "11:c9",
+    "12:c13",
+    "13:c9",
+    "14:c9",
+    "15:w8",
+    "16:c13",
+    "17:c7",
+    "18:w8",
+    "19:w10"
+   ]
+  },
+  "no-tribute": {
+   "deck": {
+    "cowboy-sheriff": 8,
+    "cowboy-outrider": 2,
+    "cowboy-covered-wagon": 2,
+    "cowboy-dynamiter": 1,
+    "cowboy-deadeye": 1,
+    "cowboy-lasso": 1,
+    "cowboy-bear-trap": 1
+   },
+   "cases": 20,
+   "cowboyWins": 11,
+   "wizardWins": 9,
+   "draws": 0,
+   "reasons": {
+    "base": 20
+   },
+   "sweeps": 26,
+   "perSeed": [
+    "0:w8",
+    "1:c13",
+    "2:w10",
+    "3:c20",
+    "4:c15",
+    "5:w10",
+    "6:w10",
+    "7:c11",
+    "8:c20",
+    "9:w10",
+    "10:c26",
+    "11:c13",
+    "12:w10",
+    "13:c11",
+    "14:c11",
+    "15:c11",
+    "16:c5",
+    "17:w10",
+    "18:w12",
+    "19:w10"
+   ]
+  }
+ }
+}

@@ -328,3 +328,20 @@ The next substantial Kiro task is #56, boundary generation, failure reduction an
 - **Change**: `--no-ff` merges keep the removal commit `4ebbb16` separate. `src/app.js` conflict resolved to Showdown only with the full Camp. The hosted build has no lane-chunk path, and the staged-tree check asserts none. README, AGENTS.md, CLAUDE.md, the router, Kiro steering, the duel-presenter description, the judge guide and Devpost URLs, the release line (its Nov 19 handoff replaced) and the brief's status now name `/`, `/graybox/`, `/showdown/` and `/3d/`.
 - **Verification**: `npm test` 578/578; Showdown browser checks 22, 13, 16, 6 and 5 ok; staged Pages tree 8/8 with Chrome; `/3d/` menu and accessibility harnesses pass, replay 7 of 8 as on `main`. Receipts: [evidence note](evidence/showdown-slice3-release-candidate.md).
 - **Remaining**: three first-time human playtests; Fable's wording approval; the live Pages deploy after merge.
+
+### 2026-11-19 — K-095 experiment turn: the seed-3 Dragon decision from Camp (Kiro CLI, America/Los_Angeles, 23:40 PST)
+
+- **State**: one local commit on `kiro/graywave-overnight-turn`. Not merged or published.
+- **Performed in**: a Kiro CLI overnight-turn worker session (Claude Opus 5.5). The decision data comes from the Dragon referee experiment (`kiro/graywave-dragon-referee` `d264466`, checkpoint `s3-C5-dragon-resting`).
+- **Change**: `?turn=dragon-c5` and one optional Camp control open that Cowboy turn 5 on the normal Showdown screen. The 7 allowlisted Cowboy actions replay on the canonical engine from a fresh deal, each checked legal, with the unchanged bot playing the Wizard turns. Nothing is settled or logged. Restart and Retry replay the turn again. No rule, reward or Scout change. Wording is a draft for Fable.
+- **Verification**: Node 6/6 (both choices reach the referee's T15 Cowboy and T10 Wizard results), `npm test` 584/584, new browser check 18/18, and the existing graybox browser checks all pass. Receipts: [evidence note](evidence/showdown-turn-k095.md).
+- **Remaining**: native Crew browser handoff was blocked because Chrome remote debugging was not enabled. The Crew video capture, human takeover and human playtest are pending. Fable's review of the experiment and its wording is also pending.
+
+### 2026-11-19 — Overnight QA: Camp return focus with a card offer open (Kiro agent session, America/Los_Angeles, 23:40 PST)
+
+- **State**: committed locally on `kiro/graywave-overnight-qa` from `db80cd0`. Not merged.
+- **Performed in**: a Kiro agent session using Claude Opus 5.5, with kiro-cli 3.5.0 installed. The bugfix spec was written by hand in Kiro's layout; no native bugfix-spec run took place.
+- **Problem (observed, keyboard bot in headless Chrome)**: after a win with a card offer open, Enter on "Back to camp" focused the Camp's Main menu, and the next Enter left the Camp. Cause: `toCamp` fell back to a selector list, which matches in document order and does not skip disabled buttons.
+- **Change**: `src/app.js` tries the claim area, then the first open duel, then any enabled button, in that order. A regression step was added to `scripts/browser-showdown-keyboard-check.mjs`, along with the spec `.kiro/specs/showdown-camp-return-focus/bugfix.md`. No rule, wording, reward or Scout change.
+- **Verification**: red on base (step 4b fails, focus `#camp-home`). Green after the fix: keyboard 7/7, trail 16/16, modes 13/13, main graybox 22/22, `npm test` 578/0. [Evidence note](evidence/kiro-overnight-qa-camp-focus.md).
+- **Remaining**: focus goes to `body` when a duel starts from the Camp and after the best-of-three swap. This is open as a presentation decision. Human playtests are pending.

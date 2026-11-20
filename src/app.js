@@ -7,8 +7,8 @@
 const node = (id) => document.getElementById(id);
 
 Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"), import("./ui/showdown-builder.js"), import("./match/showdown-campaign.js"),
-  import("./match/showdown-playtest.js"), import("./match/showdown-session.js")])
-  .then(([{mountShowdown, freshSeed}, {mountCamp}, {mountBuilder}, {createCampaign}, {createPlaytestLog}, {twoPlayers}]) => {
+  import("./match/showdown-playtest.js"), import("./match/showdown-session.js"), import("./match/showdown-turn.js")])
+  .then(([{mountShowdown, freshSeed}, {mountCamp}, {mountBuilder}, {createCampaign}, {createPlaytestLog}, {twoPlayers}, {turnDuel}]) => {
   const title = node("title-screen"), screen = node("showdown"), campRoot = node("showdown-camp"), builderRoot = node("showdown-builder"), play = node("menu-play");
   const seed = new URLSearchParams(location.search).get("seed");
   // ?seed fixes every deal started from the Camp and every later game of a match, so a scripted check replays the same duels.
@@ -24,7 +24,10 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   const toCamp = () => {
     showOnly(campRoot);
     camp.show();
-    ((last && campRoot.querySelector(`${last}:not(:disabled)`)) ?? campRoot.querySelector("[data-duel], [data-choose], button"))?.focus();
+    // When that control is now disabled (a win's card offer is open), the Camp's own order: the claim
+    // (offer or pack), then the first open duel. Selectors are tried in turn, not in document order.
+    const usable = (selector) => campRoot.querySelector(`${selector}:not(:disabled)`);
+    ((last && usable(last)) ?? usable("#camp-claim button") ?? usable("[data-duel]") ?? usable("button"))?.focus();
   };
   const builder = mountBuilder(builderRoot, {campaign});
   const showdown = mountShowdown(screen, {onHome: toCamp, campaign, playtest, nextSeed: seedFor,
@@ -47,4 +50,20 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
       showdown.start(duel, seedFor(), {players, best});
     }});
   play.addEventListener("click", toCamp);
+  // Experiment for review (K-095): one recorded Dragon turn, opened from this optional Camp control or
+  // ?turn=dragon-c5. Only ids allowlisted in showdown-turn.js open; it saves nothing.
+  campRoot.insertAdjacentHTML("beforeend", `<section id="camp-experiment" aria-labelledby="camp-experiment-title"><h2 id="camp-experiment-title">Experiment</h2>
+    <p class="sd-note">For review, not a bounty. Nothing here is saved.</p>
+    <div class="sd-row"><button type="button" id="camp-turn-dragon" data-turn="dragon-c5">Try one Dragon turn</button></div></section>`);
+  const openTurn = (id) => {
+    const turn = turnDuel(id);
+    if (!turn) return false;
+    last = "#camp-turn-dragon";
+    showOnly(screen);
+    showdown.start(turn.duel, turn.seed);
+    return true;
+  };
+  campRoot.addEventListener("click", (event) => { const b = event.target.closest("button[data-turn]"); if (b) openTurn(b.dataset.turn); });
+  const turn = new URLSearchParams(location.search).get("turn");
+  if (turn !== null) openTurn(turn);
   });

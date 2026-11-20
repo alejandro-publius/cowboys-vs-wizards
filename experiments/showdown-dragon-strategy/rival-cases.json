@@ -1,0 +1,1468 @@
+{
+ "experiment": "showdown-dragon-strategy/rival-search",
+ "engine": "src/game/showdown (unchanged)",
+ "encounter": "hunt:graveyard-dragon #5, Cowboys first, deckAfter(6)",
+ "heldOut": "seeds 64-127 ascending (earlier scripts used 0-63)",
+ "cowboyPolicy": "planTurn on viewFor(cowboy) rebuild (counter.mjs, copied)",
+ "wizardPolicy": "playTurn(state, hunt level)",
+ "claim": {
+  "id": "s3-C5-dragon-resting",
+  "text": "At C5 with the bounty Dragon resting, the Ranger hitting the Dragon beats the policy's other attack, when the attacker survives the hit-back or a Cowboy trap is set.",
+  "seed3": {
+   "result": {
+    "A": "c15",
+    "B": "w10"
+   },
+   "visible": {
+    "attacker": "Ranger",
+    "attackerIsRanger": true,
+    "attackerAttack": 2,
+    "attackerHealth": 4,
+    "dragonAttack": 3,
+    "dragonHealth": 4,
+    "attackerSurvivesHitBack": true,
+    "dragonLeft": 2,
+    "cowboyTrapsSet": [
+     "Bear Trap"
+    ],
+    "wizardTrapsFaceDown": 0,
+    "cowboyTroops": 2,
+    "wizardTroops": 2,
+    "bases": {
+     "cowboy": 5,
+     "wizard": 3
+    }
+   },
+   "board": {
+    "cowboy": "Ranger 2/4 | Dynamiter 3/1 resting | -",
+    "wizard": "Dragon 3/4 | Jack-o'-Lantern 1/1 cover | -"
+   },
+   "matchesCounterOutput": true
+  }
+ },
+ "summary": {
+  "seeds": 64,
+  "tested": 60,
+  "skipped": 4,
+  "allBothLegal": true,
+  "allHiddenReadFree": true,
+  "aWins": 30,
+  "bWins": 32,
+  "flips": 20,
+  "conditionsHold": 48,
+  "conditionsHoldAndAWins": 27,
+  "counterexamples": [
+   64,
+   70,
+   80,
+   82,
+   87,
+   95,
+   105,
+   111,
+   113,
+   119,
+   122
+  ],
+  "rangerSurvivesByTrap": {
+   "trapSet": {
+    "pairs": 5,
+    "aWins": 5,
+    "bWinsWhereALoses": 0,
+    "seeds": [
+     "65:A=c15,B=w12",
+     "84:A=c11,B=c15",
+     "90:A=c7,B=c7",
+     "99:A=c15,B=c15",
+     "115:A=c9,B=c13"
+    ]
+   },
+   "noTrap": {
+    "pairs": 11,
+    "aWins": 5,
+    "bWinsWhereALoses": 2,
+    "seeds": [
+     "70:A=w14,B=c17",
+     "72:A=c11,B=c11",
+     "75:A=c13,B=c11",
+     "77:A=c17,B=c9",
+     "81:A=w10,B=w12",
+     "100:A=w8,B=w12",
+     "101:A=w10,B=w12",
+     "103:A=c22,B=c22",
+     "105:A=w10,B=c11",
+     "107:A=w8,B=w8",
+     "127:A=c20,B=c11"
+    ]
+   }
+  },
+  "firstCounterexample": 64
+ },
+ "shrink": {
+  "rule": "fewest visible differences from the seed-3 position, then lowest seed",
+  "order": [
+   {
+    "seed": 70,
+    "differences": 3
+   },
+   {
+    "seed": 80,
+    "differences": 5
+   },
+   {
+    "seed": 82,
+    "differences": 5
+   },
+   {
+    "seed": 87,
+    "differences": 5
+   },
+   {
+    "seed": 95,
+    "differences": 5
+   },
+   {
+    "seed": 105,
+    "differences": 5
+   },
+   {
+    "seed": 122,
+    "differences": 5
+   },
+   {
+    "seed": 64,
+    "differences": 6
+   },
+   {
+    "seed": 111,
+    "differences": 6
+   },
+   {
+    "seed": 113,
+    "differences": 7
+   },
+   {
+    "seed": 119,
+    "differences": 7
+   }
+  ],
+  "pickedSeed": 70,
+  "board": {
+   "cowboy": "Ranger 2/4 | Covered Wagon 1/4 resting | -",
+   "wizard": "Dragon 3/4 | Jack-o'-Lantern 1/1 cover | -"
+  },
+  "pair": {
+   "A": "Ranger (slot 0) attacks Dragon (slot 0) -> w14",
+   "B": "Ranger (slot 0) attacks Jack-o'-Lantern (slot 1) -> c17",
+   "policy": "B"
+  },
+  "visibleDifferencesFromSeed3": {
+   "cowboyTrapSet": {
+    "seed3": true,
+    "counterexample": false
+   },
+   "cowboyCards": {
+    "seed3": "Ranger | Dynamiter | -",
+    "counterexample": "Ranger | Covered Wagon | -"
+   },
+   "wizardBase": {
+    "seed3": 3,
+    "counterexample": 4
+   }
+  },
+  "firstSplit": {
+   "A": {
+    "turn": 5,
+    "side": "cowboy",
+    "bases": {
+     "cowboy": 5,
+     "wizard": 4
+    },
+    "cowboyBoard": "Ranger 2/1 | Covered Wagon 1/4 | -",
+    "wizardBoard": "Dragon 3/2 | Jack-o'-Lantern 1/1 | -",
+    "dragonOnBoard": true
+   },
+   "B": {
+    "turn": 5,
+    "side": "cowboy",
+    "bases": {
+     "cowboy": 5,
+     "wizard": 4
+    },
+    "cowboyBoard": "Ranger 2/3 | Covered Wagon 1/4 | -",
+    "wizardBoard": "Dragon 3/4 | - | -",
+    "dragonOnBoard": true
+   }
+  }
+ },
+ "rows": [
+  {
+   "seed": 64,
+   "A": "Mounted Billy (slot 0) attacks Dragon (slot 0)",
+   "B": "Mounted Billy (slot 0) attacks Raven Familiar (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "w8",
+    "B": "c7"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": false,
+   "counterexample": true,
+   "stateHash": "5d7f3d3194ea"
+  },
+  {
+   "seed": 65,
+   "A": "Ranger (slot 0) attacks Dragon (slot 0)",
+   "B": "Ranger (slot 0) attacks Skeleton (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "c15",
+    "B": "w12"
+   },
+   "survives": true,
+   "trap": true,
+   "ranger": true,
+   "counterexample": false,
+   "stateHash": "37cbd7350e1e"
+  },
+  {
+   "seed": 66,
+   "A": "Covered Wagon (slot 0) attacks Dragon (slot 1)",
+   "B": "Covered Wagon (slot 0) attacks Skeleton (slot 0)",
+   "policy": "other",
+   "result": {
+    "A": "w10",
+    "B": "w12"
+   },
+   "survives": false,
+   "trap": true,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "b52f5bbc073b"
+  },
+  {
+   "seed": 67,
+   "A": "Billy (slot 0) attacks Dragon (slot 0)",
+   "B": "Billy (slot 0) attacks Skeleton (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "c13",
+    "B": "w12"
+   },
+   "survives": true,
+   "trap": true,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "13ca9cf14caa"
+  },
+  {
+   "seed": 68,
+   "A": "Covered Wagon (slot 0) attacks Dragon (slot 1)",
+   "B": "Covered Wagon (slot 0) attacks Wizard (slot 0)",
+   "policy": "other",
+   "result": {
+    "A": "w10",
+    "B": "w10"
+   },
+   "survives": false,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "7362b7d369a3"
+  },
+  {
+   "seed": 69,
+   "A": "Billy (slot 0) attacks Dragon (slot 0)",
+   "B": "Billy (slot 0) attacks Skeleton (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "c11",
+    "B": "w10"
+   },
+   "survives": false,
+   "trap": true,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "ae201fb5cecf"
+  },
+  {
+   "seed": 70,
+   "A": "Ranger (slot 0) attacks Dragon (slot 0)",
+   "B": "Ranger (slot 0) attacks Jack-o'-Lantern (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "w14",
+    "B": "c17"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": true,
+   "counterexample": true,
+   "stateHash": "eb667ee5c4cc"
+  },
+  {
+   "seed": 71,
+   "A": "Billy (slot 0) attacks Dragon (slot 0)",
+   "B": "Billy (slot 0) attacks Jack-o'-Lantern (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "c17",
+    "B": "c13"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "583e3d44b2ef"
+  },
+  {
+   "seed": 72,
+   "A": "Ranger (slot 0) attacks Dragon (slot 0)",
+   "B": "Ranger (slot 0) attacks Jack-o'-Lantern (slot 1)",
+   "policy": "A",
+   "result": {
+    "A": "c11",
+    "B": "c11"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": true,
+   "counterexample": false,
+   "stateHash": "8dff81420911"
+  },
+  {
+   "seed": 73,
+   "A": "Gatling Crew (slot 0) attacks Dragon (slot 1)",
+   "B": "Gatling Crew (slot 0) attacks Wizard (slot 0)",
+   "policy": "other",
+   "result": {
+    "A": "c11",
+    "B": "w14"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "dc33be4bcbce"
+  },
+  {
+   "seed": 74,
+   "A": "Gatling Crew (slot 0) attacks Dragon (slot 0)",
+   "B": "Gatling Crew (slot 0) attacks Raven Familiar (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "c11",
+    "B": "c5"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "c9c91d491519"
+  },
+  {
+   "seed": 75,
+   "A": "Ranger (slot 0) attacks Dragon (slot 0)",
+   "B": "Ranger (slot 0) attacks Jack-o'-Lantern (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "c13",
+    "B": "c11"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": true,
+   "counterexample": false,
+   "stateHash": "3fa25685aeaa"
+  },
+  {
+   "seed": 76,
+   "A": "Outrider (slot 0) attacks Dragon (slot 1)",
+   "B": "Outrider (slot 0) attacks Wizard (slot 0)",
+   "policy": "other",
+   "result": {
+    "A": "w10",
+    "B": "w12"
+   },
+   "survives": false,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "08097c1685fc"
+  },
+  {
+   "seed": 77,
+   "A": "Ranger (slot 0) attacks Dragon (slot 0)",
+   "B": "Ranger (slot 0) attacks Raven Familiar (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "c17",
+    "B": "c9"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": true,
+   "counterexample": false,
+   "stateHash": "e25b7a807cdb"
+  },
+  {
+   "seed": 78,
+   "A": "Covered Wagon (slot 0) attacks Dragon (slot 1)",
+   "B": "Covered Wagon (slot 0) attacks Wizard (slot 0)",
+   "policy": "other",
+   "result": {
+    "A": "w8",
+    "B": "w8"
+   },
+   "survives": false,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "29cf57336b86"
+  },
+  {
+   "seed": 79,
+   "A": "Billy (slot 0) attacks Dragon (slot 0)",
+   "B": "Billy (slot 0) attacks Skeleton (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "c15",
+    "B": "w16"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "c9440d725e74"
+  },
+  {
+   "seed": 80,
+   "A": "Outrider (slot 0) attacks Dragon (slot 1)",
+   "B": "Outrider (slot 0) attacks Raven Familiar (slot 0)",
+   "policy": "other",
+   "result": {
+    "A": "w12",
+    "B": "c13"
+   },
+   "survives": false,
+   "trap": true,
+   "ranger": false,
+   "counterexample": true,
+   "stateHash": "92e8ec4e50f1"
+  },
+  {
+   "seed": 81,
+   "A": "Ranger (slot 0) attacks Dragon (slot 0)",
+   "B": "Ranger (slot 0) attacks Jack-o'-Lantern (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "w10",
+    "B": "w12"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": true,
+   "counterexample": false,
+   "stateHash": "415a100352ac"
+  },
+  {
+   "seed": 82,
+   "A": "Mounted Billy (slot 0) attacks Dragon (slot 0)",
+   "B": "Mounted Billy (slot 0) attacks Skeleton (slot 1)",
+   "policy": "other",
+   "result": {
+    "A": "w8",
+    "B": "c22"
+   },
+   "survives": true,
+   "trap": true,
+   "ranger": false,
+   "counterexample": true,
+   "stateHash": "fe0d50a22c72"
+  },
+  {
+   "seed": 83,
+   "skipped": "no bounty Dragon on the board at C5"
+  },
+  {
+   "seed": 84,
+   "A": "Ranger (slot 0) attacks Dragon (slot 0)",
+   "B": "Ranger (slot 0) attacks Raven Familiar (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "c11",
+    "B": "c15"
+   },
+   "survives": true,
+   "trap": true,
+   "ranger": true,
+   "counterexample": false,
+   "stateHash": "d42b3f6d26b3"
+  },
+  {
+   "seed": 85,
+   "skipped": "no bounty Dragon on the board at C5"
+  },
+  {
+   "seed": 86,
+   "A": "Outrider (slot 0) attacks Dragon (slot 1)",
+   "B": "Outrider (slot 0) attacks Wizard (slot 0)",
+   "policy": "other",
+   "result": {
+    "A": "w8",
+    "B": "w8"
+   },
+   "survives": false,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "f3b019372e16"
+  },
+  {
+   "seed": 87,
+   "A": "Ranger (slot 0) attacks Dragon (slot 1)",
+   "B": "Ranger (slot 0) attacks Skeleton (slot 0)",
+   "policy": "other",
+   "result": {
+    "A": "w8",
+    "B": "c13"
+   },
+   "survives": false,
+   "trap": true,
+   "ranger": true,
+   "counterexample": true,
+   "stateHash": "3ce9de982de0"
+  },
+  {
+   "seed": 88,
+   "A": "Covered Wagon (slot 0) attacks Dragon (slot 0)",
+   "B": "Covered Wagon (slot 0) attacks Skeleton (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "c9",
+    "B": "c9"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "c060ff27564b"
+  },
+  {
+   "seed": 89,
+   "A": "Covered Wagon (slot 0) attacks Dragon (slot 1)",
+   "B": "Covered Wagon (slot 0) attacks Skeleton (slot 0)",
+   "policy": "B",
+   "result": {
+    "A": "w8",
+    "B": "w8"
+   },
+   "survives": false,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "ccf8a0c07ed7"
+  },
+  {
+   "seed": 90,
+   "A": "Ranger (slot 0) attacks Dragon (slot 1)",
+   "B": "Ranger (slot 0) attacks Jack-o'-Lantern (slot 0)",
+   "policy": "A",
+   "result": {
+    "A": "c7",
+    "B": "c7"
+   },
+   "survives": true,
+   "trap": true,
+   "ranger": true,
+   "counterexample": false,
+   "stateHash": "e1fd58a93f43"
+  },
+  {
+   "seed": 91,
+   "A": "Gatling Crew (slot 0) attacks Dragon (slot 0)",
+   "B": "Gatling Crew (slot 0) attacks Skeleton (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "c13",
+    "B": "c13"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "e64496d62f83"
+  },
+  {
+   "seed": 92,
+   "A": "Gatling Crew (slot 0) attacks Dragon (slot 1)",
+   "B": "Gatling Crew (slot 0) attacks Wizard (slot 0)",
+   "policy": "B",
+   "result": {
+    "A": "c9",
+    "B": "c9"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "a2e186b6b274"
+  },
+  {
+   "seed": 93,
+   "skipped": "no bounty Dragon on the board at C5"
+  },
+  {
+   "seed": 94,
+   "A": "Billy (slot 0) attacks Dragon (slot 0)",
+   "B": "Billy (slot 0) attacks Skeleton (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "c11",
+    "B": "w14"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "bd15cd4609c5"
+  },
+  {
+   "seed": 95,
+   "A": "Outrider (slot 0) attacks Dragon (slot 1)",
+   "B": "Outrider (slot 0) attacks Raven Familiar (slot 0)",
+   "policy": "other",
+   "result": {
+    "A": "w12",
+    "B": "c7"
+   },
+   "survives": false,
+   "trap": true,
+   "ranger": false,
+   "counterexample": true,
+   "stateHash": "f5aeff56e3cc"
+  },
+  {
+   "seed": 96,
+   "A": "Dynamiter (slot 0) attacks Dragon (slot 0)",
+   "B": "Dynamiter (slot 0) attacks Jack-o'-Lantern (slot 1)",
+   "policy": "other",
+   "result": {
+    "A": "c17",
+    "B": "c17"
+   },
+   "survives": false,
+   "trap": true,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "90fd523cb938"
+  },
+  {
+   "seed": 97,
+   "A": "Ranger (slot 0) attacks Dragon (slot 0)",
+   "B": "Ranger (slot 0) attacks Skeleton (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "w8",
+    "B": "w8"
+   },
+   "survives": false,
+   "trap": false,
+   "ranger": true,
+   "counterexample": false,
+   "stateHash": "a033c27b2db5"
+  },
+  {
+   "seed": 98,
+   "A": "Covered Wagon (slot 0) attacks Dragon (slot 1)",
+   "B": "Covered Wagon (slot 0) attacks Wizard (slot 0)",
+   "policy": "other",
+   "result": {
+    "A": "w10",
+    "B": "w10"
+   },
+   "survives": false,
+   "trap": true,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "091575959c10"
+  },
+  {
+   "seed": 99,
+   "A": "Ranger (slot 0) attacks Dragon (slot 0)",
+   "B": "Ranger (slot 0) attacks Raven Familiar (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "c15",
+    "B": "c15"
+   },
+   "survives": true,
+   "trap": true,
+   "ranger": true,
+   "counterexample": false,
+   "stateHash": "3e814934083c"
+  },
+  {
+   "seed": 100,
+   "A": "Ranger (slot 0) attacks Dragon (slot 0)",
+   "B": "Ranger (slot 0) attacks Jack-o'-Lantern (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "w8",
+    "B": "w12"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": true,
+   "counterexample": false,
+   "stateHash": "216e74064fa4"
+  },
+  {
+   "seed": 101,
+   "A": "Ranger (slot 0) attacks Dragon (slot 0)",
+   "B": "Ranger (slot 0) attacks Raven Familiar (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "w10",
+    "B": "w12"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": true,
+   "counterexample": false,
+   "stateHash": "ff220d80dd58"
+  },
+  {
+   "seed": 102,
+   "A": "Billy (slot 0) attacks Dragon (slot 0)",
+   "B": "Billy (slot 0) attacks Raven Familiar (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "w10",
+    "B": "w18"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "fb55f1bb5178"
+  },
+  {
+   "seed": 103,
+   "A": "Ranger (slot 0) attacks Dragon (slot 1)",
+   "B": "Ranger (slot 0) attacks Skeleton (slot 0)",
+   "policy": "other",
+   "result": {
+    "A": "c22",
+    "B": "c22"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": true,
+   "counterexample": false,
+   "stateHash": "5d33240d8f08"
+  },
+  {
+   "seed": 104,
+   "A": "Dynamiter (slot 0) attacks Dragon (slot 0)",
+   "B": "Dynamiter (slot 0) attacks Raven Familiar (slot 1)",
+   "policy": "other",
+   "result": {
+    "A": "c11",
+    "B": "c9"
+   },
+   "survives": false,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "2ab6531da1cb"
+  },
+  {
+   "seed": 105,
+   "A": "Ranger (slot 0) attacks Dragon (slot 0)",
+   "B": "Ranger (slot 0) attacks Skeleton (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "w10",
+    "B": "c11"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": true,
+   "counterexample": true,
+   "stateHash": "4e2acba4cd99"
+  },
+  {
+   "seed": 106,
+   "skipped": "no bounty Dragon on the board at C5"
+  },
+  {
+   "seed": 107,
+   "A": "Ranger (slot 0) attacks Dragon (slot 1)",
+   "B": "Ranger (slot 0) attacks Wizard (slot 0)",
+   "policy": "B",
+   "result": {
+    "A": "w8",
+    "B": "w8"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": true,
+   "counterexample": false,
+   "stateHash": "14d09743338a"
+  },
+  {
+   "seed": 108,
+   "A": "Covered Wagon (slot 0) attacks Dragon (slot 1)",
+   "B": "Covered Wagon (slot 0) attacks Wizard (slot 0)",
+   "policy": "other",
+   "result": {
+    "A": "w8",
+    "B": "w8"
+   },
+   "survives": false,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "50e1db095cbd"
+  },
+  {
+   "seed": 109,
+   "A": "Gatling Crew (slot 0) attacks Dragon (slot 1)",
+   "B": "Gatling Crew (slot 0) attacks Wizard (slot 0)",
+   "policy": "B",
+   "result": {
+    "A": "c9",
+    "B": "c9"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "09f4ebc5ee3b"
+  },
+  {
+   "seed": 110,
+   "A": "Billy (slot 0) attacks Dragon (slot 0)",
+   "B": "Billy (slot 0) attacks Jack-o'-Lantern (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "c13",
+    "B": "w10"
+   },
+   "survives": true,
+   "trap": true,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "defe05cc6609"
+  },
+  {
+   "seed": 111,
+   "A": "Mounted Billy (slot 0) attacks Dragon (slot 0)",
+   "B": "Mounted Billy (slot 0) attacks Skeleton (slot 1)",
+   "policy": "other",
+   "result": {
+    "A": "w8",
+    "B": "c9"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": false,
+   "counterexample": true,
+   "stateHash": "853a493bc965"
+  },
+  {
+   "seed": 112,
+   "A": "Gatling Crew (slot 0) attacks Dragon (slot 1)",
+   "B": "Gatling Crew (slot 0) attacks Jack-o'-Lantern (slot 0)",
+   "policy": "other",
+   "result": {
+    "A": "c9",
+    "B": "w12"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "71ff132fef40"
+  },
+  {
+   "seed": 113,
+   "A": "Mounted Billy (slot 0) attacks Dragon (slot 1)",
+   "B": "Mounted Billy (slot 0) attacks Wizard (slot 0)",
+   "policy": "other",
+   "result": {
+    "A": "w8",
+    "B": "c11"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": false,
+   "counterexample": true,
+   "stateHash": "49d71ecf9f07"
+  },
+  {
+   "seed": 114,
+   "A": "Billy (slot 0) attacks Dragon (slot 0)",
+   "B": "Billy (slot 0) attacks Skeleton (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "w8",
+    "B": "w10"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "5eb54cffd553"
+  },
+  {
+   "seed": 115,
+   "A": "Ranger (slot 0) attacks Dragon (slot 0)",
+   "B": "Ranger (slot 0) attacks Raven Familiar (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "c9",
+    "B": "c13"
+   },
+   "survives": true,
+   "trap": true,
+   "ranger": true,
+   "counterexample": false,
+   "stateHash": "63b91208712e"
+  },
+  {
+   "seed": 116,
+   "A": "Dynamiter (slot 0) attacks Dragon (slot 1)",
+   "B": "Dynamiter (slot 0) attacks Jack-o'-Lantern (slot 0)",
+   "policy": "other",
+   "result": {
+    "A": "c22",
+    "B": "c22"
+   },
+   "survives": false,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "f40fb7025a96"
+  },
+  {
+   "seed": 117,
+   "A": "Gatling Crew (slot 0) attacks Dragon (slot 0)",
+   "B": "Gatling Crew (slot 0) attacks Jack-o'-Lantern (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "c9",
+    "B": "c9"
+   },
+   "survives": true,
+   "trap": true,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "2d3d778f03e6"
+  },
+  {
+   "seed": 118,
+   "A": "Outrider (slot 0) attacks Dragon (slot 1)",
+   "B": "Outrider (slot 0) attacks Wizard (slot 0)",
+   "policy": "other",
+   "result": {
+    "A": "w10",
+    "B": "w10"
+   },
+   "survives": false,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "2cb112b49207"
+  },
+  {
+   "seed": 119,
+   "A": "Mounted Billy (slot 0) attacks Dragon (slot 1)",
+   "B": "Mounted Billy (slot 0) attacks Wizard (slot 0)",
+   "policy": "other",
+   "result": {
+    "A": "w8",
+    "B": "c17"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": false,
+   "counterexample": true,
+   "stateHash": "58d4160c6709"
+  },
+  {
+   "seed": 120,
+   "A": "Dynamiter (slot 0) attacks Dragon (slot 0)",
+   "B": "Dynamiter (slot 0) attacks Jack-o'-Lantern (slot 1)",
+   "policy": "other",
+   "result": {
+    "A": "c11",
+    "B": "c11"
+   },
+   "survives": false,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "e0b0c4c00bf3"
+  },
+  {
+   "seed": 121,
+   "A": "Billy (slot 0) attacks Dragon (slot 0)",
+   "B": "Billy (slot 0) attacks Skeleton (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "c11",
+    "B": "w12"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "5cdc84bcffe9"
+  },
+  {
+   "seed": 122,
+   "A": "Billy (slot 0) attacks Dragon (slot 1)",
+   "B": "Billy (slot 0) attacks Raven Familiar (slot 0)",
+   "policy": "B",
+   "result": {
+    "A": "w10",
+    "B": "c19"
+   },
+   "survives": true,
+   "trap": true,
+   "ranger": false,
+   "counterexample": true,
+   "stateHash": "34e793f444d1"
+  },
+  {
+   "seed": 123,
+   "A": "Gatling Crew (slot 0) attacks Dragon (slot 0)",
+   "B": "Gatling Crew (slot 0) attacks Raven Familiar (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "c9",
+    "B": "c5"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "b192050aada2"
+  },
+  {
+   "seed": 124,
+   "A": "Ranger (slot 0) attacks Dragon (slot 1)",
+   "B": "Ranger (slot 0) attacks Skeleton (slot 2)",
+   "policy": "B",
+   "result": {
+    "A": "w8",
+    "B": "w10"
+   },
+   "survives": false,
+   "trap": false,
+   "ranger": true,
+   "counterexample": false,
+   "stateHash": "91f14503507b"
+  },
+  {
+   "seed": 125,
+   "A": "Billy (slot 0) attacks Dragon (slot 0)",
+   "B": "Billy (slot 0) attacks Jack-o'-Lantern (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "w8",
+    "B": "w16"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "c3074ea09ed3"
+  },
+  {
+   "seed": 126,
+   "A": "Billy (slot 0) attacks Dragon (slot 0)",
+   "B": "Billy (slot 0) attacks Skeleton (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "w10",
+    "B": "w12"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": false,
+   "counterexample": false,
+   "stateHash": "aa047cf8da6f"
+  },
+  {
+   "seed": 127,
+   "A": "Ranger (slot 0) attacks Dragon (slot 0)",
+   "B": "Ranger (slot 0) attacks Jack-o'-Lantern (slot 1)",
+   "policy": "B",
+   "result": {
+    "A": "c20",
+    "B": "c11"
+   },
+   "survives": true,
+   "trap": false,
+   "ranger": true,
+   "counterexample": false,
+   "stateHash": "b7c504652381"
+  }
+ ],
+ "cases": [
+  {
+   "id": "hunt5-s3-C5-ranger",
+   "seed": 3,
+   "stateHash": "9634dfb6d2a1",
+   "cowboyViewHash": "ed935e9f75b9",
+   "atChoiceHash": "fa80caa710a1",
+   "sharedPrefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-dynamiter-1",
+     "tributes": []
+    }
+   ],
+   "A": {
+    "action": {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    "text": "Ranger (slot 0) attacks Dragon (slot 0)",
+    "isPolicy": false
+   },
+   "B": {
+    "action": {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    },
+    "text": "Ranger (slot 0) attacks Jack-o'-Lantern (slot 1)",
+    "isPolicy": true
+   },
+   "bothLegal": true,
+   "hiddenReadFree": true,
+   "board": {
+    "cowboy": "Ranger 2/4 | Dynamiter 3/1 resting | -",
+    "wizard": "Dragon 3/4 | Jack-o'-Lantern 1/1 cover | -"
+   },
+   "visible": {
+    "attacker": "Ranger",
+    "attackerIsRanger": true,
+    "attackerAttack": 2,
+    "attackerHealth": 4,
+    "dragonAttack": 3,
+    "dragonHealth": 4,
+    "attackerSurvivesHitBack": true,
+    "dragonLeft": 2,
+    "cowboyTrapsSet": [
+     "Bear Trap"
+    ],
+    "wizardTrapsFaceDown": 0,
+    "cowboyTroops": 2,
+    "wizardTroops": 2,
+    "bases": {
+     "cowboy": 5,
+     "wizard": 3
+    }
+   },
+   "claimConditionsHold": true,
+   "result": {
+    "A": "c15",
+    "B": "w10"
+   },
+   "counterexample": false,
+   "lines": {
+    "A": {
+     "winner": "cowboy",
+     "reason": "base",
+     "endTurn": 15,
+     "bases": {
+      "cowboy": 2,
+      "wizard": 0
+     },
+     "trace": [
+      {
+       "turn": 5,
+       "side": "cowboy",
+       "bases": {
+        "cowboy": 5,
+        "wizard": 3
+       },
+       "cowboyBoard": "Ranger 2/1 | Dynamiter 3/1 cover | -",
+       "wizardBoard": "Dragon 3/2 | Jack-o'-Lantern 1/1 | -",
+       "dragonOnBoard": true
+      },
+      {
+       "turn": 6,
+       "side": "wizard",
+       "bases": {
+        "cowboy": 4,
+        "wizard": 3
+       },
+       "cowboyBoard": "- | Dynamiter 3/1 | -",
+       "wizardBoard": "- | Wizard 2/4 | Skeleton 1/1 cover",
+       "dragonOnBoard": false
+      },
+      {
+       "turn": 7,
+       "side": "cowboy",
+       "bases": {
+        "cowboy": 4,
+        "wizard": 3
+       },
+       "cowboyBoard": "Outrider 1/3 | Dynamiter 3/1 | -",
+       "wizardBoard": "- | Wizard 2/4 | -",
+       "dragonOnBoard": false
+      },
+      {
+       "turn": 8,
+       "side": "wizard",
+       "bases": {
+        "cowboy": 3,
+        "wizard": 3
+       },
+       "cowboyBoard": "Outrider 1/2 | - | -",
+       "wizardBoard": "Skeleton 1/3 | Wizard 2/3 | -",
+       "dragonOnBoard": false
+      }
+     ]
+    },
+    "B": {
+     "winner": "wizard",
+     "reason": "base",
+     "endTurn": 10,
+     "bases": {
+      "cowboy": 0,
+      "wizard": 3
+     },
+     "trace": [
+      {
+       "turn": 5,
+       "side": "cowboy",
+       "bases": {
+        "cowboy": 5,
+        "wizard": 3
+       },
+       "cowboyBoard": "Ranger 2/3 | Dynamiter 3/1 cover | -",
+       "wizardBoard": "Dragon 3/4 | - | -",
+       "dragonOnBoard": true
+      },
+      {
+       "turn": 6,
+       "side": "wizard",
+       "bases": {
+        "cowboy": 4,
+        "wizard": 3
+       },
+       "cowboyBoard": "- | - | -",
+       "wizardBoard": "Dragon 3/2 | Skeleton 1/3 | -",
+       "dragonOnBoard": true
+      },
+      {
+       "turn": 7,
+       "side": "cowboy",
+       "bases": {
+        "cowboy": 4,
+        "wizard": 3
+       },
+       "cowboyBoard": "Outrider 1/3 | - | -",
+       "wizardBoard": "Dragon 3/2 | Skeleton 1/3 | -",
+       "dragonOnBoard": true
+      },
+      {
+       "turn": 8,
+       "side": "wizard",
+       "bases": {
+        "cowboy": 2,
+        "wizard": 3
+       },
+       "cowboyBoard": "- | - | -",
+       "wizardBoard": "Dragon 3/2 | Wizard 2/4 | Skeleton 1/1",
+       "dragonOnBoard": true
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "hunt5-s70-C5-ranger",
+   "seed": 70,
+   "stateHash": "eb667ee5c4cc",
+   "cowboyViewHash": "6e77a2747323",
+   "atChoiceHash": "abbe27d20382",
+   "sharedPrefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    }
+   ],
+   "A": {
+    "action": {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    "text": "Ranger (slot 0) attacks Dragon (slot 0)",
+    "isPolicy": false
+   },
+   "B": {
+    "action": {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    },
+    "text": "Ranger (slot 0) attacks Jack-o'-Lantern (slot 1)",
+    "isPolicy": true
+   },
+   "bothLegal": true,
+   "hiddenReadFree": true,
+   "board": {
+    "cowboy": "Ranger 2/4 | Covered Wagon 1/4 resting | -",
+    "wizard": "Dragon 3/4 | Jack-o'-Lantern 1/1 cover | -"
+   },
+   "visible": {
+    "attacker": "Ranger",
+    "attackerIsRanger": true,
+    "attackerAttack": 2,
+    "attackerHealth": 4,
+    "dragonAttack": 3,
+    "dragonHealth": 4,
+    "attackerSurvivesHitBack": true,
+    "dragonLeft": 2,
+    "cowboyTrapsSet": [],
+    "wizardTrapsFaceDown": 0,
+    "cowboyTroops": 2,
+    "wizardTroops": 2,
+    "bases": {
+     "cowboy": 5,
+     "wizard": 4
+    }
+   },
+   "claimConditionsHold": true,
+   "result": {
+    "A": "w14",
+    "B": "c17"
+   },
+   "counterexample": true,
+   "lines": {
+    "A": {
+     "winner": "wizard",
+     "reason": "base",
+     "endTurn": 14,
+     "bases": {
+      "cowboy": 0,
+      "wizard": 4
+     },
+     "trace": [
+      {
+       "turn": 5,
+       "side": "cowboy",
+       "bases": {
+        "cowboy": 5,
+        "wizard": 4
+       },
+       "cowboyBoard": "Ranger 2/1 | Covered Wagon 1/4 | -",
+       "wizardBoard": "Dragon 3/2 | Jack-o'-Lantern 1/1 | -",
+       "dragonOnBoard": true
+      },
+      {
+       "turn": 6,
+       "side": "wizard",
+       "bases": {
+        "cowboy": 4,
+        "wizard": 4
+       },
+       "cowboyBoard": "- | - | -",
+       "wizardBoard": "Dragon 3/1 | Wizard 2/4 | Skeleton 1/1",
+       "dragonOnBoard": true
+      },
+      {
+       "turn": 7,
+       "side": "cowboy",
+       "bases": {
+        "cowboy": 4,
+        "wizard": 4
+       },
+       "cowboyBoard": "Outrider 1/3 | - | -",
+       "wizardBoard": "Dragon 3/1 | Wizard 2/4 | Skeleton 1/1",
+       "dragonOnBoard": true
+      },
+      {
+       "turn": 8,
+       "side": "wizard",
+       "bases": {
+        "cowboy": 4,
+        "wizard": 4
+       },
+       "cowboyBoard": "- | - | -",
+       "wizardBoard": "- | Wizard 2/3 | Skeleton 1/1",
+       "dragonOnBoard": false
+      }
+     ]
+    },
+    "B": {
+     "winner": "cowboy",
+     "reason": "base",
+     "endTurn": 17,
+     "bases": {
+      "cowboy": 4,
+      "wizard": 0
+     },
+     "trace": [
+      {
+       "turn": 5,
+       "side": "cowboy",
+       "bases": {
+        "cowboy": 5,
+        "wizard": 4
+       },
+       "cowboyBoard": "Ranger 2/3 | Covered Wagon 1/4 | -",
+       "wizardBoard": "Dragon 3/4 | - | -",
+       "dragonOnBoard": true
+      },
+      {
+       "turn": 6,
+       "side": "wizard",
+       "bases": {
+        "cowboy": 5,
+        "wizard": 4
+       },
+       "cowboyBoard": "Ranger 2/2 | Covered Wagon 1/1 | -",
+       "wizardBoard": "Dragon 3/3 | Raven Familiar 1/1 cover | -",
+       "dragonOnBoard": true
+      },
+      {
+       "turn": 7,
+       "side": "cowboy",
+       "bases": {
+        "cowboy": 5,
+        "wizard": 3
+       },
+       "cowboyBoard": "Ranger 2/2 | Billy 2/1 | -",
+       "wizardBoard": "- | Raven Familiar 1/1 | -",
+       "dragonOnBoard": false
+      },
+      {
+       "turn": 8,
+       "side": "wizard",
+       "bases": {
+        "cowboy": 4,
+        "wizard": 3
+       },
+       "cowboyBoard": "Ranger 2/2 | - | -",
+       "wizardBoard": "Wizard 2/2 | Skeleton 1/1 cover | -",
+       "dragonOnBoard": false
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

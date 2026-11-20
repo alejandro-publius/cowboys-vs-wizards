@@ -1,0 +1,951 @@
+{
+ "base": "4d52642575a75c60b1d2337b80c479dd30f2c181",
+ "cases": [
+  {
+   "id": "hunt5-s1-t6-sweep-target",
+   "mode": "hunt5",
+   "seed": 1,
+   "kind": "hunt5-first-sweep",
+   "prefix": [
+    {
+     "type": "set",
+     "cardId": "cowboy-bear-trap-1"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "spell",
+     "cardId": "wizard-singularity-1",
+     "target": 0
+    },
+    {
+     "type": "summon",
+     "cardId": "wizard-jack-o-lantern-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-2",
+     "tributes": [
+      0
+     ]
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-1",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": "base"
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "wizard-jack-o-lantern-1",
+     "tributes": []
+    },
+    {
+     "type": "cover",
+     "slot": 1
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-3",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "rotation": {
+    "first": "cowboy",
+    "turn": 6,
+    "active": "wizard"
+   },
+   "command": "node experiments/showdown-dragon-strategy/wizard.mjs --case hunt5-s1-t6-sweep-target",
+   "lines": [
+    {
+     "name": "planner",
+     "script": [
+      {
+       "type": "summon",
+       "cardId": "wizard-raven-familiar-2",
+       "tributes": []
+      },
+      {
+       "type": "attack",
+       "slot": 0,
+       "target": 0
+      },
+      {
+       "type": "end"
+      }
+     ]
+    },
+    {
+     "name": "alternative",
+     "forced": [
+      {
+       "type": "summon",
+       "cardId": "wizard-raven-familiar-2",
+       "tributes": []
+      },
+      {
+       "type": "attack",
+       "slot": 0,
+       "target": 1
+      }
+     ],
+     "script": [
+      {
+       "type": "summon",
+       "cardId": "wizard-raven-familiar-2",
+       "tributes": []
+      },
+      {
+       "type": "attack",
+       "slot": 0,
+       "target": 1
+      },
+      {
+       "type": "cover",
+       "slot": 1
+      },
+      {
+       "type": "end"
+      }
+     ]
+    }
+   ],
+   "receipt": {
+    "sees": {
+     "turn": 6,
+     "wizardHand": [
+      "wizard-wizard-2",
+      "wizard-skeleton-9",
+      "wizard-skeleton-7",
+      "wizard-skeleton-5",
+      "wizard-raven-familiar-2"
+     ],
+     "wizardBoard": [
+      "dragon-0:4",
+      "-",
+      "-"
+     ],
+     "wizardBase": 2,
+     "cowboyBoard": [
+      "billy-2:3",
+      "sheriff-3:3",
+      "-"
+     ],
+     "cowboyBase": 5,
+     "cowboyHand": 1,
+     "cowboyTraps": 1,
+     "cowboyGrave": [
+      "cowboy-sheriff-2",
+      "cowboy-deadeye-1"
+     ],
+     "pendingArrivals": []
+    },
+    "legalCount": 7,
+    "lines": [
+     {
+      "name": "planner",
+      "afterTurn": {
+       "turn": 7,
+       "active": "cowboy",
+       "cowboy": {
+        "base": 5,
+        "board": [
+         "-",
+         "sheriff-3:2",
+         "-"
+        ],
+        "hand": 2,
+        "deck": 9,
+        "grave": 4,
+        "traps": 0
+       },
+       "wizard": {
+        "base": 2,
+        "board": [
+         "dragon-0:2",
+         "raven-familiar-2:1",
+         "-"
+        ],
+        "hand": 5,
+        "deck": 7,
+        "grave": 3,
+        "traps": 0
+       }
+      },
+      "result": {
+       "winner": "wizard",
+       "reason": "base"
+      },
+      "endTurn": 12,
+      "turnsPlayed": 6,
+      "wizardTurnEvents": [
+       "summon wizard wizard-raven-familiar-2",
+       "draw wizard",
+       "trap cowboy cowboy-bear-trap-1 wizard-dragon-0 2",
+       "attack wizard wizard-dragon-0 cowboy-billy-2 0 0",
+       "sweep wizard wizard-dragon-0 1",
+       "turn cowboy",
+       "draw cowboy"
+      ],
+      "final": {
+       "turn": 12,
+       "active": "wizard",
+       "cowboy": {
+        "base": 0,
+        "board": [
+         "-",
+         "-",
+         "-"
+        ],
+        "hand": 2,
+        "deck": 7,
+        "grave": 7,
+        "traps": 0
+       },
+       "wizard": {
+        "base": 1,
+        "board": [
+         "wizard-1:3",
+         "wizard-2:4",
+         "skeleton-9:1"
+        ],
+        "hand": 5,
+        "deck": 4,
+        "grave": 5,
+        "traps": 0
+       }
+      }
+     },
+     {
+      "name": "alternative",
+      "afterTurn": {
+       "turn": 7,
+       "active": "cowboy",
+       "cowboy": {
+        "base": 5,
+        "board": [
+         "billy-2:2",
+         "-",
+         "-"
+        ],
+        "hand": 2,
+        "deck": 9,
+        "grave": 4,
+        "traps": 0
+       },
+       "wizard": {
+        "base": 2,
+        "board": [
+         "dragon-0:2",
+         "raven-familiar-2:1c",
+         "-"
+        ],
+        "hand": 5,
+        "deck": 7,
+        "grave": 3,
+        "traps": 0
+       }
+      },
+      "result": {
+       "winner": "cowboy",
+       "reason": "base"
+      },
+      "endTurn": 11,
+      "turnsPlayed": 5,
+      "wizardTurnEvents": [
+       "summon wizard wizard-raven-familiar-2",
+       "draw wizard",
+       "trap cowboy cowboy-bear-trap-1 wizard-dragon-0 2",
+       "attack wizard wizard-dragon-0 cowboy-sheriff-3 0 0",
+       "sweep wizard wizard-dragon-0 1",
+       "cover wizard wizard-raven-familiar-2",
+       "turn cowboy",
+       "draw cowboy"
+      ],
+      "final": {
+       "turn": 11,
+       "active": "cowboy",
+       "cowboy": {
+        "base": 5,
+        "board": [
+         "outrider-2:3",
+         "outrider-1:1",
+         "-"
+        ],
+        "hand": 2,
+        "deck": 7,
+        "grave": 5,
+        "traps": 0
+       },
+       "wizard": {
+        "base": 0,
+        "board": [
+         "wizard-2:3",
+         "skeleton-9:3",
+         "-"
+        ],
+        "hand": 5,
+        "deck": 5,
+        "grave": 5,
+        "traps": 0
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "open-s7-t5-dragon-tribute",
+   "mode": "open",
+   "seed": 7,
+   "kind": "open-dragon-tribute",
+   "prefix": [
+    {
+     "type": "set",
+     "cardId": "wizard-hex-1"
+    },
+    {
+     "type": "summon",
+     "cardId": "wizard-skeleton-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-dynamiter-1",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-lasso-1",
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "spell",
+     "cardId": "wizard-hellfire-1"
+    },
+    {
+     "type": "summon",
+     "cardId": "wizard-wizard-2",
+     "tributes": [
+      0
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": "base"
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "rotation": {
+    "first": "wizard",
+    "turn": 5,
+    "active": "wizard"
+   },
+   "command": "node experiments/showdown-dragon-strategy/wizard.mjs --case open-s7-t5-dragon-tribute",
+   "lines": [
+    {
+     "name": "planner",
+     "script": [
+      {
+       "type": "summon",
+       "cardId": "wizard-imp-1",
+       "tributes": []
+      },
+      {
+       "type": "attack",
+       "slot": 0,
+       "target": 0
+      },
+      {
+       "type": "attack",
+       "slot": 2,
+       "target": 0
+      },
+      {
+       "type": "attack",
+       "slot": 1,
+       "target": "base"
+      },
+      {
+       "type": "end"
+      }
+     ]
+    },
+    {
+     "name": "alternative",
+     "forced": [
+      {
+       "type": "summon",
+       "cardId": "wizard-dragon-1",
+       "tributes": [
+        0,
+        1
+       ]
+      }
+     ],
+     "script": [
+      {
+       "type": "summon",
+       "cardId": "wizard-dragon-1",
+       "tributes": [
+        0,
+        1
+       ]
+      },
+      {
+       "type": "attack",
+       "slot": 0,
+       "target": 0
+      },
+      {
+       "type": "end"
+      }
+     ]
+    }
+   ],
+   "receipt": {
+    "sees": {
+     "turn": 5,
+     "wizardHand": [
+      "wizard-dragon-1",
+      "wizard-imp-1"
+     ],
+     "wizardBoard": [
+      "wizard-2:4",
+      "skeleton-1:1",
+      "-"
+     ],
+     "wizardBase": 5,
+     "cowboyBoard": [
+      "covered-wagon-2:4",
+      "-",
+      "-"
+     ],
+     "cowboyBase": 3,
+     "cowboyHand": 4,
+     "cowboyTraps": 0,
+     "cowboyGrave": [
+      "cowboy-lasso-1",
+      "cowboy-dynamiter-1"
+     ],
+     "pendingArrivals": []
+    },
+    "legalCount": 7,
+    "lines": [
+     {
+      "name": "planner",
+      "afterTurn": {
+       "turn": 6,
+       "active": "cowboy",
+       "cowboy": {
+        "base": 1,
+        "board": [
+         "-",
+         "-",
+         "-"
+        ],
+        "hand": 5,
+        "deck": 8,
+        "grave": 3,
+        "traps": 0
+       },
+       "wizard": {
+        "base": 5,
+        "board": [
+         "wizard-2:3",
+         "skeleton-1:1",
+         "imp-1:1"
+        ],
+        "hand": 1,
+        "deck": 10,
+        "grave": 1,
+        "traps": 1
+       }
+      },
+      "result": {
+       "winner": "wizard",
+       "reason": "base"
+      },
+      "endTurn": 7,
+      "turnsPlayed": 2,
+      "wizardTurnEvents": [
+       "summon wizard wizard-imp-1",
+       "attack wizard wizard-wizard-2 cowboy-covered-wagon-2 2 0",
+       "attack wizard wizard-imp-1 cowboy-covered-wagon-2 0 1",
+       "attack wizard wizard-skeleton-1 base 1",
+       "turn cowboy",
+       "draw cowboy"
+      ],
+      "final": {
+       "turn": 7,
+       "active": "wizard",
+       "cowboy": {
+        "base": 0,
+        "board": [
+         "-",
+         "-",
+         "-"
+        ],
+        "hand": 4,
+        "deck": 8,
+        "grave": 4,
+        "traps": 0
+       },
+       "wizard": {
+        "base": 5,
+        "board": [
+         "dragon-1:5",
+         "-",
+         "imp-1:1"
+        ],
+        "hand": 0,
+        "deck": 9,
+        "grave": 4,
+        "traps": 1
+       }
+      }
+     },
+     {
+      "name": "alternative",
+      "afterTurn": {
+       "turn": 6,
+       "active": "cowboy",
+       "cowboy": {
+        "base": 3,
+        "board": [
+         "covered-wagon-2:1",
+         "-",
+         "-"
+        ],
+        "hand": 5,
+        "deck": 8,
+        "grave": 2,
+        "traps": 0
+       },
+       "wizard": {
+        "base": 5,
+        "board": [
+         "dragon-1:4",
+         "-",
+         "-"
+        ],
+        "hand": 1,
+        "deck": 10,
+        "grave": 3,
+        "traps": 1
+       }
+      },
+      "result": {
+       "winner": "wizard",
+       "reason": "base"
+      },
+      "endTurn": 7,
+      "turnsPlayed": 2,
+      "wizardTurnEvents": [
+       "tribute wizard wizard-wizard-2",
+       "tribute wizard wizard-skeleton-1",
+       "summon wizard wizard-dragon-1",
+       "attack wizard wizard-dragon-1 cowboy-covered-wagon-2 1 0",
+       "turn cowboy",
+       "draw cowboy"
+      ],
+      "final": {
+       "turn": 7,
+       "active": "wizard",
+       "cowboy": {
+        "base": 0,
+        "board": [
+         "-",
+         "-",
+         "-"
+        ],
+        "hand": 4,
+        "deck": 8,
+        "grave": 4,
+        "traps": 0
+       },
+       "wizard": {
+        "base": 5,
+        "board": [
+         "dragon-1:4",
+         "imp-1:1",
+         "-"
+        ],
+        "hand": 0,
+        "deck": 9,
+        "grave": 4,
+        "traps": 1
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "open-s27-t7-dragon-tribute",
+   "mode": "open",
+   "seed": 27,
+   "kind": "open-dragon-tribute",
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "wizard-skeleton-4",
+     "tributes": []
+    },
+    {
+     "type": "set",
+     "cardId": "wizard-hex-1"
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "set",
+     "cardId": "cowboy-bear-trap-1"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-dynamiter-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "spell",
+     "cardId": "wizard-hellfire-1"
+    },
+    {
+     "type": "summon",
+     "cardId": "wizard-headless-horseman-1",
+     "tributes": [
+      0
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": "base"
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "wizard-skeleton-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-1",
+     "tributes": [
+      0
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "rotation": {
+    "first": "wizard",
+    "turn": 7,
+    "active": "wizard"
+   },
+   "command": "node experiments/showdown-dragon-strategy/wizard.mjs --case open-s27-t7-dragon-tribute",
+   "lines": [
+    {
+     "name": "planner",
+     "script": [
+      {
+       "type": "summon",
+       "cardId": "wizard-raven-familiar-1",
+       "tributes": []
+      },
+      {
+       "type": "attack",
+       "slot": 0,
+       "target": "base"
+      },
+      {
+       "type": "cover",
+       "slot": 2
+      },
+      {
+       "type": "end"
+      }
+     ]
+    },
+    {
+     "name": "alternative",
+     "forced": [
+      {
+       "type": "summon",
+       "cardId": "wizard-dragon-1",
+       "tributes": [
+        0,
+        1
+       ]
+      }
+     ],
+     "script": [
+      {
+       "type": "summon",
+       "cardId": "wizard-dragon-1",
+       "tributes": [
+        0,
+        1
+       ]
+      },
+      {
+       "type": "attack",
+       "slot": 0,
+       "target": 0
+      },
+      {
+       "type": "end"
+      }
+     ]
+    }
+   ],
+   "receipt": {
+    "sees": {
+     "turn": 7,
+     "wizardHand": [
+      "wizard-dragon-1",
+      "wizard-raven-familiar-1"
+     ],
+     "wizardBoard": [
+      "headless-horseman-1:1",
+      "skeleton-2:3",
+      "-"
+     ],
+     "wizardBase": 5,
+     "cowboyBoard": [
+      "billy-1:4",
+      "-",
+      "-"
+     ],
+     "cowboyBase": 3,
+     "cowboyHand": 4,
+     "cowboyTraps": 0,
+     "cowboyGrave": [
+      "cowboy-dynamiter-1",
+      "cowboy-bear-trap-1",
+      "cowboy-covered-wagon-2"
+     ],
+     "pendingArrivals": []
+    },
+    "legalCount": 8,
+    "lines": [
+     {
+      "name": "planner",
+      "afterTurn": {
+       "turn": 8,
+       "active": "cowboy",
+       "cowboy": {
+        "base": 2,
+        "board": [
+         "billy-1:4",
+         "-",
+         "-"
+        ],
+        "hand": 5,
+        "deck": 7,
+        "grave": 3,
+        "traps": 0
+       },
+       "wizard": {
+        "base": 5,
+        "board": [
+         "headless-horseman-1:1",
+         "skeleton-2:3",
+         "raven-familiar-1:1c"
+        ],
+        "hand": 2,
+        "deck": 8,
+        "grave": 3,
+        "traps": 0
+       }
+      },
+      "result": {
+       "winner": "wizard",
+       "reason": "base"
+      },
+      "endTurn": 13,
+      "turnsPlayed": 6,
+      "wizardTurnEvents": [
+       "summon wizard wizard-raven-familiar-1",
+       "draw wizard",
+       "attack wizard wizard-headless-horseman-1 base 1",
+       "cover wizard wizard-raven-familiar-1",
+       "turn cowboy",
+       "draw cowboy"
+      ],
+      "final": {
+       "turn": 13,
+       "active": "wizard",
+       "cowboy": {
+        "base": 0,
+        "board": [
+         "-",
+         "ranger-1:4",
+         "outrider-2:3"
+        ],
+        "hand": 4,
+        "deck": 4,
+        "grave": 6,
+        "traps": 0
+       },
+       "wizard": {
+        "base": 3,
+        "board": [
+         "imp-1:1",
+         "-",
+         "-"
+        ],
+        "hand": 1,
+        "deck": 5,
+        "grave": 9,
+        "traps": 0
+       }
+      }
+     },
+     {
+      "name": "alternative",
+      "afterTurn": {
+       "turn": 8,
+       "active": "cowboy",
+       "cowboy": {
+        "base": 3,
+        "board": [
+         "billy-1:1",
+         "-",
+         "-"
+        ],
+        "hand": 5,
+        "deck": 7,
+        "grave": 3,
+        "traps": 0
+       },
+       "wizard": {
+        "base": 5,
+        "board": [
+         "dragon-1:3",
+         "-",
+         "-"
+        ],
+        "hand": 1,
+        "deck": 9,
+        "grave": 5,
+        "traps": 0
+       }
+      },
+      "result": {
+       "winner": "cowboy",
+       "reason": "base"
+      },
+      "endTurn": 18,
+      "turnsPlayed": 11,
+      "wizardTurnEvents": [
+       "tribute wizard wizard-headless-horseman-1",
+       "tribute wizard wizard-skeleton-2",
+       "summon wizard wizard-dragon-1",
+       "attack wizard wizard-dragon-1 cowboy-billy-1 1 0",
+       "turn cowboy",
+       "draw cowboy"
+      ],
+      "final": {
+       "turn": 18,
+       "active": "cowboy",
+       "cowboy": {
+        "base": 3,
+        "board": [
+         "mounted-billy-1:5",
+         "-",
+         "outrider-2:3"
+        ],
+        "hand": 3,
+        "deck": 1,
+        "grave": 10,
+        "traps": 0
+       },
+       "wizard": {
+        "base": 0,
+        "board": [
+         "wizard-2:3",
+         "skeleton-3:1c",
+         "-"
+        ],
+        "hand": 1,
+        "deck": 3,
+        "grave": 10,
+        "traps": 0
+       }
+      }
+     }
+    ]
+   }
+  }
+ ]
+}
