@@ -7,7 +7,8 @@
 // and then be tributed for a second attacker.
 // An attack: your troop deals its attack to an enemy troop you choose. Damage beyond the
 // target's last orb hits its owner's Base. A target that survives hits back.
-// A troop in cover keeps that damage off its Base, but it does not hit back.
+// A troop in cover keeps that damage off its Base, but it does not hit back. Spells cannot
+// choose it, and Hellfire passes over it.
 // A troop may strike a Base directly only when that side has no troops.
 // A free troop cannot attack on the turn it arrives. A troop paid for with a tribute can.
 // A trap waits face down and springs on the next enemy attack, one trap per attack.
@@ -20,6 +21,10 @@ export const HAND_CAP = 6;
 export const TRAP_SLOTS = 2;
 // Whoever goes second starts with this many extra cards, to offset the first move.
 export const SECOND_PLAYER_CARDS = 1;
+// The Base orbs of an even match: the side going first starts with BASE_ORBS, the side going
+// second with SECOND_PLAYER_BASE. A duel that sets baseOrbs (Trail, rivals, bounties) keeps its own.
+export const BASE_ORBS = 5;
+export const SECOND_PLAYER_BASE = 7;
 // Only a guard against an endless game: an empty deck already ends games.
 export const TURN_CAP = 80;
 
@@ -41,28 +46,34 @@ export function random(seed) {
 const arrive = (cardId, turn, {health = cardOf(cardId).health, paid = false} = {}) =>
   ({cardId, health, attacked: false, stunned: false, cover: false, gear: [], arrived: turn, ready: paid || has(cardId, "quickdraw")});
 
-// baseOrbs is one number for both sides or {cowboy, wizard}; decks is {cowboy, wizard} card counts (cards.js DECKS by default).
+// baseOrbs is one number for both sides or {cowboy, wizard}; left out, it is the even match's
+// BASE_ORBS for the side going first and SECOND_PLAYER_BASE for the side going second.
+// decks is {cowboy, wizard} card counts (cards.js DECKS by default).
 // opening is {cowboy, wizard} lists of {type, health} troops already on the board, for a bounty's boss.
 // arrivals is {cowboy, wizard} lists of {type, turn, health}: a boss that lands by itself at the start of its side's turn `turn`, or the first turn after with a free slot.
-export function createShowdown(seed, {baseOrbs = 5, first, secondPlayerCards = SECOND_PLAYER_CARDS, decks = {}, opening = {}, arrivals = {}} = {}) {
+export function createShowdown(seed, {baseOrbs, first, secondPlayerCards = SECOND_PLAYER_CARDS, decks = {}, opening = {}, arrivals = {}} = {}) {
   const next = random(seed);
-  const sides = {};
+  const decksDealt = {};
   for (const side of ["cowboy", "wizard"]) {
     const deck = deckIds(side, decks[side]);
     for (let i = deck.length - 1; i > 0; i--) {
       const j = Math.floor(next() * (i + 1));
       [deck[i], deck[j]] = [deck[j], deck[i]];
     }
-    const base = baseOrbs[side] ?? baseOrbs;
-    const board = Array(BOARD_SIZE).fill(null);
-    // A troop that opens on the board has been there since before turn 1, so it does not rest.
-    (opening[side] ?? []).forEach(({type, health}, slot) => { board[slot] = arrive(`${type}-0`, 0, {health}); });
-    sides[side] = {base, baseMax: base, hand: [], deck, board, traps: [], discard: []};
+    decksDealt[side] = deck;
   }
   const starter = next() < .5 ? "cowboy" : "wizard";
   first ??= starter;
+  const sides = {};
   for (const side of ["cowboy", "wizard"]) {
-    sides[side].hand = sides[side].deck.splice(0, OPENING_HAND + (side === first ? 0 : secondPlayerCards));
+    const deck = decksDealt[side];
+    // baseMax is the Base a side starts with; the screen draws its orbs out of that many.
+    const base = baseOrbs === undefined ? (side === first ? BASE_ORBS : SECOND_PLAYER_BASE) : baseOrbs[side] ?? baseOrbs;
+    const board = Array(BOARD_SIZE).fill(null);
+    // A troop that opens on the board has been there since before turn 1, so it does not rest.
+    (opening[side] ?? []).forEach(({type, health}, slot) => { board[slot] = arrive(`${type}-0`, 0, {health}); });
+    const hand = deck.splice(0, OPENING_HAND + (side === first ? 0 : secondPlayerCards));
+    sides[side] = {base, baseMax: base, hand, deck, board, traps: [], discard: []};
   }
   const landing = ["cowboy", "wizard"].flatMap((side) => (arrivals[side] ?? []).map((arrival) => ({side, ...arrival})));
   return {seed, turn: 1, active: first, first, summonUsed: false, castUsed: false, setUsed: false, attacking: false, location: null, arrivals: landing, result: null, sides};
@@ -113,10 +124,12 @@ export function legalActions(state) {
     }
     if (card.kind === "spell" && !state.castUsed) {
       if (!EFFECTS[card.effect].target) {
-        if (enemy.board.some(Boolean)) actions.push({type: "spell", cardId});
+        // Hellfire passes over troops in cover, so it needs one enemy troop out of cover.
+        if (enemy.board.some((troop) => troop && !troop.cover)) actions.push({type: "spell", cardId});
       } else {
+        // A spell cannot choose a troop in cover, or one with Ghostly.
         enemy.board.forEach((troop, target) => {
-          if (!troop || has(troop.cardId, "ghostly") || (card.effect === "tie" && troop.stunned)) return;
+          if (!troop || troop.cover || has(troop.cardId, "ghostly") || (card.effect === "tie" && troop.stunned)) return;
           actions.push({type: "spell", cardId, target});
         });
       }
@@ -261,7 +274,7 @@ export function applyAction(state, action) {
     fromHand();
     own.discard.push(action.cardId);
     next.castUsed = true;
-    const hit = effect === "hellfire" ? enemy.board.flatMap((troop, slot) => (troop ? [slot] : [])) : [action.target];
+    const hit = effect === "hellfire" ? enemy.board.flatMap((troop, slot) => (troop && !troop.cover ? [slot] : [])) : [action.target];
     for (const slot of hit) {
       const troop = enemy.board[slot];
       if (effect === "tie") troop.stunned = true;

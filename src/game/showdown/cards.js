@@ -59,7 +59,7 @@ export const tributes = (cardId) => (cardOf(cardId).stars >= 7 ? 2 : cardOf(card
 export const DECKS = Object.freeze({
   cowboy: {"cowboy-sheriff": 4, "cowboy-outrider": 2, "cowboy-covered-wagon": 2, "cowboy-billy": 2, "cowboy-ranger": 1,
     "cowboy-dynamiter": 1, "cowboy-mounted-billy": 1, "cowboy-deadeye": 1, "cowboy-lasso": 1, "cowboy-bear-trap": 1},
-  wizard: {"wizard-skeleton": 4, "wizard-jack-o-lantern": 1, "wizard-raven-familiar": 1, "wizard-imp": 1, "wizard-bone-wall": 2,
+  wizard: {"wizard-skeleton": 3, "wizard-jack-o-lantern": 1, "wizard-raven-familiar": 1, "wizard-imp": 2, "wizard-bone-wall": 2,
     "wizard-wizard": 2, "wizard-headless-horseman": 1, "wizard-dragon": 1, "wizard-singularity": 1, "wizard-hellfire": 1, "wizard-hex": 1},
 });
 export const deckIds = (side, counts = DECKS[side]) => Object.entries(counts).flatMap(([type, count]) => Array.from({length: count}, (_, i) => `${type}-${i + 1}`));

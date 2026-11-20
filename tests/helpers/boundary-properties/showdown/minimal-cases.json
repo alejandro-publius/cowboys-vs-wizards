@@ -70,13 +70,13 @@
         "status": "violation",
         "kind": "unlisted-applied",
         "step": 0,
-        "message": "unlisted-applied: step 0: tributes {\"type\":\"summon\",\"cardId\":\"wizard-jack-o-lantern-1\",\"tributes\":[0]} is not in legalActions but applied"
+        "message": "unlisted-applied: step 0: tributes {\"type\":\"summon\",\"cardId\":\"wizard-raven-familiar-1\",\"tributes\":[0]} is not in legalActions but applied"
       }
     },
     {
       "property": "SP3",
       "fault": "f3BaseUnderflow",
-      "index": 7,
+      "index": 20,
       "kind": "bounds",
       "originalSize": {
         "choices": 400,
@@ -84,36 +84,33 @@
         "total": 400
       },
       "minimizedSize": {
-        "choices": 18,
+        "choices": 19,
         "turns": 0,
-        "total": 18
+        "total": 19
       },
-      "evaluations": 147,
+      "evaluations": 172,
       "exhausted": false,
       "minimized": {
-        "seed": 742376,
-        "duel": "trail:3",
+        "seed": 496779,
+        "duel": "trail:1",
         "options": {
           "decks": {
             "cowboy": {
-              "cowboy-sheriffs-office": 2,
-              "cowboy-captured-dragon": 1,
-              "cowboy-covered-wagon": 2,
-              "cowboy-captured-wraith": 1,
-              "cowboy-lasso": 1,
+              "cowboy-lasso": 2,
               "cowboy-bear-trap": 2,
-              "cowboy-billy": 3,
-              "cowboy-sheriff": 1,
+              "cowboy-six-shooter": 2,
               "cowboy-dynamiter": 1,
-              "cowboy-six-shooter": 1,
-              "cowboy-gatling-crew": 1
+              "cowboy-billy": 2,
+              "cowboy-covered-wagon": 2,
+              "cowboy-gatling-crew": 2,
+              "cowboy-sheriffs-office": 1,
+              "cowboy-captured-wraith": 1,
+              "cowboy-captured-dragon": 1
             },
             "wizard": {
-              "wizard-skeleton": 6,
-              "wizard-imp": 3,
-              "wizard-jack-o-lantern": 3,
-              "wizard-singularity": 2,
-              "wizard-hellfire": 2
+              "wizard-skeleton": 9,
+              "wizard-raven-familiar": 4,
+              "wizard-jack-o-lantern": 3
             }
           },
           "baseOrbs": {
@@ -123,24 +120,25 @@
           "first": "cowboy"
         },
         "choices": [
-          23078,
-          15027,
-          0,
-          0,
-          34121,
-          0,
-          12521,
-          1013,
-          21113,
-          27840,
-          246,
-          0,
-          19973,
           0,
           0,
           0,
-          5857,
-          0
+          0,
+          13515,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          15601,
+          63997
         ]
       },
       "realEngine": {
@@ -149,8 +147,8 @@
       "faultyEngine": {
         "status": "violation",
         "kind": "bounds",
-        "step": 17,
-        "message": "bounds: step 17: wizard Base -1 outside 0..4"
+        "step": 18,
+        "message": "bounds: step 18: wizard Base -1 outside 0..4"
       }
     },
     {
@@ -189,7 +187,7 @@
     {
       "property": "SP5",
       "fault": "f5SetEventNamesCard",
-      "index": 1,
+      "index": 3,
       "kind": "event-shape",
       "originalSize": {
         "choices": 400,
@@ -197,18 +195,39 @@
         "total": 400
       },
       "minimizedSize": {
-        "choices": 2,
+        "choices": 1,
         "turns": 0,
-        "total": 2
+        "total": 1
       },
-      "evaluations": 97,
+      "evaluations": 11,
       "exhausted": false,
       "minimized": {
-        "seed": 186438,
-        "duel": "even",
-        "options": {},
+        "seed": 418749,
+        "duel": "trail:0",
+        "options": {
+          "decks": {
+            "cowboy": {
+              "cowboy-ranger": 2,
+              "cowboy-sheriff": 4,
+              "cowboy-six-shooter": 1,
+              "cowboy-captured-wraith": 1,
+              "cowboy-lasso": 1,
+              "cowboy-mounted-billy": 2,
+              "cowboy-deadeye": 2,
+              "cowboy-dynamiter": 2,
+              "cowboy-bear-trap": 1
+            },
+            "wizard": {
+              "wizard-skeleton": 16
+            }
+          },
+          "baseOrbs": {
+            "cowboy": 6,
+            "wizard": 3
+          },
+          "first": "cowboy"
+        },
         "choices": [
-          24710,
           0
         ]
       },
@@ -218,8 +237,8 @@
       "faultyEngine": {
         "status": "violation",
         "kind": "event-shape",
-        "step": 1,
-        "message": "event-shape: step 1: set carries cardId,side, EVENTS lists side"
+        "step": 0,
+        "message": "event-shape: step 0: set carries cardId,side, EVENTS lists side"
       }
     },
     {
@@ -267,10 +286,10 @@
       },
       "minimizedSize": {
         "choices": 0,
-        "turns": 1,
-        "total": 1
+        "turns": 3,
+        "total": 3
       },
-      "evaluations": 18,
+      "evaluations": 15,
       "exhausted": false,
       "minimized": {
         "seed": 0,
@@ -281,7 +300,7 @@
           "cowboy": 0,
           "wizard": 2
         },
-        "turns": 1
+        "turns": 3
       },
       "realEngine": {
         "status": "pass"
@@ -290,7 +309,7 @@
         "status": "violation",
         "kind": "bot-illegal",
         "step": null,
-        "message": "bot-illegal: turn 1 wizard: planned {\"type\":\"summon\",\"cardId\":\"wizard-jack-o-lantern-1\",\"tributes\":[]} is not legal"
+        "message": "bot-illegal: turn 3 wizard: planned {\"type\":\"summon\",\"cardId\":\"wizard-imp-2\",\"tributes\":[]} is not legal"
       }
     }
   ]
