@@ -1,5 +1,7 @@
 # Making a haunted-Western card duel inspectable with Kiro
 
+> **Lane-era draft (November 16, 2026).** It describes the three-lane duel. The December 4 entry is Showdown; its current Kiro answers and proof are in the [judge write-up](kiro-brag-sheet.md). Kept as history.
+
 Draft for a third-party blog, prepared November 16, 2026. Review against the final release before publishing. This article is written as part of the **Kiroween 2026 hackathon**.
 
 Cowboys vs. Wizards is a browser card duel across three 3D lanes. A free Sheriff can hold a lane. Stronger troops cost sacrifices, called tributes. Each troop and each Base has life orbs, and each orb is one life. When the two sides clash, attacks resolve together, even if an attacker is defeated during the exchange.
