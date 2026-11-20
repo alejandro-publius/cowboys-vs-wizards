@@ -11,7 +11,8 @@ import assert from "node:assert/strict";
 import {spawn} from "node:child_process";
 import {mkdir, mkdtemp, rm, writeFile} from "node:fs/promises";
 import path from "node:path";
-import {pathToFileURL} from "node:url";
+import {fileURLToPath, pathToFileURL} from "node:url";
+import {grayboxBuildLabel} from "./graybox-build-label.mjs";
 
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const WIDTH = 1440, HEIGHT = 900;
@@ -19,6 +20,8 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 if (!process.argv[2]) throw new Error("Pass the built graybox HTML file");
 const page = pathToFileURL(path.resolve(process.argv[2])).href;
 const out = path.resolve(process.argv[3] ?? ".artifacts/showdown-143");
+// K-087: the page under test was built from this checkout just before, so it carries this label.
+const BUILD = grayboxBuildLabel(fileURLToPath(new URL("../", import.meta.url)));
 await mkdir(out, {recursive: true});
 
 async function launchChrome() {
@@ -307,7 +310,8 @@ try {
   assert.equal(log1.length, 1);
   assert.deepEqual([log1[0].name, log1[0].won, log1[0].duel, log1[0].seed, log1[0].rules], ["Boot Hill", true, "trail", 0, false]);
   assert.ok(Number.isInteger(log1[0].turns) && log1[0].turns > 1 && Number.isInteger(log1[0].seconds) && typeof log1[0].run === "string");
-  assert.deepEqual(Object.keys(log1[0]).sort(), ["duel", "name", "rules", "run", "seconds", "seed", "turns", "won"], "no other field is stored");
+  assert.deepEqual(Object.keys(log1[0]).sort(), ["build", "duel", "name", "rules", "run", "seconds", "seed", "turns", "won"].filter((k) => BUILD || k !== "build"), "no other field is stored");
+  assert.equal(log1[0].build, BUILD ?? undefined, "the line names the build it was finished under (K-087)");
   // FH-R3.9 (.kiro/specs/showdown-first-hour/requirements.md)
   check("The Boot Hill win is logged once under cvw-showdown-playtest-v1, with no personal fields", log1[0]);
   // Choice in the result panel, then back to the Camp.
@@ -346,6 +350,7 @@ try {
   assert.match(report1.text, new RegExp(`^Showdown playtest report\nFinished 1 duel in \\d+ (s|min) of play: won 1, lost 0\.\nReached: Trail 1 of 6 won,`));
   assert.match(report1.text, new RegExp(`\n1\. Boot Hill: won in ${log1[0].turns} turns, `));
   assert.doesNotMatch(report1.text, /Raven Roost: /);
+  assert.ok(report1.text.includes(`\nThis report is from game build ${BUILD ?? "not identified"}.\nDuels by build: 1 ${BUILD ? `on ${BUILD}` : "build not recorded"}.\n`), "K-087 build lines");
   await click("#camp-report-copy");
   await wait(`/^(Copied\.|Selected: press Ctrl\+C or Cmd\+C to copy\.)$/.test(document.getElementById('camp-report-copied').textContent)`);
   const copied = await text("#camp-report-copied");
