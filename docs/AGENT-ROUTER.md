@@ -33,6 +33,8 @@ Kiro agent: [`.kiro/agents/showdown-presenter.json`](../.kiro/agents/showdown-pr
 
 Build it with `npm run build:art` (offline file) or `npm run build:art -- --web` (`dist/web/3d/`). Its rows below are for that page only.
 
+Lane browser harnesses target this page only. Each one's header names it, and `browser-match-check`, `browser-pace-measure` and `browser-guide-check` refuse the graybox file. Serve `dist/web/` (or the staged tree) and pass the `/3d/` URL. Verified on the slice 3 release candidate (`kiro/graywave-assemble`): `browser-menu-check <url>/3d/?seed=0` and `browser-board-accessibility-check <url>/3d/?seed=0` exit 0. `browser-match-check --url <url>/3d/ --seed 0 --swiftshader` observes 7 of 8 steps (step 2 is pending because the six newer cards have no art), the same result as on `main` before slice 3. The cleanup worker also ran `browser-pace-measure`, `browser-webkit-smoke`, `browser-card-face-check --browser webkit` and `browser-guide-check` on this page. Not current: `browser-deck-workbench-check` fails its 13px text assertion on the unchanged 3D page, and `browser-menu-check` without `?seed` fails by design. `sh scripts/check-match-ui.sh` (no argument) is the duel-presenter hook for the lane code this page keeps; `sh scripts/check-match-ui.sh showdown` is the Showdown one.
+
 | Task | Read first | Run first |
 | --- | --- | --- |
 | Lane rules, tribute, spells, CPU | `src/game/{actions,legal,clash,cpu}.js` as relevant; `docs/kiro-task-01.md` only when a rule is disputed | `node --test tests/game/<closest>.test.js` |

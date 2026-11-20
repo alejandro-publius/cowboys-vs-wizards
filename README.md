@@ -61,7 +61,7 @@ Start with the normal Showdown Play path. Build once with `npm run build`; each 
 | Earlier 3D build: attack demo geometry, grip and event order | `npm run check` |
 | A seeded lane rules trace | `node scripts/play-match.mjs --seed 60` |
 
-The older lane harnesses (`browser-menu-check`, `browser-webkit-smoke` and the other lane `scripts/browser-*.mjs`) drive the earlier 3D build; [docs/AGENT-ROUTER.md](docs/AGENT-ROUTER.md) lists which ones are current and how to point them at it.
+The older lane harnesses (`browser-menu-check`, `browser-webkit-smoke` and the other lane `scripts/browser-*.mjs`) drive only the earlier 3D build at `/3d/`; [docs/AGENT-ROUTER.md](docs/AGENT-ROUTER.md#earlier-illustrated-3d-build-lane-rules-3d) lists which ones are current and how to point them at it.
 
 The Chrome check on macOS writes the receipt and screenshots to `.artifacts/kiro/replay/` when invoked through `verify-duel.mjs`. The saved **orb-duel-replay** Workflow runs the same command. See the [Kiro write-up](docs/kiro-brag-sheet.md) for the Spec, hooks, tests, review Power and MCP evidence.
 
