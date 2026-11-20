@@ -1,0 +1,50 @@
+{
+  "schema": "night-review/proposal@1",
+  "id": "cowboy-sheriff-health-3-to-4-4069bf99-f26bce4",
+  "status": "draft",
+  "surface": {
+    "kind": "local-cli",
+    "kiroWeb": "not used; this bundle was produced by the local CLI and is not a Kiro Web run"
+  },
+  "finding": {
+    "file": ".artifacts/night-shift-native/finding.json",
+    "sha256": "26bce4b65c62fdbff84a90e97f6380512667522d9805766176c4f4d7a9086903",
+    "reportId": "e6713af867dc",
+    "commit": "e813ae8a3fdb5efbda75caddc28805d407ae8802",
+    "firstSeed": 0,
+    "count": 1000,
+    "counts": {
+      "games": 2000,
+      "cowboy": 1188,
+      "wizard": 812,
+      "draw": 0,
+      "first": 1142,
+      "second": 858,
+      "byStartingSide": {
+        "cowboy": {
+          "cowboy": 665,
+          "wizard": 335,
+          "draw": 0
+        },
+        "wizard": {
+          "cowboy": 523,
+          "wizard": 477,
+          "draw": 0
+        }
+      }
+    }
+  },
+  "base": "4069bf99cf8d37e1cb96b5720b88995df00540ed",
+  "cardPath": ".kiro/specs/duel-card-pipeline/cards/cowboy-sheriff.json",
+  "card": "cowboy-sheriff",
+  "side": "cowboy",
+  "field": "health",
+  "from": 3,
+  "to": 4,
+  "cardSha256": {
+    "before": "ea764758eaa08bd1bb372d3b761f21f49c477ac7e8d86b117c336a33f1ae377c",
+    "after": "3fce9c8f6da49ef9bb706d3fb9ae2c9064e651052dc1175445d9fbb9333dc5e6"
+  },
+  "patchSha256": "8dbd43211967efca11944b61a910795d024ac742d61abdbaa92b453ef52afad8",
+  "note": "Draft only. Not applied to this checkout or any branch. Fable/Alex decide."
+}
