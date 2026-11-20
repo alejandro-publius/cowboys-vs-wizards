@@ -10,10 +10,17 @@ const TEMPLATE = `
   <p id="camp-storage" class="sd-note" role="status" hidden>This browser did not save your progress, so a reload will lose it.</p>
   <div id="camp-claim" aria-live="polite"></div>
   <section aria-labelledby="camp-trail-title"><h2 id="camp-trail-title">The Trail</h2><ol id="camp-trail" class="sd-row"></ol></section>
-  <section aria-label="Your cards"><h2>Your cards</h2><p id="camp-collection" class="sd-note"></p></section>`;
+  <section aria-label="Your cards"><h2>Your cards</h2><p id="camp-collection" class="sd-note"></p></section>
+  <details id="camp-report"><summary>Playtest report</summary>
+    <p class="sd-note">What you played and how it went. Select all of it, copy it and send it to whoever asked you to play.</p>
+    <p id="camp-report-storage" class="sd-note" role="status" hidden>This browser did not save the playtest report, so a reload will lose it.</p>
+    <textarea id="camp-report-text" rows="10" cols="60" readonly aria-label="Playtest report"></textarea>
+    <p><button id="camp-report-copy" type="button">Copy report</button> <span id="camp-report-copied" role="status" aria-live="polite"></span></p>
+  </details>`;
 
 // campaign: progress(), saved(), duels(), holdings(), owned(type), choose(type). onDuel(): start the open Trail duel.
-export function mountCamp(root, {campaign, onDuel, onHome}) {
+// playtest (optional): text(progress), saved(); the report is plain text the player or moderator copies.
+export function mountCamp(root, {campaign, playtest, onDuel, onHome}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
   let picked = null;
@@ -37,6 +44,25 @@ export function mountCamp(root, {campaign, onDuel, onHome}) {
     const listed = rows.map(({type, copies, inherited}) => `${TYPES[type].name} ×${copies}${inherited ? " (from the lane game)" : ""}`).join(", ");
     $("camp-collection").innerHTML = `<strong>Deck:</strong> ${count(progress.deck)}.<br><strong>Collection:</strong> Sheriff and Billy in any number${
       listed ? `, ${listed}` : ""}.${rows.some((row) => row.inherited) ? `<br>Cards from the lane game stay owned. They are not in your Trail deck and are not in save codes.` : ""}`;
+    $("camp-report").hidden = !playtest;
+    if (playtest) {
+      $("camp-report-text").value = playtest.text(progress);
+      $("camp-report-storage").hidden = playtest.saved();
+      $("camp-report-copied").textContent = "";
+    }
+  }
+
+  // Clipboard first; where it is refused (file:// pages, older browsers) the text is selected for a manual copy.
+  async function copyReport() {
+    const box = $("camp-report-text");
+    try {
+      await navigator.clipboard.writeText(box.value);
+      $("camp-report-copied").textContent = "Copied.";
+    } catch {
+      box.focus();
+      box.select();
+      $("camp-report-copied").textContent = "Selected: press Ctrl+C or Cmd+C to copy.";
+    }
   }
 
   root.addEventListener("click", (event) => {
@@ -49,6 +75,7 @@ export function mountCamp(root, {campaign, onDuel, onHome}) {
       root.querySelector("[data-duel]")?.focus();
     } else if (b.dataset.duel === "trail" && !campaign.progress().offer) onDuel();
     else if (b.id === "camp-home") onHome();
+    else if (b.id === "camp-report-copy") copyReport();
   });
   return {show() { picked = null; render(); }};
 }

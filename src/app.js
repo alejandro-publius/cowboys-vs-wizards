@@ -12,8 +12,8 @@ if (LANE_MODES.includes(mode)) {
   node("menu-showdown").hidden = false;
   import("./graybox.js");
 } else {
-  Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"), import("./match/showdown-campaign.js")])
-    .then(([{mountShowdown, freshSeed}, {mountCamp}, {createCampaign}]) => {
+  Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"), import("./match/showdown-campaign.js"), import("./match/showdown-playtest.js")])
+    .then(([{mountShowdown, freshSeed}, {mountCamp}, {createCampaign}, {createPlaytestLog}]) => {
   const title = node("title-screen"), screen = node("showdown"), campRoot = node("showdown-camp"), play = node("menu-play");
   // The camp replaces the lane-only entries (Wanted, Build Deck, the rival duels); they stay on ?mode=lanes until slice 3.
   for (const lane of title.querySelectorAll("#menu-stargazer, #menu-imp, [data-menu-page], nav a:not(#menu-lanes)")) lane.hidden = true;
@@ -23,11 +23,13 @@ if (LANE_MODES.includes(mode)) {
   let storage = null;
   try { storage = window.localStorage; } catch { /* storage is blocked */ }
   const campaign = createCampaign(storage);
+  // One line per finished Trail duel for the Camp's playtest report, under the prototype's key.
+  const playtest = createPlaytestLog(storage);
   const showOnly = (shown) => { for (const el of [title, screen, campRoot]) el.hidden = el !== shown; window.scrollTo(0, 0); };
   const toCamp = () => { showOnly(campRoot); camp.show(); campRoot.querySelector("[data-duel], [data-choose], button")?.focus(); };
-  const showdown = mountShowdown(screen, {onHome: toCamp, campaign});
+  const showdown = mountShowdown(screen, {onHome: toCamp, campaign, playtest});
   // ?seed fixes every deal started from the Camp, so a scripted check replays the same Trail duels.
-  const camp = mountCamp(campRoot, {campaign, onHome: () => { showOnly(title); play.focus(); },
+  const camp = mountCamp(campRoot, {campaign, playtest, onHome: () => { showOnly(title); play.focus(); },
     onDuel: () => {
       const duel = campaign.trailDuel();
       if (!duel) return;
