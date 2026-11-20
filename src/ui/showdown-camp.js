@@ -4,6 +4,7 @@
 import {TYPES} from "../game/showdown/cards.js";
 import {TRAIL} from "../game/showdown/trail.js";
 import {OFFER_HEADING, offerRow, pays} from "./showdown-screen.js";
+import {mountLedger} from "./sheriffs-ledger.js";
 
 const TEMPLATE = `
   <header><h1>Camp</h1><button id="camp-home" type="button">Main menu</button></header>
@@ -16,13 +17,15 @@ const TEMPLATE = `
     <p id="camp-report-storage" class="sd-note" role="status" hidden>This browser did not save the playtest report, so a reload will lose it.</p>
     <textarea id="camp-report-text" rows="10" cols="60" readonly aria-label="Playtest report"></textarea>
     <p><button id="camp-report-copy" type="button">Copy report</button> <span id="camp-report-copied" role="status" aria-live="polite"></span></p>
-  </details>`;
+  </details>
+  <details id="camp-ledger" class="sd-ledger"></details>`;
 
 // campaign: progress(), saved(), duels(), holdings(), owned(type), choose(type). onDuel(): start the open Trail duel.
 // playtest (optional): text(progress), saved(); the report is plain text the player or moderator copies.
 export function mountCamp(root, {campaign, playtest, onDuel, onHome}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
+  mountLedger($("camp-ledger")); // The Night Shift: Sheriff's Ledger, static and collapsed (src/ui/sheriffs-ledger.js).
   let picked = null;
 
   function render() {
