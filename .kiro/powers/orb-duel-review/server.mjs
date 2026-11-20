@@ -1,12 +1,14 @@
-// Read-only MCP server (newline-delimited JSON-RPC over stdio) for reviewing the
-// Orb Duel Chrome replay receipt and the board character GLBs. It reads only
-// fixed files under this repo: no arbitrary paths, writes, network, shell or database.
+// MCP server (newline-delimited JSON-RPC over stdio) for reviewing the Orb Duel Chrome replay
+// receipt and the board character GLBs (earlier lane build and its 3D assets), and for playing
+// one seat of a Showdown Trail duel in memory (showdown.mjs). It reads only fixed files under
+// this repo: no arbitrary paths, writes, network, shell or database.
 import {createHash} from "node:crypto";
 import {readFileSync, realpathSync} from "node:fs";
 import {join} from "node:path";
 import {createInterface} from "node:readline";
 import {fileURLToPath} from "node:url";
 import {parseGlb} from "./glb.mjs";
+import {createTable, loadEngine} from "./showdown.mjs";
 
 // Project binding: with PLUGIN_DATA set, only PLUGIN_DATA/project.json (written by setup.mjs)
 // names the project. Never inferred. Without PLUGIN_DATA (workspace MCP), the source checkout.
@@ -153,6 +155,39 @@ const CHARACTER_TOOL = {
   },
 };
 
+// Showdown seat play. The bot and rules run in this process; the agent gets only the seat's view.
+// SHOWDOWN_MCP_DEBUG_SEED fixes the deal for a reproducible proof run. No tool input sets it.
+const SHOWDOWN_DUELS = ["boot-hill", "raven-roost", "bone-fence", "imp-hollow", "hexed-mile", "dragons-roost"];
+let table = null;
+async function showdownTable() {
+  if (unavailable) throw new Error(unavailable);
+  if (!table) {
+    const debug = process.env.SHOWDOWN_MCP_DEBUG_SEED;
+    if (debug !== undefined && !/^\d+$/.test(debug)) throw new Error("SHOWDOWN_MCP_DEBUG_SEED must be a whole number");
+    table = createTable(await loadEngine(root), debug === undefined ? {} : {seedSource: () => Number(debug) >>> 0});
+  }
+  return table;
+}
+const SHOWDOWN_TOOLS = [
+  {name: "start_showdown_duel",
+    description: "Start a Showdown Trail duel with you as the Cowboys against the game's own bot. Returns an opaque session, a revision, your seat's view, numbered legal intents and a commitment to the hidden deal seed. Optional duel: a Trail id (default boot-hill).",
+    inputSchema: {type: "object", properties: {duel: {type: "string", enum: SHOWDOWN_DUELS, default: "boot-hill"}}, additionalProperties: false}},
+  {name: "observe_showdown",
+    description: "Read the Cowboy seat's current view and legal intents for a session. Wizard hand, traps and both deck orders are counts only; the seed is revealed in `proof` only after the duel ends.",
+    inputSchema: {type: "object", properties: {session: {type: "string"}}, required: ["session"], additionalProperties: false}},
+  {name: "act_showdown",
+    description: "Apply one listed intent by number at the current revision. The bot then plays its turns. Returns the public events and the new observation; a stale revision or unlisted intent is refused.",
+    inputSchema: {type: "object", properties: {session: {type: "string"}, revision: {type: "string"}, intent: {type: "integer", minimum: 0}}, required: ["session", "revision", "intent"], additionalProperties: false}},
+];
+const SHOWDOWN_KEYS = {start_showdown_duel: ["duel"], observe_showdown: ["session"], act_showdown: ["session", "revision", "intent"]};
+
+async function showdownCall(name, args) {
+  const play = await showdownTable();
+  if (name === "start_showdown_duel") return play.start(args.duel ?? "boot-hill");
+  if (name === "observe_showdown") return play.observe(args.session);
+  return play.act(args.session, args.revision, args.intent);
+}
+
 function reply(id, result) { process.stdout.write(JSON.stringify({jsonrpc: "2.0", id, result}) + "\n"); }
 function fail(id, code, message) { process.stdout.write(JSON.stringify({jsonrpc: "2.0", id, error: {code, message}}) + "\n"); }
 
@@ -164,14 +199,26 @@ function handle(msg) {
       return reply(msg.id, {
         protocolVersion: msg.params?.protocolVersion ?? "2024-11-05",
         capabilities: {tools: {}},
-        serverInfo: {name: "orb-duel-review", version: "1.1.0"},
+        serverInfo: {name: "orb-duel-review", version: "1.2.0"},
       });
     case "ping":
       return reply(msg.id, {});
     case "tools/list":
-      return reply(msg.id, {tools: [TOOL, CHARACTER_TOOL]});
+      return reply(msg.id, {tools: [TOOL, CHARACTER_TOOL, ...SHOWDOWN_TOOLS]});
     case "tools/call": {
       const params = msg.params;
+      if (Object.hasOwn(SHOWDOWN_KEYS, params?.name ?? "")) {
+        const args = params.arguments ?? {};
+        if (typeof args !== "object" || args === null || Array.isArray(args)) return fail(msg.id, -32602, `${params.name} takes an object`);
+        const allowed = SHOWDOWN_KEYS[params.name];
+        if (Object.keys(args).some((key) => !allowed.includes(key))) return fail(msg.id, -32602, `Only ${allowed.join(", ")} accepted`);
+        if (args.duel !== undefined && !SHOWDOWN_DUELS.includes(args.duel)) return fail(msg.id, -32602, `duel must be one of: ${SHOWDOWN_DUELS.join(", ")}`);
+        if (params.name !== "start_showdown_duel" && typeof args.session !== "string") return fail(msg.id, -32602, "session must be a string");
+        if (params.name === "act_showdown" && (typeof args.revision !== "string" || !Number.isInteger(args.intent))) return fail(msg.id, -32602, "revision must be a string and intent an integer");
+        return showdownCall(params.name, args).then(
+          (body) => reply(msg.id, {content: [{type: "text", text: JSON.stringify(body)}], ...(body.error && {isError: true})}),
+          (error) => reply(msg.id, {content: [{type: "text", text: JSON.stringify({error: error.message})}], isError: true}));
+      }
       if (params?.name === CHARACTER_TOOL.name) {
         const args = params.arguments;
         if (typeof args !== "object" || args === null || Array.isArray(args)) return fail(msg.id, -32602, "inspect_character_asset takes an object");
