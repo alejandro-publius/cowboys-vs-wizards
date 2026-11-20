@@ -319,3 +319,12 @@ The next substantial Kiro task is #56, boundary generation, failure reduction an
 - **Change**: Camp, duel screen, a new builder and a pure best-of-three module are mounted on the canonical progress, session and save-code modules (`savecode.js` moved unchanged into `src/game/showdown/`). Two players draw from the active seat's view behind a curtain. Start over resets Showdown progress and the report only. No rule, reward, Scout, lane or 3D change.
 - **Verification**: `npm test` 606/606. New `scripts/browser-showdown-modes-check.mjs` 13/13. Existing graybox checks and the six reference-page checks all pass. Receipts: [evidence note](evidence/showdown-modes-143.md).
 - **Remaining**: the lane removal and the front page are separate slice 3 work. Wording is Fable's first draft. Human playtests are pending.
+
+### 2026-11-19 — Overnight QA: Camp return focus with a card offer open (Kiro agent session, America/Los_Angeles, 23:40 PST)
+
+- **State**: committed locally on `kiro/graywave-overnight-qa` from `db80cd0`. Not merged.
+- **Performed in**: a Kiro agent session using Claude Opus 5.5, with kiro-cli 3.5.0 installed. The bugfix spec was written by hand in Kiro's layout; no native bugfix-spec run took place.
+- **Problem (observed, keyboard bot in headless Chrome)**: after a win with a card offer open, Enter on "Back to camp" focused the Camp's Main menu, and the next Enter left the Camp. Cause: `toCamp` fell back to a selector list, which matches in document order and does not skip disabled buttons.
+- **Change**: `src/app.js` tries the claim area, then the first open duel, then any enabled button, in that order. A regression step was added to `scripts/browser-showdown-keyboard-check.mjs`, along with the spec `.kiro/specs/showdown-camp-return-focus/bugfix.md`. No rule, wording, reward or Scout change.
+- **Verification**: red on base (step 4b fails, focus `#camp-home`). Green after the fix: keyboard 7/7, trail 16/16, modes 13/13, main graybox 22/22, `npm test` 578/0. [Evidence note](evidence/kiro-overnight-qa-camp-focus.md).
+- **Remaining**: focus goes to `body` when a duel starts from the Camp and after the best-of-three swap. This is open as a presentation decision. Human playtests are pending.

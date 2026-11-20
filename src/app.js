@@ -24,7 +24,10 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   const toCamp = () => {
     showOnly(campRoot);
     camp.show();
-    ((last && campRoot.querySelector(`${last}:not(:disabled)`)) ?? campRoot.querySelector("[data-duel], [data-choose], button"))?.focus();
+    // When that control is now disabled (a win's card offer is open), the Camp's own order: the claim
+    // (offer or pack), then the first open duel. Selectors are tried in turn, not in document order.
+    const usable = (selector) => campRoot.querySelector(`${selector}:not(:disabled)`);
+    ((last && usable(last)) ?? usable("#camp-claim button") ?? usable("[data-duel]") ?? usable("button"))?.focus();
   };
   const builder = mountBuilder(builderRoot, {campaign});
   const showdown = mountShowdown(screen, {onHome: toCamp, campaign, playtest, nextSeed: seedFor,
