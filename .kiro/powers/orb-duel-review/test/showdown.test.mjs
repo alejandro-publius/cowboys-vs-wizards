@@ -140,3 +140,73 @@ test("the Kiro CLI Boot Hill receipt replays to the same result", async () => {
   assert.equal(receipt.proof.actions.length, receipt.surfacedToolCalls["@orb-duel-review/act_showdown"]);
   assert.deepEqual(replayProof(engine, receipt.proof), receipt.result);
 });
+
+// Engine-bound Showdown receipts, checked by an installed-style server (PLUGIN_DATA binding) on a
+// copied project holding only the engine closure, so mutations never touch this checkout.
+test("inspect_showdown_receipt: pass on the same engine, stale or rejected when engine or fixture is altered", {timeout: 20000}, async (t) => {
+  const fs = await import("node:fs");
+  const {tmpdir} = await import("node:os");
+  const {engineFingerprint} = await import("../showdown.mjs");
+  const tmp = fs.mkdtempSync(join(tmpdir(), "showdown-receipt-"));
+  t.after(() => fs.rmSync(tmp, {recursive: true, force: true}));
+  const project = join(tmp, "project");
+  const data = join(tmp, "data");
+  const fingerprint = engineFingerprint(root);
+  for (const rel of Object.keys(fingerprint.files)) fs.cpSync(join(root, rel), join(project, rel));
+  fs.writeFileSync(join(project, "package.json"), JSON.stringify({name: "cowboys-vs-wizards-board", type: "module"}));
+  fs.mkdirSync(data);
+  fs.writeFileSync(join(data, "project.json"), JSON.stringify({projectRoot: project}));
+  assert.equal(engineFingerprint(project + "/").sha256, fingerprint.sha256, "copied closure has the same fingerprint");
+
+  // Record a proof through the tools themselves, with a fixed debug seed.
+  const player = start({SHOWDOWN_MCP_DEBUG_SEED: "60"});
+  t.after(() => player.stop());
+  const played = await playBootHill(player);
+  assert.equal(played.first.engine.sha256, fingerprint.sha256);
+  assert.deepEqual(played.last.proof.engine, fingerprint);
+  const receiptPath = join(project, "docs/evidence/showdown-installed-power/boot-hill-receipt.json");
+  const write = (body) => { fs.mkdirSync(dirname(receiptPath), {recursive: true}); fs.writeFileSync(receiptPath, JSON.stringify(body)); };
+  const good = {what: "test", result: played.last.result, proof: played.last.proof};
+  write(good);
+
+  const s = start({PLUGIN_DATA: data});
+  t.after(() => s.stop());
+  const check = async (args = {}) => (await s.tool("inspect_showdown_receipt", args)).json;
+  const pass = await check();
+  assert.equal(pass.verdict, "pass", JSON.stringify(pass.reasons));
+  assert.equal(pass.kind, "showdown-gameplay-proof");
+  assert.equal(pass.receipt.coversCurrentEngine, true);
+  assert.deepEqual(pass.replay.result, played.last.result);
+
+  // Mismatched build: one engine file changed after the proof was recorded.
+  const rules = join(project, "src/game/showdown/rules.js");
+  const original = fs.readFileSync(rules);
+  fs.appendFileSync(rules, "\n// altered copy\n");
+  const stale = await check();
+  assert.equal(stale.verdict, "stale");
+  assert.deepEqual(stale.receipt.changedFiles, ["src/game/showdown/rules.js"]);
+  fs.writeFileSync(rules, original);
+  assert.equal((await check()).verdict, "pass");
+
+  // Altered fixtures on the same engine.
+  write({...good, result: {...good.result, winner: "wizard"}});
+  assert.equal((await check()).verdict, "rejected");
+  write({...good, proof: {...good.proof, seed: good.proof.seed + 1}});
+  assert.match((await check()).reasons.join(" "), /commitment/);
+  write({...good, proof: {...good.proof, actions: [{type: "attack", slot: 9, target: "base"}, ...good.proof.actions]}});
+  assert.equal((await check()).replay.illegalActionAt, 0);
+  write({...good, proof: {...good.proof, engine: {...fingerprint, sha256: "0".repeat(64)}}});
+  assert.equal((await check()).verdict, "stale");
+  write({proof: {}});
+  assert.equal((await check()).verdict, "malformed");
+
+  // The earlier workspace-MCP receipt has no engine fingerprint: unbound, never pass.
+  const legacy = join(project, "docs/evidence/kiro-showdown-mcp-boot-hill.json");
+  fs.cpSync(join(root, "docs/evidence/kiro-showdown-mcp-boot-hill.json"), legacy);
+  const unbound = await check({receipt: "mcp-boot-hill"});
+  assert.equal(unbound.verdict, "unbound");
+  assert.equal(unbound.replay.matchesRecordedResult, true);
+  fs.rmSync(receiptPath);
+  assert.equal((await check()).verdict, "absent");
+  for (const args of [{receipt: "../../etc/passwd"}, {path: "/x"}]) assert.equal((await s.tool("inspect_showdown_receipt", args)).protocolError.code, -32602);
+});
