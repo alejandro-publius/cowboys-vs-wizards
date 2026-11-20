@@ -23,10 +23,7 @@ SKILL.md SHA-256 at commit `46155c3`: `620dcb8325192159520571cd93dd8cbed29eb6890
 - Native introspection: Kiro CLI 3.5.0 v3 exposes the skill as resource id `skill::showdown-practice`, loaded through
   tool `disclose_context` (title "Load skill: showdown-practice"). The writing Kiro IDE session's resource catalogue
   also lists `skill::showdown-practice` with the committed description; when it first appeared there was not recorded.
-- Register source "video 15, chapter 15:25": not grounded. The YouTube chapter lists of all 36 videos on
-  https://kiro.dev/videos/ (fetched today) contain no 15:25 chapter, and this tree's register has no numbered video
-  list. The official chapters about skills that do exist are "Kiro Features: Skills" (6:24) and "Demo: Using a Custom
-  Skill" (10:59) in *Getting Started with Kiro for Non-Technicals* (`PbgGC2n_Xu0`). The skill follows the docs above.
+- The coordinator verified the workbook reference for video 15, [Kiro powers and Agent Skills in your development workflows, 15:25](https://www.youtube.com/watch?v=aDysU8zIWK8&t=925s). The workbook records the chapter “Introduction to skills.” The worker used the official format documentation above for implementation. The chapter reference supplies context only.
 
 ## First move, checked against the engine and the built page
 

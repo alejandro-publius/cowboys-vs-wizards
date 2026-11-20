@@ -17,8 +17,7 @@ Date: 2026-11-20, 14:23 PST (America/Los_Angeles). Implemented by Kiro (agent se
   `data-build` set to the page's existing build label. A plain click or Enter opens the duel in-page; a modified
   click follows the href. `?practice` is read after `?turn` and `?outrider`. `?seed` is unchanged.
 
-Wording ("Practice Boot Hill", the note, "Deal 0/60") is first-draft and needs Fable's approval like the other
-Camp labels.
+Fable 5.2 reviewed the quoted Camp disclosure, both deal labels and the in-duel practice text on November 20 and approved them for release. That review covered the wording. Browser behavior was checked separately below.
 
 ## Checks run (all on the committed tree, build label `1b2136f40ffb`)
 | Command | Result |
