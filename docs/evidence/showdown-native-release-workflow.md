@@ -33,9 +33,9 @@ November 20, 2026, America/Los_Angeles. Worker: Kiro CLI 3.5.0 V3 (model claude-
 The turn checks, game code and the Power are unchanged.
 
 **Seeds.** The runner fixes no seed. Each browser check keeps its own seeds: seed 0 for Boot Hill and
-seed 3 for the hot-seat match. The sweep reads seeds from `TURNS`, and today the only entry is `dragon-c5`
+seed 3 for the hot-seat match. The sweep reads seeds from `TURNS`, and on the worker revision the only entry was `dragon-c5`
 at seed 3. A later turn such as seed 70 joins the sweep automatically, with all its branches, once it is
-added to `TURNS`. That case has not been exercised, because no such entry exists yet.
+added to `TURNS`. The worker revision predates the second playable position in PR 165.
 
 **Branch results.** The sweep's fixed policy plays attack first. Its results are not the referee results
 that `tests/match/showdown-turn.test.js` asserts: for example, choice A becomes a Wizard win on turn 10
@@ -89,9 +89,10 @@ git worktree add --detach .worktrees/review-$SHA $SHA
 mkdir .worktrees/review-$SHA/node_modules
 for x in node_modules/* node_modules/.bin; do ln -s "$PWD/$x" ".worktrees/review-$SHA/$x"; done
 cd .worktrees/review-$SHA && git status --porcelain --untracked-files=all   # must print nothing
+mkdir -p .artifacts/kiro
 kiro-cli chat --v3 --no-interactive --trust-workspace --output-format stream-json \
   --trust-tools 'fs_read,fs_write,execute_bash,run_command,introspect,*workflow*' \
-  "Use run_workflow once with workflowPath \"$PWD/.kiro/workflows/independent-release-review.workflow.json\", inputs {\"expected_sha\": \"$SHA\"}, runLabel \"independent-release-review-showdown-$SHA\". Do not read or edit files yourself. Wait for its terminal notification, then give the workflowId, status and the report's last line." > stream.jsonl
+  "Use run_workflow once with workflowPath \"$PWD/.kiro/workflows/independent-release-review.workflow.json\", inputs {\"expected_sha\": \"$SHA\"}, runLabel \"independent-release-review-showdown-$SHA\". Do not read or edit files yourself. Wait for its terminal notification, then give the workflowId, status and the report's last line." > .artifacts/kiro/release-workflow-stream.jsonl
 ```
 
 `node_modules` must be a real directory with symlinked children. A symlink in its place would show as
