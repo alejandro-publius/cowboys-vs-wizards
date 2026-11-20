@@ -2,6 +2,8 @@
 
 Fable 5.2, Wednesday November 18, 2026, Pacific. Based on Alex's four decisions that evening and an audit of the branches at 7:45 p.m. The integration branch was `kiro/frontier-pack`. It was published to `main` at `5ee6a3a`, where 448 tests passed and both builds compiled.
 
+**Updated Thursday November 19** after Alex played Showdown and chose it for the December 4 entry, and after pull requests 139 to 145 merged.
+
 This file is the one place that says what is in the game, what is waiting, and what is out. If something is not listed under "In the game", it is not in the submission.
 
 ## What we are building
@@ -12,11 +14,11 @@ Cowboys vs. Wizards: the proven parts of Yu-Gi-Oh (mostly), Magic and Pokémon, 
 
 Alex played the lane duel that night and found it was not fun: strong troops did not protect the Base and he never chose an attack. He chose the Showdown fight for the deeper rules: you pick each attack, troops shield the Base, turns alternate.
 
-Showdown is a prototype in [`prototypes/showdown/`](../../prototypes/showdown/README.md) with its own keywords, type tags, traps and 25 cards. The lane duel stays the main game until its features are moved over. Until then:
+**Showdown is the fight in the December 4 entry.** Alex played it on November 19 and liked it a lot more than the lane duel.
 
-- No new lane content is written. Ride, Wraith Drift, Dragon Fire and lane previews are redesigned for Showdown or dropped when they are moved.
-- The playtest of November 19 to 22 should put first-time players on Showdown as well as the first-session flow.
-- Which fight is the December 4 entry is still Alex's decision.
+- Its engine is in the game (`src/game/showdown/`, pull request 144). Play in the graybox opens its first duel, Boot Hill.
+- The Trail, rivals, bounties, packs and the deck builder are still only on the [Showdown page](../../prototypes/showdown/README.md). Moving the Trail in is slice 2 of the [integration brief](showdown-integration-kiro-brief.md).
+- The lane duel stays reachable at `?mode=lanes` until slice 3 retires it. No new lane content is written.
 
 ## Three finish lines, in order
 
@@ -34,7 +36,7 @@ Release 1 will not reach 34 cards by December 4. The entry is a snapshot of it.
 
 ## December 4: submit the skeleton
 
-The graybox is the playable entry, described honestly as the rules-first build. The existing 3D duel supplies the look in the video. No 3D work is rushed before the deadline.
+The graybox is the playable entry, described honestly as the rules-first build. Its fight is Showdown. The existing 3D duel supplies the look in the video. No 3D work is rushed before the deadline.
 
 | Date | What happens |
 | --- | --- |
@@ -54,15 +56,19 @@ The graybox is the playable entry, described honestly as the rules-first build. 
 4. **A person before a mechanic.** No new mechanic is added until a real player has tried the last one.
 5. **This page is updated at every merge and every cut.**
 
-## Under review since the evening of November 18
-
-Alex played the lane duel and did not find it fun: strong troops did not protect the Base and no attack was chosen. A different fight, "Showdown", is on the branch `fable/showdown-prototype` for him to try. Until he decides, lane-based work (Ride, Wraith Drift, Dragon Fire) is at risk and nothing new is built on it. The dates above were set before this.
-
 ## Scoreboard
 
-"Seen by a person" means a first-time human player. Agent browser checks do not count. Today that column is empty for everything.
+"Seen by a person" means a first-time human player. Agent browser checks do not count. Alex's own play of Showdown on November 19 chose the fight, but he is not a first-time player, so the column is still empty.
 
-### In the game (on the integration branch)
+### Showdown, the December 4 fight
+
+| Piece | Where | Seen by a person |
+| --- | --- | --- |
+| The fight: 29 cards, cover, traps, gear, locations, bot levels | in the game, pull requests 144 and 145 | no |
+| Trail of six duels, pick-of-two rewards, save | Showdown page; slice 2 moves it in | no |
+| Rivals, bounties, packs, deck builder with side deck, best of three, two players | Showdown page; slice 3 | no |
+
+### Lane duel (at `?mode=lanes` until slice 3)
 
 | Piece | From | Seen by a person |
 | --- | --- | --- |
@@ -77,7 +83,9 @@ Alex played the lane duel and did not find it fun: strong troops did not protect
 | Dragon Fire arc: Ember Gulch and the Bonewright | depth arc brief, built tonight | no |
 | Deck builder drafts, clash history, tribute and lane explanations | Kiro | no |
 
-### Built, not merged (clock running)
+### Built, not merged (as of November 18)
+
+This table is kept as written on November 18. With Showdown as the entry, the lane mechanics in it (the guided duel, Wraith Drift and the Dragon Fire pages) are not carried into the snapshot; the table in the integration brief says what replaces each. The playtest kit's branch has not been rechecked since.
 
 | Piece | Branch | Decision due |
 | --- | --- | --- |
@@ -102,11 +110,13 @@ Alex played the lane duel and did not find it fun: strong troops did not protect
 - Ride Out as a rule for every troop in ordinary duels. Ride on cards replaced it.
 - Round-one Base shield. The experiment was negative.
 
-## Open briefs: 2 of 3
+## Open briefs: 1 of 3
 
-1. **First Play opens the guided duel.** Waiting on the playtest.
-2. **Dragon Fire arc.** Built; waiting on a person.
-3. Free. I am holding it for the fix brief on November 22.
+1. **Showdown into the game** ([brief](showdown-integration-kiro-brief.md), issue 143). Slice 1 and the card pipeline are merged. Open: the Scout fix, slice 2, and Kiro's spec, property tests and Night Watch pointed at Showdown.
+2. Free. I am holding it for the fix brief on November 22.
+3. Free.
+
+The two lane briefs that were open on November 18 (First Play opens the guided duel, and the Dragon Fire arc) are closed by the change of fight.
 
 ## Only Alex can do these
 
@@ -119,6 +129,6 @@ Alex played the lane duel and did not find it fun: strong troops did not protect
 
 ## What I do next
 
-- Until November 22: no new mechanics. I check tonight's Fire arc build against the acceptance cases in its brief and report what does not match.
+- Until November 22: no new mechanics. I answer what Kiro sends back on the Showdown rules and read its before-and-after numbers for the Scout fix.
 - November 22: read the playtest results, write the cut list, write one fix brief if a stall shows up.
 - After December 4: the Release 1 card list to 34, starting with six Wizard cards that need no new rule.

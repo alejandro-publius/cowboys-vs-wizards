@@ -1,14 +1,14 @@
 # Cowboys vs. Wizards
 
-**A haunted-Western card duel: cowboys against wizards across three lanes.** It takes what long-running card games already proved (tribute summons, spells that answer a board, a graveyard, a deck you build) and keeps a duel short and easy to read.
+**A haunted-Western card duel: cowboys against wizards, where you choose every attack and your troops shield your Base.** It takes what long-running card games already proved (tribute summons, spells that answer a board, a graveyard, a deck you build) and keeps a duel short and easy to read.
 
-## Status on November 18, 2026
+## Status on November 19, 2026
 
-The rules are being built first, in a plain "graybox" page: a flat board, text cards, life orbs and a clash log. [Play the graybox in the browser](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/). The next fight, Showdown, where you choose every attack, is a separate prototype: [play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/showdown/) or read [what is in it](prototypes/showdown/README.md). The 3D models, animation and board go on top once the rules are locked, because motion is expensive to change. An earlier illustrated 3D duel is still [live in the browser](https://alejandro-publius.github.io/cowboys-vs-wizards/). It predates most of what is listed below, so this page shows no screenshots until the 3D layer matches the current rules.
+The rules are being built first, in a plain "graybox" page: a flat board, text cards, life orbs and a clash log. [Play the graybox in the browser](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/): Play opens the first Showdown duel, Boot Hill. Showdown is the fight this game is being built on. Its Trail of duels, rivals, bounties and deck builder are still on a separate page until they are moved in: [play the full Showdown page](https://alejandro-publius.github.io/cowboys-vs-wizards/showdown/) or read [what is in it](prototypes/showdown/README.md). The earlier three-lane duel is still playable at [graybox/?mode=lanes](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/?mode=lanes). The 3D models, animation and board go on top once the rules are locked, because motion is expensive to change. An earlier illustrated 3D duel is still [live in the browser](https://alejandro-publius.github.io/cowboys-vs-wizards/). It predates most of what is listed below, so this page shows no screenshots until the 3D layer matches the current rules.
 
 No first-time human player has tested the current rules yet. Every balance figure in this repository comes from bot play. The [release line and scoreboard](docs/design/release-line.md) says what is in the game, what is waiting on a playtest, and what was cut.
 
-## What is playable in the graybox
+## What is playable in the earlier lane duel
 
 - **The duel.** Twelve-card decks, three lanes, one summon and one spell a turn, tributes for stronger troops, and both sides striking at once. Eighteen cards: twelve Cowboy, six Wizard.
 - **A guided first duel** on a fixed, forgiving deal.
