@@ -10,10 +10,13 @@ owns any design reading of this.
 | `rival-cases.json` | The receipt: summary, one row per seed, and replayable fixtures for seed 3 and the shrunk case |
 | `rival-crew-receipt.json` | The Crew Bot memory and check-in receipt: what ran, where, and what it observed |
 
+To compare another engine revision with the historical receipt, write the rerun to a separate file.
+
+```sh
+node experiments/showdown-dragon-strategy/rival-search.mjs --print > /tmp/showdown-rival-rerun.json
 ```
-node experiments/showdown-dragon-strategy/rival-search.mjs   # rewrites rival-cases.json; byte-identical on rerun
-git status --short                                           # empty afterwards
-```
+
+On even-fight candidate `d5a799d6`, the full recorded cases for seeds 3 and 70 reproduced exactly, including both legal moves, the hidden-information checks and each resulting winner. Across all 60 eligible positions, attacking the Dragon won 28 times, compared with 30 on the released rules at `7fdc234`. The tables below describe the released rules. [Candidate and comparisons](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/170).
 
 ## Claim under test
 
