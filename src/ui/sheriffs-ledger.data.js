@@ -7,6 +7,7 @@ export const LEDGER = {
   "run": {"source":"docs/evidence/night-shift/receipt.json","id":"receipt 2026-11-20T07:46:17Z","at":"2026-11-20T07:46:17Z","local":"November 19, 2026, 11:46 PM PST","trigger":"on-demand","state":"steady","revision":"e813ae8a3fdb5efbda75caddc28805d407ae8802","baseline":"6b6caeff465be6175eb2fe62ae16b3c54ead2598","firstSeed":0,"count":1000,"games":2000,"first":1142,"cowboy":1188,"wizard":812,"draw":0,"rulesTests":361,"method":"docs/evidence/night-watch-showdown.md","bot":"playTurn level 2 (both seats)","rulesBlob":"66538aca2b7660c8bd7717a03dee364f8489c184"},
   "perCardSource": null,
   "reviews": [{"source":"docs/evidence/night-shift/guard-sheriff-health-3-to-4/bundle.json","card":"cowboy-sheriff","field":"health","from":3,"to":4,"verdict":"rejected","reasons":["tune: faction skew 9.40 -> 13.60 pp did not improve","holdout: faction skew 11.05 -> 15.30 pp did not improve"],"seal":"809cb9eeaa05"}],
+  "packages": [],
   "cards": [
     {"type":"cowboy-sheriff","side":"cowboy","name":"Sheriff","kind":"troop","rarity":"Basic","starter":4,"spec":".kiro/specs/duel-card-pipeline/cards/cowboy-sheriff.json","requirement":"R1.1","latest":null},
     {"type":"cowboy-billy","side":"cowboy","name":"Billy","kind":"troop","rarity":"Basic","starter":2,"spec":".kiro/specs/duel-card-pipeline/cards/cowboy-billy.json","requirement":"R1.1","latest":null},

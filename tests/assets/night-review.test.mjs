@@ -3,7 +3,7 @@
 // exercised by the dry runs recorded in docs/evidence/night-shift-review.md.
 import test from "node:test";
 import assert from "node:assert/strict";
-import {POLICY, bundleSealIntact, changeField, decide, findingProblems, paired, sealBundle, summarize} from "../../scripts/night-review.mjs";
+import {PACKAGE_POLICY, POLICY, bundleSealIntact, changeField, decide, decidePackage, findingProblems, paired, sealBundle, summarize, trailDeltas, trailTable} from "../../scripts/night-review.mjs";
 
 const real = {mode: "showdown", firstSeed: 0, count: 1000, rules: {state: "passed", tests: 318},
   candidate: {commit: "3dd47f1fb668f1b42edd72b50c898a0b1e622d74", counts: {games: 2000, cowboy: 1188, wizard: 812, draw: 0, first: 1142, second: 858}}};
@@ -77,4 +77,42 @@ test("the bundle seal detects any edit", () => {
   assert.ok(bundleSealIntact(bundle));
   assert.ok(!bundleSealIntact({...bundle, decision: {verdict: "accepted"}}));
   assert.ok(!bundleSealIntact({...bundle, sets: {tune: {a: 2}}}));
+});
+
+// Rules-package review (night-review/package@1). Synthetic numbers; no measured result is implied.
+const share = (firstShare, cowboyShare) => ({candidate: {firstShare, cowboyShare}});
+const trailOf = (rows, deals = 100) => ({deals, rows: rows.map(([label, id, wins]) => ({label, id, wins}))});
+const testsOk = {baseline: {passed: true}, candidate: {passed: true}};
+const steadyTrail = trailDeltas(trailOf([["Trail 1", "trail", [50, 60, 70]], ["Open range", "open", [10, 14, 65]]]),
+  trailOf([["Trail 1", "trail", [52, 60, 67]], ["Open range", "open", [10, 14, 52]]]));
+
+test("the package gate passes only inside Fable's band on both sets with a steady Trail", () => {
+  const input = {tests: testsOk, entry: {consistent: true}, sets: {tune: share(49.5, 51.8), holdout: share(51.4, 54.1)}, trail: steadyTrail};
+  const passed = decidePackage(input);
+  assert.equal(passed.verdict, "passed");
+  assert.match(passed.meaning, /not a release approval/);
+  assert.equal(steadyTrail.maxGatedMovePp, 3);
+  assert.equal(steadyTrail.maxMovePp, 13, "the Open range move is reported");
+  const cases = {
+    "holdout Cowboy share above the band": [{...input, sets: {...input.sets, holdout: share(51.4, 55.1)}}, /holdout: Cowboy share 55\.10% is outside 45–55%/],
+    "tune first share below the band": [{...input, sets: {...input.sets, tune: share(44.9, 50)}}, /tune: first player share 44\.90%/],
+    "missing holdout": [{...input, sets: {tune: input.sets.tune}}, /no holdout results/],
+    "Trail move over three points": [{...input, trail: trailDeltas(trailOf([["Trail 1", "trail", [50, 60, 70]]]), trailOf([["Trail 1", "trail", [50, 64, 70]]]))}, /Trail 1, level 1: 60\.0% -> 64\.0%/],
+    "Trail rows differ": [{...input, trail: trailDeltas(trailOf([["Trail 1", "trail", [1, 1, 1]]]), trailOf([["Trail 2", "trail", [1, 1, 1]]]))}, /rows differ/],
+    "candidate tests fail": [{...input, tests: {...testsOk, candidate: {passed: false, failed: ["cover"]}}}, /candidate tests failed: cover/],
+    "measured setup is not the Open range": [{...input, entry: {consistent: false}}, /Open range setup/],
+  };
+  for (const [name, [args, reason]] of Object.entries(cases)) {
+    const decision = decidePackage(args);
+    assert.equal(decision.verdict, "failed", name);
+    assert.match(decision.reasons.join("\n"), reason, name);
+    assert.match(decision.meaning, /Do not retune/, name);
+  }
+  assert.deepEqual([PACKAGE_POLICY.band, PACKAGE_POLICY.trailTolerancePp], [[45, 55], 3]);
+});
+
+test("the Trail table shows before, after and the move per level", () => {
+  const text = trailTable(steadyTrail);
+  assert.match(text, /Trail 1\s+50\.0%\s+52\.0% \+2\.0/);
+  assert.match(text, /limit 3\); including the Open range .*: 13\.0 points/);
 });
