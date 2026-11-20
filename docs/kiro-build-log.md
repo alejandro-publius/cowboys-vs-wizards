@@ -248,3 +248,11 @@ The next substantial Kiro task is #56, boundary generation, failure reduction an
 - **Change**: cherry-picked `f802687` (`prototypes/showdown/style.css` only, no copy, DOM, script or test change) with no conflicts. No rules, bot, card text or test changes.
 - **Verification**: `npm test` 516 of 516 plus both GLB checks. The offline and web graybox builds are byte-identical and unchanged. All six PR 144 Chrome checks pass on the combined `dist/showdown.html` with their original assertions, including onboarding (31 of 31), which failed 2 checks before this fix. The graybox Boot Hill and lane fallback check passed 12 of 12 on both builds. The rules files are identical to `735cb09`, and the bot trace and Scout oracle hashes match the 735cb09 prototype. [Receipts](evidence/kiro-144-final-integration/README.md)
 - **Remaining**: the Fable decision on the issue 143 / PR 144 Scout bot change, and human playtests. Short phones (375×667 and smaller) still need one scroll to reach the first card, per the onboarding worker's measurements. Those measurements were not re-run here.
+
+### 2026-11-19 — Judge page refresh for PR 152 (Kiro IDE, America/Los_Angeles, 21:54 PST)
+
+- **Problem**: the judge page in PR 152 described `main` at `a9aa828` and listed #149, #150, #151 and #154 in a status table that went stale once #150, #151 and #153 merged.
+- **Performed in**: a Kiro IDE agent session (Claude Opus 5.5) using the `gh` CLI for PR and CI states.
+- **Change**: [docs/submission/kiro-brag-sheet.md](submission/kiro-brag-sheet.md) now describes `main` at `6c14686`, adds #150 (Scout before/after), #151 (Night Watch Showdown, balance steady) and #153 (profile) with commit-pinned evidence and CI links, and replaces the status table with pinned links for #149 (merged into the candidate branch only), #148 and #154. Demo steps unchanged.
+- **Verification**: every link on the page resolved (local paths, anchors, and remote URLs with HTTP 200). The demo's four actions were replayed through `src/match/showdown-session.js` at `6c14686` in Node and gave the same events; no browser run on the new build.
+- **Not verified here**: a scheduled Crew run of Night Watch on Showdown, the #148 code, and any human play.

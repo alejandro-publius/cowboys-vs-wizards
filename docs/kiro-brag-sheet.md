@@ -1,6 +1,6 @@
 # How we used Kiro on Cowboys vs. Wizards: evidence map
 
-[Judge-facing brag sheet, eight Devpost answers and recording register](submission/kiro-brag-sheet.md)
+**Judge entry:** [Showdown write-up and eight Devpost answers](submission/kiro-brag-sheet.md). Showdown became the December 4 fight on November 19. The sections below are dated history, mostly from the earlier lane duel, and are not Showdown testing.
 
 ## November 18 Dragon Fire arc
 
