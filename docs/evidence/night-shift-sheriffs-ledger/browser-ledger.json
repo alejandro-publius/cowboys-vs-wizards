@@ -1,0 +1,98 @@
+{
+ "page": "dist/cowboys-vs-wizards-board-duel.html (local build)",
+ "checks": [
+  {
+   "name": "390px: ledger collapsed after the Trail; Boot Hill uncovered in the first view; no horizontal overflow",
+   "detail": {
+    "open": false,
+    "after": true,
+    "trailTop": 128.5,
+    "trailBottom": 208.90625,
+    "ledgerTop": 501.375,
+    "trailVisible": true,
+    "scrollW": 390,
+    "summary": "Sheriff's Ledger 29 cards \u00b7 last check steady at 3dd47f1"
+   }
+  },
+  {
+   "name": "390px: Tab reaches Boot Hill before the ledger summary",
+   "detail": {
+    "order": [
+     "trail",
+     "SUMMARY",
+     "summary"
+    ],
+    "focusOutline": "solid 2px"
+   }
+  },
+  {
+   "name": "390px: Enter opens the ledger; 29 rows, all Not observed; fits the viewport",
+   "detail": {
+    "rows": 29,
+    "notObserved": 29,
+    "scrollW": 390,
+    "right": 375,
+    "wrapScroll": 0,
+    "run": "Night Watch run fa15c87e1701 (manual), November 19, 2026, 9:43 PM PST: commit 3dd47f1 against a9aa828, seeds 0\u2013999, 2,000 games, each deal played once with each side first. First player won 1,142 (57.1%). Cowboys won 1,188 (59.4%). Draws 0. Rule tests passed: 318. Shift against the baseline: steady."
+   }
+  },
+  {
+   "name": "390px: the card table region takes focus; Shift+Tab and Enter close the ledger"
+  },
+  {
+   "name": "390px: Boot Hill's first turn shows no part of the ledger",
+   "detail": {
+    "inDuel": false,
+    "visible": false,
+    "scrollW": 390
+   }
+  },
+  {
+   "name": "1440px: ledger collapsed after the Trail; Boot Hill uncovered in the first view; no horizontal overflow",
+   "detail": {
+    "open": false,
+    "after": true,
+    "trailTop": 147,
+    "trailBottom": 227.40625,
+    "ledgerTop": 431.96875,
+    "trailVisible": true,
+    "scrollW": 1440,
+    "summary": "Sheriff's Ledger 29 cards \u00b7 last check steady at 3dd47f1"
+   }
+  },
+  {
+   "name": "1440px: Tab reaches Boot Hill before the ledger summary",
+   "detail": {
+    "order": [
+     "trail",
+     "SUMMARY",
+     "summary"
+    ],
+    "focusOutline": "solid 2px"
+   }
+  },
+  {
+   "name": "1440px: Enter opens the ledger; 29 rows, all Not observed; fits the viewport",
+   "detail": {
+    "rows": 29,
+    "notObserved": 29,
+    "scrollW": 1440,
+    "right": 1150,
+    "wrapScroll": 0,
+    "run": "Night Watch run fa15c87e1701 (manual), November 19, 2026, 9:43 PM PST: commit 3dd47f1 against a9aa828, seeds 0\u2013999, 2,000 games, each deal played once with each side first. First player won 1,142 (57.1%). Cowboys won 1,188 (59.4%). Draws 0. Rule tests passed: 318. Shift against the baseline: steady."
+   }
+  },
+  {
+   "name": "1440px: the card table region takes focus; Shift+Tab and Enter close the ledger"
+  },
+  {
+   "name": "1440px: Boot Hill's first turn shows no part of the ledger",
+   "detail": {
+    "inDuel": false,
+    "visible": false,
+    "scrollW": 1440
+   }
+  }
+ ],
+ "errors": []
+}
