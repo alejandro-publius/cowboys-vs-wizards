@@ -1,0 +1,116 @@
+{
+  "build": "ce6bdfe64e1b",
+  "gate": "10 of 10 fresh; linked case-a, case-e",
+  "camp": "case-e",
+  "output": "dist/cowboys-vs-wizards-board-duel.html",
+  "linked": [
+    "case-a",
+    "case-e"
+  ],
+  "ledger": {
+    "schema": "outrider-ledger/1",
+    "nightWatch": {
+      "source": "docs/evidence/night-shift/receipt.json",
+      "at": "2026-11-20T07:46:17Z",
+      "local": "November 19, 2026, 11:46 PM PST",
+      "trigger": "on-demand",
+      "bot": "playTurn level 2 (both seats)",
+      "commit": "e813ae8a3fdb5efbda75caddc28805d407ae8802",
+      "rulesBlob": "66538aca2b7660c8bd7717a03dee364f8489c184",
+      "seeds": {
+        "from": 0,
+        "to": 999
+      },
+      "games": 2000,
+      "engine": {
+        "checked": true,
+        "files": 4,
+        "same": true,
+        "differ": [],
+        "entryBlob": "66538aca2b7660c8bd7717a03dee364f8489c184",
+        "notMeasured": [
+          "src/game/showdown/contract.js",
+          "src/game/showdown/progress.js",
+          "src/game/showdown/trail.js",
+          "src/match/showdown-outrider.js",
+          "src/match/showdown-session.js"
+        ]
+      },
+      "rulesBlobMatch": true
+    },
+    "record": "experiments/showdown-outrider/decision",
+    "status": "fresh",
+    "statusText": "Both positions replay in this build exactly as measured (10 of 10 recorded cases fresh).",
+    "positions": [
+      {
+        "id": "case-e",
+        "label": "Position 1",
+        "turn": 3,
+        "bases": {
+          "cowboy": 5,
+          "wizard": 4
+        },
+        "cowboy": "Outrider 2 · empty · empty",
+        "wizard": "Skeleton 3 · empty · empty"
+      },
+      {
+        "id": "case-a",
+        "label": "Position 2",
+        "turn": 7,
+        "bases": {
+          "cowboy": 5,
+          "wizard": 4
+        },
+        "cowboy": "Covered Wagon 1 · Outrider 3 · Sheriff 3",
+        "wizard": "Wizard 3 · Skeleton 1 · empty"
+      }
+    ],
+    "results": {
+      "case-e": {
+        "ride": {
+          "winner": "wizard",
+          "turn": 10
+        },
+        "fight": {
+          "winner": "cowboy",
+          "turn": 23
+        }
+      },
+      "case-a": {
+        "ride": {
+          "winner": "cowboy",
+          "turn": 24
+        },
+        "fight": {
+          "winner": "wizard",
+          "turn": 16
+        }
+      }
+    },
+    "research": {
+      "tried": 300,
+      "reached": 184,
+      "rideOnly": 12,
+      "fightOnly": 11,
+      "cue": "riderHealth <= 2 → fight",
+      "derivedOn": "1000-1199",
+      "fit": {
+        "correct": 11,
+        "flips": 16
+      },
+      "holdout": {
+        "range": "1200-1299",
+        "correct": 3,
+        "flips": 7,
+        "alwaysRide": 5,
+        "alwaysFight": 2,
+        "supported": false
+      },
+      "record": "experiments/showdown-outrider/decision"
+    },
+    "sides": {
+      "cowboy": "Cowboys",
+      "wizard": "Wizards"
+    }
+  }
+}

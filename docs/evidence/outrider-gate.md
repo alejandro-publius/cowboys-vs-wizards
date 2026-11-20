@@ -63,3 +63,53 @@ session's id and `hook_event_name: "PostFileSave"`; a manual run of the wrapper 
 - X-041 SpecGuard README and videos 55 and 24 were not read in this session.
 - `docs/kiro-build-log.md` not edited (coordinator owns it); `../gate.md` carries the entry.
 - `npm test` (lane `verify-duel.mjs`) not run: no lane file changed.
+
+## Repair: one Camp entry, Ledger comparison, Night Watch relation (2026-11-20 PST, same Kiro CLI session)
+
+Commits 870bff1 (code) and ce6bdfe (check), on top of the coordinator's merge b72e5eb. Everything below was run on a
+clean detached worktree at ce6bdfe unless it says otherwise.
+
+What changed for the player and Fable:
+- Camp: one neutral control, "Try an Outrider turn" (`#camp-outrider-turn`, case-e). The ten buttons are gone. All ten
+  cases stay in `experiments/showdown-outrider/decision/` and in the gate check and receipt.
+- Sheriff's Ledger (collapsed, after the card table): "Outrider experiment (for review, not advice)" with a status line,
+  Position 1 (case-e) and Position 2 (case-a) as public boards only, "Open Position 1/2" links (the same `?outrider=` ids),
+  and the Night Watch relation. Results appear only after "Show the measured comparison" and leave the DOM when hidden.
+  Revealed text: each position's ride and fight result; that the pair is one of each kind from 23 reversals (12 ride-only,
+  11 fight-only) among 184 decisions in 300 seeds; that each result depends on every later move (greedy Cowboy policy,
+  level-0 Trail bot); the cue's holdout 3 of 7 against always-ride 5 of 7, unsupported; no general rule proven.
+  Screenshots: [before reveal](outrider-gate/ledger-before-reveal.png), [revealed](outrider-gate/ledger-revealed.png),
+  [stale build](outrider-gate/ledger-stale.png).
+- Night Watch relation: `scripts/outrider-ledger.mjs` takes the import closure of `prototypes/showdown/rules.js` (the file
+  the Night Watch simulator loads and hashes as `rulesBlob`) at the receipt's commit e813ae8 and in this tree, and compares
+  git blob ids. Result on ce6bdfe: the 4 files are byte-identical and the rules blob 66538ac matches. The Ledger keeps the
+  receipt's date (November 19, 2026, 11:46 PM PST), trigger, bot (level 2 both seats), seeds 0–999 and says it measures the
+  whole ruleset, not this move, and names the files the Outrider path uses that the run did not exercise
+  (contract.js, progress.js, trail.js, showdown-session.js, showdown-outrider.js). No new Night Watch run was needed or made.
+- Stale: readable status, no results, no research numbers, no reveal, no links, no Camp control; curated ids open the menu.
+
+Build receipts (what each page was given, `.artifacts/outrider-ledger/` copied here):
+| Build | Gate | Camp | Links | Ledger | Results in payload | Night Watch engine |
+| --- | --- | --- | --- | --- | --- | --- |
+| [clean ce6bdfe](outrider-gate/build-receipt-fresh.json) | 10 of 10 fresh | case-e | case-a, case-e | fresh | yes | same 4 files |
+| [ride strike 1 → 2 orbs](outrider-gate/build-receipt-stale.json) | 0 of 10 | none | none | stale | no | differs: rules.js |
+| [rules comment + clash.js export](outrider-gate/build-receipt-unrelated.json) | 10 of 10 fresh | case-e | case-a, case-e | fresh | yes | differs: rules.js |
+
+The unrelated edit keeps the Outrider claims fresh (semantic), while the Night Watch relation honestly reports a byte
+difference: that receipt's numbers are then labelled as describing the earlier rules.
+
+Checks on the clean worktree: gate `--check --ledger` 10 fresh; Node suites 166/166 (Showdown, Sheriff's Ledger, gate,
+decision tests); `build-sheriffs-ledger.mjs --check` current; headless Chrome `browser-showdown-outrider-check` 23/23
+(Camp entry, Ledger neutral before reveal, reveal text equals the build data, hide removes it, no measured text in the DOM
+on the Camp or during either duel, Camp hidden during the duel, both arms, Restart, Retry, Back to camp returning focus to
+the Camp control or the Ledger link, direct URL, reload, bad ids, 375 px, save byte-identical); `browser-ledger-check` 12/12;
+`browser-showdown-check` 22/22; `browser-showdown-turn-check` 29/29. Mutated build: `--write` refused, refreshed source
+hashes still 0 fresh (exit 1), browser 6/6 (stale status, no links or reveal, `?outrider=case-e` and `case-a` open the menu).
+
+Disclosed limit: on a fresh build the measured results for the two positions are inside the page's script as data (the
+Ledger needs them to reveal); they are never in the position objects, the duel view or the DOM before the reveal.
+
+Native hook (this session, receipts 10–13 in [hook-receipts.jsonl](outrider-gate/hook-receipts.jsonl), now with `--ledger`):
+mutation save → failed, "Ledger: stale; links none; camp none; Night Watch e813ae8 engine differs"; revert save → passed,
+"Ledger: fresh … same 4 files"; comment-only save → passed with "engine differs: rules.js"; revert → passed. Each save was
+read before the next. The edits to `src/ui/*`, `scripts/*` and these docs produced no receipt (outside the matcher).

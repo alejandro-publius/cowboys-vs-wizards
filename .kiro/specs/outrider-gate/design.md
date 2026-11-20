@@ -23,3 +23,12 @@ and can be refreshed by anyone; neither says whether the two lines still end as 
 Source references named by the coordinator (X-041 SpecGuard README Core Idea items 2-4, videos 55 and 24) were not
 read in this session; the design above is derived from the repo's existing Ledger `--check`, the Dragon turn
 allowlist (PRs 169/172) and the previous Outrider README.
+
+## Repair (K-011 Ledger integration)
+- `CURATED` in `scripts/outrider-gate.mjs` = `{camp: "case-e", compare: ["case-e", "case-a"]}`; only these ids are linked.
+- `scripts/outrider-ledger.mjs` builds the Ledger section from the verdicts: `positions` (public boards from the replayed
+  landing view) and `results` kept apart; `research` from the search's range files; `nightWatch` with engine identity
+  (import closure of `prototypes/showdown/rules.js`, git blob ids at the receipt commit vs this tree).
+- `build-graybox.mjs` defines `__CVW_OUTRIDER__` = `{cases, camp}` and `__CVW_OUTRIDER_LEDGER__`, and writes the build
+  receipt to `.artifacts/outrider-ledger/` (never staged). `src/ui/outrider-ledger.js` renders it inside the Ledger.
+- The Ledger section sits after the card table so the existing Ledger keyboard walk is unchanged.

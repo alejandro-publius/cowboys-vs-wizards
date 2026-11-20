@@ -31,6 +31,15 @@ under the recorded continuation policy and the shipped Trail bot".
 - **G8 No invented fallback.** Without frozen cases from the search worker the build ships no Outrider control.
   Test fixtures are labelled and only build into `.artifacts/`.
 
+- **G9 Curated presentation (repair).** The Camp shows one neutral Outrider control (case-e). The collapsed Sheriff's
+  Ledger shows two opposite reversals (case-e fight-only, case-a ride-only) as public positions with links to the same
+  ids; measured results and the search's limits appear only after an explicit reveal, only when both are fresh. All
+  measured cases stay in the research record and the gate check.
+- **G10 Night Watch relation.** The Ledger states whether the engine files the checked-in Night Watch receipt ran are
+  byte-identical in this build (and its rules blob), keeps that receipt's date, source, bot, seeds and "whole ruleset"
+  limit, and names the Outrider files it did not exercise. It never uses the ruleset shares as evidence about one move.
+- **G11 Stale Ledger.** When stale: a readable status, no results or research numbers, no reveal, no links.
+
 ## Acceptance mapped to proof
 
 | Req | Proof | Status |
@@ -43,5 +52,9 @@ under the recorded continuation policy and the shipped Trail bot".
 | G6 | `scripts/browser-showdown-outrider-check.mjs` (headless Chrome, fresh profile) | passed: 85 checks on the clean c4e9723 build with the 10 cases |
 | G7 | `.kiro/hooks/check-outrider-gate.json`, `.artifacts/outrider-gate-hook/receipts.jsonl` | native trigger and skip observed, see evidence |
 | G8 | `npm run build` log line; browser check "Camp shows no Outrider control" | passed |
+
+| G9 | `tests/match/showdown-outrider-gate.test.js` "imported search cases", "Ledger section"; browser check Ledger steps | passed (clean ce6bdfe, 23/23) |
+| G10 | same tests; build receipts fresh/unrelated/stale in `docs/evidence/outrider-gate/` | passed: same 4 files at ce6bdfe; differs after rules edits |
+| G11 | same tests; browser check on the mutated build (6/6); native hook receipt "Ledger: stale" | passed |
 
 Evidence and exact commands: [`docs/evidence/outrider-gate.md`](../../../docs/evidence/outrider-gate.md).
