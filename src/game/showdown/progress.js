@@ -24,7 +24,9 @@ export const RIVALS = Object.freeze([
     deck: {"wizard-skeleton": 5, "wizard-bone-wall": 3, "wizard-wizard": 3, "wizard-headless-horseman": 2, "wizard-boneyard": 2, "wizard-bone-armor": 1}},
   {id: "coven", name: "The Graveyard Coven", lesson: "Everything the Wizards have, played as well as they can play it.",
     level: 2, base: 4, first: "cowboy", reward: [], packs: 2,
-    deck: {...DECKS.wizard, "wizard-skeleton": 3, "wizard-boneyard": 1}},
+    // Fixed counts: the even-match deck's November 20 change (3 Skeletons, 2 Imps) is not a rival change.
+    deck: {"wizard-skeleton": 3, "wizard-jack-o-lantern": 1, "wizard-raven-familiar": 1, "wizard-imp": 1, "wizard-bone-wall": 2,
+      "wizard-wizard": 2, "wizard-headless-horseman": 1, "wizard-dragon": 1, "wizard-singularity": 1, "wizard-hellfire": 1, "wizard-hex": 1, "wizard-boneyard": 1}},
 ]);
 
 // Bounties: a Wanted boss you must beat five times; the fifth win pays its card.

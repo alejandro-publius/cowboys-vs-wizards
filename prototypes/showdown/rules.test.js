@@ -5,12 +5,13 @@ import {DECKS, EFFECTS, KEYWORDS, RARITY, TYPES, cardOf, deckIds} from "../../sr
 import {cardsCsv} from "./export-cards.mjs";
 import {FRAMES, FRAME_BASE, FRAMING, LOOK, MODEL_ORDER, PLACES, STYLE} from "./art.js";
 import {artDirection} from "./export-art.mjs";
-import {HAND_CAP, OPENING_HAND, applyAction, attackOf, attackOutcome, canAttack, createShowdown, legalActions, playTurn} from "../../src/game/showdown/rules.js";
+import {BASE_ORBS, HAND_CAP, OPENING_HAND, SECOND_PLAYER_BASE, applyAction, attackOf, attackOutcome, canAttack, createShowdown, legalActions, playTurn} from "../../src/game/showdown/rules.js";
 
 const troop = (type, health = TYPES[type].health, extra = {}) => ({cardId: `${type}-1`, health, attacked: false, stunned: false, cover: false, gear: [], arrived: 0, ...extra});
-// Turn 4, Cowboy to act, nothing spent, boards as given, empty hands.
+// Turn 4, Cowboy to act, nothing spent, boards as given, empty hands, both Bases on 5 orbs.
+// (Since November 20 the even match starts the side going second on 7; these cases test fights, not the deal.)
 function position(cowboy, wizard, active = "cowboy") {
-  const state = createShowdown(690);
+  const state = createShowdown(690, {baseOrbs: 5});
   Object.assign(state, {turn: 4, active});
   for (const side of ["cowboy", "wizard"]) state.sides[side].hand = [];
   state.sides.cowboy.board = [...cowboy, null, null, null].slice(0, 3);
@@ -52,6 +53,31 @@ test("the deal: same seed, same game; the second player starts with one more car
   const second = state.first === "cowboy" ? "wizard" : "cowboy";
   assert.equal(state.sides[state.first].hand.length, OPENING_HAND);
   assert.equal(state.sides[second].hand.length, OPENING_HAND + 1);
+});
+
+// Fable's even-fight brief, change 2: in the even match the side going second starts on 7 Base orbs.
+test("the even-match deal: the side going first starts on 5 Base orbs, the side going second on 7", () => {
+  assert.deepEqual([BASE_ORBS, SECOND_PLAYER_BASE], [5, 7]);
+  for (let seed = 0; seed < 40; seed++) {
+    for (const options of [{}, {first: "cowboy"}, {first: "wizard"}, {decks: DECKS}]) {
+      const state = createShowdown(seed, options);
+      const second = state.first === "cowboy" ? "wizard" : "cowboy";
+      assert.deepEqual([state.sides[state.first].base, state.sides[state.first].baseMax], [5, 5], `seed ${seed}`);
+      assert.deepEqual([state.sides[second].base, state.sides[second].baseMax], [7, 7], `seed ${seed}`);
+      assert.equal(state.sides[second].hand.length, OPENING_HAND + 1, "the side going second keeps its extra card");
+    }
+  }
+  // A duel that sets its own Base orbs keeps them, whoever goes first.
+  assert.deepEqual(["cowboy", "wizard"].map((side) => createShowdown(3, {baseOrbs: 5, first: "cowboy"}).sides[side].base), [5, 5]);
+  assert.deepEqual(["cowboy", "wizard"].map((side) => createShowdown(3, {baseOrbs: {cowboy: 6, wizard: 4}, first: "wizard"}).sides[side].base), [6, 4]);
+});
+
+// Fable's even-fight brief, change 1: 3 Skeletons and 2 Imps, everything else as it was.
+test("the even-match Wizard deck holds 3 Skeletons and 2 Imps, and the Cowboy deck is unchanged", () => {
+  assert.deepEqual(DECKS.wizard, {"wizard-skeleton": 3, "wizard-jack-o-lantern": 1, "wizard-raven-familiar": 1, "wizard-imp": 2, "wizard-bone-wall": 2,
+    "wizard-wizard": 2, "wizard-headless-horseman": 1, "wizard-dragon": 1, "wizard-singularity": 1, "wizard-hellfire": 1, "wizard-hex": 1});
+  assert.deepEqual(DECKS.cowboy, {"cowboy-sheriff": 4, "cowboy-outrider": 2, "cowboy-covered-wagon": 2, "cowboy-billy": 2, "cowboy-ranger": 1,
+    "cowboy-dynamiter": 1, "cowboy-mounted-billy": 1, "cowboy-deadeye": 1, "cowboy-lasso": 1, "cowboy-bear-trap": 1});
 });
 
 test("a Base can be struck directly only when its side has no troops", () => {
@@ -159,6 +185,52 @@ test("Ghostly troops cannot be targeted by spells, but Hellfire still burns them
   const burn = position([troop("cowboy-captured-wraith"), troop("cowboy-sheriff", 1)], [], "wizard");
   burn.sides.wizard.hand = ["wizard-hellfire-1"];
   assert.deepEqual(act(burn, {type: "spell", cardId: "wizard-hellfire-1"}).sides.cowboy.board.map((t) => t && t.health), [1, null, null]);
+});
+
+// RULEBOOK section 10, "Cover and spells" (Fable's even-fight brief, change 3).
+test("cover and spells: Deadeye, Lasso and Singularity cannot choose a troop in cover", () => {
+  const cowboyCasts = position([], [troop("wizard-skeleton", 3, {cover: true}), troop("wizard-wizard")]);
+  cowboyCasts.sides.cowboy.hand = ["cowboy-deadeye-1", "cowboy-lasso-1"];
+  assert.deepEqual(legalActions(cowboyCasts).filter((a) => a.type === "spell").map((a) => [a.cardId, a.target]),
+    [["cowboy-deadeye-1", 1], ["cowboy-lasso-1", 1]]);
+  assert.throws(() => act(cowboyCasts, {type: "spell", cardId: "cowboy-deadeye-1", target: 0}), /illegal action/);
+  const wizardCasts = position([troop("cowboy-sheriff", 3, {cover: true}), troop("cowboy-billy", 4, {cover: true})], [], "wizard");
+  wizardCasts.sides.wizard.hand = ["wizard-singularity-1"];
+  assert.deepEqual(legalActions(wizardCasts).filter((a) => a.type === "spell"), []);
+  // Out of cover, the same troop is a target again.
+  wizardCasts.sides.cowboy.board[1].cover = false;
+  assert.deepEqual(legalActions(wizardCasts).filter((a) => a.type === "spell").map((a) => a.target), [1]);
+});
+
+test("cover and spells: Hellfire passes over troops in cover", () => {
+  const burn = position([troop("cowboy-sheriff", 1, {cover: true}), troop("cowboy-billy", 1), troop("cowboy-covered-wagon", 4, {cover: true})], [], "wizard");
+  burn.sides.wizard.hand = ["wizard-hellfire-1"];
+  const {state, events} = applyAction(burn, {type: "spell", cardId: "wizard-hellfire-1"});
+  assert.deepEqual(state.sides.cowboy.board.map((t) => t && t.health), [1, null, 4]);
+  assert.deepEqual(events.filter((event) => event.type === "spell").map((event) => event.target), ["cowboy-billy-1"]);
+});
+
+test("cover and spells: Hellfire is not a legal play when every enemy troop is in cover", () => {
+  const state = position([troop("cowboy-sheriff", 3, {cover: true}), troop("cowboy-captured-wraith", 2, {cover: true})], [], "wizard");
+  state.sides.wizard.hand = ["wizard-hellfire-1"];
+  assert.ok(!legalActions(state).some((a) => a.type === "spell"));
+  assert.throws(() => act(state, {type: "spell", cardId: "wizard-hellfire-1"}), /illegal action/);
+  // Ghostly still stops only spells that choose: an uncovered Ghostly troop is burned.
+  state.sides.cowboy.board[1].cover = false;
+  assert.deepEqual(act(state, {type: "spell", cardId: "wizard-hellfire-1"}).sides.cowboy.board.map((t) => t && t.health), [3, 1, null]);
+});
+
+test("cover and spells: Sweep, traps and attacks are not spells and still reach a troop in cover", () => {
+  // An attack still lands on a troop in cover, and the Dragon's Sweep still hits the covered troops beside it.
+  const swept = act(position([troop("cowboy-sheriff", 3, {cover: true}), troop("cowboy-billy", 4, {cover: true}), troop("cowboy-sheriff", 1, {cover: true})],
+    [troop("wizard-dragon")], "wizard"), {type: "attack", slot: 0, target: 0});
+  assert.deepEqual(swept.sides.cowboy.board.map((t) => t && t.health), [null, 3, null]);
+  // A Bear Trap set behind covered troops still bites the attacker.
+  const trapped = position([troop("cowboy-sheriff", 3, {cover: true})], [troop("wizard-wizard")], "wizard");
+  trapped.sides.cowboy.traps = ["cowboy-bear-trap-1"];
+  const sprung = applyAction(trapped, {type: "attack", slot: 0, target: 0});
+  assert.equal(sprung.events.find((event) => event.type === "trap").left, 2);
+  assert.equal(sprung.state.sides.cowboy.board[0].health, 1);
 });
 
 test("Lasso stuns a troop for its next turn only", () => {
