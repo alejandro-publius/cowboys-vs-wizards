@@ -1,0 +1,291 @@
+{
+  "schema": "outrider-gate-receipt/1",
+  "decision": {
+    "experiments/showdown-outrider/decision/replay.json": "483f7784242ae620a8634105c0840c1e415103e1b4bcbf461496aeab0a6cc936",
+    "experiments/showdown-outrider/decision/results/observed.json": "f532a03c219f2d7df3b902eda0f588393ae6143bb7ae9a3847bef4fd078c1c55",
+    "experiments/showdown-outrider/decision/decision.js": "df204fe0d59c38fea4a490e9022cae208dbe7cc8bb27541e57a2b610da297ec2"
+  },
+  "sources": {
+    "src/game/showdown/rules.js": "096eb8a22dced7ca527cd2ebc27b6d1c36922884f0570662a7c0762d62d5b61a",
+    "src/game/showdown/cards.js": "2e9c3c7df707c43bc61b6481b801211de4fabd6ada87d9aa35d52330b868ffe1",
+    "src/game/card-specs.generated.js": "187bb9ca71516227e67edd9f6e248e038ae20028e7e3333b6fa28bdf18b40a8b",
+    "src/game/showdown/progress.js": "6eec06618efbfb13d7b965d5d3bce9a7b9d0f4f5f54cd3e11aac41e0de5ef1d0",
+    "src/game/showdown/trail.js": "8fa27db59ee2d6cceaecd72012c198c6ef00d98c88994866509cfe51704fd528",
+    "src/game/showdown/contract.js": "85a356ee3ff9b530162cca870eefead5fb773e45d857b95cfed125e942f1b2be",
+    "src/match/showdown-session.js": "6ffdf75b79fb706632e9ee6b445d4b658bdc3ec9859e2897088a1fe8f1512c00",
+    "src/match/showdown-outrider.js": "26d6764f577b6b703de0bce0711e4e13d0d53cdeeec28f4933f5edefb2c02ac3"
+  },
+  "note": "Transcript digests are sha256 of each arm's full event list; source hashes are informational only.",
+  "cases": [
+    {
+      "id": "case-a",
+      "arms": {
+        "ride": {
+          "outcome": {
+            "winner": "cowboy",
+            "turn": 24,
+            "bases": {
+              "cowboy": 2,
+              "wizard": 0
+            }
+          },
+          "transcript": "0a1cc99dd520acefcc8168dc8351904bc3347ff3db8c9749015908c1d765c83b"
+        },
+        "fight": {
+          "outcome": {
+            "winner": "wizard",
+            "turn": 16,
+            "bases": {
+              "cowboy": 0,
+              "wizard": 2
+            }
+          },
+          "transcript": "b43cbb026fbcb7198c7bc86a66d1066ae161f004ace88af7f64dd801531f5327"
+        }
+      }
+    },
+    {
+      "id": "case-b",
+      "arms": {
+        "ride": {
+          "outcome": {
+            "winner": "cowboy",
+            "turn": 15,
+            "bases": {
+              "cowboy": 3,
+              "wizard": 0
+            }
+          },
+          "transcript": "61826fb6edddd4ca6289a04d4f4d2124662798dfd466e287ee315d1d9ae48b40"
+        },
+        "fight": {
+          "outcome": {
+            "winner": "wizard",
+            "turn": 24,
+            "bases": {
+              "cowboy": 0,
+              "wizard": 1
+            }
+          },
+          "transcript": "b61f0e348af4b2d23b8aaaf1a85f81fabcc02faced8471f9da5e61992db394d8"
+        }
+      }
+    },
+    {
+      "id": "case-c",
+      "arms": {
+        "ride": {
+          "outcome": {
+            "winner": "cowboy",
+            "turn": 11,
+            "bases": {
+              "cowboy": 5,
+              "wizard": 0
+            }
+          },
+          "transcript": "505579d64ec6cc04f475f4eb83ea0abf3ae9ca57eba70774979eefb7f57620d4"
+        },
+        "fight": {
+          "outcome": {
+            "winner": "wizard",
+            "turn": 10,
+            "bases": {
+              "cowboy": 0,
+              "wizard": 4
+            }
+          },
+          "transcript": "878cf1deed68a2da59c0c1f04e11ab5f4d80174a67d7f8992ce7a2e91b75583d"
+        }
+      }
+    },
+    {
+      "id": "case-d",
+      "arms": {
+        "ride": {
+          "outcome": {
+            "winner": "cowboy",
+            "turn": 24,
+            "bases": {
+              "cowboy": 2,
+              "wizard": 0
+            }
+          },
+          "transcript": "c7a5f6a95845b64f24542ae6c8d2a436684f0897ca0077d29e89f16c2f60ddcb"
+        },
+        "fight": {
+          "outcome": {
+            "winner": "wizard",
+            "turn": 14,
+            "bases": {
+              "cowboy": 0,
+              "wizard": 2
+            }
+          },
+          "transcript": "0d7d91a808e68c1f04658daefd01cc5ede41c18dadfee79d98352fc02d11d688"
+        }
+      }
+    },
+    {
+      "id": "case-e",
+      "arms": {
+        "ride": {
+          "outcome": {
+            "winner": "wizard",
+            "turn": 10,
+            "bases": {
+              "cowboy": 0,
+              "wizard": 2
+            }
+          },
+          "transcript": "b5611326f62206fa6446d9c116125965a776d20d6bcede795841dbd35188d995"
+        },
+        "fight": {
+          "outcome": {
+            "winner": "cowboy",
+            "turn": 23,
+            "bases": {
+              "cowboy": 3,
+              "wizard": 0
+            }
+          },
+          "transcript": "7cd14e1a39e9e024935870d39021874f1fffaf368317663f7a7b8b650dd96e12"
+        }
+      }
+    },
+    {
+      "id": "case-f",
+      "arms": {
+        "ride": {
+          "outcome": {
+            "winner": "cowboy",
+            "turn": 13,
+            "bases": {
+              "cowboy": 5,
+              "wizard": 0
+            }
+          },
+          "transcript": "110455a27e783af1e80be88a28b89fb4a0162d3ed0d59154b9149e59bf092d04"
+        },
+        "fight": {
+          "outcome": {
+            "winner": "wizard",
+            "turn": 18,
+            "bases": {
+              "cowboy": 0,
+              "wizard": 2
+            }
+          },
+          "transcript": "6649c90a62b421d2273004ab32318f3b8e2ed4aa8807c36ffd489226408c4418"
+        }
+      }
+    },
+    {
+      "id": "case-g",
+      "arms": {
+        "ride": {
+          "outcome": {
+            "winner": "wizard",
+            "turn": 10,
+            "bases": {
+              "cowboy": 0,
+              "wizard": 2
+            }
+          },
+          "transcript": "e7b3049ce68726f195449cf7eef4feecab27eeefbee2f7f04c53703100bc3726"
+        },
+        "fight": {
+          "outcome": {
+            "winner": "cowboy",
+            "turn": 13,
+            "bases": {
+              "cowboy": 5,
+              "wizard": 0
+            }
+          },
+          "transcript": "cbba1beb60d8d8857473eea4689f6e98c0204ca48688142c2d2e4f96f4de3b7c"
+        }
+      }
+    },
+    {
+      "id": "case-h",
+      "arms": {
+        "ride": {
+          "outcome": {
+            "winner": "wizard",
+            "turn": 14,
+            "bases": {
+              "cowboy": 0,
+              "wizard": 2
+            }
+          },
+          "transcript": "0326fa86cd39b1b342faea739cb764b58060b30154dd773fad577fd8a2fadf1d"
+        },
+        "fight": {
+          "outcome": {
+            "winner": "cowboy",
+            "turn": 23,
+            "bases": {
+              "cowboy": 4,
+              "wizard": 0
+            }
+          },
+          "transcript": "e224006c3fc19e9e42deddc7422f0ecf6029c27627897dff892888114b677a7f"
+        }
+      }
+    },
+    {
+      "id": "case-i",
+      "arms": {
+        "ride": {
+          "outcome": {
+            "winner": "wizard",
+            "turn": 14,
+            "bases": {
+              "cowboy": 0,
+              "wizard": 2
+            }
+          },
+          "transcript": "534473c6ded02945a2f71f31c0c907e8cb3ee7014f4e124a26c08f81233ed061"
+        },
+        "fight": {
+          "outcome": {
+            "winner": "cowboy",
+            "turn": 17,
+            "bases": {
+              "cowboy": 5,
+              "wizard": 0
+            }
+          },
+          "transcript": "d36b150e77d74f268c66fdd582e1021b12e7a1764c9aa24eb021c61eced0b07d"
+        }
+      }
+    },
+    {
+      "id": "case-j",
+      "arms": {
+        "ride": {
+          "outcome": {
+            "winner": "wizard",
+            "turn": 20,
+            "bases": {
+              "cowboy": 0,
+              "wizard": 2
+            }
+          },
+          "transcript": "264255da732f64c94ae41a29b03c1dd4cc3d7c0a902f91bb67d6e4a4b0873170"
+        },
+        "fight": {
+          "outcome": {
+            "winner": "cowboy",
+            "turn": 21,
+            "bases": {
+              "cowboy": 4,
+              "wizard": 0
+            }
+          },
+          "transcript": "86bd5f9e35017a034faeff265a1343081bfe635167c43d029e3e32425b7f33cc"
+        }
+      }
+    }
+  ]
+}

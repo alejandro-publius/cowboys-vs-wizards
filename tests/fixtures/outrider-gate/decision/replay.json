@@ -1,0 +1,73 @@
+{
+  "note": "TEST FIXTURE ONLY: gate tests, seeds outside the search ranges; never shipped.",
+  "cases": [
+    {
+      "id": "fixture-a",
+      "setup": {
+        "wins": 2
+      },
+      "seed": 91,
+      "prefix": [
+        {
+          "type": "summon",
+          "cardId": "cowboy-outrider-1",
+          "tributes": []
+        },
+        {
+          "type": "cover",
+          "slot": 0
+        },
+        {
+          "type": "end"
+        }
+      ],
+      "at": 3,
+      "arms": {
+        "ride": {
+          "type": "attack",
+          "slot": 0,
+          "target": "base"
+        },
+        "fight": {
+          "type": "attack",
+          "slot": 0,
+          "target": 0
+        }
+      }
+    },
+    {
+      "id": "fixture-b",
+      "setup": {
+        "wins": 2
+      },
+      "seed": 93,
+      "prefix": [
+        {
+          "type": "summon",
+          "cardId": "cowboy-outrider-2",
+          "tributes": []
+        },
+        {
+          "type": "cover",
+          "slot": 0
+        },
+        {
+          "type": "end"
+        }
+      ],
+      "at": 3,
+      "arms": {
+        "ride": {
+          "type": "attack",
+          "slot": 0,
+          "target": "base"
+        },
+        "fight": {
+          "type": "attack",
+          "slot": 0,
+          "target": 0
+        }
+      }
+    }
+  ]
+}

@@ -4,6 +4,8 @@
 // Ruleset-wide numbers are labelled as such. A card shows its own result only when the payload holds per-card
 // counts matched to the same run; otherwise it reads "Not observed" (or "Pending" when no run is recorded).
 import {LEDGER} from "./sheriffs-ledger.data.js";
+import {VERIFIED} from "./outrider-camp.js";
+import {OUTRIDER_LEDGER, outriderLedgerHtml, wireReveal} from "./outrider-ledger.js";
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"})[c]);
 const pct = (n, d) => `${((100 * n) / d).toFixed(1)}%`;
@@ -62,12 +64,14 @@ export function ledgerHtml(ledger = LEDGER) {
   <div class="sd-ledger-wrap" role="region" aria-labelledby="ledger-cards" tabindex="0">
   <table class="sd-ledger-table"><thead><tr><th scope="col">Card</th><th scope="col">Starter deck</th><th scope="col">Latest result</th></tr></thead>
   <tbody>${rows.map((row) => `<tr class="${row.side}"><th scope="row"><strong>${esc(row.name)}</strong><span class="sd-type">${esc(row.detail)}</span><span class="sd-note sd-ledger-src">${esc(row.provenance)}</span></th><td>${esc(row.starter)}</td><td>${esc(row.latest)}</td></tr>`).join("")}</tbody></table>
-  </div>`;
+  </div>
+  <section id="ledger-outrider" aria-labelledby="ledger-outrider-title">${outriderLedgerHtml(OUTRIDER_LEDGER, VERIFIED)}</section>`;
 }
 
 // Fills a <details> element once; it starts collapsed so it never covers the Trail or the first turn.
 export function mountLedger(details, ledger = LEDGER) {
   if (!details) return;
   details.innerHTML = ledgerHtml(ledger);
+  wireReveal(details);
   details.open = false;
 }

@@ -1,0 +1,12 @@
+{
+  "schema": "night-watch-engine/1",
+  "note": "Git blob ids of the import closure of prototypes/showdown/rules.js at the Night Watch receipt's commit, read with git rev-parse <commit>:<path> in a full-history checkout. Used only when that commit is not in the checkout (shallow CI, exported tree); when it is, scripts/outrider-ledger.mjs checks this file against git and refuses a mismatch.",
+  "receipt": "docs/evidence/night-shift/receipt.json",
+  "commit": "e813ae8a3fdb5efbda75caddc28805d407ae8802",
+  "files": {
+    "prototypes/showdown/rules.js": "66538aca2b7660c8bd7717a03dee364f8489c184",
+    "src/game/card-specs.generated.js": "88491a02c0ca15525f9f16ef161b6a8e1e5ea935",
+    "src/game/showdown/cards.js": "7b3290207121834bd563741dc878a7b57b333ae9",
+    "src/game/showdown/rules.js": "e9a38905fa7dff5827879cf279b76f2afd285e1a"
+  }
+}

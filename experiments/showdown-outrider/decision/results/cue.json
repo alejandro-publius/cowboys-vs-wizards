@@ -1,0 +1,19 @@
+{
+ "derivedFrom": "1000-1199",
+ "rule": {
+  "feature": "riderHealth",
+  "op": "<=",
+  "threshold": 2
+ },
+ "fit": {
+  "flips": 16,
+  "correct": 11,
+  "alwaysRide": 7,
+  "alwaysFight": 9,
+  "branches": 124,
+  "winsFollowing": 116,
+  "winsAlwaysRide": 112,
+  "winsAlwaysFight": 114
+ },
+ "supportedOnSearch": true
+}
