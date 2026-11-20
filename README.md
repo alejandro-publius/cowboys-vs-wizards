@@ -41,7 +41,7 @@ Open `dist/cowboys-vs-wizards-board-duel.html` in a desktop browser. Turns resol
 | `?mode=practice-dynamiter`, `?mode=practice-tribute` | The two practice decisions |
 | `?mode=ride-out` | The Ride Out lesson |
 
-`npm run build -- --web` writes the self-contained graybox to `dist/web/index.html`. `node prototypes/showdown/build.mjs` writes the full Showdown page to `dist/showdown.html`.
+`npm run build -- --web` writes the self-contained graybox to `dist/web/index.html`. `npm run build -- --hosted` writes the Pages copy to `dist/web/graybox/`, with the lane duel in a separate file that only the lane modes fetch. `node prototypes/showdown/build.mjs` writes the full Showdown page to `dist/showdown.html`.
 
 `npm run build:art` builds the illustrated 3D duel and attack demo at the same path, `dist/cowboys-vs-wizards-board-duel.html`, replacing the graybox there. That build needs WebGL 2 and includes the models and card art. `npm run build:art -- --web` writes it with content-hashed assets to `dist/web/`. The Pages workflow publishes that build at `/`, the graybox at `/graybox/` and the full Showdown page at `/showdown/`.
 
