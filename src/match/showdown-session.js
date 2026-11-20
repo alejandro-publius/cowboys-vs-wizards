@@ -2,16 +2,10 @@
 // the screen only ever receives viewFor(state, seat), the seat's legal actions and the events.
 import {viewFor} from "../game/showdown/contract.js";
 import {applyAction, createShowdown, legalActions, playTurn} from "../game/showdown/rules.js";
-// The Trail stays in the prototype until slice 2 moves it; trail.js reads the same canonical cards.
-import {STARTER, TRAIL} from "../../prototypes/showdown/trail.js";
+import {duelFor, newSave} from "../game/showdown/progress.js";
 
-// Trail duel 1 for a player with nothing saved, as prototypes/showdown/progress.js duelFor builds it
-// for newSave() (starter deck, no rematch grit). Progress is not stored in slice 1.
-export function bootHill() {
-  const duel = TRAIL[0];
-  return {id: "trail:boot-hill", name: duel.name, lesson: duel.lesson, level: duel.level,
-    options: {decks: {cowboy: {...STARTER}, wizard: {...duel.deck}}, baseOrbs: {cowboy: 5, wizard: duel.base}, first: duel.first}};
-}
+// Trail duel 1 for a player with nothing saved: progress.js duelFor on newSave() (starter deck, no grit).
+export const bootHill = () => duelFor(newSave(), "trail");
 
 export function createShowdownSession({seed, duel, seat = "cowboy"}) {
   let state = createShowdown(seed, duel.options);

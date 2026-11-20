@@ -1,7 +1,9 @@
-// The Showdown duel in the graybox (issue 143 slice 1). Adapted from the reference screen in
+// The Showdown duel in the graybox (issue 143 slices 1 and 2). Adapted from the reference screen in
 // prototypes/showdown/main.js, solo only. Everything drawn comes from session.view() (viewFor),
 // session.legal() (legalActions for this seat) and presentEvent text. The full state never
 // reaches this module, and no Wizard hand, trap or deck card id is written into the page.
+// Slice 2: a finished duel is settled once through the campaign (src/match/showdown-campaign.js),
+// and the result shows what it paid and the card choice before the way back to Camp.
 import {EFFECTS, KEYWORDS, RARITY, TYPES, cardOf, has, tributes, typeOf} from "../game/showdown/cards.js";
 import {presentEvent} from "../game/showdown/presenter.js";
 import {TRAP_SLOTS, attackOf, attackOutcome, canAttack, opponent} from "../game/showdown/rules.js";
@@ -20,7 +22,7 @@ function costLine(type) {
   if (cost) return `Cost: ${cost} of your troops, sent to the graveyard. Attacks the turn it arrives.`;
   return TYPES[type].keys.includes("quickdraw") ? "Cost: none." : "Cost: none. Rests the turn it arrives.";
 }
-function face(type, extra = "") {
+export function face(type, extra = "") {
   const card = TYPES[type];
   const rules = card.kind !== "troop" ? EFFECTS[card.effect].text : "";
   return `<strong>${card.name}</strong>${typeLine(card)}${card.kind === "troop" ? `${card.attack} attack · ${plural(card.health, "orb")} ${keywords(card)}` : ""}
@@ -28,7 +30,7 @@ function face(type, extra = "") {
 }
 
 const TEMPLATE = `
-  <header><h1>Showdown</h1><button id="sd-home" type="button">Main menu</button></header>
+  <header><h1>Showdown</h1><button id="sd-home" type="button">Back to camp</button></header>
   <p id="sd-lesson"></p>
   <p id="sd-status" role="status"></p>
   <p id="sd-feedback" aria-live="polite"></p>
@@ -50,10 +52,16 @@ const TEMPLATE = `
   </section>
   <section aria-label="Keywords"><h2>Keywords</h2><ul id="sd-keywords"></ul></section>`;
 
-export function mountShowdown(root, {onHome}) {
+export const OFFER_HEADING = "Bonus: pick 1 more card to keep";
+export const offerRow = (offer, owned) => `<div class="sd-row">${offer.map((type) => `<button type="button" class="sd-card cowboy ${TYPES[type].rarity} sd-can" data-frame="${TYPES[type].kind}" data-choose="${type}">
+  ${face(type, `<span class="sd-note">You own ${owned(type)}.</span>`)}</button>`).join("")}</div>`;
+export const pays = (cards) => cards.map(([type, copies]) => `${TYPES[type].name}${copies > 1 ? ` ×${copies}` : ""}`).join(", ");
+
+// campaign: settle(duel, won) once per finished duel, choose(type), progress(), owned(type), trailDuel().
+export function mountShowdown(root, {onHome, campaign}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
-  let session, duel, seed, lines, latest, pick;
+  let session, duel, seed, lines, latest, pick, outcome, picked;
 
   function record(events) {
     latest = events.map((event) => presentEvent(event));
@@ -65,13 +73,22 @@ export function mountShowdown(root, {onHome}) {
     lines = [{turn: true, text: `Turn 1: the ${session.view().first === "cowboy" ? "Cowboys" : "Wizards"}.`}];
     latest = [];
     pick = null;
+    outcome = null;
+    picked = null;
     record(session.opening);
+    finish();
     render();
   }
   function act(action) {
     pick = null;
     record(session.act(action));
+    finish();
     render();
+  }
+  // The duel counts once it is decided: settled exactly once, then saved by the campaign.
+  function finish() {
+    const result = session.view().result;
+    if (result && !outcome) outcome = campaign.settle(duel, result.winner === session.seat);
   }
   const playsOf = (cardId) => session.legal().filter((a) => a.cardId && name(a.cardId) === name(cardId));
 
@@ -127,6 +144,23 @@ export function mountShowdown(root, {onHome}) {
     if (foe.board[target].cover) return `<span class="sd-note">Survives on ${o.targetLeft}. It is in cover and does not hit back.</span>`;
     if (attackOf(view, foe.board[target]) === 0) return `<span class="sd-note">Survives on ${o.targetLeft}. It has no attack, so yours is unharmed.</span>`;
     return `<span class="sd-note ${o.attackerLeft === 0 ? "sd-warn" : ""}">Survives on ${o.targetLeft} and hits back: yours ${o.attackerLeft === 0 ? "is defeated" : `drops to ${o.attackerLeft}`}</span>`;
+  }
+
+  // After a win: what it paid and the two cards to choose from. After a loss: the rematch's grit.
+  function rewardPanel() {
+    const {won, earned, intoDeck, grit} = outcome;
+    const offer = campaign.progress().offer;
+    // A rematch is offered only for an unfinished Trail duel; a win moves on in Camp.
+    const again = !won && campaign.trailDuel() ? '<button type="button" id="sd-again">Rematch</button>' : "";
+    return [
+      earned.cards.length ? `<h2>New in your collection</h2><p class="sd-good">You earned ${pays(earned.cards)}.</p>` : "",
+      intoDeck.length ? `<p class="sd-note">In your deck now: ${intoDeck.map(([type, copies, replaced]) => `${TYPES[type].name} ×${copies} in place of ${TYPES[replaced].name} ×${copies}`).join(", ")}.</p>` : "",
+      earned.packs ? `<p class="sd-good">You earned ${plural(earned.packs, "pack")}.</p>` : "",
+      won && offer ? `<h2>${OFFER_HEADING}</h2>${offerRow(offer, campaign.owned)}`
+        : picked ? `<p class="sd-good">Added ${TYPES[picked].name}: you now own ${campaign.owned(picked)}.</p>` : "",
+      !won && grit ? `<p class="sd-note">Grit: your Base starts the rematch with ${5 + grit} orbs.</p>` : "",
+      `<div class="sd-row">${again}<button type="button" id="sd-camp">Back to camp</button></div>`,
+    ].join("");
   }
 
   function render() {
@@ -193,9 +227,7 @@ export function mountShowdown(root, {onHome}) {
     $("sd-status").innerHTML = r ? `<span class="sd-result ${r.winner === own ? "sd-good" : "sd-warn"}">${verdict}</span>`
       : `${duel.name} · turn ${view.turn} · ${view.active === own ? "your turn" : "the Wizards' turn"}`;
     $("sd-feedback").textContent = latest.length ? `Last: ${latest.join(" ")}` : "";
-    // Slice 1 keeps no progress, so a result offers the duel again and the way back, and pays nothing.
-    $("sd-result").innerHTML = r ? `<div class="sd-row"><button type="button" id="sd-again">${r.winner === own ? "Play Boot Hill again" : "Rematch"}</button>
-      <button type="button" id="sd-menu">Main menu</button></div>` : "";
+    $("sd-result").innerHTML = r ? rewardPanel() : "";
 
     const canCover = attacking && options.some((a) => a.type === "cover" && a.slot === pick.troop);
     const guarded = view.sides[foe].board.some((troop) => troop && has(troop.cardId, "guard"));
@@ -233,8 +265,14 @@ export function mountShowdown(root, {onHome}) {
     else if (b.id === "sd-cover" && pick?.troop !== undefined) act(session.legal().find((a) => a.type === "cover" && a.slot === pick.troop));
     else if (b.id === "sd-cancel") { pick = null; render(); }
     else if (b.id === "sd-restart") start(duel, seed);
-    else if (b.id === "sd-again") start(duel, freshSeed());
-    else if (b.id === "sd-home" || b.id === "sd-menu") onHome();
+    else if (d.choose && campaign.progress().offer?.includes(d.choose)) {
+      campaign.choose(d.choose);
+      picked = d.choose;
+      render();
+      $("sd-camp")?.focus();
+    }
+    else if (b.id === "sd-again" && campaign.trailDuel()) start(campaign.trailDuel(), freshSeed());
+    else if (b.id === "sd-home" || b.id === "sd-camp") onHome();
   });
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && pick && !root.hidden) { pick = null; render(); }
