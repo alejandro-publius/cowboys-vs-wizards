@@ -60,7 +60,7 @@ Each pair is the same seed, shuffle, bot and branch position.
 | 1100-1199 (worker B) | 100 | 62 | 50 | 2 | 5 | 5 |
 | 1200-1299 (holdout) | 100 | 60 | 49 | 4 | 5 | 2 |
 
-Clean reversals happen in both directions: 19 in 184 branched pairs (10.3%) and 300 seeds tried.
+Clean reversals happen in both directions: 23 in 184 branched pairs (12.5%; 12 ride-only, 11 fight-only) over 300 seeds tried.
 At the branch the policy itself chose ride 176 times and another action 8 times.
 
 Cue: the pre-registered derivation on 1000-1199 picked `riderHealth <= 2 => fight`, right in 11 of 16
