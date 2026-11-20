@@ -1,0 +1,3 @@
+{"event": "source-trace", "sha256": "8c0b2e7cff669902065208842f479d9da4386f3a2c3fd07e39ff848334347eeb", "format": "Public native run markers. The full local stream is private."}
+{"event": "runStarted"}
+{"event": "runFinished", "sessionId": "sess_c01211f2-0841-4c4d-bb6c-65c8c7a9e1b2", "status": "success"}
