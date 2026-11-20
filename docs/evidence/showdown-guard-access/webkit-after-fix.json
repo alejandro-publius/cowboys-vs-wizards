@@ -1,0 +1,192 @@
+{
+  "engine": "webkit",
+  "seed": 0,
+  "page": "graybox build over loopback HTTP",
+  "driver": "Playwright 1.64.1 (scripted bot + keyboard presses)",
+  "accessibility": "DOM aria-describedby references (no native AX tree in this WebKit build)",
+  "human": false,
+  "checks": [
+    {
+      "name": "Normal entry: Play opens the Camp",
+      "passed": true,
+      "detail": {
+        "url": "/game.html?seed=0"
+      }
+    },
+    {
+      "name": "Bot won Boot Hill by clicks and took the first offered card",
+      "passed": true,
+      "detail": {
+        "attempts": 1
+      }
+    },
+    {
+      "name": "Bot won Raven Roost by clicks and took the first offered card",
+      "passed": true,
+      "detail": {
+        "attempts": 1
+      }
+    },
+    {
+      "name": "The Bone Fence opens from its Camp tile",
+      "passed": true,
+      "detail": {
+        "lesson": "A Bone Wall has Guard: it must fall first. Their Wizard raises a Skeleton from the graveyard."
+      }
+    },
+    {
+      "name": "Legal Guard turn reached: a ready Cowboy troop and a Bone Wall on the Wizard side",
+      "passed": true,
+      "detail": {
+        "status": "The Bone Fence · turn 11 · your turn"
+      }
+    },
+    {
+      "name": "WebKit plain Tab does not reach buttons; the run uses Alt+Tab",
+      "passed": true,
+      "detail": {
+        "reachedButton": false,
+        "focused": [
+          "BODY"
+        ]
+      }
+    },
+    {
+      "name": "Enter on the ready troop moves focus to the Bone Wall, named with Guard",
+      "passed": true,
+      "detail": {
+        "name": "Bone Wall● Troop · Undead 0 attack ●●●● Guard Survives on 3. It has no attack, so yours is unharmed."
+      }
+    },
+    {
+      "name": "The focused Guard target's description gives the reason",
+      "passed": true,
+      "detail": {
+        "description": "A Guard stands in the way: attack it first. Or take cover: until your next turn it keeps extra damage off your Base, but it will not hit back."
+      }
+    },
+    {
+      "name": "Every enemy Tab stop during the pick is a Guard troop",
+      "passed": true,
+      "detail": {
+        "stops": [
+          "wizard-2"
+        ]
+      }
+    },
+    {
+      "name": "Blocked enemy troops and the Base are disabled and their description gives the Guard reason",
+      "passed": true,
+      "detail": {
+        "blocked": [
+          "wizard",
+          "wizard-0"
+        ]
+      }
+    },
+    {
+      "name": "Keyboard attacks defeat the Guard and the polite live region announces it",
+      "passed": true,
+      "detail": {
+        "announced": [
+          "Last: The Cowboys' Covered Wagon attacked Bone Wall and left it on 3; it has no attack, so it did not hit back.",
+          "Last: The Cowboys' Outrider attacked Bone Wall and left it on 2; it has no attack, so it did not hit back.",
+          "Last: The Cowboys' Outrider attacked Bone Wall and left it on 1; it has no attack, so it did not hit back.",
+          "Last: The Cowboys' Outrider attacked Bone Wall and defeated it."
+        ]
+      }
+    },
+    {
+      "name": "After the Guard falls the next pick focuses another target and its description drops the Guard reason",
+      "passed": true,
+      "detail": {
+        "prompt": "Choose what to attack. Or take cover: until your next turn it keeps extra damage off your Base, but it will not hit back.",
+        "focused": "Wizard● Troop · Mage 2 attack ●●○○ Raise Defeated",
+        "description": "Choose what to attack. Or take cover: until your next turn it keeps extra damage off your Base, but it will not hit back.",
+        "stops": [
+          "wizard-0",
+          "wizard-2"
+        ]
+      }
+    }
+  ],
+  "errors": [],
+  "version": "27.2",
+  "plainTab": {
+    "reachedButton": false,
+    "focused": [
+      "BODY"
+    ]
+  },
+  "before": {
+    "tabsToTroop": 1,
+    "prompt": "A Guard stands in the way: attack it first. Or take cover: until your next turn it keeps extra damage off your Base, but it will not hit back.",
+    "focused": {
+      "role": "button",
+      "name": "Bone Wall● Troop · Undead 0 attack ●●●● Guard Survives on 3. It has no attack, so yours is unharmed.",
+      "description": "A Guard stands in the way: attack it first. Or take cover: until your next turn it keeps extra damage off your Base, but it will not hit back.",
+      "disabled": false,
+      "focusable": true
+    },
+    "enemyTabStops": [
+      {
+        "slot": "wizard-2",
+        "id": "",
+        "enemy": "2",
+        "text": "Bone Wall● Troop · Undead 0 attack ●●●● Guard Survives on 3."
+      }
+    ],
+    "blocked": [
+      {
+        "slot": "wizard",
+        "filled": true,
+        "guard": false,
+        "disabled": true,
+        "ax": {
+          "role": "button",
+          "name": "Wizard Base●●●○ Hand 3 · Deck 6 · Graveyard 5 ▲ Nothing face down",
+          "description": "A Guard stands in the way: attack it first. Or take cover: until your next turn it keeps extra damage off your Base, but it will not hit back.",
+          "disabled": true,
+          "focusable": false
+        }
+      },
+      {
+        "slot": "wizard-0",
+        "filled": true,
+        "guard": false,
+        "disabled": true,
+        "ax": {
+          "role": "button",
+          "name": "Wizard● Troop · Mage 2 attack ●●○○ Raise",
+          "description": "A Guard stands in the way: attack it first. Or take cover: until your next turn it keeps extra damage off your Base, but it will not hit back.",
+          "disabled": true,
+          "focusable": false
+        }
+      }
+    ]
+  },
+  "after": {
+    "prompt": "Choose what to attack. Or take cover: until your next turn it keeps extra damage off your Base, but it will not hit back.",
+    "focused": {
+      "role": "button",
+      "name": "Wizard● Troop · Mage 2 attack ●●○○ Raise Defeated",
+      "description": "Choose what to attack. Or take cover: until your next turn it keeps extra damage off your Base, but it will not hit back.",
+      "disabled": false,
+      "focusable": true
+    },
+    "stops": [
+      {
+        "slot": "wizard-0",
+        "id": "",
+        "enemy": "0",
+        "text": "Wizard● Troop · Mage 2 attack ●●○○ Raise Defeated"
+      },
+      {
+        "slot": "wizard-2",
+        "id": "",
+        "enemy": "2",
+        "text": "Skeleton● Troop · Undead 1 attack ●●● Survives on 1 and hits"
+      }
+    ]
+  }
+}

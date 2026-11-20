@@ -399,3 +399,5 @@ The next substantial Kiro task is #56, boundary generation, failure reduction an
 ## November 20 · Showdown Camp and native verification
 
 Kiro CLI added per-duel build attribution to the Camp export. Separate workers exercised the rival’s one-shot Crew check-in, the staged Sheriff rejection and engine/UI steering controls. The release handoff links each receipt. The Devpost draft now leads with the two playable Dragon decisions and credits the earlier lane work separately.
+
+Kiro added the Bone Fence Outrider study and the Guard targeting check. Source precedents were TradeWizard’s parallel comparison and Last Rites’ file-scoped accessibility audit. The private Dragon cut is based on the two-position build at 96adf60. The submission script describes the capture and preserves the earlier lane credits.

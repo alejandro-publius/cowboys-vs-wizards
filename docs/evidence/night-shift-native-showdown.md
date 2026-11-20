@@ -69,8 +69,7 @@ used.
 - An **accepted** verdict through the native workflow. Exercising it would need a new candidate, which was out of
   scope.
 - The draft-step input refusals, and the reviewer's "no candidate to review" path. Pending.
-- Scheduled Night Watch → reviewer hand-off with a real band. No band is approved, so this is pending and
-  user-only.
+- Scheduled Night Watch → reviewer hand-off with a real band. The staged run predated the approved band. [Fable’s approved snapshot brief](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/168) keeps issue filing off for the snapshot.
 
 The bundle, proposal, patch and staged finding are copied unchanged. Their only machine path is the staged
 finding's note naming the deleted `/tmp/nj/finding.json`.
