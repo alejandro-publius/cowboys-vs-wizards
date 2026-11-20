@@ -1,0 +1,209 @@
+{
+  "schema": "night-review/bundle@1",
+  "id": "cowboy-sheriff-health-3-to-4-2417d71c-fd2e069",
+  "createdAt": "2026-11-20T07:23:12.955Z",
+  "surface": {
+    "kind": "local-cli",
+    "kiroWeb": "not used; this bundle was produced by the local CLI and is not a Kiro Web run"
+  },
+  "tool": {
+    "commit": "2417d71c27156c36a920aadc25dbae059ac18ac9",
+    "script": "8f5119b7944922095cfe59286fc351d27718ae121e9f9ea75aeddefee844f56e",
+    "nightWatchRunner": "fb58b78a932f5b603f597a1d1db2829a444a9741e5e450633ae8a2917e0335b3",
+    "node": "v26.0.0"
+  },
+  "proposal": {
+    "sha256": "9fdcb2a92d860a4ce420a0da2f3c5ef9160a007dbe73656e829cbd8c711443c4",
+    "card": "cowboy-sheriff",
+    "field": "health",
+    "from": 3,
+    "to": 4,
+    "patchSha256": "8dbd43211967efca11944b61a910795d024ac742d61abdbaa92b453ef52afad8"
+  },
+  "source": {
+    "commit": "2417d71c27156c36a920aadc25dbae059ac18ac9",
+    "tree": "8404ffbdf224e66af5b7f99d5959dfcef9bc46c0",
+    "baseline": {
+      "card": "ea764758eaa08bd1bb372d3b761f21f49c477ac7e8d86b117c336a33f1ae377c",
+      "generated": "187bb9ca71516227e67edd9f6e248e038ae20028e7e3333b6fa28bdf18b40a8b",
+      "rules": "096eb8a22dced7ca527cd2ebc27b6d1c36922884f0570662a7c0762d62d5b61a",
+      "cards": "2e9c3c7df707c43bc61b6481b801211de4fabd6ada87d9aa35d52330b868ffe1",
+      "propertyReceipt": "4dfa7e77951274330dacb49090d64fd66471492bfc2f75a630405456115c6e1d",
+      "engineBundle": "cdfa82ff9c142874e680fe0a721deb324e308caa65444ccd6c48d452af1f0f69"
+    },
+    "candidate": {
+      "card": "3fce9c8f6da49ef9bb706d3fb9ae2c9064e651052dc1175445d9fbb9333dc5e6",
+      "generated": "a350e5d11ae0ef159a4759afb943934308c8b3679d4fe566887e671643ad9a40",
+      "rules": "096eb8a22dced7ca527cd2ebc27b6d1c36922884f0570662a7c0762d62d5b61a",
+      "cards": "2e9c3c7df707c43bc61b6481b801211de4fabd6ada87d9aa35d52330b868ffe1",
+      "propertyReceipt": "4dfa7e77951274330dacb49090d64fd66471492bfc2f75a630405456115c6e1d",
+      "engineBundle": "c3f527487a37c0ba21a48b162477a5af694dba271cd244b7de155622ad4252b9"
+    }
+  },
+  "finding": {
+    "reproduced": true,
+    "runner": "apps/night-watch/backend/showdown_sim.mjs",
+    "observed": {
+      "games": 2000,
+      "cowboy": 1188,
+      "wizard": 812,
+      "draw": 0,
+      "first": 1142,
+      "second": 858
+    },
+    "mismatched": [],
+    "commit": "3dd47f1fb668f1b42edd72b50c898a0b1e622d74",
+    "holdsAtBase": true,
+    "file": "docs/evidence/night-watch-showdown/scout-pair-reports.json",
+    "sha256": "d2e069084d48fcca8da05476cdc4f62f34f44da5d29c4b9a3eeabc44a11cca54",
+    "reportId": "fa15c87e1701",
+    "seeds": {
+      "from": 0,
+      "deals": 1000
+    }
+  },
+  "properties": {
+    "baseline": {
+      "passed": true,
+      "missing": [],
+      "tests": 21,
+      "pass": 21,
+      "fail": 0,
+      "files": [
+        "tests/game/showdown-properties.test.js",
+        "tests/game/showdown-fair-bot.test.js"
+      ]
+    },
+    "candidate": {
+      "passed": true,
+      "missing": [],
+      "tests": 21,
+      "pass": 21,
+      "fail": 0,
+      "files": [
+        "tests/game/showdown-properties.test.js",
+        "tests/game/showdown-fair-bot.test.js"
+      ],
+      "derived": [
+        "src/game/card-specs.generated.js"
+      ]
+    }
+  },
+  "advisory": {
+    "passed": false,
+    "missing": [],
+    "tests": 27,
+    "pass": 22,
+    "fail": 5,
+    "files": [
+      "prototypes/showdown/rules.test.js"
+    ],
+    "failed": [
+      "a target that survives hits back, and neither Base is touched",
+      "Sweep: every other enemy troop loses an orb when it attacks a troop",
+      "a set trap springs on the next enemy attack: Hex cancels it, Bear Trap bites first",
+      "cards.csv matches the card table",
+      "art direction: every card has a subject, a scene and a cue, and the page is current"
+    ],
+    "counted": false
+  },
+  "sets": {
+    "tune": {
+      "seeds": {
+        "from": 0,
+        "to": 999,
+        "deals": 1000
+      },
+      "baseline": {
+        "games": 2000,
+        "cowboy": 1188,
+        "wizard": 812,
+        "draw": 0,
+        "first": 1142,
+        "second": 858,
+        "cowboyShare": 59.4,
+        "firstShare": 57.1,
+        "factionSkew": 9.399999999999999,
+        "seatSkew": 7.100000000000001
+      },
+      "candidate": {
+        "games": 2000,
+        "cowboy": 1272,
+        "wizard": 728,
+        "draw": 0,
+        "first": 1158,
+        "second": 842,
+        "cowboyShare": 63.6,
+        "firstShare": 57.9,
+        "factionSkew": 13.600000000000001,
+        "seatSkew": 7.899999999999999
+      },
+      "flips": {
+        "towardCowboy": 117,
+        "towardWizard": 33,
+        "other": 0,
+        "same": 1850
+      }
+    },
+    "holdout": {
+      "seeds": {
+        "from": 1000,
+        "to": 1999,
+        "deals": 1000
+      },
+      "baseline": {
+        "games": 2000,
+        "cowboy": 1221,
+        "wizard": 779,
+        "draw": 0,
+        "first": 1165,
+        "second": 835,
+        "cowboyShare": 61.05,
+        "firstShare": 58.25,
+        "factionSkew": 11.049999999999997,
+        "seatSkew": 8.25
+      },
+      "candidate": {
+        "games": 2000,
+        "cowboy": 1306,
+        "wizard": 694,
+        "draw": 0,
+        "first": 1184,
+        "second": 816,
+        "cowboyShare": 65.3,
+        "firstShare": 59.2,
+        "factionSkew": 15.299999999999997,
+        "seatSkew": 9.200000000000003
+      },
+      "flips": {
+        "towardCowboy": 119,
+        "towardWizard": 34,
+        "other": 0,
+        "same": 1847
+      }
+    }
+  },
+  "results": {
+    "games-tune-baseline.json": "703ea0552db45fb5b068e9fb38e7b0ba723f9ffabeaf33c5b1117e4b2e5044d3",
+    "games-tune-candidate.json": "50162534efdba97d4bc67610b44179204ebefd25f08e5cca72de99fb2494d5da",
+    "games-holdout-baseline.json": "5ff90afceea9c52baeb303e8fe469d3380e4215ac800fa51064f5ae8af3aa4b4",
+    "games-holdout-candidate.json": "3d91370466a635a85b217a55b78f58f424555c624e2f46e052c13e268516127a"
+  },
+  "policy": {
+    "metric": "faction skew: |Cowboy share - 50%| in percentage points over all games",
+    "improveOn": [
+      "tune",
+      "holdout"
+    ],
+    "seatTolerancePp": 1
+  },
+  "decision": {
+    "verdict": "rejected",
+    "reasons": [
+      "tune: faction skew 9.40 -> 13.60 pp did not improve",
+      "holdout: faction skew 11.05 -> 15.30 pp did not improve"
+    ],
+    "meaning": "Do not forward this candidate."
+  },
+  "bundleSha256": "b2dd7dc6d1e025da000cd8080c046076a87255644d4ad58c1bfb6f93eeaf0ade"
+}

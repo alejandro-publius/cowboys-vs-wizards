@@ -1,10 +1,15 @@
 // K-095: the experiment turn (src/match/showdown-turn.js) in real headless Chrome, fresh profile.
 //   npm run build
 //   node scripts/browser-showdown-turn-check.mjs dist/cowboys-vs-wizards-board-duel.html [outDir]
+//   node scripts/browser-showdown-turn-check.mjs http://127.0.0.1:PORT/cowboys-vs-wizards/ [outDir]   (a served build, e.g. staged dist/web)
 // Opens the Dragon turn from Play -> Camp -> #camp-turn-dragon (mouse) and from ?turn=dragon-c5, plays
 // both Ranger choices (mouse and keyboard), retries during and after the duel, returns to Camp, uses
 // reload and the browser's Back, and repeats the landing on a 375 px screen. A saved career written
 // before the run must be byte-identical after it. Screenshots and report.json go to outDir.
+// Browser Back from the direct URL must reach the earlier root document (same path, no ?turn) with the duel
+// closed, a normal entry usable and the career intact. Which entry shows is recorded, not prescribed: without
+// the back/forward cache (file://) the root starts at the title; over HTTP Chrome's cache restores the root
+// as it was left, which here is the Camp.
 import assert from "node:assert/strict";
 import {spawn} from "node:child_process";
 import {mkdir, mkdtemp, rm, writeFile} from "node:fs/promises";
@@ -15,8 +20,10 @@ import {newSave} from "../src/game/showdown/progress.js";
 
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-if (!process.argv[2]) throw new Error("Pass the built graybox HTML file");
-const page = pathToFileURL(path.resolve(process.argv[2])).href;
+if (!process.argv[2]) throw new Error("Pass the built graybox HTML file or an http(s) URL of the served page");
+const page = /^https?:\/\//i.test(process.argv[2]) ? new URL(process.argv[2]).href : pathToFileURL(path.resolve(process.argv[2])).href;
+assert.ok(!new URL(page).search && !new URL(page).hash, "pass the page without a query or hash");
+const withQuery = (query) => { const u = new URL(page); u.search = query; return u.href; };
 const out = path.resolve(process.argv[3] ?? ".artifacts/showdown-turn");
 await mkdir(out, {recursive: true});
 
@@ -66,7 +73,7 @@ try {
   };
   const q = (selector) => JSON.stringify(selector);
   const shown = (id) => evaluate(`!document.getElementById(${q(id)}).hidden`);
-  const navigate = async (query) => { await send("Page.navigate", {url: page + query}); await wait(`document.readyState==='complete'&&document.getElementById('camp-turn-dragon')`); };
+  const navigate = async (query) => { await send("Page.navigate", {url: withQuery(query)}); await wait(`document.readyState==='complete'&&document.getElementById('camp-turn-dragon')`); };
   const storage = () => evaluate(`JSON.stringify(Object.fromEntries(Object.keys(localStorage).sort().map((k)=>[k,localStorage.getItem(k)])))`);
   const shot = async (name) => {
     const {data} = await send("Page.captureScreenshot", {format: "png"});
@@ -164,7 +171,9 @@ try {
   assert.equal(await storage(), before);
   ok("Back to camp returns focus to the Camp control; saved career byte-identical");
 
-  // Direct URL, reload, Back, and an id that is not allowlisted.
+  // Direct URL, reload, Back, and an id that is not allowlisted. The marker tells whether Back restores this
+  // same root document (back/forward cache) or loads it afresh.
+  await evaluate(`window.__turnCheckRoot = true`);
   await navigate("?turn=dragon-c5");
   await landing("Direct URL ?turn=dragon-c5");
   await choose(0);
@@ -177,8 +186,22 @@ try {
   await landing("Reload of the direct URL");
   const {currentIndex, entries} = await send("Page.getNavigationHistory");
   await send("Page.navigateToHistoryEntry", {entryId: entries[currentIndex - 1].id});
-  await wait(`document.readyState==='complete'&&!document.getElementById('title-screen').hidden&&document.getElementById('showdown').hidden`);
-  ok("browser Back from the direct URL returns to the main menu");
+  await wait(`document.readyState==='complete'&&location.href===${q(page)}&&document.getElementById('showdown').hidden`);
+  const back = await evaluate(`(()=>{const usable=(s)=>{const n=document.querySelector(s);return !!n&&!n.disabled&&n.getClientRects().length>0;};
+    const title=!document.getElementById('title-screen').hidden,camp=!document.getElementById('showdown-camp').hidden;
+    return {pathname:location.pathname,search:location.search,restored:window.__turnCheckRoot===true,title,camp,
+      entry:title?(usable('#menu-play')?'title':null):camp?(usable('[data-duel]:not(:disabled)')?'camp':null):null,
+      duelOpen:!document.getElementById('showdown').hidden,status:document.getElementById('sd-status')?.textContent??''};})()`);
+  report.browserBack = back;
+  assert.equal(back.pathname, new URL(page).pathname);
+  assert.equal(back.search, "");
+  assert.equal(back.duelOpen, false);
+  assert.ok(back.title !== back.camp, `exactly one of title and Camp shows: ${JSON.stringify(back)}`);
+  assert.ok(back.entry, `no usable normal entry after Back: ${JSON.stringify(back)}`);
+  // A fresh load starts at the title; only a restored document may still show the Camp it was left in.
+  assert.ok(back.restored || back.entry === "title", `a freshly loaded root shows the Camp: ${JSON.stringify(back)}`);
+  assert.equal(await storage(), before);
+  ok(`browser Back from the direct URL reaches the earlier root ${back.pathname} without ?turn, duel closed, ${back.entry === "title" ? "title with Play" : "Camp with Boot Hill"} usable (${back.restored ? "document restored by the back/forward cache" : "fresh load"}); saved career byte-identical`);
   for (const bad of ["?turn=nope", "?turn=__proto__", `?turn=${encodeURIComponent('[{"type":"end"}]')}`]) {
     await navigate(bad);
     await sleep(100);

@@ -33,6 +33,10 @@ The URL carries only an allowlisted id, never actions or JSON. `createShowdownSe
 
 In the browser runs, the "play it out" step only presses End turn after the choice, so both of those lines lost. The policy-line outcomes are verified in the Node test, not in the browser.
 
+## Later repair (2026-11-20)
+
+The browser Back step originally required the title screen. That held only over `file://`. Over HTTP, Chrome's back/forward cache restores the Camp, and the step failed (overnight-verify Finding 1). The check now also takes an HTTP(S) URL and records which normal entry it saw. It passed 18/18 on file (title) and over HTTP at `/cowboys-vs-wizards/` (Camp, restored by the cache). See [overnight-check-repair.md](overnight-check-repair.md).
+
 ## Not done
 
 - Native Kiro Crew browser handoff was attempted (`browser-harness` 0.1.13, Crew's registered harness) and blocked. Alex's running Chrome has no remote debugging enabled (`DevToolsActivePort not found`). Enabling it needs a human approval in Chrome, so it was not forced.

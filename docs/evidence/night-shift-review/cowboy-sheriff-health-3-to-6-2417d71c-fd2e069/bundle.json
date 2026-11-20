@@ -1,0 +1,100 @@
+{
+  "schema": "night-review/bundle@1",
+  "id": "cowboy-sheriff-health-3-to-6-2417d71c-fd2e069",
+  "createdAt": "2026-11-20T07:23:38.125Z",
+  "surface": {
+    "kind": "local-cli",
+    "kiroWeb": "not used; this bundle was produced by the local CLI and is not a Kiro Web run"
+  },
+  "tool": {
+    "commit": "2417d71c27156c36a920aadc25dbae059ac18ac9",
+    "script": "8f5119b7944922095cfe59286fc351d27718ae121e9f9ea75aeddefee844f56e",
+    "nightWatchRunner": "fb58b78a932f5b603f597a1d1db2829a444a9741e5e450633ae8a2917e0335b3",
+    "node": "v26.0.0"
+  },
+  "proposal": {
+    "sha256": "cb5a60aa26f25a89dcdd28f8181cf3250a14226d41fea8849f6e6184ecf390e2",
+    "card": "cowboy-sheriff",
+    "field": "health",
+    "from": 3,
+    "to": 6,
+    "patchSha256": "9c5e8e7253739dcc0d6da7fbdb8342daa457caca22f07644cbbdf2ac19c0fb20"
+  },
+  "source": {
+    "commit": "2417d71c27156c36a920aadc25dbae059ac18ac9",
+    "tree": "8404ffbdf224e66af5b7f99d5959dfcef9bc46c0",
+    "baseline": {
+      "card": "ea764758eaa08bd1bb372d3b761f21f49c477ac7e8d86b117c336a33f1ae377c",
+      "generated": "187bb9ca71516227e67edd9f6e248e038ae20028e7e3333b6fa28bdf18b40a8b",
+      "rules": "096eb8a22dced7ca527cd2ebc27b6d1c36922884f0570662a7c0762d62d5b61a",
+      "cards": "2e9c3c7df707c43bc61b6481b801211de4fabd6ada87d9aa35d52330b868ffe1",
+      "propertyReceipt": "4dfa7e77951274330dacb49090d64fd66471492bfc2f75a630405456115c6e1d",
+      "engineBundle": "cdfa82ff9c142874e680fe0a721deb324e308caa65444ccd6c48d452af1f0f69"
+    },
+    "candidate": null
+  },
+  "finding": {
+    "reproduced": true,
+    "runner": "apps/night-watch/backend/showdown_sim.mjs",
+    "observed": {
+      "games": 2000,
+      "cowboy": 1188,
+      "wizard": 812,
+      "draw": 0,
+      "first": 1142,
+      "second": 858
+    },
+    "mismatched": [],
+    "commit": "3dd47f1fb668f1b42edd72b50c898a0b1e622d74",
+    "file": "docs/evidence/night-watch-showdown/scout-pair-reports.json",
+    "sha256": "d2e069084d48fcca8da05476cdc4f62f34f44da5d29c4b9a3eeabc44a11cca54",
+    "reportId": "fa15c87e1701",
+    "seeds": {
+      "from": 0,
+      "deals": 1000
+    }
+  },
+  "properties": {
+    "baseline": {
+      "passed": true,
+      "missing": [],
+      "tests": 21,
+      "pass": 21,
+      "fail": 0,
+      "files": [
+        "tests/game/showdown-properties.test.js",
+        "tests/game/showdown-fair-bot.test.js"
+      ]
+    },
+    "candidate": {
+      "passed": false,
+      "files": [
+        "tests/game/showdown-properties.test.js",
+        "tests/game/showdown-fair-bot.test.js"
+      ],
+      "output": "cowboy-sheriff.json: health must be an integer from 1 to 5\ncowboy: deck has 6 cards, expected 12",
+      "specSync": "failed"
+    }
+  },
+  "advisory": null,
+  "sets": {},
+  "results": {},
+  "policy": {
+    "metric": "faction skew: |Cowboy share - 50%| in percentage points over all games",
+    "improveOn": [
+      "tune",
+      "holdout"
+    ],
+    "seatTolerancePp": 1
+  },
+  "decision": {
+    "verdict": "rejected",
+    "reasons": [
+      "candidate failed a property test or card-spec validation",
+      "no tune results",
+      "no holdout results"
+    ],
+    "meaning": "Do not forward this candidate."
+  },
+  "bundleSha256": "d532eb388fd3f2f52d473f709fc0c7e9a96ea9fa3ddf9bf247bf30c1f1597963"
+}

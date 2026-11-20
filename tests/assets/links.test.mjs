@@ -12,10 +12,7 @@ const root = fileURLToPath(new URL("../../", import.meta.url));
 // Links that were already broken when this check was added, as "file -> target".
 // None were: all 364 relative links in 105 files resolved on 2026-11-16. Add an entry only
 // for a broken link in a record that must not be edited, with a comment.
-const KNOWN_BROKEN = [
-  // Slice 1 evidence (history, not edited): issue 143 slice 3 removed the graybox lane duel module.
-  "docs/evidence/kiro-143-showdown-graybox.md -> ../../src/graybox.js",
-];
+const KNOWN_BROKEN = [];
 
 test("links: the parser finds links, images and definitions, and skips code", () => {
   const found = linksIn("[a](gone.md) ![i](<my pic.png> \"t\") `[no](code.md)`\n```\n[no](fence.md)\n```\n[![b](in.png)](out.md#h)\n[ref]: ../up.md");

@@ -329,6 +329,39 @@ The next substantial Kiro task is #56, boundary generation, failure reduction an
 - **Verification**: `npm test` 578/578; Showdown browser checks 22, 13, 16, 6 and 5 ok; staged Pages tree 8/8 with Chrome; `/3d/` menu and accessibility harnesses pass, replay 7 of 8 as on `main`. Receipts: [evidence note](evidence/showdown-slice3-release-candidate.md).
 - **Remaining**: three first-time human playtests; Fable's wording approval; the live Pages deploy after merge.
 
+### 2026-11-19 — Showdown resource audit and judge write-up refresh (Kiro CLI, America/Los_Angeles, 23:15 PST)
+
+- **State**: committed on `kiro/graywave-showdown-audit` from `main` `4d52642`. Not merged.
+- **Performed in**: a Kiro CLI audit session (Claude Opus 5.5), `sess_0e569e8c`.
+- **Problem**: the judge write-up described `main` at `6c14686` and listed #148, #149 and #154 as outside `main`; all three merged and `4d52642` is live. The lane-era Devpost packet and build story read as current.
+- **Change**: `docs/submission/kiro-brag-sheet.md` opens with replay commands and results on `4d52642`, adds #148/#149, #154, #156 and #157, fixes the Play → Camp → Boot Hill route, adds a five-criteria evidence/gap table and drops the unreceipted Kiro IDE fact-check claim. `devpost-packet.md` and `build-story.md` gain a lane-era banner; their text is unchanged. The 110-row resource classification for the workbook is outside the repo (`../graywave-showdown-register.json`).
+- **Verification** on `4d52642`: `npm test` 595 pass, 0 fail; `showdown-properties` 16/16; offline build SHA-256 `602055b0…8269`; `browser-showdown-check` 23/23; `browser-showdown-trail-check` 16/16; `browser-showdown-keyboard-check` 6/6; `browser-showdown-cues-check` 5/5; Night Watch backend 12/12; `check-links` 0 broken. Live `build.json` names `4d52642`, and live `/graybox/` matches a local `--hosted` build byte for byte (`0f52d719…d3c4`).
+- **Remaining**: human playtest, Showdown video, MCP/Power/Workflow and scheduled Night Watch on Showdown. Several register receipts (resume, parallel review, skill, usage ledger, startup measure) exist only on `kiro/video-swarm-integration`.
+
+### 2026-11-20 — The Night Shift, integrated (Kiro CLI, America/Los_Angeles, 23:40 PST Nov 19 onward)
+
+- **State**: one branch `kiro/graywave-night-join` from `main` `6b6caef` (after #161), PR [#163](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/163) against `main`. Not merged; the coordinator merges.
+- **Performed in**: a Kiro CLI coordinator session (Claude Opus 5.5). It merges the night-meter, night-review, night-ledger, showdown-mcp and showdown-audit worker branches.
+- **Problem**: the meter, the reviewer and the Ledger were built on three branches with no connection between them. The meter's issues used the `kiro` label, which assigns Kiro Web. The Ledger showed an older run on `3dd47f1` and no review state.
+- **Change**:
+  - Camp conflict resolved to keep the slice 3 modes and the Ledger.
+  - New Night Watch setting `autoIssues` (default `off`). With `lean`, a scheduled run gates each issue on `night-review.mjs check`.
+  - Issues are labelled `night-watch`, never `kiro`, and text Kiro Web would read as a `/kiro` command is refused. They are deduplicated across open and closed issues, with at most two per run.
+  - The Ledger reads one checked-in receipt and shows sealed reviews bound to that run.
+  - The ledger browser check gained a review assertion and opt-in `--frames`.
+  - Judge guide, release line and brag sheet aligned.
+- **Verification**:
+  - `npm test` 595/595; Night Watch 29/29; MCP plus properties 26/26.
+  - Browser checks: showdown 22, ledger 12, modes 13, trail 16, keyboard 6, cues pass. Pages tree 4.
+  - Real on-demand run on `e813ae8`: 2,000 games, first player 57.10%, Cowboys 59.40%.
+  - Three staged scheduled runs (stub `gh`, illustrative band 45–55): created, exists, resolved.
+  - Guard: Sheriff health 3→4 rejected, skew 9.40 → 13.60 pp tune and 11.05 → 15.30 pp holdout.
+  - Receipts: [Night Shift evidence](evidence/night-shift.md).
+- **Remaining**:
+  - No clock-triggered Showdown run yet (Crew job `62736a74`) and no published issue.
+  - No approved band (Fable/Alex). Ledger wording is Fable's.
+  - Installed Power is still 1.1.0. Kiro Web is not used.
+
 ### 2026-11-19 — K-095 experiment turn: the seed-3 Dragon decision from Camp (Kiro CLI, America/Los_Angeles, 23:40 PST)
 
 - **State**: one local commit on `kiro/graywave-overnight-turn`. Not merged or published.
@@ -345,3 +378,12 @@ The next substantial Kiro task is #56, boundary generation, failure reduction an
 - **Change**: `src/app.js` tries the claim area, then the first open duel, then any enabled button, in that order. A regression step was added to `scripts/browser-showdown-keyboard-check.mjs`, along with the spec `.kiro/specs/showdown-camp-return-focus/bugfix.md`. No rule, wording, reward or Scout change.
 - **Verification**: red on base (step 4b fails, focus `#camp-home`). Green after the fix: keyboard 7/7, trail 16/16, modes 13/13, main graybox 22/22, `npm test` 578/0. [Evidence note](evidence/kiro-overnight-qa-camp-focus.md).
 - **Remaining**: focus goes to `body` when a duel starts from the Camp and after the best-of-three swap. This is open as a presentation decision. Human playtests are pending.
+
+### 2026-11-20 — Overnight check repair: turn-check Back and ledger Tab walk (Kiro CLI, America/Los_Angeles, 00:15 PST)
+
+- **State**: one local commit on `kiro/graywave-overnight-check-repair` from `3d970ca`. Not merged or published.
+- **Performed in**: a Kiro CLI session (Claude Opus 5.5) on Alex's Mac. Only the scripts were run, and no human played.
+- **Problem**: two independent reviews found harness assumptions. (1) The turn check's Back step expected the title, but over HTTP Chrome's back/forward cache restores the Camp. (2) The ledger check blurred the Camp's new entry focus (Boot Hill) before tabbing, so the walk started after Boot Hill and failed in the combined release.
+- **Change**: test scripts and evidence notes only. `scripts/browser-showdown-turn-check.mjs` takes a file or an HTTP(S) URL and checks the earlier root path, a closed duel, a usable title or Camp entry and an intact career. `scripts/browser-ledger-check.mjs` enters by keyboard, counts the entry focus, requires Boot Hill before the ledger summary and retraces with Shift+Tab. No app, rules or wording change.
+- **Verification**: turn 18/18 on file (title) and 18/18 over HTTP at `/cowboys-vs-wizards/` with bfcache on (Camp restored). Ledger 12/12 on file and staged index, and it fails on two deliberately broken copies. Keyboard regression 7/7. [Evidence note](evidence/overnight-check-repair.md).
+- **Remaining**: Fable and the coordinator still have to decide whether Back should restore the Camp or show the menu. Human playtests are pending.

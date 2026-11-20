@@ -4,6 +4,7 @@ Only git, Node and the selected local repo's own engine are executed. There is
 no network access and no credential handling.
 """
 
+import hashlib
 import json
 import math
 import os
@@ -17,6 +18,8 @@ import uuid
 from datetime import datetime, timezone
 from urllib.parse import urlencode, urlsplit
 
+import lean
+
 DEFAULT_CONFIG = {
     "repo": "",
     "baseline": "HEAD",
@@ -25,7 +28,16 @@ DEFAULT_CONFIG = {
     "count": 1000,
     "threshold": 10,
     "mode": "lanes",
+    # Absolute target band for first-player and Cowboy shares, {"low": %, "high": %}, or None.
+    # Operator-configured; no design target has been approved, so the default is off.
+    "band": None,
+    # Opt-in for scheduled runs only: "off" (default, read-only) or "lean" (file one deduplicated
+    # `night-watch` issue per out-of-band lean finding that the Night Shift check reproduces).
+    "autoIssues": "off",
+    # GitHub owner/name for those issues; empty means the checkout's GitHub origin.
+    "issueRepo": "",
 }
+AUTO_ISSUES = ("off", "lean")
 
 # "showdown" plays each deal twice with the first seat swapped (prototypes/showdown/sim.mjs);
 # "lanes" runs the lane duel through scripts/simulate-matches.mjs.
@@ -101,7 +113,23 @@ def validate_config(raw):
     if mode not in MODES:
         raise ConfigError("Mode must be one of %s." % ", ".join(MODES))
 
-    config = {"repo": repo, "firstSeed": first_seed, "count": count, "threshold": threshold, "mode": mode}
+    try:
+        band = lean.validate_band(merged["band"])
+    except ValueError as error:
+        raise ConfigError(str(error))
+
+    auto = merged["autoIssues"]
+    if auto not in AUTO_ISSUES:
+        raise ConfigError("Scheduled issues must be one of %s." % ", ".join(AUTO_ISSUES))
+    if auto != "off" and (band is None or mode != "showdown"):
+        raise ConfigError("Scheduled issues need Showdown mode and a target band.")
+    issue_repo = merged["issueRepo"]
+    if not isinstance(issue_repo, str) or (issue_repo.strip() and not re.fullmatch(
+            r"[A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9][A-Za-z0-9_.-]*", issue_repo.strip())):
+        raise ConfigError("The issue repository must be empty or owner/name.")
+
+    config = {"repo": repo, "firstSeed": first_seed, "count": count, "threshold": threshold, "mode": mode, "band": band,
+              "autoIssues": auto, "issueRepo": issue_repo.strip()}
     for name in ("baseline", "candidate"):
         ref = merged[name]
         if not isinstance(ref, str) or not ref.strip() or len(ref) > 200 or re.search(r"[\x00-\x1f\x7f]", ref):
@@ -293,6 +321,16 @@ def parse_showdown(data, config):
         raise CheckError("The Showdown outcomes do not add up to %d games." % counts["games"])
     if counts["first"] + counts["second"] != counts["cowboy"] + counts["wizard"]:
         raise CheckError("The seat and faction results disagree on the number of wins.")
+    seats = {}
+    for starter in ("cowboy", "wizard"):
+        entry = data["byStartingSide"][starter]
+        seats[starter] = {key: entry[key] for key in ("cowboy", "wizard", "draw")}
+        if any(isinstance(v, bool) or not isinstance(v, int) or v < 0 for v in seats[starter].values()) \
+                or sum(seats[starter].values()) != deals:
+            raise CheckError("The Showdown simulation did not report %d games with the %s moving first." % (deals, starter))
+    if seats["cowboy"]["cowboy"] + seats["wizard"]["wizard"] != counts["first"]:
+        raise CheckError("The Showdown seat counts disagree with the first-player wins.")
+    counts["byStartingSide"] = seats
     return counts
 
 
@@ -361,6 +399,22 @@ def card_changes(base_dir, cand_dir):
                     "field": field, "old": old[field], "new": new[field],
                 })
     return changes[:MAX_CHANGES]
+
+
+def checkout_repository(repo):
+    """The GitHub owner/name of the checkout: origin first, else the one GitHub remote it has."""
+    code, origin, _ = git(repo, ["config", "--get", "remote.origin.url"], "git")
+    slug = github_repository(origin) if code == 0 else None
+    if slug:
+        return slug
+    code, names, _ = git(repo, ["remote"], "git")
+    slugs = set()
+    for name in (names.split() if code == 0 else []):
+        code, url, _ = git(repo, ["config", "--get", "remote.%s.url" % name], "git")
+        found = github_repository(url) if code == 0 else None
+        if found:
+            slugs.add(found)
+    return slugs.pop() if len(slugs) == 1 else None
 
 
 def github_repository(origin):
@@ -446,6 +500,7 @@ def build_report(config, source):
         "count": config["count"],
         "threshold": config["threshold"],
         "mode": config.get("mode", "lanes"),
+        "band": config.get("band"),
         "state": "failed",
         "message": "",
         "baseline": {"ref": config["baseline"], "commit": base_commit, "counts": None},
@@ -466,6 +521,11 @@ def build_report(config, source):
             record["detail"] = detail
     finally:
         shutil.rmtree(work, ignore_errors=True)
+    try:
+        trusted = provenance(repo, record)
+    except CheckError:
+        trusted = {}
+    record["receipt"] = lean.build_receipt(record, trusted)
     if record["state"] in ("alert", "failed"):
         try:
             url = issue_url(repo, record)
@@ -498,3 +558,57 @@ def compare(config, record, repo, work):
     record["baseline"]["counts"] = base_counts
     record["changes"] = card_changes(base_dir, cand_dir)
     record["state"], record["message"] = judge(config, base_counts, cand_counts)
+
+
+# ---------------------------------------------------------------- provenance
+
+SHOWDOWN_PATHS = ["package.json", "src", "prototypes/showdown"]
+
+
+def blob_id(repo, commit, path):
+    code, out, _ = git(repo, ["rev-parse", "--verify", "--quiet", "%s:%s" % (commit, path)], "git")
+    return out if code == 0 and re.fullmatch(r"[0-9a-f]{40}([0-9a-f]{24})?", out) else None
+
+
+def file_sha256(path):
+    with open(path, "rb") as handle:
+        return hashlib.sha256(handle.read()).hexdigest()
+
+
+def provenance(repo, record):
+    """Trusted local values for the receipt: repository slug, rule blobs, runner identity and commands."""
+    mode = record.get("mode", "lanes")
+    base, cand = record["baseline"]["commit"], record["candidate"]["commit"]
+    first, count = record["firstSeed"], record["count"]
+    try:
+        node = node_command()
+        result = run_command([node, "--version"], None, GIT_TIMEOUT, "Node")
+        node_version = text_of(result.stdout).strip() or None
+    except CheckError:
+        node_version = None
+    rules = "prototypes/showdown/rules.js" if mode == "showdown" else "src/game/rules.js"
+    evaluate = ["python3", "apps/night-watch/backend/server.py", "evaluate", "--repo", "<checkout>",
+                "--baseline", base, "--candidate", cand, "--mode", mode,
+                "--first-seed", str(first), "--count", str(count)]
+    if record.get("band"):
+        evaluate += ["--band-low", "%g" % record["band"]["low"], "--band-high", "%g" % record["band"]["high"]]
+    evaluate += ["--out", "receipt.json"]
+    if mode == "showdown":
+        runner = {"path": "apps/night-watch/backend/showdown_sim.mjs", "sha256": file_sha256(SHOWDOWN_RUNNER), "node": node_version}
+        direct = [
+            "git -C <checkout> archive --format=tar %s -- %s | tar -x -C <snapshot>" % (cand, " ".join(SHOWDOWN_PATHS)),
+            "node apps/night-watch/backend/showdown_sim.mjs <snapshot> %d %d out.json" % (first, count),
+        ]
+        bot = "playTurn level 2 (both seats)"
+    else:
+        runner = {"path": "scripts/simulate-matches.mjs (in the snapshot)", "sha256": None, "node": node_version}
+        direct = ["node scripts/simulate-matches.mjs --from %d --count %d --cowboy cpu --wizard cpu --out out.json" % (first, count)]
+        bot = "cpu vs cpu"
+    return {
+        "bot": bot,
+        "repository": checkout_repository(repo),
+        "candidateRules": blob_id(repo, cand, rules),
+        "baselineRules": blob_id(repo, base, rules),
+        "runner": runner,
+        "commands": [" ".join(evaluate)] + direct,
+    }

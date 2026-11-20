@@ -1,0 +1,13 @@
+draft cowboy-sheriff-health-3-to-4-e813ae8a-f2abc83: cowboy-sheriff health 3 -> 4 on e813ae8a3fdb
+  .artifacts/night-review/cowboy-sheriff-health-3-to-4-e813ae8a-f2abc83
+review cowboy-sheriff-health-3-to-4-e813ae8a-f2abc83
+  finding reproduced at e813ae8a3fdb: true
+  properties: baseline 21/21, candidate 21/21
+  tune 0-999: Cowboy 59.40% -> 63.60%, first seat 57.10% -> 57.90%
+  holdout 1000-1999: Cowboy 61.05% -> 65.30%, first seat 58.25% -> 59.20%
+  verdict: rejected
+    - tune: faction skew 9.40 -> 13.60 pp did not improve
+    - holdout: faction skew 11.05 -> 15.30 pp did not improve
+  Do not forward this candidate.
+verify cowboy-sheriff-health-3-to-4-e813ae8a-f2abc83: ok; recorded verdict rejected; tool script matches the current file
+EXIT=1

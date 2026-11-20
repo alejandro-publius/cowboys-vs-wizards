@@ -1,0 +1,153 @@
+{
+  "what": "Kiro CLI played Showdown Trail duel Boot Hill as the Cowboys through the workspace MCP server orb-duel-review (start_showdown_duel, observe_showdown, act_showdown). Seed was server-random and hidden; it is revealed only in the finished-duel proof.",
+  "date": "2026-11-19 23:04-23:06 PST (America/Los_Angeles)",
+  "app": "Kiro CLI 3.5.0, kiro-cli chat --no-interactive --trust-workspace --trust-tools=@orb-duel-review",
+  "baseCommit": "4d52642 (main), server uncommitted at run time on branch kiro/graywave-showdown-mcp",
+  "debugSeed": false,
+  "surfacedToolCalls": {
+    "@orb-duel-review/start_showdown_duel": 1,
+    "@orb-duel-review/act_showdown": 28,
+    "other": 0
+  },
+  "result": {
+    "winner": "cowboy",
+    "reason": "base"
+  },
+  "proof": {
+    "seed": 1700288254,
+    "salt": "8f734dea5d88d586",
+    "commitment": "5aff389fecb8530107e7d81a47b7d3e03bc379976866bb4b00a2c9e0e04e6600",
+    "duel": "boot-hill",
+    "actions": [
+      {
+        "type": "summon",
+        "cardId": "cowboy-sheriff-6",
+        "tributes": []
+      },
+      {
+        "type": "end"
+      },
+      {
+        "type": "summon",
+        "cardId": "cowboy-sheriff-4",
+        "tributes": []
+      },
+      {
+        "type": "attack",
+        "slot": 0,
+        "target": 0
+      },
+      {
+        "type": "end"
+      },
+      {
+        "type": "spell",
+        "cardId": "cowboy-deadeye-1",
+        "target": 1
+      },
+      {
+        "type": "attack",
+        "slot": 1,
+        "target": 0
+      },
+      {
+        "type": "end"
+      },
+      {
+        "type": "spell",
+        "cardId": "cowboy-deadeye-2",
+        "target": 1
+      },
+      {
+        "type": "summon",
+        "cardId": "cowboy-sheriff-1",
+        "tributes": []
+      },
+      {
+        "type": "attack",
+        "slot": 1,
+        "target": 1
+      },
+      {
+        "type": "end"
+      },
+      {
+        "type": "summon",
+        "cardId": "cowboy-billy-4",
+        "tributes": [
+          0
+        ]
+      },
+      {
+        "type": "attack",
+        "slot": 0,
+        "target": 0
+      },
+      {
+        "type": "attack",
+        "slot": 1,
+        "target": 0
+      },
+      {
+        "type": "end"
+      },
+      {
+        "type": "summon",
+        "cardId": "cowboy-sheriff-3",
+        "tributes": []
+      },
+      {
+        "type": "attack",
+        "slot": 0,
+        "target": 0
+      },
+      {
+        "type": "attack",
+        "slot": 1,
+        "target": 0
+      },
+      {
+        "type": "end"
+      },
+      {
+        "type": "attack",
+        "slot": 0,
+        "target": 0
+      },
+      {
+        "type": "attack",
+        "slot": 1,
+        "target": 0
+      },
+      {
+        "type": "attack",
+        "slot": 2,
+        "target": "base"
+      },
+      {
+        "type": "end"
+      },
+      {
+        "type": "spell",
+        "cardId": "cowboy-deadeye-3",
+        "target": 0
+      },
+      {
+        "type": "attack",
+        "slot": 0,
+        "target": 0
+      },
+      {
+        "type": "attack",
+        "slot": 1,
+        "target": "base"
+      },
+      {
+        "type": "attack",
+        "slot": 2,
+        "target": "base"
+      }
+    ]
+  },
+  "verify": "node --test .kiro/powers/orb-duel-review/test/showdown.test.mjs replays this proof on the canonical engine"
+}

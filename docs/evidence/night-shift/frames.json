@@ -1,0 +1,28 @@
+{
+  "page": "file:///Users/alexvintera/Documents/Codex/2026-11-19/can-you-pickup-after-my-kiro/work/graywave-night-join/dist/cowboys-vs-wizards-board-duel.html",
+  "ledgerRun": "docs/evidence/night-shift/receipt.json",
+  "revision": "e813ae8a3fdb5efbda75caddc28805d407ae8802",
+  "frames": [
+    {
+      "file": "frames/1-camp.jpg",
+      "sha256": "a2e5a0999698b1edc512c747207cd7f1811a07c45d2204cbe7fb95eb44e865ac",
+      "bytes": 55776,
+      "selector": "#showdown-camp",
+      "text": "Camp\nMain menu\n\nStart here: click Boot Hill to play your first duel.\n\nThe Trail\nBoot Hill\nWin to earn Covered Wagon ×2\nRaven Roost\nLocked · win to earn Outrider ×2\nThe Bone Fence\nLocked · win to earn Ranger, Lasso\nImp Hollow\nLocked · win to earn Dynamiter, Bear Trap\nThe Hexed Mile\nLocked · win to earn Mounted Billy\nDragon's Roost\nLocked · win to earn Gatling Crew\nRivals\nThe Stargazer\nAfter the Trail\nThe Imp\nAfter the Trail\nThe Bonewright\nAfter the Trail\nThe Graveyard Coven\nAfter the Trail\nWanted\nThe Lantern Wraith\nAfter the Trail\nThe Graveyard Dragon\nAfter the Trail\nOpen range\nThe even match ("
+    },
+    {
+      "file": "frames/2-ledger-open.jpg",
+      "sha256": "49363ae78444a73ce80cc90504a354cad7568a37bb8e3800160a24754e4562ae",
+      "bytes": 118208,
+      "selector": "#camp-ledger",
+      "text": "Sheriff's Ledger\n29 cards · last check steady at e813ae8\nWhole ruleset (not per card)\n\nNight Watch run receipt 2026-11-20T07:46:17Z (on-demand), November 19, 2026, 11:46 PM PST: commit e813ae8 against 6b6caef, seeds 0–999, 2,000 games, each deal played once with each side first. First player won 1,142 (57.1%). Cowboys won 1,188 (59.4%). Draws 0. Rule tests passed: 361. Shift against the baseline: steady.\n\nEstimates for playTurn level 2 (both seats) on these seeds only. Commits after e813ae8 are not measured here. Method: docs/evidence/night-watch-showdown.md; records: docs/evidence/night-shift"
+    },
+    {
+      "file": "frames/3-review.jpg",
+      "sha256": "2a43752f47bc6f0301d2f507e6b7ed84fc27ae92e0c11412881639c70e87f2ef",
+      "bytes": 110095,
+      "selector": "#ledger-review",
+      "text": "cowboy-sheriff health 3 → 4: rejected. tune: faction skew 9.40 -> 13.60 pp did not improve; holdout: faction skew 11.05 -> 15.30 pp did not improve. docs/evidence/night-shift/guard-sheriff-health-3-to-4/bundle.json"
+    }
+  ]
+}

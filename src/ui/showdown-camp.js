@@ -8,6 +8,7 @@ import {BOUNTIES, HUNTS, RIVALS, trailDone} from "../game/showdown/progress.js";
 import {decodeSaveCode, describeSave, encodeSave, sameSave} from "../game/showdown/savecode.js";
 import {TRAIL} from "../game/showdown/trail.js";
 import {OFFER_HEADING, face, offerRow, pays} from "./showdown-screen.js";
+import {mountLedger} from "./sheriffs-ledger.js";
 
 const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
 const sum = (counts) => Object.values(counts).reduce((total, copies) => total + copies, 0);
@@ -42,7 +43,8 @@ const TEMPLATE = `
     <p id="camp-report-storage" class="sd-note" role="status" hidden>This browser did not save the playtest report, so a reload will lose it.</p>
     <textarea id="camp-report-text" rows="10" cols="60" readonly aria-label="Playtest report"></textarea>
     <p><button id="camp-report-copy" type="button">Copy report</button> <span id="camp-report-copied" role="status" aria-live="polite"></span></p>
-  </details>`;
+  </details>
+  <details id="camp-ledger" class="sd-ledger"></details>`;
 
 // campaign: progress(), saved(), duels(), holdings(), owned(type), choose(type), openPack(), replace(save), reset().
 // onDuel(id, {players, best}): start a Camp duel ("trail", "rival:<id>", "hunt:<id>", "open", or "two" for two players).
@@ -51,6 +53,7 @@ const TEMPLATE = `
 export function mountCamp(root, {campaign, playtest, onDuel, onHome, onBuild, confirm = (text) => window.confirm(text)}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
+  mountLedger($("camp-ledger")); // The Night Shift: Sheriff's Ledger, static and collapsed (src/ui/sheriffs-ledger.js).
   let picked = null;
   let opened = null; // the pack just opened, shown once
 

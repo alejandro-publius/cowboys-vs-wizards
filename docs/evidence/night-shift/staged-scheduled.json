@@ -1,0 +1,183 @@
+{
+ "what": "Staged scheduled run: real `server.py run --scheduled --mode showdown` x3 on candidate e813ae8 with autoIssues=lean and an illustrative operator band 45-55 (not a design target). gh was a local stub that stores issues in a file; nothing was sent to GitHub. Between run 2 and run 3 the stub issue was set to CLOSED.",
+ "runs": [
+  {
+   "id": "e6713af867dc",
+   "at": "2026-11-20T07:41:11Z",
+   "source": "scheduled",
+   "candidate": "e813ae8a3fdb5efbda75caddc28805d407ae8802",
+   "baseline": "6b6caeff465be6175eb2fe62ae16b3c54ead2598",
+   "counts": {
+    "games": 2000,
+    "cowboy": 1188,
+    "wizard": 812,
+    "draw": 0,
+    "first": 1142,
+    "second": 858
+   },
+   "lean": "lean",
+   "findings": [
+    "0c1b23267784d4be"
+   ],
+   "publication": {
+    "mode": "lean",
+    "state": "published",
+    "review": "reproduced all 2000 games for e813ae8a3fdb seeds 0-999",
+    "repository": "staged/night-watch-stub",
+    "issues": [
+     {
+      "key": "0c1b23267784d4be",
+      "action": "created",
+      "number": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "b49c9846cb62",
+   "at": "2026-11-20T07:42:23Z",
+   "source": "scheduled",
+   "candidate": "e813ae8a3fdb5efbda75caddc28805d407ae8802",
+   "baseline": "6b6caeff465be6175eb2fe62ae16b3c54ead2598",
+   "counts": {
+    "games": 2000,
+    "cowboy": 1188,
+    "wizard": 812,
+    "draw": 0,
+    "first": 1142,
+    "second": 858
+   },
+   "lean": "lean",
+   "findings": [
+    "0c1b23267784d4be"
+   ],
+   "publication": {
+    "mode": "lean",
+    "state": "published",
+    "review": "reproduced all 2000 games for e813ae8a3fdb seeds 0-999",
+    "repository": "staged/night-watch-stub",
+    "issues": [
+     {
+      "key": "0c1b23267784d4be",
+      "action": "exists",
+      "number": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "e204c06de026",
+   "at": "2026-11-20T07:43:44Z",
+   "source": "scheduled",
+   "candidate": "e813ae8a3fdb5efbda75caddc28805d407ae8802",
+   "baseline": "6b6caeff465be6175eb2fe62ae16b3c54ead2598",
+   "counts": {
+    "games": 2000,
+    "cowboy": 1188,
+    "wizard": 812,
+    "draw": 0,
+    "first": 1142,
+    "second": 858
+   },
+   "lean": "lean",
+   "findings": [
+    "0c1b23267784d4be"
+   ],
+   "publication": {
+    "mode": "lean",
+    "state": "published",
+    "review": "reproduced all 2000 games for e813ae8a3fdb seeds 0-999",
+    "repository": "staged/night-watch-stub",
+    "issues": [
+     {
+      "key": "0c1b23267784d4be",
+      "action": "resolved",
+      "number": 1
+     }
+    ]
+   }
+  }
+ ],
+ "ghCalls": [
+  [
+   "issue",
+   "list",
+   "--repo",
+   "staged/night-watch-stub",
+   "--state",
+   "all",
+   "--search",
+   "0c1b23267784d4be in:body",
+   "--json",
+   "number,state,body",
+   "--limit",
+   "50"
+  ],
+  [
+   "issue",
+   "create",
+   "--repo",
+   "staged/night-watch-stub",
+   "--title",
+   "Night Watch: faction lean toward cowboy outside 45-55% band (showdown seeds 0-999)",
+   "--label",
+   "night-watch",
+   "--body-file",
+   "/var/folders/zv/vxrp0js555l3b3vqr1m4gstw0000gn/T/night-watch-issue-ih_iey00.md"
+  ],
+  [
+   "issue",
+   "view",
+   "1",
+   "--repo",
+   "staged/night-watch-stub",
+   "--json",
+   "number,state,body"
+  ],
+  [
+   "issue",
+   "list",
+   "--repo",
+   "staged/night-watch-stub",
+   "--state",
+   "all",
+   "--search",
+   "0c1b23267784d4be in:body",
+   "--json",
+   "number,state,body",
+   "--limit",
+   "50"
+  ],
+  [
+   "issue",
+   "view",
+   "1",
+   "--repo",
+   "staged/night-watch-stub",
+   "--json",
+   "number,state,body"
+  ],
+  [
+   "issue",
+   "list",
+   "--repo",
+   "staged/night-watch-stub",
+   "--state",
+   "all",
+   "--search",
+   "0c1b23267784d4be in:body",
+   "--json",
+   "number,state,body",
+   "--limit",
+   "50"
+  ]
+ ],
+ "stubIssues": {
+  "1": {
+   "state": "CLOSED",
+   "title": "Night Watch: faction lean toward cowboy outside 45-55% band (showdown seeds 0-999)",
+   "label": "night-watch",
+   "body": "Night Watch finding from a fixed-seed CPU vs. CPU run. These are estimates for this bot and seed range, not human play.\n\n- Kind: lean\n- Candidate: e813ae8a3fdb5efbda75caddc28805d407ae8802\n- Baseline: 6b6caeff465be6175eb2fe62ae16b3c54ead2598\n- Mode: showdown; bot: playTurn level 2 (both seats)\n- Seeds: 0-999, 1000 deals x 2 = 2000 games\n- Candidate counts: 1188 Cowboy, 812 Wizard, 0 draws; 1142 first-player wins, 858 second-player wins\n- First-player share: 57.10% (95% CI 54.92-59.25%, n=2000 decisive)\n- Cowboy share: 59.40% (95% CI 57.23-61.53%, n=2000 decisive)\n- Target band: 45-55% (operator-configured, not an approved design target)\n- Lean verdict: lean; shift verdict: steady (threshold 10 pp)\n- Per-card data: not measured\n- Independent reproduction (scripts/night-review.mjs check): reproduced all 2000 games for e813ae8a3fdb seeds 0-999\n\nReproduce:\n\n    python3 apps/night-watch/backend/server.py evaluate --repo <checkout> --baseline 6b6caeff465be6175eb2fe62ae16b3c54ead2598 --candidate e813ae8a3fdb5efbda75caddc28805d407ae8802 --mode showdown --first-seed 0 --count 1000 --band-low 45 --band-high 55 --out receipt.json\n    git -C <checkout> archive --format=tar e813ae8a3fdb5efbda75caddc28805d407ae8802 -- package.json src prototypes/showdown | tar -x -C <snapshot>\n    node apps/night-watch/backend/showdown_sim.mjs <snapshot> 0 1000 out.json\n\nNight Shift review (local CLI, by hand; Fable/Alex choose the card and number, nothing is merged):\n\n    node scripts/night-review.mjs run --finding <night-watch report.json> --card <card> --field <attack|health|stars> --to <n>\n\nNight Watch does not read, comment on or edit this issue after filing it.\n\n<!-- night-watch-finding:0c1b23267784d4be -->\n<!-- night-watch-rules:66538aca2b7660c8bd7717a03dee364f8489c184 -->\n"
+  }
+ }
+}

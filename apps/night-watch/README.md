@@ -29,6 +29,40 @@ Night Watch resolves the refs to commits, runs the candidate's game-rule tests a
 
 The defaults compare seeds 0–999 (deals in Showdown) and flag a faction win-share shift of at least 10 percentage points or a first-seat advantage that grows by at least that much. Results describe these CPU policies and seeds. A rules failure is recorded with diagnostic output. When the checkout has a GitHub origin, eligible reports include an **Open GitHub issue draft** link with the run details.
 
+## Target band (lean) and receipts
+
+The shift check above is relative: it compares the candidate with the baseline. A lean check is absolute: it compares the candidate's first-player share and Cowboy share (over decisive games) with a **target band** you set, for example 45–55%. It runs even when baseline and candidate are the same commit. No design target has been approved, so the band is empty by default and the lean verdict reads `unconfigured`.
+
+Each share carries a Wilson 95% interval and its sample size. A metric is `within` when its whole interval lies inside the band, `lean` (toward first/second or cowboy/wizard) when its whole interval lies outside, and `inconclusive` otherwise. Games are treated as independent, an approximation, since each Showdown deal is played from both seats. No per-card data is measured.
+
+Every report stores a `night-watch-receipt/1` object under `receipt`: full commit SHAs, the rules blob, seed range, raw two-seat counts, shares and intervals, band, lean and shift verdicts, runner hash and commands that reproduce the counts. For a one-off check that leaves the saved settings and history alone:
+
+~~~sh
+python3 backend/server.py evaluate --repo /path/to/checkout --candidate origin/main \
+  --first-seed 0 --count 1000 --band-low 45 --band-high 55 --out receipt.json
+~~~
+
+## Publish findings as GitHub issues (opt-in)
+
+~~~sh
+python3 backend/server.py issues --receipt receipt.json            # dry run: prints each draft
+python3 backend/server.py issues --receipt receipt.json --publish  # creates issues with gh
+~~~
+
+`--report latest` (or a report id) reads a stored report instead of a file. Each finding (a lean metric or a shift alert) becomes at most one issue labelled `night-watch`. Night Watch finds it again by the `<!-- night-watch-finding:KEY -->` marker in any state. An open issue is reused. A closed issue that also holds the same `<!-- night-watch-rules:BLOB -->` marker counts as resolved and is not filed again, so retries and closed findings never duplicate. Only a lean that persists after the rules file changed opens a new issue. The lean key leaves out the commit, so a lean that persists across commits keeps one issue. Night Watch recomputes the verdicts from the receipt's counts before drafting, builds titles and bodies from those numbers only, and runs `gh` with an argument list. The repository must already have a `night-watch` label.
+
+Night Watch never uses the `kiro` label or a `/kiro` line, which assign Kiro Web ([docs](https://kiro.dev/docs/web/github/)). It never reads, comments on or edits an issue after filing it, so a filed issue cannot start an agent or another run.
+
+### Scheduled issues (opt-in project setting)
+
+The scheduled job is read-only by default (`autoIssues: "off"`). Set **Scheduled issues** to *One issue per reproduced out-of-band lean* (`autoIssues: "lean"`, which needs Showdown mode and a target band) to let each scheduled run file issues. Optionally set **Issue repository** (`issueRepo`, owner/name). Then, after each scheduled run:
+
+1. Only lean findings count (the whole 95% interval outside the band). Shift alerts stay as draft links.
+2. The Night Shift reviewer re-runs the finding's counts from a fresh `git archive` snapshot: `node scripts/night-review.mjs check --finding <report>` in this app's checkout, with a 120 s limit. If the reviewer is missing, times out or gets different counts, nothing is filed.
+3. At most two issues per run, deduplicated as above. The run's report records the outcome under `publication`.
+
+Choosing a card and a number, and any change to cards or rules, stays with Fable/Alex through `node scripts/night-review.mjs run …` (see `docs/evidence/night-shift-review.md`). Nothing is merged automatically.
+
 ## Schedule a nightly check
 
 Save the settings and verify one manual run first. From this app directory, register a Kiro Crew command job.
@@ -37,7 +71,7 @@ Save the settings and verify one manual run first. From this app directory, regi
 python3 backend/server.py schedule --time 02:00 --timezone America/Los_Angeles
 ~~~
 
-The job runs `server.py run --scheduled --mode showdown`, so nightly checks play Showdown whatever mode the manual settings hold. Run `python3 backend/server.py run --mode lanes` for a one-off lane comparison.
+The job runs `server.py run --scheduled --mode showdown`, so nightly checks play Showdown whatever mode the manual settings hold. It files issues only when Scheduled issues is on (see above). Run `python3 backend/server.py run --mode lanes` for a one-off lane comparison.
 
 Crew runs the scheduled command locally. It records a report in the same history as manual runs, with **Scheduled** as the trigger. Manage the job in Crew’s **Schedule** panel. To remove it from the terminal, use this command.
 
