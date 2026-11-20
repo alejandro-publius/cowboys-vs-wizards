@@ -2,6 +2,7 @@ import {build} from "esbuild";
 import {mkdir, readFile, rm, writeFile} from "node:fs/promises";
 import {fileURLToPath} from "node:url";
 import {grayboxBuildLabel} from "./graybox-build-label.mjs";
+import {verifiedForBuild} from "./outrider-gate.mjs";
 
 const root = new URL("../", import.meta.url);
 const file = (name) => new URL(name, root);
@@ -10,12 +11,19 @@ const read = (name) => readFile(file(name), "utf8");
 // /graybox/ alias). It is the same single offline file as the other builds: the graybox game is
 // Showdown only (issue 143 slice 3), so no lane chunk exists and none is fetched.
 const hosted = process.argv.includes("--hosted");
-const output = hosted || process.argv.includes("--web") ? "dist/web/index.html" : "dist/cowboys-vs-wizards-board-duel.html";
+const output = process.argv.includes("--outrider-fixture") ? ".artifacts/outrider-fixture/graybox.html"
+  : hosted || process.argv.includes("--web") ? "dist/web/index.html" : "dist/cowboys-vs-wizards-board-duel.html";
 // K-087: the page's public build label (commit, "+local" if uncommitted), so the Camp's playtest report can say
 // which build each duel was finished under. Null without git: the report then says the build is not identified.
 const label = grayboxBuildLabel(fileURLToPath(root));
+// K-011: the Outrider turns the gate verifies now, from this tree (scripts/outrider-gate.mjs). Stale or missing = none,
+// and the page builds without any Outrider control. --outrider-fixture <dir> builds a test page from a fixture
+// directory, written only under .artifacts/ so it is never staged or shipped.
+const fixtureAt = process.argv.indexOf("--outrider-fixture");
+const fixture = fixtureAt >= 0 ? process.argv[fixtureAt + 1] : null;
+const outrider = await verifiedForBuild(fixture ? {dir: `${fixture}/decision`, receiptPath: `${fixture}/receipt.json`} : {});
 const options = {absWorkingDir: fileURLToPath(root), bundle: true, write: false, platform: "browser", target: "es2022", minify: true,
-  define: {__CVW_GRAYBOX_BUILD__: JSON.stringify(label)}};
+  define: {__CVW_GRAYBOX_BUILD__: JSON.stringify(label), __CVW_OUTRIDER__: JSON.stringify(outrider.cases)}};
 const [template, style, showdownStyle, bundle] = await Promise.all([
   read("src/ui/graybox.html"),
   read("src/ui/graybox.css"),
@@ -27,4 +35,4 @@ const script = bundle.outputFiles[0].text.replace(/<\/script/gi, "<\\/script");
 if (hosted) await rm(file("dist/web/chunks/"), {recursive: true, force: true});
 await mkdir(new URL("./", file(output)), {recursive: true});
 await writeFile(file(output), template.replace("@@STYLE@@", () => `${style}\n${showdownStyle}`).replace("@@SCRIPT@@", () => script));
-console.log(`Built ${output} (graybox, build ${label ?? "not identified"})`);
+console.log(`Built ${output} (graybox, build ${label ?? "not identified"}); Outrider gate: ${outrider.note}`);

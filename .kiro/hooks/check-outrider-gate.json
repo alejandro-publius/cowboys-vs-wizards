@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "check-outrider-gate",
+      "trigger": "PostFileSave",
+      "matcher": "(^|/)(src/game/showdown/[^/]+\\.js|src/game/card-specs\\.generated\\.js|src/match/showdown-(session|outrider)\\.js|experiments/showdown-outrider/decision/[^/]+|docs/evidence/outrider-gate/receipt\\.json)$",
+      "action": {
+        "type": "command",
+        "command": "node scripts/check-outrider-gate-hook.mjs"
+      }
+    }
+  ]
+}
