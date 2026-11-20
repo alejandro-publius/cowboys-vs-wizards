@@ -40,7 +40,10 @@ async function buildHarness() {
     root.hidden = false;
     const seed = Number(new URLSearchParams(location.search).get("seed") ?? 0);
     const step = Number(new URLSearchParams(location.search).get("step") ?? ${HARNESS_STEP});
-    mountShowdown(root, {onHome() {}, cueOptions: {step}}).start({name: "Cue harness", lesson: "Every card type in play.", level: 1, options: {decks}}, seed);`;
+    // Slice 2: the screen settles a finished duel through a campaign; the harness duel is outside the Trail and pays nothing.
+    const campaign = {settle: (duel, won) => ({won, earned: {cards: [], packs: 0, captured: null}, intoDeck: [], grit: 0}),
+      progress: () => ({offer: null}), trailDuel: () => null, owned: () => 0, choose() {}};
+    mountShowdown(root, {onHome() {}, campaign, cueOptions: {step}}).start({name: "Cue harness", lesson: "Every card type in play.", level: 1, options: {decks}}, seed);`;
   const [template, style, showdownStyle, bundle] = await Promise.all([read("src/ui/graybox.html"), read("src/ui/graybox.css"), read("src/ui/showdown.css"),
     build({stdin: {contents: entry, resolveDir: ROOT, sourcefile: "cue-harness.js"}, bundle: true, write: false, platform: "browser", target: "es2022", format: "iife"})]);
   const file = path.join(out, "cue-harness.html");
@@ -261,6 +264,9 @@ try {
   await send("Page.navigate", {url: `${page}?seed=1`});
   await wait(`document.readyState==='complete'&&document.getElementById('menu-play')`);
   await click("#menu-play");
+  // Slice 2: Play opens the Camp; Boot Hill is its open Trail tile.
+  await wait(`document.querySelector('#showdown-camp [data-duel=trail]')`);
+  await click("#showdown-camp [data-duel=trail]");
   await wait(`document.querySelector('#sd-board [data-side=cowboy]')`);
   await evaluate(OBSERVER);
   const bootMet = new Set();

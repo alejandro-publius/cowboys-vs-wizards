@@ -1,4 +1,4 @@
-/* Showdown duel (issue 143 slice 1), scoped to #showdown. Layout from prototypes/showdown/style.css;
+/* Showdown duel (issue 143 slice 1), scoped to #showdown; Camp (slice 2) at the end. Layout from prototypes/showdown/style.css;
    troop, spell and trap borders come from the [data-frame] rules in graybox.css. */
 #showdown { max-width: 920px; margin: auto; padding: clamp(1rem, 3vw, 2rem); display: grid; gap: .5rem; }
 #showdown h2 { font-size: 1rem; margin: .75rem 0 .25rem; }
@@ -29,6 +29,13 @@
 #showdown [data-frame=gear] { border-style: dotted; border-width: 3px; }
 #showdown [data-frame=location] { border-width: 1px 1px 5px; }
 @media (max-width: 40rem) { .sd-side { grid-template-columns: 1fr 1fr; } }
+/* Camp (issue 143 slice 2): the same graybox layout, with the Trail as a row of plain tiles. */
+#showdown-camp { max-width: 920px; margin: auto; padding: clamp(1rem, 3vw, 2rem); display: grid; gap: .5rem; }
+#showdown-camp h2 { font-size: 1rem; margin: .75rem 0 .25rem; }
+#camp-trail { list-style: none; margin: 0; padding: 0; }
+.sd-tile { width: 9.5rem; min-height: 5.25rem; padding: .6rem; text-align: left; display: block; }
+.sd-tile strong { display: block; }
+.sd-tile.open { border-color: #8fd18f; } .sd-tile.locked { opacity: .6; }
 /* Placeholder cues before any 3D work (src/ui/showdown-cues.js): an outline flash on the place an
    event touched and a marked log line. Reduced motion, or .sd-cue-still, shows the outline without the flash. */
 #sd-cue { min-height: 1.4rem; margin: 0; font-size: .9rem; }

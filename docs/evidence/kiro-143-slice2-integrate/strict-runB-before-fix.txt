@@ -1,0 +1,14 @@
+ok - [new-player] Normal entry on a clean profile: Play opens the Camp, Boot Hill is the only open Trail duel, starter deck shown
+ok - [new-player] Boot Hill opens from its Camp tile with its lesson and a 3-orb Wizard Base
+ok - [new-player] Boot Hill won by clicks alone (?seed=0 deal)
+ok - [new-player] The Boot Hill win names its payment with the result
+ok - [new-player] After Boot Hill: Covered Wagon ×2 paid into the deck, the chosen card owned, Raven Roost open, stored progress equals the reference
+ok - [new-player] Raven Roost opens from its Camp tile with its lesson and a 4-orb Wizard Base
+ok - [new-player] Raven Roost won by clicks alone
+ok - [new-player] The Raven Roost win names its payment with the result
+ok - [new-player] Reload with the second offer unclaimed: the Camp offers the same two cards and nothing else starts
+ok - [new-player] Reload: Boot Hill and Raven Roost won, The Bone Fence open, deck and collection on screen and stored progress equal the reference
+ok - [new-player] The Bone Fence opens from its Camp tile
+ok - [new-player] Leaving The Bone Fence unfinished changes no stored progress
+ok - [lane-veteran] Lane-era profile written by the real lane store (five Graveyard Dragon hunts cleared) is the only stored data
+not ok - [lane-veteran] collection names Captured Dragon: Deck: Sheriff ×8, Billy ×5, Deadeye ×3.

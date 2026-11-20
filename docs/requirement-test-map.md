@@ -7,6 +7,9 @@ commit `4c0723d` plus the new boundary properties. It is not generated and no
 script checks it, so it can drift: re-read the cited tests before relying on a
 row. It claims nothing about visual quality, fun or animation.
 
+The Showdown slice 2 spec has its own section at the end,
+[Showdown slice 2: the first hour](#showdown-slice-2-the-first-hour), with `FH-` IDs.
+
 IDs: `R<requirement>.<criterion>`. The spec's "Asset Gaps" section carries its
 own list 1 to 5, written here as `AG.1` to `AG.5`.
 
@@ -192,3 +195,62 @@ task instruction they are treated as stale: no current asset gap is inferred fro
 - A listed test can pass while the claim is only partly checked. "direct" means an assertion on the stated behavior that I read, not that every input is covered.
 - Rows marked "title" were matched from test names and `design.md` Validates lines. Their assertions were not read for this map.
 - Nothing here measures rendering, animation, readability or play quality.
+
+## Showdown slice 2: the first hour
+
+Maps each criterion of [`.kiro/specs/showdown-first-hour/requirements.md`](../.kiro/specs/showdown-first-hour/requirements.md)
+(IDs `FH-R<n>.<m>`) to the tests that prove it. Backfilled on `kiro/graywave-integrate` `cd764f1`: the
+implementation and tests existed before the spec, and this section was written by hand from their
+assertions. Each Node test and browser check listed here carries a comment naming its IDs, except
+`prog`, which is left untouched so FH-R4.1 ("only import paths changed") stays literally true. The
+classes are those defined above.
+
+Shorthands: `prog` = `prototypes/showdown/progress.test.js`, `store` = `tests/game/showdown-campaign-store.test.js`,
+`inh` = `tests/game/showdown-inherited.test.js`, `keep` = `tests/game/showdown-keepsake-compat.test.js`, `ramp` = `tests/game/showdown-trail-ramp.test.js`,
+`camp` = `tests/match/showdown-campaign.test.js`, `plog` = `tests/match/showdown-playtest.test.js`,
+`B-entry` = `scripts/browser-showdown-check.mjs`, `B-trail` = `scripts/browser-showdown-trail-check.mjs`
+(Run A new player, Run B lane veteran). Browser receipts:
+[`browser-showdown.json`](evidence/kiro-143-slice2-integrate/browser-showdown.json) (23 of 23) and
+[`browser-showdown-trail.json`](evidence/kiro-143-slice2-integrate/browser-showdown-trail.json) (16 of 16), run on `6ade89e`;
+the built pages at `cd764f1` are byte-identical to the ones checked
+([README](evidence/kiro-143-slice2-integrate/README.md#later-main-merge)). They were not re-run for this map.
+
+| AC | Class | Tests | Notes |
+| --- | --- | --- | --- |
+| FH-R1.1 | direct | `ramp` "the prototype paths export exactly the canonical modules" | |
+| FH-R1.2 | missing | none | No automated purity check. A source grep of `src/game/showdown/` for DOM, storage globals and Node imports found none on `cd764f1`; that is a one-off reading, not a test. |
+| FH-R2.1 | browser | `B-entry` "Normal entry on a clean profile offers Play and the lane duel link only" | |
+| FH-R2.2 | browser | `B-entry` "Play on a clean profile opens the Camp: Boot Hill open, the other five Trail duels locked"; `B-trail` Run A "Normal entry on a clean profile: Play opens the Camp…" | |
+| FH-R2.3 | browser | `B-entry` "The Camp opens Trail duel 1, Boot Hill (Showdown), not the lane duel"; `B-trail` "Boot Hill opens from its Camp tile…", "Raven Roost opens from its Camp tile…", "The Bone Fence opens from its Camp tile" | |
+| FH-R2.4 | browser | `B-entry` "Back to camp leaves an unfinished duel unrecorded…"; `B-trail` "Leaving The Bone Fence unfinished changes no stored progress" | |
+| FH-R2.5 | browser | `B-entry` "?mode=lanes shows the lane menu, and Play opens the lane duel"; "?mode=match still auto-starts the lane duel…" | |
+| FH-R3.1 | direct | `store` "a new profile loads as a new save and loading writes nothing" | |
+| FH-R3.2 | direct | `store` "the v1 Trail save loads as migrate() and the legacy save code read it, and keeps its key"; `prog` "saves: the first version is carried over…" | |
+| FH-R3.3 | direct | `store` "progress the next load would reset is refused and nothing is written" | |
+| FH-R3.4 | direct | `store` "a stored save the load refused is kept once under its own key before it is replaced" | |
+| FH-R3.5 | direct | `store` "blocked storage loads a new save and reports a failed save without throwing"; `camp` "the lane profile is left as it was, and blocked storage plays on in memory" | |
+| FH-R3.6 | direct | `store` "an unclaimed card offer survives a reload, so it cannot be rolled again"; `B-trail` "Reload with the second offer unclaimed…" | |
+| FH-R3.7 | direct | `store` "whatever loads can be exported and strictly imported back unchanged" | Progress only. See FH-R7.1. |
+| FH-R3.8 | direct | `store` "a lane-era profile keeps its Captured cards owned in the lane store…"; `camp` "the lane profile is left as it was…"; `inh` first test; `B-trail` Run B normal-load check | |
+| FH-R3.9 | direct | `plog` all three tests; `B-entry` "The Boot Hill win is logged once under cvw-showdown-playtest-v1…", "After a reload the Camp's Playtest report…", "Two wins, three reloads…" | |
+| FH-R4.1 | direct | `prog`, unchanged since `0beb0d5` (before slice 2); passes through the re-exports | |
+| FH-R4.2 | direct | `prog` "a cushion, then a ramp, all the way to the even match: bot players on 80 deals"; `scripts/verify-duel.mjs` discovers `prototypes/showdown/` | |
+| FH-R4.3 | direct | `ramp` "the ramp's cushion: any legal play wins Trail 1 and 2 on 80 deals" | |
+| FH-R5.1 | direct + browser | `inh` "a lane capture is owned by name in the Camp list…"; `B-trail` Run B "Normal load: the Captured Dragon is shown as owned…" | Node test checks `holdings()`; the "(from the lane game)" text is checked only by `B-trail` reading the Camp collection. |
+| FH-R5.2 | direct | `inh` "the record only grows, and a damaged record is never overwritten"; `inh` "blocked storage keeps ownership in memory and says it was not saved" | |
+| FH-R5.3 | direct | `inh` "the record persists on its own: reloads, a Trail win and a later lane-profile loss keep it" | |
+| FH-R5.4 | direct | `inh` "a card owned in both games is listed once, at the Showdown count…"; `store` "an existing Showdown save is kept when a lane capture is also stored" | |
+| FH-R5.5 | direct | `inh` "partial lane hunts and a clean profile create no record and write nothing" | |
+| FH-R5.6 | direct | `store` "a lane-era profile keeps its Captured cards owned in the lane store across Showdown loads and saves" | |
+| FH-R5.7 | browser | `B-trail` Run B, all four checks | The record assertion was added in `c74a7d6`; the pre-fix run failed as expected ([output](evidence/kiro-143-slice2-integrate/strict-runB-before-fix.txt)). |
+| FH-R6.1 | browser + direct | `B-entry` "Boot Hill win pays Covered Wagon ×2 in place of Sheriff ×2…"; `B-trail` "Boot Hill won by clicks alone", "The Boot Hill win names its payment…"; `camp` "a fresh profile wins Trail duels 1 and 2…"; `prog` "a Trail win pays its card into the deck…" | Bot clicks, not a human. |
+| FH-R6.2 | browser | `B-entry` "Choosing one offered card adds exactly one copy and clears the offer" | |
+| FH-R6.3 | browser + direct | `B-entry` "The Camp marks Boot Hill won and opens Raven Roost", "Raven Roost win pays Outrider ×2…"; `B-trail` Raven Roost checks; `camp` first test | |
+| FH-R6.4 | browser | `B-entry` "Back in the Camp the unclaimed offer comes first and every Trail tile is disabled"; `B-trail` "Reload with the second offer unclaimed…" | |
+| FH-R6.5 | browser + direct | `B-entry` "After a reload the Camp keeps…", "The Camp choice clears the offer and opens The Bone Fence…"; `B-trail` "Reload: Boot Hill and Raven Roost won, The Bone Fence open…stored progress equal the reference"; `store` "Trail duels 1 and 2 each pay their card once…" | |
+| FH-R6.6 | direct | `camp` "a loss pays nothing and gives the rematch one more Base orb, kept across a reload"; `prog` "a loss gives the rematch one more Base orb…" | |
+| FH-R7.1 | direct (reference) | `keep` "save codes exclude keepsakes: a veteran's code equals a new player's…"; `B-trail` Run B checks that the record is in its own key | Uses `prototypes/showdown/savecode.js`; the graybox Camp offers no save code until slice 3. |
+| FH-R7.2 | direct | `keep` "keepsake compat A1-A5" (14 cases), "a genuine Showdown bounty pays its Legendary to a lane veteran and a new player alike"; `store` "Fable F1: a lane capture gives no Showdown ownership, Trail progress, hunt or power"; `inh` first test | Fable's ruling, PR 148 issuecomment-7031816529. Until 2026-11-19 this row was "pending Fable F1/F2" and external A1 failed on 7 cases ([historical table](evidence/kiro-143-slice2-integrate/compat-A1-A5.md)). |
+| FH-R7.3 | direct (reference) + todo | `keep` "partial lane hunts and lane Frontier cards do not carry into Showdown", "reference Start over resets Showdown progress only…"; `test.todo` "slice 3: the graybox Camp's own Start over…" | Start over is checked as the reference prototype's reset (`keep(newSave())`, `keepLog([])`); the graybox has none until slice 3. Until 2026-11-19 this row was "missing (open)". |
+
+Not mapped, pending: human playtests of the first hour (clarity, fun, Camp wording). None run.

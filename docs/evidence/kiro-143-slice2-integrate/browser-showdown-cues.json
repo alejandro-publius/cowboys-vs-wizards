@@ -1,0 +1,360 @@
+{
+  "page": "file://graywave-integrate/dist/cowboys-vs-wizards-board-duel.html",
+  "chrome": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "viewport": [
+    1440,
+    900
+  ],
+  "checks": [
+    {
+      "name": "Boot Hill (?seed=1) by clicks at the 700 ms step: cover, burned draw and fatigue cues each mark their place and light their log line",
+      "passed": true,
+      "detail": {
+        "turns": 14,
+        "met": [
+          "burn",
+          "cover",
+          "fatigue"
+        ],
+        "result": "You win: the Wizard Base fell."
+      }
+    },
+    {
+      "name": "harness duel (every card type, 150 ms step) by clicks: all ten cue kinds and every trap and Last Stand subcase painted, each checked against its log line",
+      "passed": true,
+      "detail": {
+        "met": [
+          "burn",
+          "cover",
+          "fatigue",
+          "gear",
+          "laststand:defeated",
+          "laststand:wounded",
+          "location",
+          "raise",
+          "set",
+          "sweep",
+          "trap:cancelled",
+          "trap:defeated",
+          "trap:through"
+        ],
+        "bySeed": {
+          "0": [
+            "cover",
+            "gear",
+            "location",
+            "set"
+          ],
+          "1": [
+            "cover",
+            "gear",
+            "location",
+            "raise",
+            "set",
+            "sweep",
+            "trap:cancelled",
+            "trap:defeated"
+          ],
+          "2": [
+            "burn",
+            "cover",
+            "gear",
+            "location",
+            "raise",
+            "set"
+          ],
+          "3": [
+            "cover",
+            "gear",
+            "laststand:wounded",
+            "location"
+          ],
+          "4": [
+            "cover",
+            "gear",
+            "location",
+            "raise",
+            "set",
+            "sweep",
+            "trap:through"
+          ],
+          "5": [
+            "cover",
+            "gear",
+            "location",
+            "raise"
+          ],
+          "6": [
+            "cover",
+            "gear",
+            "location",
+            "set",
+            "sweep",
+            "trap:cancelled",
+            "trap:defeated"
+          ],
+          "7": [
+            "cover",
+            "gear",
+            "set",
+            "trap:cancelled"
+          ],
+          "8": [
+            "burn",
+            "cover",
+            "gear",
+            "laststand:wounded",
+            "location",
+            "raise",
+            "set",
+            "trap:through"
+          ],
+          "9": [
+            "burn",
+            "cover",
+            "gear",
+            "laststand:wounded",
+            "location",
+            "raise",
+            "set",
+            "sweep",
+            "trap:defeated"
+          ],
+          "10": [
+            "cover",
+            "gear",
+            "location",
+            "raise",
+            "set",
+            "trap:cancelled",
+            "trap:through"
+          ],
+          "11": [
+            "burn",
+            "cover",
+            "fatigue",
+            "gear",
+            "location",
+            "set"
+          ],
+          "12": [
+            "cover",
+            "gear",
+            "location",
+            "raise",
+            "sweep"
+          ],
+          "13": [
+            "cover",
+            "location",
+            "raise",
+            "set",
+            "sweep",
+            "trap:through"
+          ],
+          "14": [
+            "burn",
+            "cover",
+            "gear",
+            "laststand:wounded",
+            "location",
+            "raise",
+            "set",
+            "trap:defeated"
+          ],
+          "15": [
+            "cover",
+            "gear",
+            "laststand:wounded",
+            "location",
+            "set"
+          ],
+          "16": [
+            "burn",
+            "cover",
+            "gear",
+            "location",
+            "raise",
+            "set",
+            "sweep",
+            "trap:through"
+          ],
+          "17": [
+            "burn",
+            "cover",
+            "gear",
+            "location",
+            "raise",
+            "set",
+            "trap:through"
+          ],
+          "18": [
+            "cover",
+            "gear",
+            "location",
+            "set",
+            "trap:defeated"
+          ],
+          "19": [
+            "burn",
+            "cover",
+            "gear",
+            "laststand:wounded",
+            "location",
+            "raise",
+            "set",
+            "sweep",
+            "trap:cancelled",
+            "trap:defeated"
+          ],
+          "20": [
+            "cover",
+            "gear",
+            "location"
+          ],
+          "21": [
+            "cover",
+            "gear",
+            "location",
+            "raise",
+            "set",
+            "trap:cancelled",
+            "trap:defeated"
+          ],
+          "22": [
+            "cover",
+            "gear",
+            "laststand:wounded",
+            "location",
+            "set"
+          ],
+          "23": [
+            "cover",
+            "gear",
+            "location",
+            "raise",
+            "set",
+            "trap:through"
+          ],
+          "24": [
+            "cover",
+            "gear",
+            "location",
+            "raise",
+            "set",
+            "trap:defeated"
+          ],
+          "25": [
+            "burn",
+            "cover",
+            "gear",
+            "location",
+            "raise",
+            "set",
+            "sweep",
+            "trap:defeated"
+          ],
+          "26": [
+            "burn",
+            "cover",
+            "gear",
+            "laststand:wounded",
+            "location",
+            "set",
+            "trap:defeated"
+          ],
+          "27": [
+            "cover",
+            "gear",
+            "laststand:wounded",
+            "location",
+            "raise",
+            "set",
+            "sweep",
+            "trap:cancelled",
+            "trap:through"
+          ],
+          "28": [
+            "cover",
+            "gear",
+            "laststand:wounded",
+            "location",
+            "raise",
+            "set",
+            "trap:cancelled",
+            "trap:through"
+          ],
+          "29": [
+            "cover",
+            "gear",
+            "laststand:wounded",
+            "location",
+            "raise"
+          ],
+          "30": [
+            "burn",
+            "cover",
+            "gear",
+            "location",
+            "raise",
+            "set",
+            "sweep"
+          ],
+          "31": [
+            "burn",
+            "cover",
+            "gear",
+            "laststand:defeated",
+            "location",
+            "raise",
+            "set",
+            "trap:defeated"
+          ]
+        }
+      }
+    },
+    {
+      "name": "trap and Last Stand cues landed on these slot pairs in real play",
+      "passed": true,
+      "detail": [
+        "laststand cowboy-0 & wizard-0",
+        "laststand cowboy-0 & wizard-1",
+        "laststand cowboy-1 & wizard-0",
+        "laststand cowboy-1 & wizard-1",
+        "trap on cowboy-0",
+        "trap on wizard-0",
+        "trap on wizard-1",
+        "trap on wizard-2"
+      ]
+    },
+    {
+      "name": "two actions inside one 700 ms step: the newer cue replaces the older at once and the older batch never paints again",
+      "passed": true,
+      "detail": {
+        "seed": 0,
+        "turn": 2,
+        "firstLine": 19,
+        "secondLine": 20,
+        "paints": 4
+      }
+    },
+    {
+      "name": "with prefers-reduced-motion: reduce, each batch shows all its cues at once with no flash and every line lit",
+      "passed": true,
+      "detail": {
+        "multiCueBatches": 3,
+        "met": [
+          "cover",
+          "gear",
+          "location",
+          "raise",
+          "set",
+          "trap:cancelled"
+        ]
+      }
+    }
+  ],
+  "errors": [],
+  "clicks": 1945,
+  "passed": true
+}

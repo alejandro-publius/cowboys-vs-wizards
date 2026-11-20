@@ -1,0 +1,21 @@
+HEAD 6ade89ea9c1ce296568b52e80001538d0b26a69a
+npm-test 0
+check-card-specs 0
+proto-build 0
+proto-access 0
+proto-onboarding 0
+proto-hotseat 0
+proto-savecode 0
+proto-bo3 0
+proto-campaign 0
+graybox-build 0
+graybox-web-build 0
+0a9973d330a0cf8796e5b7ce852fb04f1a4251456cb344503c3611e467f07869  dist/cowboys-vs-wizards-board-duel.html
+0a9973d330a0cf8796e5b7ce852fb04f1a4251456cb344503c3611e467f07869  dist/web/index.html
+fc17ef48d8ff96463ee18df5133f90420341ee1f04913a05f0d11950e8f08a5b  dist/showdown.html
+showdown-check dist/cowboys-vs-wizards-board-duel.html 0
+trail-check dist/cowboys-vs-wizards-board-duel.html 0
+showdown-check dist/web/index.html 0
+trail-check dist/web/index.html 0
+cues-check 0
+done

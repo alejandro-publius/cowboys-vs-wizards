@@ -1,0 +1,415 @@
+{
+  "page": "file://graywave-integrate/dist/cowboys-vs-wizards-board-duel.html",
+  "chrome": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "viewport": [
+    1440,
+    900
+  ],
+  "checks": [
+    {
+      "name": "Normal entry on a clean profile offers Play and the lane duel link only",
+      "passed": true,
+      "detail": [
+        "Play",
+        "Lane duel (previous rules)"
+      ]
+    },
+    {
+      "name": "Play on a clean profile opens the Camp: Boot Hill open, the other five Trail duels locked",
+      "passed": true,
+      "detail": {
+        "tiles": [
+          {
+            "name": "Boot Hill",
+            "on": true,
+            "note": "Win to earn Covered Wagon ×2"
+          },
+          {
+            "name": "Raven Roost",
+            "on": false,
+            "note": "Locked · win to earn Outrider ×2"
+          },
+          {
+            "name": "The Bone Fence",
+            "on": false,
+            "note": "Locked · win to earn Ranger, Lasso"
+          },
+          {
+            "name": "Imp Hollow",
+            "on": false,
+            "note": "Locked · win to earn Dynamiter, Bear Trap"
+          },
+          {
+            "name": "The Hexed Mile",
+            "on": false,
+            "note": "Locked · win to earn Mounted Billy"
+          },
+          {
+            "name": "Dragon's Roost",
+            "on": false,
+            "note": "Locked · win to earn Gatling Crew"
+          }
+        ],
+        "offer": [],
+        "next": "Start here: click Boot Hill to play your first duel.",
+        "cards": "Deck: Sheriff ×8, Billy ×5, Deadeye ×3.Collection: Sheriff and Billy in any number, Deadeye ×3.",
+        "storage": true
+      }
+    },
+    {
+      "name": "The Camp opens Trail duel 1, Boot Hill (Showdown), not the lane duel",
+      "passed": true,
+      "detail": {
+        "status": "Boot Hill · turn 1 · your turn",
+        "lesson": "Win by removing every orb from the Wizard Base. You can strike it only when the Wizards have no troops: pick one of your troops, then the enemy troop it hits."
+      }
+    },
+    {
+      "name": "Back to camp leaves an unfinished duel unrecorded; Main menu returns to the title",
+      "passed": true
+    },
+    {
+      "name": "Turn 1 offers only legal plays: no attacker, no target, Wizard Base disabled",
+      "passed": true,
+      "detail": {
+        "own": 0,
+        "enemy": 0,
+        "base": true,
+        "playable": [
+          "cowboy-sheriff-3",
+          "cowboy-sheriff-8"
+        ],
+        "prompt": "Play your cards: one troop a turn. Nobody attacks on the opening turn."
+      }
+    },
+    {
+      "name": "A summon shows its event line, and further troop cards are disabled with 'One troop a turn.'",
+      "passed": true,
+      "detail": {
+        "feedback": "Last: The Cowboys' Sheriff arrived.",
+        "log": 2,
+        "board": [
+          "Sheriff"
+        ],
+        "refused": [
+          [
+            "cowboy-billy-2",
+            "One troop a turn."
+          ],
+          [
+            "cowboy-billy-1",
+            "One troop a turn."
+          ],
+          [
+            "cowboy-sheriff-8",
+            "One troop a turn."
+          ]
+        ],
+        "slotNote": "Sheriff● Troop · Lawman\n          1 attack ●●● \n          Can take cover"
+      }
+    },
+    {
+      "name": "Clicking a disabled card applies nothing",
+      "passed": true
+    },
+    {
+      "name": "Boot Hill (?seed=0) won by clicks alone; inputs close after the result",
+      "passed": true,
+      "detail": {
+        "status": "You win: the Wizard Base fell.",
+        "wizardBase": "0 of 3 orbs",
+        "feedback": "Last: The Cowboys' Sheriff struck the Wizards' Base for 1.",
+        "hand": 0,
+        "end": true,
+        "targets": 0,
+        "restart": true,
+        "earned": "Covered Wagon ×2",
+        "offer": [
+          "cowboy-covered-wagon",
+          "cowboy-deadeye"
+        ],
+        "again": false,
+        "turns": 8,
+        "attacks": 15,
+        "clicks": 66
+      }
+    },
+    {
+      "name": "Boot Hill win pays Covered Wagon ×2 in place of Sheriff ×2, saved with the two-card offer",
+      "passed": true,
+      "detail": {
+        "earned": "Covered Wagon ×2",
+        "offer": [
+          "cowboy-covered-wagon",
+          "cowboy-deadeye"
+        ],
+        "deck": {
+          "cowboy-sheriff": 6,
+          "cowboy-billy": 5,
+          "cowboy-deadeye": 3,
+          "cowboy-covered-wagon": 2
+        }
+      }
+    },
+    {
+      "name": "The Boot Hill win is logged once under cvw-showdown-playtest-v1, with no personal fields",
+      "passed": true,
+      "detail": {
+        "name": "Boot Hill",
+        "won": true,
+        "turns": 17,
+        "seconds": 1,
+        "rules": false,
+        "run": "b22c07e2-6452-429d-9e07-c00bbaea6ecc",
+        "duel": "trail",
+        "seed": 0
+      }
+    },
+    {
+      "name": "Choosing one offered card adds exactly one copy and clears the offer",
+      "passed": true,
+      "detail": {
+        "pick": "cowboy-covered-wagon"
+      }
+    },
+    {
+      "name": "The Camp marks Boot Hill won and opens Raven Roost",
+      "passed": true,
+      "detail": [
+        {
+          "name": "✓ Boot Hill",
+          "on": false,
+          "note": "Earned Covered Wagon ×2"
+        },
+        {
+          "name": "Raven Roost",
+          "on": true,
+          "note": "Win to earn Outrider ×2"
+        }
+      ]
+    },
+    {
+      "name": "After a reload the Camp keeps the Boot Hill win, the reward and the chosen card",
+      "passed": true,
+      "detail": {
+        "tiles": [
+          {
+            "name": "✓ Boot Hill",
+            "on": false,
+            "note": "Earned Covered Wagon ×2"
+          },
+          {
+            "name": "Raven Roost",
+            "on": true,
+            "note": "Win to earn Outrider ×2"
+          },
+          {
+            "name": "The Bone Fence",
+            "on": false,
+            "note": "Locked · win to earn Ranger, Lasso"
+          },
+          {
+            "name": "Imp Hollow",
+            "on": false,
+            "note": "Locked · win to earn Dynamiter, Bear Trap"
+          },
+          {
+            "name": "The Hexed Mile",
+            "on": false,
+            "note": "Locked · win to earn Mounted Billy"
+          },
+          {
+            "name": "Dragon's Roost",
+            "on": false,
+            "note": "Locked · win to earn Gatling Crew"
+          }
+        ],
+        "offer": [],
+        "next": "Next: click Raven Roost to play it.",
+        "cards": "Deck: Sheriff ×6, Billy ×5, Deadeye ×3, Covered Wagon ×2.Collection: Sheriff and Billy in any number, Deadeye ×3, Covered Wagon ×3.",
+        "storage": true
+      }
+    },
+    {
+      "name": "After a reload the Camp's Playtest report shows the one logged win as plain text; Copy report answers",
+      "passed": true,
+      "detail": {
+        "report": "Showdown playtest report\nFinished 1 duel in 1 s of play: won 1, lost 0.\nReached: Trail 1 of 6 won, rivals 0 of 4, Wanted hunts 0 of 10, even-match wins 0.\nNever lost.\nOpened \"All the rules\" during 0 of 1 duels.\nCards in the deck now: sheriff x6, billy x5, deadeye x3, covered-wagon x2.\n\nDuel by duel:\n1. Boot Hill: won in 17 turns, 1 s",
+        "copied": "Copied."
+      }
+    },
+    {
+      "name": "Raven Roost (?seed=0) won by clicks alone; inputs close after the result",
+      "passed": true,
+      "detail": {
+        "status": "You win: the Wizard Base fell.",
+        "wizardBase": "0 of 4 orbs",
+        "feedback": "Last: The Cowboys' Billy struck the Wizards' Base for 2.",
+        "hand": 0,
+        "end": true,
+        "targets": 0,
+        "restart": true,
+        "earned": "Outrider ×2",
+        "offer": [
+          "cowboy-outrider",
+          "cowboy-deadeye"
+        ],
+        "again": false,
+        "turns": 4,
+        "attacks": 4,
+        "clicks": 96
+      }
+    },
+    {
+      "name": "Raven Roost win pays Outrider ×2 in place of Sheriff ×2",
+      "passed": true,
+      "detail": {
+        "earned": "Outrider ×2",
+        "deck": {
+          "cowboy-sheriff": 4,
+          "cowboy-billy": 5,
+          "cowboy-deadeye": 3,
+          "cowboy-covered-wagon": 2,
+          "cowboy-outrider": 2
+        }
+      }
+    },
+    {
+      "name": "Back in the Camp the unclaimed offer comes first and every Trail tile is disabled",
+      "passed": true,
+      "detail": {
+        "tiles": [
+          {
+            "name": "✓ Boot Hill",
+            "on": false,
+            "note": "Earned Covered Wagon ×2"
+          },
+          {
+            "name": "✓ Raven Roost",
+            "on": false,
+            "note": "Earned Outrider ×2"
+          },
+          {
+            "name": "The Bone Fence",
+            "on": false,
+            "note": "Win to earn Ranger, Lasso"
+          },
+          {
+            "name": "Imp Hollow",
+            "on": false,
+            "note": "Locked · win to earn Dynamiter, Bear Trap"
+          },
+          {
+            "name": "The Hexed Mile",
+            "on": false,
+            "note": "Locked · win to earn Mounted Billy"
+          },
+          {
+            "name": "Dragon's Roost",
+            "on": false,
+            "note": "Locked · win to earn Gatling Crew"
+          }
+        ],
+        "offer": [
+          "cowboy-outrider",
+          "cowboy-deadeye"
+        ],
+        "next": null,
+        "cards": "Deck: Sheriff ×4, Billy ×5, Deadeye ×3, Covered Wagon ×2, Outrider ×2.Collection: Sheriff and Billy in any number, Deadeye ×3, Covered Wagon ×3, Outrider ×2.",
+        "storage": true
+      }
+    },
+    {
+      "name": "The Camp choice clears the offer and opens The Bone Fence; a reload continues from there",
+      "passed": true,
+      "detail": {
+        "tiles": [
+          {
+            "name": "✓ Boot Hill",
+            "on": false,
+            "note": "Earned Covered Wagon ×2"
+          },
+          {
+            "name": "✓ Raven Roost",
+            "on": false,
+            "note": "Earned Outrider ×2"
+          },
+          {
+            "name": "The Bone Fence",
+            "on": true,
+            "note": "Win to earn Ranger, Lasso"
+          },
+          {
+            "name": "Imp Hollow",
+            "on": false,
+            "note": "Locked · win to earn Dynamiter, Bear Trap"
+          },
+          {
+            "name": "The Hexed Mile",
+            "on": false,
+            "note": "Locked · win to earn Mounted Billy"
+          },
+          {
+            "name": "Dragon's Roost",
+            "on": false,
+            "note": "Locked · win to earn Gatling Crew"
+          }
+        ],
+        "offer": [],
+        "next": "Next: click The Bone Fence to play it.",
+        "cards": "Deck: Sheriff ×4, Billy ×5, Deadeye ×3, Covered Wagon ×2, Outrider ×2.Collection: Sheriff and Billy in any number, Deadeye ×4, Covered Wagon ×3, Outrider ×2.",
+        "storage": true
+      }
+    },
+    {
+      "name": "Two wins, three reloads: the log holds exactly two lines and the report lists both",
+      "passed": true,
+      "detail": {
+        "lines": 2
+      }
+    },
+    {
+      "name": "Seat privacy held at every checked step",
+      "passed": true,
+      "detail": {
+        "steps": 18
+      }
+    },
+    {
+      "name": "?mode=lanes shows the lane menu, and Play opens the lane duel",
+      "passed": true,
+      "detail": {
+        "visible": [
+          "Play",
+          "Wanted",
+          "How to Play",
+          "Build Deck",
+          "Achievements",
+          "Fire arc (draft)",
+          "Showdown (new rules)"
+        ],
+        "showdown": true
+      }
+    },
+    {
+      "name": "?mode=match still auto-starts the lane duel used by the existing lane checks",
+      "passed": true
+    },
+    {
+      "name": "No page exceptions or console errors",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "camp-fresh.png",
+    "boot-hill-opening.png",
+    "boot-hill-after-summon.png",
+    "boot-hill-won.png",
+    "camp-report-after-reload.png",
+    "camp-offer.png",
+    "camp-after-two.png",
+    "lanes-play.png"
+  ],
+  "clicks": 101
+}
