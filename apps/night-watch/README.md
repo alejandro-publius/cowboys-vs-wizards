@@ -23,9 +23,11 @@ kirocrew app install "$PWD"
 
 In Crew’s Library, find **Night Watch**, review its install source and enable it. If Crew asks for execution trust, choose **Trust this app alone**. Open **Night Watch** in Crew. Under **Settings**, enter the absolute path to a local Cowboys vs. Wizards checkout. Choose baseline and candidate branches, tags or commits that contain the playable engine. Use a fixed baseline and a working branch as the candidate to track new commits. Save the settings and choose **Run balance check**.
 
+Choose a **Mode**. **Showdown** plays each deal twice, once with each faction moving first, through the commit's `prototypes/showdown/rules.js` and its level-2 bot, the same loop as `prototypes/showdown/sim.mjs`. Its report shows the first-player share and the Cowboy share over all games (two per deal). **Lane duel** runs `scripts/simulate-matches.mjs` as before.
+
 Night Watch resolves the refs to commits, runs the candidate's game-rule tests and replays the chosen seed range for both commits. It tests the committed code from the checkout on this computer. Reports show the exact revisions, seed range, outcome shifts and any card-spec changes. The app keeps the 20 latest reports.
 
-The defaults compare seeds 0–999 and flag a faction win-share shift of at least 10 percentage points or a first-seat advantage that grows by at least that much. Results describe these CPU policies and seeds. A rules failure is recorded with diagnostic output. When the checkout has a GitHub origin, eligible reports include an **Open GitHub issue draft** link with the run details.
+The defaults compare seeds 0–999 (deals in Showdown) and flag a faction win-share shift of at least 10 percentage points or a first-seat advantage that grows by at least that much. Results describe these CPU policies and seeds. A rules failure is recorded with diagnostic output. When the checkout has a GitHub origin, eligible reports include an **Open GitHub issue draft** link with the run details.
 
 ## Schedule a nightly check
 
@@ -34,6 +36,8 @@ Save the settings and verify one manual run first. From this app directory, regi
 ~~~sh
 python3 backend/server.py schedule --time 02:00 --timezone America/Los_Angeles
 ~~~
+
+The job runs `server.py run --scheduled --mode showdown`, so nightly checks play Showdown whatever mode the manual settings hold. Run `python3 backend/server.py run --mode lanes` for a one-off lane comparison.
 
 Crew runs the scheduled command locally. It records a report in the same history as manual runs, with **Scheduled** as the trigger. Manage the job in Crew’s **Schedule** panel. To remove it from the terminal, use this command.
 
