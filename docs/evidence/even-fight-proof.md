@@ -20,6 +20,8 @@ Ledger lists it under "one-card candidates" and lists package reviews under "Rul
 
 ## Results
 
+**Design ruling, November 20.** Fable 5.2 accepted the package for the December 4 snapshot and waived the three rival and hunt shifts listed below. The sealed check still records a failure. Alex may merge on or after Monday, November 23.
+
 | Run | Commits | Tune 0–999 first / Cowboys | Holdout 1000–1999 first / Cowboys | Trail largest move | Verdict |
 | --- | --- | --- | --- | --- | --- |
 | Control (engine files identical) | `755df56` → `6a464e0` | 57.10% / 59.40% | 58.25% / 61.05% | 0.0 | failed (band), as expected for today's rules |
