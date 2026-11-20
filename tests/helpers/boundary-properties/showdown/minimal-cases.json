@@ -1,0 +1,297 @@
+{
+  "baseSeed": 45274,
+  "note": "First failing generated case per planted fault, reduced. Regenerate: node tests/helpers/boundary-properties/showdown/replay.mjs --write-minimal",
+  "cases": [
+    {
+      "property": "SP1",
+      "fault": "f1CoverWritesInput",
+      "index": 0,
+      "kind": "input-mutated",
+      "originalSize": {
+        "choices": 400,
+        "turns": 0,
+        "total": 400
+      },
+      "minimizedSize": {
+        "choices": 2,
+        "turns": 0,
+        "total": 2
+      },
+      "evaluations": 16,
+      "exhausted": false,
+      "minimized": {
+        "seed": 0,
+        "duel": "even",
+        "options": {},
+        "choices": [
+          0,
+          0
+        ]
+      },
+      "realEngine": {
+        "status": "pass"
+      },
+      "faultyEngine": {
+        "status": "violation",
+        "kind": "input-mutated",
+        "step": 1,
+        "message": "input-mutated: step 1: applyAction({\"type\":\"cover\",\"slot\":0}) changed its input state"
+      }
+    },
+    {
+      "property": "SP2",
+      "fault": "f2IgnoresUnlistedAction",
+      "index": 0,
+      "kind": "unlisted-applied",
+      "originalSize": {
+        "choices": 400,
+        "turns": 0,
+        "total": 400
+      },
+      "minimizedSize": {
+        "choices": 1,
+        "turns": 0,
+        "total": 1
+      },
+      "evaluations": 6,
+      "exhausted": false,
+      "minimized": {
+        "seed": 0,
+        "duel": "even",
+        "options": {},
+        "choices": [
+          0
+        ]
+      },
+      "realEngine": {
+        "status": "pass"
+      },
+      "faultyEngine": {
+        "status": "violation",
+        "kind": "unlisted-applied",
+        "step": 0,
+        "message": "unlisted-applied: step 0: tributes {\"type\":\"summon\",\"cardId\":\"wizard-jack-o-lantern-1\",\"tributes\":[0]} is not in legalActions but applied"
+      }
+    },
+    {
+      "property": "SP3",
+      "fault": "f3BaseUnderflow",
+      "index": 7,
+      "kind": "bounds",
+      "originalSize": {
+        "choices": 400,
+        "turns": 0,
+        "total": 400
+      },
+      "minimizedSize": {
+        "choices": 18,
+        "turns": 0,
+        "total": 18
+      },
+      "evaluations": 147,
+      "exhausted": false,
+      "minimized": {
+        "seed": 742376,
+        "duel": "trail:3",
+        "options": {
+          "decks": {
+            "cowboy": {
+              "cowboy-sheriffs-office": 2,
+              "cowboy-captured-dragon": 1,
+              "cowboy-covered-wagon": 2,
+              "cowboy-captured-wraith": 1,
+              "cowboy-lasso": 1,
+              "cowboy-bear-trap": 2,
+              "cowboy-billy": 3,
+              "cowboy-sheriff": 1,
+              "cowboy-dynamiter": 1,
+              "cowboy-six-shooter": 1,
+              "cowboy-gatling-crew": 1
+            },
+            "wizard": {
+              "wizard-skeleton": 6,
+              "wizard-imp": 3,
+              "wizard-jack-o-lantern": 3,
+              "wizard-singularity": 2,
+              "wizard-hellfire": 2
+            }
+          },
+          "baseOrbs": {
+            "cowboy": 6,
+            "wizard": 4
+          },
+          "first": "cowboy"
+        },
+        "choices": [
+          23078,
+          15027,
+          0,
+          0,
+          34121,
+          0,
+          12521,
+          1013,
+          21113,
+          27840,
+          246,
+          0,
+          19973,
+          0,
+          0,
+          0,
+          5857,
+          0
+        ]
+      },
+      "realEngine": {
+        "status": "pass"
+      },
+      "faultyEngine": {
+        "status": "violation",
+        "kind": "bounds",
+        "step": 17,
+        "message": "bounds: step 17: wizard Base -1 outside 0..4"
+      }
+    },
+    {
+      "property": "SP4",
+      "fault": "f4ViewLeaksOtherHandCard",
+      "index": 0,
+      "kind": "hidden-leak",
+      "originalSize": {
+        "choices": 400,
+        "turns": 0,
+        "total": 400
+      },
+      "minimizedSize": {
+        "choices": 0,
+        "turns": 0,
+        "total": 0
+      },
+      "evaluations": 3,
+      "exhausted": false,
+      "minimized": {
+        "seed": 0,
+        "duel": "even",
+        "options": {},
+        "choices": []
+      },
+      "realEngine": {
+        "status": "pass"
+      },
+      "faultyEngine": {
+        "status": "violation",
+        "kind": "hidden-leak",
+        "step": -1,
+        "message": "hidden-leak: deal: viewFor(state, cowboy) shows wizard-headless-horseman-1"
+      }
+    },
+    {
+      "property": "SP5",
+      "fault": "f5SetEventNamesCard",
+      "index": 1,
+      "kind": "event-shape",
+      "originalSize": {
+        "choices": 400,
+        "turns": 0,
+        "total": 400
+      },
+      "minimizedSize": {
+        "choices": 2,
+        "turns": 0,
+        "total": 2
+      },
+      "evaluations": 97,
+      "exhausted": false,
+      "minimized": {
+        "seed": 186438,
+        "duel": "even",
+        "options": {},
+        "choices": [
+          24710,
+          0
+        ]
+      },
+      "realEngine": {
+        "status": "pass"
+      },
+      "faultyEngine": {
+        "status": "violation",
+        "kind": "event-shape",
+        "step": 1,
+        "message": "event-shape: step 1: set carries cardId,side, EVENTS lists side"
+      }
+    },
+    {
+      "property": "SP6",
+      "fault": "f6DealKeepsHiddenState",
+      "index": 0,
+      "kind": "replay-diverged",
+      "originalSize": {
+        "choices": 400,
+        "turns": 0,
+        "total": 400
+      },
+      "minimizedSize": {
+        "choices": 0,
+        "turns": 0,
+        "total": 0
+      },
+      "evaluations": 402,
+      "exhausted": false,
+      "minimized": {
+        "seed": 0,
+        "duel": "even",
+        "options": {},
+        "choices": []
+      },
+      "realEngine": {
+        "status": "pass"
+      },
+      "faultyEngine": {
+        "status": "violation",
+        "kind": "replay-diverged",
+        "step": null,
+        "message": "replay-diverged: the same seed dealt a different game"
+      }
+    },
+    {
+      "property": "SP7",
+      "fault": "f7PlanSummonsTwice",
+      "index": 0,
+      "kind": "bot-illegal",
+      "originalSize": {
+        "choices": 9,
+        "turns": 4,
+        "total": 13
+      },
+      "minimizedSize": {
+        "choices": 0,
+        "turns": 1,
+        "total": 1
+      },
+      "evaluations": 18,
+      "exhausted": false,
+      "minimized": {
+        "seed": 0,
+        "duel": "even",
+        "options": {},
+        "choices": [],
+        "levels": {
+          "cowboy": 0,
+          "wizard": 2
+        },
+        "turns": 1
+      },
+      "realEngine": {
+        "status": "pass"
+      },
+      "faultyEngine": {
+        "status": "violation",
+        "kind": "bot-illegal",
+        "step": null,
+        "message": "bot-illegal: turn 1 wizard: planned {\"type\":\"summon\",\"cardId\":\"wizard-jack-o-lantern-1\",\"tributes\":[]} is not legal"
+      }
+    }
+  ]
+}

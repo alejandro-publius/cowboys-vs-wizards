@@ -277,3 +277,18 @@ The next substantial Kiro task is #56, boundary generation, failure reduction an
   - The PR 147 brief orders the Scout fix `7e8e6eb` before slice 2. It is not on this branch.
   - The slice 2 Requirements-First spec has not been written.
   - `github/main` `a9aa828` (PRs 145–147) was merged in; the change was docs-only. `npm test` passed again, and the built pages kept the same hashes.
+
+### 2026-11-19 — Judge page refresh for PR 152 (Kiro IDE, America/Los_Angeles, 21:54 PST)
+
+- **Problem**: the judge page in PR 152 described `main` at `a9aa828` and listed #149, #150, #151 and #154 in a status table that went stale once #150, #151 and #153 merged.
+- **Performed in**: a Kiro IDE agent session (Claude Opus 5.5) using the `gh` CLI for PR and CI states.
+- **Change**: [docs/submission/kiro-brag-sheet.md](submission/kiro-brag-sheet.md) now describes `main` at `6c14686`, adds #150 (Scout before/after), #151 (Night Watch Showdown, balance steady) and #153 (profile) with commit-pinned evidence and CI links, and replaces the status table with pinned links for #149 (merged into the candidate branch only), #148 and #154. Demo steps unchanged.
+- **Verification**: every link on the page resolved (local paths, anchors, and remote URLs with HTTP 200). The demo's four actions were replayed through `src/match/showdown-session.js` at `6c14686` in Node and gave the same events; no browser run on the new build.
+- **Not verified here**: a scheduled Crew run of Night Watch on Showdown, the #148 code, and any human play.
+
+### 2026-11-19 — PR 148 synced with main after #150, #154, #155, #156 (Kiro CLI, America/Los_Angeles, 22:12 PST)
+
+- **Performed in**: a Kiro CLI sync worker session (Claude Opus 5.5). Ordinary merge of `github/main` `ff84403` into `kiro/graywave-integrate` `998645a`. No new features, rules, wording or balance changes.
+- **Conflicts**: `src/ui/showdown-screen.js` click handler: kept #148's bonus-choice, Trail "again" and Camp lines, then appended #156's `pickStarted`/`refocus` lines (the resolution tested in the #156 worker report). This log: both entries kept.
+- **Verification** (offline graybox build): `npm test` 577 of 577; card-spec check exit 0; `browser-showdown-keyboard-check` 6 of 6; `browser-showdown-check` 23 of 23 (includes `?mode=lanes` and `?mode=match` fallback); `browser-showdown-trail-check` 16 of 16 (first two duels by clicks, rewards across reloads); cue check passed. A temporary, uncommitted extension of the keyboard check also took the bonus choice by Enter (focus landed on Back to camp), reloaded, and won Raven Roost by keyboard only; the Camp after a reload showed both rewards. `src/game/showdown/rules.js`, `cards.js` and the bot are identical to main; `sim.mjs 1000` and `trail-sim.mjs` reproduce #150's "after" numbers.
+- **Remaining**: Fable F1/F2 and F3–F5, save-code portability of inherited cards, wording approval, human playtests (keyboard, screen reader, first-time).

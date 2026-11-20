@@ -29,10 +29,15 @@ possible. Use human playtests to judge clarity and fun.
   user before creating it. Apply this to Blender, in-game visual effects and
   poses, and work delegated to Fable or Kiro.
 - Preserve the approved haunted Western art and existing attack demo.
-- The current browser duel uses visible decks and hands, three lanes per
-  side, tribute summons and one-to-five life orbs per living troop.
-- Draft numeric rules and known spec contradictions are in docs/kiro-task-01.md.
-  Do not invent mechanics to fill asset gaps.
+- Showdown is the game being built (docs/design/release-line.md). Its engine
+  is src/game/showdown/ and Play on the graybox page (src/app.js) opens it.
+  Its rules are prototypes/showdown/RULEBOOK.md; the full Trail reference
+  page is prototypes/showdown/. Start Showdown work from docs/AGENT-ROUTER.md.
+- The earlier lane duel (three lanes per side, tribute summons, one-to-five
+  life orbs per living troop) stays playable at ?mode=lanes and in the
+  illustrated build. Its draft rules and known contradictions are in
+  docs/kiro-task-01.md. Keep it working. Do not invent mechanics to fill
+  asset gaps.
 - Keep plain JavaScript, Three.js, Rapier and esbuild. Rules in src/game/ must
   have no DOM, rendering, filesystem, network or model dependencies.
 - Prefer direct functions and explicit data. Split modules by purpose. Avoid

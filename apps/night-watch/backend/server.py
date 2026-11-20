@@ -1,7 +1,7 @@
 """Night Watch Kiro Crew backend.
 
 Run without arguments to serve HTTP on 127.0.0.1 (port from the PORT variable).
-Run `python3 backend/server.py run --scheduled` for one check, as a cron command.
+Run `python3 backend/server.py run --scheduled --mode showdown` for one check, as a cron command.
 """
 
 import argparse
@@ -24,6 +24,7 @@ SCHEDULE_OWNER = "app:kiroween-night-watch/balance"
 API_PREFIXES = ("/apps/" + APP_ID + "/api", "/api/apps/" + APP_ID, "/api")
 MAX_BODY = 64 * 1024
 MAX_REPORTS = 20
+NIGHTLY_MODE = "showdown"
 
 
 class Busy(Exception):
@@ -107,10 +108,15 @@ def save_config(raw):
     return get_state()
 
 
-def run_report(source):
-    """Run one comparison, store it, and return the record."""
+def run_report(source, mode=None):
+    """Run one comparison, store it, and return the record. A mode overrides the saved one for this run."""
     with file_lock("run.lock", wait=False):
-        record = balance.build_report(load_config(), source)
+        config = load_config()
+        if mode is not None:
+            if mode not in balance.MODES:
+                raise balance.ConfigError("Mode must be one of %s." % ", ".join(balance.MODES))
+            config["mode"] = mode
+        record = balance.build_report(config, source)
         with file_lock("state.lock", wait=True):
             write_json("history.json", ([record] + load_reports())[:MAX_REPORTS])
     return record
@@ -231,9 +237,9 @@ def serve():
 
 # ---------------------------------------------------------------- CLI
 
-def run_cli(source):
+def run_cli(source, mode=None):
     try:
-        record = run_report(source)
+        record = run_report(source, mode)
     except (balance.ConfigError, Busy, StoreError) as error:
         print("Night Watch could not run. %s" % error, file=sys.stderr)
         return 1
@@ -261,7 +267,8 @@ def schedule_cli(args):
     if not load_config().get("repo"):
         print("Save the checkout and revisions in Night Watch before scheduling checks.", file=sys.stderr)
         return 1
-    command = shlex.join([sys.executable, os.path.realpath(__file__), "run", "--scheduled"])
+    # The nightly job plays the Showdown fight, whatever mode the manual settings hold.
+    command = shlex.join([sys.executable, os.path.realpath(__file__), "run", "--scheduled", "--mode", NIGHTLY_MODE])
     return subprocess.run([
         crew, "cron", "add", "Night Watch", "",
         "--cron", "%d %d * * *" % (time.minute, time.hour), "--timezone", args.timezone,
@@ -276,6 +283,7 @@ def main(argv):
     commands = parser.add_subparsers(dest="command")
     run = commands.add_parser("run", help="run one balance check and store the report")
     run.add_argument("--scheduled", action="store_true", help="record the check as scheduled")
+    run.add_argument("--mode", choices=balance.MODES, help="showdown (paired seat-swapped deals) or lanes; defaults to the saved setting")
     schedule = commands.add_parser("schedule", help="register or remove the Kiro Crew job")
     schedule.add_argument("--time", default="02:00", help="local nightly time as HH:MM")
     schedule.add_argument("--timezone", default="America/Los_Angeles", help="IANA timezone for the schedule")
@@ -284,7 +292,7 @@ def main(argv):
     if args.command == "schedule":
         return schedule_cli(args)
     if args.command == "run":
-        return run_cli("scheduled" if args.scheduled else "manual")
+        return run_cli("scheduled" if args.scheduled else "manual", args.mode)
     serve()
     return 0
 

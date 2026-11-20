@@ -276,9 +276,35 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions}) {
     cues.paint();
   }
 
+  // Each render replaces the board and hand buttons, which drops keyboard focus. After a keyboard
+  // activation (a click with detail 0, or Escape) focus goes to the next usable button: a new pick's
+  // first legal choice, back to what opened a cancelled pick, the same button, or the next thing to
+  // play. A mouse click (detail 1 or more) never moves focus, and Escape moves it only from a duel button.
+  let origin = null; // the button that opened the current pick
+  const pickKey = (p) => p ? p.card ?? `troop-${p.troop}` : null;
+  const keyOf = (b) => !b || !root.contains(b) ? null : b.id ? `#${b.id}`
+    : b.dataset.card ? `[data-card="${b.dataset.card}"]` : b.dataset.slot ? `[data-slot="${b.dataset.slot}"]` : b.dataset.base ? `[data-base="${b.dataset.base}"]` : null;
+  // The first enabled, shown match of the earliest selector in the list that has one.
+  const usable = (...selectors) => {
+    for (const selector of selectors) {
+      const found = selector && [...root.querySelectorAll(selector)].find((n) => !n.disabled && !n.hidden);
+      if (found) return found;
+    }
+    return null;
+  };
+  const pickStarted = (before) => pickKey(pick) !== null && pickKey(pick) !== pickKey(before);
+  function refocus(key, before) {
+    if (root.hidden) return;
+    const next = (pickStarted(before) ? usable("#sd-board button", "#sd-cover", "#sd-cancel") : null)
+      ?? (before && !pick ? usable(origin) : null) ?? usable(key)
+      ?? usable("#sd-hand button", "#sd-board [data-own]", "#sd-end", "#sd-result button", "#sd-home");
+    if (next && next !== document.activeElement) next.focus();
+  }
+
   root.addEventListener("click", (event) => {
     const b = event.target.closest("button");
     if (!b || b.disabled || !session) return;
+    const [key, before, keyboard] = [keyOf(b), pick, event.detail === 0];
     const d = b.dataset;
     if (d.card) clickCard(d.card);
     else if (d.own) clickOwn(Number(d.own));
@@ -295,9 +321,16 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions}) {
     }
     else if (b.id === "sd-again" && campaign.trailDuel()) start(campaign.trailDuel(), freshSeed());
     else if (b.id === "sd-home" || b.id === "sd-camp") { cues.clear(); onHome(); }
+    if (pickStarted(before)) origin = key;
+    if (keyboard) refocus(key, before);
   });
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && pick && !root.hidden) { pick = null; render(); }
+    if (event.key === "Escape" && pick && !root.hidden) {
+      const [key, before] = [keyOf(document.activeElement), pick];
+      pick = null;
+      render();
+      if (key) refocus(key, before);
+    }
   });
   return {start};
 }

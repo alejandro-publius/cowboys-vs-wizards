@@ -341,25 +341,51 @@ function evaluate(state, side) {
   return 8 * (own.base - enemy.base) + material(own, side) - material(enemy, opponent(side)) - 6 * exposed + own.hand.length + 3 * own.traps.length + location;
 }
 
-// The list of actions for the active side's whole turn, ending with {type: "end"}.
-// It plans as if the other side had no traps set, because it cannot see them.
-// shortcut: the plan can see the top of its own deck through Scout; hide the deck order if this bot is kept.
+// What the level-2 bot may know: the other side's traps are removed, and its own deck is put in a
+// fixed order, because the order is hidden from its owner too.
+function knowable(state) {
+  const view = structuredClone(state);
+  view.sides[opponent(state.active)].traps = [];
+  view.sides[state.active].deck.sort();
+  return view;
+}
+
+// A Scout drawing from a non-empty deck reveals a card the bot cannot know yet. The card is
+// taken back out of the plan's view: it still counts as one more card in hand (or nothing, if
+// the hand was full and it burned), but the rest of the plan cannot play it.
+function hideDraw(next, side, events) {
+  const drawn = events.find((event) => (event.type === "draw" || event.type === "burn") && event.side === side);
+  if (!drawn) return null;
+  if (drawn.type === "draw") next.sides[side].hand.pop();
+  else next.sides[side].discard.pop();
+  return drawn.type === "draw" ? 1 : 0;
+}
+
+// The list of actions for the active side's turn. It plans as if the other side had no traps
+// set, because it cannot see them. A plan ends with {type: "end"}, or stops right after a Scout
+// that draws, scored without the unseen card; playTurn plans again once the card is in hand.
 export function planTurn(state) {
   const side = state.active;
-  const blind = structuredClone(state);
-  blind.sides[opponent(side)].traps = [];
   let best = null;
   const seen = new Set();
-  (function explore(current, plan) {
-    const key = JSON.stringify([current.sides, current.location, current.summonUsed, current.castUsed, current.setUsed, current.attacking]);
+  (function explore(current, plan, cut, unseen) {
+    const key = JSON.stringify([current.sides, current.location, current.summonUsed, current.castUsed, current.setUsed, current.attacking, unseen]);
     if (seen.has(key)) return;
     seen.add(key);
     for (const action of legalActions(current)) {
       // Cover is decided once the attacks are chosen (below): trying it at every step triples the search for the same result.
       if (action.type === "cover") continue;
-      let next = action.type === "end" ? current : applyAction(current, action).state;
+      let next = current;
+      let nextCut = cut;
+      let nextUnseen = unseen;
+      if (action.type !== "end") {
+        const applied = applyAction(current, action);
+        next = applied.state;
+        const hidden = cut === null ? hideDraw(next, side, applied.events) : null;
+        if (hidden !== null) [nextCut, nextUnseen] = [plan.length + 1, hidden];
+      }
       if (action.type !== "end" && !next.result) {
-        explore(next, [...plan, action]);
+        explore(next, [...plan, action], nextCut, nextUnseen);
         continue;
       }
       const steps = [...plan];
@@ -369,10 +395,11 @@ export function planTurn(state) {
           if (evaluate(covered, side) > evaluate(next, side)) [next, steps[steps.length]] = [covered, cover];
         }
       }
-      const value = evaluate(next, side);
-      if (!best || value > best.value) best = {value, plan: [...steps, action]};
+      const value = evaluate(next, side) + nextUnseen;
+      const full = [...steps, action];
+      if (!best || value > best.value) best = {value, plan: nextCut === null ? full : full.slice(0, nextCut)};
     }
-  })(blind, []);
+  })(knowable(state), [], null, 0);
   return best.plan;
 }
 
@@ -401,7 +428,7 @@ function simpleStep(state, level) {
 }
 
 // Plays the active side's whole turn with the bot. Level 2 plans the whole turn; 0, 1 and 1.5 are weaker opponents.
-// A sprung trap changes the board, so the rest of a plan is made again.
+// A sprung trap or a Scout draw changes what level 2 knows, so the rest of its plan is made again.
 export function playTurn(state, level = 2) {
   if (state.result) return {state, events: []};
   const side = state.active;
@@ -409,13 +436,18 @@ export function playTurn(state, level = 2) {
   if (level === 1.5) level = Math.floor(state.turn / 2) % 2 ? 1 : 2;
   const events = [];
   let plan = level === 2 ? planTurn(state) : [simpleStep(state, level)];
-  while (plan.length && !state.result && state.active === side) {
+  while (!state.result && state.active === side) {
+    if (!plan.length) {
+      if (level !== 2) break;
+      plan = planTurn(state);
+    }
     const applied = applyAction(state, plan.shift());
     state = applied.state;
     events.push(...applied.events);
     if (state.result || state.active !== side) break;
     if (level !== 2) plan = [simpleStep(state, level)];
-    else if (applied.events.some((event) => event.type === "trap")) plan = planTurn(state);
+    // A sprung trap changes the board and the bot's own draw reveals a card: plan again from the actual state.
+    else if (applied.events.some((event) => event.type === "trap" || ((event.type === "draw" || event.type === "burn") && event.side === side))) plan = planTurn(state);
   }
   return {state, events};
 }
