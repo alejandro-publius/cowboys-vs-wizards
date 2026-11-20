@@ -26,7 +26,7 @@ Times are from the receipt. Each state was read from the page during capture.
 | 0:55 | **Restart**, **Ranger**, **Jack** (B), **End turn**. | On turn 7 both Cowboy troops are still standing: the Ranger on 2 orbs and the Wagon on 1. |
 | 1:05 | Caption only, over the deal-2 board. | Fixed-policy outcomes from [`rival-cases.json`](../../experiments/showdown-dragon-strategy/rival-cases.json). Deal 1: Dragon, Cowboys win on T15; Jack, Wizards win on T10. Deal 2 reverses this: Dragon, Wizards win on T14; Jack, Cowboys win on T17. These come from bot-versus-bot replays. The video does not play them, and they predict nothing for a human. |
 | 1:14 | **Back to camp**, **Sheriff's Ledger**. | The Ledger opens on its Night Watch summary: 2,000 bot games at `e813ae8`. It is shown as supporting evidence about the bots only. |
-| 1:21–1:25 | Closing caption. | The reason to replay: on these two deals the same target choice reverses the fixed-policy result. First-time human playtests are pending. |
+| 1:21–1:25 | Closing caption. | The reason to replay: on these two deals the same target choice reverses the fixed-policy result. The caption reports the playtest status at capture time. |
 
 A persistent top caption line says the capture is scripted, names the build and says it is not a human playtest. A 0.7-second yellow outline marks each scripted click. These are the only additions to the recorded frames. The video is played at recorded speed; held stretches are real page state between clicks.
 
@@ -34,12 +34,12 @@ A persistent top caption line says the capture is scripted, names the build and 
 
 About 150 words for 85 seconds. The video is complete without it.
 
-> This is Showdown, the current Cowboys versus Wizards game. Play opens the Camp. The Experiment section opens one turn five decision on two deals. Your Ranger can hit the resting Dragon or the Jack-o'-Lantern in cover, and the game shows what each will do before you commit. On this deal, hit the Dragon and your Bear Trap finishes it next turn. Hit the Jack instead, and the Dragon survives the trap and clears your board. Restart puts the same turn back. On the second deal there is no trap and a Covered Wagon stands beside the Ranger. The Dragon line now loses both troops, and the Jack line keeps them. Played to the end by fixed bots, the better choice flips between the two deals. That flip is the reason to replay. We have not yet watched a first-time player try it.
+> This is Showdown, the current Cowboys versus Wizards game. Play opens the Camp. The Experiment section opens one turn five decision on two deals. Your Ranger can hit the resting Dragon or the Jack-o'-Lantern in cover, and the game shows what each will do before you commit. On this deal, hit the Dragon and your Bear Trap finishes it next turn. Hit the Jack instead, and the Dragon survives the trap and clears your board. Restart puts the same turn back. On the second deal there is no trap and a Covered Wagon stands beside the Ranger. The Dragon line now loses both troops, and the Jack line keeps them. Played to the end by fixed bots, the better choice flips between the two deals. That flip is the reason to replay. The recorded lines are played by the fixed bots.
 
 ### Open gates
 
 - **Human voice:** not chosen or recorded. No synthesized speech is used.
-- **First-time feedback:** none. The three first-time tests in [the playtest guide](../../prototypes/showdown/PLAYTEST.md) are still pending.
+- **Playtests:** Alex confirmed completion after the recording. The available report documents two Trail wins. First-time player comments about this particular decision are undocumented.
 - **Public video:** no YouTube or other public upload exists. Do not put a placeholder link in the Devpost form.
 - **Rendered review:** Codex checked the encoded file, sampled the Camp, both boards and the Ledger, and read the fixed-policy caption at native width. The captions distinguish scripted moves from human play. Alex’s full viewing and final editorial choice remain open.
 - **Live build:** the cut shows `96adf60`. The [public manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) identifies the current game.

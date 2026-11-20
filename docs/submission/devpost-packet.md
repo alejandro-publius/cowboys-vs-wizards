@@ -37,7 +37,7 @@ Three visible things differ: the supporting troop, the trap and the Wizard Base.
 | Kind | What happened | Evidence |
 | --- | --- | --- |
 | Human, maintainer | Alex played Showdown on November 19 and chose it as the entry. A Camp playtest report Alex pasted records two Trail wins (Boot Hill in 13 turns, Raven Roost in 11) and 87 active seconds. The report does not identify the build. Alex is not a first-time player, so this is not part of the first-time cohort. | The report is held by the coordinator and is not committed. [Release line](../design/release-line.md) |
-| Human, first-time | **None.** Three first-time playtests are pending, so no claim about clarity or fun is made. | [Playtest guide](../../prototypes/showdown/PLAYTEST.md) |
+| Human, first-time | Alex confirmed the playtests were completed. First-time participant counts and individual feedback are undocumented. | [Playtest guide](../../prototypes/showdown/PLAYTEST.md) |
 | Scripted browser | Headless Chrome selected both targets on both seeds by mouse, keyboard and touch (375×740). It also checked retry and checked that the saved career stayed byte-identical: 29/29 over `file://` and over local HTTP. The browser's play-out step only presses End turn, so the policy outcomes in the table are checked in Node, not in the browser. | [Browser checks](../evidence/showdown-turn-k095.md#second-decision-seed-70-k-008-2026-11-20) · [Check script](../../scripts/browser-showdown-turn-check.mjs) |
 | Bot | Night Watch's scheduled Crew run on November 20 played 2,000 bot games: the first player won 57.1% and the Cowboys 59.4%. | [Scheduled run receipt](../evidence/night-shift/crew-scheduled-2026-11-20.json) |
 | Native Kiro | See [How Kiro was used](#how-kiro-was-used-on-showdown). | |
@@ -50,7 +50,7 @@ Cowboys vs. Wizards. The entry is **Showdown**, served at the [site root](https:
 
 **Who it is for:** people who play strategy and card games in a browser and want decisions that matter more than reflexes.
 
-**Player problem (a hypothesis).** We think a card-duel player cannot easily tell why one target was right on a given board. The two positions above let a player try the same target choice on two boards and see what changed. No first-time player has tried this, so it is untested.
+**Player problem (a hypothesis).** We think a card-duel player cannot easily tell why one target was right on a given board. The two positions above let a player try the same target choice on two boards and see what changed. The available reports give no individual player’s explanation of the Dragon choice.
 
 ## Who did what
 
@@ -116,7 +116,7 @@ Official rules: https://kiroween.devpost.com/rules. Deadlines: credit requests b
 - Pre-existing work disclosure: when the board demo and the Tripo exports were made
 - Artist credits and the source of the card illustrations; missing Tripo and Mixamo license metadata
 - Team: current enrollment if claiming student status, every teammate joined on Devpost, Rachel's credit, and credit requests by December 1
-- Three first-time human playtests
+- Individual playtest observations for any claim about clarity or fun
 - Fable's approval of the first-draft Camp, mode, `/3d/` and Ledger wording, and Fable's decision on the Dragon positions ([release line](../design/release-line.md))
 - Final check of the served build and these links on submission day
 - Alex's approval of this packet, and confirmation that it was submitted
