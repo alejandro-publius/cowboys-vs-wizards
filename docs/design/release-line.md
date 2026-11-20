@@ -20,6 +20,8 @@ Added by Kiro (Kiro CLI, coordinator job `graywave-assemble`) from GitHub `main`
 
 **Bone Fence evidence for Fable.** In 1,000 paired third-duel deals, the greedy Cowboy policy took 1,258 of 1,328 offered rides and won 50 fewer games than its matched Sheriff control. Declining rides reproduced all 1,000 controls. Players can now inspect the Guard reason on the focused target. The private Dragon cut is ready for Alex. Human assistive-technology feedback and the public video remain open. [Outrider paired study](../../experiments/showdown-outrider/README.md) · [Guard accessibility check](../evidence/showdown-guard-access/README.md) · [judge script](../submission/judge-demo-script.md).
 
+**Outrider decision candidate (local, November 20).** An independent Kiro CLI session verified candidate `e58fb4b` from a clean checkout. Camp shows one "Try an Outrider turn" button (`?outrider=case-e`). The collapsed Sheriff's Ledger opens two positions, case-e and case-a, and shows each measured ride and fight result only after "Show the measured comparison". The game replays both choices before each build. A rules change or a reversed result removes the button, the links and the results. The pre-registered cue failed its holdout, so neither position is advice, a bounty or a rule. Fable decides whether any of it becomes one. The public site still serves `bf510f3`. [Release verification](../evidence/outrider-release-verify.md) · [gate evidence](../evidence/outrider-gate.md) · [Power evidence](../evidence/showdown-ride-power.md).
+
 **Milestones.**
 
 | State | What |
