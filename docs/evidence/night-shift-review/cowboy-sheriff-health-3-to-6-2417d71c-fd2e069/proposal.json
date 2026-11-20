@@ -1,0 +1,38 @@
+{
+  "schema": "night-review/proposal@1",
+  "id": "cowboy-sheriff-health-3-to-6-2417d71c-fd2e069",
+  "status": "draft",
+  "surface": {
+    "kind": "local-cli",
+    "kiroWeb": "not used; this bundle was produced by the local CLI and is not a Kiro Web run"
+  },
+  "finding": {
+    "file": "docs/evidence/night-watch-showdown/scout-pair-reports.json",
+    "sha256": "d2e069084d48fcca8da05476cdc4f62f34f44da5d29c4b9a3eeabc44a11cca54",
+    "reportId": "fa15c87e1701",
+    "commit": "3dd47f1fb668f1b42edd72b50c898a0b1e622d74",
+    "firstSeed": 0,
+    "count": 1000,
+    "counts": {
+      "games": 2000,
+      "cowboy": 1188,
+      "wizard": 812,
+      "draw": 0,
+      "first": 1142,
+      "second": 858
+    }
+  },
+  "base": "2417d71c27156c36a920aadc25dbae059ac18ac9",
+  "cardPath": ".kiro/specs/duel-card-pipeline/cards/cowboy-sheriff.json",
+  "card": "cowboy-sheriff",
+  "side": "cowboy",
+  "field": "health",
+  "from": 3,
+  "to": 6,
+  "cardSha256": {
+    "before": "ea764758eaa08bd1bb372d3b761f21f49c477ac7e8d86b117c336a33f1ae377c",
+    "after": "9d4d01e13c963b2782d9af86afa19b8e8dc18ba3eb9fa5e290b098d13a8372b4"
+  },
+  "patchSha256": "9c5e8e7253739dcc0d6da7fbdb8342daa457caca22f07644cbbdf2ac19c0fb20",
+  "note": "Draft only. Not applied to this checkout or any branch. Fable/Alex decide."
+}

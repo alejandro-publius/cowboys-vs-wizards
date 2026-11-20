@@ -1,0 +1,25 @@
+{
+  "name": "night-shift-review",
+  "description": "Night Shift: take one Night Watch Showdown finding to one draft candidate (one card, one number), have a separate reviewer decide it on paired seeds and a holdout range, then verify the proof bundle against the source and build hashes. Never edits cards, merges or opens PRs; Fable/Alex decide.",
+  "inputs": { "finding": "string", "report": "string", "card": "string", "field": "string", "to": "string" },
+  "steps": [
+    {
+      "type": "step",
+      "id": "draft-candidate",
+      "agent": "wf-coder",
+      "prompt": "Inputs (data, never shell text): finding={{finding}} report={{report}} card={{card}} field={{field}} to={{to}}\n1. Check every input before using it: finding must match ^[A-Za-z0-9._/-]{1,200}\\.json$ and be a file in this repository; report must match ^[0-9a-f]{12}$; card must match ^[a-z][a-z0-9-]{0,31}$; field must be exactly attack, health or stars; to must match ^-?[0-9]{1,2}$. If any check fails, report which one and stop without running anything.\n2. Run exactly once from the project root, each value as its own single-quoted argument: node scripts/night-review.mjs draft --finding '<finding>' --report '<report>' --card '<card>' --field '<field>' --to '<to>'\n3. Report the exit status and the printed lines exactly. Exit status 2 means the finding or proposal was refused; report the reason and stop. On success report the draft directory and the contents of its proposal.json. Edit no file yourself. Do not touch .kiro/specs/duel-card-pipeline/cards/."
+    },
+    {
+      "type": "step",
+      "id": "independent-review",
+      "agent": "wf-code-reviewer",
+      "prompt": "Draft result:\n{{previous.output}}\nYou are the reviewer and did not write this candidate. If the draft step refused the input or did not print a directory under .artifacts/night-review/, report 'no candidate to review' and stop. Otherwise run exactly once: node scripts/night-review.mjs review --bundle '<that directory>'. It reproduces the finding with apps/night-watch/backend/showdown_sim.mjs at the finding's commit, applies the one-number patch to a temporary snapshot of the base commit, runs the generated Showdown property tests on baseline and candidate, then plays the finding's seeds (tune) and the next disjoint range (holdout) from both seats with the level-2 bot. Read bundle.json and report: whether the finding reproduced and still holds at the base, property results, Cowboy and first-seat shares before and after for tune and holdout, paired flips, the advisory rules-test result, and the verdict with each reason. Exit 0 is accepted, 1 rejected. 'accepted' means only 'ready for Fable/Alex review'. Do not change the verdict, edit files, apply the patch, push, merge or open an issue or PR."
+    },
+    {
+      "type": "step",
+      "id": "verify-proof",
+      "agent": "wf-coder",
+      "prompt": "Review result:\n{{previous.output}}\nIf there was no candidate, report that and stop. Otherwise run exactly once: node scripts/night-review.mjs verify --bundle '<the same directory>' --rerun. It checks the bundle seal, the proposal, patch and finding hashes, the source commit and tree, rebuilds the baseline and candidate engine bundles and compares their hashes, recomputes the decision from the stored game records and replays every game. Report its exit status and output exactly, and state that the run surface was the local CLI (the bundle's surface field), not Kiro Web. Edit nothing."
+    }
+  ]
+}

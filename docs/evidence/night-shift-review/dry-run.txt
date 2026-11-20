@@ -1,0 +1,49 @@
+draft cowboy-sheriff-health-3-to-2-2417d71c-fd2e069: cowboy-sheriff health 3 -> 2 on 2417d71c2715
+  .artifacts/night-review/cowboy-sheriff-health-3-to-2-2417d71c-fd2e069
+review cowboy-sheriff-health-3-to-2-2417d71c-fd2e069
+  finding reproduced at 3dd47f1fb668: true
+  properties: baseline 21/21, candidate 21/21
+  tune 0-999: Cowboy 59.40% -> 52.90%, first seat 57.10% -> 55.90%
+  holdout 1000-1999: Cowboy 61.05% -> 54.65%, first seat 58.25% -> 57.35%
+  verdict: accepted
+  Ready for Fable/Alex review. Not applied to any card; no merge.
+verify cowboy-sheriff-health-3-to-2-2417d71c-fd2e069: ok; recorded verdict accepted; tool script matches the current file
+EXIT=0
+draft cowboy-sheriff-health-3-to-4-2417d71c-fd2e069: cowboy-sheriff health 3 -> 4 on 2417d71c2715
+  .artifacts/night-review/cowboy-sheriff-health-3-to-4-2417d71c-fd2e069
+review cowboy-sheriff-health-3-to-4-2417d71c-fd2e069
+  finding reproduced at 3dd47f1fb668: true
+  properties: baseline 21/21, candidate 21/21
+  tune 0-999: Cowboy 59.40% -> 63.60%, first seat 57.10% -> 57.90%
+  holdout 1000-1999: Cowboy 61.05% -> 65.30%, first seat 58.25% -> 59.20%
+  verdict: rejected
+    - tune: faction skew 9.40 -> 13.60 pp did not improve
+    - holdout: faction skew 11.05 -> 15.30 pp did not improve
+  Do not forward this candidate.
+verify cowboy-sheriff-health-3-to-4-2417d71c-fd2e069: ok; recorded verdict rejected; tool script matches the current file
+EXIT=1
+draft cowboy-sheriff-health-3-to-6-2417d71c-fd2e069: cowboy-sheriff health 3 -> 6 on 2417d71c2715
+  .artifacts/night-review/cowboy-sheriff-health-3-to-6-2417d71c-fd2e069
+review cowboy-sheriff-health-3-to-6-2417d71c-fd2e069
+  finding reproduced at 3dd47f1fb668: true
+  properties: baseline 21/21, candidate 0/0 (spec validation failed)
+  verdict: rejected
+    - candidate failed a property test or card-spec validation
+    - no tune results
+    - no holdout results
+  Do not forward this candidate.
+verify cowboy-sheriff-health-3-to-6-2417d71c-fd2e069: ok; recorded verdict rejected; tool script matches the current file
+EXIT=1
+draft cowboy-sheriff-health-3-to-2-2417d71c-fb4e45e: cowboy-sheriff health 3 -> 2 on 2417d71c2715
+  .artifacts/night-review/cowboy-sheriff-health-3-to-2-2417d71c-fb4e45e
+review cowboy-sheriff-health-3-to-2-2417d71c-fb4e45e
+  finding reproduced at 3dd47f1fb668: false (mismatched cowboy, wizard)
+  properties: baseline 21/21, candidate 21/21
+  tune 0-999: Cowboy 59.40% -> 52.90%, first seat 57.10% -> 55.90%
+  holdout 1000-1999: Cowboy 61.05% -> 54.65%, first seat 58.25% -> 57.35%
+  verdict: rejected
+    - the Night Watch finding did not reproduce from its commit and seeds
+    - the finding's counts no longer hold at the review base; rerun Night Watch on the base
+  Do not forward this candidate.
+verify cowboy-sheriff-health-3-to-2-2417d71c-fb4e45e: ok; recorded verdict rejected; tool script matches the current file
+EXIT=1
