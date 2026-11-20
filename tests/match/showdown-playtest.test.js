@@ -121,3 +121,18 @@ test("the prototype's report call, with no build option, is byte-for-byte the ol
     Object.entries(newSave().deck).map(([t, c]) => `${t.replace(/^cowboy-/, "")} x${c}`).join(", ") + ".",
     "", "Duel by duel:", "1. Boot Hill: won in 13 turns, 53 s", "2. Raven Roost: won in 11 turns, 34 s"].join("\n"));
 });
+
+// K-094: the report a tester copies prints only each line's public fields, whatever else a stored line carries.
+test("stored lines with private extras, a non-label build or two-player fields report only public fields", () => {
+  const canary = (what) => `ZZCANARY-${what}`;
+  const storage = memory({[PLAYTEST_KEY]: JSON.stringify([
+    {...entry(canary("run")), duel: canary("duel"), note: canary("note"), player: canary("player")},
+    {name: "Raven Roost", won: false, turns: 6, seconds: 30, rules: false, build: canary("build")},
+    {name: "Raven Roost", won: true, turns: 7, seconds: 60, rules: true, seat: "wizard", hand: [canary("hand")], otherHand: [canary("other")]},
+    {mode: "hotseat", hand: [canary("dropped")]},
+  ])});
+  const text = createPlaytestLog(storage, {build: BUILD_A}).text(career());
+  assert.doesNotMatch(text, /ZZCANARY/);
+  assert.match(text, /\nDuels by build: 1-3 build not recorded\.\n/);
+  assert.match(text, /\n1\. Boot Hill: won in 9 turns, 80 s\n2\. Raven Roost: lost in 6 turns, 30 s\n3\. Raven Roost: won in 7 turns, 60 s, read the rules$/);
+});
