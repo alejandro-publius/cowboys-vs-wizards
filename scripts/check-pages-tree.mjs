@@ -6,6 +6,7 @@
 //     hashes the served bytes; with --commit the manifest must name that commit
 //   - every assets/ URL in /3d/index.html is relative, is served from /cowboys-vs-wizards/3d/assets/
 //     with the bytes on disk, and every model in the page's model list is a glTF binary
+//   - / and /graybox/ hold no lane chunk or lane board (issue 143 slice 3)
 //   - /showdown/ is served, and the /3d/ page carries the earlier-build label
 // --browser, native headless Chrome with a fresh profile (SwiftShader WebGL), mouse events only:
 //   - / and /graybox/: Play on a clean profile opens the Camp
@@ -16,7 +17,7 @@
 import assert from "node:assert/strict";
 import {spawn} from "node:child_process";
 import {createHash} from "node:crypto";
-import {mkdir, mkdtemp, readFile, rm, writeFile} from "node:fs/promises";
+import {mkdir, mkdtemp, readFile, rm, stat, writeFile} from "node:fs/promises";
 import {createServer} from "node:http";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -72,6 +73,12 @@ try {
   check("build.json names the served root index.html; /graybox/ serves the same bytes", {commit: manifest.commit, indexHtmlSha256: digest});
   assert.match(rootHtml.bytes.toString("utf8"), /id="menu-play"/, "root is the graybox page with Play");
   assert.equal((await get("graybox", "manual")).location, `${BASE_PATH}graybox/`, "/graybox redirects to /graybox/");
+  // Issue 143 slice 3: the graybox page is one file with no lane chunk, so neither path can load lane play.
+  const rootText = rootHtml.bytes.toString("utf8");
+  assert.doesNotMatch(rootText, /chunks\/lanes-|import\(["']\.\/graybox\.js|id="arena"|id="menu-lanes"/, "root carries no lane duel");
+  await assert.rejects(stat(path.join(dir, "chunks")), {code: "ENOENT"}, "no chunks/ at the root");
+  await assert.rejects(stat(path.join(dir, "graybox", "chunks")), {code: "ENOENT"}, "no chunks/ under /graybox/");
+  check("/ and /graybox/ carry no lane chunk or lane board");
 
   // 2. The /3d/ page and every asset it names.
   const page3d = await get("3d/");
