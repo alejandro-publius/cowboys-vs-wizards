@@ -10,7 +10,7 @@ A "ride" is the Showdown Outrider's attack past standing enemy troops to the Wiz
    - `game.commit` (and `game.recordedCommit`, `game.sameCommit`), `closure.current` against `closure.recorded`, and any `closure.changedFiles`.
    - `build.sha256` (or its `error`) and `replayUrl`. If `replayUrl` is null, say the game has no link that opens this decision.
    - `verdict` with each `reasons` entry, `status` and `caseId`.
-   - The position from `decision.position` in plain words: both Bases, both boards, the Cowboy hand, and the offered `decision.ride`.
+   - The position from `decision.position` in plain words: both Bases, both boards, the Cowboy hand, the offered `decision.ride` and, when present, the declining choice `decision.decline`. Board slots are numbered from 0, as in `slot`; name the troop in that slot.
 3. If `advice.allowed` is false, say you cannot give a reason to decline (or take) this ride from verified evidence, and list each `advice.reasons` entry. Do not offer general strategy, do not use `evidence.note` as advice, and do not describe outcomes.
 4. If `advice.allowed` is true, explain only the reason recorded in `evidence`, with its denominators, and the `replayUrl` to try it.
 5. `stale`, `rejected`, `malformed`, `absent` or `unavailable` mean the recorded decision no longer matches the game: say it must be re-derived by the coordinator.

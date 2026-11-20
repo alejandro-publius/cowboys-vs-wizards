@@ -1,0 +1,56 @@
+{
+  "what": "One searched Outrider decision from the ride search (kiro/showdown-ride-search 6ab8899): the first case in label order whose observed decline (fight) arm differs from its ride arm in favour of declining. Neutral label; outcomes stay in the bound project's results/observed.json.",
+  "status": "searched-case",
+  "scope": "Re-derives the public position with a fresh createShowdownSession, checks both arms are legal, replays both arms to the end with the search policy and the shipped Bone Fence bot, and compares them with results/observed.json. One deterministic bot line per arm; not a forced result and not human play.",
+  "derive": {
+    "source": "search",
+    "label": "case-e",
+    "commit": "6ab88990a5536040594286f5f2d9d840a526f474"
+  },
+  "route": {
+    "turn": null
+  },
+  "evidence": {
+    "source": "experiments/showdown-outrider/decision/",
+    "note": "Holdout 1200-1299 scored the pre-registered cue (riderHealth <= 2 -> decline) 3 of 7 reversals correct against always-ride 5 of 7: unsupported."
+  },
+  "recorded": {
+    "commit": "1908eaaa5d995d6f5589d4fbc4a2c30b83e02683",
+    "closure": {
+      "sha256": "6b3b3c4e75b9ad27ab37fce2d2e3f8ffc3b4aefc36ee0759ebc43389e759425e",
+      "fileCount": 10,
+      "files": {
+        "experiments/showdown-outrider/compare.js": "3b7906fdce59008976af724f8331b884443b6810bf9e3d20c8abb05322bca084",
+        "experiments/showdown-outrider/decision/decision.js": "df204fe0d59c38fea4a490e9022cae208dbe7cc8bb27541e57a2b610da297ec2",
+        "src/game/card-specs.generated.js": "187bb9ca71516227e67edd9f6e248e038ae20028e7e3333b6fa28bdf18b40a8b",
+        "src/game/showdown/cards.js": "2e9c3c7df707c43bc61b6481b801211de4fabd6ada87d9aa35d52330b868ffe1",
+        "src/game/showdown/contract.js": "85a356ee3ff9b530162cca870eefead5fb773e45d857b95cfed125e942f1b2be",
+        "src/game/showdown/progress.js": "6eec06618efbfb13d7b965d5d3bce9a7b9d0f4f5f54cd3e11aac41e0de5ef1d0",
+        "src/game/showdown/rules.js": "096eb8a22dced7ca527cd2ebc27b6d1c36922884f0570662a7c0762d62d5b61a",
+        "src/game/showdown/trail.js": "8fa27db59ee2d6cceaecd72012c198c6ef00d98c88994866509cfe51704fd528",
+        "src/match/showdown-session.js": "6ffdf75b79fb706632e9ee6b445d4b658bdc3ec9859e2897088a1fe8f1512c00",
+        "src/match/showdown-turn.js": "f3ca9c067a61c5b6a3444d7a92d081e167c3f992262f3d0fe36f6eba32645e6a"
+      }
+    },
+    "data": {
+      "experiments/showdown-outrider/decision/positions.json": "2558342c584e027ed3f96fc6e485b5a7d39287f125a572a2e06d17d3ddf6f9f8",
+      "experiments/showdown-outrider/decision/replay.json": "483f7784242ae620a8634105c0840c1e415103e1b4bcbf461496aeab0a6cc936",
+      "experiments/showdown-outrider/decision/results/observed.json": "f532a03c219f2d7df3b902eda0f588393ae6143bb7ae9a3847bef4fd078c1c55",
+      "experiments/showdown-outrider/decision/results/holdout-1200-1299.json": "f075f495e08cd36994941cfe7026cc2b2814c31e5e0f345738f86fa5ab34997a"
+    }
+  },
+  "decision": {
+    "turn": 3,
+    "positionSha256": "dceaabe7c6dfc9f08aff005137613db83373fe007b6365898348f2c8f181bed4",
+    "ride": {
+      "type": "attack",
+      "slot": 0,
+      "target": "base"
+    },
+    "decline": {
+      "type": "attack",
+      "slot": 0,
+      "target": 0
+    }
+  }
+}

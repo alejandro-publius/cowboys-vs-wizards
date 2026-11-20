@@ -7,7 +7,7 @@ import {tmpdir} from "node:os";
 import {dirname, join} from "node:path";
 import {fileURLToPath} from "node:url";
 import {createInterface} from "node:readline";
-import {RIDE_ENTRIES, inspectRideDecision} from "../ride.mjs";
+import {RIDE_ENTRIES, SEARCH_DATA, SEARCH_ENTRIES, inspectRideDecision} from "../ride.mjs";
 import {engineFingerprint} from "../showdown.mjs";
 
 const plugin = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -19,7 +19,8 @@ const tmp = mkdtempSync(join(tmpdir(), "orb-ride-"));
 // A copy of the decision's code closure (plus a built page), so edits never touch the checkout.
 function copyProject(name) {
   const root = join(tmp, name) + "/";
-  for (const rel of Object.keys(engineFingerprint(repo, RIDE_ENTRIES).files)) {
+  const files = [...Object.keys(engineFingerprint(repo, RIDE_ENTRIES).files), ...Object.keys(engineFingerprint(repo, SEARCH_ENTRIES).files), ...SEARCH_DATA];
+  for (const rel of new Set(files)) {
     mkdirSync(dirname(join(root, rel)), {recursive: true});
     cpSync(join(repo, rel), join(root, rel));
   }
@@ -108,4 +109,41 @@ test("server lists inspect_ride_decision and refuses paths and extra inputs", {t
   assert.equal(ok.power.version, "1.4.0");
   assert.equal(ok.verdict, "pass");
   assert.equal(ok.advice.allowed, false);
+});
+
+const SEARCH = "outrider-ride-search";
+test("the searched case re-verifies its position and both arms, and withholds advice without a route or a supported cue", {timeout: 30000}, async () => {
+  const out = await inspectRideDecision(repo, SEARCH);
+  assert.equal(out.verdict, "pass", JSON.stringify(out.reasons));
+  assert.equal(out.status, "searched-case");
+  assert.deepEqual(out.advice.reasons, ["no game route is recorded for this case: the game does not open this decision",
+    "the pre-registered ride/decline cue failed its holdout test: no general reason to decline is supported"]);
+  assert.ok(out.decision.decline && out.decision.ride.target === "base");
+  const text = JSON.stringify(out);
+  assert.ok(!/"winner"|"seed"|"prefix"|"label"|case-[a-j]/.test(text), "no outcome, seed, prefix or case label leaves the tool");
+  const wizard = out.decision.position.sides.wizard;
+  assert.ok(!["hand", "deck", "traps"].some((key) => key in wizard), "viewFor carries Wizard counts only");
+  assert.ok(!("deck" in out.decision.position.sides.cowboy));
+});
+
+test("an edited observed result is rejected; a changed data file is stale", {timeout: 30000}, async () => {
+  const root = copyProject("observed");
+  const file = join(root, "experiments/showdown-outrider/decision/results/observed.json");
+  const observed = JSON.parse(readFileSync(file, "utf8"));
+  const label = JSON.parse(readFileSync(join(plugin, "cases", `${SEARCH}.json`), "utf8")).derive.label;
+  observed[label].ride.turn += 1;
+  writeFileSync(file, JSON.stringify(observed));
+  const out = await inspectRideDecision(root, SEARCH);
+  assert.equal(out.verdict, "rejected");
+  assert.ok(out.reasons.includes("replayed ride and decline arms differ from results/observed.json"));
+  assert.ok(out.reasons.some((r) => /results\/observed\.json differs from the receipt/.test(r)));
+  assert.equal(out.advice.allowed, false);
+});
+
+test("a gameplay edit makes the searched case stale", {timeout: 30000}, async () => {
+  const root = copyProject("search-mutated");
+  appendFileSync(join(root, "src/game/showdown/rules.js"), "\n// changed\n");
+  const out = await inspectRideDecision(root, SEARCH);
+  assert.equal(out.verdict, "stale");
+  assert.deepEqual(out.closure.changedFiles, ["src/game/showdown/rules.js"]);
 });
