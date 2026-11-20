@@ -11,7 +11,7 @@
 // policies, so both branches share the base game, the deck orders and the opponent policy.
 import {createHash} from "node:crypto";
 import {existsSync, readFileSync, writeFileSync} from "node:fs";
-import {dirname, resolve} from "node:path";
+import {dirname, relative, resolve} from "node:path";
 import {fileURLToPath} from "node:url";
 import {applyAction, legalActions, planTurn, playTurn, createShowdown, attackOf} from "../../src/game/showdown/rules.js";
 import {viewFor} from "../../src/game/showdown/contract.js";
@@ -21,7 +21,8 @@ import {deckAfter} from "../../src/game/showdown/trail.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "../..");
-const CONTRACT = resolve(root, "../graywave-dragon-contract.json");
+// Referee: the shared contract is committed beside this script (byte-identical copy of ../graywave-dragon-contract.json, same sha256).
+const CONTRACT = resolve(here, "contract.json");
 const BOUNTY = BOUNTIES.find((each) => each.id === "graveyard-dragon");
 
 // Decks. Baseline: the Trail-complete deck every player holds when the bounty opens.
@@ -173,7 +174,7 @@ if (process.argv[2] === "--explore") {
 // ---- main: matched checkpoints from one base game, then a deck sample ----
 const HUNT = 5; // level 2 Wizards, Wizard Base 4, Dragon lands with 4 orbs on Wizard turn 4
 const SEED = Number(process.env.SEED ?? 3);
-const contract = existsSync(CONTRACT) ? {path: CONTRACT, sha256: createHash("sha256").update(readFileSync(CONTRACT)).digest("hex")} : {path: CONTRACT, missing: true};
+const contract = existsSync(CONTRACT) ? {path: relative(root, CONTRACT), sha256: createHash("sha256").update(readFileSync(CONTRACT)).digest("hex")} : {path: relative(root, CONTRACT), missing: true};
 
 function branchAt(seed, turn, pick, prefixCards = false, start = null) {
   const {duel, state} = encounter(seed, HUNT, TRAIL_DECK);

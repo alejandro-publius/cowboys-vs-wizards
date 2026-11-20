@@ -5,7 +5,7 @@
  "cowboyPolicy": "planTurn on viewFor(cowboy) rebuild",
  "wizardPolicy": "playTurn(state, hunt level)",
  "wizardContract": {
-  "path": "/Users/alexvintera/Documents/Codex/2026-11-19/can-you-pickup-after-my-kiro/work/graywave-dragon-contract.json",
+  "path": "experiments/showdown-dragon-strategy/contract.json",
   "sha256": "c1c5a8d4da89b731c3a96fe13b211d86b79222dde530dfc88439df87bdeda33e"
  },
  "baseSeed": 3,
