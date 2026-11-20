@@ -1,5 +1,82 @@
 # K-039 cold start: installed Power answers "Why would I decline this ride?"
 
+## Stage 3 (current): Camp-routed case, opened link (2026-11-20 PST, same worker)
+
+Branch `kiro/showdown-ride-power` after the coordinator merged gate and search into it (`b72e5eb`). Candidate head
+`a8c8673df6a33a40cd9d89b7a653b3a3eab7050e`. No game, gate, rule or Dragon file changed; only `.kiro/powers/orb-duel-review/` and this doc.
+
+**Power 1.5.0.** New default case `outrider-camp-case` = search `case-e`, the first `fight-only` label in `results/observed.json`
+([camp.mjs](../../.kiro/powers/orb-duel-review/camp.mjs), [receipt](../../.kiro/powers/orb-duel-review/cases/outrider-camp-case.json)).
+- Semantic freshness comes from the game's own K-011 gate (`scripts/outrider-gate.mjs` `loadDecision`/`replayAll`/`judge`). Both arms
+  are replayed in the bound tree against `results/observed.json` and the gate's transcript digests. File hashes decide nothing.
+- A fresh session's landing must equal `positions.json`, and both arms must be legal there.
+- The link is issued only from a built page (`dist/web/index.html` or the standalone page) that meets both conditions:
+  - the page carries the bound tree's own build label (`scripts/graybox-build-label.mjs`). A `+local` tree or an older label is refused.
+  - the page carries this case's exact verified entry, in esbuild's minified form.
+  Otherwise the verdict is `stale`, with no link, no outcome and no advice. A stale or missing page therefore cannot stand in for the head.
+- Links:
+  - `links.local`: `http://127.0.0.1:47391/?outrider=case-e`, with its `serve` command. It is verified as page bytes at this head.
+  - `links.public`: `https://alejandro-publius.github.io/cowboys-vs-wizards/?outrider=case-e`. It is canonical once deployed and is marked as not checked by the tool.
+- `judgeOnly` is kept apart from `decision.position`. It holds each choice's winner and turn, and the line of `[Cowboy, Wizard]` Bases and standing troops at each changed turn.
+- `advice`: `allowed` true, `scope` "this example only", `general` false, with the holdout reason.
+- Port 8765 was already held by an unrelated `http.server` running since Nov 18 (not touched), so the link uses 47391.
+
+**Already live vs locally verified.** On 2026-11-20 the mirror's `build.json` reported commit `bf510f3`, which predates the gate. So the public
+link is **not live** for this head; that build has no `?outrider` route. Only the local link is verified.
+
+**Checks (this head)**
+- `node --test .kiro/powers/orb-duel-review/test/*.test.mjs`: 29 pass. [test/camp.test.mjs](../../.kiro/powers/orb-duel-review/test/camp.test.mjs) uses throwaway git copies:
+  - a current page gives `pass`, with a link, judge-only lines, example-only advice, and no seed or prefix;
+  - each of these gives `stale` with no link, outcome or advice: a page at an older commit, a page without the case, no page, uncommitted page sources;
+  - the ride strike changed from 1 to 2 orbs, committed and with a page rebuilt at the new head, gives `stale` via the gate;
+  - a comment-only commit gives `pass`. This is the unrelated-edit control.
+- `node --test tests/match/showdown-turn.test.js tests/match/showdown-outrider-gate.test.js`: 20 pass (Dragon and gate unchanged).
+  `node scripts/outrider-gate.mjs --check`: 10 fresh.
+- Real browser, headless Chrome, fresh profile. `node scripts/build-graybox.mjs --hosted` at `a8c8673` gave label `a8c8673df6a3`, "10 verified".
+  The page was served with the tool's own serve command. The served bytes' SHA-256 equalled `dist/web/index.html` (`041652fe…9240`), as the tool reported.
+  - `node scripts/browser-showdown-outrider-check.mjs http://127.0.0.1:47391/` passed **85/85**. It covers the Camp, both arms, Restart, Retry,
+    the direct URL, reload, bad ids, 375 px, and the save byte-identical at the end.
+  - A separate open of `http://127.0.0.1:47391/?outrider=case-e` landed on "Experiment: an Outrider turn · turn 3 · your turn" with:
+    - Outrider in Cowboy slot 0 at 2 of 3 orbs, "Can attack";
+    - Skeleton at 3 orbs in Wizard slot 0;
+    - Bases 5 and 4;
+    - hand Billy, Billy, Deadeye, Outrider;
+    - neutral lesson text, and no outcome or Wizard hand card.
+    This matches `decision.position`. The server was stopped afterwards.
+
+**Native runs (installed only, isolated `KIRO_HOME`, empty cwd, fresh sessions, same command and `--trust-tools` as below, once each)**
+
+| Prompt | Session | Calls (all `completed`) | Credits |
+| --- | --- | --- | --- |
+| Why would I decline this ride? | `sess_09043bfd-518e-4085-b6e5-87f7d1e97393` | Kiro Powers load `plugin::orb-duel-review::skill::showdown-ride-decision`; Tool Load; `@orb-duel-review/review/inspect_ride_decision {}` | 0.261 |
+| How do I patch a small hole in drywall? | `sess_a778765f-4281-4dee-abe4-125266ec1131` | none | 0.085 |
+
+What the positive run answered:
+- verdict `pass`, commit `a8c8673…`, label `a8c8673df6a3`, both pages current with `041652fe…`;
+- the local URL with its serve command, and the public URL "not verified live", quoting the rule;
+- the position with slot 0 named correctly;
+- "in this example only": riding takes the Wizard Base from 4 to 3 on turn 3, then the Cowboy Base falls to 3 by turn 7 and to 0 on turn 10, a Wizard win.
+  Declining keeps the Wizard Base at 4 through turn 9, and the Cowboys win on turn 23 with Base 3;
+- `advice.general` false, with the holdout reason quoted: "Don't turn this into a rule, for example about the rider's health".
+
+There were no 429s. Alex's `~/.kiro` was unchanged (16 files). Stream SHA-256 prefixes: `b9cd8e7a`, `5c7d1401`.
+
+**Mechanisms:**
+- Native skill activation: the skill was loaded unprompted, and the negative run loaded nothing.
+- MCP tool use: the installed plugin namespace only.
+- Browser launch: Kiro did **not** open a browser. It reported the URL. The URL opening at the decision was verified separately by the headless Chrome runs above,
+  which were scripted and not native Kiro.
+
+**Stage 3 gaps:**
+- The public mirror is not deployed at this head, and publishing was out of scope.
+- The explanation is one deterministic bot line per choice on one case. It is not human play.
+- The local link works only while the serve command runs.
+- The IDE was not tested.
+
+---
+
+History: stages 1 and 2 below are unchanged records from before the gate landed.
+
 Date: 2026-11-20, 12:55-13:10 PST (America/Los_Angeles). Worker: Kiro CLI 3.5.0 (claude-opus-5.5), branch
 `kiro/showdown-ride-power` from `bf510f3`. No rule, card, deck, save, art or UI changed. No human played.
 

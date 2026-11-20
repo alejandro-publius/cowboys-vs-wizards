@@ -1,0 +1,8 @@
+{
+  "what": "One fight-only case from the ride search, opened by the game's K-011 Camp route ?outrider=<id>. Chosen as the first fight-only label in results/observed.json (case-e). Outcomes stay in the bound project and reach only the judge-only field.",
+  "status": "camp-case",
+  "scope": "Semantic freshness by the bound game's own gate (both arms replayed against the measured results and the committed transcript digests), the public position from a fresh session, and a link only from a page built at the bound head that carries this case. One example; no general rule.",
+  "derive": {"source": "gate", "label": "case-e"},
+  "route": {"outrider": "case-e", "publicMirror": "https://alejandro-publius.github.io/cowboys-vs-wizards/"},
+  "decision": {"positionSha256": "dceaabe7c6dfc9f08aff005137613db83373fe007b6365898348f2c8f181bed4"}
+}

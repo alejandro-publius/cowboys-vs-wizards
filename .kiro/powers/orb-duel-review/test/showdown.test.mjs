@@ -175,7 +175,7 @@ test("inspect_showdown_receipt: pass on the same engine, stale or rejected when 
   const pass = await check();
   assert.equal(pass.verdict, "pass", JSON.stringify(pass.reasons));
   assert.equal(pass.kind, "showdown-gameplay-proof");
-  assert.deepEqual(pass.power, {name: "orb-duel-review", version: "1.4.0"});
+  assert.deepEqual(pass.power, {name: "orb-duel-review", version: "1.5.0"});
   assert.equal(pass.receipt.coversCurrentEngine, true);
   assert.deepEqual(pass.replay.result, played.last.result);
 
