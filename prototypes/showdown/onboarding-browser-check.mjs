@@ -4,8 +4,8 @@
 //   node prototypes/showdown/build.mjs && node prototypes/showdown/onboarding-browser-check.mjs [--seed 7] [--shots DIR]
 //
 // Same approach as access-browser-check.mjs: fresh isolated profile, file:// page, DevTools protocol, no dependency.
-// Clean Camp: only the open Boot Hill tile says "Start here", and one Tab reaches it. Opening turn: the prompt names
-// the hand and End turn and says nobody attacks; the first playable card and End turn are on screen without
+// Clean Camp: the Camp says "Start here" and names Boot Hill, and one Tab reaches it. Opening turn: the prompt says
+// nobody attacks; the first playable card and End turn are on screen without
 // scrolling, also at 390 px where the turn's buttons stay at the bottom. Turn 3: a picked troop's prompt explains
 // cover next to the attack preview, Take cover is on screen, and taking cover is logged. Focus survives leaving the
 // tab and coming back, and "Back to camp" returns it to Boot Hill. A save with two Trail wins shows no "Start here".
@@ -150,19 +150,19 @@ const trailNotes = () => evaluate(`[...document.querySelectorAll("#trail .tile")
 // Plays the opening turn (a free troop, then End turn) and picks the first troop that can attack.
 async function openingThenPick(press) {
   const prompt = await text("prompt");
-  check(/opening turn/.test(prompt) && /hand/.test(prompt) && /end the turn/.test(prompt), `opening prompt names the hand and End turn: "${prompt}"`);
+  check(/Nobody attacks on the opening turn/.test(prompt), `opening prompt says nobody attacks on the opening turn: "${prompt}"`);
   const card = await place("#hand button.can"), end = await place("#end");
   check(card?.onScreen && end?.onScreen, `first playable card (top ${card?.top}px${card?.covered ? ", under the turn bar" : ""}) and End turn (top ${end?.top}px) on screen without scrolling`);
   await shot(`${press.name}-opening`);
   await press("#hand button.can");
   const after = await text("prompt");
-  check(/take cover/.test(after) && !/No troop can attack/.test(after), `after the free troop, the prompt offers cover or End turn: "${after}"`);
+  check(/Nobody attacks on the opening turn/.test(after), `after the free troop, the prompt still says nobody attacks yet: "${after}"`);
   check(await evaluate(`[...document.querySelectorAll("#board button[data-own]")].some((b) => /Opening turn · can take cover/.test(b.textContent))`), "the new troop says why it cannot attack: Opening turn · can take cover");
   await press("#end");
   check(await evaluate(`/turn 3/.test(document.getElementById("status").textContent)`), `back to the Cowboys after the Wizards' reply (${await text("status")})`);
   await press("#board button[data-own]");
   const pick = await text("prompt");
-  check(/Choose what to attack/.test(pick) && /take cover: it will not hit back/.test(pick), `picked troop: the prompt explains cover beside the attack: "${pick}"`);
+  check(/Choose what to attack/.test(pick) && /take cover:.*will not hit back/.test(pick), `picked troop: the prompt explains cover beside the attack: "${pick}"`);
   check(await evaluate(`[...document.querySelectorAll("#board button[data-enemy]")].some((b) => /hits back|Defeated|Hit the Base/.test(b.textContent))`), "picked troop: each target still previews the attack");
   const cover = await place("#cover");
   check(cover?.onScreen, `Take cover on screen while a troop is picked (top ${cover?.top}px)`);
@@ -178,7 +178,8 @@ try {
   await fresh();
   const before = await saved();
   let notes = await trailNotes();
-  check(/^Boot Hill Win to earn .* Start here/.test(notes[0]) && notes.filter((n) => /Start here/.test(n)).length === 1, `clean Camp: only Boot Hill says "Start here" ("${notes[0]}")`);
+  const start = await evaluate(`document.getElementById("claim").innerText.replace(/\\s+/g, " ").trim()`);
+  check(/^Start here: click Boot Hill/.test(start) && /^Boot Hill Win to earn /.test(notes[0]), `clean Camp: "Start here" names Boot Hill ("${start}"; tile "${notes[0]}")`);
   const presses = await tabUntil('button[data-duel="trail"]');
   check(presses <= 1 && (await view()).ring, `clean Camp: Boot Hill reached in ${presses} Tab press with a focus outline`);
   await enter();
@@ -220,7 +221,7 @@ try {
   await send("Page.reload", {ignoreCache: true});
   await sleep(800);
   notes = await trailNotes();
-  check(notes.every((n) => !/Start here/.test(n)) && /^✓ Boot Hill Earned/.test(notes[0]) && /^The Bone Fence Win to earn/.test(notes[2]), `progressed Camp: no "Start here"; tiles read "${notes[0]}", "${notes[2]}"`);
+  check(!/Start here/.test(await evaluate(`document.getElementById("camp").innerText`)) && /^✓ Boot Hill Earned/.test(notes[0]) && /^The Bone Fence Win to earn/.test(notes[2]), `progressed Camp: no "Start here"; tiles read "${notes[0]}", "${notes[2]}"`);
   const next = await tabUntil('button[data-duel="trail"]');
   check(await evaluate(`/Bone Fence/.test(document.activeElement.textContent)`), `progressed Camp: Tab reaches The Bone Fence in ${next} press(es)`);
   await enter();

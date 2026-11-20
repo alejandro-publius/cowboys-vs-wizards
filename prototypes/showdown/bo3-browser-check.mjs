@@ -128,7 +128,7 @@ const VIEW = `(() => { ${SHOWN}
   const base = (side) => { const b = document.querySelector("#board .base." + side); const o = b?.querySelector(".orbs"); const n = b?.querySelector(".note");
     return b && shown(b) ? {orbs: o.getAttribute("aria-label"), counts: n.textContent} : null; };
   return {screens: ["camp", "builder", "duel", "curtain"].filter((id) => shown(document.getElementById(id))),
-    status: text("status"), curtain: text("curtain-text"), again: text("again"), problems: text("builder-problems"),
+    status: text("status"), curtain: text("curtain-text"), again: (() => { const m = document.querySelector("#reward [data-again]"); return shown(m) ? m.textContent.replace(/\\s+/g, " ").trim() : text("again"); })(), problems: text("builder-problems"),
     firstLog: document.querySelector("#log li")?.textContent ?? null,
     hand: [...document.querySelectorAll("#hand [data-card]")].filter(shown).map((c) => c.dataset.card),
     cowboy: base("cowboy"), wizard: base("wizard")};
@@ -199,12 +199,14 @@ async function perform(action) {
 
 const orbLabel = (side) => `${side.base} of ${Math.max(side.base, side.baseMax)} orbs`;
 // The screen must show what the test's copy of the game holds for the side at the controls.
-async function matchesModel(state, own, label) {
+async function matchesModel(state, own, label, {shared = false} = {}) {
   const v = await view();
-  const ok = v.screens.join() === "duel" && JSON.stringify(v.hand) === JSON.stringify(state.sides[own].hand)
+  // A finished two-player game is on a shared screen, so neither hand is shown.
+  const hand = shared ? [] : state.sides[own].hand;
+  const ok = v.screens.join() === "duel" && JSON.stringify(v.hand) === JSON.stringify(hand)
     && v.cowboy?.orbs === orbLabel(state.sides.cowboy) && v.wizard?.orbs === orbLabel(state.sides.wizard)
     && (state.result || new RegExp(`turn ${state.turn} `).test(v.status ?? ""));
-  if (!ok) check(false, `${label}: screen differs from the rules copy (screen ${JSON.stringify(v)}; model hand ${state.sides[own].hand.join(",")}, Bases ${orbLabel(state.sides.cowboy)} / ${orbLabel(state.sides.wizard)}, turn ${state.turn})`);
+  if (!ok) check(false, `${label}: screen differs from the rules copy (screen ${JSON.stringify(v)}; model hand ${hand.join(",")}, Bases ${orbLabel(state.sides.cowboy)} / ${orbLabel(state.sides.wizard)}, turn ${state.turn})`);
   return ok;
 }
 
@@ -231,7 +233,7 @@ async function playGame(state, {two}) {
     await perform(action);
     state = applyAction(state, action).state;
   }
-  if (await matchesModel(state, two ? state.active : "cowboy", "final position")) compared += 1;
+  if (await matchesModel(state, two ? state.active : "cowboy", "final position", {shared: two})) compared += 1;
   return {state, steps, compared, actions};
 }
 
@@ -270,7 +272,7 @@ try {
   check(end1.again === "Game 2", `the next control is "Game 2" (${end1.again})`);
   check(await stored() === loaded, "saved progress unchanged after game 1 (a match is settled only when it ends)");
 
-  await click("#again");
+  await click("#reward [data-again]");
   const b = await view();
   const counts = () => evaluate(`Object.fromEntries([...document.querySelectorAll("#builder-rows .build-row")].map((row) => {
     const pile = (zone) => Number(row.querySelector('[data-zone="' + zone + '"]').parentElement.querySelector("strong").textContent);
@@ -350,7 +352,7 @@ try {
   for (let n = 2; ; n++) {
     if (n > MAX_GAMES || n > SOLO_SEEDS.length) throw new Error(`series not over after ${n - 1} games (score you ${wins.cowboy}, Wizards ${wins.wizard}); steps: load fixture, Best of three, games on seeds ${SOLO_SEEDS.slice(0, n - 1).join(",")}; give --solo-seeds with ${MAX_GAMES} or fewer games that end it`);
     if (n > 2) {
-      await click("#again");
+      await click("#reward [data-again]");
       check((await view()).screens.join() === "builder", `"Game ${n}" opens the side-deck swap again`);
       await click("#builder-save");
     }
@@ -373,7 +375,8 @@ try {
     check(canonical(JSON.parse(after)) === canonical(settledOnce) && JSON.parse(after).openWins === fixture.openWins + 1 && JSON.parse(after).rolls === fixture.rolls + 1,
       `series won ${wins.cowboy}-${wins.wizard}: saved progress is exactly one Open range settlement of the fixture (openWins ${fixture.openWins}→${JSON.parse(after).openWins}, rolls ${fixture.rolls}→${JSON.parse(after).rolls}, offer ${JSON.parse(after).offer})`);
     const reward = await evaluate(`document.getElementById("reward").textContent`);
-    check(/^You win/.test(end.status ?? "") && end.again === "Play it again" && (!settledOnce.offer || reward.includes("Choose a card")), `series result on screen: ${end.status}; "${end.again}"; card offer shown`);
+    // A card on offer must be taken before the duel can start again, so the button goes back to camp.
+    check(/^You win/.test(end.status ?? "") && end.again === (settledOnce.offer ? "Back to camp" : "Play it again") && (!settledOnce.offer || reward.includes("pick 1 more card")), `series result on screen: ${end.status}; "${end.again}"; card offer shown`);
     break;
   }
   await click("#leave");
@@ -402,7 +405,7 @@ try {
   check(Boolean(two.state.result), `REAL two-player game 1 finished by clicks: ${winner2 ?? "draw"} after turn ${two.state.turn} (${two.actions.cowboy} Cowboy + ${two.actions.wizard} Wizard actions clicked, ${two.compared} screen/model comparisons)`);
   check((end2.status ?? "").includes(`game 1 of 3 · ${score2}`), `game 1 result and score on screen (${end2.status})`);
   check(end2.again === "Game 2", `the next control is "Game 2" (${end2.again})`);
-  await click("#again");
+  await click("#reward [data-again]");
   const c2 = await view();
   const opener = winner2 ? (winner2 === "cowboy" ? "Wizard" : "Cowboy") : null;
   check(c2.screens.join() === "curtain" && (!opener || (c2.curtain ?? "").includes(`${opener} player`)), `game 2 starts behind the curtain${opener ? `, for the ${opener} player who lost game 1` : ""} (${c2.curtain})`);
@@ -416,7 +419,7 @@ try {
   let lastTwo = two.state;
   for (let n = 2; ; n++) {
     if (n > MAX_GAMES || n > TWO_SEEDS.length) throw new Error(`two-player series not over after ${n - 1} games (Cowboys ${twoWins.cowboy}, Wizards ${twoWins.wizard}); steps: Two players best of three, games on seeds ${TWO_SEEDS.slice(0, n - 1).join(",")}; give --two-seeds that end it in ${MAX_GAMES} or fewer`);
-    if (n > 2) await click("#again"); // playGame clicks through the curtain
+    if (n > 2) await click("#reward [data-again]"); // playGame clicks through the curtain
     const first = lastTwo.result.winner ? opponent(lastTwo.result.winner) : lastTwo.first;
     const g = await playGame(createShowdown(TWO_SEEDS[n - 1], {decks: DECKS, first}), {two: true});
     lastTwo = g.state;

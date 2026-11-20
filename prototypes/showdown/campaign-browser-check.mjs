@@ -101,9 +101,10 @@ function expectedView(state, duel) {
     return {
       base: `${s.base} of ${Math.max(s.base, s.baseMax)} orbs`,
       counts: `Hand ${s.hand.length} · Deck ${s.deck.length} · Graveyard ${s.discard.length}`,
+      // The trap line shows only when it says something: your traps once you hold or set one, the Wizards' once one is set.
       traps: name === "cowboy"
-        ? `▲ ${s.traps.length ? `Set: ${s.traps.map((id) => cardOf(id).name).join(", ")}` : "No trap set"}`
-        : `▲ ${s.traps.length ? `${plural(s.traps.length, "card")} face down` : "Nothing face down"}`,
+        ? (s.traps.length ? `▲ Set: ${s.traps.map((id) => cardOf(id).name).join(", ")}` : s.hand.some((id) => cardOf(id).kind === "trap") ? "▲ No trap set" : "")
+        : (s.traps.length ? `▲ ${plural(s.traps.length, "card")} face down` : ""),
       slots: s.board.map((t) => (t ? {name: cardOf(t.cardId).name, orbs: `${t.health} of ${Math.max(t.health, cardOf(t.cardId).health)} orbs`} : null)),
       graveyard: s.discard.map((id) => cardOf(id).name).join(", ") || "empty",
     };
@@ -211,7 +212,7 @@ const READ = `JSON.stringify((() => {
     return {
       base: base.querySelector(".orbs").getAttribute("aria-label"),
       counts: base.querySelectorAll(".note")[0].textContent,
-      traps: base.querySelectorAll(".note")[1].textContent,
+      traps: base.querySelectorAll(".note")[1]?.textContent ?? "",
       slots: [...div.querySelectorAll("button.slot")].map((b) => b.querySelector("strong")
         ? {name: b.querySelector("strong").textContent, orbs: b.querySelector(".orbs").getAttribute("aria-label")} : null),
     };
@@ -221,7 +222,7 @@ const READ = `JSON.stringify((() => {
   const sides = [...el("board").querySelectorAll(".side")];
   const visible = ["camp", "builder", "duel", "curtain"].filter((id) => !el(id).hidden);
   return {
-    visible, status: el("status").textContent, lesson: el("lesson").textContent, again: el("again").textContent,
+    visible, status: el("status").textContent, lesson: el("lesson").textContent, again: (el("reward").querySelector("[data-again]") ?? el("again")).textContent,
     reward: el("reward").innerText.replace(/\\s+/g, " ").trim(),
     offer: [...el("reward").querySelectorAll("button[data-choose]")].map((b) => b.dataset.choose),
     hand: [...el("hand").querySelectorAll("button.card")].map((b) => b.querySelector("strong").textContent),
@@ -385,7 +386,7 @@ async function main() {
     let dom = await read();
     campIs("A", dom, save, "fresh Camp");
     check("A", "fresh Camp: Boot Hill is the only enabled ladder tile", [...dom.camp.trail, ...dom.camp.rivals, ...dom.camp.bounties].filter((t) => !t.off).map((t) => t.title).join() === "Boot Hill");
-    check("A", "fresh Camp: nothing to claim", dom.claim === "", {claim: dom.claim});
+    check("A", "fresh Camp: nothing to claim, only where to start", !/Choose|pack/i.test(dom.claim) && /Start here/.test(dom.claim), {claim: dom.claim});
     await shot("fresh-camp", "A", "h1", ["#trail", "#rivals"]);
     await pace();
     await click('#trail button[data-duel="trail"]');
@@ -405,7 +406,7 @@ async function main() {
     save = bootSettled.save;
     dom = boot.dom;
     check("C", "settle() pays Covered Wagon ×2 and no pack", same(bootSettled.earned, {cards: [["cowboy-covered-wagon", 2]], packs: 0, captured: null}), bootSettled.earned);
-    check("C", "reward panel shows Covered Wagon ×2 under New in your collection", /^New in your collection Covered Wagon .* ×2 Choose a card /.test(dom.reward), {reward: dom.reward});
+    check("C", "reward panel shows Covered Wagon ×2 under New in your collection", /^New in your collection Covered Wagon .* ×2 .*Bonus: pick 1 more card to keep /.test(dom.reward), {reward: dom.reward});
     check("C", "the two offered cards equal settle()'s offer", same(dom.offer, save.offer), {page: dom.offer, want: save.offer});
     savedIs("C", dom, save, "after the win, before the choice");
     await shot("boot-hill-win-reward", "C", "#status", ["#status", "#reward"]);
@@ -416,10 +417,10 @@ async function main() {
     dom = await until((d) => d.offer.length === 0);
     check("C", `choosing ${TYPES[bootPick].name} clears the offer`, dom.offer.length === 0 && !dom.reward.includes("Choose a card"), {reward: dom.reward});
     savedIs("C", dom, save, `after choosing ${TYPES[bootPick].name}`);
-    check("C", "next-step button reads Continue", dom.again === "Continue", {again: dom.again});
-    await shot("reward-claimed", "C", "#status", ["#status", "#reward", "#again"]);
+    check("C", "next-step button reads Back to camp", dom.again === "Back to camp", {again: dom.again});
+    await shot("reward-claimed", "C", "#status", ["#status", "#reward"]);
     await pace();
-    await click("#again");
+    await click("#reward [data-again]");
     dom = await until((d) => d.visible.join() === "camp");
     campIs("C", dom, save, "Camp after Continue");
     check("C", "Camp after Continue: Raven Roost is the open Trail duel", dom.camp.trail[1].cls === "tile open" && !dom.camp.trail[1].off && dom.camp.trail[0].title === "✓ Boot Hill");
@@ -478,8 +479,8 @@ async function main() {
         save = choose(save, pick);
         dom = await until((d) => d.offer.length === 0);
         savedIs("T", dom, save, `${where}: after choosing ${TYPES[pick].name}`);
-        check("T", `${where}: next-step button reads Continue`, dom.again === "Continue", {again: dom.again});
-        await click("#again");
+        check("T", `${where}: next-step button reads Back to camp`, dom.again === "Back to camp", {again: dom.again});
+        await click("#reward [data-again]");
         dom = await until((d) => d.visible.join() === "camp");
         campIs("T", dom, save, `${where}: Camp after Continue`);
         run.took = pick;
@@ -511,7 +512,7 @@ async function main() {
     await load(pageUrl(cfg.rivalSeed));
     const code = Buffer.from(JSON.stringify(FIXTURE.raw), "latin1").toString("base64");
     save = migrate(FIXTURE.raw);
-    check("D", `fixture ${FIXTURE.name} migrates to a finished Trail with no packs or offer`, trailDone(save) && save.packs === 0 && save.offer === null && save.rivals.length === 0, save);
+    check("D", `fixture ${FIXTURE.name} migrates to a finished Trail that keeps its 1 pack, with no offer`, trailDone(save) && save.packs === 1 && save.offer === null && save.rivals.length === 0, save);
     await click("#camp details > summary");
     await click("#code");
     await send("Input.dispatchKeyEvent", {type: "keyDown", key: "a", code: "KeyA", modifiers: process.platform === "darwin" ? 4 : 2, commands: ["selectAll"]});
@@ -543,7 +544,8 @@ async function main() {
     check("E", "settle() pays the Six-Shooter and 1 pack", same(rivalSettled.earned, {cards: [["cowboy-six-shooter", 1]], packs: 1, captured: null}), rivalSettled.earned);
     check("E", "reward panel shows the Six-Shooter and the earned pack", dom.reward.includes(TYPES["cowboy-six-shooter"].name) && dom.reward.includes("You earned 1 pack. Open it in camp."), {reward: dom.reward});
     check("E", "the two offered cards equal settle()'s offer", same(dom.offer, save.offer), {page: dom.offer, want: save.offer});
-    check("E", "a beaten rival offers Play it again", dom.again === "Play it again", {again: dom.again});
+    // While a card is on offer the rival cannot start again, so the button goes back to camp.
+    check("E", "a beaten rival with a card on offer moves on with Back to camp", dom.again === (save.offer ? "Back to camp" : "Play it again"), {again: dom.again});
     const rivalPick = save.offer[0];
     await click(`#reward button[data-choose="${rivalPick}"]`);
     save = choose(save, rivalPick);
@@ -552,24 +554,31 @@ async function main() {
     await click("#leave");
     dom = await until((d) => d.visible.join() === "camp");
     campIs("E", dom, save, "Camp after the Stargazer");
-    check("E", "Camp offers 1 pack to open", dom.claim.startsWith("1 pack to open"), {claim: dom.claim});
+    // The fixture keeps the Trail's pack and the Stargazer pays one more.
+    check("E", `Camp offers ${plural(save.packs, "pack")} to open`, save.packs === 2 && dom.claim.includes(`${plural(save.packs, "pack")} to open`), {claim: dom.claim});
     await click("#pack");
-    const pack = openPack(save);
-    save = pack.save;
-    dom = await until((d) => d.claim.startsWith("In the pack"));
-    check("E", "the pack's three cards equal progress.js openPack()", same(dom.packCards, pack.cards.map((t) => TYPES[t].name)) && pack.cards.length === 3, {page: dom.packCards, want: pack.cards});
-    savedIs("E", dom, save, "after opening the pack");
-    await click("#pack-done");
-    dom = await until((d) => d.claim === "");
-    check("E", "Add them to my collection clears the claim", dom.claim === "", {claim: dom.claim});
-    check("E", "collection line lists the Six-Shooter and every pack card", [TYPES["cowboy-six-shooter"].name, ...pack.cards.map((t) => TYPES[t].name)].every((n) => dom.collection.includes(n)), {collection: dom.collection});
+    const packCards = [];
+    let pack;
+    for (;;) {
+      pack = openPack(save);
+      save = pack.save;
+      dom = await until((d) => d.claim.startsWith("In the pack") && same(d.packCards, pack.cards.map((t) => TYPES[t].name)));
+      check("E", `pack ${packCards.length / 3 + 1}: its three cards equal progress.js openPack()`, same(dom.packCards, pack.cards.map((t) => TYPES[t].name)) && pack.cards.length === 3, {page: dom.packCards, want: pack.cards});
+      savedIs("E", dom, save, `after opening pack ${packCards.length / 3 + 1}`);
+      packCards.push(...pack.cards);
+      await click("#pack-done");
+      if (!save.packs) break;
+    }
+    dom = await until((d) => !d.claim.startsWith("In the pack"));
+    check("E", "Add them to my collection leaves no pack or card to claim", !/pack|pick 1 more/i.test(dom.claim), {claim: dom.claim});
+    check("E", "collection line lists the Six-Shooter and every pack card", [TYPES["cowboy-six-shooter"].name, ...packCards.map((t) => TYPES[t].name)].every((n) => dom.collection.includes(n)), {collection: dom.collection});
     campIs("E", dom, save, "Camp after the pack");
     check("E", "the Imp is now the open rival", dom.camp.rivals[0].title === "✓ The Stargazer" && dom.camp.rivals[1].cls === "tile open" && !dom.camp.rivals[1].off);
     await reload();
     dom = await read();
     campIs("E", dom, save, "Camp after reload");
     savedIs("E", dom, save, "after reload");
-    runs.pack = {cards: pack.cards, offerPicks: [bootPick, rivalPick]};
+    runs.pack = {cards: packCards, offerPicks: [bootPick, rivalPick]};
 
     // F. Bounty start from the same save.
     await load(pageUrl(cfg.huntSeed));

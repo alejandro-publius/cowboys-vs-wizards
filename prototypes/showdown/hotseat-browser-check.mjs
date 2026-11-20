@@ -8,8 +8,8 @@
 // "End turn" (keyboard) throws the curtain again for the other side. Keyboard focus must land on "I'm ready" while the
 // curtain is up and must not be left on a hidden control after it. "Back to camp" must leave the saved Camp progress
 // byte-for-byte as before. After each handoff the Keywords glossary must explain every keyword marked on a visible card
-// and name nothing else than keywords of cards the mover can see (board, own hand, gear, set traps, graveyards,
-// location), so it never leaks the other hand or either deck. Reads only what is on screen, the DOM and localStorage. Exits 1 on any failure; 60 s cap.
+// and stay the same list on every turn: it is drawn from both whole decklists, so a draw or a play never changes it
+// and it cannot hint at the other hand or either deck order. Reads only what is on screen, the DOM and localStorage. Exits 1 on any failure; 60 s cap.
 // --shots DIR also saves viewport PNGs of the first curtain, the Cowboy hand behind it and the Wizard curtain, and
 // writes DIR/hotseat-shots.json (SHA-256, size, screens on show). Capturing presses nothing and changes no check.
 import {spawn} from "node:child_process";
@@ -17,7 +17,6 @@ import {createHash} from "node:crypto";
 import {mkdir, mkdtemp, rm, writeFile} from "node:fs/promises";
 import path from "node:path";
 import {fileURLToPath, pathToFileURL} from "node:url";
-import {KEYWORDS, TYPES} from "./cards.js";
 
 const CHROME = process.env.CHROME ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const root = fileURLToPath(new URL("../../", import.meta.url));
@@ -161,11 +160,10 @@ try {
     check(d.hand.length > 0 && d.hand.every((s) => s === side), `turn ${turn}: hand shows only ${side} cards (${d.hand.join(",")})`);
     check(new RegExp(`the ${side === "cowboy" ? "Cowboy" : "Wizard"}s' turn`).test(d.status ?? ""), `turn ${turn}: status names the ${side}s (${d.status})`);
     check(d.focusShown && d.focus === "end", `turn ${turn}: focus left the curtain for the visible End turn button (${d.focus})`);
-    const seen = new Set(d.named.flatMap((n) => Object.values(TYPES).filter((t) => t.name === n.replace(/^[^A-Za-z]+/, "").trim()).flatMap((t) => t.keys ?? [])).map((k) => KEYWORDS[k][0]));
     const missing = [...new Set(d.marked)].filter((w) => !d.glossary.includes(w));
-    const leaked = d.glossary.filter((w) => !seen.has(w));
     check(missing.length === 0, `turn ${turn}: Keywords explains every keyword on a visible card (${d.glossary.join(", ") || "none"}${missing.length ? `; missing ${missing.join(", ")}` : ""})`);
-    check(leaked.length === 0, `turn ${turn}: Keywords names no keyword from hidden cards${leaked.length ? ` (leaked ${leaked.join(", ")})` : ""}`);
+    if (turn === 1) var firstGlossary = d.glossary.join(", ");
+    else check(d.glossary.join(", ") === firstGlossary, `turn ${turn}: Keywords is the same list as on turn 1, so it shows nothing hidden (${d.glossary.join(", ")}${d.glossary.join(", ") === firstGlossary ? "" : `; turn 1 had ${firstGlossary}`})`);
     if (turn === 1) await shot(`hotseat-${side}-hand`, turn);
     if (turn > 1) check(d.handText !== previousHand, `turn ${turn}: hand content changed with the handoff`);
     var previousHand = d.handText;

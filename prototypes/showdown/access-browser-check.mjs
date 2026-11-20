@@ -9,7 +9,7 @@
 // other button at a bound, and returns to "Build deck" after Cancel and Save. Reward (fresh profile, --reward-seed): wins
 // Boot Hill by Enter presses on the page's own buttons (moves from campaign-driver.mjs), then choosing the offered card
 // by Tab and Enter, once in the duel and once in Camp after a reload, must keep focus on a visible control and put the
-// sentence "You took <card>." in a live region. This is desktop Chrome evidence only, not a VoiceOver run. Phone (390 × 844, touch): taps the same path; no page-wide sideways scroll and no visible
+// sentence "Added <card>: …" in a live region. This is desktop Chrome evidence only, not a VoiceOver run. Phone (390 × 844, touch): taps the same path; no page-wide sideways scroll and no visible
 // control cut off at either edge on Camp or the duel. Both: saved Camp progress is unchanged by leaving mid-duel.
 // Prints the measurements it judged by. Exits 1 on any failure; 180 s cap.
 // --page FILE checks another build of the page instead of dist/showdown.html.
@@ -268,11 +268,11 @@ try {
     const took = JSON.parse(await saved() ?? "{}");
     check(took.offer === null && took.collection?.[type] >= 1, `reward in ${where === "reward" ? "the duel" : "Camp"}: ${tabs} Tab presses reach ${TYPES[type].name}; Enter takes it into the saved collection`);
     check(after.focusShown && after.ring && after.focusIn !== "body", `reward in ${where === "reward" ? "the duel" : "Camp"}: after choosing, ${fmt(after)}`);
-    check(said.some((t) => t.includes(`You took ${TYPES[type].name}.`)), `reward in ${where === "reward" ? "the duel" : "Camp"}: a live region says which card was taken (${said.join(" | ") || "none"})`);
+    check(said.some((t) => t.includes(`Added ${TYPES[type].name}:`)), `reward in ${where === "reward" ? "the duel" : "Camp"}: a live region says which card was taken (${said.join(" | ") || "none"})`);
     return after;
   };
   await choiceIn("reward", offer[0]);
-  const contPresses = await tabUntil("#again");
+  const contPresses = await tabUntil("#reward [data-again]");
   const cont = await evaluate(`document.activeElement.textContent.trim()`);
   await enter();
   v = await view();
