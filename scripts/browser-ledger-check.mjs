@@ -6,15 +6,21 @@
 // viewport when open; and the first turn of Boot Hill shows no part of the ledger.
 import assert from "node:assert/strict";
 import {spawn} from "node:child_process";
+import {createHash} from "node:crypto";
 import {mkdir, mkdtemp, rm, writeFile} from "node:fs/promises";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
+import {LEDGER} from "../src/ui/sheriffs-ledger.data.js";
 
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 if (!process.argv[2]) throw new Error("Pass the built graybox HTML file");
 const page = pathToFileURL(path.resolve(process.argv[2])).href;
-const out = path.resolve(process.argv[3] ?? ".artifacts/sheriffs-ledger");
+const positional = process.argv.slice(3).filter((a) => !a.startsWith("--"));
+const out = path.resolve(positional[0] ?? ".artifacts/sheriffs-ledger");
+// --frames: also save three JPEG key frames at 1440x900 (Camp, Ledger opened, run and review) under <out>/frames,
+// with their SHA-256 and visible text in frames.json. For the presentation proof; not part of the checks.
+const FRAMES = process.argv.includes("--frames");
 await mkdir(out, {recursive: true});
 
 const profile = await mkdtemp("/tmp/kiro-ledger-chrome-");
@@ -54,6 +60,17 @@ const key = async (k, code, keyCode, shift = false) => {
   if (k === "Enter") await sleep(50);
 };
 const report = {page, checks: [], errors};
+const frames = [];
+const frame = async (name, selector) => {
+  if (!FRAMES) return;
+  const text = await evaluate(`(()=>{const n=document.querySelector(${JSON.stringify(selector)});n.scrollIntoView({block:"start"});return n.innerText.slice(0,600)})()`);
+  await sleep(150);
+  const {data} = await send("Page.captureScreenshot", {format: "jpeg", quality: 70});
+  const bytes = Buffer.from(data, "base64");
+  await mkdir(path.join(out, "frames"), {recursive: true});
+  await writeFile(path.join(out, "frames", `${name}.jpg`), bytes);
+  frames.push({file: `frames/${name}.jpg`, sha256: createHash("sha256").update(bytes).digest("hex"), bytes: bytes.length, selector, text});
+};
 const check = (name, detail) => { report.checks.push({name, ...(detail === undefined ? {} : {detail})}); console.log(`ok - ${name}`); };
 let failed = null;
 try {
@@ -68,6 +85,7 @@ try {
     await wait(`document.readyState==='complete'&&document.getElementById('menu-play')`);
     await evaluate(`document.getElementById('menu-play').click()`);
     await wait(`!document.getElementById('showdown-camp').hidden&&document.querySelector('#camp-ledger summary')`);
+    if (width === 1440) await frame("1-camp", "#showdown-camp");
     const camp = await evaluate(`(()=>{const l=document.getElementById('camp-ledger'),t=document.querySelector('#camp-trail [data-duel=trail]');
       const lb=l.getBoundingClientRect(),tb=t.getBoundingClientRect();
       return {open:l.open,after:!!(t.compareDocumentPosition(l)&Node.DOCUMENT_POSITION_FOLLOWING),trailTop:tb.top,trailBottom:tb.bottom,ledgerTop:lb.top,
@@ -97,8 +115,12 @@ try {
         scrollW:document.documentElement.scrollWidth,right,wrapScroll:wrap.scrollWidth-wrap.clientWidth,run:document.getElementById('ledger-run').textContent}})()`);
     assert.equal(opened.rows, 29); assert.equal(opened.notObserved, 29);
     assert.ok(opened.scrollW <= width && opened.right <= width, `open ledger fits ${width}px`);
-    assert.match(opened.run, /commit 3dd47f1 against a9aa828, seeds 0–999/);
+    assert.ok(opened.run.includes(`commit ${LEDGER.run.revision.slice(0, 7)} against ${LEDGER.run.baseline.slice(0, 7)}, seeds 0–999`), opened.run);
     check(`${width}px: Enter opens the ledger; 29 rows, all Not observed; fits the viewport`, opened);
+    const review = await evaluate(`document.getElementById('ledger-review').textContent`);
+    for (const v of LEDGER.reviews) assert.ok(review.includes(`${v.card} ${v.field} ${v.from} → ${v.to}: ${v.verdict}.`), review);
+    check(`${width}px: the Night Shift review state of this run is shown (${LEDGER.reviews.map((v) => v.verdict).join(", ") || "none"})`, {review});
+    if (width === 1440) { await frame("2-ledger-open", "#camp-ledger"); await frame("3-review", "#ledger-review"); }
     await key("Tab", "Tab", 9);
     const region = await evaluate(`document.activeElement.getAttribute('role')`);
     assert.equal(region, "region");
@@ -119,6 +141,7 @@ try {
   assert.deepEqual(errors, [], "no page errors");
 } catch (error) { failed = error; report.failure = error.stack; }
 await writeFile(path.join(out, "browser-ledger.json"), `${JSON.stringify(report, null, 2)}\n`);
+if (FRAMES && !failed) await writeFile(path.join(out, "frames.json"), `${JSON.stringify({page, ledgerRun: LEDGER.run.source, revision: LEDGER.run.revision, frames}, null, 2)}\n`);
 ws.close(); child.kill("SIGTERM"); await sleep(500); await rm(profile, {recursive: true, force: true, maxRetries: 5});
 if (failed) { console.error(failed); process.exit(1); }
 console.log(`${report.checks.length} checks passed; report in ${path.relative(process.cwd(), path.join(out, "browser-ledger.json"))}`);

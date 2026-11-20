@@ -8,11 +8,15 @@
 //     used instead of the report file. Its `cards.measured` must be false: the receipt defines no per-card counts.
 //   - optionally --per-card <file>: per-card counts from a run. They are kept only when the file names the same
 //     mode, commit and seed range as the chosen ruleset run, and only for card types in the catalog.
+//   - Night Shift review bundles docs/evidence/night-shift/*/bundle.json (scripts/night-review.mjs). Only sealed bundles
+//     whose finding is the run above (same commit and counts) are shown, with their verdict; nothing is applied.
 // With --check it only compares and exits 1 when the payload is stale. Output depends only on these inputs.
 import {createHash} from "node:crypto";
 import {existsSync, readFileSync, writeFileSync} from "node:fs";
 import {dirname, join, relative} from "node:path";
 import {fileURLToPath} from "node:url";
+import {readdirSync} from "node:fs";
+import {bundleSealIntact} from "./night-review.mjs";
 import {SHOWDOWN_SPECS} from "../src/game/card-specs.generated.js";
 import {DECKS, RARITY, TYPES} from "../src/game/showdown/cards.js";
 import {PROPERTIES} from "../tests/helpers/boundary-properties/showdown/properties.js";
@@ -22,9 +26,28 @@ const OUTPUT = join(root, "src/ui/sheriffs-ledger.data.js");
 const DEFAULT_REPORT = "docs/evidence/night-watch-showdown/scout-pair-reports.json";
 export const DEFAULT_RECEIPT = "docs/evidence/night-shift/receipt.json";
 // The inputs the payload is built from when no option is given: the receipt when it is checked in.
+export const REVIEW_DIR = "docs/evidence/night-shift";
+export function reviewBundles() {
+  const dir = join(root, REVIEW_DIR);
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir, {withFileTypes: true}).filter((e) => e.isDirectory() && existsSync(join(dir, e.name, "bundle.json")))
+    .map((e) => ({path: `${REVIEW_DIR}/${e.name}/bundle.json`, bundle: JSON.parse(readFileSync(join(dir, e.name, "bundle.json"), "utf8"))}))
+    .sort((a, b) => a.path.localeCompare(b.path));
+}
 export function defaultInputs() {
-  if (!existsSync(join(root, DEFAULT_RECEIPT))) return {reports: JSON.parse(readFileSync(join(root, DEFAULT_REPORT), "utf8"))};
-  return {reports: [], reportPath: DEFAULT_RECEIPT, receipt: JSON.parse(readFileSync(join(root, DEFAULT_RECEIPT), "utf8"))};
+  const reviews = reviewBundles();
+  if (!existsSync(join(root, DEFAULT_RECEIPT))) return {reports: JSON.parse(readFileSync(join(root, DEFAULT_REPORT), "utf8")), reviews};
+  return {reports: [], reportPath: DEFAULT_RECEIPT, receipt: JSON.parse(readFileSync(join(root, DEFAULT_RECEIPT), "utf8")), reviews};
+}
+
+const COUNT_KEYS = ["games", "cowboy", "wizard", "draw", "first", "second"];
+// Reviews of this run only: sealed, same finding commit, same counts. Anything else is left out, not shown as stale.
+export function matchReviews(reviews, run) {
+  if (!run) return [];
+  return reviews.filter(({bundle}) => bundleSealIntact(bundle) && bundle.finding?.commit === run.candidate.commit
+      && COUNT_KEYS.every((k) => bundle.finding?.observed?.[k] === run.candidate.counts[k]))
+    .map(({path, bundle}) => ({source: path, card: bundle.proposal.card, field: bundle.proposal.field, from: bundle.proposal.from,
+      to: bundle.proposal.to, verdict: bundle.decision.verdict, reasons: bundle.decision.reasons, seal: bundle.bundleSha256.slice(0, 12)}));
 }
 const SPEC_DIR = ".kiro/specs/duel-card-pipeline/cards";
 const REQUIREMENTS = ".kiro/specs/duel-card-pipeline/requirements.md";
@@ -73,7 +96,7 @@ export function runFromReceipt(receipt) {
     baseline: {commit: receipt.baseline.commit}, rules: receipt.rulesTests};
 }
 
-export function buildLedger({reports = [], reportPath = DEFAULT_REPORT, receipt = null, perCard = null}) {
+export function buildLedger({reports = [], reportPath = DEFAULT_REPORT, receipt = null, perCard = null, reviews = []}) {
   const run = receipt ? runFromReceipt(receipt) : latestShowdownRun(reports);
   const stats = run ? matchPerCard(perCard, run) : {};
   const digest = createHash("sha256").update(JSON.stringify(SHOWDOWN_SPECS)).digest("hex").slice(0, 16);
@@ -95,6 +118,7 @@ export function buildLedger({reports = [], reportPath = DEFAULT_REPORT, receipt 
       method: "docs/evidence/night-watch-showdown.md", bot: run.bot ?? "playTurn level 2 (both seats)", rulesBlob: run.rulesBlob ?? null,
     },
     perCardSource: Object.keys(stats).length ? perCard.source ?? null : null,
+    reviews: matchReviews(reviews, run),
     cards,
   };
 }
@@ -115,7 +139,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const inputs = receiptPath ? {reports: [], reportPath: receiptPath, receipt: JSON.parse(readFileSync(join(root, receiptPath), "utf8"))}
     : reportPath ? {reports: JSON.parse(readFileSync(join(root, reportPath), "utf8")), reportPath} : defaultInputs();
   const perCard = perCardPath ? {...JSON.parse(readFileSync(join(root, perCardPath), "utf8")), source: relative(root, join(root, perCardPath))} : null;
-  const text = render(buildLedger({...inputs, perCard}));
+  const text = render(buildLedger({reviews: reviewBundles(), ...inputs, perCard}));
   if (args.includes("--check")) {
     const current = existsSync(OUTPUT) ? readFileSync(OUTPUT, "utf8") : "";
     if (current !== text) { console.error("src/ui/sheriffs-ledger.data.js is stale: run node scripts/build-sheriffs-ledger.mjs"); process.exit(1); }

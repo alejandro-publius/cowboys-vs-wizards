@@ -32,6 +32,19 @@ export function rulesetSummary(ledger = LEDGER) {
     + `Draws ${r.draw}. Rule tests passed: ${r.rulesTests}. Shift against the baseline: ${r.state}.`;
 }
 
+// Pure: one line per Night Shift review of this run (a one-card, one-number candidate). Reviews never change a card.
+export function reviewLines(ledger = LEDGER) {
+  return (ledger.reviews ?? []).map((v) => `${v.card} ${v.field} ${v.from} → ${v.to}: ${v.verdict}. ${v.reasons.join("; ")}.`);
+}
+
+function reviewHtml(ledger) {
+  const lines = reviewLines(ledger);
+  if (!lines.length) return `<p class="sd-note" id="ledger-review">Night Shift review: none recorded for this run.</p>`;
+  return `<h3 id="ledger-review-title">Night Shift review</h3>
+  <ul class="sd-ledger-props" id="ledger-review">${lines.map((line, i) => `<li>${esc(line)} <code>${esc(ledger.reviews[i].source)}</code></li>`).join("")}</ul>
+  <p class="sd-note">Draft candidates only. None is applied to the cards; Fable and Alex decide.</p>`;
+}
+
 export function ledgerHtml(ledger = LEDGER) {
   const rows = ledgerRows(ledger);
   const observed = rows.filter((row) => ledger.cards.find((c) => c.type === row.type).latest).length;
@@ -40,6 +53,7 @@ export function ledgerHtml(ledger = LEDGER) {
   <h3 id="ledger-ruleset">Whole ruleset (not per card)</h3>
   <p id="ledger-run" class="sd-note">${esc(rulesetSummary(ledger))}</p>
   ${r ? `<p class="sd-note">Estimates for ${esc(r.bot)} on these seeds only. Commits after ${short(r.revision)} are not measured here. Method: <code>${esc(r.method)}</code>; records: <code>${esc(r.source)}</code>.</p>` : ""}
+  ${reviewHtml(ledger)}
   <p class="sd-note">Engine properties tested over every card (<code>${esc(ledger.properties.source)}</code>):</p>
   <ul class="sd-ledger-props">${ledger.properties.list.map((p) => `<li><strong>${esc(p.id)}</strong> ${esc(p.title)}</li>`).join("")}</ul>
   <p class="sd-note">Each card has one spec under ${esc(ledger.requirement.id)} ${esc(ledger.requirement.title)} (<code>${esc(ledger.requirement.path)}</code>), checked by <code>${esc(ledger.requirement.check)}</code>. R1.1 marks the eight cards it names.</p>

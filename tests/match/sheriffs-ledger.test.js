@@ -6,8 +6,8 @@ import {readFileSync} from "node:fs";
 import {SHOWDOWN_SPECS} from "../../src/game/card-specs.generated.js";
 import {DECKS} from "../../src/game/showdown/cards.js";
 import {LEDGER} from "../../src/ui/sheriffs-ledger.data.js";
-import {ledgerHtml, ledgerRows, rulesetSummary} from "../../src/ui/sheriffs-ledger.js";
-import {DEFAULT_RECEIPT, R1_1_CARDS, buildLedger, defaultInputs, laTime, latestShowdownRun, matchPerCard, render, runFromReceipt} from "../../scripts/build-sheriffs-ledger.mjs";
+import {ledgerHtml, ledgerRows, reviewLines, rulesetSummary} from "../../src/ui/sheriffs-ledger.js";
+import {DEFAULT_RECEIPT, R1_1_CARDS, buildLedger, defaultInputs, matchReviews, reviewBundles, laTime, latestShowdownRun, matchPerCard, render, runFromReceipt} from "../../scripts/build-sheriffs-ledger.mjs";
 
 const REPORT_PATH = "docs/evidence/night-watch-showdown/scout-pair-reports.json";
 const reports = JSON.parse(readFileSync(REPORT_PATH, "utf8"));
@@ -25,6 +25,19 @@ test("the Camp shows the checked-in receipt's real run: its commit, rules blob a
   assert.equal(LEDGER.run.rulesBlob, receipt.candidate.rulesBlob);
   assert.deepEqual([LEDGER.run.games, LEDGER.run.first, LEDGER.run.cowboy], [run.candidate.counts.games, run.candidate.counts.first, run.candidate.counts.cowboy]);
   assert.equal(receipt.cards.measured, false);
+});
+
+test("Night Shift reviews appear only when sealed and bound to this run's commit and counts", () => {
+  const bundles = reviewBundles();
+  assert.ok(bundles.length >= 1);
+  assert.deepEqual(LEDGER.reviews.map((v) => v.source), bundles.filter(({bundle}) => bundle.finding.commit === LEDGER.run.revision).map((b) => b.path));
+  assert.match(reviewLines()[0], /^cowboy-sheriff health 3 → 4: rejected\. tune: faction skew 9\.40 -> 13\.60 pp did not improve/);
+  assert.match(ledgerHtml(), /None is applied to the cards/);
+  const run = runFromReceipt(JSON.parse(readFileSync(DEFAULT_RECEIPT, "utf8")));
+  const [one] = bundles;
+  assert.equal(matchReviews([{...one, bundle: {...one.bundle, decision: {...one.bundle.decision, verdict: "accepted"}}}], run).length, 0, "a broken seal is dropped");
+  assert.equal(matchReviews(bundles, {...run, candidate: {...run.candidate, commit: "0".repeat(40)}}).length, 0, "another commit is dropped");
+  assert.equal(matchReviews(bundles, {...run, candidate: {...run.candidate, counts: {...run.candidate.counts, cowboy: 1}}}).length, 0, "other counts are dropped");
 });
 
 test("one row per catalog card, in catalog order, with real starter counts and spec paths", () => {
