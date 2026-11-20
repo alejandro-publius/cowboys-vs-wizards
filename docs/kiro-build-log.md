@@ -319,3 +319,12 @@ The next substantial Kiro task is #56, boundary generation, failure reduction an
 - **Change**: Camp, duel screen, a new builder and a pure best-of-three module are mounted on the canonical progress, session and save-code modules (`savecode.js` moved unchanged into `src/game/showdown/`). Two players draw from the active seat's view behind a curtain. Start over resets Showdown progress and the report only. No rule, reward, Scout, lane or 3D change.
 - **Verification**: `npm test` 606/606. New `scripts/browser-showdown-modes-check.mjs` 13/13. Existing graybox checks and the six reference-page checks all pass. Receipts: [evidence note](evidence/showdown-modes-143.md).
 - **Remaining**: the lane removal and the front page are separate slice 3 work. Wording is Fable's first draft. Human playtests are pending.
+
+### 2026-11-20 — Issue 143 slice 3 release candidate (Kiro CLI, America/Los_Angeles, 23:30 PST Nov 19 onward)
+
+- **State**: one combined branch `kiro/graywave-assemble` and one PR against `main`. Not merged; the coordinator merges after review. It supersedes PR #159 (Camp modes), which it contains.
+- **Performed in**: a Kiro CLI coordinator session (Claude Opus 5.5), merging the modes, retire, topology and cleanup worker branches. Rulings: Fable, PR 148 issuecomment-7031816529 and issue 143 issuecomment-7031863563.
+- **Problem**: slice 3's three parts (Camp modes, lane retirement, Showdown at the front page) were built on separate branches. The hosted build still had a lane-chunk path from #157, and the docs still said lane play was reachable from the graybox.
+- **Change**: `--no-ff` merges keep the removal commit `4ebbb16` separate. `src/app.js` conflict resolved to Showdown only with the full Camp. The hosted build has no lane-chunk path, and the staged-tree check asserts none. README, AGENTS.md, CLAUDE.md, the router, Kiro steering, the duel-presenter description, the judge guide and Devpost URLs, the release line (its Nov 19 handoff replaced) and the brief's status now name `/`, `/graybox/`, `/showdown/` and `/3d/`.
+- **Verification**: `npm test` 578/578; Showdown browser checks 22, 13, 16, 6 and 5 ok; staged Pages tree 8/8 with Chrome; `/3d/` menu and accessibility harnesses pass, replay 7 of 8 as on `main`. Receipts: [evidence note](evidence/showdown-slice3-release-candidate.md).
+- **Remaining**: three first-time human playtests; Fable's wording approval; the live Pages deploy after merge.
