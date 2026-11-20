@@ -1,0 +1,2 @@
+verify package-755df56b-to-d5a799d6: ok (games and Trail replayed); recorded verdict failed; tool script matches the current file
+EXIT=0

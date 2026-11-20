@@ -1,0 +1,16 @@
+2026-11-20T17:42:14Z
+package package-755df56b-to-6a464e06: 755df56b9903 -> 6a464e0680a4; tune 0+1000, holdout 1000+1000, Trail 300 deals
+  tests: baseline 62/62, candidate 62/62
+  tune 0-999: first player 57.10% -> 57.10%, Cowboys 59.40% -> 59.40%
+  holdout 1000-1999: first player 58.25% -> 58.25%, Cowboys 61.05% -> 61.05%
+  Trail: largest move 0.0 points on Trail, rival and hunt rows (0.0 including the Open range) over 21 rows x 3 levels
+  verdict: failed
+    - tune: first player share 57.10% is outside 45–55%
+    - tune: Cowboy share 59.40% is outside 45–55%
+    - holdout: first player share 58.25% is outside 45–55%
+    - holdout: Cowboy share 61.05% is outside 45–55%
+  Stop and send Fable the numbers. Do not retune. Not release eligible.
+  /tmp/even-control/out
+verify package-755df56b-to-6a464e06: ok; recorded verdict failed; tool script matches the current file
+EXIT=1
+2026-11-20T17:44:53Z
