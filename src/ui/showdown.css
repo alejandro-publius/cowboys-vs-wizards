@@ -46,3 +46,11 @@
 #showdown .sd-cue-still { animation: none; }
 @keyframes sd-cue-flash { from { outline-color: #fff; background-color: rgba(242, 210, 122, .25); } to { outline-color: #f2d27a; } }
 @media (prefers-reduced-motion: reduce) { #showdown .sd-cue { animation: none; } }
+/* Slice 3: Camp rows for rivals and Wanted, the deck builder and the two-player curtain, as in prototypes/showdown/style.css. */
+#camp-rivals, #camp-bounties { list-style: none; margin: 0; padding: 0; }
+#showdown-builder { max-width: 920px; margin: auto; padding: clamp(1rem, 3vw, 2rem); display: grid; gap: .5rem; }
+.sd-build-row { display: grid; grid-template-columns: 10rem repeat(2, auto) 1fr; gap: .75rem; align-items: center; margin-bottom: .5rem; }
+.sd-build-row .sd-card { width: 10rem; }
+#camp-code, #camp-report-text { width: 100%; box-sizing: border-box; }
+#sd-curtain { display: grid; gap: 1rem; justify-items: start; padding: 3rem 0; font-size: 1.15rem; }
+@media (max-width: 40rem) { .sd-build-row { grid-template-columns: 1fr 1fr; } }

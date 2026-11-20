@@ -18,6 +18,7 @@ import {OLD_SAVE_KEY, SAVE_KEY, loadCampaign, saveCampaign} from "../../src/game
 import {INHERITED_KEY, readInherited} from "../../src/game/showdown/inherited.js";
 import {BOUNTIES, HUNTS, migrate, newSave, owned, settle, trailDone} from "../../src/game/showdown/progress.js";
 import {createCampaign} from "../../src/match/showdown-campaign.js";
+import {createPlaytestLog} from "../../src/match/showdown-playtest.js";
 import {decodeSaveCode, encodeSave, sameSave} from "../../prototypes/showdown/savecode.js";
 
 const LANE_KEY = "cvw-player-v1";
@@ -270,7 +271,32 @@ test("reference Start over resets Showdown progress only; keepsakes and cvw-play
   assert.deepEqual(sorted(after.inherited()), sorted([DRAGON.reward, WRAITH.reward]), "keepsakes still shown");
   assert.deepEqual(earnedRewards(createProfileStore(storage).get()), [DRAGON.reward, WRAITH.reward]);
 });
-test.todo("slice 3: the graybox Camp's own Start over writes only Showdown keys and keeps keepsakes and cvw-player-v1");
+// FH-R7.3: the graybox Camp's own Start over (slice 3) is campaign.reset() then playtest.clear(),
+// the calls src/ui/showdown-camp.js makes after the confirm.
+test("graybox Start over resets Showdown progress only; keepsakes and cvw-player-v1 are left alone", () => {
+  const storage = storageFor("both-captured-in-deck");
+  const campaign = createCampaign(storage);
+  const playtest = createPlaytestLog(storage);
+  playToCapture(campaign, BOUNTIES[0].id);
+  playtest.add({name: "Boot Hill", won: true, turns: 5, seconds: 60, run: "r1"});
+  const lane = storage.data.get(LANE_KEY);
+  const keepsakes = storage.data.get(INHERITED_KEY);
+  const before = storage.writes.length;
+
+  assert.equal(campaign.reset(), true);
+  playtest.clear();
+
+  assert.deepEqual(storage.writes.slice(before), [SAVE_KEY, LOG_KEY], "the reset writes only Showdown keys");
+  assert.equal(storage.data.get(LANE_KEY), lane, "cvw-player-v1 untouched");
+  assert.equal(storage.data.get(INHERITED_KEY), keepsakes, "keepsake record untouched");
+  assert.deepEqual(campaign.progress(), newSave());
+  assert.deepEqual(createPlaytestLog(storage).entries(), []);
+  const after = createCampaign(storage);
+  assert.deepEqual(after.progress(), newSave(), "Showdown progress reset, including the earned Legendary");
+  assert.deepEqual(sorted(after.inherited()), sorted([DRAGON.reward, WRAITH.reward]), "keepsakes still shown");
+  assert.ok(after.holdings().filter((row) => row.inherited).length === 2, "the Camp still lists both keepsakes");
+  assert.deepEqual(earnedRewards(createProfileStore(storage).get()), [DRAGON.reward, WRAITH.reward]);
+});
 
 // FH-R7.1 (.kiro/specs/showdown-first-hour/requirements.md)
 test("save codes exclude keepsakes: a veteran's code equals a new player's and carries none to a new browser", () => {

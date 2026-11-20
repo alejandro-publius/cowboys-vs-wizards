@@ -42,7 +42,7 @@ async function buildHarness() {
     const step = Number(new URLSearchParams(location.search).get("step") ?? ${HARNESS_STEP});
     // Slice 2: the screen settles a finished duel through a campaign; the harness duel is outside the Trail and pays nothing.
     const campaign = {settle: (duel, won) => ({won, earned: {cards: [], packs: 0, captured: null}, intoDeck: [], grit: 0}),
-      progress: () => ({offer: null}), trailDuel: () => null, owned: () => 0, choose() {}};
+      progress: () => ({offer: null}), trailDuel: () => null, duel: () => null, owned: () => 0, choose() {}};
     mountShowdown(root, {onHome() {}, campaign, cueOptions: {step}}).start({name: "Cue harness", lesson: "Every card type in play.", level: 1, options: {decks}}, seed);`;
   const [template, style, showdownStyle, bundle] = await Promise.all([read("src/ui/graybox.html"), read("src/ui/graybox.css"), read("src/ui/showdown.css"),
     build({stdin: {contents: entry, resolveDir: ROOT, sourcefile: "cue-harness.js"}, bundle: true, write: false, platform: "browser", target: "es2022", format: "iife"})]);
