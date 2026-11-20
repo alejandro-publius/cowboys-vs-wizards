@@ -1,0 +1,53 @@
+# Rebased head on main ff84403 (baseline = main's single file)
+== main-run/browser-showdown.json checks 11 failure AssertionError [ERR_ASSERTION]: lane chunk fetched on ?mode=lanes errors 0
+phase (none): 1 requests, raw 174206, gzip-9 58833, Chrome encodedDataLength 174398
+| graybox/ | 200 | text/html; charset=utf-8 | 174206 | 58833 | 174398 |
+phase ?seed=0: 1 requests, raw 174206, gzip-9 58833, Chrome encodedDataLength 174398
+| graybox/ | 200 | text/html; charset=utf-8 | 174206 | 58833 | 174398 |
+phase ?mode=lanes: 1 requests, raw 174206, gzip-9 58833, Chrome encodedDataLength 174398
+| graybox/ | 200 | text/html; charset=utf-8 | 174206 | 58833 | 174398 |
+== http-run/browser-showdown.json checks 14 failure none errors 0
+phase (none): 1 requests, raw 55327, gzip-9 18496, Chrome encodedDataLength 55518
+| graybox/ | 200 | text/html; charset=utf-8 | 55327 | 18496 | 55518 |
+phase ?seed=0: 1 requests, raw 55327, gzip-9 18496, Chrome encodedDataLength 55518
+| graybox/ | 200 | text/html; charset=utf-8 | 55327 | 18496 | 55518 |
+phase ?mode=lanes: 2 requests, raw 173539, gzip-9 58852, Chrome encodedDataLength 173928
+| graybox/ | 200 | text/html; charset=utf-8 | 55327 | 18496 | 55518 |
+| graybox/chunks/lanes-0dbfbd1b.js | 200 | text/javascript; charset=utf-8 | 118212 | 40356 | 118410 |
+phase ?mode=match&deck=starter&seed=0: 2 requests, raw 173539, gzip-9 58852, Chrome encodedDataLength 173928
+| graybox/ | 200 | text/html; charset=utf-8 | 55327 | 18496 | 55518 |
+| graybox/chunks/lanes-0dbfbd1b.js | 200 | text/javascript; charset=utf-8 | 118212 | 40356 | 118410 |
+
+# First run on base a9aa828, plus PR #148 head 998645a with this script
+== base-run/browser-showdown.json checks 11 failure AssertionError [ERR_ASSERTION]: lane chunk fetched on ?mode=lanes errors 0
+phase (none): 1 requests, raw 172945, gzip-9 58341, Chrome encodedDataLength 173137
+| graybox/ | 200 | text/html; charset=utf-8 | 172945 | 58341 | 173137 |
+phase ?seed=0: 1 requests, raw 172945, gzip-9 58341, Chrome encodedDataLength 173137
+| graybox/ | 200 | text/html; charset=utf-8 | 172945 | 58341 | 173137 |
+phase ?mode=lanes: 1 requests, raw 172945, gzip-9 58341, Chrome encodedDataLength 173137
+| graybox/ | 200 | text/html; charset=utf-8 | 172945 | 58341 | 173137 |
+== http-run/browser-showdown.json checks 14 failure none errors 0
+phase (none): 1 requests, raw 54090, gzip-9 17993, Chrome encodedDataLength 54281
+| graybox/ | 200 | text/html; charset=utf-8 | 54090 | 17993 | 54281 |
+phase ?seed=0: 1 requests, raw 54090, gzip-9 17993, Chrome encodedDataLength 54281
+| graybox/ | 200 | text/html; charset=utf-8 | 54090 | 17993 | 54281 |
+phase ?mode=lanes: 2 requests, raw 172302, gzip-9 58349, Chrome encodedDataLength 172691
+| graybox/ | 200 | text/html; charset=utf-8 | 54090 | 17993 | 54281 |
+| graybox/chunks/lanes-0dbfbd1b.js | 200 | text/javascript; charset=utf-8 | 118212 | 40356 | 118410 |
+phase ?mode=match&deck=starter&seed=0: 2 requests, raw 172302, gzip-9 58349, Chrome encodedDataLength 172691
+| graybox/ | 200 | text/html; charset=utf-8 | 54090 | 17993 | 54281 |
+| graybox/chunks/lanes-0dbfbd1b.js | 200 | text/javascript; charset=utf-8 | 118212 | 40356 | 118410 |
+== run148/browser-showdown.json checks 25 failure none errors 0
+phase (none): 1 requests, raw 84766, gzip-9 28094, Chrome encodedDataLength 84957
+| graybox/ | 200 | text/html; charset=utf-8 | 84766 | 28094 | 84957 |
+phase ?seed=0: 4 requests, raw 339064, gzip-9 112376, Chrome encodedDataLength 339828
+| graybox/ | 200 | text/html; charset=utf-8 | 84766 | 28094 | 84957 |
+| graybox/ | 200 | text/html; charset=utf-8 | 84766 | 28094 | 84957 |
+| graybox/ | 200 | text/html; charset=utf-8 | 84766 | 28094 | 84957 |
+| graybox/ | 200 | text/html; charset=utf-8 | 84766 | 28094 | 84957 |
+phase ?mode=lanes: 2 requests, raw 202978, gzip-9 68450, Chrome encodedDataLength 203367
+| graybox/ | 200 | text/html; charset=utf-8 | 84766 | 28094 | 84957 |
+| graybox/chunks/lanes-0dbfbd1b.js | 200 | text/javascript; charset=utf-8 | 118212 | 40356 | 118410 |
+phase ?mode=match&deck=starter&seed=0: 2 requests, raw 202978, gzip-9 68450, Chrome encodedDataLength 203367
+| graybox/ | 200 | text/html; charset=utf-8 | 84766 | 28094 | 84957 |
+| graybox/chunks/lanes-0dbfbd1b.js | 200 | text/javascript; charset=utf-8 | 118212 | 40356 | 118410 |

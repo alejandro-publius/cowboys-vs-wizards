@@ -1,0 +1,24 @@
+18c18,19
+< const page = pathToFileURL(path.resolve(process.argv[2])).href;
+---
+> const page = /^https?:/.test(process.argv[2]) ? process.argv[2] : pathToFileURL(path.resolve(process.argv[2])).href;
+> let phase = "initial";
+77c78
+< const report = {page, chrome: CHROME, viewport: [WIDTH, HEIGHT], checks: [], errors: [], screenshots: [], clicks: 0};
+---
+> const report = {requests: [], page, chrome: CHROME, viewport: [WIDTH, HEIGHT], checks: [], errors: [], screenshots: [], clicks: 0};
+85a87,89
+>     if (method === "Network.requestWillBeSent") report.requests.push({id: params.requestId, phase, url: params.request.url, type: params.type});
+>     if (method === "Network.responseReceived") Object.assign(report.requests.find((r) => r.id === params.requestId) ?? {}, {status: params.response.status, mimeType: params.response.mimeType, contentType: params.response.headers["Content-Type"] ?? params.response.headers["content-type"], fromCache: params.response.fromDiskCache || params.response.fromServiceWorker});
+>     if (method === "Network.loadingFinished") Object.assign(report.requests.find((r) => r.id === params.requestId) ?? {}, {encodedDataLength: params.encodedDataLength});
+90a95,96
+>   await send("Network.enable");
+>   await send("Network.setCacheDisabled", {cacheDisabled: true});
+117a124
+>     phase = query || "(none)";
+260a268,270
+>   { const lane = report.requests.filter((r) => /\/lanes-[0-9a-f]+\.js/.test(r.url));
+>     report.laneChunkRequestsDuringShowdown = lane;
+>     assert.deepEqual(lane, [], "lane chunk fetched during Showdown"); check("Lane chunk never requested during Showdown Boot Hill play", {phases: [...new Set(report.requests.map((r) => r.phase))], requests: report.requests.length}); }
+269a280
+>   assert.ok(report.requests.some((r) => r.phase === "?mode=lanes" && /\/lanes-[0-9a-f]+\.js/.test(r.url) && r.status === 200), "lane chunk fetched on ?mode=lanes"); check("?mode=lanes fetches the lane chunk (200)");
