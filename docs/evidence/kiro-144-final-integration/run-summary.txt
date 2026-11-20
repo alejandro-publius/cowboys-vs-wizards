@@ -1,0 +1,315 @@
+# Fresh run summary, HEAD 6f2245a, 2026-11-19 PST
+
+## npm test
+ℹ tests 516
+ℹ pass 516
+ℹ fail 0
+PASS assets/models/dragon.glb
+PASS assets/models/mounted-billy.glb
+2/2 file(s) passed structural checks (structure only; not motion quality)
+
+## builds (sha256)
+2d60da31931c98123db0cb39e8b7637c31d734c80a0ebd2ae3e2ae2a4b84d6d6  dist/cowboys-vs-wizards-board-duel.html
+2d60da31931c98123db0cb39e8b7637c31d734c80a0ebd2ae3e2ae2a4b84d6d6  dist/web/index.html
+2d60da31931c98123db0cb39e8b7637c31d734c80a0ebd2ae3e2ae2a4b84d6d6  .artifacts/final/offline.html
+871ff32f406ff7a000fc3e24fe32791c5c33f6f5770be261aa93e5aa6095dd2f  dist/showdown.html
+
+## access-browser-check.mjs (exit 0)
+desktop camp: screens camp, focus body in body (not visible), ring no
+ok   desktop: Boot Hill tile reached in 1 Tab presses and shows a focus outline
+ok   desktop: Enter opens Boot Hill with focus on a visible duel control (focus #end in duel, ring yes)
+ok   desktop: status names Boot Hill
+ok   desktop: after Enter on cowboy-sheriff-8, focus #end in duel, ring yes
+ok   desktop: after the card resolved, focus #end in duel, ring yes
+ok   desktop: after End turn and the Wizards' reply, focus #end in duel, ring yes
+ok   desktop: solo hand holds no Wizard cards
+note desktop: no tribute card in hand on this seed; pick-focus step not exercised
+ok   desktop: "Back to camp" (2 Tab presses) returns to Camp with focus duel=trail in camp, ring yes
+ok   desktop: saved Camp progress unchanged by leaving mid-duel
+ok   desktop: Enter on "Build deck" opens the builder with focus zone=deck,type=cowboy-sheriff,by=-1 in builder, ring yes
+ok   desktop: Enter twice on "One fewer Deadeye" keeps focus on it (focus zone=deck,type=cowboy-deadeye,by=-1 in builder, ring yes)
+ok   desktop: at the Deadeye limit focus moves to its "One fewer" button (focus zone=deck,type=cowboy-deadeye,by=-1 in builder, ring yes)
+ok   desktop: Cancel returns to Camp on "Build deck", save unchanged (focus #build in camp, ring yes)
+ok   desktop: Enter on "One more Sheriff in the side deck" keeps focus on it (focus zone=side,type=cowboy-sheriff,by=1 in builder, ring yes)
+ok   desktop: Save deck returns to Camp on "Build deck" with the side deck saved (focus #build in camp, ring yes)
+ok   reward: Boot Hill won by keyboard (seed 0); offer Covered Wagon or Deadeye; focus again=1 in duel, ring yes
+ok   reward: after the winning move focus stays on a visible duel control (focus again=1 in duel, ring yes)
+reward: live regions after the win: #status: You win: the Wizard Base fell. | #reward: New in your collectionCovered Wagon● Troop · Rig · Common1 attack · 4 orbs Guard. Enemies must attack this troop before any other troop or the Base.Cost: none. Rests the turn it arrives.×2In your deck now: Covered Wagon ×2 in place of Sheriff ×2.Bonus: pick 1 more card to keepCovered Wagon● Troop · Rig · Common1 attack · 4 orbs Guard. Enemies must attack this troop before any other troop or the Base.Cost: none. Rests the turn it arrives.You own 2.Deadeye✦ Spell · Common Remove 1 orb from an enemy troop.You own 3.Back to camp
+ok   reward in duel: choosing rewrites one reward part and leaves the status alone (changed: #reward/5)
+ok   reward in the duel: 5 Tab presses reach Covered Wagon; Enter takes it into the saved collection
+ok   reward in the duel: after choosing, focus again=1 in duel, ring yes
+ok   reward in the duel: a live region says which card was taken (#status: You win: the Wizard Base fell. | #reward: New in your collectionCovered Wagon● Troop · Rig · Common1 attack · 4 orbs Guard. Enemies must attack this troop before any other troop or the Base.Cost: none. Rests the turn it arrives.×2In your deck now: Covered Wagon ×2 in place of Sheriff ×2.Added Covered Wagon: you now own 3. The new copy is not in your deck yet: use Build deck in camp.Back to camp)
+ok   reward: "Back to camp" (0 Tab presses) returns to Camp with focus duel=trail in camp, ring yes
+ok   reward: after a reload Camp offers the same two cards
+ok   reward in Camp: 2 Tab presses reach Deadeye; Enter takes it into the saved collection
+ok   reward in Camp: after choosing, focus duel=trail in camp, ring yes
+ok   reward in Camp: a live region says which card was taken (#claim: Added Deadeye: you now own 4. The new copy is not in your deck yet: use Build deck below.Next: click Raven Roost to play it.)
+ok   phone camp: sideways overflow 0px, cut-off controls [] of 23, smallest 27px
+ok   phone: tap on Boot Hill opens the duel (duel)
+ok   phone duel: sideways overflow 0px, cut-off controls [] of 16, smallest 27px
+ok   phone duel after a played card: overflow 0px, cut-off []
+ok   phone duel after End turn: overflow 0px, cut-off []
+ok   phone: "Back to camp" returns to Camp (camp, overflow 0px)
+ok   phone: saved Camp progress unchanged by leaving mid-duel
+ok   no page errors or network requests (none)
+keyboard and phone path passed (seed 7)
+
+## onboarding-browser-check.mjs (exit 0)
+ok   clean Camp: "Start here" names Boot Hill ("Start here: click Boot Hill to play your first duel."; tile "Boot Hill Win to earn Covered Wagon ×2")
+ok   clean Camp: Boot Hill reached in 1 Tab press with a focus outline
+ok   Enter opens Boot Hill (focus #end in duel, ring yes)
+ok   opening prompt says nobody attacks on the opening turn: "Play your cards: one troop a turn. Nobody attacks on the opening turn."
+ok   first playable card (top 525px) and End turn (top 720px) on screen without scrolling
+ok   after the free troop, the prompt still says nobody attacks yet: "Play your cards: one troop a turn. Nobody attacks on the opening turn."
+ok   the new troop says why it cannot attack: Opening turn · can take cover
+ok   back to the Cowboys after the Wizards' reply (Boot Hill · turn 3 · your turn)
+ok   picked troop: the prompt explains cover beside the attack: "Choose what to attack. Or take cover: until your next turn it keeps extra damage off your Base, but it will not hit back."
+ok   picked troop: each target still previews the attack
+ok   Take cover on screen while a troop is picked (top 678px)
+ok   Take cover is applied and logged
+ok   desktop: focus after cover (focus #end in duel, ring yes)
+ok   away and back: focus still on #end (focus #end in duel, ring yes)
+ok   "Back to camp" puts focus back on Boot Hill (focus duel=trail in camp, ring yes)
+ok   desktop: saved progress unchanged by the unfinished duel
+ok   progressed Camp: no "Start here"; tiles read "✓ Boot Hill Earned Covered Wagon ×2", "The Bone Fence Win to earn Ranger, Lasso"
+ok   progressed Camp: Tab reaches The Bone Fence in 1 press(es)
+ok   progressed: The Bone Fence opens with its own lesson ("A Bone Wall has Guard: it must fall first. Their Wizard raises a Skeleton from the graveyard.")
+ok   opening prompt says nobody attacks on the opening turn: "Play your cards: one troop a turn. Nobody attacks on the opening turn."
+ok   first playable card (top 585px) and End turn (top 800px) on screen without scrolling
+ok   after the free troop, the prompt still says nobody attacks yet: "Play your cards: one troop a turn. Nobody attacks on the opening turn."
+ok   the new troop says why it cannot attack: Opening turn · can take cover
+ok   back to the Cowboys after the Wizards' reply (Boot Hill · turn 3 · your turn)
+ok   picked troop: the prompt explains cover beside the attack: "Choose what to attack. Or take cover: until your next turn it keeps extra damage off your Base, but it will not hit back."
+ok   picked troop: each target still previews the attack
+ok   Take cover on screen while a troop is picked (top 758px)
+ok   Take cover is applied and logged
+ok   phone: sideways overflow 0px, cut-off controls [], smallest 27px
+ok   phone: back in Camp with saved progress unchanged
+ok   no page errors or network requests (none)
+first-session onboarding path passed (seed 7)
+
+## hotseat-browser-check.mjs (exit 0)
+ok   fresh profile: no saved Camp progress before play
+ok   fresh Camp is the only screen (camp)
+ok   at the start: curtain is the only visible screen (curtain)
+ok   at the start: board and hand are hidden behind the curtain
+ok   at the start: curtain names the wizard player
+ok   at the start: keyboard focus is on "I'm ready" (ready)
+ok   turn 1: "I'm ready" by keyboard reveals the duel (duel, 0 Tab presses)
+ok   turn 1: hand shows only wizard cards (wizard,wizard,wizard,wizard)
+ok   turn 1: status names the wizards (Two players · turn 1 · the Wizards' turn)
+ok   turn 1: focus left the curtain for the visible End turn button (end)
+ok   turn 1: Keywords explains every keyword on a visible card (Guard, Quickdraw, Ride, Scout, Raise, Sweep, Last Stand)
+ok   after End turn 1: curtain is the only visible screen (curtain)
+ok   after End turn 1: board and hand are hidden behind the curtain
+ok   after End turn 1: curtain names the cowboy player (expected cowboy)
+ok   after End turn 1: keyboard focus is on "I'm ready" (ready)
+ok   turn 2: "I'm ready" by keyboard reveals the duel (duel, 0 Tab presses)
+ok   turn 2: hand shows only cowboy cards (cowboy,cowboy,cowboy,cowboy,cowboy,cowboy)
+ok   turn 2: status names the cowboys (Two players · turn 2 · the Cowboys' turn)
+ok   turn 2: focus left the curtain for the visible End turn button (end)
+ok   turn 2: Keywords explains every keyword on a visible card (Guard, Quickdraw, Ride, Scout, Raise, Sweep, Last Stand)
+ok   turn 2: Keywords is the same list as on turn 1, so it shows nothing hidden (Guard, Quickdraw, Ride, Scout, Raise, Sweep, Last Stand)
+ok   turn 2: hand content changed with the handoff
+ok   after End turn 2: curtain is the only visible screen (curtain)
+ok   after End turn 2: board and hand are hidden behind the curtain
+ok   after End turn 2: curtain names the wizard player (expected wizard)
+ok   after End turn 2: keyboard focus is on "I'm ready" (ready)
+ok   turn 3: "I'm ready" by keyboard reveals the duel (duel, 0 Tab presses)
+ok   turn 3: hand shows only wizard cards (wizard,wizard,wizard,wizard,wizard)
+ok   turn 3: status names the wizards (Two players · turn 3 · the Wizards' turn)
+ok   turn 3: focus left the curtain for the visible End turn button (end)
+ok   turn 3: Keywords explains every keyword on a visible card (Guard, Quickdraw, Ride, Scout, Raise, Sweep, Last Stand)
+ok   turn 3: Keywords is the same list as on turn 1, so it shows nothing hidden (Guard, Quickdraw, Ride, Scout, Raise, Sweep, Last Stand)
+ok   turn 3: hand content changed with the handoff
+ok   after End turn 3: curtain is the only visible screen (curtain)
+ok   after End turn 3: board and hand are hidden behind the curtain
+ok   after End turn 3: curtain names the cowboy player (expected cowboy)
+ok   after End turn 3: keyboard focus is on "I'm ready" (ready)
+ok   turn 4: "I'm ready" by keyboard reveals the duel (duel, 0 Tab presses)
+ok   turn 4: hand shows only cowboy cards (cowboy,cowboy,cowboy,cowboy,cowboy,cowboy)
+ok   turn 4: status names the cowboys (Two players · turn 4 · the Cowboys' turn)
+ok   turn 4: focus left the curtain for the visible End turn button (end)
+ok   turn 4: Keywords explains every keyword on a visible card (Guard, Quickdraw, Ride, Scout, Raise, Sweep, Last Stand)
+ok   turn 4: Keywords is the same list as on turn 1, so it shows nothing hidden (Guard, Quickdraw, Ride, Scout, Raise, Sweep, Last Stand)
+ok   turn 4: hand content changed with the handoff
+ok   "Back to camp" returns to Camp (camp)
+ok   Camp progress (saved v2 entry, save code, collection) is unchanged by the two-player game
+ok   no page errors or network requests (none)
+hotseat handoff passed (seed 7, 4 turns)
+
+## savecode-browser-check.mjs (exit 0)
+ok   startup reads the saved Camp unchanged
+ok   a bad code: refused (That is not a save code. Nothing was changed.), no preview, storage unchanged
+ok   a damaged code: refused (That is not a save code. Nothing was changed.), no preview, storage unchanged
+ok   a newer-version code: refused (That code is from a newer version of the game. Nothing was changed.), no preview, storage unchanged
+ok   the same save's code: no preview, storage unchanged
+ok   a different save shows the preview (This code holds: Trail 0 of 6 won, 0 rivals beaten, 0 bounty hunts cleared, 3 collected cards, 0 unopened packs. You have: Trail 2 of 6 won, 0 rivals beaten, 0 bounty hunts cleared, 7 collected cards, 0 unopened packs. Replace your progress in this browser with it?)
+ok   storage is unchanged while the preview is open
+ok   Cancel closes the preview and writes nothing
+ok   a legacy v1 code previews as Trail 1 and writes nothing yet
+ok   stale: the first foreign save is previewed
+ok   stale: typing a new code closes the preview, so Replace is not offered (The code changed, so the preview was closed. Press Load to preview it. Nothing was changed.)
+ok   stale: the note asks for a fresh preview (The code changed, so the preview was closed. Press Load to preview it. Nothing was changed.)
+ok   stale: storage keeps the old save and the typed code stays in the box
+ok   stale: Load previews the edited code afresh (This code holds: Trail 1 of 6 won, 0 rivals beaten, 0 bounty hunts cleared, 5 collected cards, 0 unopened packs. You have: Trail 2 of 6 won, 0 rivals beaten, 0 bounty hunts cleared, 7 collected cards, 0 unopened packs. Replace your progress in this browser with it?)
+ok   stale: Cancel on the fresh preview still writes nothing
+ok   Replace writes the pasted save
+ok   after reload the Camp shows the replaced save
+ok   storage blocked: no notice before any write is attempted
+ok   only the Showdown save key is blocked
+ok   failed write shows a status notice (This browser did not save your progress, so a reload will lose it. To keep it, open Save code in the Camp and copy the code.)
+ok   the import note says it was not saved (Loaded for this visit only: the browser did not save it.)
+ok   in-memory progress is the imported save
+ok   the last stored save is untouched
+ok   the notice stays visible in the deck builder
+ok   the Camp save code round-trips the unsaved progress
+ok   after reload the last stored save loads, with no notice
+ok   no page errors or network requests (none)
+PASS save-code import
+
+## bo3-browser-check.mjs (exit 0)
+ok   [solo] fresh profile: no saved Camp progress before the fixture is loaded
+ok   [solo] before the fixture, the best of three is locked behind the Trail
+ok   [solo] Load opens the save preview and changes nothing until Replace
+ok   [solo] FIXTURE loaded through the Save code box and Replace: the Camp says Loaded.
+ok   [solo] saved progress after Load is exactly the fixture (v2, Trail done, 16-card deck, 4-card side deck)
+ok   [solo] REAL game 1 finished by clicks: cowboy after turn 9 (18 Cowboy actions clicked, 19 screen/model comparisons)
+ok   [solo] game 1 result and score on screen (You win: the Wizard Base fell. · game 1 of 3 · you 1, Wizards 0)
+ok   [solo] the next control is "Game 2" (Game 2)
+ok   [solo] saved progress unchanged after game 1 (a match is settled only when it ends)
+ok   [solo] "Game 2" opens the between-games side-deck swap (builder)
+ok   [solo] swap screen lists exactly the fixture deck and side deck counts ({"cowboy-sheriff":[3,0],"cowboy-billy":[2,0],"cowboy-mounted-billy":[1,0],"cowboy-deadeye":[1,1],"cowboy-covered-wagon":[2,0],"cowboy-outrider":[2,1],"cowboy-dynamiter":[1,1],"cowboy-ranger":[1,0],"cowboy-gatling-crew":[1,0],"cowboy-lasso":[1,0],"cowboy-bear-trap":[1,1]})
+ok   [solo] no Cancel between games: the swap is part of the match
+ok   [solo] the swap screen opens with focus on its first enabled step button ({"zone":"deck","type":"cowboy-sheriff","by":"-1","id":null,"ring":false,"inBuilder":true,"disabled":false})
+ok   [solo] Enter on "One more in the deck: Dynamiter" moves it in; 17 of 16 blocks the next game (Deck 17 of 16 · side deck 3 of 4. A deck is exactly 16 cards; this one has 17.)
+ok   [solo] side deck now empty of Dynamiter: focus moves to its "One fewer in the deck" button with a focus ring ({"zone":"deck","type":"cowboy-dynamiter","by":"-1","id":null,"ring":true,"inBuilder":true,"disabled":false})
+ok   [solo] Enter again reverses it: counts back to the fixture exactly, Deck 16 of 16 · side deck 4 of 4.
+ok   [solo] focus stays on a Dynamiter step button after the undo ({"zone":"deck","type":"cowboy-dynamiter","by":"-1","id":null,"ring":true,"inBuilder":true,"disabled":false})
+ok   [solo] saved progress unchanged by the try-and-undo
+ok   [solo] one card in without one out: 17 of 16 blocks the next game (Deck 17 of 16 · side deck 3 of 4. A deck is exactly 16 cards; this one has 17.)
+ok   [solo] Dynamiter moved side deck to deck, Sheriff deck to side deck, every other row as loaded ({"cowboy-sheriff":[2,1],"cowboy-billy":[2,0],"cowboy-mounted-billy":[1,0],"cowboy-deadeye":[1,1],"cowboy-covered-wagon":[2,0],"cowboy-outrider":[2,1],"cowboy-dynamiter":[2,0],"cowboy-ranger":[1,0],"cowboy-gatling-crew":[1,0],"cowboy-lasso":[1,0],"cowboy-bear-trap":[1,1]})
+ok   [solo] focus stays on the Sheriff side deck button just pressed ({"zone":"side","type":"cowboy-sheriff","by":"1","id":null,"ring":true,"inBuilder":true,"disabled":false})
+ok   [solo] legal swap: Deck 16 of 16 · side deck 4 of 4.; "Play the next game" enabled
+ok   [solo] saved progress unchanged by the swap: the Camp deck and side deck are still the fixture's (it lasts for this match only)
+ok   [solo] Tab reaches "Play the next game" with a focus ring ({"zone":null,"type":null,"by":null,"id":"builder-save","ring":true,"inBuilder":true,"disabled":false})
+ok   [solo] the whole swap and the deal of game 2 used no mouse clicks: 45 Tab, 15 Shift+Tab, 5 Enter
+ok   [solo] game 2 dealt with the score carried over (Open range · game 2 of 3 · you 1, Wizards 0 · turn 2 · your turn)
+ok   [solo] the loser of game 1 opens game 2 (Turn 1: the Wizards)
+ok   [solo] game 2 Cowboy cards: hand 6 + deck 10 = 16, every hand card fits the swapped deck (cowboy-deadeye-1,cowboy-bear-trap-1,cowboy-sheriff-2,cowboy-mounted-billy-1,cowboy-covered-wagon-1,cowboy-billy-1)
+ok   [solo] saved progress unchanged with game 2 under way (active save is not touched mid-match)
+ok   [solo] REAL game 2 (SYNTHETIC seed 1, wizard first) finished by clicks: cowboy after turn 10 (16 Cowboy actions clicked, 17 screen/model comparisons)
+ok   [solo] game 2 result and score on screen (You win: the Wizard Base fell. · game 2 of 3 · you 2, Wizards 0)
+ok   [solo] series won 2-0: saved progress is exactly one Open range settlement of the fixture (openWins 0→1, rolls 6→7, offer cowboy-mounted-billy,cowboy-deadeye)
+ok   [solo] series result on screen: You win: the Wizard Base fell. · game 2 of 3 · you 2, Wizards 0; "Back to camp"; card offer shown
+ok   [solo] Back to camp after the series: Camp shows the saved deck, not the match swap, and still exactly one settlement
+ok   [solo] no Camp deck mutation: saved deck and side deck after the series are the fixture's (Sheriff ×3, Dynamiter deck ×1 side ×1)
+ok   [two-player] reload: saved progress is still the solo-settled save
+ok   [two-player] REAL two-player game 1 finished by clicks: wizard after turn 6 (6 Cowboy + 12 Wizard actions clicked, 19 screen/model comparisons)
+ok   [two-player] game 1 result and score on screen (The Wizards win: the Cowboy Base fell. · game 1 of 3 · Cowboys 0, Wizards 1)
+ok   [two-player] the next control is "Game 2" (Game 2)
+ok   [two-player] game 2 starts behind the curtain, for the Cowboy player who lost game 1 (Pass the screen to the Cowboy player.)
+ok   [two-player] game 2 dealt with the score carried over (Two players · game 2 of 3 · Cowboys 0, Wizards 1 · turn 1 · the Cowboys' turn)
+ok   [two-player] game 2 hand belongs to the side to move (cowboy-mounted-billy-1,cowboy-lasso-1,cowboy-billy-2,cowboy-billy-1)
+ok   [two-player] REAL two-player game 2 (SYNTHETIC seed 1271, cowboy first) finished by clicks: wizard after turn 4 (3 Cowboy + 6 Wizard actions clicked, 10 screen/model comparisons)
+ok   [two-player] game 2 result and score on screen (The Wizards win: the Cowboy Base fell. · game 2 of 3 · Cowboys 0, Wizards 2)
+ok   [two-player] series over 0-2: the next control is "Play again" (Play again)
+ok   [two-player] saved progress unchanged by the whole two-player series (no Camp progression)
+ok   [page] no page errors or network requests (none)
+best of three passed: 47 checks, 110 clicks, 5.5 s (solo series 4,1 2-0, two-player series 12,1271 0-2)
+receipt .artifacts/kiro/judge-proof/showdown-bo3/receipt.json
+
+## campaign-browser-check.mjs (exit 0)
+ok  A fresh profile has no saved Showdown progress
+ok  A page adds no window globals (no hidden-state test hook)
+ok  A fresh Camp: Camp tiles and Open range match duelList()
+ok  A fresh Camp: Boot Hill is the only enabled ladder tile
+ok  A fresh Camp: nothing to claim, only where to start
+ok  B Boot Hill opens on turn 1 with the authored lesson
+ok  B Boot Hill: deal on screen equals the mirror deal
+ok  B Boot Hill: page matched the mirror after all 12 actions
+ok  B Boot Hill won by the Cowboys
+ok  C settle() pays Covered Wagon ×2 and no pack
+ok  C reward panel shows Covered Wagon ×2 under New in your collection
+ok  C the two offered cards equal settle()'s offer
+ok  C after the win, before the choice: localStorage holds the expected progress.js save
+ok  C choosing Covered Wagon clears the offer
+ok  C after choosing Covered Wagon: localStorage holds the expected progress.js save
+ok  C next-step button reads Back to camp
+ok  C Camp after Continue: Camp tiles and Open range match duelList()
+ok  C Camp after Continue: Raven Roost is the open Trail duel
+ok  C Camp after reload: Camp tiles and Open range match duelList()
+ok  C after reload: localStorage and the Save code box hold the expected progress.js save
+ok  C after reload Raven Roost starts with the mirror deal for ?seed and the earned deck
+ok  C Raven Roost deck holds the two Covered Wagons
+ok  C Back to camp without playing: localStorage and the Save code box hold the expected progress.js save
+ok  D fixture v1-trail-done migrates to a finished Trail that keeps its 1 pack, with no offer
+ok  D the Save code box holds the typed fixture code
+ok  D Load opens the visible preview and leaves the save unchanged
+ok  D Replace my progress reports Loaded. with no browser dialog and closes the preview
+ok  D after loading v1-trail-done: localStorage and the Save code box hold the expected progress.js save
+ok  D Camp after loading v1-trail-done: Camp tiles and Open range match duelList()
+ok  D the Stargazer and both bounties are open, the Imp locked, Open range enabled
+ok  E The Stargazer: deal on screen equals the mirror deal
+ok  E The Stargazer: page matched the mirror after all 17 actions
+ok  E the Stargazer won by the Cowboys
+ok  E settle() pays the Six-Shooter and 1 pack
+ok  E reward panel shows the Six-Shooter and the earned pack
+ok  E the two offered cards equal settle()'s offer
+ok  E a beaten rival with a card on offer moves on with Back to camp
+ok  E after choosing Mounted Billy: localStorage holds the expected progress.js save
+ok  E Camp after the Stargazer: Camp tiles and Open range match duelList()
+ok  E Camp offers 2 packs to open
+ok  E pack 1: its three cards equal progress.js openPack()
+ok  E after opening pack 1: localStorage and the Save code box hold the expected progress.js save
+ok  E pack 2: its three cards equal progress.js openPack()
+ok  E after opening pack 2: localStorage and the Save code box hold the expected progress.js save
+ok  E Add them to my collection leaves no pack or card to claim
+ok  E collection line lists the Six-Shooter and every pack card
+ok  E Camp after the pack: Camp tiles and Open range match duelList()
+ok  E the Imp is now the open rival
+ok  E Camp after reload: Camp tiles and Open range match duelList()
+ok  E after reload: localStorage and the Save code box hold the expected progress.js save
+ok  F Lantern Wraith hunt 1 of 5 opens with the mirror deal for ?seed
+ok  F the Wraith stands in the first Wizard slot with 4 orbs
+ok  F Back to camp leaves the save byte-for-byte unchanged
+ok  F Camp after leaving the hunt: Camp tiles and Open range match duelList()
+ok  Z no confirmation or alert dialog opened
+checks 55/55 passed; actions 29; console errors 0; remote requests 0; dialogs 0
+html dist/showdown.html sha256 871ff32f406ff7a000fc3e24fe32791c5c33f6f5770be261aa93e5aa6095dd2f; Chrome/158.0.8127.37; 2.1 s; receipt .artifacts/kiro/judge-proof/campaign-browser-receipt.json
+pass true
+
+## browser-showdown-check.mjs, offline build
+ok - Normal entry on a clean profile offers Play and the lane duel link only
+ok - Play on a clean profile opens Trail duel 1, Boot Hill (Showdown), not the lane duel
+ok - Main menu returns to the title
+ok - Turn 1 offers only legal plays: no attacker, no target, Wizard Base disabled
+ok - A summon shows its event line, and further troop cards are disabled with 'One troop a turn.'
+ok - Clicking a disabled card applies nothing
+ok - Boot Hill (?seed=0) won by clicks alone; inputs close after the result
+ok - Seat privacy held at every checked step
+ok - 'Play Boot Hill again' deals a new Boot Hill
+ok - ?mode=lanes shows the lane menu, and Play opens the lane duel
+ok - ?mode=match still auto-starts the lane duel used by the existing lane checks
+ok - No page exceptions or console errors
+12 checks passed; report in .artifacts/final/graybox-file/browser-showdown.json
+
+## browser-showdown-check.mjs, web build
+ok - Normal entry on a clean profile offers Play and the lane duel link only
+ok - Play on a clean profile opens Trail duel 1, Boot Hill (Showdown), not the lane duel
+ok - Main menu returns to the title
+ok - Turn 1 offers only legal plays: no attacker, no target, Wizard Base disabled
+ok - A summon shows its event line, and further troop cards are disabled with 'One troop a turn.'
+ok - Clicking a disabled card applies nothing
+ok - Boot Hill (?seed=0) won by clicks alone; inputs close after the result
+ok - Seat privacy held at every checked step
+ok - 'Play Boot Hill again' deals a new Boot Hill
+ok - ?mode=lanes shows the lane menu, and Play opens the lane duel
+ok - ?mode=match still auto-starts the lane duel used by the existing lane checks
+ok - No page exceptions or console errors
+12 checks passed; report in .artifacts/final/graybox-web/browser-showdown.json
+
+## rules trace + Scout oracle (735cb09 prototype / HEAD src/game/showdown / HEAD shim)
+{"trace":"917609b92c73cfb5591f8f74539f7d2da5e98fc4172c03e0d7416c7a6e5e8bdd","turns":2570,"wins":{"cowboy":150,"wizard":50,"none":0},"scoutOracle":{"hash":"c57910c00afa4c6a49da64604ecce1a8e1ef7ae43bc77baca4f9b7eaaade2c45","cmp":474,"withScoutInHand":78,"changed":16,"changedNoScout":0}}
+{"trace":"917609b92c73cfb5591f8f74539f7d2da5e98fc4172c03e0d7416c7a6e5e8bdd","turns":2570,"wins":{"cowboy":150,"wizard":50,"none":0},"scoutOracle":{"hash":"c57910c00afa4c6a49da64604ecce1a8e1ef7ae43bc77baca4f9b7eaaade2c45","cmp":474,"withScoutInHand":78,"changed":16,"changedNoScout":0}}
+{"trace":"917609b92c73cfb5591f8f74539f7d2da5e98fc4172c03e0d7416c7a6e5e8bdd","turns":2570,"wins":{"cowboy":150,"wizard":50,"none":0},"scoutOracle":{"hash":"c57910c00afa4c6a49da64604ecce1a8e1ef7ae43bc77baca4f9b7eaaade2c45","cmp":474,"withScoutInHand":78,"changed":16,"changedNoScout":0}}
