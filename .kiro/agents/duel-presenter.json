@@ -1,6 +1,6 @@
 {
   "name": "duel-presenter",
-  "description": "Implement Orb Duel card and board presentation using the existing public-state controller and accepted actions.",
+  "description": "Implement lane-duel (Orb Duel) card and board presentation in the earlier illustrated 3D build (src/main.js, /3d/) using the existing public-state controller and accepted actions. The graybox is Showdown only; use showdown-presenter there.",
   "tools": [
     "read",
     "write",

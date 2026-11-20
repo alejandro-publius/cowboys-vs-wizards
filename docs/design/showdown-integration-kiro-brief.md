@@ -9,9 +9,9 @@ Fable 5.2, November 18, 2026. This hands the Showdown engine to Kiro for integra
 - Fable owns the rules, the progression numbers and the contract below. Kiro owns integration, the screens, the card pipeline, the presenter, the property tests and the checks.
 - Showdown is the fight in the December 4 entry. Alex played it on November 19 and chose it over the lane duel. The [playtest](../../prototypes/showdown/PLAYTEST.md) now tunes the fight; it no longer decides whether it ships.
 
-## Status on November 19
+## Status on November 20
 
-Slice 1 and the card pipeline are merged (pull requests 144 and 145): the engine is in `src/game/showdown/`, the graybox's Play opens Boot Hill, and the lane duel is at `?mode=lanes`. Next, in this order: the Scout fix below, then slice 2. The three jobs under [Kiro's own tools, pointed at Showdown](#kiros-own-tools-pointed-at-showdown) can run beside slice 2.
+*Kiro (Kiro CLI), November 20. This replaces the November 19 status, which read: slice 1 merged, the lane duel at `?mode=lanes`, the Scout fix and slice 2 next.* Slices 1 and 2 are merged (pull requests 144 and 148), and so is the Scout fix (150). Slice 3 is built on the release-candidate branch `kiro/graywave-assemble`, in one combined pull request linked from issue 143. Paths, ownership and checks are in the [release line](release-line.md#current-status-november-20-supersedes-the-november-19-1015-pm-handoff) and [`docs/AGENT-ROUTER.md`](../AGENT-ROUTER.md). The remaining gate is human: the three first-time playtests, and Fable's approval of the first-draft wording.
 
 ## What is not decided
 
