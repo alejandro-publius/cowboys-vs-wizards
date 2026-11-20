@@ -1,0 +1,150 @@
+{
+  "what": "Kiro CLI played Showdown Trail duel Boot Hill as the Cowboys through the INSTALLED Orb Duel Review Power 1.3.0 (isolated KIRO_HOME, no workspace MCP). Proof copied from the raw final act_showdown tool result, not from the model's summary.",
+  "game": "showdown",
+  "date": "2026-11-20 08:39-08:41 PST (America/Los_Angeles)",
+  "app": "Kiro CLI 3.5.0, kiro-cli chat --v3 --no-interactive --output-format stream-json, session sess_1ad3f289-6eaf-4a06-8744-7e24c48c89cc",
+  "power": {
+    "name": "orb-duel-review",
+    "version": "1.3.0",
+    "route": "installed plugin, server review"
+  },
+  "debugSeed": false,
+  "surfacedToolCalls": {
+    "@orb-duel-review/review/start_showdown_duel": 1,
+    "@orb-duel-review/review/act_showdown": 23,
+    "Tool Load": 2,
+    "other": 0
+  },
+  "startCommitment": "beb62c9e3c97b052c4e8011f9bc36a62cd3b0b8b9831407814e2d04895d8488b",
+  "result": {
+    "winner": "cowboy",
+    "reason": "base"
+  },
+  "proof": {
+    "seed": 524182318,
+    "salt": "3f9ad60f28c5f6bf",
+    "commitment": "beb62c9e3c97b052c4e8011f9bc36a62cd3b0b8b9831407814e2d04895d8488b",
+    "duel": "boot-hill",
+    "actions": [
+      {
+        "type": "summon",
+        "cardId": "cowboy-sheriff-4",
+        "tributes": []
+      },
+      {
+        "type": "cover",
+        "slot": 0
+      },
+      {
+        "type": "end"
+      },
+      {
+        "type": "spell",
+        "cardId": "cowboy-deadeye-2",
+        "target": 0
+      },
+      {
+        "type": "attack",
+        "slot": 0,
+        "target": 0
+      },
+      {
+        "type": "end"
+      },
+      {
+        "type": "summon",
+        "cardId": "cowboy-sheriff-7",
+        "tributes": []
+      },
+      {
+        "type": "cover",
+        "slot": 0
+      },
+      {
+        "type": "end"
+      },
+      {
+        "type": "summon",
+        "cardId": "cowboy-sheriff-3",
+        "tributes": []
+      },
+      {
+        "type": "attack",
+        "slot": 1,
+        "target": 1
+      },
+      {
+        "type": "attack",
+        "slot": 0,
+        "target": 1
+      },
+      {
+        "type": "cover",
+        "slot": 2
+      },
+      {
+        "type": "end"
+      },
+      {
+        "type": "summon",
+        "cardId": "cowboy-billy-3",
+        "tributes": [
+          0
+        ]
+      },
+      {
+        "type": "attack",
+        "slot": 0,
+        "target": 0
+      },
+      {
+        "type": "attack",
+        "slot": 2,
+        "target": 0
+      },
+      {
+        "type": "attack",
+        "slot": 1,
+        "target": "base"
+      },
+      {
+        "type": "end"
+      },
+      {
+        "type": "summon",
+        "cardId": "cowboy-billy-2",
+        "tributes": [
+          1
+        ]
+      },
+      {
+        "type": "attack",
+        "slot": 1,
+        "target": 0
+      },
+      {
+        "type": "attack",
+        "slot": 0,
+        "target": 0
+      },
+      {
+        "type": "attack",
+        "slot": 2,
+        "target": "base"
+      }
+    ],
+    "engine": {
+      "sha256": "1bc43654272bc0b99951cd11200377675f1ab554893e45e16f12c00b1ec9b8ee",
+      "fileCount": 7,
+      "files": {
+        "src/game/card-specs.generated.js": "187bb9ca71516227e67edd9f6e248e038ae20028e7e3333b6fa28bdf18b40a8b",
+        "src/game/showdown/cards.js": "2e9c3c7df707c43bc61b6481b801211de4fabd6ada87d9aa35d52330b868ffe1",
+        "src/game/showdown/contract.js": "85a356ee3ff9b530162cca870eefead5fb773e45d857b95cfed125e942f1b2be",
+        "src/game/showdown/progress.js": "6eec06618efbfb13d7b965d5d3bce9a7b9d0f4f5f54cd3e11aac41e0de5ef1d0",
+        "src/game/showdown/rules.js": "096eb8a22dced7ca527cd2ebc27b6d1c36922884f0570662a7c0762d62d5b61a",
+        "src/game/showdown/trail.js": "8fa27db59ee2d6cceaecd72012c198c6ef00d98c88994866509cfe51704fd528",
+        "src/match/showdown-session.js": "6ffdf75b79fb706632e9ee6b445d4b658bdc3ec9859e2897088a1fe8f1512c00"
+      }
+    }
+  }
+}

@@ -10,7 +10,7 @@ Added by Kiro (Kiro CLI, coordinator job `graywave-assemble`) from GitHub `main`
 
 **Target.** Showdown is the December 4 fight and the game being built. It is the only game in the graybox.
 
-**Experiment for Fable.** The [turn-five Ranger decision](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5) has a shareable, save-isolated entry from Camp. [Decision and replay evidence](../../experiments/showdown-dragon-strategy/rival-README.md). Fable owns promotion into an official bounty.
+**Experiment for Fable.** Camp opens two save-isolated experiments. In the [first position](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5) the Ranger fights alongside the Dynamiter. In the [second Dragon position](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5-70) it fights alongside the Covered Wagon. Compare the Dragon and Jack as targets on each deal. [Decision and replay evidence](../../experiments/showdown-dragon-strategy/rival-README.md). Fable owns promotion into an official bounty.
 
 **Milestones.**
 

@@ -1,0 +1,62 @@
+{
+  "workflowId": "wf_3f3cc7a5856eef24",
+  "workflowName": "independent-release-review",
+  "status": "failed",
+  "inputs": {
+    "expected_sha": "2fcf39b7fe4db6f78cb33f6b2c474e053e89bbc7"
+  },
+  "artifacts": {},
+  "capturedOutputs": {
+    "review": "The review was refused, so this step ends with an error status. The review script exited 3 because HEAD is `c529330dc724108d72035f9bc46ba726a0612d8a`, not the expected `2fcf39b7fe4db6f78cb33f6b2c474e053e89bbc7`.\n\nI left the expected SHA and the checkout unchanged. The report is at `.artifacts/kiro/showdown-release-review/2fcf39b7fe4db6f78cb33f6b2c474e053e89bbc7/report.md`.\n\nrefused"
+  },
+  "root": {
+    "nodeId": "wf_3f3cc7a5856eef24",
+    "type": "sequence",
+    "status": "failed",
+    "children": [
+      {
+        "nodeId": "review",
+        "type": "step",
+        "status": "failed",
+        "agentName": "wf-code-reviewer",
+        "startedAt": "2026-11-20T16:44:53.314Z",
+        "sessionId": "sess_d456d3e1-b91e-46cf-b804-e2fcd57a43c9",
+        "completionSignal": "error",
+        "completionSignalSource": "send_message",
+        "capturedOutput": "The review was refused, so this step ends with an error status. The review script exited 3 because HEAD is `c529330dc724108d72035f9bc46ba726a0612d8a`, not the expected `2fcf39b7fe4db6f78cb33f6b2c474e053e89bbc7`.\n\nI left the expected SHA and the checkout unchanged. The report is at `.artifacts/kiro/showdown-release-review/2fcf39b7fe4db6f78cb33f6b2c474e053e89bbc7/report.md`.\n\nrefused",
+        "credits": [
+          {
+            "usage": 0.5796696004975124,
+            "unit": "credit",
+            "unitPlural": "credits"
+          }
+        ],
+        "failureReason": "Step signaled error via send_message.",
+        "endedAt": "2026-11-20T16:45:01.062Z"
+      }
+    ],
+    "startedAt": "2026-11-20T16:44:53.313Z"
+  },
+  "createdAt": "2026-11-20T16:44:31.583Z",
+  "planRevision": 0,
+  "parentSessionId": "sess_98f1d7e4-a218-4879-b0f4-0b8e370efdee",
+  "launchChain": [],
+  "runLabel": "independent-release-review-bad-sha",
+  "originalUserMessages": [
+    "Use the run_workflow tool to start the saved workspace recipe twice, by workflowPath, with no model override and no workflowPrompt. Do not read source files, edit files or run shell commands yourself.\nRun 1: workflowPath \"<REVIEW_CHECKOUT>/.kiro/workflows/independent-release-review.workflow.json\", inputs {\"expected_sha\": \"2fcf39b7fe4db6f78cb33f6b2c474e053e89bbc7\"}, runLabel \"independent-release-review-bad-sha\".\nRun 2: same workflowPath, inputs {\"expected_sha\": \"c529330dc724108d72035f9bc46ba726a0612d8a\"}, runLabel \"independent-release-review-showdown-c529330dc724108d72035f9bc46ba726a0612d8a\".\nThen wait for both runs to reach a terminal state from their notifications (do not poll with sleep). Answer with each workflowId, its terminal status and the last line of each step's report."
+  ],
+  "rootConversationId": "sess_98f1d7e4-a218-4879-b0f4-0b8e370efdee",
+  "workspacePath": "<REVIEW_CHECKOUT>",
+  "memoryConfig": {
+    "mode": "disabled",
+    "reflection": false
+  },
+  "memoryConfigSource": "explicit",
+  "backgroundExecution": false,
+  "sessionTools": {
+    "awareness": false,
+    "messaging": false,
+    "cloud": false
+  },
+  "parentModelId": "auto"
+}

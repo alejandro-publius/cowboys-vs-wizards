@@ -2,13 +2,13 @@
 
 ## Try the Dragon decision
 
-[Open the experiment on turn five](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5). Select the Ranger, then the resting Dragon. Restart the duel and target Jack-o’-Lantern instead. You can also enter from Camp. The experiment leaves your saved career alone.
+[Open the experiment on turn five](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5). Select the Ranger, then the resting Dragon. Restart the duel and target Jack-o’-Lantern instead. Open the [second Dragon position](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5-70) and compare the Cowboy support troop before choosing a target. Both decisions open from Camp. The experiment leaves your saved career alone.
 
 | Kiro use | What we verified |
 | --- | --- |
 | Crew bot and memory (K-074, K-075) | The native Overnight Rival bot stored the seed-3 claim and recalled it in a later turn after its conversation context was cleared. Its scheduled reminder returned a conflict and produced no completed run (K-078). The later turn was requested manually. [Crew receipt](../../experiments/showdown-dragon-strategy/rival-crew-receipt.json) |
 | Counterexamples (K-080, K-082) | Kiro CLI ran the engine on 64 held-out seeds. Sixty positions offered both moves. The recorded policy won for the Cowboys by attacking the Dragon on seed 3, and by attacking Jack on seed 70. The Cowboy trap, friendly troop and Wizard Base differed. These are two reproducible lines under fixed draws. [Search and replay](../../experiments/showdown-dragon-strategy/rival-README.md) |
-| Playable test position (K-095) | Chrome exercised Camp entry, a direct link, both targets, keyboard, mouse, retry and unchanged career data. The native Crew browser could not attach to the user's Chrome profile (K-076). A human takeover and first-time playtest are pending. [Browser checks](../evidence/showdown-turn-k095.md) |
+| Playable test positions (K-008, K-095) | Both recorded turns open from Camp or a direct link. Chrome exercised both targets, mouse, keyboard, touch and retry. The existing career stayed byte-identical. The native Crew browser could not attach to the user's Chrome profile (K-076). A human takeover and first-time playtest are pending. [Browser checks](../evidence/showdown-turn-k095.md) |
 | Keyboard regression (K-010, K-086, K-094) | QA found a keyboard player could win a duel, return to Camp with an unclaimed reward and be focused on Main menu. A clean pre-fix browser run failed the new assertion. The fix focused the first offered card and passed all seven keyboard checks. The Kiro CLI worker wrote the bugfix spec. Native bugfix-spec generation, a human report and Kiro Web are unverified. [Regression check](../../scripts/browser-showdown-keyboard-check.mjs) |
 | Playing through MCP (K-040, K-041) | Kiro CLI won Boot Hill in 28 legal actions through the Showdown engine. The agent saw only the Cowboy player’s view. [Boot Hill replay](../evidence/kiro-showdown-mcp.md) |
 | Scheduled Crew run (K-073) | On November 20, Night Watch ran on the merged game without a manual trigger. In 2,000 bot games, the first player won 57.1% and Cowboys won 59.4%. [Scheduled run receipt](../evidence/night-shift/crew-scheduled-2026-11-20.json) |
@@ -23,7 +23,9 @@ The site root opens the Showdown menu. Camp contains the Trail, rivals, Wanted h
 
 This page is the one judge-facing description. The [Devpost packet](devpost-packet.md), [build story](build-story.md) and [historical evidence map](../kiro-brag-sheet.md) give more detail and older history.
 
-## Proof on the current build
+## Release evidence
+
+The two-position release passed 606 repository tests and 29 HTTP browser checks. A separate Chrome run selected both targets on both seeds and compared the saved career after each. [Paired decisions in PR 165](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/165).
 
 The combined release candidate for [#163](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/163) passed **601 repository tests**. Chrome exercised the Dragon turn over HTTP (18 checks), the Camp Ledger (12), and reward focus by keyboard (7). The merged build was verified at the public game entry. [Browser checks](../evidence/overnight-check-repair.md) · [Deployed build identity](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json).
 
@@ -86,7 +88,7 @@ Fable wrote the Showdown rules, cards, Trail, bots and art direction. Kiro CLI d
 
 ## Not done yet
 
-Three first-time playtests, a human takeover through the native Crew browser, and the final public demo video under three minutes are pending. The illustrated board and animation belong to the earlier build. On Showdown, native runs of the installed Power and saved review Workflow still need evidence. The rival bot’s timed goal reminder (K-078) also remains open. Kiro Web and cloud sessions have no recorded run.
+Three first-time playtests, a human takeover through the native Crew browser, and the final public demo video under three minutes are pending. The illustrated board and animation belong to the earlier build. Automatic activation of the Showdown Power skill and native execution of the Night Shift balance-review Workflow remain open. The rival bot’s timed goal reminder (K-078) also remains open. Kiro Web and cloud sessions have no recorded run.
 
 ## Against the official criteria
 
@@ -95,9 +97,9 @@ The [rules](https://kiroween.devpost.com/rules) weight five criteria equally (20
 | Criterion | Evidence now | Missing |
 | --- | --- | --- |
 | Potential Impact | A playable browser game, live at a known commit, keyboard-usable | Any first-time player's response |
-| Technological Implementation | Kiro CLI implemented the Camp and Trail. The workspace MCP played Boot Hill, Crew ran the scheduled balance check, and an independent agent replayed the release candidate. [Boot Hill replay](../evidence/kiro-showdown-mcp.md) · [Scheduled run receipt](../evidence/night-shift/crew-scheduled-2026-11-20.json) | A native Showdown run of the installed Power and saved review Workflow |
+| Technological Implementation | Kiro CLI implemented the Camp and Trail. The installed Power played Boot Hill and rejected a stale engine receipt. Crew ran the scheduled balance check. [Boot Hill replay](../evidence/kiro-showdown-mcp.md) · [Scheduled run receipt](../evidence/night-shift/crew-scheduled-2026-11-20.json) | Automatic activation of the Power skill on Showdown |
 | Design | Camp → Trail → reward loop with saves, ten cues, a readable log | Art in the Showdown build; a rendered or human review of the cues |
-| Innovation/Idea | A Crew bot recalled a strategic claim. Kiro CLI found a legal position that reverses the preferred attack, and the player can retry the original decision in Camp. [Strategy evidence](../../experiments/showdown-dragon-strategy/rival-README.md) | First-time players’ explanations of what changed their choice |
+| Innovation/Idea | A Crew bot recalled a strategic claim. Kiro CLI found a legal position that reverses the preferred attack, and the player can retry both positions in Camp. [Strategy evidence](../../experiments/showdown-dragon-strategy/rival-README.md) | First-time players’ explanations of what changed their choice |
 | Presentation | This page, the build table and replay commands | The required public video under three minutes |
 
 ## Eight Devpost answers
@@ -113,9 +115,9 @@ Each answer gives the Showdown use first, then any earlier lane-duel use as hist
 | 5. Steering | **Showdown:** the always-on project and evidence guidance applies to each worker, and the rules guidance is scoped to `src/game/**`, which includes the Showdown engine. No activation test was run on a Showdown file. **Earlier:** four real CLI sessions showed rules, rendering and interface guidance loading only for matching files. [Experiment](../evidence/kiro-scoped-steering-hook.md#file-scoped-activation-verified-on-november-17-2026-pacific) |
 | 6. MCP | **Showdown (PR 163):** `start_showdown_duel`, `observe_showdown` and `act_showdown` play through the canonical engine with the Cowboy seat's view only. A real Kiro CLI session won Boot Hill in 28 moves, and its revealed proof replays. [Receipt](../evidence/kiro-showdown-mcp.md) **Earlier:** Kiro wrote a project MCP server. `inspect_duel_replay` matches a browser receipt to its page; `inspect_character_asset` reports model structure. [Server](../../.kiro/powers/orb-duel-review/server.mjs) |
 | 7. Property testing | **Showdown:** the cue tests on `main` play 80 seeds of random legal moves and check 1,922 slot marks against the game state. #154 adds seven generated engine properties; 16/16 on `4d52642`, with seven planted faults caught and the reduced cases replaying alone ([audit at that revision](#reproducible-checks-by-revision)). **Earlier:** seven boundary properties, 1,203 cases at seed 45274, six planted faults caught, a failing case shrunk from 24 to 5 cards. [Boundary evidence](../evidence/kiro-boundary-properties.md) |
-| 8. Powers | The Showdown seat tools ran from the workspace MCP configuration. The installed Orb Duel Review Power still needs a native Showdown run. **Earlier:** the installed Orb Duel Review Power returned pass for a lane receipt on matching HTML and stale on changed HTML. [Package proof](../evidence/kiro-power-package-fix.md#actual-installed-only-verification) |
+| 8. Powers | In an isolated Kiro profile, Orb Duel Review 1.3.0 played Boot Hill through its installed tools. Explicitly loading the skill verified a matching receipt. Changing the bound rules file produced a stale verdict, and an older receipt without an engine fingerprint returned unbound. [installed Power run](../evidence/showdown-installed-power.md). **Earlier:** the installed Orb Duel Review Power returned pass for a lane receipt on matching HTML and stale on changed HTML. [Package proof](../evidence/kiro-power-package-fix.md#actual-installed-only-verification) |
 
-**Crew and Workflows.** Night Watch completed its scheduled Showdown run on November 20 (K-073). The Sheriff’s Ledger displays the separately recorded on-demand run and its review. The Overnight Rival recalled its claim in a manually requested turn. Its own timed check-in still lacks a completed run (K-078). The review steps ran locally. Executing the saved Workflow through Kiro remains pending. [Scheduled run receipt](../evidence/night-shift/crew-scheduled-2026-11-20.json) · [Ledger and review evidence](../evidence/night-shift.md) · [Rival memory receipt](../../experiments/showdown-dragon-strategy/rival-crew-receipt.json).
+**Crew and Workflows.** Night Watch completed its scheduled Showdown run on November 20 (K-073). The Sheriff’s Ledger displays the separately recorded on-demand run and its review. The Overnight Rival recalled its claim in a manually requested turn. Its own timed check-in still lacks a completed run (K-078). The independent Showdown release Workflow ran through Kiro and refused a mismatched revision. See the [native release review](../evidence/showdown-native-release-workflow.md). Night Shift balance-review steps ran locally. Its saved native Workflow still awaits a run. [Scheduled run receipt](../evidence/night-shift/crew-scheduled-2026-11-20.json) · [Ledger and review evidence](../evidence/night-shift.md) · [Rival memory receipt](../../experiments/showdown-dragon-strategy/rival-crew-receipt.json).
 
 ## Earlier lane-duel work (historical)
 

@@ -1,6 +1,7 @@
 // MCP server (newline-delimited JSON-RPC over stdio) for reviewing the Orb Duel Chrome replay
-// receipt and the board character GLBs (earlier lane build and its 3D assets), and for playing
-// one seat of a Showdown Trail duel in memory (showdown.mjs). It reads only fixed files under
+// receipt and the board character GLBs (earlier lane build and its 3D assets), for playing
+// one seat of a Showdown Trail duel in memory (showdown.mjs), and for replaying a recorded
+// Showdown proof against the current Showdown engine fingerprint. It reads only fixed files under
 // this repo: no arbitrary paths, writes, network, shell or database.
 import {createHash} from "node:crypto";
 import {readFileSync, realpathSync} from "node:fs";
@@ -8,7 +9,9 @@ import {join} from "node:path";
 import {createInterface} from "node:readline";
 import {fileURLToPath} from "node:url";
 import {parseGlb} from "./glb.mjs";
-import {createTable, loadEngine} from "./showdown.mjs";
+import {createTable, engineFingerprint, inspectShowdownReceipt, loadEngine} from "./showdown.mjs";
+
+const VERSION = "1.3.0";
 
 // Project binding: with PLUGIN_DATA set, only PLUGIN_DATA/project.json (written by setup.mjs)
 // names the project. Never inferred. Without PLUGIN_DATA (workspace MCP), the source checkout.
@@ -46,7 +49,8 @@ function readFixed(rel) {
 function inspect(target) {
   if (unavailable) return {target, verdict: "unavailable", reasons: [unavailable]};
   const {receipt: RECEIPT, page: PAGE, steps: required = REQUIRED_STEPS, seed: requiredSeed, companion} = TARGETS[target];
-  const out = {target, receiptPath: RECEIPT, pagePath: PAGE};
+  // A page-hash receipt for the earlier lane duel build. It is never Showdown gameplay proof.
+  const out = {target, kind: "lane-duel-chrome-replay", showdownProof: false, receiptPath: RECEIPT, pagePath: PAGE};
   const page = readFixed(PAGE);
   if (page.bytes) {
     out.currentBuild = {bytes: page.bytes.length, sha256: createHash("sha256").update(page.bytes).digest("hex")};
@@ -164,7 +168,8 @@ async function showdownTable() {
   if (!table) {
     const debug = process.env.SHOWDOWN_MCP_DEBUG_SEED;
     if (debug !== undefined && !/^\d+$/.test(debug)) throw new Error("SHOWDOWN_MCP_DEBUG_SEED must be a whole number");
-    table = createTable(await loadEngine(root), debug === undefined ? {} : {seedSource: () => Number(debug) >>> 0});
+    table = createTable(await loadEngine(root), {fingerprint: engineFingerprint(root),
+      ...(debug !== undefined && {seedSource: () => Number(debug) >>> 0})});
   }
   return table;
 }
@@ -179,6 +184,30 @@ const SHOWDOWN_TOOLS = [
     description: "Apply one listed intent by number at the current revision. The bot then plays its turns. Returns the public events and the new observation; a stale revision or unlisted intent is refused.",
     inputSchema: {type: "object", properties: {session: {type: "string"}, revision: {type: "string"}, intent: {type: "integer", minimum: 0}}, required: ["session", "revision", "intent"], additionalProperties: false}},
 ];
+// Recorded Showdown proofs, mapped to fixed project paths. Input never becomes a path.
+const SHOWDOWN_RECEIPTS = {
+  "installed-power-boot-hill": "docs/evidence/showdown-installed-power/boot-hill-receipt.json",
+  "mcp-boot-hill": "docs/evidence/kiro-showdown-mcp-boot-hill.json",
+};
+const RECEIPT_TOOL = {
+  name: "inspect_showdown_receipt",
+  description: `Replay one recorded Showdown seat proof on this project's Showdown engine and compare the engine fingerprint it was played on. Verdict pass, stale, unbound, rejected, malformed or absent. Not a Chrome replay. Optional receipt: ${Object.keys(SHOWDOWN_RECEIPTS).join(", ")} (default installed-power-boot-hill).`,
+  inputSchema: {type: "object", properties: {receipt: {type: "string", enum: Object.keys(SHOWDOWN_RECEIPTS), default: "installed-power-boot-hill"}}, additionalProperties: false},
+};
+async function showdownReceipt(id) {
+  const base = {power: {name: "orb-duel-review", version: VERSION}, receiptId: id, receiptPath: SHOWDOWN_RECEIPTS[id], kind: "showdown-gameplay-proof"};
+  if (unavailable) return {...base, verdict: "unavailable", reasons: [unavailable]};
+  const file = readFixed(SHOWDOWN_RECEIPTS[id]);
+  if (file.error) return {...base, verdict: file.error === "absent" ? "absent" : "malformed", reasons: [`receipt ${file.error}`]};
+  let receipt;
+  try { receipt = JSON.parse(file.bytes.toString("utf8")); } catch { return {...base, verdict: "malformed", reasons: ["receipt is not valid JSON"]}; }
+  let engine, current;
+  try { engine = await loadEngine(root); current = engineFingerprint(root); } catch (error) {
+    return {...base, verdict: "unavailable", reasons: [`Showdown engine not found in the bound project: ${error.message}`]};
+  }
+  return {...base, receiptSha256: createHash("sha256").update(file.bytes).digest("hex"), ...inspectShowdownReceipt(engine, current, receipt)};
+}
+
 const SHOWDOWN_KEYS = {start_showdown_duel: ["duel"], observe_showdown: ["session"], act_showdown: ["session", "revision", "intent"]};
 
 async function showdownCall(name, args) {
@@ -199,12 +228,12 @@ function handle(msg) {
       return reply(msg.id, {
         protocolVersion: msg.params?.protocolVersion ?? "2024-11-05",
         capabilities: {tools: {}},
-        serverInfo: {name: "orb-duel-review", version: "1.2.0"},
+        serverInfo: {name: "orb-duel-review", version: VERSION},
       });
     case "ping":
       return reply(msg.id, {});
     case "tools/list":
-      return reply(msg.id, {tools: [TOOL, CHARACTER_TOOL, ...SHOWDOWN_TOOLS]});
+      return reply(msg.id, {tools: [TOOL, CHARACTER_TOOL, ...SHOWDOWN_TOOLS, RECEIPT_TOOL]});
     case "tools/call": {
       const params = msg.params;
       if (Object.hasOwn(SHOWDOWN_KEYS, params?.name ?? "")) {
@@ -217,6 +246,15 @@ function handle(msg) {
         if (params.name === "act_showdown" && (typeof args.revision !== "string" || !Number.isInteger(args.intent))) return fail(msg.id, -32602, "revision must be a string and intent an integer");
         return showdownCall(params.name, args).then(
           (body) => reply(msg.id, {content: [{type: "text", text: JSON.stringify(body)}], ...(body.error && {isError: true})}),
+          (error) => reply(msg.id, {content: [{type: "text", text: JSON.stringify({error: error.message})}], isError: true}));
+      }
+      if (params?.name === RECEIPT_TOOL.name) {
+        const args = params.arguments ?? {};
+        if (typeof args !== "object" || args === null || Array.isArray(args)) return fail(msg.id, -32602, "inspect_showdown_receipt takes an object");
+        if (Object.keys(args).some((key) => key !== "receipt")) return fail(msg.id, -32602, "Only the receipt input is accepted");
+        const id = args.receipt ?? "installed-power-boot-hill";
+        if (typeof id !== "string" || !Object.hasOwn(SHOWDOWN_RECEIPTS, id)) return fail(msg.id, -32602, `receipt must be one of: ${Object.keys(SHOWDOWN_RECEIPTS).join(", ")}`);
+        return showdownReceipt(id).then((body) => reply(msg.id, {content: [{type: "text", text: JSON.stringify(body, null, 2)}]}),
           (error) => reply(msg.id, {content: [{type: "text", text: JSON.stringify({error: error.message})}], isError: true}));
       }
       if (params?.name === CHARACTER_TOOL.name) {

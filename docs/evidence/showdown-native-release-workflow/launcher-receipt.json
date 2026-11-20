@@ -1,0 +1,31 @@
+{
+  "agent": "Kiro CLI",
+  "version": "3.5.0",
+  "engine": "v3",
+  "cwd": "<REVIEW_CHECKOUT> (detached, clean, c529330dc724108d72035f9bc46ba726a0612d8a)",
+  "command": [
+    "<HOME>/.local/bin/kiro-cli",
+    "chat",
+    "--v3",
+    "--no-interactive",
+    "--trust-workspace",
+    "--output-format",
+    "stream-json",
+    "--trust-tools",
+    "fs_read,fs_write,execute_bash,run_command,introspect,*workflow*",
+    "<task.txt contents>"
+  ],
+  "task": "Use the run_workflow tool to start the saved workspace recipe twice, by workflowPath, with no model override and no workflowPrompt. Do not read source files, edit files or run shell commands yourself.\nRun 1: workflowPath \"<REVIEW_CHECKOUT>/.kiro/workflows/independent-release-review.workflow.json\", inputs {\"expected_sha\": \"2fcf39b7fe4db6f78cb33f6b2c474e053e89bbc7\"}, runLabel \"independent-release-review-bad-sha\".\nRun 2: same workflowPath, inputs {\"expected_sha\": \"c529330dc724108d72035f9bc46ba726a0612d8a\"}, runLabel \"independent-release-review-showdown-c529330dc724108d72035f9bc46ba726a0612d8a\".\nThen wait for both runs to reach a terminal state from their notifications (do not poll with sleep). Answer with each workflowId, its terminal status and the last line of each step's report.\n",
+  "started_utc": "2026-11-20T16:44:26Z",
+  "ended_utc": "2026-11-20T16:47:09Z",
+  "exit_code": 1,
+  "final_stream_event": {
+    "type": "runError",
+    "data": {
+      "sessionId": "sess_98f1d7e4-a218-4879-b0f4-0b8e370efdee",
+      "stage": "workflow",
+      "message": "workflow run incomplete (1 failed)"
+    }
+  },
+  "parent_session": "sess_98f1d7e4-a218-4879-b0f4-0b8e370efdee"
+}
