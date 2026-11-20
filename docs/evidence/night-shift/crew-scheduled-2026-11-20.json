@@ -1,0 +1,151 @@
+{
+  "scheduler": {
+    "job_id": "62736a74",
+    "run_id": "9d81f577a1b2",
+    "trigger": "scheduled",
+    "started_at": 1795168800.014637,
+    "finished_at": 1795171423.763052,
+    "status": "success"
+  },
+  "nightWatch": {
+    "id": "4195c6c07cda",
+    "at": "2026-11-20T10:42:51Z",
+    "source": "scheduled",
+    "mode": "showdown",
+    "state": "steady",
+    "publication": {
+      "mode": "off"
+    },
+    "receipt": {
+      "schema": "night-watch-receipt/1",
+      "generatedAt": "2026-11-20T10:42:51Z",
+      "trigger": "scheduled",
+      "mode": "showdown",
+      "repository": "alejandro-publius/cowboys-vs-wizards",
+      "bot": "playTurn level 2 (both seats)",
+      "baseline": {
+        "ref": "4d52642575a75c60b1d2337b80c479dd30f2c181",
+        "commit": "4d52642575a75c60b1d2337b80c479dd30f2c181",
+        "rulesBlob": "66538aca2b7660c8bd7717a03dee364f8489c184"
+      },
+      "candidate": {
+        "ref": "github/main",
+        "commit": "5421633dc3ab9ad3fc91285dbc917f12ee538e93",
+        "rulesBlob": "66538aca2b7660c8bd7717a03dee364f8489c184"
+      },
+      "seeds": {
+        "from": 0,
+        "to": 999,
+        "deals": 1000,
+        "gamesPerDeal": 2,
+        "games": 2000
+      },
+      "samples": {
+        "candidate": {
+          "games": 2000,
+          "cowboy": 1188,
+          "wizard": 812,
+          "draw": 0,
+          "first": 1142,
+          "second": 858,
+          "byStartingSide": {
+            "cowboy": {
+              "cowboy": 665,
+              "wizard": 335,
+              "draw": 0
+            },
+            "wizard": {
+              "cowboy": 523,
+              "wizard": 477,
+              "draw": 0
+            }
+          }
+        },
+        "baseline": {
+          "games": 2000,
+          "cowboy": 1188,
+          "wizard": 812,
+          "draw": 0,
+          "first": 1142,
+          "second": 858,
+          "byStartingSide": {
+            "cowboy": {
+              "cowboy": 665,
+              "wizard": 335,
+              "draw": 0
+            },
+            "wizard": {
+              "cowboy": 523,
+              "wizard": 477,
+              "draw": 0
+            }
+          }
+        }
+      },
+      "measured": {
+        "candidate": {
+          "firstPlayer": {
+            "wins": 1142,
+            "decisive": 2000,
+            "share": 57.1,
+            "ci95": [
+              54.92,
+              59.25
+            ]
+          },
+          "cowboy": {
+            "wins": 1188,
+            "decisive": 2000,
+            "share": 59.4,
+            "ci95": [
+              57.23,
+              61.53
+            ]
+          },
+          "drawShare": 0.0
+        },
+        "baseline": {
+          "firstPlayer": {
+            "wins": 1142,
+            "decisive": 2000,
+            "share": 57.1,
+            "ci95": [
+              54.92,
+              59.25
+            ]
+          },
+          "cowboy": {
+            "wins": 1188,
+            "decisive": 2000,
+            "share": 59.4,
+            "ci95": [
+              57.23,
+              61.53
+            ]
+          },
+          "drawShare": 0.0
+        }
+      },
+      "rulesTests": {
+        "state": "passed",
+        "tests": 361
+      },
+      "band": null,
+      "lean": {
+        "verdict": "unconfigured",
+        "firstPlayer": null,
+        "faction": null
+      },
+      "shift": {
+        "state": "steady",
+        "threshold": 10,
+        "message": "Faction results and first-seat growth stayed within the 10 pp alert threshold."
+      },
+      "commands": [
+        "python3 apps/night-watch/backend/server.py evaluate --repo <checkout> --baseline 4d52642575a75c60b1d2337b80c479dd30f2c181 --candidate 5421633dc3ab9ad3fc91285dbc917f12ee538e93 --mode showdown --first-seed 0 --count 1000 --out receipt.json",
+        "git -C <checkout> archive --format=tar 5421633dc3ab9ad3fc91285dbc917f12ee538e93 -- package.json src prototypes/showdown | tar -x -C <snapshot>",
+        "node apps/night-watch/backend/showdown_sim.mjs <snapshot> 0 1000 out.json"
+      ]
+    }
+  }
+}
