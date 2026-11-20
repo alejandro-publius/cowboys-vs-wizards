@@ -1,24 +1,15 @@
-// Graybox page entry (issue 143 slices 1 to 3). The normal entry is Showdown: Play opens the Camp,
-// which starts the Trail and, after it, the rivals, Wanted hunts and Open range, plus two players at any time. The lane duel is unchanged in
-// src/graybox.js and is reachable at ?mode=lanes; the lane-only modes its checks and links already use (?mode=match, ride-out, practice-*, fire-arc)
-// keep loading it. esbuild inlines both dynamic imports, so the page stays one offline file and
-// only the chosen app's module runs.
-export const LANE_MODES = Object.freeze(["lanes", "match", "ride-out", "practice-dynamiter", "practice-tribute", "fire-arc"]);
-
+// Graybox page entry (issue 143). The graybox game is Showdown only: Play opens the Camp, which
+// starts the Trail and, after it, the rivals, Wanted hunts, packs, deck builder, best of three and
+// Open range, plus two players at any time. Slice 3 retired the lane duel from this
+// page, so no URL opens it here; an old lane address (?mode=lanes, match, ride-out, practice-*,
+// fire-arc) loads this same Showdown menu. The lane rules stay only where the 3D page (src/main.js)
+// imports them. esbuild inlines the dynamic imports, so the page stays one offline file.
 const node = (id) => document.getElementById(id);
-const mode = new URLSearchParams(location.search).get("mode");
 
-if (LANE_MODES.includes(mode)) {
-  node("menu-showdown").hidden = false;
-  import("./graybox.js");
-} else {
-  Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"), import("./ui/showdown-builder.js"), import("./match/showdown-campaign.js"),
-    import("./match/showdown-playtest.js"), import("./match/showdown-session.js")])
-    .then(([{mountShowdown, freshSeed}, {mountCamp}, {mountBuilder}, {createCampaign}, {createPlaytestLog}, {twoPlayers}]) => {
+Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"), import("./ui/showdown-builder.js"), import("./match/showdown-campaign.js"),
+  import("./match/showdown-playtest.js"), import("./match/showdown-session.js")])
+  .then(([{mountShowdown, freshSeed}, {mountCamp}, {mountBuilder}, {createCampaign}, {createPlaytestLog}, {twoPlayers}]) => {
   const title = node("title-screen"), screen = node("showdown"), campRoot = node("showdown-camp"), builderRoot = node("showdown-builder"), play = node("menu-play");
-  // The camp replaces the lane-only entries (Wanted, Build Deck, the rival duels); they stay on ?mode=lanes until slice 3.
-  for (const lane of title.querySelectorAll("#menu-stargazer, #menu-imp, [data-menu-page], nav a:not(#menu-lanes)")) lane.hidden = true;
-  node("menu-lanes").hidden = false;
   const seed = new URLSearchParams(location.search).get("seed");
   // ?seed fixes every deal started from the Camp and every later game of a match, so a scripted check replays the same duels.
   const seedFor = () => (seed === null ? freshSeed() : Number(seed));
@@ -57,4 +48,3 @@ if (LANE_MODES.includes(mode)) {
     }});
   play.addEventListener("click", toCamp);
   });
-}

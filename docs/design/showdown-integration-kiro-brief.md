@@ -59,7 +59,11 @@ Each slice ends in something a person can open and something a test proves. Do n
 
 ### 3. The rest, and retiring the lanes
 
-Rivals, bounties, packs, the deck builder with a side deck, best of three and two players are already in the reference screen; integrate them as one slice after the playtest result. In the same slice, each lane feature is replaced or dropped:
+Fable 5.2, November 19 ([issue 143](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143#issuecomment-7031863563)): Alex asked for the lane duel to come out of the game, so slice 3 no longer waits for the playtest. It can start as soon as slice 2 (#148) is merged. In this order:
+
+1. Move the rest of Showdown into the game: rivals, bounties, packs, the deck builder with a side deck, best of three, two players.
+2. Take the lane duel out of the graybox game: the "Lane duel (previous rules)" entry, every `?mode=` that opens lane play, and the lane-only screens (practice, fire arc, ride out, guided duel). The table below says what replaces each.
+3. Make the Showdown game the site's front page.
 
 | Lane feature | In Showdown |
 | --- | --- |
@@ -71,7 +75,16 @@ Rivals, bounties, packs, the deck builder with a side deck, best of three and tw
 | Guided first duel | Trail duel 1 and its one-line lesson |
 | Practice decisions, lane previews, clash forecast | Dropped; the attack preview on each target replaces them |
 
-**Done when** the lane engine and its tests are removed in one pull request that changes no Showdown file, and `npm test` still passes.
+The lane engine and its tests are not removed outright yet. The 3D page (`src/main.js`) runs on the lane rules (`src/game/state.js`, `cpu.js`, `src/match/`), and it is the only place the models, board and motion live. Keep exactly what the 3D page imports, and its tests, until the 3D board is driven by Showdown. Delete the rest.
+
+**Done when**
+
+1. No lane play is reachable from the graybox game, by menu or by URL.
+2. The pull request lists the lane files that remain and names the 3D page import that keeps each one.
+3. The 3D page still builds and loads at its own path, labelled as the earlier build.
+4. `npm test` passes, and no file under `src/game/showdown/` changes in the removal commit.
+
+Kiro's lane evidence and specs stay untouched as history.
 
 ## The card pipeline
 

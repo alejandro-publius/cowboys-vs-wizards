@@ -2,7 +2,7 @@
 // (dist/cowboys-vs-wizards-board-duel.html). It speaks the DevTools protocol
 // over Node's built-in WebSocket, so it needs no extra dependency.
 //
-//   npm run build && node scripts/browser-match-check.mjs [--seed N] [--url URL] [--swiftshader] [--summary] [--out-dir PATH] [--showcase] [--escape]
+//   npm run build:art && node scripts/browser-match-check.mjs [--seed N] [--url URL] [--swiftshader] [--summary] [--out-dir PATH] [--showcase] [--escape]
 //
 // --escape checks only the Escape key against the selection (no full match)
 // and writes to .artifacts/fable-escape-cancel/browser/ unless --out-dir is given.

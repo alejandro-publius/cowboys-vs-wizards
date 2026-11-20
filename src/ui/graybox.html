@@ -8,35 +8,14 @@
   <style>@@STYLE@@</style>
 </head>
 <body>
-  <section id="title-screen" aria-label="Main menu" data-deck-presets="true">
+  <section id="title-screen" aria-label="Main menu">
     <div class="title-scene">
       <h1>Cowboys vs. Wizards</h1>
       <nav aria-label="Main menu">
         <button class="menu-hotspot" id="menu-play" type="button">Play</button>
-        <button class="menu-hotspot" id="menu-stargazer" type="button" hidden>Duel the Stargazer</button>
-        <button class="menu-hotspot" id="menu-imp" type="button" hidden>Duel the Imp</button>
-        <button class="menu-hotspot" id="menu-wanted" type="button" data-menu-page="wanted">Wanted</button>
-        <button class="menu-hotspot" type="button" data-menu-page="how">How to Play</button>
-        <button class="menu-hotspot" type="button" data-menu-page="deck">Build Deck</button>
-        <button class="menu-hotspot" type="button" data-menu-page="achievements">Achievements</button>
-        <a href="?mode=fire-arc">Fire arc (draft)</a>
-        <a id="menu-lanes" href="?mode=lanes" hidden>Lane duel (previous rules)</a>
-        <a id="menu-showdown" href="?" hidden>Showdown (new rules)</a>
       </nav>
     </div>
-    <section class="menu-page" aria-labelledby="menu-page-title" hidden>
-      <div class="menu-page-header">
-        <button id="menu-back" type="button">Main menu</button>
-        <h2 id="menu-page-title"></h2>
-      </div>
-      <div class="menu-page-content"></div>
-    </section>
-    <p id="menu-notice" role="status" hidden></p>
   </section>
-  <main id="arena" hidden>
-    <header><h1>Cowboys vs. Wizards</h1><button id="home" type="button">Main menu</button></header>
-    <section id="match" aria-label="Orb Duel match"></section>
-  </main>
   <main id="showdown-camp" aria-label="Camp" hidden></main>
   <main id="showdown-builder" aria-label="Deck builder" hidden></main>
   <main id="showdown" aria-label="Showdown duel" hidden></main>

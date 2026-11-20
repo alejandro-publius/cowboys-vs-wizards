@@ -1,11 +1,12 @@
-// Issue 143 slices 1 and 2: real-browser acceptance check of the graybox Showdown entry and Camp.
+// Issue 143 slices 1 to 3: real-browser acceptance check of the graybox Showdown entry and Camp.
 //   node scripts/build-graybox.mjs
 //   node scripts/browser-showdown-check.mjs dist/cowboys-vs-wizards-board-duel.html [outDir]
 // Native headless Chrome with a fresh profile, driven only by mouse events over the DevTools
 // protocol (same isolated Chrome launch as browser-menu-check.mjs). It checks that Play on a clean
 // profile opens the Camp and Boot Hill, that Trail duels 1 and 2 can be won by clicks alone (?seed=0)
 // and pay their designed cards and a one-card choice, that reloads keep the progress, seat privacy,
-// action legality and visible feedback at every step, and that ?mode=lanes and ?mode=match still load the lane duel.
+// action legality and visible feedback at every step, and that every retired lane address (?mode=lanes, match, ride-out,
+// practice-*, fire-arc, the guided duel) offers the Showdown menu and never starts the lane duel (slice 3).
 import assert from "node:assert/strict";
 import {spawn} from "node:child_process";
 import {mkdir, mkdtemp, rm, writeFile} from "node:fs/promises";
@@ -153,9 +154,9 @@ try {
   await navigate("");
   assert.equal(await evaluate(`localStorage.length`), 0, "fresh Chrome profile has no saved data");
   const menu = await evaluate(`[...document.querySelectorAll('#title-screen nav > *')].filter(n=>!n.hidden).map(n=>n.textContent.trim())`);
-  assert.deepEqual(menu, ["Play", "Lane duel (previous rules)"]);
-  // FH-R2.1 (.kiro/specs/showdown-first-hour/requirements.md)
-  check("Normal entry on a clean profile offers Play and the lane duel link only", menu);
+  assert.deepEqual(menu, ["Play"]);
+  // Issue 143 slice 3: no lane duel entry (supersedes FH-R2.1's lane link).
+  check("Normal entry on a clean profile offers Play only, with no lane duel link", menu);
   await click("#menu-play");
   await wait(`${shown("showdown-camp")}&&document.getElementById('title-screen').hidden&&document.getElementById('showdown').hidden`);
   const freshCamp = await campState();
@@ -172,7 +173,7 @@ try {
   const opened = {status: await text("#sd-status"), lesson: await text("#sd-lesson")};
   assert.match(opened.status, /^Boot Hill · turn 1 · your turn$/);
   assert.match(opened.lesson, /^Win by removing every orb from the Wizard Base\./);
-  assert.equal(await evaluate(`document.getElementById('arena').hidden`), true, "the lane arena stays closed");
+  assert.equal(await evaluate(`Boolean(document.querySelector('#arena, #match, .match-slot'))`), false, "the page has no lane board");
   await assertPrivate();
   // FH-R2.3 (.kiro/specs/showdown-first-hour/requirements.md)
   check("The Camp opens Trail duel 1, Boot Hill (Showdown), not the lane duel", opened);
@@ -403,21 +404,22 @@ try {
   check("Two wins, three reloads: the log holds exactly two lines and the report lists both", {lines: log2.length});
   check("Seat privacy held at every checked step", {steps: privacyChecks});
 
-  // 3. The lane duel stays reachable.
-  await navigate("?mode=lanes");
-  const lanes = await evaluate(`({visible:[...document.querySelectorAll('#title-screen nav > *')].filter(n=>!n.hidden).map(n=>n.textContent.trim()),showdown:document.getElementById('showdown').hidden})`);
-  assert.ok(lanes.visible.includes("Wanted") && lanes.visible.includes("Build Deck") && lanes.visible.includes("Showdown (new rules)"), JSON.stringify(lanes));
-  assert.ok(!lanes.visible.includes("Lane duel (previous rules)"));
-  await click("#menu-play");
-  await wait(`!document.getElementById('arena').hidden&&document.querySelector('#match .match-slot')`, 30000);
-  assert.equal(await evaluate(`document.getElementById('showdown').hidden`), true);
-  await shot("lanes-play");
-  // FH-R2.5 (.kiro/specs/showdown-first-hour/requirements.md)
-  check("?mode=lanes shows the lane menu, and Play opens the lane duel", lanes);
-  await navigate("?mode=match&deck=starter&seed=0");
-  await wait(`!document.getElementById('arena').hidden&&document.querySelector('#match .match-slot')`, 30000);
-  // FH-R2.5 (.kiro/specs/showdown-first-hour/requirements.md)
-  check("?mode=match still auto-starts the lane duel used by the existing lane checks");
+  // 3. Issue 143 slice 3: no URL starts the lane duel. Each retired lane address loads the
+  // Showdown menu, has no lane board, and its Play opens the Camp (supersedes FH-R2.5).
+  const RETIRED = ["?mode=lanes", "?mode=match&deck=starter&seed=0", "?mode=ride-out", "?mode=practice-dynamiter",
+    "?mode=practice-tribute", "?mode=fire-arc", "?mode=lanes&guide=1", "?mode=match&rideOut=1&wizard=stargazer"];
+  for (const query of RETIRED) {
+    await navigate(query);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    const seen = await evaluate(`({menu:[...document.querySelectorAll('#title-screen nav > *')].filter(n=>!n.hidden).map(n=>n.textContent.trim()),
+      title:!document.getElementById('title-screen').hidden,lane:Boolean(document.querySelector('#arena, #match, .match-slot, [data-menu-page], a[href*="mode="]'))})`);
+    assert.deepEqual(seen, {menu: ["Play"], title: true, lane: false}, `${query}: ${JSON.stringify(seen)}`);
+    await click("#menu-play");
+    await wait(`${shown("showdown-camp")}&&document.getElementById('title-screen').hidden`);
+    assert.equal(await evaluate(`Boolean(document.querySelector('#arena, #match, .match-slot'))`), false, `${query}: lane board after Play`);
+  }
+  await shot("retired-lane-url");
+  check("Every retired lane address offers the Showdown menu, never a lane board, and Play opens the Camp", {urls: RETIRED});
 
   assert.deepEqual(report.errors, [], "no page errors");
   check("No page exceptions or console errors");
