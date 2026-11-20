@@ -1,5 +1,17 @@
 # How Kiro changed Cowboys vs. Wizards
 
+## Try the Dragon decision
+
+[Open the experiment on turn five](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5). Select the Ranger, then the resting Dragon. Restart the duel and target Jack-o’-Lantern instead. You can also enter from Camp. The experiment leaves your saved career alone.
+
+| Kiro use | What we verified |
+| --- | --- |
+| Crew bot and memory (K-074, K-075) | The native Overnight Rival bot stored the seed-3 claim and recalled it in a later turn after its conversation context was cleared. Its scheduled reminder returned a conflict and produced no completed run (K-078). The later turn was requested manually. [Crew receipt](../../experiments/showdown-dragon-strategy/rival-crew-receipt.json) |
+| Counterexamples (K-080, K-082) | Kiro CLI ran the engine on 64 held-out seeds. Sixty positions offered both moves. The recorded policy won for the Cowboys by attacking the Dragon on seed 3, and by attacking Jack on seed 70. The Cowboy trap, friendly troop and Wizard Base differed. These are two reproducible lines under fixed draws. [Search and replay](../../experiments/showdown-dragon-strategy/rival-README.md) |
+| Playable test position (K-095) | Chrome exercised Camp entry, a direct link, both targets, keyboard, mouse, retry and unchanged career data. The native Crew browser could not attach to the user's Chrome profile (K-076). A human takeover and first-time playtest are pending. [Browser checks](../evidence/showdown-turn-k095.md) |
+| Keyboard regression (K-010, K-086, K-094) | QA found a keyboard player could win a duel, return to Camp with an unclaimed reward and be focused on Main menu. A clean pre-fix browser run failed the new assertion. The fix focused the first offered card and passed all seven keyboard checks. Kiro authored the bugfix document by hand. Native bugfix-spec generation, a human report and Kiro Web are unverified. [Regression check](../../scripts/browser-showdown-keyboard-check.mjs) |
+
+
 **Judge entry · updated November 19, 2026 Pacific · describes `main` at [`6c14686`](https://github.com/alejandro-publius/cowboys-vs-wizards/commit/6c14686cfe22d948913d1ebadf366320519de509) (merge of #153)**
 
 Cowboys vs. Wizards is a haunted-Western card duel that runs in a browser. The fight in the December 4 entry is **Showdown**: you choose every attack, your troops shield your Base, and turns alternate. Alex chose it on November 19 after playing it. Fable 5.2 wrote its rules ([rulebook](../../prototypes/showdown/RULEBOOK.md), PR [#142](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/142)). Kiro CLI moved it into the game, put all 29 cards in one catalog, added ten readable combat cues, made the Scout bot fair, pointed Night Watch at Showdown and added a Showdown agent profile.
@@ -12,9 +24,9 @@ This page is the one judge-facing description. The [Devpost packet](devpost-pack
 | --- | --- | --- | --- |
 | **Public graybox** (the entry) | [graybox/](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) | The rules-first game: flat board, text cards, life orbs, a log. **Play** opens the first Showdown duel, Boot Hill. | Live. The site's [build.json](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) names the `main` commit it serves. |
 | **Full Showdown reference** | [showdown/](https://alejandro-publius.github.io/cowboys-vs-wizards/showdown/) · [contents](../../prototypes/showdown/README.md) | Fable's standalone page with the whole design: the Trail of six duels, rivals, bounties, packs, deck builder with side deck, best of three and two players on one screen. | Live, separate from the game. Its parts are moved into the graybox slice by slice. |
-| **Candidate** | PR [#148](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/148), head [`998645a`](https://github.com/alejandro-publius/cowboys-vs-wizards/commit/998645a547f86a7ad5f783e8e3882dc7c541c8b1) | Slice 2: the Trail, Camp and saves inside the graybox. | **Not on `main`, not deployed.** The PR asks for a Fable decision on its points F1 and F2 first. Its branch does not yet contain the Scout fix from #150. |
+| **Camp and Trail** | [PR 148](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/148) | Integrated Camp, Trail, rewards and keepsakes | Merged |
 
-The earlier three-lane duel is still playable at [graybox/?mode=lanes](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/?mode=lanes). It is the fight this project was built on until November 19. Its Kiro work is [listed below](#earlier-lane-duel-work-historical) as history.
+The public front page and the graybox alias open Showdown. The [earlier illustrated build](https://alejandro-publius.github.io/cowboys-vs-wizards/3d/) retains its original rules.
 
 ## Try one action (about a minute)
 

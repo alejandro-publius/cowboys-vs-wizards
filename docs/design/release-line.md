@@ -10,12 +10,14 @@ Added by Kiro (Kiro CLI, coordinator job `graywave-assemble`) from GitHub `main`
 
 **Target.** Showdown is the December 4 fight and the game being built. It is the only game in the graybox.
 
+**Experiment for Fable.** The [turn-five Ranger decision](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5) has a shareable, save-isolated entry from Camp. [Decision and replay evidence](../../experiments/showdown-dragon-strategy/rival-README.md). Fable owns promotion into an official bounty.
+
 **Milestones.**
 
 | State | What |
 | --- | --- |
 | Merged to `main` | Pull requests 144 to 158, including slice 1 (144), the 29-card catalog (145), slice 2's Trail and Camp (148) and the hosted graybox bootstrap (157) |
-| In review | Slice 3 on one release-candidate branch, `kiro/graywave-assemble`, in one combined pull request linked from issue 143. It contains the Camp modes (pull request 159, which it supersedes), the lane retirement as its own commit, the site layout, and the graybox CSS and old-harness cleanup. The coordinator merges after review. |
+| Merged and deployed | [Slice 3, PR 161](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/161) includes the Camp modes, graybox lane retirement, Showdown at the site root and the earlier illustrated build at /3d/. |
 | Pending, human | Three first-time playtests (below). Fable's approval of first-draft wording: the Camp and mode labels, and the `/3d/` label. |
 
 **Site layout after slice 3** (built by `node scripts/stage-pages.mjs`, checked by `node scripts/check-pages-tree.mjs`):
