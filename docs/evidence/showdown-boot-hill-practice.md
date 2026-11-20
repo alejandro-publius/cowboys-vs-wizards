@@ -43,6 +43,37 @@ The temporary check, headless Chrome over DevTools on `http://127.0.0.1:<port>/`
    `?seed=0` does not change deal 60. `?turn=dragon-c5` and `?outrider=case-e` win over `?practice=0`;
    `?mode=lanes&practice=0` opens practice. Storage stays byte-identical over all of these loads. No page errors.
 
+## Follow-up: lane keepsake import on a direct practice boot (2026-11-20, Kiro, commit `ffe645dfddbf`)
+Coordinator finding (`legacy-check.mjs`, outside Git): on a brand-new origin holding only an unimported lane profile that
+had cleared every hunt of the first lane boss (Graveyard Dragon; built with `createProfileStore` and `recordBounty`),
+loading `?practice=0` wrote `cvw-showdown-inherited-v1` at boot, because `createCampaign` imported keepsakes in its
+constructor. The isolation claim above was therefore wrong for that case at `1b2136f`.
+
+Fix: `createCampaign(storage, {deferImport})`. The default (`false`) and every existing caller behave as before.
+`src/app.js` passes `true` only when a valid `?practice` actually opens (no `?turn`, no `?outrider`). Then the
+constructor writes nothing, and `campaign.enter()`, called by the Camp's `toCamp`, reloads the stored career and runs
+the ordinary `joinInherited` import once. A second `enter()` does nothing. No UI, rule or save-format change.
+
+| Check | Before: page from `1b2136f` (SHA-256 `40089672…862a9`) | After: page from `ffe645d` (SHA-256 `aa232319…242c977`) |
+| --- | --- | --- |
+| `node --test tests/match/showdown-practice.test.js`: 3 new tests (deferred campaign writes nothing until `enter()` and imports once; `enter()` loads a career another tab saved; blocked storage) | 3 of 3 new tests fail (the option did not exist) | 6 of 6 pass |
+| Temporary loopback Chrome check, one fresh profile per case: fresh origin | pass | pass |
+| Lane profile with the earned Dragon: direct `?practice=0`, finish, Retry, `?practice=60` write no key; Back to camp then imports the keepsake once (Camp lists it "from the lane game"); a return and a root reload import nothing more; `cvw-player-v1` unchanged | **fail**: key written at the `?practice=0` boot | pass |
+| Lane profile, ordinary root boot: keepsake imported at boot, as designed | pass | pass |
+| Blocked `localStorage`: practice opens, finishes and returns to the Camp; a Camp Boot Hill then settles in memory and the Camp says it could not be saved | pass | pass |
+| Normal career with a lane profile: Play -> Boot Hill (`?seed=0`) writes the save and playtest keys (1 win); a later direct practice and Camp return leave every key byte-identical | pass | pass |
+| A career saved by another tab during a direct practice is what the Camp then loads (Trail duel 2 opens), and Camp entry rewrites no key | **fail**: Camp kept the boot snapshot and opened Boot Hill | pass |
+
+On `ffe645d` also: `npm test` 638 of 638; `browser-showdown-check` 22, keyboard 7, turn 29 and Outrider 23 checks pass on
+`dist/cowboys-vs-wizards-board-duel.html` (identical to the `--hosted` build). The coordinator's own Playwright script was
+not run here: Playwright is not installed in this checkout. The 12-check entry script above was not rerun on `ffe645d`.
+
+Scope of the isolation claim now: a direct `?practice=0|60` boot writes no storage key until the player enters the Camp.
+Entering the Camp is a real Camp visit and runs the ordinary keepsake import. A boot of the root, or a `?turn` or
+`?outrider` boot, still imports keepsakes at boot, as before. In a deferred boot the playtest log is still read once at
+boot. A practice boot never writes to it, but if another tab adds lines and this tab then finishes a Camp duel, those
+lines are lost. A normal long-lived tab has the same behaviour today.
+
 ## Limits
 - The duels were played by a naive scripted click policy, not by a person. These runs say nothing about clarity
   or fun, and no screenshot was reviewed for appearance.
