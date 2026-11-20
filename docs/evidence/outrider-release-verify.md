@@ -3,6 +3,8 @@
 Verifier: an independent Kiro CLI session (claude-opus-5.5) on Mac, 2026-11-20, about 13:15–13:30 PST. Candidate
 `e58fb4b77be7defd46e8927812ab7d1fa4fef57f` (merge of the gate repair 389f60e and Power stage 3 b682117), compared with
 `bf510f3`. Local only: nothing was pushed, merged or posted. No human play. No paid model prompt was repeated.
+The corresponding public source snapshot is `1fca448`. Its game code is identical. The public reviewer receipt contains run markers and a source digest. The [blind choices](../../experiments/showdown-outrider/decision/reviewer/choices.jsonl) entered public history at `4720860`, before scoring.
+
 Worker evidence: [gate](outrider-gate.md), [Power](showdown-ride-power.md), [search](../../experiments/showdown-outrider/decision/README.md).
 
 ## Scope of the diff
