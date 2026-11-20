@@ -1,0 +1,319 @@
+{
+  "page": "graybox build over loopback HTTP",
+  "chrome": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "viewport": [
+    1440,
+    900
+  ],
+  "reference": {
+    "choices": [
+      "cowboy-covered-wagon",
+      "cowboy-deadeye"
+    ],
+    "final": {
+      "v": 2,
+      "wins": 2,
+      "losses": {
+        "trail": 0
+      },
+      "collection": {
+        "cowboy-deadeye": 4,
+        "cowboy-covered-wagon": 3,
+        "cowboy-outrider": 2
+      },
+      "deck": {
+        "cowboy-sheriff": 4,
+        "cowboy-billy": 5,
+        "cowboy-deadeye": 3,
+        "cowboy-covered-wagon": 2,
+        "cowboy-outrider": 2
+      },
+      "side": {},
+      "rivals": [],
+      "hunts": {},
+      "openWins": 0,
+      "packs": 0,
+      "rolls": 2,
+      "offer": null
+    }
+  },
+  "runs": {
+    "new-player": {
+      "checks": [
+        {
+          "name": "Normal entry on a clean profile: Play opens the Camp, Boot Hill is the only open Trail duel, starter deck shown",
+          "passed": true,
+          "detail": [
+            {
+              "name": "Boot Hill",
+              "state": "open",
+              "text": "Boot Hill\nWin to earn Covered Wagon ×2"
+            },
+            {
+              "name": "Raven Roost",
+              "state": "locked",
+              "text": "Raven Roost\nLocked · win to earn Outrider ×2"
+            },
+            {
+              "name": "The Bone Fence",
+              "state": "locked",
+              "text": "The Bone Fence\nLocked · win to earn Ranger, Lasso"
+            },
+            {
+              "name": "Imp Hollow",
+              "state": "locked",
+              "text": "Imp Hollow\nLocked · win to earn Dynamiter, Bear Trap"
+            },
+            {
+              "name": "The Hexed Mile",
+              "state": "locked",
+              "text": "The Hexed Mile\nLocked · win to earn Mounted Billy"
+            },
+            {
+              "name": "Dragon's Roost",
+              "state": "locked",
+              "text": "Dragon's Roost\nLocked · win to earn Gatling Crew"
+            }
+          ]
+        },
+        {
+          "name": "Boot Hill opens from its Camp tile with its lesson and a 3-orb Wizard Base",
+          "passed": true,
+          "detail": {
+            "status": "Boot Hill · turn 1 · your turn",
+            "lesson": "Win by removing every orb from the Wizard Base. You can strike it only when the Wizards have no troops: pick one of your troops, then the enemy troop it hits.",
+            "wizardBase": "3 of 3 orbs"
+          }
+        },
+        {
+          "name": "Boot Hill won by clicks alone (?seed=0 deal)",
+          "passed": true,
+          "detail": {
+            "won": true,
+            "status": "You win: the Wizard Base fell.",
+            "turns": 8,
+            "attacks": 15
+          }
+        },
+        {
+          "name": "The Boot Hill win names its payment with the result",
+          "passed": true,
+          "detail": [
+            "Covered Wagon ×2"
+          ]
+        },
+        {
+          "name": "After Boot Hill: Covered Wagon ×2 paid into the deck, the chosen card owned, Raven Roost open, stored progress equals the reference",
+          "passed": true,
+          "detail": {
+            "key": "cvw-showdown-save-v2",
+            "at": null,
+            "offered": [
+              "cowboy-covered-wagon",
+              "cowboy-deadeye"
+            ],
+            "chose": "cowboy-covered-wagon"
+          }
+        },
+        {
+          "name": "Raven Roost opens from its Camp tile with its lesson and a 4-orb Wizard Base",
+          "passed": true,
+          "detail": {
+            "status": "Raven Roost · turn 1 · your turn",
+            "lesson": "Their cards now have keywords, listed under the board. A Jack-o'-Lantern has Last Stand: when it falls in a fight, your troop loses an orb.",
+            "wizardBase": "4 of 4 orbs"
+          }
+        },
+        {
+          "name": "Raven Roost won by clicks alone",
+          "passed": true,
+          "detail": {
+            "won": true,
+            "status": "You win: the Wizard Base fell.",
+            "turns": 4,
+            "attacks": 4,
+            "attempts": 1
+          }
+        },
+        {
+          "name": "The Raven Roost win names its payment with the result",
+          "passed": true,
+          "detail": [
+            "Outrider ×2"
+          ]
+        },
+        {
+          "name": "Reload with the second offer unclaimed: the Camp offers the same two cards and nothing else starts",
+          "passed": true,
+          "detail": [
+            "cowboy-outrider",
+            "cowboy-deadeye"
+          ]
+        },
+        {
+          "name": "Reload: Boot Hill and Raven Roost won, The Bone Fence open, deck and collection on screen and stored progress equal the reference",
+          "passed": true,
+          "detail": {
+            "stored": {
+              "v": 2,
+              "wins": 2,
+              "losses": {
+                "trail": 0
+              },
+              "collection": {
+                "cowboy-deadeye": 4,
+                "cowboy-covered-wagon": 3,
+                "cowboy-outrider": 2
+              },
+              "deck": {
+                "cowboy-sheriff": 4,
+                "cowboy-billy": 5,
+                "cowboy-deadeye": 3,
+                "cowboy-covered-wagon": 2,
+                "cowboy-outrider": 2
+              },
+              "side": {},
+              "rivals": [],
+              "hunts": {},
+              "openWins": 0,
+              "packs": 0,
+              "rolls": 2,
+              "offer": null
+            },
+            "storageUnchangedByLoad": true
+          }
+        },
+        {
+          "name": "The Bone Fence opens from its Camp tile",
+          "passed": true,
+          "detail": {
+            "status": "The Bone Fence · turn 1 · your turn",
+            "lesson": "A Bone Wall has Guard: it must fall first. Their Wizard raises a Skeleton from the graveyard.",
+            "wizardBase": "4 of 4 orbs"
+          }
+        },
+        {
+          "name": "Leaving The Bone Fence unfinished changes no stored progress",
+          "passed": true,
+          "detail": {
+            "leftBy": "back"
+          }
+        }
+      ],
+      "clicks": 91,
+      "duels": [
+        {
+          "duel": "Boot Hill",
+          "attempt": 1,
+          "won": true,
+          "status": "You win: the Wizard Base fell.",
+          "turns": 8,
+          "attacks": 15
+        },
+        {
+          "duel": "Raven Roost",
+          "attempt": 1,
+          "won": true,
+          "status": "You win: the Wizard Base fell.",
+          "turns": 4,
+          "attacks": 4
+        }
+      ],
+      "backToCamp1": "back",
+      "leftBy": "back"
+    },
+    "lane-veteran": {
+      "checks": [
+        {
+          "name": "Lane-era profile written by the real lane store (five Graveyard Dragon hunts cleared) is the only stored data",
+          "passed": true,
+          "detail": [
+            "coffin-creek-crossing",
+            "bone-choir-chapel",
+            "hanging-tree-pass",
+            "dusk-at-dry-well",
+            "lantern-row-standoff"
+          ]
+        },
+        {
+          "name": "Normal load: the Captured Dragon is shown as owned, the Trail has not advanced, the deck is the plain starter, the lane profile is byte-identical",
+          "passed": true,
+          "detail": [
+            {
+              "name": "Boot Hill",
+              "state": "open",
+              "text": "Boot Hill\nWin to earn Covered Wagon ×2"
+            },
+            {
+              "name": "Raven Roost",
+              "state": "locked",
+              "text": "Raven Roost\nLocked · win to earn Outrider ×2"
+            },
+            {
+              "name": "The Bone Fence",
+              "state": "locked",
+              "text": "The Bone Fence\nLocked · win to earn Ranger, Lasso"
+            },
+            {
+              "name": "Imp Hollow",
+              "state": "locked",
+              "text": "Imp Hollow\nLocked · win to earn Dynamiter, Bear Trap"
+            },
+            {
+              "name": "The Hexed Mile",
+              "state": "locked",
+              "text": "The Hexed Mile\nLocked · win to earn Mounted Billy"
+            },
+            {
+              "name": "Dragon's Roost",
+              "state": "locked",
+              "text": "Dragon's Roost\nLocked · win to earn Gatling Crew"
+            }
+          ]
+        },
+        {
+          "name": "Boot Hill won by clicks alone with the lane profile present",
+          "passed": true,
+          "detail": {
+            "won": true,
+            "status": "You win: the Wizard Base fell.",
+            "turns": 8,
+            "attacks": 15
+          }
+        },
+        {
+          "name": "Reload after the win: Covered Wagon paid, the Captured Dragon still owned, the lane profile still holds its five cleared hunts",
+          "passed": true,
+          "detail": {
+            "key": "cvw-showdown-save-v2",
+            "at": null,
+            "capturedInStoredCollection": 0,
+            "laneByteIdentical": true,
+            "inheritedRecord": "{\"v\":1,\"source\":\"cvw-player-v1\",\"cards\":[\"cowboy-captured-dragon\"]}",
+            "campCollection": "Deck: Sheriff ×6, Billy ×5, Deadeye ×3, Covered Wagon ×2.\nCollection: Sheriff and Billy in any number, Deadeye ×3, Covered Wagon ×3, Captured Dragon ×1 (from the lane game).\nCards from the lane game stay owned. They are not in your Trail deck and are not in save codes."
+          }
+        }
+      ],
+      "clicks": 61,
+      "duels": [
+        {
+          "duel": "Boot Hill",
+          "attempt": 1,
+          "won": true,
+          "status": "You win: the Wizard Base fell.",
+          "turns": 8,
+          "attacks": 15
+        }
+      ]
+    }
+  },
+  "errors": [],
+  "screenshots": [
+    "new-player-camp-fresh.png",
+    "new-player-boot-hill-won.png",
+    "new-player-raven-roost-won.png",
+    "new-player-camp-after-reload.png",
+    "lane-veteran-camp-veteran.png"
+  ],
+  "note": "Bot-driven browser acceptance. Human playtests are pending and are not simulated here."
+}

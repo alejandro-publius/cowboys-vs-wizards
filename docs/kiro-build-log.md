@@ -248,3 +248,29 @@ The next substantial Kiro task is #56, boundary generation, failure reduction an
 - **Change**: cherry-picked `f802687` (`prototypes/showdown/style.css` only, no copy, DOM, script or test change) with no conflicts. No rules, bot, card text or test changes.
 - **Verification**: `npm test` 516 of 516 plus both GLB checks. The offline and web graybox builds are byte-identical and unchanged. All six PR 144 Chrome checks pass on the combined `dist/showdown.html` with their original assertions, including onboarding (31 of 31), which failed 2 checks before this fix. The graybox Boot Hill and lane fallback check passed 12 of 12 on both builds. The rules files are identical to `735cb09`, and the bot trace and Scout oracle hashes match the 735cb09 prototype. [Receipts](evidence/kiro-144-final-integration/README.md)
 - **Remaining**: the Fable decision on the issue 143 / PR 144 Scout bot change, and human playtests. Short phones (375×667 and smaller) still need one scroll to reach the first card, per the onboarding worker's measurements. Those measurements were not re-run here.
+
+### 2026-11-19 — Issue 143 slice 2 graywave integration (Kiro CLI, America/Los_Angeles, 21:34 PST)
+
+- **State**: verified locally on `kiro/graywave-integrate` (code `6ade89e`, base `github/main` `24dd11c`). Published as a topic branch with a PR labelled review-needed; not merged.
+- **Performed in**: a Kiro CLI integration worker session (Claude Opus 5.5). Merged the Kiro CLI worker branches saves, camp, accept, catalog, report and cues, each once. The saves commit appears once, as the tree-identical `96b75bc`.
+- **Problem**: slice 2 done-when 2. A lane-captured card was not visible or owned in the Camp. The accept worker's strict Run B failed at "collection names Captured Dragon".
+- **Change**:
+  - `src/game/showdown/inherited.js` keeps lane captures in a separate grow-only record, `cvw-showdown-inherited-v1`.
+  - The Camp lists each owned card once, by name, with lane cards marked.
+  - Progress, `migrate()`, the Trail, the deck, bounties, rewards and Scout are unchanged.
+  - Run B now also requires the persisted record.
+  - The cue check enters Boot Hill through the Camp.
+- **Verification**:
+  - `npm test` 556 of 556.
+  - Card-spec check and catalog CSV round trip unchanged.
+  - The six PR 144 prototype Chrome suites pass.
+  - On the offline and web builds (byte-identical): graybox Showdown check 23 of 23 and Trail acceptance 16 of 16.
+  - Cue check 5 of 5.
+  - Compat harness: A2–A5 pass on all cases. A1 fails on 7 of 14 because the progress object is deliberately unchanged.
+  - [Receipts](evidence/kiro-143-slice2-integrate/README.md)
+- **Remaining**:
+  - Fable F1/F2: may a lane capture count in Showdown progress before the Trail ends, and what does that bounty pay?
+  - F3–F5 are also open.
+  - Save-code portability of inherited cards is open.
+  - Wording approval is pending.
+  - Human playtests are pending.
