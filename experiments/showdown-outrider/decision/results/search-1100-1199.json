@@ -1,0 +1,5811 @@
+{
+ "range": {
+  "from": 1100,
+  "to": 1199
+ },
+ "tried": 100,
+ "seeds": [
+  {
+   "seed": 1100,
+   "branch": true,
+   "at": 5,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 5,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 2,
+    "wizardTroops": 2,
+    "troopGap": 0,
+    "cowboyPower": 2,
+    "wizardPower": 2,
+    "riderHealth": 3,
+    "targetHealth": 2,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 4,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 15,
+    "decisions": 15
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 12
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1101,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1102,
+   "branch": true,
+   "at": 3,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 0,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 3,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 1,
+    "wizardTroops": 1,
+    "troopGap": 0,
+    "cowboyPower": 1,
+    "wizardPower": 1,
+    "riderHealth": 2,
+    "targetHealth": 3,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 4,
+    "wizardHand": 4,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "wizard",
+    "reason": "base",
+    "turn": 14,
+    "decisions": 13
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 17,
+    "decisions": 24
+   },
+   "kind": "fight-only"
+  },
+  {
+   "seed": 1103,
+   "branch": true,
+   "at": 7,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-3",
+     "tributes": [
+      0
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 7,
+    "cowboyBase": 5,
+    "wizardBase": 3,
+    "baseGap": 2,
+    "cowboyTroops": 2,
+    "wizardTroops": 1,
+    "troopGap": 1,
+    "cowboyPower": 3,
+    "wizardPower": 2,
+    "riderHealth": 1,
+    "targetHealth": 3,
+    "targetAttack": 2,
+    "fightKills": 0,
+    "riderSurvivesFight": 0,
+    "cowboyHand": 4,
+    "wizardHand": 4,
+    "wizardTraps": 0,
+    "target": "Wizard"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 9,
+    "decisions": 3
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 17,
+    "decisions": 18
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1104,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1105,
+   "branch": true,
+   "at": 7,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-3",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-1",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 7,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 2,
+    "wizardTroops": 2,
+    "troopGap": 0,
+    "cowboyPower": 2,
+    "wizardPower": 3,
+    "riderHealth": 3,
+    "targetHealth": 4,
+    "targetAttack": 2,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 3,
+    "wizardHand": 3,
+    "wizardTraps": 0,
+    "target": "Wizard"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 19,
+    "decisions": 18
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 23,
+    "decisions": 24
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1106,
+   "branch": true,
+   "at": 3,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 0,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 3,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 1,
+    "wizardTroops": 1,
+    "troopGap": 0,
+    "cowboyPower": 1,
+    "wizardPower": 1,
+    "riderHealth": 3,
+    "targetHealth": 3,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 4,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 15
+   },
+   "fight": {
+    "winner": "wizard",
+    "reason": "base",
+    "turn": 18,
+    "decisions": 18
+   },
+   "kind": "ride-only"
+  },
+  {
+   "seed": 1107,
+   "branch": true,
+   "at": 11,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-3",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-4",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 1
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-1",
+     "tributes": [
+      1
+     ]
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-2",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": "base"
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 1
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 11,
+    "cowboyBase": 5,
+    "wizardBase": 2,
+    "baseGap": 3,
+    "cowboyTroops": 3,
+    "wizardTroops": 1,
+    "troopGap": 2,
+    "cowboyPower": 4,
+    "wizardPower": 1,
+    "riderHealth": 3,
+    "targetHealth": 3,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 3,
+    "wizardHand": 4,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 15,
+    "decisions": 8
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 3
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1108,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1109,
+   "branch": true,
+   "at": 7,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-3",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-1",
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-3",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 1
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-5",
+     "tributes": [
+      0
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 7,
+    "cowboyBase": 5,
+    "wizardBase": 3,
+    "baseGap": 2,
+    "cowboyTroops": 3,
+    "wizardTroops": 1,
+    "troopGap": 2,
+    "cowboyPower": 4,
+    "wizardPower": 2,
+    "riderHealth": 3,
+    "targetHealth": 3,
+    "targetAttack": 2,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 1,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Wizard"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 11,
+    "decisions": 7
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 9,
+    "decisions": 4
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1110,
+   "branch": true,
+   "at": 7,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-3",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-4",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 7,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 3,
+    "wizardTroops": 1,
+    "troopGap": 2,
+    "cowboyPower": 3,
+    "wizardPower": 1,
+    "riderHealth": 3,
+    "targetHealth": 1,
+    "targetAttack": 1,
+    "fightKills": 1,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 4,
+    "wizardHand": 6,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 11,
+    "decisions": 6
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 11,
+    "decisions": 6
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1111,
+   "branch": true,
+   "at": 3,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 0,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 3,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 1,
+    "wizardTroops": 1,
+    "troopGap": 0,
+    "cowboyPower": 1,
+    "wizardPower": 1,
+    "riderHealth": 2,
+    "targetHealth": 3,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 4,
+    "wizardHand": 4,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 17,
+    "decisions": 22
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 17,
+    "decisions": 21
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1112,
+   "branch": true,
+   "at": 7,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-3",
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 7,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 3,
+    "wizardTroops": 2,
+    "troopGap": 1,
+    "cowboyPower": 3,
+    "wizardPower": 3,
+    "riderHealth": 3,
+    "targetHealth": 3,
+    "targetAttack": 2,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 3,
+    "wizardHand": 4,
+    "wizardTraps": 0,
+    "target": "Wizard"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 24,
+    "decisions": 23
+   },
+   "fight": {
+    "winner": "wizard",
+    "reason": "base",
+    "turn": 14,
+    "decisions": 9
+   },
+   "kind": "ride-only"
+  },
+  {
+   "seed": 1113,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1114,
+   "branch": true,
+   "at": 5,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-2",
+     "target": 0
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 5,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 2,
+    "wizardTroops": 1,
+    "troopGap": 1,
+    "cowboyPower": 2,
+    "wizardPower": 1,
+    "riderHealth": 3,
+    "targetHealth": 1,
+    "targetAttack": 1,
+    "fightKills": 1,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 3,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 11,
+    "decisions": 12
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 11,
+    "decisions": 12
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1115,
+   "branch": true,
+   "at": 5,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-4",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-3",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-1",
+     "tributes": [
+      0
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 5,
+    "cowboyBase": 5,
+    "wizardBase": 3,
+    "baseGap": 2,
+    "cowboyTroops": 2,
+    "wizardTroops": 1,
+    "troopGap": 1,
+    "cowboyPower": 3,
+    "wizardPower": 2,
+    "riderHealth": 3,
+    "targetHealth": 3,
+    "targetAttack": 2,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 2,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Wizard"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 11,
+    "decisions": 8
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 9,
+    "decisions": 6
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1116,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1117,
+   "branch": true,
+   "at": 7,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-3",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-3",
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 7,
+    "cowboyBase": 5,
+    "wizardBase": 3,
+    "baseGap": 2,
+    "cowboyTroops": 3,
+    "wizardTroops": 1,
+    "troopGap": 2,
+    "cowboyPower": 3,
+    "wizardPower": 1,
+    "riderHealth": 3,
+    "targetHealth": 3,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 3,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 11,
+    "decisions": 8
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 11
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1118,
+   "branch": true,
+   "at": 7,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-2",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-2",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 0,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 7,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 2,
+    "wizardTroops": 1,
+    "troopGap": 1,
+    "cowboyPower": 2,
+    "wizardPower": 2,
+    "riderHealth": 3,
+    "targetHealth": 2,
+    "targetAttack": 2,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 3,
+    "wizardHand": 6,
+    "wizardTraps": 0,
+    "target": "Wizard"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 15,
+    "decisions": 15
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 15,
+    "decisions": 15
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1119,
+   "branch": true,
+   "at": 9,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-3",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-1",
+     "tributes": [
+      0
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 1
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 2
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 9,
+    "cowboyBase": 5,
+    "wizardBase": 3,
+    "baseGap": 2,
+    "cowboyTroops": 3,
+    "wizardTroops": 2,
+    "troopGap": 1,
+    "cowboyPower": 4,
+    "wizardPower": 3,
+    "riderHealth": 3,
+    "targetHealth": 2,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 4,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 17,
+    "decisions": 13
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 24,
+    "decisions": 23
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1120,
+   "branch": true,
+   "at": 7,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-3",
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-2",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 1
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-5",
+     "tributes": [
+      1
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 1
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 7,
+    "cowboyBase": 5,
+    "wizardBase": 3,
+    "baseGap": 2,
+    "cowboyTroops": 3,
+    "wizardTroops": 1,
+    "troopGap": 2,
+    "cowboyPower": 4,
+    "wizardPower": 2,
+    "riderHealth": 3,
+    "targetHealth": 3,
+    "targetAttack": 2,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 1,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Wizard"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 9,
+    "decisions": 3
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 12
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1121,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1122,
+   "branch": true,
+   "at": 5,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 5,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 2,
+    "wizardTroops": 1,
+    "troopGap": 1,
+    "cowboyPower": 2,
+    "wizardPower": 1,
+    "riderHealth": 3,
+    "targetHealth": 2,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 4,
+    "wizardHand": 6,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 11,
+    "decisions": 7
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 15,
+    "decisions": 16
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1123,
+   "branch": true,
+   "at": 9,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-3",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 1
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-1",
+     "tributes": [
+      0
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 9,
+    "cowboyBase": 5,
+    "wizardBase": 2,
+    "baseGap": 3,
+    "cowboyTroops": 3,
+    "wizardTroops": 1,
+    "troopGap": 2,
+    "cowboyPower": 4,
+    "wizardPower": 1,
+    "riderHealth": 3,
+    "targetHealth": 3,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 3,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 11,
+    "decisions": 4
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 11,
+    "decisions": 4
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1124,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1125,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1126,
+   "branch": true,
+   "at": 11,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-1",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-2",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-1",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 1
+    },
+    {
+     "type": "attack",
+     "slot": 2,
+     "target": 1
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-2",
+     "tributes": [
+      0
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 2
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 1
+    },
+    {
+     "type": "attack",
+     "slot": 2,
+     "target": 1
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 0
+    }
+   },
+   "policyChoice": "other",
+   "cues": {
+    "turn": 11,
+    "cowboyBase": 5,
+    "wizardBase": 3,
+    "baseGap": 2,
+    "cowboyTroops": 3,
+    "wizardTroops": 2,
+    "troopGap": 1,
+    "cowboyPower": 4,
+    "wizardPower": 3,
+    "riderHealth": 3,
+    "targetHealth": 1,
+    "targetAttack": 2,
+    "fightKills": 1,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 2,
+    "wizardHand": 4,
+    "wizardTraps": 0,
+    "target": "Wizard"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 3
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 19,
+    "decisions": 12
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1127,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1128,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1129,
+   "branch": true,
+   "at": 7,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-1",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-2",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-1",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 0,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 7,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 3,
+    "wizardTroops": 2,
+    "troopGap": 1,
+    "cowboyPower": 3,
+    "wizardPower": 2,
+    "riderHealth": 3,
+    "targetHealth": 3,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 3,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 15,
+    "decisions": 17
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 15,
+    "decisions": 11
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1130,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1131,
+   "branch": true,
+   "at": 13,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-2",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-3",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-5",
+     "tributes": [
+      1
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 1
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-1",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 0,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 13,
+    "cowboyBase": 4,
+    "wizardBase": 3,
+    "baseGap": 1,
+    "cowboyTroops": 2,
+    "wizardTroops": 1,
+    "troopGap": 1,
+    "cowboyPower": 3,
+    "wizardPower": 1,
+    "riderHealth": 2,
+    "targetHealth": 3,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 4,
+    "wizardHand": 4,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 15,
+    "decisions": 3
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 24,
+    "decisions": 16
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1132,
+   "branch": true,
+   "at": 5,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 5,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 2,
+    "wizardTroops": 2,
+    "troopGap": 0,
+    "cowboyPower": 2,
+    "wizardPower": 2,
+    "riderHealth": 3,
+    "targetHealth": 2,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 4,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 21,
+    "decisions": 22
+   },
+   "fight": {
+    "winner": "wizard",
+    "reason": "base",
+    "turn": 16,
+    "decisions": 12
+   },
+   "kind": "ride-only"
+  },
+  {
+   "seed": 1133,
+   "branch": true,
+   "at": 5,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 5,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 2,
+    "wizardTroops": 2,
+    "troopGap": 0,
+    "cowboyPower": 2,
+    "wizardPower": 2,
+    "riderHealth": 3,
+    "targetHealth": 2,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 4,
+    "wizardHand": 4,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "wizard",
+    "reason": "base",
+    "turn": 12,
+    "decisions": 8
+   },
+   "fight": {
+    "winner": "wizard",
+    "reason": "base",
+    "turn": 14,
+    "decisions": 12
+   },
+   "kind": "both-wizard"
+  },
+  {
+   "seed": 1134,
+   "branch": true,
+   "at": 7,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 7,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 3,
+    "wizardTroops": 1,
+    "troopGap": 2,
+    "cowboyPower": 3,
+    "wizardPower": 1,
+    "riderHealth": 3,
+    "targetHealth": 1,
+    "targetAttack": 1,
+    "fightKills": 1,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 4,
+    "wizardHand": 6,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 15
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 15
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1135,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1136,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1137,
+   "branch": true,
+   "at": 5,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 5,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 2,
+    "wizardTroops": 1,
+    "troopGap": 1,
+    "cowboyPower": 2,
+    "wizardPower": 1,
+    "riderHealth": 2,
+    "targetHealth": 2,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 4,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "wizard",
+    "reason": "base",
+    "turn": 16,
+    "decisions": 12
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 15,
+    "decisions": 16
+   },
+   "kind": "fight-only"
+  },
+  {
+   "seed": 1138,
+   "branch": true,
+   "at": 7,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-3",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-1",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 7,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 2,
+    "wizardTroops": 1,
+    "troopGap": 1,
+    "cowboyPower": 2,
+    "wizardPower": 2,
+    "riderHealth": 3,
+    "targetHealth": 3,
+    "targetAttack": 2,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 3,
+    "wizardHand": 6,
+    "wizardTraps": 0,
+    "target": "Wizard"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 17,
+    "decisions": 14
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 17,
+    "decisions": 14
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1139,
+   "branch": true,
+   "at": 7,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-1",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-3",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-3",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 7,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 3,
+    "wizardTroops": 1,
+    "troopGap": 2,
+    "cowboyPower": 3,
+    "wizardPower": 2,
+    "riderHealth": 3,
+    "targetHealth": 3,
+    "targetAttack": 2,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 1,
+    "wizardHand": 4,
+    "wizardTraps": 0,
+    "target": "Wizard"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 11,
+    "decisions": 6
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 24,
+    "decisions": 22
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1140,
+   "branch": true,
+   "at": 9,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-4",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-3",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-2",
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-5",
+     "tributes": [
+      0
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-1",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 9,
+    "cowboyBase": 5,
+    "wizardBase": 1,
+    "baseGap": 4,
+    "cowboyTroops": 3,
+    "wizardTroops": 1,
+    "troopGap": 2,
+    "cowboyPower": 4,
+    "wizardPower": 1,
+    "riderHealth": 3,
+    "targetHealth": 3,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 2,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 9,
+    "decisions": 0
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 9,
+    "decisions": 2
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1141,
+   "branch": false,
+   "ended": "wizard"
+  },
+  {
+   "seed": 1142,
+   "branch": true,
+   "at": 5,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 5,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 2,
+    "wizardTroops": 2,
+    "troopGap": 0,
+    "cowboyPower": 2,
+    "wizardPower": 2,
+    "riderHealth": 3,
+    "targetHealth": 2,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 4,
+    "wizardHand": 3,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "wizard",
+    "reason": "base",
+    "turn": 14,
+    "decisions": 9
+   },
+   "fight": {
+    "winner": "wizard",
+    "reason": "base",
+    "turn": 18,
+    "decisions": 14
+   },
+   "kind": "both-wizard"
+  },
+  {
+   "seed": 1143,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1144,
+   "branch": true,
+   "at": 5,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 5,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 2,
+    "wizardTroops": 1,
+    "troopGap": 1,
+    "cowboyPower": 2,
+    "wizardPower": 1,
+    "riderHealth": 3,
+    "targetHealth": 2,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 4,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 15
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 17,
+    "decisions": 20
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1145,
+   "branch": true,
+   "at": 7,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 7,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 3,
+    "wizardTroops": 2,
+    "troopGap": 1,
+    "cowboyPower": 3,
+    "wizardPower": 2,
+    "riderHealth": 3,
+    "targetHealth": 1,
+    "targetAttack": 1,
+    "fightKills": 1,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 4,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 11
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 15,
+    "decisions": 13
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1146,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1147,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1148,
+   "branch": true,
+   "at": 7,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-4",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 7,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 3,
+    "wizardTroops": 1,
+    "troopGap": 2,
+    "cowboyPower": 3,
+    "wizardPower": 1,
+    "riderHealth": 3,
+    "targetHealth": 1,
+    "targetAttack": 1,
+    "fightKills": 1,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 4,
+    "wizardHand": 6,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 11
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 11
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1149,
+   "branch": true,
+   "at": 5,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-2",
+     "target": 0
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 5,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 2,
+    "wizardTroops": 2,
+    "troopGap": 0,
+    "cowboyPower": 2,
+    "wizardPower": 3,
+    "riderHealth": 3,
+    "targetHealth": 3,
+    "targetAttack": 2,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 3,
+    "wizardHand": 4,
+    "wizardTraps": 0,
+    "target": "Wizard"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 16
+   },
+   "fight": {
+    "winner": "wizard",
+    "reason": "base",
+    "turn": 16,
+    "decisions": 14
+   },
+   "kind": "ride-only"
+  },
+  {
+   "seed": 1150,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1151,
+   "branch": true,
+   "at": 9,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-3",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-4",
+     "tributes": [
+      0
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 2,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-3",
+     "tributes": [
+      1
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 1
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 9,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 3,
+    "wizardTroops": 1,
+    "troopGap": 2,
+    "cowboyPower": 5,
+    "wizardPower": 1,
+    "riderHealth": 3,
+    "targetHealth": 3,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 2,
+    "wizardHand": 3,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 11,
+    "decisions": 3
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 11,
+    "decisions": 3
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1152,
+   "branch": true,
+   "at": 13,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-3",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-3",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-4",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-5",
+     "tributes": [
+      1
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 1
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    },
+    {
+     "type": "attack",
+     "slot": 2,
+     "target": 1
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 1
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-2",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 0,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 13,
+    "cowboyBase": 5,
+    "wizardBase": 3,
+    "baseGap": 2,
+    "cowboyTroops": 3,
+    "wizardTroops": 2,
+    "troopGap": 1,
+    "cowboyPower": 4,
+    "wizardPower": 2,
+    "riderHealth": 3,
+    "targetHealth": 3,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 3,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 15,
+    "decisions": 5
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 19,
+    "decisions": 11
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1153,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1154,
+   "branch": true,
+   "at": 15,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-3",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-3",
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-1",
+     "tributes": [
+      1
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 1
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 1
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-2",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 1
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 15,
+    "cowboyBase": 5,
+    "wizardBase": 1,
+    "baseGap": 4,
+    "cowboyTroops": 3,
+    "wizardTroops": 2,
+    "troopGap": 1,
+    "cowboyPower": 4,
+    "wizardPower": 2,
+    "riderHealth": 3,
+    "targetHealth": 2,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 4,
+    "wizardHand": 4,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 15,
+    "decisions": 0
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 15,
+    "decisions": 1
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1155,
+   "branch": true,
+   "at": 7,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-4",
+     "tributes": [
+      0
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "other",
+   "cues": {
+    "turn": 7,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 2,
+    "wizardTroops": 2,
+    "troopGap": 0,
+    "cowboyPower": 3,
+    "wizardPower": 3,
+    "riderHealth": 1,
+    "targetHealth": 3,
+    "targetAttack": 2,
+    "fightKills": 0,
+    "riderSurvivesFight": 0,
+    "cowboyHand": 4,
+    "wizardHand": 3,
+    "wizardTraps": 0,
+    "target": "Wizard"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 9,
+    "decisions": 4
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 15,
+    "decisions": 20
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1156,
+   "branch": true,
+   "at": 7,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-2",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-1",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 1
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 7,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 3,
+    "wizardTroops": 1,
+    "troopGap": 2,
+    "cowboyPower": 3,
+    "wizardPower": 1,
+    "riderHealth": 3,
+    "targetHealth": 2,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 3,
+    "wizardHand": 6,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 11
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 11,
+    "decisions": 13
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1157,
+   "branch": true,
+   "at": 11,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-4",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-2",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-3",
+     "tributes": [
+      1
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 1
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": "base"
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-1",
+     "tributes": [
+      0
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 11,
+    "cowboyBase": 5,
+    "wizardBase": 2,
+    "baseGap": 3,
+    "cowboyTroops": 3,
+    "wizardTroops": 1,
+    "troopGap": 2,
+    "cowboyPower": 5,
+    "wizardPower": 1,
+    "riderHealth": 3,
+    "targetHealth": 3,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 4,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 11,
+    "decisions": 2
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 11,
+    "decisions": 2
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1158,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1159,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1160,
+   "branch": true,
+   "at": 5,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-2",
+     "target": 0
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 5,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 2,
+    "wizardTroops": 2,
+    "troopGap": 0,
+    "cowboyPower": 2,
+    "wizardPower": 3,
+    "riderHealth": 1,
+    "targetHealth": 3,
+    "targetAttack": 2,
+    "fightKills": 0,
+    "riderSurvivesFight": 0,
+    "cowboyHand": 3,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Wizard"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 19,
+    "decisions": 21
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 23,
+    "decisions": 26
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1161,
+   "branch": true,
+   "at": 7,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-2",
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-3",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 1
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-3",
+     "tributes": [
+      0
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 2
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 7,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 3,
+    "wizardTroops": 1,
+    "troopGap": 2,
+    "cowboyPower": 4,
+    "wizardPower": 1,
+    "riderHealth": 3,
+    "targetHealth": 3,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 2,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 9,
+    "decisions": 4
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 9
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1162,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1163,
+   "branch": true,
+   "at": 7,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-4",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-2",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 1
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 7,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 3,
+    "wizardTroops": 1,
+    "troopGap": 2,
+    "cowboyPower": 3,
+    "wizardPower": 2,
+    "riderHealth": 3,
+    "targetHealth": 4,
+    "targetAttack": 2,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 3,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Wizard"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 15,
+    "decisions": 8
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 19,
+    "decisions": 21
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1164,
+   "branch": true,
+   "at": 3,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 0,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 3,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 1,
+    "wizardTroops": 1,
+    "troopGap": 0,
+    "cowboyPower": 1,
+    "wizardPower": 1,
+    "riderHealth": 2,
+    "targetHealth": 3,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 4,
+    "wizardHand": 4,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 11,
+    "decisions": 16
+   },
+   "fight": {
+    "winner": "wizard",
+    "reason": "base",
+    "turn": 10,
+    "decisions": 8
+   },
+   "kind": "ride-only"
+  },
+  {
+   "seed": 1165,
+   "branch": true,
+   "at": 5,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-3",
+     "target": 0
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 5,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 2,
+    "wizardTroops": 1,
+    "troopGap": 1,
+    "cowboyPower": 2,
+    "wizardPower": 1,
+    "riderHealth": 2,
+    "targetHealth": 1,
+    "targetAttack": 1,
+    "fightKills": 1,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 3,
+    "wizardHand": 6,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 15,
+    "decisions": 13
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 15,
+    "decisions": 13
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1166,
+   "branch": true,
+   "at": 7,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-4",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-3",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-1",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-2",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 1
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 7,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 3,
+    "wizardTroops": 1,
+    "troopGap": 2,
+    "cowboyPower": 3,
+    "wizardPower": 1,
+    "riderHealth": 3,
+    "targetHealth": 2,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 2,
+    "wizardHand": 6,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 7
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 17
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1167,
+   "branch": true,
+   "at": 7,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-4",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-1",
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-3",
+     "target": 1
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 0,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 7,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 2,
+    "wizardTroops": 1,
+    "troopGap": 1,
+    "cowboyPower": 2,
+    "wizardPower": 2,
+    "riderHealth": 1,
+    "targetHealth": 3,
+    "targetAttack": 2,
+    "fightKills": 0,
+    "riderSurvivesFight": 0,
+    "cowboyHand": 2,
+    "wizardHand": 4,
+    "wizardTraps": 0,
+    "target": "Wizard"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 21,
+    "decisions": 21
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 15,
+    "decisions": 15
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1168,
+   "branch": true,
+   "at": 13,
+   "prefix": [
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-1",
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-1",
+     "tributes": [
+      0
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-3",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 1
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 13,
+    "cowboyBase": 5,
+    "wizardBase": 1,
+    "baseGap": 4,
+    "cowboyTroops": 3,
+    "wizardTroops": 1,
+    "troopGap": 2,
+    "cowboyPower": 4,
+    "wizardPower": 1,
+    "riderHealth": 3,
+    "targetHealth": 3,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 5,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 0
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 15,
+    "decisions": 2
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1169,
+   "branch": true,
+   "at": 5,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-2",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-3",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 5,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 3,
+    "wizardTroops": 1,
+    "troopGap": 2,
+    "cowboyPower": 3,
+    "wizardPower": 2,
+    "riderHealth": 3,
+    "targetHealth": 2,
+    "targetAttack": 2,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 1,
+    "wizardHand": 4,
+    "wizardTraps": 0,
+    "target": "Wizard"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 11,
+    "decisions": 12
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 17,
+    "decisions": 15
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1170,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1171,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1172,
+   "branch": true,
+   "at": 5,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 5,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 3,
+    "wizardTroops": 1,
+    "troopGap": 2,
+    "cowboyPower": 3,
+    "wizardPower": 2,
+    "riderHealth": 1,
+    "targetHealth": 3,
+    "targetAttack": 2,
+    "fightKills": 0,
+    "riderSurvivesFight": 0,
+    "cowboyHand": 3,
+    "wizardHand": 4,
+    "wizardTraps": 0,
+    "target": "Wizard"
+   },
+   "ride": {
+    "winner": "wizard",
+    "reason": "base",
+    "turn": 12,
+    "decisions": 8
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 15
+   },
+   "kind": "fight-only"
+  },
+  {
+   "seed": 1173,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1174,
+   "branch": true,
+   "at": 5,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-2",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-2",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-3",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 1
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 5,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 3,
+    "wizardTroops": 1,
+    "troopGap": 2,
+    "cowboyPower": 3,
+    "wizardPower": 1,
+    "riderHealth": 3,
+    "targetHealth": 3,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 1,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 9,
+    "decisions": 6
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 12
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1175,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1176,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1177,
+   "branch": true,
+   "at": 5,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-3",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-5",
+     "tributes": [
+      0
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 5,
+    "cowboyBase": 5,
+    "wizardBase": 3,
+    "baseGap": 2,
+    "cowboyTroops": 2,
+    "wizardTroops": 1,
+    "troopGap": 1,
+    "cowboyPower": 3,
+    "wizardPower": 2,
+    "riderHealth": 3,
+    "targetHealth": 3,
+    "targetAttack": 2,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 2,
+    "wizardHand": 4,
+    "wizardTraps": 0,
+    "target": "Wizard"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 7,
+    "decisions": 3
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 11,
+    "decisions": 10
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1178,
+   "branch": true,
+   "at": 5,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-1",
+     "target": 0
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 5,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 2,
+    "wizardTroops": 2,
+    "troopGap": 0,
+    "cowboyPower": 2,
+    "wizardPower": 2,
+    "riderHealth": 3,
+    "targetHealth": 1,
+    "targetAttack": 1,
+    "fightKills": 1,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 3,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 21,
+    "decisions": 23
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 15,
+    "decisions": 11
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1179,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1180,
+   "branch": true,
+   "at": 5,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 5,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 2,
+    "wizardTroops": 2,
+    "troopGap": 0,
+    "cowboyPower": 2,
+    "wizardPower": 2,
+    "riderHealth": 3,
+    "targetHealth": 2,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 4,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 17,
+    "decisions": 17
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 10
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1181,
+   "branch": true,
+   "at": 3,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 0,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 3,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 1,
+    "wizardTroops": 1,
+    "troopGap": 0,
+    "cowboyPower": 1,
+    "wizardPower": 1,
+    "riderHealth": 2,
+    "targetHealth": 3,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 4,
+    "wizardHand": 4,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "wizard",
+    "reason": "base",
+    "turn": 10,
+    "decisions": 7
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 23,
+    "decisions": 24
+   },
+   "kind": "fight-only"
+  },
+  {
+   "seed": 1182,
+   "branch": true,
+   "at": 5,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-3",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-2",
+     "target": 0
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 5,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 2,
+    "wizardTroops": 1,
+    "troopGap": 1,
+    "cowboyPower": 2,
+    "wizardPower": 1,
+    "riderHealth": 3,
+    "targetHealth": 1,
+    "targetAttack": 1,
+    "fightKills": 1,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 3,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 17,
+    "decisions": 16
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 17,
+    "decisions": 16
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1183,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1184,
+   "branch": true,
+   "at": 5,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-1",
+     "target": 0
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 5,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 2,
+    "wizardTroops": 2,
+    "troopGap": 0,
+    "cowboyPower": 2,
+    "wizardPower": 2,
+    "riderHealth": 3,
+    "targetHealth": 1,
+    "targetAttack": 1,
+    "fightKills": 1,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 3,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 15
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 13
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1185,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1186,
+   "branch": true,
+   "at": 3,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 0,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 3,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 1,
+    "wizardTroops": 1,
+    "troopGap": 0,
+    "cowboyPower": 1,
+    "wizardPower": 1,
+    "riderHealth": 2,
+    "targetHealth": 3,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 4,
+    "wizardHand": 4,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 19,
+    "decisions": 25
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 19,
+    "decisions": 30
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1187,
+   "branch": true,
+   "at": 5,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 5,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 2,
+    "wizardTroops": 1,
+    "troopGap": 1,
+    "cowboyPower": 2,
+    "wizardPower": 1,
+    "riderHealth": 3,
+    "targetHealth": 2,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 4,
+    "wizardHand": 6,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 11,
+    "decisions": 7
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 23,
+    "decisions": 27
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1188,
+   "branch": true,
+   "at": 7,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-2",
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 7,
+    "cowboyBase": 5,
+    "wizardBase": 3,
+    "baseGap": 2,
+    "cowboyTroops": 3,
+    "wizardTroops": 1,
+    "troopGap": 2,
+    "cowboyPower": 3,
+    "wizardPower": 1,
+    "riderHealth": 3,
+    "targetHealth": 3,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 3,
+    "wizardHand": 4,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 11,
+    "decisions": 4
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 7
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1189,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1190,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1191,
+   "branch": true,
+   "at": 7,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-2",
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-3",
+     "target": 0
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 1
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 7,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 3,
+    "wizardTroops": 1,
+    "troopGap": 2,
+    "cowboyPower": 3,
+    "wizardPower": 1,
+    "riderHealth": 3,
+    "targetHealth": 2,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 2,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 11
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 15,
+    "decisions": 20
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1192,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1193,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1194,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1195,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1196,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1197,
+   "branch": false,
+   "ended": "cowboy"
+  },
+  {
+   "seed": 1198,
+   "branch": true,
+   "at": 7,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-4",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-3",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-2",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 2,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 2,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 7,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 3,
+    "wizardTroops": 2,
+    "troopGap": 1,
+    "cowboyPower": 3,
+    "wizardPower": 2,
+    "riderHealth": 3,
+    "targetHealth": 3,
+    "targetAttack": 1,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 3,
+    "wizardHand": 5,
+    "wizardTraps": 0,
+    "target": "Skeleton"
+   },
+   "ride": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 13,
+    "decisions": 7
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 15,
+    "decisions": 10
+   },
+   "kind": "both-cowboy"
+  },
+  {
+   "seed": 1199,
+   "branch": true,
+   "at": 5,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-outrider-1",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-2",
+     "target": 0
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "choices": {
+    "ride": {
+     "type": "attack",
+     "slot": 1,
+     "target": "base"
+    },
+    "fight": {
+     "type": "attack",
+     "slot": 1,
+     "target": 0
+    }
+   },
+   "policyChoice": "ride",
+   "cues": {
+    "turn": 5,
+    "cowboyBase": 5,
+    "wizardBase": 4,
+    "baseGap": 1,
+    "cowboyTroops": 2,
+    "wizardTroops": 2,
+    "troopGap": 0,
+    "cowboyPower": 2,
+    "wizardPower": 3,
+    "riderHealth": 3,
+    "targetHealth": 3,
+    "targetAttack": 2,
+    "fightKills": 0,
+    "riderSurvivesFight": 1,
+    "cowboyHand": 3,
+    "wizardHand": 4,
+    "wizardTraps": 0,
+    "target": "Wizard"
+   },
+   "ride": {
+    "winner": "wizard",
+    "reason": "base",
+    "turn": 16,
+    "decisions": 12
+   },
+   "fight": {
+    "winner": "cowboy",
+    "reason": "base",
+    "turn": 23,
+    "decisions": 25
+   },
+   "kind": "fight-only"
+  }
+ ],
+ "counts": {
+  "tried": 100,
+  "branch": 62,
+  "noBranch": 38,
+  "kinds": {
+   "both-cowboy": 50,
+   "fight-only": 5,
+   "ride-only": 5,
+   "both-wizard": 2
+  }
+ }
+}
