@@ -123,7 +123,8 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     const batch = record(session.opening, null);
     finish();
     render();
-    cues.play(batch);
+    // An experiment turn opens on its decision: its replayed history is in the log, not played as cues.
+    cues.play(duel.prefix ? [] : batch);
   }
   function act(action) {
     pick = null;
@@ -145,7 +146,8 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
       match = recordGame(match, {winner: result.winner, first: view.first});
       outcome.matchOver = matchOver(match);
     }
-    if (!solo()) return;
+    // Two players and an experiment turn (showdown-turn.js) settle nothing and add no playtest line.
+    if (!solo() || duel.kind === "turn") return;
     // The run id makes the log ignore a second report of this same finished game.
     playtest?.add({name: duel.name, won: result.winner === session.seat, turns: view.turn,
       seconds: Math.round((Date.now() - started) / 1000), rules: false, run, duel: duel.id, seed});
@@ -154,6 +156,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
   // After a result: the next game of the match, a rematch, a repeat, or nothing (back to camp).
   function againLabel() {
     if (!outcome.matchOver) return `Game ${match.game + 1}`;
+    if (duel.kind === "turn") return "Retry";
     if (!solo()) return "Play again";
     if (!outcome.won) return repeat() ? "Rematch" : null;
     return duel.kind === "trail" || !repeat() ? null : "Play it again";
@@ -171,6 +174,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
       return deal(nextSeed());
     }
     if (!solo()) return start(twoPlayers(), nextSeed(), {players: 2, best});
+    if (duel.kind === "turn") return deal(seed);
     // A loss is a fresh deal of the same duel; a repeat (a beaten rival, the next hunt, the even match) uses nextSeed.
     const next = repeat();
     if (next) start(next, outcome.won ? nextSeed() : freshSeed(), {best});

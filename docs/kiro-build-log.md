@@ -319,3 +319,11 @@ The next substantial Kiro task is #56, boundary generation, failure reduction an
 - **Change**: Camp, duel screen, a new builder and a pure best-of-three module are mounted on the canonical progress, session and save-code modules (`savecode.js` moved unchanged into `src/game/showdown/`). Two players draw from the active seat's view behind a curtain. Start over resets Showdown progress and the report only. No rule, reward, Scout, lane or 3D change.
 - **Verification**: `npm test` 606/606. New `scripts/browser-showdown-modes-check.mjs` 13/13. Existing graybox checks and the six reference-page checks all pass. Receipts: [evidence note](evidence/showdown-modes-143.md).
 - **Remaining**: the lane removal and the front page are separate slice 3 work. Wording is Fable's first draft. Human playtests are pending.
+
+### 2026-11-19 — K-095 experiment turn: the seed-3 Dragon decision from Camp (Kiro CLI, America/Los_Angeles, 23:40 PST)
+
+- **State**: one local commit on `kiro/graywave-overnight-turn`. Not merged or published.
+- **Performed in**: a Kiro CLI overnight-turn worker session (Claude Opus 5.5). The decision data comes from the Dragon referee experiment (`kiro/graywave-dragon-referee` `d264466`, checkpoint `s3-C5-dragon-resting`).
+- **Change**: `?turn=dragon-c5` and one optional Camp control open that Cowboy turn 5 on the normal Showdown screen. The 7 allowlisted Cowboy actions replay on the canonical engine from a fresh deal, each checked legal, with the unchanged bot playing the Wizard turns. Nothing is settled or logged. Restart and Retry replay the turn again. No rule, reward or Scout change. Wording is a draft for Fable.
+- **Verification**: Node 6/6 (both choices reach the referee's T15 Cowboy and T10 Wizard results), `npm test` 584/584, new browser check 18/18, and the existing graybox browser checks all pass. Receipts: [evidence note](evidence/showdown-turn-k095.md).
+- **Remaining**: native Crew browser handoff was blocked because Chrome remote debugging was not enabled. The Crew video capture, human takeover and human playtest are pending. Fable's review of the experiment and its wording is also pending.
