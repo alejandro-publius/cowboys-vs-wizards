@@ -6,6 +6,7 @@ import {EFFECTS, KEYWORDS, RARITY, TYPES, cardOf, has, tributes, typeOf} from ".
 import {presentEvent} from "../game/showdown/presenter.js";
 import {TRAP_SLOTS, attackOf, attackOutcome, canAttack, opponent} from "../game/showdown/rules.js";
 import {createShowdownSession} from "../match/showdown-session.js";
+import {createCuePlayer, cuesFor} from "./showdown-cues.js";
 import {FRAMES} from "./card-frames.js";
 
 const name = (cardId) => cardOf(cardId).name;
@@ -32,6 +33,7 @@ const TEMPLATE = `
   <p id="sd-lesson"></p>
   <p id="sd-status" role="status"></p>
   <p id="sd-feedback" aria-live="polite"></p>
+  <p id="sd-cue" aria-hidden="true"></p>
   <div id="sd-result"></div>
   <p id="sd-location" class="sd-note"></p>
   <section id="sd-board" aria-label="Board"></section>
@@ -50,14 +52,21 @@ const TEMPLATE = `
   </section>
   <section aria-label="Keywords"><h2>Keywords</h2><ul id="sd-keywords"></ul></section>`;
 
-export function mountShowdown(root, {onHome}) {
+// cueOptions go to createCuePlayer (showdown-cues.js); only a check sets them, to shorten the step.
+export function mountShowdown(root, {onHome, cueOptions}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
   let session, duel, seed, lines, latest, pick;
+  const cues = createCuePlayer(root, cueOptions);
 
-  function record(events) {
+  // Logs a batch of events and returns its placeholder cues, each tied to its log line.
+  function record(events, before) {
     latest = events.map((event) => presentEvent(event));
+    const first = lines.length;
     for (const [i, event] of events.entries()) lines.push({turn: event.type === "turn", text: latest[i]});
+    const batch = cuesFor(events, before, session.view()).map((cue) => ({...cue, line: first + cue.index}));
+    for (const cue of batch) lines[cue.line].cue = cue.kind;
+    return batch;
   }
   function start(nextDuel, nextSeed) {
     [duel, seed] = [nextDuel, nextSeed];
@@ -65,13 +74,17 @@ export function mountShowdown(root, {onHome}) {
     lines = [{turn: true, text: `Turn 1: the ${session.view().first === "cowboy" ? "Cowboys" : "Wizards"}.`}];
     latest = [];
     pick = null;
-    record(session.opening);
+    cues.clear();
+    const batch = record(session.opening, null);
     render();
+    cues.play(batch);
   }
   function act(action) {
     pick = null;
-    record(session.act(action));
+    const before = session.view();
+    const batch = record(session.act(action), before);
     render();
+    cues.play(batch);
   }
   const playsOf = (cardId) => session.legal().filter((a) => a.cardId && name(a.cardId) === name(cardId));
 
@@ -152,7 +165,7 @@ export function mountShowdown(root, {onHome}) {
         <span class="sd-note">Hand ${s.handCount} · Deck ${s.deckCount} · Graveyard ${s.discard.length}</span>${backs}
         <span class="sd-note">▲ ${traps}</span>${baseOpen ? preview(view, "base") : ""}</button>`;
       const slots = s.board.map((troop, slot) => {
-        if (!troop) return `<button type="button" class="sd-slot ${side}" disabled><span class="sd-note">empty</span></button>`;
+        if (!troop) return `<button type="button" class="sd-slot ${side}" data-slot="${side}-${slot}" disabled><span class="sd-note">empty</span></button>`;
         const card = cardOf(troop.cardId);
         let cls = "", data = "disabled", note = troop.cover ? "In cover" : troop.stunned ? "Stunned" : "";
         if (isOwn && mine) {
@@ -213,13 +226,14 @@ export function mountShowdown(root, {onHome}) {
     $("sd-cancel").hidden = !pick;
     $("sd-restart").hidden = Boolean(r);
     $("sd-lesson").textContent = duel.lesson;
-    $("sd-log").innerHTML = lines.map((l) => `<li${l.turn ? ' class="sd-turn"' : ""}>${l.text}</li>`).join("");
+    $("sd-log").innerHTML = lines.map((l, i) => `<li data-line="${i}"${l.cue ? ` data-cue-kind="${l.cue}"` : ""}${l.turn ? ' class="sd-turn"' : ""}>${l.text}</li>`).join("");
     $("sd-log").scrollTop = $("sd-log").scrollHeight;
     for (const side of ["cowboy", "wizard"]) $(`sd-${side}-graveyard`).textContent = view.sides[side].discard.map(name).join(", ") || "empty";
     // Keywords from the duel's two public deck lists, so the list never depends on a hidden card.
     const inPlay = new Set(Object.values(duel.options.decks).flatMap((counts) => Object.keys(counts)).flatMap((type) => TYPES[type].keys ?? []));
     $("sd-keywords").innerHTML = Object.entries(KEYWORDS).filter(([key]) => inPlay.has(key)).map(([, [word, rule]]) => `<li><strong>${word}.</strong> ${rule}</li>`).join("")
       || "<li>No keywords in this duel.</li>";
+    cues.paint();
   }
 
   root.addEventListener("click", (event) => {
@@ -234,7 +248,7 @@ export function mountShowdown(root, {onHome}) {
     else if (b.id === "sd-cancel") { pick = null; render(); }
     else if (b.id === "sd-restart") start(duel, seed);
     else if (b.id === "sd-again") start(duel, freshSeed());
-    else if (b.id === "sd-home" || b.id === "sd-menu") onHome();
+    else if (b.id === "sd-home" || b.id === "sd-menu") { cues.clear(); onHome(); }
   });
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && pick && !root.hidden) { pick = null; render(); }
