@@ -76,8 +76,8 @@ test("bound server from copied plugin", {timeout: 5000}, async (t) => {
   const s = start({PLUGIN_DATA: data});
   t.after(s.stop);
   const init = await s.call("initialize", {protocolVersion: "2024-11-05"});
-  assert.equal(init.result.serverInfo.version, "1.1.0");
-  assert.deepEqual((await s.call("tools/list")).result.tools.map((t) => t.name), ["inspect_duel_replay", "inspect_character_asset"]);
+  assert.equal(init.result.serverInfo.version, "1.2.0");
+  assert.deepEqual((await s.call("tools/list")).result.tools.map((t) => t.name), ["inspect_duel_replay", "inspect_character_asset", "start_showdown_duel", "observe_showdown", "act_showdown"]);
 
   assert.equal((await s.tool("inspect_duel_replay", {})).json.verdict, "pass");
   appendFileSync(join(project, "dist/cowboys-vs-wizards-board-duel.html"), "<!-- mutated -->");
