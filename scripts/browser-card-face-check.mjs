@@ -1,6 +1,9 @@
 // Card-face visibility check of a served web build, in Playwright WebKit or Chromium.
+// Target: the earlier illustrated build (lane duel, 3D board), built by `npm run build:art -- --web`
+// and published at /3d/. The graybox build (`npm run build`) is Showdown only since #143 slice 3
+// and has none of the lane screens this script drives.
 //
-//   npm run build -- --web && python3 -m http.server 8123 -d dist/web
+//   npm run build:art -- --web && python3 -m http.server 8123 -d dist/web   (illustrated build; /3d/ on Pages)
 //   npx -y -p playwright-core@1.64.1 node scripts/browser-card-face-check.mjs http://127.0.0.1:8123/ [--browser webkit|chromium] [--out-dir PATH]
 //
 // Why it exists: the WebKit smoke check passed all its steps while every hand card

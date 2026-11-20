@@ -1,6 +1,7 @@
 #!/bin/sh
 # Invoked by Kiro agent SessionStart hooks.
-#   sh scripts/check-match-ui.sh            lane duel (duel-presenter, ?mode=lanes)
+#   sh scripts/check-match-ui.sh            lane duel (duel-presenter): its controller, presenter and card model,
+#                                           used by the earlier illustrated build (npm run build:art, /3d/ on Pages)
 #   sh scripts/check-match-ui.sh showdown   Showdown (showdown-presenter, default Play)
 # Output goes to ignored .artifacts/kiro/; tracked evidence under docs/evidence/ is left alone.
 mkdir -p .artifacts/kiro
