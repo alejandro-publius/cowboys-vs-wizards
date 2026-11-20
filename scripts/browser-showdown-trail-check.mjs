@@ -475,11 +475,15 @@ async function laneVeteran() {
     assert.deepEqual(pick(progress.save, [laneFixture.captured]), pick(reference.afterChoice1, [laneFixture.captured]),
       "apart from the captured card, the stored progress equals the new player's");
     assert.ok(!progress.save.deck[laneFixture.captured], "the captured card is not in the stored deck");
+    // Integration: the capture is persisted in Showdown's own grow-only record (src/game/showdown/inherited.js),
+    // so ownership does not rest on a live read of the unchanged lane key alone.
+    assert.deepEqual(JSON.parse(all["cvw-showdown-inherited-v1"] ?? "null")?.cards, [laneFixture.captured],
+      "the stored Showdown inherited-ownership record lists the captured card");
     const lane = JSON.parse(all[LANE_KEY]);
     assert.ok(laneFixture.hunts.every((id) => lane.clearedHunts.includes(id)), "the lane profile still lists the five cleared hunts");
     s.check("Reload after the win: Covered Wagon paid, the Captured Dragon still owned, the lane profile still holds its five cleared hunts", {
       key: progress.key, at: progress.at, capturedInStoredCollection: progress.save.collection[laneFixture.captured] ?? 0,
-      laneByteIdentical: all[LANE_KEY] === laneFixture.raw});
+      laneByteIdentical: all[LANE_KEY] === laneFixture.raw, inheritedRecord: all["cvw-showdown-inherited-v1"], campCollection: camp.collection});
   } finally { await s.close(); }
 }
 
