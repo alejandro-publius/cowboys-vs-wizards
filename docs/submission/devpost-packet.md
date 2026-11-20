@@ -1,164 +1,126 @@
-# Kiroween submission packet
+# Kiroween submission packet: Showdown
 
-> **Lane-era draft (November 16–17, 2026).** It describes the three-lane duel. The December 4 entry is Showdown; its current Kiro answers and proof are in the [judge write-up](kiro-brag-sheet.md). Kept as history.
-
-Prepared November 16, 2026 and revised November 17, 2026 (Pacific time). Draft for the entrant's review. The latest recorded release checks ran against `892cadac5689290b8fd109ae6a51837cc6f1c31d`. Fields marked **OWNER** need facts that only the user or team can supply.
-
-## Project
-Cowboys vs. Wizards
+> Draft for Alex's review. Revised November 20, 2026 (America/Los_Angeles) by a Kiro CLI worker, against `main` at [`96adf60`](https://github.com/alejandro-publius/cowboys-vs-wizards/commit/96adf6031b6159ab34fd7751180ced507f677104), the merge of PR #166. The public site's [build manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) named that commit when this was written. Fields marked **OWNER** need facts or decisions that only Alex or the team can supply. The earlier lane-duel packet (November 16–17) is kept as history at [`96adf60`](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/96adf6031b6159ab34fd7751180ced507f677104/docs/submission/devpost-packet.md).
 
 ## Pitch
-A haunted-Western card duel in your browser. Place Cowboy troops in three 3D lanes, sacrifice weaker troops for stronger ones, and watch both sides attack at once, so you can see why each life orb (one point of a troop's or Base's life) was lost.
 
-## Who it is for
-People who play strategy and card games in a browser: no install, a match that fits a short break, and decisions that matter more than reflexes.
+**Cowboys vs. Wizards: Showdown** is a haunted-Western card duel you play in a browser. You pick every attack, your troops shield your Base, and turns alternate.
 
-## The player problem (a hypothesis)
-We think these players often cannot see why a round went the way it did. The result shows up as changed numbers or a log line, and a lane choice can feel like bookkeeping. We have not tested this with players. No human playtest has been run, and our automated checks say nothing about demand or enjoyment. The [first-time playtest protocol](judge-demo-script.md#part-2-first-time-human-playtest-protocol) is ready and unrun.
+Here is one decision to try. Cowboy turn 5 of the Graveyard Dragon hunt: your Ranger (2 attack, 4 life) can hit the resting Dragon or the Jack-o'-Lantern in cover. With a recorded continuation (the same bot policy plays both sides after your choice), hitting the Dragon **wins on seed 3 and loses on seed 70**. Hitting the Jack does the reverse. Both positions are playable, and what you can see differs between them.
 
-## What you can verify
-We do not claim a new genre. Lane-based card duels exist. Three things can be checked directly:
+- [Seed 3 position](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5): the Ranger's supporting troop is a **Dynamiter** (3/1).
+- [Seed 70 position](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5-70): the Ranger's supporting troop is a **Covered Wagon** (1/4).
 
-1. **Positional three-lane decisions.** Each side has three lanes. A troop fights the troop opposite it, and an unblocked troop attacks the enemy Base. Tribute summons (sacrificing your own troops to bring out a stronger one) and spells that move a troop to another lane change which matchups happen.
-2. **Visible simultaneous outcomes.** Opposing troops attack together. Matches are seeded: a seed is a number that makes a match repeatable. In the match that starts from seed 60, Mounted Billy is defeated and still takes the Dragon from five orbs to two. The arena shows both results.
-3. **Evidence tied to the build it came from.** Seeded matches replay the same route. A saved Kiro Workflow runs browser checks and writes a receipt: a record of the run that includes the hash (a fingerprint) of the HTML it tested. The review tool returns `stale` when a receipt is paired with a different build.
+Both also open from Camp (Play, then the Experiment controls), and neither touches your saved career. If you are testing a player, let them choose before you show this section.
 
-## Inspiration and behavior
-We wanted card decisions to happen visibly in the arena: sacrifice troops for stronger allies, move troops between lanes with spells, and see both attacks of a clash even when a troop falls. The current browser release includes a user-approved illustrated title, instructions, saved settings, local achievements, a twelve-card Cowboy deck builder and pause/resume. The deck-builder closeout added larger, readable card art (187px on desktop and 162px at phone size in Chrome checks), saved decks and keyboard controls. It was published in PR #15, and the HTML the site served was verified then. Later changes have their own release evidence; an older receipt does not cover a later build.
+## The two positions
+
+The Wizard board is the same in both: Dragon 3/4 resting and Jack-o'-Lantern 1/1 in cover. Outcomes come from the engine's recorded lines, `c15` meaning "Cowboys win on turn 15".
+
+| | Seed 3 | Seed 70 |
+| --- | --- | --- |
+| Ranger's supporting troop | Dynamiter 3/1 | Covered Wagon 1/4 |
+| Cowboy trap set | Bear Trap | none |
+| Wizard Base | 3 | 4 |
+| Ranger → Dragon | Cowboys win, turn 15 | Wizards win, turn 14 |
+| Ranger → Jack (the policy's own choice) | Wizards win, turn 10 | Cowboys win, turn 17 |
+
+Three visible things differ: the supporting troop, the trap and the Wizard Base. The recorded positions cannot single out one of them as the cause. The search notes that the trap is the difference matching the original claim: on seed 3 the Bear Trap finishes the damaged Dragon. Each result is one deterministic bot line under fixed draws. None is a forced win, and none says anything about how humans play.
+
+**Where it comes from.**
+- Policy and search: the Cowboys run `planTurn` on a view rebuilt from `viewFor(state, "cowboy")`, so they see only public information. The Wizards run the unchanged level-2 bot. Kiro CLI searched held-out seeds 64–127 with the canonical engine. Sixty seeds offered both moves, and seed 70 was the counterexample closest to seed 3. [Search protocol and results](../../experiments/showdown-dragon-strategy/rival-README.md) · [Receipt with both fixtures](../../experiments/showdown-dragon-strategy/rival-cases.json) · [Search script](../../experiments/showdown-dragon-strategy/rival-search.mjs)
+- Playable positions: each link replays 7 recorded Cowboy actions from a fresh deal and checks each one against the legal actions. It refuses to open unless the engine state hash equals the fixture (`fa80caa710a1` for seed 3, `abbe27d20382` for seed 70). [Route and checks](../evidence/showdown-turn-k095.md) · [Allowlist](../../src/match/showdown-turn.js) · [Node test, 11/11](../../tests/match/showdown-turn.test.js) · PR [#165](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/165)
+- Kiro native integration, PR [#166](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/166): the installed Orb Duel Review Power 1.3.0 played Boot Hill through its own tools, then returned `pass`, `unbound` and `stale` for matching, unfingerprinted and altered engines ([installed Power run](../evidence/showdown-installed-power.md)). The saved `independent-release-review` Workflow ran natively: `wf_5fb9b905dc2ad28d` passed on its pinned revision and `wf_3f3cc7a5856eef24` refused a mismatched one ([native release review](../evidence/showdown-native-release-workflow.md)).
+
+## What has been played, by whom
+
+| Kind | What happened | Evidence |
+| --- | --- | --- |
+| Human, maintainer | Alex played Showdown on November 19 and chose it as the entry. A Camp playtest report Alex pasted records two Trail wins (Boot Hill in 13 turns, Raven Roost in 11) and 87 active seconds. The report does not identify the build. Alex is not a first-time player, so this is not part of the first-time cohort. | The report is held by the coordinator and is not committed. [Release line](../design/release-line.md) |
+| Human, first-time | **None.** Three first-time playtests are pending, so no claim about clarity or fun is made. | [Playtest guide](../../prototypes/showdown/PLAYTEST.md) |
+| Scripted browser | Headless Chrome selected both targets on both seeds by mouse, keyboard and touch (375×740). It also checked retry and checked that the saved career stayed byte-identical: 29/29 over `file://` and over local HTTP. The browser's play-out step only presses End turn, so the policy outcomes in the table are checked in Node, not in the browser. | [Browser checks](../evidence/showdown-turn-k095.md#second-decision-seed-70-k-008-2026-11-20) · [Check script](../../scripts/browser-showdown-turn-check.mjs) |
+| Bot | Night Watch's scheduled Crew run on November 20 played 2,000 bot games: the first player won 57.1% and the Cowboys 59.4%. | [Scheduled run receipt](../evidence/night-shift/crew-scheduled-2026-11-20.json) |
+| Native Kiro | See [How Kiro was used](#how-kiro-was-used-on-showdown). | |
+
+**Planned, not done:** a public demo release, meaning the narrated video under three minutes and its public URL. A separate worker owns the [demo script and capture](judge-demo-script.md), which still describes the lane duel at this commit.
+
+## Project
+
+Cowboys vs. Wizards. The entry is **Showdown**, served at the [site root](https://alejandro-publius.github.io/cowboys-vs-wizards/). Play opens the Camp, which holds the Trail of duels, rivals, Wanted hunts, packs, the deck builder, best of three, two players on one screen and the Sheriff's Ledger. Wins, rewards and card choices are saved in the browser. The Showdown build is a graybox: a flat board, text cards, life orbs and a log. The illustrated 3D models and motion belong to the [earlier build](https://alejandro-publius.github.io/cowboys-vs-wizards/3d/), which keeps the retired lane rules.
+
+**Who it is for:** people who play strategy and card games in a browser and want decisions that matter more than reflexes.
+
+**Player problem (a hypothesis).** We think a card-duel player cannot easily tell why one target was right on a given board. The two positions above let a player try the same target choice on two boards and see what changed. No first-time player has tried this, so it is untested.
 
 ## Who did what
-- **Kiro** (IDE, CLI and Crew) wrote the match presentation and its Requirements-First spec, the later CLI specs, the custom agent, hooks, Workflows, the review Power and MCP server, the boundary property tests, the trap-lab parity harness, Night Watch, and imported and rigged the characters (Skeleton optimization; Dragon and Mounted Billy attack clips made from the Tripo exports in Blender jobs run from Kiro CLI). [Character evidence](../evidence/kiro-character-assets.md).
-- **Fable**, the model used in Claude Code sessions, wrote the rules engine and the computer opponent (the CPU), repaired keyboard focus, wrote the judge script and playtest protocol, and wrote the [rules check](rules-check.md). The rules check ran in a collaborator's Claude Code session and was committed by Rachel (`rachelselbrede`) in PR #58.
-- **Codex**, the coding assistant coordinating the project, handled integration, independent re-checks, the always-on `build-evidence.md` steering file, the illustrated-menu integration, and operated the steering experiment below.
-- **The user** supplied the Tripo exports and approved the illustrated title and Sheriff idle. The title illustration was generated with GPT Image in ChatGPT. [Title provenance](../../assets/menu/README.md) and [Sheriff idle evidence](../evidence/kiro-approved-sheriff-idle.md). **OWNER:** confirm any additional artist credits and the source of the card illustrations.
 
-## Implementation and Kiro
-The rules are plain JavaScript in `src/game/` and stay separate from the Three.js presentation and the Rapier scene behavior. Kiro's Requirements-First spec guided the match presentation and its seeded checks. A custom agent, hooks, saved Workflows and a review Power (an installed Kiro package that supplies the review procedure and bundles an MCP server to inspect receipts) tie each result to the HTML that was actually built. The section after this one takes the Kiro features one topic at a time.
+- **Fable 5.2** (Claude Code) designed Showdown: rules, cards, Trail, bots and art direction ([rulebook](../../prototypes/showdown/RULEBOOK.md), PR [#142](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/142)). Fable also wrote the lane engine, its CPU and the lane judge script and playtest protocol. Fable owns game design, wording rulings, balance and any promotion of the Dragon decision to an official bounty.
+- **Kiro** (CLI workers and Crew) moved Showdown into the game with its Trail, Camp and saves. It built the 29-card catalog (15 Cowboy, 14 Wizard), the ten combat cues, the fair Scout bot, the property tests, the keyboard focus fixes, the hosted page split, Night Watch's Showdown mode, the `showdown-presenter` profile, the MCP seat tools, both Dragon positions, Power 1.3.0 and the Showdown release Workflow. Kiro changed no rule, card number or wording. The Scout fix changed bot planning only, and Fable accepted it. Earlier, Kiro built the lane match presentation and its spec, and imported and rigged the characters ([character evidence](../evidence/kiro-character-assets.md)).
+- **Codex** coordinated the workers, wrote the always-on `build-evidence.md` steering file and independently checked frozen candidates. For example, it ran 610 repository tests and the HTTP browser checks on `4069bf9`, the head of PR #166.
+- **Rachel Selbrede** (`rachelselbrede`) has 13 commits under her account, all on November 16 during the lane era. They include the rules check (PR [#58](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/58), produced in a Claude Code session), running CI on every pull request (#31), the opt-in clash log, the WebKit smoke check, the docs link check, the `?cpu=` levels and the first eight-topic Kiro write-up. **OWNER:** confirm how Rachel wants to be credited, and whether she is a teammate on the form.
+- **Alex** chose Showdown after playing it, directs the visuals, supplied the Tripo exports, approved the illustrated title and Sheriff idle, and merges. The title illustration came from GPT Image in ChatGPT ([title provenance](../../assets/menu/README.md), [Sheriff idle](../evidence/kiro-approved-sheriff-idle.md)). **OWNER:** confirm any other artist credits and the source of the card illustrations.
 
-Two historical saved Kiro Workflow runs each passed 157 tests and 12 scripted browser checks: `wf_5bd13532f5142477` on `e9aeb06` and `wf_0572a745f5194cf1` on `02b1bf8`. A later native `independent-release-review` Workflow completed 3/3 on `7506599` (222/222 tests, seed 0 8/8, seed 60 4/4, no run ID captured; [note](../evidence/kiro-independent-release-review-66.md)). Match the filmed commit to its receipt.
+## How Kiro was used on Showdown
 
-## How Kiro was used, topic by topic
-Each topic names the file that shows the work and links one evidence note. Test counts and results belong to the commit their note names. [The feature evidence table](kiro-feature-evidence-table.md) and [the full evidence map](../kiro-brag-sheet.md) list every run and its limits.
+The authoritative answers are the [eight Devpost answers in the judge write-up](kiro-brag-sheet.md#eight-devpost-answers), and the [evidence map](../kiro-brag-sheet.md) holds older history. Below, each topic gives the Showdown use first and labels earlier lane-duel use as history.
 
-### 1. Kiro apps: IDE, CLI, Web and Crew
-Three of the four were used. The Kiro IDE ran the Requirements-First spec session that planned and built the match presentation. Kiro CLI (3.3.0 historically; 3.4.0 V3 for the latest batches) did feature work in separate worktrees, ran the hooks and Workflows, wrote the later specs and imported the characters. Kiro Crew (0.12.2) ran a browser playtest and a balance preview, and runs the separate Night Watch app. **Kiro Web was not used.** In practice the IDE was where a spec was written and reviewed task by task; the CLI ran bounded jobs that ended in a receipt; Crew ran scheduled and repeated jobs.
-- Shown by: [`.kiro/specs/orb-duel/tasks.meta.json`](../../.kiro/specs/orb-duel/tasks.meta.json), the IDE's own execution history.
-- Evidence: [build log](../kiro-build-log.md), which records the app each piece of work was performed in.
+1. **Kiro apps.** Kiro CLI workers built and checked Showdown in separate worktrees. Kiro Crew ran Night Watch on a schedule, and the Overnight Rival bot kept the seed-3 claim in memory across a context reset ([Crew receipt](../../experiments/showdown-dragon-strategy/rival-crew-receipt.json)). The Rival's own timed reminder never completed a run, and the later turn was requested manually. On Showdown the Kiro IDE was not used; it ran the lane-era spec session. Kiro Web and cloud sessions were not used.
+2. **Custom agents.** The `showdown-presenter` profile (PR #153) auto-allows only Showdown tests and checks. In a test session, a lane test and a source write were held for approval ([profile](../../.kiro/agents/showdown-presenter.json)). History: `duel-presenter` for lane work.
+3. **Hooks.** In a fresh `showdown-presenter` session, the SessionStart hook ran 18 Showdown tests and all passed (PR [#153](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/153)). The compaction hooks were run by hand only. History: the lane card-save and doc-link hooks.
+4. **Specs.** The `showdown-first-hour` spec (PR #149) maps each line of the brief to a numbered requirement and its tests ([requirements](../../.kiro/specs/showdown-first-hour/requirements.md), [requirements-to-tests map](../requirement-test-map.md)). It was **authored retroactively**, after the code, so it is not Requirements-First. The `showdown-camp-return-focus` bugfix spec was written by a Kiro CLI worker, and native bugfix-spec generation is unverified. History: the lane match was built Requirements-First in the Kiro IDE.
+5. **Steering.** The always-on `AGENTS.md` and `build-evidence.md` apply to every Showdown worker. The `rules-area.md` file is scoped to `src/game/**`, which contains the Showdown engine. **That scoping has not been retested on a Showdown file.** The activation experiment from November 17 ran on lane-era files ([experiment](../evidence/kiro-scoped-steering-hook.md#file-scoped-activation-verified-on-november-17-2026-pacific)).
+6. **MCP.** `start_showdown_duel`, `observe_showdown` and `act_showdown` play through the canonical engine with the Cowboy seat's view only. A Kiro CLI session won Boot Hill in 28 legal actions, and its revealed proof replays ([MCP receipt](../evidence/kiro-showdown-mcp.md)).
+7. **Property testing.** PR #154 added seven generated Showdown properties. Each caught its planted fault, and the reduced failing cases replay alone ([test](../../tests/game/showdown-properties.test.js)). The cue tests check 1,922 slot marks over 80 seeds of random legal play ([cues](../evidence/graywave-cues.md)). No product bug was found. Properties sample cases; they do not prove correctness.
+8. **Powers.** In an isolated Kiro profile, installed Orb Duel Review 1.3.0 played Boot Hill in 23 actions through its own tools. With the skill loaded explicitly, it returned `pass` for a matching engine, `unbound` for an older receipt and `stale` after one file of a copied engine changed ([installed Power run](../evidence/showdown-installed-power.md)). **Pending:** automatic activation of the skill. Kiro saw it but did not load it unprompted. Alex's own installed copy is still 1.1.0.
 
-### 2. Custom agents
-`duel-presenter`, used in Kiro CLI, is a custom agent whose shell permissions are limited to the test and replay commands, and which loads `AGENTS.md` and the evidence steering file. It was used for the card landing-target fix: when the canvas has no size, a summoned card falls back to the lane button's position. The agent file shows the agent's scope, not the quality of its output. The saved Workflows use `wf-coder`, an agent bundled with Kiro, not one defined in this repository.
-- Shown by: [`.kiro/agents/duel-presenter.json`](../../.kiro/agents/duel-presenter.json).
-- Evidence: [November 16 build evidence](../evidence/kiro-overnight.md#kiro-implementation-and-execution).
+**Workflows and Crew jobs.** The native `independent-release-review` runs are listed above. On its pinned revision the passing run recorded 167/167 Node tests and six Chrome checks. That revision predates the seed-70 position, so seed 70 was not in its sweep. The Night Shift balance-review Workflow has run only as local steps, and its native run is **pending**. Night Watch's scheduled run is the November 20 receipt above ([Night Shift evidence](../evidence/night-shift.md)).
 
-### 3. Agent hooks
-Four hooks have a recorded run, all in Kiro CLI. At session start, `duel-presenter` ran the 19 presenter, controller and card-model tests, and all 19 passed. A file-save hook regenerated the card catalog after a card's specification changed, in a trial that set Skeleton health from 3 to 4, and three registration tests passed. A documentation save hook failed on a broken link and passed after the fix. The `PreCompact` and `PostCompact` hooks wrote and restored a receipt ID. No Kiro IDE hook run is recorded.
-- Shown by: [`.kiro/hooks/sync-duel-card-specs.json`](../../.kiro/hooks/sync-duel-card-specs.json) and the hooks in [`duel-presenter.json`](../../.kiro/agents/duel-presenter.json).
-- Evidence: [session-start hook output](../evidence/kiro-ui-hook.txt), [documentation hook](../evidence/kiro-doc-link-hook.md).
+## Implementation
 
-### 4. Spec-driven development
-The card match was built from a Requirements-First spec in the Kiro IDE: requirements, a design and 10 ordered tasks, all checked. The spec work caught a real fault. Restarting with the same seed returns the engine to revision 0, so a stale scheduled action could look current; the controller now tags every timer and CPU request with a match epoch. Requirement 5.6 (a defeated troop stays on the board until every attack in the clash, including its own, has played) became a tested property. Later specs were written in Kiro CLI: the card pipeline, preview contracts, the guided first match, deck-builder readability and the trap zone. The trap-zone spec has a developer-only lab under `experiments/`; it is not in the playable game.
-- Shown by: [`.kiro/specs/orb-duel/`](../../.kiro/specs/orb-duel/requirements.md) (`requirements.md`, `design.md`, `tasks.md`) and [`tests/match/scheduler.test.js`](../../tests/match/scheduler.test.js).
-- Evidence: [the Spec row of the evidence table](kiro-feature-evidence-table.md).
-
-**Spec-driven compared with direct prompting, from this project.** The two modes were used for different sizes of work.
-- *Spec-driven:* the match presentation (10 tasks against numbered acceptance criteria). Writing requirements before code surfaced the same-seed restart fault, and each criterion can be traced to a test in the [requirement-test map](../requirement-test-map.md). The card pipeline and trap zone were also spec-first. The trap-zone spec was corrected to a dedicated trap card kind before any code, instead of inventing a mechanic (PR #63).
-- *Direct, unspecced tasks:* small fixes were done from an issue and a regression test, with no spec: the First Spell achievement (`"cast"` vs `"spell"` mismatch, PR #62), seed range validation (PR #73), deck-builder rule constants (PR #74) and the opt-in `?pace=fast` option (PR #65).
-- *Before Kiro:* the original attack demo predates the spec. **OWNER:** how it was built and how the two ways of working felt is the builder's account to write.
-
-### 5. Steering documents
-Five steering files are tracked. `build-evidence.md` (written by Codex) and `AGENTS.md` are always included and say how to record evidence and attribute work. `duel-iteration.md`, added by Kiro, loads for the match, render and interface code, the replay script and the card art. Kiro also wrote three area files with `inclusion: fileMatch`: `rules-area.md`, `rendering-area.md` and `interface-area.md`.
-
-**What we measured.** On November 17, 2026 (Pacific), Codex ran four fresh Kiro CLI 3.4.0 V3 sessions against a fixture copied from `892cada`. Each session read one file. Each steering copy carried a unique response tag, and the prompt asked Kiro to follow the automatically supplied response-format instructions. Reading `src/game/legal.js` loaded `rules-area.md`; reading `src/render/match-camera.js` loaded `duel-iteration.md` and `rendering-area.md`; reading `src/ui/card-art.js` loaded `duel-iteration.md` and `interface-area.md`. The control, `package.json`, loaded only the always-on files. Each final answer contained exactly the tags of the files that loaded. The four turns used about 1.649 credits.
-
-The strategy that the experiment supports is to keep always-on guidance short and put area rules behind file patterns, so they arrive only when Kiro reads the matching code. The experiment measured inclusion and a visible response change in a fixture. It did not measure code quality, IDE behavior or other paths.
-- Shown by: [`.kiro/steering/`](../../.kiro/steering/build-evidence.md).
-- Evidence: [file-scoped activation receipt](../evidence/kiro-scoped-steering-hook.md#file-scoped-activation-verified-on-november-17-2026-pacific).
-
-### 6. MCP
-Kiro wrote an MCP server with two tools. `inspect_duel_replay` hashes the built HTML and compares it with a run's receipt: it returned `pass` for a matching build, `stale` for a receipt paired with older HTML, and `fail` for a wrong showcase seed. `inspect_character_asset` reports a model file's hash, triangles, joints and animation clips. What it made practical: an agent can check that a receipt belongs to the build in front of it and refuse a stale one, without a person comparing hashes. The server checks hashes and receipt fields; it does not judge gameplay. Codex connected it through the workspace MCP settings.
-- Shown by: [`.kiro/powers/orb-duel-review/server.mjs`](../../.kiro/powers/orb-duel-review/server.mjs) and [`.kiro/settings/mcp.json`](../../.kiro/settings/mcp.json).
-- Evidence: [Power and MCP run](../evidence/kiro-overnight.md#power-and-mcp).
-
-### 7. Property-based testing
-There are two layers.
-- *Presenter loops (November 16):* six seeded properties over seeds 0 to 99: selection never touches the engine, presenter fidelity, clash completeness (requirement 5.6), orb bounds, cancellation and the CPU's information limit. They covered 741 clashes and 2,734 attacks. These are seeded loops without generators or shrinking. In a one-time Codex experiment on a copy of the presenter, suppressing the animation for defeated attackers made the clash property fail at seed 0. [Clash property check](../evidence/kiro-submission-preflight.md#clash-property-check).
-- *Engine and CPU boundary properties (PR #61, written by Kiro CLI):* seven properties with generators, 1,203 cases at recorded seed 45274, each tied to acceptance criteria (BP-DECK, BP-TRIBUTE, BP-REJECT, BP-SPELL, BP-CLASH, BP-REPLAY, BP-CPU). A bounded reducer (`shrink.js`) shrinks a failing input: on a planted mutant it cut 24 cards to 5 and 7 actions to 5 in 58 of 3,000 candidate runs. Kiro's note records 15/15 boundary tests and `npm test` 206/206. [Boundary properties](../evidence/kiro-boundary-properties.md).
-
-**What generated checks added to ordinary unit tests.** The existing unit tests used hand-written examples: example clashes, hand-listed invalid actions, one replay-twice test and a hidden-information test that only reversed the opponent's hand. The boundary suite added every one-Sheriff and six-copy deck plus one step outside each limit (103 decks), about 40 invalid-action categories on generated states with byte-identical rejection checks, an independent clash oracle over 400 clashes, interleaved rejected actions in replays, and random permutations of hidden cards at all three CPU levels. Each property must reach its declared boundary categories (100 tags, all reached). Six test-only mutants, such as a rejection that advances the RNG and a CPU that reads the opponent's hand, were each caught by their property. **No product bug was found.** The only failures were harness faults during development. Properties sample; they are not proofs, and the presenter, controller and renderer have no boundary properties.
-
-### 8. Kiro powers
-The Orb Duel Review Power packages the review procedure together with the MCP server above. Version 1.1.0 is self-contained: in fresh Kiro sessions that used only the installed Power, it returned pass for matching receipts and stale for altered copies. Those inputs were copied historical browser receipts, not a new browser run. Kiro implemented the package; Codex reviewed and installed it. No registry Power was used.
-- Shown by: [`.kiro/powers/orb-duel-review/plugin.json`](../../.kiro/powers/orb-duel-review/plugin.json) and its procedure, [`SKILL.md`](../../.kiro/powers/orb-duel-review/skills/review-duel-replay/SKILL.md).
-- Evidence: [package proof](../evidence/kiro-power-package-fix.md).
+The Showdown rules are plain JavaScript in `src/game/showdown/`, with no DOM, rendering or network code. The graybox page (`src/app.js`) reads only the active seat's view. Three.js and Rapier power the earlier 3D build. Current counts on `96adf60`, run for this packet: `npm test` 610/610, and `tests/match/showdown-turn.test.js` 11/11.
 
 ## Third-party tooling and attribution
-- **Libraries and build.** The installed versions identify Three.js 0.180.0 and esbuild 0.28.2 as MIT and Rapier 0.12.0 as Apache-2.0. The project repository uses MIT.
-- **Assets and motion.** The original Tripo exports are preserved. Blender Game Skills and Lucca Cerf's Character Factory served as references. The shipped Sheriff idle uses Mixamo's `headShake` clip. Quaternius motion was used in a separate Billy preview. The title illustration came from GPT Image in ChatGPT. [Motion sources](../character-animation-plan.md) and [remaining license evidence](rules-check.md#risks-to-settle-before-submitting).
+
+- **Libraries and build.** The installed versions identify Three.js 0.180.0 and esbuild 0.28.2 as MIT, and Rapier 0.12.0 as Apache-2.0. The repository uses MIT.
+- **Assets and motion (earlier 3D build).** The original Tripo exports are preserved. Blender Game Skills and Lucca Cerf's Character Factory served as references. The Sheriff idle uses Mixamo's `headShake` clip. Quaternius motion was used in a separate Billy preview. The title illustration came from GPT Image in ChatGPT. [Motion sources](../character-animation-plan.md) · [License risks](rules-check.md#risks-to-settle-before-submitting). The Showdown graybox adds no art.
 - **Other AI tools:** Fable (Claude Code) and Codex, as attributed above.
-- **Testing and hosting:** headless Chrome driven over the DevTools protocol, GitHub Actions and GitHub Pages.
-- **Pre-existing work disclosure:** **OWNER.** The first commit (November 14, 2026) preserves an existing board demo. The rules require disclosing pre-existing work and confirming it was made after October 30. Only the user knows when the demo and the Tripo exports were made.
+- **Testing and hosting:** headless Chrome over the DevTools protocol, GitHub Actions and GitHub Pages.
+- **Pre-existing work disclosure: OWNER.** The first commit (November 14, 2026) preserves an existing board demo. The rules require disclosing pre-existing work and confirming it was made after October 30. Only Alex knows when the demo and the Tripo exports were made.
 
-## Automated checks and human testing
-- **T1 lab browser automation.** Kiro CLI 3.4.0 V3 ran the developer-only T1 scenario in headless Chrome for seeds 55, 9, 2, 23, 7 and 43. Each of 68 stable points matched a Node engine mirror for public state, events, visible fields and face-down trap redaction. The six runs had zero mismatches, console errors or remote requests. These results describe scripted play against the normal CPU. [PR #136 receipt](../evidence/kiro-trap-seed-matrix-135.md).
-- **Current release.** The native Kiro workflow passed 333 tests and both Chrome replays on `892cada`. A separate desktop Safari smoke check verified cancellation, summon and turn advance on the deployed build. [Release evidence](../evidence/kiro-release-review-892cada.md).
-- **Earlier scripted replays:** Workflow runs on seeds 0 and 60, the menu and keyboard checks, and a Crew browser review that found developer labels on screen.
-- **Human testing: none.** Zero first-time-player sessions. No agent review counts as a human observation, and no claim about clarity or fun is made.
+## Category and bonuses
 
-## Why this fits the Costume Contest
-The category asks for a haunting, polished interface whose spooky design improves how the app works. Here the haunted-Western dressing carries the game's information. Life orbs float above every troop and Base: each orb is one life, so a player reads health at a glance and sees it fall when a hit lands. A graveyard well beside each side's row draws in every tributed troop, defeated troop and spent spell, so the player sees where a card went and why it left the board. Each illustrated card shows its stars, which set its tribute cost, with its attack and life orbs. The Wizards' side is skeletons, a dragon and a gateway; the Cowboys' is a sheriff and a saloon, so the two sides and their Bases are told apart by look alone.
+- **Category: OWNER.** The lane-era draft proposed Costume Contest on the strength of the illustrated arena. The Showdown entry is a graybox, and the illustrated art lives in the `/3d/` build. Alex should choose the category with that in mind.
+- **Crew bonus:** the Night Watch app has [its own repository](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch). Its form write-up is not drafted.
+- **Blog bonus:** requires a public third-party post that mentions Kiroween 2026. See the draft [build story](build-story.md), which still tells the lane-era story.
+- **Social bonus:** optional. A person must write it; no agent should. Nothing has been posted.
+- **Student eligibility: OWNER.** Requires current enrollment and details for every teammate. School affiliation alone is insufficient.
 
-## Challenges and lessons
-An animation can look convincing and still misrepresent a simultaneous attack. Passing rules tests does not catch every visible defect: a Kiro Crew browser review found developer labels on screen, and they were removed. Rigging a generated mesh also has limits, so the original exports stay untouched and new motion must come from approved sources. Older test counts and timing improvements are quoted with the commit and date they were measured on.
-
-**Personal reflection: OWNER.** No first-person account of using Kiro is written here, and none should be generated.
-
-## Evidence
-- Playable seeded matches, and a CPU limited to public information.
-- Specifications tracked in the repository, and receipts from actual hook and Workflow runs.
-- The installed Power (version 1.1.0), using its bundled MCP server and no workspace MCP server, passes a receipt that matches its build and rejects one that does not. The proof used historical browser receipts and copied HTML; it is not a new browser replay. [Package proof](../evidence/kiro-power-package-fix.md).
-- Night Watch, a separate Kiro Crew app that compares exact commits and drafts issue reports, is enabled at version 0.1.2 after the user's approval. A manual CLI run and an actual Crew scheduler trigger each saved a report with 65 passing rule tests and 1,000 seeds per revision. A nightly job is registered for 2 a.m. Pacific; the Mac and Crew must be running, and checks use local Git refs without fetching remote updates. The latest report after a UI reload, a future unattended clock-time run and a request through the installed Crew gateway against the Host guard (PR #70) remain unverified. [Activation evidence](../evidence/night-watch-activation.md).
-- A working illustrated menu and player options.
-- Custom-deck regression test: 128 distinct decks, each replayed twice; 2,199 actions in the first pass; 1,419 CPU/public-view checks. This covers correctness. It is not an estimate of balance for human players.
-- The live commit and HTML digest matched `892cada` on November 17. [Deployment and release evidence](../evidence/kiro-release-review-892cada.md).
-
-## Demo video
-[Narration and shot list](judge-demo-script.md): planned 2:40, 325 spoken words, timed segments, each shot marked EXISTS or NEEDED. Narration and Kiro UI footage are not recorded yet. The rules forbid third-party trademarks in the video; see the [rules check](rules-check.md#risks-to-settle-before-submitting).
+Official rules: https://kiroween.devpost.com/rules. Deadlines: credit requests by December 1, 2026 at 12:00 p.m. Pacific; submission by December 4, 2026 at 2 p.m. Pacific.
 
 ## URLs
-- Game: https://alejandro-publius.github.io/cowboys-vs-wizards/ (after issue 143 slice 3 is deployed: the graybox Showdown game; Play opens the Camp. Current state: [release line](../design/release-line.md))
-- Earlier illustrated 3D build (lane rules, models and motion): https://alejandro-publius.github.io/cowboys-vs-wizards/3d/
+
+- Game: https://alejandro-publius.github.io/cowboys-vs-wizards/
+- Dragon positions: [seed 3](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5) · [seed 70](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5-70)
+- Earlier illustrated 3D build (lane rules): https://alejandro-publius.github.io/cowboys-vs-wizards/3d/
 - Source: https://github.com/alejandro-publius/cowboys-vs-wizards
-- Kiro usage write-up: https://github.com/alejandro-publius/cowboys-vs-wizards/blob/main/docs/kiro-brag-sheet.md
+- Kiro write-up: https://github.com/alejandro-publius/cowboys-vs-wizards/blob/main/docs/submission/kiro-brag-sheet.md
 - Crew app: https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch
-- Current preview: [58.73-second menu and gameplay video](../evidence/gameplay-demo/menu-and-gameplay-preview.mp4); source versions are recorded in its receipt. No narration or Workflow UI footage is claimed.
-- Gameplay source: [43.67-second real gameplay recording](../evidence/gameplay-demo/seed60-599450a.mp4), captured at the prior release `599450a`. It does not show the new deck page.
-- Public YouTube: **OWNER, PENDING.** Do not submit a placeholder.
-- Third-party blog: **OWNER, PENDING.** Review build-story.md.
+- Demo video (public YouTube, under three minutes): **OWNER, PENDING.** Do not submit a placeholder. The rules forbid third-party trademarks in the video ([rules check](rules-check.md#risks-to-settle-before-submitting)).
+- Third-party blog: **OWNER, PENDING.**
 
-## Category and bonus checks
-- **Category:** Costume Contest fits the current haunted-interface direction. **OWNER:** confirm the category selected in the form.
-- **Crew bonus:** the Crew app has its own repository. Its form write-up is not drafted.
-- **Student eligibility:** **OWNER.** Requires current enrollment and details for every teammate. School affiliation alone is insufficient.
-- **Blog bonus:** requires a public third-party post that mentions Kiroween 2026.
-- **Social bonus:** optional. A person must write it; no agent should. No social post has been sent.
+## Required form fields and owner inputs still open
 
-Official rules: https://kiroween.devpost.com/rules
-
-Deadlines: credit requests by December 1, 2026 at 12:00 p.m. Pacific; submission by December 4, 2026 at 2 p.m. Pacific.
-
-## First-time-player protocol
-**Not run. Zero human sessions.** The full protocol is in [judge-demo-script.md](judge-demo-script.md#part-2-first-time-human-playtest-protocol): five tasks (start a match, place a troop, explain a lost orb, make a tribute summon, change and save a deck), definitions of independent, assisted and fail, the exact observations to record, and a blank results table. An agent browser review is not a human observation. Decide opening policy only after real play evidence; preserve current default meanwhile.
-
-## Pending before final submission (owner inputs)
-- Personal reflection on using Kiro, and the spec-versus-direct comparison in the builder's words
+- Demo video: narration, Kiro UI footage and the public YouTube URL
+- Category selection; Crew, blog and social bonuses if entering them
+- Personal reflection on using Kiro, and the spec-versus-direct comparison in the builder's words (none should be generated)
 - Pre-existing work disclosure: when the board demo and the Tripo exports were made
-- Human artist credits and the source of the card illustrations
-- Missing Tripo and Mixamo license metadata
-- Current enrollment and team facts; every teammate joined on Devpost; credit requests
-- Final category and bonuses
-- Narration recording, actual Kiro Workflow UI footage, and the public YouTube URL
-- Third-party blog URL and social post, if entering those bonuses
-- First-time human playtest
-- Final UI verification and the user's visual review; supported-device checks
-- Verification of the final served build and final links
-- User approval of this packet, and actual submission confirmation
+- Artist credits and the source of the card illustrations; missing Tripo and Mixamo license metadata
+- Team: current enrollment if claiming student status, every teammate joined on Devpost, Rachel's credit, and credit requests by December 1
+- Three first-time human playtests
+- Fable's approval of the first-draft Camp, mode, `/3d/` and Ledger wording, and Fable's decision on the Dragon positions ([release line](../design/release-line.md))
+- Final check of the served build and these links on submission day
+- Alex's approval of this packet, and confirmation that it was submitted
+
+## History
+
+The lane-era packet described the three-lane duel: tribute summons, simultaneous clashes such as Mounted Billy taking the Dragon from five orbs to two on seed 60, and release receipts on `892cada`. It is preserved [at `96adf60`](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/96adf6031b6159ab34fd7751180ced507f677104/docs/submission/devpost-packet.md), and the judge write-up's [lane-duel section](kiro-brag-sheet.md#earlier-lane-duel-work-historical) summarizes it. None of it is Showdown testing.
