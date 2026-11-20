@@ -2,7 +2,7 @@
 //   npm run build
 //   node scripts/browser-ledger-check.mjs dist/cowboys-vs-wizards-board-duel.html [outDir]
 // At 390x844 and 1440x900 on a fresh profile: Play opens the Camp with the ledger collapsed after the Trail;
-// Boot Hill is reachable before it by Tab; Enter on the summary opens and closes it; nothing is wider than the
+// entered by Enter on Play, the walk from the Camp's entry focus reaches Boot Hill before the summary by Tab; Enter on the summary opens and closes it; nothing is wider than the
 // viewport when open; and the first turn of Boot Hill shows no part of the ledger.
 import assert from "node:assert/strict";
 import {spawn} from "node:child_process";
@@ -59,6 +59,8 @@ const key = async (k, code, keyCode, shift = false) => {
   }
   if (k === "Enter") await sleep(50);
 };
+// The focused control: 'trail' for the Boot Hill tile, 'summary' for the ledger summary.
+const focusName = `(()=>{const a=document.activeElement;if(!a||a===document.body)return 'BODY';return a.dataset.duel?'trail':a.closest('#camp-ledger')?(a.tagName==='SUMMARY'?'summary':a.getAttribute('role')||a.tagName):a.id||a.tagName})()`;
 const report = {page, checks: [], errors};
 const frames = [];
 const frame = async (name, selector) => {
@@ -83,8 +85,13 @@ try {
     await evaluate(`localStorage.clear()`);
     await send("Page.navigate", {url: page});
     await wait(`document.readyState==='complete'&&document.getElementById('menu-play')`);
-    await evaluate(`document.getElementById('menu-play').click()`);
+    // Controlled keyboard entry: focus Play on the title screen and press Enter.
+    await evaluate(`document.getElementById('menu-play').focus()`);
+    assert.equal(await evaluate(`document.activeElement?.id`), "menu-play");
+    await key("Enter", "Enter", 13);
     await wait(`!document.getElementById('showdown-camp').hidden&&document.querySelector('#camp-ledger summary')`);
+    // The control the Camp focuses on entry is the first stop of the keyboard walk below.
+    const initial = await evaluate(focusName);
     if (width === 1440) await frame("1-camp", "#showdown-camp");
     const camp = await evaluate(`(()=>{const l=document.getElementById('camp-ledger'),t=document.querySelector('#camp-trail [data-duel=trail]');
       const lb=l.getBoundingClientRect(),tb=t.getBoundingClientRect();
@@ -94,18 +101,28 @@ try {
     assert.equal(camp.open, false); assert.ok(camp.after); assert.ok(camp.trailVisible, "Boot Hill tile visible and uncovered in the first viewport");
     assert.ok(camp.ledgerTop >= camp.trailBottom); assert.ok(camp.scrollW <= width, `page ${camp.scrollW}px wide at ${width}px`);
     check(`${width}px: ledger collapsed after the Trail; Boot Hill uncovered in the first view; no horizontal overflow`, camp);
-    // Keyboard: Tab from the start of the page reaches Boot Hill, then later the ledger summary.
-    await evaluate(`document.activeElement?.blur()`);
-    const order = [];
-    for (let i = 0; i < 40; i += 1) {
+    // Keyboard: from the Camp's entry focus (recorded as the first stop), Tab reaches Boot Hill and then
+    // the ledger summary without leaving the page; Shift+Tab from the summary retraces the walk to Boot Hill.
+    // The walk does not blur first:
+    // Chrome keeps a blurred control as the Tab starting point, so a blurred entry focus would be skipped.
+    const order = [initial];
+    for (let i = 0; i < 40 && order.at(-1) !== "summary"; i += 1) {
       await key("Tab", "Tab", 9);
-      const at = await evaluate(`(()=>{const a=document.activeElement;return a.dataset.duel?'trail':a.closest('#camp-ledger')?(a.tagName==='SUMMARY'?'summary':a.getAttribute('role')||a.tagName):a.id||a.tagName})()`);
-      order.push(at);
-      if (at === "summary") break;
+      order.push(await evaluate(focusName));
     }
-    assert.ok(order.includes("trail") && order.indexOf("trail") < order.indexOf("summary"), `focus order ${order}`);
+    const trailAt = order.indexOf("trail"), summaryAt = order.indexOf("summary");
+    assert.ok(trailAt >= 0 && summaryAt > trailAt && !order.includes("BODY"), `focus order ${order}`);
     const ring = await evaluate(`getComputedStyle(document.activeElement).outlineStyle+' '+getComputedStyle(document.activeElement).outlineWidth`);
-    check(`${width}px: Tab reaches Boot Hill before the ledger summary`, {order, focusOutline: ring});
+    const back = [];
+    for (let i = 0; i < 40 && back.at(-1) !== "trail"; i += 1) {
+      await key("Tab", "Tab", 9, true);
+      back.push(await evaluate(focusName));
+    }
+    assert.deepEqual(back, order.slice(0, -1).reverse(), `Shift+Tab from the summary does not retrace the walk to Boot Hill: ${back}`);
+    for (let i = 0; i < back.length; i += 1) await key("Tab", "Tab", 9);
+    assert.equal(await evaluate(focusName), "summary", "Tab back to the ledger summary");
+    check(`${width}px: keyboard entry focuses ${initial}; Tab reaches Boot Hill before the ledger summary; Shift+Tab walks back to Boot Hill`,
+      {initial, order, back, focusOutline: ring});
     await key("Enter", "Enter", 13);
     await wait(`document.getElementById('camp-ledger').open`);
     const opened = await evaluate(`(()=>{const l=document.getElementById('camp-ledger');const rows=[...l.querySelectorAll('tbody tr')];

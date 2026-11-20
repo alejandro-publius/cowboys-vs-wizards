@@ -378,3 +378,12 @@ The next substantial Kiro task is #56, boundary generation, failure reduction an
 - **Change**: `src/app.js` tries the claim area, then the first open duel, then any enabled button, in that order. A regression step was added to `scripts/browser-showdown-keyboard-check.mjs`, along with the spec `.kiro/specs/showdown-camp-return-focus/bugfix.md`. No rule, wording, reward or Scout change.
 - **Verification**: red on base (step 4b fails, focus `#camp-home`). Green after the fix: keyboard 7/7, trail 16/16, modes 13/13, main graybox 22/22, `npm test` 578/0. [Evidence note](evidence/kiro-overnight-qa-camp-focus.md).
 - **Remaining**: focus goes to `body` when a duel starts from the Camp and after the best-of-three swap. This is open as a presentation decision. Human playtests are pending.
+
+### 2026-11-20 — Overnight check repair: turn-check Back and ledger Tab walk (Kiro CLI, America/Los_Angeles, 00:15 PST)
+
+- **State**: one local commit on `kiro/graywave-overnight-check-repair` from `3d970ca`. Not merged or published.
+- **Performed in**: a Kiro CLI session (Claude Opus 5.5) on Alex's Mac. Only the scripts were run, and no human played.
+- **Problem**: two independent reviews found harness assumptions. (1) The turn check's Back step expected the title, but over HTTP Chrome's back/forward cache restores the Camp. (2) The ledger check blurred the Camp's new entry focus (Boot Hill) before tabbing, so the walk started after Boot Hill and failed in the combined release.
+- **Change**: test scripts and evidence notes only. `scripts/browser-showdown-turn-check.mjs` takes a file or an HTTP(S) URL and checks the earlier root path, a closed duel, a usable title or Camp entry and an intact career. `scripts/browser-ledger-check.mjs` enters by keyboard, counts the entry focus, requires Boot Hill before the ledger summary and retraces with Shift+Tab. No app, rules or wording change.
+- **Verification**: turn 18/18 on file (title) and 18/18 over HTTP at `/cowboys-vs-wizards/` with bfcache on (Camp restored). Ledger 12/12 on file and staged index, and it fails on two deliberately broken copies. Keyboard regression 7/7. [Evidence note](evidence/overnight-check-repair.md).
+- **Remaining**: Fable and the coordinator still have to decide whether Back should restore the Camp or show the menu. Human playtests are pending.
