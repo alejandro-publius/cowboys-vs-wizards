@@ -1,6 +1,5 @@
 // The Trail: a new player's first six duels. Each one is easier than an even match, shows one
 // new thing on the Wizard side, and pays a new card on the first win. Progress and saving are in progress.js.
-import {DECKS} from "./cards.js";
 
 // What a new player starts with: three card names and no keywords.
 export const STARTER = Object.freeze({"cowboy-sheriff": 8, "cowboy-billy": 5, "cowboy-deadeye": 3});
@@ -26,7 +25,9 @@ export const TRAIL = Object.freeze([
     level: 1, base: 4, first: "cowboy", deck: {"wizard-skeleton": 6, "wizard-wizard": 3, "wizard-headless-horseman": 2, "wizard-bone-wall": 2, "wizard-hex": 2, "wizard-singularity": 1},
     reward: [["cowboy-mounted-billy", "cowboy-billy", 1]]},
   {id: "dragons-roost", name: "Dragon's Roost", lesson: "The whole coven, and the Dragon. Everything you have earned is in your deck.",
-    level: 1.5, base: 4, first: "cowboy", deck: DECKS.wizard,
+    // The even-match Wizard deck as it was before November 20 (4 Skeletons, 1 Imp): the Trail keeps its duels.
+    level: 1.5, base: 4, first: "cowboy", deck: {"wizard-skeleton": 4, "wizard-jack-o-lantern": 1, "wizard-raven-familiar": 1, "wizard-imp": 1, "wizard-bone-wall": 2,
+      "wizard-wizard": 2, "wizard-headless-horseman": 1, "wizard-dragon": 1, "wizard-singularity": 1, "wizard-hellfire": 1, "wizard-hex": 1},
     reward: [["cowboy-gatling-crew", "cowboy-billy", 1]]},
 ]);
 

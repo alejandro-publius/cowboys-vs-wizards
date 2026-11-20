@@ -135,7 +135,27 @@ function checkViewOf(state, engine, label, seen) {
     if (other.hand.length) seen.add("other-hand-held");
     if (other.traps.length) seen.add("other-trap-set");
     if (!state.sides[viewer].deck.length) seen.add("own-deck-empty");
+    checkFinishedViewOf(state, engine, label, viewer, seen);
   }
+}
+
+// Once `result` is set (the even-fight brief, item 4) the finished view adds the other hand and
+// nothing else hidden: the other side's traps and both decks stay out. While the duel runs it is refused.
+function checkFinishedViewOf(state, engine, label, viewer, seen) {
+  const other = state.sides[engine.opponent(viewer)];
+  let view;
+  try { view = engine.finishedViewFor(state, viewer); } catch { view = null; }
+  if (!state.result) {
+    need(view === null, "hidden-leak", () => `${label}: finishedViewFor(state, ${viewer}) answered while the duel runs`);
+    return;
+  }
+  need(view !== null, "finished-hands", () => `${label}: finishedViewFor(state, ${viewer}) refused a finished duel`);
+  const hidden = new Set([...other.traps, ...state.sides.cowboy.deck, ...state.sides.wizard.deck]);
+  const leaked = strings(view).filter((text) => hidden.has(text));
+  need(leaked.length === 0, "hidden-leak", () => `${label}: finishedViewFor(state, ${viewer}) shows ${leaked.join(", ")}`);
+  need(json(view.sides.cowboy.hand) === json(state.sides.cowboy.hand) && json(view.sides.wizard.hand) === json(state.sides.wizard.hand),
+    "finished-hands", () => `${label}: finishedViewFor(state, ${viewer}) does not show both hands`);
+  seen.add("finished-both-hands");
 }
 
 function checkView(input, engine, seen) {
@@ -258,7 +278,7 @@ export const PROPERTIES = [
   { id: "SP3", title: "no orb count, Base or hand size goes below zero or above its limit", cases: 150, check: checkBounds,
     categories: ["base-zero", "base-overkill", "hand-at-cap", "traps-full", "troop-one-orb", "troop-over-start-orbs-by-gear", "boss-on-board", "burn", "fatigue"] },
   { id: "SP4", title: "viewFor(state, side) never shows a card id from the other hand or traps, or from either deck", cases: 80, check: checkView,
-    categories: ["other-hand-held", "other-trap-set", "own-deck-empty"] },
+    categories: ["other-hand-held", "other-trap-set", "own-deck-empty", "finished-both-hands"] },
   { id: "SP5", title: "every event returned matches its EVENTS entry exactly", cases: 150, check: checkEvents,
     categories: Object.keys(ENGINE.EVENTS).map((type) => `event:${type}`) },
   { id: "SP6", title: "the same seed and the same actions give the same game", cases: 60, check: checkReplay,

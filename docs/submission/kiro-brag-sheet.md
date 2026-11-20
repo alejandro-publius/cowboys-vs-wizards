@@ -29,6 +29,9 @@ This page is the one judge-facing description. The [Devpost packet](devpost-pack
 
 ## Release evidence
 
+**Even-fight candidate (branch).** Level-2 paired play on the exact gameplay commit d5a799d6: first-player / Cowboy wins were 49.5% / 51.8% on deals 0–999 and 51.4% / 54.1% on deals 1000–1999. All six Trail duels stayed within 2.67 percentage points over 300 seeds per level. The extended guard flagged rival and hunt results. The public game is at `7fdc234`. Fable owns the decision on rivals and hunts. [Review numbers and both tables](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/170) · [Sealed Night Shift review](../evidence/night-shift/even-fight-d5a799d6/bundle.json).
+
+
 The two-position release passed 606 repository tests and 29 HTTP browser checks. A separate Chrome run selected both targets on both seeds and compared the saved career after each. [Paired decisions in PR 165](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/165).
 
 The combined release candidate for [#163](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/163) passed **601 repository tests**. Chrome exercised the Dragon turn over HTTP (18 checks), the Camp Ledger (12), and reward focus by keyboard (7). The merged build was verified at the public game entry. [Browser checks](../evidence/overnight-check-repair.md) · [Deployed build identity](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json).

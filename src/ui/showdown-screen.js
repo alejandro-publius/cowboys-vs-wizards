@@ -1,7 +1,9 @@
 // The Showdown duel in the graybox (issue 143 slices 1 and 2). Adapted from the reference screen in
 // prototypes/showdown/main.js, solo only. Everything drawn comes from session.view() (viewFor),
 // session.legal() (legalActions for this seat) and presentEvent text. The full state never
-// reaches this module, and no Wizard hand, trap or deck card id is written into the page.
+// reaches this module, and no Wizard hand, trap or deck card id is written into the page while the
+// duel runs. Once it has a result, session.finished() (finishedViewFor) names both hands on the
+// Bases; traps stay face down and no deck card is written.
 // Slice 2: a finished duel is settled once through the campaign (src/match/showdown-campaign.js),
 // and the result shows what it paid and the card choice before the way back to Camp.
 // Slice 3: every Camp duel (Trail, rivals, Wanted hunts, the even match), best of three with the
@@ -267,8 +269,10 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     }
     const view = session.view();
     const own = viewer(), foe = opponent(own);
-    // Two players after the result: both look at the board, so no hand or set trap is shown.
+    // Two players after the result: both look at the board, so no playable hand or set trap is shown;
+    // both hands are named on the Bases instead, as in a solo finished duel.
     const shared = !solo() && Boolean(view.result);
+    const finished = view.result ? session.finished() : null;
     const options = session.legal();
     const mine = options.length > 0;
     const attacking = pick?.troop !== undefined;
@@ -285,11 +289,12 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
       const isOwn = side === own;
       const baseOpen = !isOwn && aims.has("base");
       const traps = isOwn && !shared ? (s.traps.length ? `Set: ${s.traps.map(name).join(", ")}` : "No trap set") : s.trapCount ? `${plural(s.trapCount, "card")} face down` : "Nothing face down";
-      // The other seat's hand is card backs (the deck back's .card-back element) and a count, never faces.
-      const backs = isOwn ? "" : `<span class="sd-backs" role="img" aria-label="${FACTION[side]} hand: ${plural(s.handCount, "card")}, face down">${'<span class="card-back" aria-hidden="true"></span>'.repeat(s.handCount)}</span>`;
+      // While the duel runs, the other seat's hand is card backs (the deck back's .card-back element) and a count, never faces.
+      const backs = isOwn || finished ? "" : `<span class="sd-backs" role="img" aria-label="${FACTION[side]} hand: ${plural(s.handCount, "card")}, face down">${'<span class="card-back" aria-hidden="true"></span>'.repeat(s.handCount)}</span>`;
+      const shownHand = finished ? `<span class="sd-note" data-hand="${side}">Hand: ${finished.sides[side].hand.map(name).join(", ") || "empty"}</span>` : "";
       const base = `<button type="button" class="sd-base ${side}${baseOpen ? " sd-can" : ""}" ${baseOpen ? 'data-enemy="base"' : "disabled"}${isOwn ? "" : aiming} data-base="${side}">
         <strong>${whoseBase(side)} Base</strong>${orbs(s.base, s.baseMax)}
-        <span class="sd-note">Hand ${s.handCount} · Deck ${s.deckCount} · Graveyard ${s.discard.length}</span>${backs}
+        <span class="sd-note">Hand ${s.handCount} · Deck ${s.deckCount} · Graveyard ${s.discard.length}</span>${backs}${shownHand}
         <span class="sd-note">▲ ${traps}</span>${baseOpen ? preview(view, "base") : ""}</button>`;
       const slots = s.board.map((troop, slot) => {
         if (!troop) return `<button type="button" class="sd-slot ${side}" data-slot="${side}-${slot}" disabled><span class="sd-note">empty</span></button>`;

@@ -546,8 +546,24 @@ const RUNS = {
       games.push(game);
       if (game.won) wins[game.won] += 1;
       if (games.length > 1 && games.at(-2).won) assert.equal(game.opened, games.at(-2).won === "cowboy" ? "wizard" : "cowboy", "the loser opens");
-      // After a result both look at the board: no hand and no set trap is shown.
+      // After a result both look at the board: no hand row and no set trap is shown, and both hands are
+      // named on their Bases (Fable's even-fight brief, item 4), one name of that side per card counted.
       assert.equal(await s.evaluate(`document.querySelectorAll('#sd-hand [data-card]').length`), 0, "no hand after the result");
+      const end = await s.evaluate(`(()=>{const side=(n)=>{const base=document.querySelector('#sd-board [data-base='+n+']');
+        return{line:base.querySelector('[data-hand='+n+']')?.textContent??null,count:Number(base.textContent.match(/Hand (\\d+)/)[1]),trapLine:base.textContent.match(/▲ ([^\\n]*)/)[1].trim()};};
+        return{backs:document.querySelectorAll('#sd-board .sd-backs').length,ids:document.getElementById('showdown').outerHTML.match(/(cowboy|wizard)-[a-z-]+-\\d+/g)||[],
+          cowboy:side('cowboy'),wizard:side('wizard')};})()`);
+      assert.equal(end.backs, 0, "no card backs once both hands are shown");
+      assert.deepEqual(end.ids, [], `card ids in the page after the result: ${end.ids}`);
+      for (const side of ["cowboy", "wizard"]) {
+        const {line, count, trapLine} = end[side];
+        assert.match(line ?? "", /^Hand: /, `the ${side} Base names its hand`);
+        const names = line === "Hand: empty" ? [] : line.slice("Hand: ".length).split(", ");
+        assert.equal(names.length, count, `${side}: one name per card in hand`);
+        assert.ok(names.every((n) => Object.values(TYPES).some((t) => t.side === side && t.name === n)), `${side} hand names ${names}`);
+        assert.match(trapLine, /^(Nothing face down|\d+ cards? face down)$/, `${side} traps stay face down after the result`);
+        game.handsShown = {...game.handsShown, [side]: count};
+      }
       if (Math.max(wins.cowboy, wins.wizard) >= 2) break;
       assert.equal(await s.text("#sd-again"), `Game ${games.length + 1}`);
       await s.click("#sd-again");
@@ -559,8 +575,8 @@ const RUNS = {
     const after = await s.storage();
     assert.deepEqual(after, before, "two players changes no stored data: no progress and no playtest line");
     await s.shot("hotseat-done");
-    s.check(`Two players best of three (?seed=3): curtain every hand-over with nothing private in the page; each seat saw only its own hand; ${wins.cowboy}-${wins.wizard}; storage unchanged`,
-      games.map((g) => ({won: g.won, opened: g.opened, turns: g.turns, curtains: g.curtains})));
+    s.check(`Two players best of three (?seed=3): curtain every hand-over with nothing private in the page; each seat saw only its own hand until the result named both; ${wins.cowboy}-${wins.wizard}; storage unchanged`,
+      games.map((g) => ({won: g.won, opened: g.opened, turns: g.turns, curtains: g.curtains, handsShown: g.handsShown})));
   },
 
   async saves(s) {

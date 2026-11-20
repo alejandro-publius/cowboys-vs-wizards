@@ -10,6 +10,8 @@
 //     mode, commit and seed range as the chosen ruleset run, and only for card types in the catalog.
 //   - Night Shift review bundles docs/evidence/night-shift/*/bundle.json (scripts/night-review.mjs). Only sealed bundles
 //     whose finding is the run above (same commit and counts) are shown, with their verdict; nothing is applied.
+//   - Night Shift rules-package bundles (schema night-review/package@1, `night-review.mjs package`) in the same folder.
+//     Every sealed one is shown with its own base and candidate commits and its verdict, passed or failed.
 // With --check it only compares and exits 1 when the payload is stale. Output depends only on these inputs.
 import {createHash} from "node:crypto";
 import {existsSync, readFileSync, writeFileSync} from "node:fs";
@@ -27,17 +29,37 @@ const DEFAULT_REPORT = "docs/evidence/night-watch-showdown/scout-pair-reports.js
 export const DEFAULT_RECEIPT = "docs/evidence/night-shift/receipt.json";
 // The inputs the payload is built from when no option is given: the receipt when it is checked in.
 export const REVIEW_DIR = "docs/evidence/night-shift";
-export function reviewBundles() {
+export const PACKAGE_SCHEMA = "night-review/package@1";
+function allBundles() {
   const dir = join(root, REVIEW_DIR);
   if (!existsSync(dir)) return [];
   return readdirSync(dir, {withFileTypes: true}).filter((e) => e.isDirectory() && existsSync(join(dir, e.name, "bundle.json")))
     .map((e) => ({path: `${REVIEW_DIR}/${e.name}/bundle.json`, bundle: JSON.parse(readFileSync(join(dir, e.name, "bundle.json"), "utf8"))}))
     .sort((a, b) => a.path.localeCompare(b.path));
 }
+// One-card, one-number reviews (night-review/bundle@1).
+export const reviewBundles = () => allBundles().filter(({bundle}) => bundle.schema !== PACKAGE_SCHEMA);
+// Whole rules-package reviews (night-review/package@1).
+export const packageBundles = () => allBundles().filter(({bundle}) => bundle.schema === PACKAGE_SCHEMA);
 export function defaultInputs() {
   const reviews = reviewBundles();
-  if (!existsSync(join(root, DEFAULT_RECEIPT))) return {reports: JSON.parse(readFileSync(join(root, DEFAULT_REPORT), "utf8")), reviews};
-  return {reports: [], reportPath: DEFAULT_RECEIPT, receipt: JSON.parse(readFileSync(join(root, DEFAULT_RECEIPT), "utf8")), reviews};
+  const packages = packageBundles();
+  if (!existsSync(join(root, DEFAULT_RECEIPT))) return {reports: JSON.parse(readFileSync(join(root, DEFAULT_REPORT), "utf8")), reviews, packages};
+  return {reports: [], reportPath: DEFAULT_RECEIPT, receipt: JSON.parse(readFileSync(join(root, DEFAULT_RECEIPT), "utf8")), reviews, packages};
+}
+
+// Sealed package reviews with the verdict they recorded, passed or failed. A broken seal is left out.
+// They are bound to their own pinned commits, not to the Night Watch run above.
+export function matchPackages(packages) {
+  const share = (s) => ({first: s.candidate.firstShare, cowboy: s.candidate.cowboyShare, firstBefore: s.baseline.firstShare,
+    cowboyBefore: s.baseline.cowboyShare, from: s.seeds.from, to: s.seeds.to, games: s.candidate.games});
+  return packages.filter(({bundle}) => bundle.schema === PACKAGE_SCHEMA && bundleSealIntact(bundle))
+    .map(({path, bundle}) => ({source: path, kind: bundle.kind, id: bundle.id, at: bundle.createdAt, local: laTime(bundle.createdAt),
+      base: bundle.source.base.commit, candidate: bundle.source.candidate.commit,
+      commits: bundle.source.attribution.commits.map((c) => ({commit: c.commit, author: c.author, subject: c.subject})),
+      tune: share(bundle.sets.tune), holdout: share(bundle.sets.holdout), band: bundle.policy.band,
+      trail: {deals: bundle.trail.deals.candidate, maxMovePp: bundle.trail.maxGatedMovePp, limitPp: bundle.policy.trailTolerancePp},
+      verdict: bundle.decision.verdict, reasons: bundle.decision.reasons, meaning: bundle.decision.meaning, seal: bundle.bundleSha256.slice(0, 12)}));
 }
 
 const COUNT_KEYS = ["games", "cowboy", "wizard", "draw", "first", "second"];
@@ -96,7 +118,7 @@ export function runFromReceipt(receipt) {
     baseline: {commit: receipt.baseline.commit}, rules: receipt.rulesTests};
 }
 
-export function buildLedger({reports = [], reportPath = DEFAULT_REPORT, receipt = null, perCard = null, reviews = []}) {
+export function buildLedger({reports = [], reportPath = DEFAULT_REPORT, receipt = null, perCard = null, reviews = [], packages = []}) {
   const run = receipt ? runFromReceipt(receipt) : latestShowdownRun(reports);
   const stats = run ? matchPerCard(perCard, run) : {};
   const digest = createHash("sha256").update(JSON.stringify(SHOWDOWN_SPECS)).digest("hex").slice(0, 16);
@@ -119,6 +141,7 @@ export function buildLedger({reports = [], reportPath = DEFAULT_REPORT, receipt 
     },
     perCardSource: Object.keys(stats).length ? perCard.source ?? null : null,
     reviews: matchReviews(reviews, run),
+    packages: matchPackages(packages),
     cards,
   };
 }
@@ -139,7 +162,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const inputs = receiptPath ? {reports: [], reportPath: receiptPath, receipt: JSON.parse(readFileSync(join(root, receiptPath), "utf8"))}
     : reportPath ? {reports: JSON.parse(readFileSync(join(root, reportPath), "utf8")), reportPath} : defaultInputs();
   const perCard = perCardPath ? {...JSON.parse(readFileSync(join(root, perCardPath), "utf8")), source: relative(root, join(root, perCardPath))} : null;
-  const text = render(buildLedger({reviews: reviewBundles(), ...inputs, perCard}));
+  const text = render(buildLedger({reviews: reviewBundles(), packages: packageBundles(), ...inputs, perCard}));
   if (args.includes("--check")) {
     const current = existsSync(OUTPUT) ? readFileSync(OUTPUT, "utf8") : "";
     if (current !== text) { console.error("src/ui/sheriffs-ledger.data.js is stale: run node scripts/build-sheriffs-ledger.mjs"); process.exit(1); }

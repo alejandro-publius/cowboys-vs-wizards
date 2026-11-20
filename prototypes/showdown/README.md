@@ -75,6 +75,13 @@ A test holds the shape: a sure win twice, a careful player winning most of every
 
 **The even match** over 2,000 bot games with the two starter decks: the first player won 57.5%, the Cowboys won 59.3%, and a game took 13.4 turns on average and 27 at most. That is tilted toward the Cowboys and toward the first seat; it has not been retuned since cover was added.
 
+**November 20 changes** (Fable's even-fight brief, `docs/design/showdown-even-fight-kiro-brief.md` at commit `f079fdc`). The even match (Open range, best of three, two players) now deals these decks; the side going second starts with 7 Base orbs and keeps its extra card. Trail, rival and bounty duels keep their own decks and Base orbs. A troop in cover cannot be hit by spells (RULEBOOK sections 6 and 10). The two tables above were measured before these changes; the trail-sim run after them is in [the worker's evidence note](../../docs/evidence/kiro-even-rules.md).
+
+| Even-match deck | Cards |
+| --- | --- |
+| Cowboy | 4 Sheriff, 2 Outrider, 2 Covered Wagon, 2 Billy, 1 Ranger, 1 Dynamiter, 1 Mounted Billy, 1 Deadeye, 1 Lasso, 1 Bear Trap |
+| Wizard | 3 Skeleton, 1 Jack-o'-Lantern, 1 Raven Familiar, 2 Imp, 2 Bone Wall, 2 Wizard, 1 Headless Horseman, 1 Dragon, 1 Singularity, 1 Hellfire, 1 Hex |
+
 These are all bot numbers. No person has played these rules.
 
 ## Reviewed by two fresh agents, November 18
