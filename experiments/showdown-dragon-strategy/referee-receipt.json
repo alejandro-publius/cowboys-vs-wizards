@@ -1,0 +1,318 @@
+{
+ "experiment": "showdown-dragon-strategy/referee",
+ "engine": "src/game/showdown (unchanged)",
+ "cases": [
+  {
+   "id": "hunt5-s1-t6-sweep-target",
+   "mode": "hunt5",
+   "seed": 1,
+   "prefixActions": 16,
+   "rotation": {
+    "first": "cowboy",
+    "turn": 6,
+    "active": "wizard"
+   },
+   "r1": {
+    "legal": true,
+    "turns": 5,
+    "everyTurnEqualsCanonicalPlayTurn2": true,
+    "mismatches": [],
+    "matchesWizardReplay": true,
+    "checkpoint": {
+     "turn": 6,
+     "active": "wizard",
+     "stateHash": "536e4c9b",
+     "wizardViewHash": "cdd97620"
+    }
+   },
+   "r2": {
+    "sameStartState": true,
+    "lines": [
+     {
+      "name": "planner",
+      "firstAction": {
+       "type": "summon",
+       "cardId": "wizard-raven-familiar-2",
+       "tributes": []
+      },
+      "firstActionLegal": true,
+      "forced": 0,
+      "restIsCanonicalPlayTurn2": true,
+      "afterTurnDecks": {
+       "cowboy": "d108a646",
+       "wizard": "06bff0ed"
+      },
+      "result": {
+       "winner": "wizard",
+       "reason": "base",
+       "endTurn": 12,
+       "bases": {
+        "cowboy": 0,
+        "wizard": 1
+       }
+      },
+      "matchesReceipt": true
+     },
+     {
+      "name": "alternative",
+      "firstAction": {
+       "type": "summon",
+       "cardId": "wizard-raven-familiar-2",
+       "tributes": []
+      },
+      "firstActionLegal": true,
+      "forced": 2,
+      "restIsCanonicalPlayTurn2": true,
+      "afterTurnDecks": {
+       "cowboy": "d108a646",
+       "wizard": "06bff0ed"
+      },
+      "result": {
+       "winner": "cowboy",
+       "reason": "base",
+       "endTurn": 11,
+       "bases": {
+        "cowboy": 5,
+        "wizard": 0
+       }
+      },
+      "matchesReceipt": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "open-s7-t5-dragon-tribute",
+   "mode": "open",
+   "seed": 7,
+   "prefixActions": 12,
+   "rotation": {
+    "first": "wizard",
+    "turn": 5,
+    "active": "wizard"
+   },
+   "r1": {
+    "legal": true,
+    "turns": 4,
+    "everyTurnEqualsCanonicalPlayTurn2": true,
+    "mismatches": [],
+    "matchesWizardReplay": true,
+    "checkpoint": {
+     "turn": 5,
+     "active": "wizard",
+     "stateHash": "61e1e990",
+     "wizardViewHash": "10343598"
+    }
+   },
+   "r2": {
+    "sameStartState": true,
+    "lines": [
+     {
+      "name": "planner",
+      "firstAction": {
+       "type": "summon",
+       "cardId": "wizard-imp-1",
+       "tributes": []
+      },
+      "firstActionLegal": true,
+      "forced": 0,
+      "restIsCanonicalPlayTurn2": true,
+      "afterTurnDecks": {
+       "cowboy": "84d33cb3",
+       "wizard": "e2313b64"
+      },
+      "result": {
+       "winner": "wizard",
+       "reason": "base",
+       "endTurn": 7,
+       "bases": {
+        "cowboy": 0,
+        "wizard": 5
+       }
+      },
+      "matchesReceipt": true
+     },
+     {
+      "name": "alternative",
+      "firstAction": {
+       "type": "summon",
+       "cardId": "wizard-dragon-1",
+       "tributes": [
+        0,
+        1
+       ]
+      },
+      "firstActionLegal": true,
+      "forced": 1,
+      "restIsCanonicalPlayTurn2": true,
+      "afterTurnDecks": {
+       "cowboy": "84d33cb3",
+       "wizard": "e2313b64"
+      },
+      "result": {
+       "winner": "wizard",
+       "reason": "base",
+       "endTurn": 7,
+       "bases": {
+        "cowboy": 0,
+        "wizard": 5
+       }
+      },
+      "matchesReceipt": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "open-s27-t7-dragon-tribute",
+   "mode": "open",
+   "seed": 27,
+   "prefixActions": 17,
+   "rotation": {
+    "first": "wizard",
+    "turn": 7,
+    "active": "wizard"
+   },
+   "r1": {
+    "legal": true,
+    "turns": 6,
+    "everyTurnEqualsCanonicalPlayTurn2": true,
+    "mismatches": [],
+    "matchesWizardReplay": true,
+    "checkpoint": {
+     "turn": 7,
+     "active": "wizard",
+     "stateHash": "8d7d76f1",
+     "wizardViewHash": "3116e3c5"
+    }
+   },
+   "r2": {
+    "sameStartState": true,
+    "lines": [
+     {
+      "name": "planner",
+      "firstAction": {
+       "type": "summon",
+       "cardId": "wizard-raven-familiar-1",
+       "tributes": []
+      },
+      "firstActionLegal": true,
+      "forced": 0,
+      "restIsCanonicalPlayTurn2": true,
+      "afterTurnDecks": {
+       "cowboy": "08320b75",
+       "wizard": "0f637155"
+      },
+      "result": {
+       "winner": "wizard",
+       "reason": "base",
+       "endTurn": 13,
+       "bases": {
+        "cowboy": 0,
+        "wizard": 3
+       }
+      },
+      "matchesReceipt": true
+     },
+     {
+      "name": "alternative",
+      "firstAction": {
+       "type": "summon",
+       "cardId": "wizard-dragon-1",
+       "tributes": [
+        0,
+        1
+       ]
+      },
+      "firstActionLegal": true,
+      "forced": 1,
+      "restIsCanonicalPlayTurn2": true,
+      "afterTurnDecks": {
+       "cowboy": "08320b75",
+       "wizard": "6b2a283c"
+      },
+      "result": {
+       "winner": "cowboy",
+       "reason": "base",
+       "endTurn": 18,
+       "bases": {
+        "cowboy": 3,
+        "wizard": 0
+       }
+      },
+      "matchesReceipt": true
+     }
+    ]
+   }
+  }
+ ],
+ "p1": {
+  "property": "planTurn(state) equals planTurn(re-dealt hidden zones), 3 re-deals per state",
+  "generator": "modes hunt5/open x seeds 0-23 x turns 2,3,4,5,6,7,8,10, canonical playTurn(…,2) both seats",
+  "engine": {
+   "checked": 1068,
+   "failures": [],
+   "result": "PASS",
+   "shrunk": null
+  },
+  "faultInjection": {
+   "mutant": "planTurn that drops summons when the opponent's hidden hand holds a Hex or Bear Trap",
+   "checked": 905,
+   "failingStates": 112,
+   "caught": true,
+   "firstFailure": {
+    "mode": "open",
+    "seed": 21,
+    "turn": 10,
+    "salt": 0
+   },
+   "shrunk": {
+    "mode": "open",
+    "seed": 1,
+    "turn": 1,
+    "active": "wizard",
+    "path": [
+     {
+      "seed": 21,
+      "turn": 10
+     },
+     {
+      "seed": 21,
+      "turn": 1
+     },
+     {
+      "seed": 1,
+      "turn": 1
+     }
+    ],
+    "opponentHand": [
+     "cowboy-outrider-1",
+     "cowboy-deadeye-1",
+     "cowboy-sheriff-2",
+     "cowboy-lasso-1",
+     "cowboy-outrider-2"
+    ]
+   }
+  }
+ },
+ "p2": {
+  "property": "counter.mjs Cowboy policy (planTurn on viewFor rebuild) equals engine planTurn on the real state",
+  "generator": "hunt5 x seeds 0-23 x the Cowboy turns among 2-10 above",
+  "checked": 71,
+  "diffs": 0
+ },
+ "p3": {
+  "property": "bounty Dragon lands free inside `end` and rests; hand Dragon = summon with 2 tributes, ready; Sweep never changes a Base; a Base attack never sweeps",
+  "generator": "hunt5 seeds 0-31 (canonical bots) + open seeds 0-31 (Wizard forced to summon the Dragon when legal, 70% of its turns, rest canonical)",
+  "games": 64,
+  "bountyLandings": 32,
+  "handDragonSummons": 10,
+  "sweepAttacks": 80,
+  "sweptTroops": 55,
+  "sweepsWithCoveredVictim": 18,
+  "sweepFightsWithOverflow": 36,
+  "baseAttacksBySweeper": 2,
+  "violations": [],
+  "result": "PASS"
+ }
+}

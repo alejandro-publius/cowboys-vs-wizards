@@ -1,0 +1,246 @@
+{
+ "base": "4d52642575a75c60b1d2337b80c479dd30f2c181",
+ "prefixFormat": "prefix = array of engine action objects applied in order with applyAction() from createShowdown(seed, options(mode)), both sides, every {type:\"end\"} included. Boss arrival is not an action: in hunt5 the Dragon (cardId wizard-dragon-0, 4 orbs, no tribute event) lands inside the Cowboy turn-3 {type:end}, at the start of Wizard turn 4, and rests that turn. A normal Dragon (wizard-dragon-1) needs a summon action with two tributes and may attack the same turn. options(mode) is exported by the script; hunt5 = progress.duelFor(save{wins:6, deck:deckAfter(6), hunts:{graveyard-dragon:4}}, \"hunt:graveyard-dragon\").options; open = {decks:{cowboy:DECKS.cowboy, wizard:DECKS.wizard}} (starter from seed). Prefix moves came from the engine level-2 planner (planTurn, replanned after trap or own draw, same loop as playTurn(state,2)) for both sides.",
+ "fixture": "experiments/showdown-dragon-strategy/wizard-cases.json",
+ "script": "experiments/showdown-dragon-strategy/wizard.mjs",
+ "branch": "kiro/graywave-dragon-lines",
+ "commit": "ef005e7ff1029b1a384883629c91c1b71a9442dd",
+ "replayExample": "import {replay} from \"./experiments/showdown-dragon-strategy/wizard.mjs\"; const {state} = replay(c.mode, c.seed, c.prefix);",
+ "cases": [
+  {
+   "id": "hunt5-s1-t6-sweep-target",
+   "mode": "hunt5",
+   "seed": 1,
+   "prefix": [
+    {
+     "type": "set",
+     "cardId": "cowboy-bear-trap-1"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "spell",
+     "cardId": "wizard-singularity-1",
+     "target": 0
+    },
+    {
+     "type": "summon",
+     "cardId": "wizard-jack-o-lantern-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-2",
+     "tributes": [
+      0
+     ]
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-deadeye-1",
+     "target": 0
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": "base"
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "wizard-jack-o-lantern-1",
+     "tributes": []
+    },
+    {
+     "type": "cover",
+     "slot": 1
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-sheriff-3",
+     "tributes": []
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 1
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "rotation": {
+    "first": "cowboy",
+    "turn": 6,
+    "active": "wizard"
+   },
+   "command": "node experiments/showdown-dragon-strategy/wizard.mjs --case hunt5-s1-t6-sweep-target"
+  },
+  {
+   "id": "open-s7-t5-dragon-tribute",
+   "mode": "open",
+   "seed": 7,
+   "prefix": [
+    {
+     "type": "set",
+     "cardId": "wizard-hex-1"
+    },
+    {
+     "type": "summon",
+     "cardId": "wizard-skeleton-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-dynamiter-1",
+     "tributes": []
+    },
+    {
+     "type": "spell",
+     "cardId": "cowboy-lasso-1",
+     "target": 0
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "spell",
+     "cardId": "wizard-hellfire-1"
+    },
+    {
+     "type": "summon",
+     "cardId": "wizard-wizard-2",
+     "tributes": [
+      0
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": "base"
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "rotation": {
+    "first": "wizard",
+    "turn": 5,
+    "active": "wizard"
+   },
+   "command": "node experiments/showdown-dragon-strategy/wizard.mjs --case open-s7-t5-dragon-tribute"
+  },
+  {
+   "id": "open-s27-t7-dragon-tribute",
+   "mode": "open",
+   "seed": 27,
+   "prefix": [
+    {
+     "type": "summon",
+     "cardId": "wizard-skeleton-4",
+     "tributes": []
+    },
+    {
+     "type": "set",
+     "cardId": "wizard-hex-1"
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "set",
+     "cardId": "cowboy-bear-trap-1"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-dynamiter-1",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "spell",
+     "cardId": "wizard-hellfire-1"
+    },
+    {
+     "type": "summon",
+     "cardId": "wizard-headless-horseman-1",
+     "tributes": [
+      0
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": "base"
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-covered-wagon-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "wizard-skeleton-2",
+     "tributes": []
+    },
+    {
+     "type": "end"
+    },
+    {
+     "type": "summon",
+     "cardId": "cowboy-billy-1",
+     "tributes": [
+      0
+     ]
+    },
+    {
+     "type": "attack",
+     "slot": 0,
+     "target": 0
+    },
+    {
+     "type": "end"
+    }
+   ],
+   "rotation": {
+    "first": "wizard",
+    "turn": 7,
+    "active": "wizard"
+   },
+   "command": "node experiments/showdown-dragon-strategy/wizard.mjs --case open-s27-t7-dragon-tribute"
+  }
+ ]
+}

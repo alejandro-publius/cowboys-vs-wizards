@@ -1,0 +1,34 @@
+{
+ "experiment": "showdown-dragon-strategy/rival-crew",
+ "date": "2026-11-19 (America/Los_Angeles)",
+ "labels": {
+  "native": "Kiro Crew Bot 'overnight-rival' (its own memory store, standing thread, Goals record) on the local gateway, v0.12.2 running while the 0.13.0 CLI is selected",
+  "emulated": "none. The engine results come from Node scripts, not from the Bot",
+  "human": "none. Alex did not type or press anything in this run. Kiro, running this job, sent each message and owner request below on Alex's behalf, through the owner dashboard API with a short-lived `kirocrew token`"
+ },
+ "bot": {
+  "name": "overnight-rival",
+  "display_name": "Overnight Rival",
+  "created_with": "kirocrew agent create --name overnight-rival --display-name \"Overnight Rival\" --kiro-agent kirocrew",
+  "workspace": "member-overnight-rival",
+  "memory_store": "member-overnight-rival-e7d4b1a28ae54aa88f7eee010c0386be",
+  "goal_id": "g9c63562f",
+  "kept": "identity, memory, goal and thread are kept. Every check-in switch is off"
+ },
+ "steps": [
+  {"at": "23:36:52 PST", "what": "claim message sent to the Bot's standing thread (POST /api/chat on its slot)",
+   "observed": "The Bot tried to append to its memory/projects.md. The Crew sensitive-path policy blocked that write. The Bot then saved the claim with learn_add as 3 entries keyed [rival-claim-s3-c5 1/3..3/3]. A read-only sqlite query on the Bot's own memory.db found 3 semantic_memory rows (source user_explicit) containing the key. `kirocrew learn list` (global) contains no rival-claim entries"},
+  {"at": "23:37 PST", "what": "goal set (PUT /api/members/overnight-rival/goals/long-term)",
+   "observed": "goal g9c63562f saved. The Bot replied on its own and offered tracking. Nothing was pressed or turned on in response"},
+  {"at": "23:38:22 PST", "what": "context cleared (POST /api/members/overnight-rival/fresh-start)", "observed": "outcome cleared; the agent process shut down"},
+  {"at": "23:38:22 PST", "what": "one Daily Goal Reminder armed for 23:42 PST (PUT goals/schedules daily=true)",
+   "observed": "cron 4c018491 'Daily goal reminder: Overnight Rival' (42 23 * * *, managed by goal-daily:overnight-rival)"},
+  {"at": "23:42-23:51 PST", "what": "waited for the native check-in",
+   "observed": "BLOCKER: the job never started a turn in the Bot's thread. The thread stayed at turn 2 with 15 messages. The job's last_run_ts stayed null, and cron-history has no record for it. `kirocrew cron trigger 4c018491` at 23:44:10 and again at 23:46:56 returned 'HTTP 409: job is already running'. The gateway log shows nothing about it. Root cause not established. Candidates: the fire-time gate, or the CLI/gateway version skew (0.13.0 CLI, 0.12.2 gateway). No retry loop was installed"},
+  {"at": "23:51:58 PST", "what": "fallback check-in: one message sent to the cleared standing thread asking the Bot to retrieve rival-claim-s3-c5 from memory without using chat history. This is a Bot-thread turn sent on Alex's behalf, not the scheduled Daily Goal Reminder",
+   "observed": "The Bot called memory_recall (kirocrew-core) and restated the seed-3 choice (Dragon C T15, Jack W T10), counterexample seed 70 (Dragon W T14, Jack C T17), the visible distinction (no trap set) and the 5/5 against 5/11 split. All of these match rival-cases.json. It said memory_recall returned part 3/3, and parts 1/3 and 2/3 came from the lessons injected into its fresh context. The cleared chat history was not used. It left out the Covered Wagon/Dynamiter difference"},
+  {"at": "23:52:33 PST", "what": "every check-in switch turned off (daily, weekly, monthly, heartbeat false)",
+   "observed": "the reminder cron is gone from `kirocrew cron list`. Only the existing Night Watch job remains"}
+ ],
+ "verdict": "The Crew Bot memory works: it saved the claim in the Bot's own store and retrieved it after a context reset. The native scheduled check-in (K-078) did NOT run. The one subsequent check-in was an owner-sent message to the Bot's standing thread"
+}
