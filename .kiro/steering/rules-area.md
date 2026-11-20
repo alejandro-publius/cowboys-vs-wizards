@@ -8,7 +8,7 @@ fileMatchPattern: ["src/game/**", "scripts/verify-duel.mjs", "scripts/simulate-m
 - `src/game/` stays pure: no DOM, rendering, filesystem, network or model imports.
 - Showdown rules live in `src/game/showdown/`; their text is
   `prototypes/showdown/RULEBOOK.md`. Check them with
-  `node --test prototypes/showdown/rules.test.js tests/game/showdown-presenter.test.js`.
+  `node --test prototypes/showdown/rules.test.js prototypes/showdown/contract.test.js tests/game/showdown-presenter.test.js`.
 - The lane duel's rules (`src/game/*.js` outside `showdown/`) and known
   contradictions are in `docs/kiro-task-01.md`. They stay only because the
   earlier 3D build (`src/main.js`, `/3d/`) imports them; the graybox no longer
