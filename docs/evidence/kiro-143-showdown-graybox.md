@@ -9,7 +9,7 @@ Scope was the graybox entry, its UI and build, and a browser acceptance check. T
 
 - [`src/app.js`](../../src/app.js) is the new graybox build entry. With no `mode`, the title shows Play and a
   "Lane duel (previous rules)" link; Play opens Trail duel 1, Boot Hill. `?mode=lanes` loads the unchanged
-  lane app [`src/graybox.js`](../../src/graybox.js), and so do the lane modes already used by checks and links
+  lane app [`src/graybox.js`](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/735cb09/src/graybox.js), and so do the lane modes already used by checks and links
   (`match`, `ride-out`, `practice-dynamiter`, `practice-tribute`, `fire-arc`). The lane menu gains a
   "Showdown (new rules)" link. The Wanted, Build Deck, How to Play, Achievements, rival and fire-arc entries
   are hidden on the Showdown entry and remain on `?mode=lanes`.

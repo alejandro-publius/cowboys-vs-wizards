@@ -1,16 +1,28 @@
 # How Kiro changed Cowboys vs. Wizards
 
-**Judge entry · updated November 19, 2026, 11:10 p.m. Pacific · describes `main` at [`4d52642`](https://github.com/alejandro-publius/cowboys-vs-wizards/commit/4d52642575a75c60b1d2337b80c479dd30f2c181) (merge of #148), the commit the live site serves**
+## Try the Dragon decision
+
+[Open the experiment on turn five](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5). Select the Ranger, then the resting Dragon. Restart the duel and target Jack-o’-Lantern instead. You can also enter from Camp. The experiment leaves your saved career alone.
+
+| Kiro use | What we verified |
+| --- | --- |
+| Crew bot and memory (K-074, K-075) | The native Overnight Rival bot stored the seed-3 claim and recalled it in a later turn after its conversation context was cleared. Its scheduled reminder returned a conflict and produced no completed run (K-078). The later turn was requested manually. [Crew receipt](../../experiments/showdown-dragon-strategy/rival-crew-receipt.json) |
+| Counterexamples (K-080, K-082) | Kiro CLI ran the engine on 64 held-out seeds. Sixty positions offered both moves. The recorded policy won for the Cowboys by attacking the Dragon on seed 3, and by attacking Jack on seed 70. The Cowboy trap, friendly troop and Wizard Base differed. These are two reproducible lines under fixed draws. [Search and replay](../../experiments/showdown-dragon-strategy/rival-README.md) |
+| Playable test position (K-095) | Chrome exercised Camp entry, a direct link, both targets, keyboard, mouse, retry and unchanged career data. The native Crew browser could not attach to the user's Chrome profile (K-076). A human takeover and first-time playtest are pending. [Browser checks](../evidence/showdown-turn-k095.md) |
+| Keyboard regression (K-010, K-086, K-094) | QA found a keyboard player could win a duel, return to Camp with an unclaimed reward and be focused on Main menu. A clean pre-fix browser run failed the new assertion. The fix focused the first offered card and passed all seven keyboard checks. Kiro authored the bugfix document by hand. Native bugfix-spec generation, a human report and Kiro Web are unverified. [Regression check](../../scripts/browser-showdown-keyboard-check.mjs) |
+
+
+**Play Showdown from the [public game](https://alejandro-publius.github.io/cowboys-vs-wizards/).** The [deployed build manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) identifies the current release.
 
 Cowboys vs. Wizards is a haunted-Western card duel that runs in a browser. The fight in the December 4 entry is **Showdown**: you choose every attack, your troops shield your Base, and turns alternate. Alex chose it on November 19 after playing it. Fable 5.2 wrote its rules ([rulebook](../../prototypes/showdown/RULEBOOK.md), PR [#142](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/142)). Kiro CLI moved it into the game with its Trail, Camp and saves, put all 29 cards in one catalog, added ten readable combat cues, made the Scout bot fair, added generated property tests, kept keyboard focus across redraws, stopped the hosted page from downloading the lane duel, pointed Night Watch at Showdown and added a Showdown agent profile.
 
-**Since then:** slice 3 merged in #161 (`6b6caef`). Showdown is now at the site root, Play opens the Camp with its rivals, Wanted hunts, packs, deck builder, best of three and two players, and the lane duel lives only in the earlier 3D build at `/3d/`. The build table and `?mode=lanes` line below describe `4d52642`. The Night Shift pull request [#163](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/163) re-ran `npm test` (595/595) and the Showdown browser checks on its candidate: [receipts](../evidence/night-shift.md).
+The site root opens the Showdown menu. Camp contains the Trail, rivals, Wanted hunts, packs, deck builder, best of three, two-player mode and the Sheriff’s Ledger. The [earlier illustrated build](https://alejandro-publius.github.io/cowboys-vs-wizards/3d/) retains the lane rules. [Cutover PR](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/161) · [Night Shift receipts](../evidence/night-shift.md).
 
 This page is the one judge-facing description. The [Devpost packet](devpost-packet.md), [build story](build-story.md) and [historical evidence map](../kiro-brag-sheet.md) give more detail and older history.
 
-## Proof on the current build
+## Reproducible checks by revision
 
-Re-run by a Kiro CLI audit session on `4d52642`, November 19, 2026, about 11 p.m. Pacific. Anyone can repeat these from a clean checkout after `npm ci`.
+The original audit ran at `4d52642`. Each receipt below belongs to its recorded revision. The newer public replay and Night Shift checks are documented in [PR 162](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/162) and [PR 163](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/163).
 
 | Command | Result |
 | --- | --- |
@@ -21,7 +33,7 @@ Re-run by a Kiro CLI audit session on `4d52642`, November 19, 2026, about 11 p.m
 | `node scripts/browser-showdown-keyboard-check.mjs dist/cowboys-vs-wizards-board-duel.html` | 6/6 |
 | `node scripts/browser-showdown-cues-check.mjs dist/cowboys-vs-wizards-board-duel.html` | 5/5: all ten cues by real clicks, trap and Last Stand outcomes, rapid actions, reduced motion (takes a few minutes) |
 | `python3 -m unittest discover -s apps/night-watch/backend -p 'test_*.py'` | 12/12 |
-| Live identity | [build.json](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) names `4d52642`. The served [graybox/](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) page has SHA-256 `0f52d719…d3c4`, byte-identical to `npm run build -- --hosted` on `4d52642`. [CI tests](https://github.com/alejandro-publius/cowboys-vs-wizards/actions/runs/44688272748) and [Pages deploy](https://github.com/alejandro-publius/cowboys-vs-wizards/actions/runs/44688272643) passed on that commit. |
+| Archived deployment at the time of the audit | [build.json](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) identified `4d52642` at audit time. The served [graybox/](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) page has SHA-256 `0f52d719…d3c4`, byte-identical to `npm run build -- --hosted` on `4d52642`. [CI tests](https://github.com/alejandro-publius/cowboys-vs-wizards/actions/runs/44688272748) and [Pages deploy](https://github.com/alejandro-publius/cowboys-vs-wizards/actions/runs/44688272643) passed on that commit. |
 
 All of this is automated play or bot play. No first-time human has played Showdown.
 
@@ -29,10 +41,10 @@ All of this is automated play or bot play. No first-time human has played Showdo
 
 | Label | Where | What it is | Status |
 | --- | --- | --- | --- |
-| **Public graybox** (the entry) | [graybox/](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) | The rules-first game: flat board, text cards, life orbs, a log. **Play** opens the Camp; the Trail starts at Boot Hill, and wins, rewards and card choices are saved. | Live at `4d52642`. |
+| **Public graybox** (the entry) | [graybox/](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) | The rules-first game: flat board, text cards, life orbs, a log. **Play** opens the Camp; the Trail starts at Boot Hill, and wins, rewards and card choices are saved. | Live at the [site root](https://alejandro-publius.github.io/cowboys-vs-wizards/). |
 | **Full Showdown reference** | [showdown/](https://alejandro-publius.github.io/cowboys-vs-wizards/showdown/) · [contents](../../prototypes/showdown/README.md) | Fable's standalone page with the whole design: the Trail of six duels, rivals, bounties, packs, deck builder with side deck, best of three and two players on one screen. | Live, separate from the game. Rivals, bounties, packs, the deck builder, best of three and two players are not in the graybox yet. |
 
-The earlier three-lane duel is still playable at [graybox/?mode=lanes](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/?mode=lanes). It is the fight this project was built on until November 19. Its Kiro work is [listed below](#earlier-lane-duel-work-historical) as history.
+The public front page and the graybox alias open Showdown. The [earlier illustrated build](https://alejandro-publius.github.io/cowboys-vs-wizards/3d/) retains its original rules.
 
 ## Try one action (about a minute)
 
@@ -93,7 +105,7 @@ Each answer gives the Showdown use first, then any earlier lane-duel use as hist
 | 3. Hooks | **Showdown:** in a fresh `showdown-presenter` session the SessionStart hook ran 18 Showdown tests, 18 pass (#153). Compaction hooks were run by hand only. [PR record](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/153) **Earlier:** SessionStart ran 19 targeted checks, a card-save hook rebuilt the catalog, and a doc-save hook caught one broken link, then zero. [19-test output](../evidence/kiro-ui-hook.txt) · [Save receipts](../evidence/parallel-closeout-2200/hook-recheck.jsonl) |
 | 4. Specs | **Showdown:** the slice 2 spec from PR #149 maps each brief line to a numbered requirement and its tests. It is on `main` since #148, and was written after the code, so it is backfilled, not Requirements-First. **Earlier:** a Requirements-First spec drove the lane match; requirement 5.6 (both attacks resolve together) caught a presenter that dropped a defeated attacker's hit. [Requirement 5.6](../../.kiro/specs/orb-duel/requirements.md) · [Requirements-to-tests map](../requirement-test-map.md) |
 | 5. Steering | **Showdown:** the always-on project and evidence guidance applies to each worker, and the rules guidance is scoped to `src/game/**`, which includes the Showdown engine. No activation test was run on a Showdown file. **Earlier:** four real CLI sessions showed rules, rendering and interface guidance loading only for matching files. [Experiment](../evidence/kiro-scoped-steering-hook.md#file-scoped-activation-verified-on-november-17-2026-pacific) |
-| 6. MCP | **Showdown (open Night Shift PR):** `start_showdown_duel`, `observe_showdown` and `act_showdown` play through the canonical engine with the Cowboy seat's view only. A real Kiro CLI session won Boot Hill in 28 moves, and its revealed proof replays. [Receipt](../evidence/kiro-showdown-mcp.md) **Earlier:** Kiro wrote a project MCP server. `inspect_duel_replay` matches a browser receipt to its page; `inspect_character_asset` reports model structure. [Server](../../.kiro/powers/orb-duel-review/server.mjs) |
+| 6. MCP | **Showdown (PR 163):** `start_showdown_duel`, `observe_showdown` and `act_showdown` play through the canonical engine with the Cowboy seat's view only. A real Kiro CLI session won Boot Hill in 28 moves, and its revealed proof replays. [Receipt](../evidence/kiro-showdown-mcp.md) **Earlier:** Kiro wrote a project MCP server. `inspect_duel_replay` matches a browser receipt to its page; `inspect_character_asset` reports model structure. [Server](../../.kiro/powers/orb-duel-review/server.mjs) |
 | 7. Property testing | **Showdown:** the cue tests on `main` play 80 seeds of random legal moves and check 1,922 slot marks against the game state. #154 adds seven generated engine properties; 16/16 on `4d52642`, with seven planted faults caught and the reduced cases replaying alone ([above](#proof-on-the-current-build)). **Earlier:** seven boundary properties, 1,203 cases at seed 45274, six planted faults caught, a failing case shrunk from 24 to 5 cards. [Boundary evidence](../evidence/kiro-boundary-properties.md) |
 | 8. Powers | **Showdown:** not yet used. **Earlier:** the installed Orb Duel Review Power returned pass for a lane receipt on matching HTML and stale on changed HTML. [Package proof](../evidence/kiro-power-package-fix.md#actual-installed-only-verification) |
 
