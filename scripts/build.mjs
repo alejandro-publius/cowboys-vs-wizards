@@ -9,8 +9,10 @@ const root = fileURLToPath(rootUrl);
 const path = name => new URL(name, rootUrl);
 const utf8 = name => readFile(path(name),"utf8");
 const base64 = async name => (await readFile(path(name))).toString("base64");
+// --web: the Pages copy, published at /3d/ as the earlier illustrated build. Every asset URL is
+// relative to that page, so the tree works under any base path (…/cowboys-vs-wizards/3d/).
 const web = process.argv.includes("--web");
-const outDir = web ? "dist/web/" : "dist/";
+const outDir = web ? "dist/web/3d/" : "dist/";
 const files = [...arenaModelNames,...perimeterModelNames].sort().map(name => name+".glb");
 // --web: copy a file next to index.html under a content-hashed name and return its relative URL.
 if (web) await mkdir(path(outDir+"assets/"),{recursive:true});
@@ -46,7 +48,14 @@ const html=(await utf8("src/ui/layout.html")).replace("@@MATCHSTYLE@@",()=>visua
   .replace("@@CARDBACK@@",web?"":await base64("assets/cards/card-back.png"))
   .replace("@@SCRIPT@@",()=>script)
   .replace("</body>",'<script type="text/plain" id="licenses">\n'+notices.join("\n")+'\n</script>\n</body>');
+// The published copy says what it is and links back to the game at the site root.
+// The offline file is unchanged.
+const label=page=>{
+  const title="<title>Cowboys vs. Wizards | Board Duel</title>";
+  if(!page.includes(title)||!page.includes("<body>"))throw new Error("src/ui/layout.html: <title> or <body> changed; update the /3d/ label in scripts/build.mjs");
+  return page.replace(title,"<title>Cowboys vs. Wizards | Earlier illustrated build</title>").replace("<body>",'<body>\n<p id="earlier-build" style="position:fixed;z-index:20;top:4px;left:50%;transform:translateX(-50%);margin:0;padding:2px 8px;border-radius:4px;background:#160c09cc;color:#f4e9d9;font-size:11px;white-space:nowrap">Earlier illustrated build (lane duel rules) · <a href="../" style="color:#eab979">Current game</a></p>');
+};
 await mkdir(path(outDir),{recursive:true});
-const output=web?"dist/web/index.html":"dist/cowboys-vs-wizards-board-duel.html";
-await writeFile(path(output),html);
+const output=web?"dist/web/3d/index.html":"dist/cowboys-vs-wizards-board-duel.html";
+await writeFile(path(output),web?label(html):html);
 console.log("Built "+output);
