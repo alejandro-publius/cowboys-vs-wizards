@@ -32,6 +32,16 @@ export function createShowdownSession({seed, duel, seat = "cowboy", players = 1,
   };
   const opening = opponentTurns();
   const legal = () => (state.result || state.active !== viewer() ? [] : legalActions(state));
+  // duel.prefix (an allowlisted experiment turn, showdown-turn.js): this seat's recorded actions from the
+  // fresh deal, each one checked against the legal actions, with the bot's turns between. It must end on
+  // this seat's turn duel.at, or the session refuses to open.
+  for (const action of duel.prefix ?? []) {
+    if (!legal().some((each) => JSON.stringify(each) === JSON.stringify(action))) throw new Error(`replay action not legal: ${JSON.stringify(action)}`);
+    const applied = applyAction(state, action);
+    state = applied.state;
+    opening.push(...applied.events, ...opponentTurns());
+  }
+  if (duel.prefix && (state.result || state.active !== seat || state.turn !== duel.at)) throw new Error("replay did not reach its turn");
   return {
     seat: solo ? seat : null,
     players,
