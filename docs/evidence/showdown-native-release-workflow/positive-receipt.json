@@ -1,0 +1,164 @@
+{
+  "schema": "showdown-release-review/1",
+  "expectedSha": "c529330dc724108d72035f9bc46ba726a0612d8a",
+  "node": "v26.0.0",
+  "started": "2026-11-20T16:44:41.090Z",
+  "before": {
+    "head": "c529330dc724108d72035f9bc46ba726a0612d8a",
+    "detached": true,
+    "clean": true
+  },
+  "node_tests": {
+    "command": "node --test tests/game/showdown-campaign-store.test.js tests/game/showdown-fair-bot.test.js tests/game/showdown-inherited.test.js tests/game/showdown-keepsake-compat.test.js tests/game/showdown-presenter.test.js tests/game/showdown-properties.test.js tests/game/showdown-trail-ramp.test.js tests/match/sheriffs-ledger.test.js tests/match/showdown-campaign.test.js tests/match/showdown-cues.test.js tests/match/showdown-modes.test.js tests/match/showdown-playtest.test.js tests/match/showdown-release-review.test.js tests/match/showdown-session.test.js tests/match/showdown-turn.test.js prototypes/showdown/campaign-trail.test.js prototypes/showdown/contract.test.js prototypes/showdown/progress-guard.test.js prototypes/showdown/progress.test.js prototypes/showdown/rules.test.js prototypes/showdown/savecode.test.js",
+    "exit": 0,
+    "seconds": 11,
+    "tests": 167,
+    "pass": 167,
+    "fail": 0,
+    "log": ".artifacts/kiro/showdown-release-review/c529330dc724108d72035f9bc46ba726a0612d8a/node-tests.log"
+  },
+  "turns": [
+    {
+      "id": "dragon-c5",
+      "seed": 3,
+      "at": 5,
+      "branches": [
+        {
+          "action": {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          "result": {
+            "winner": "wizard",
+            "turn": 10
+          }
+        },
+        {
+          "action": {
+            "type": "attack",
+            "slot": 0,
+            "target": 1
+          },
+          "result": {
+            "winner": "wizard",
+            "turn": 10
+          }
+        },
+        {
+          "action": {
+            "type": "cover",
+            "slot": 0
+          },
+          "result": {
+            "winner": "wizard",
+            "turn": 8
+          }
+        },
+        {
+          "action": {
+            "type": "cover",
+            "slot": 1
+          },
+          "result": {
+            "winner": "wizard",
+            "turn": 25
+          }
+        },
+        {
+          "action": {
+            "type": "end"
+          },
+          "result": {
+            "winner": "wizard",
+            "turn": 8
+          }
+        }
+      ],
+      "problems": []
+    }
+  ],
+  "build": {
+    "command": "node scripts/build-graybox.mjs",
+    "exit": 0,
+    "html": "dist/cowboys-vs-wizards-board-duel.html",
+    "htmlSha256": "6e849fe1fca29b635b3ce8b5d8fc5e3eca624e81ff2dc81c6fe2601d7c3e9a77",
+    "htmlBytes": 107727
+  },
+  "browser": [
+    {
+      "id": "entry",
+      "command": "node scripts/browser-showdown-check.mjs dist/cowboys-vs-wizards-board-duel.html .artifacts/kiro/showdown-release-review/c529330dc724108d72035f9bc46ba726a0612d8a/entry",
+      "exit": 0,
+      "seconds": 13.9,
+      "reportPath": ".artifacts/kiro/showdown-release-review/c529330dc724108d72035f9bc46ba726a0612d8a/entry/browser-showdown.json",
+      "summary": "22 checks passed; report in .artifacts/kiro/showdown-release-review/c529330dc724108d72035f9bc46ba726a0612d8a/entry/browser-showdown.json",
+      "reportSha256": "8ec4e342c8c726552dc7a62d7134809d6ffd5d04416888ac0c8244043378525a",
+      "pageErrors": 0,
+      "pageSha256Matches": null
+    },
+    {
+      "id": "camp-trail",
+      "command": "node scripts/browser-showdown-trail-check.mjs dist/cowboys-vs-wizards-board-duel.html .artifacts/kiro/showdown-release-review/c529330dc724108d72035f9bc46ba726a0612d8a/camp-trail",
+      "exit": 0,
+      "seconds": 9.8,
+      "reportPath": ".artifacts/kiro/showdown-release-review/c529330dc724108d72035f9bc46ba726a0612d8a/camp-trail/browser-showdown-trail.json",
+      "summary": "16 checks passed; report in .artifacts/kiro/showdown-release-review/c529330dc724108d72035f9bc46ba726a0612d8a/camp-trail/browser-showdown-trail.json",
+      "reportSha256": "a7a6492e8f415c9d1fbe68f4427b18be4bfb9046410563a894aa3e9a7c2ffb6b",
+      "pageErrors": 0,
+      "pageSha256Matches": null
+    },
+    {
+      "id": "modes-hidden-saves",
+      "command": "node scripts/browser-showdown-modes-check.mjs dist/cowboys-vs-wizards-board-duel.html .artifacts/kiro/showdown-release-review/c529330dc724108d72035f9bc46ba726a0612d8a/modes-hidden-saves",
+      "exit": 0,
+      "seconds": 23.9,
+      "reportPath": ".artifacts/kiro/showdown-release-review/c529330dc724108d72035f9bc46ba726a0612d8a/modes-hidden-saves/browser-showdown-modes.json",
+      "summary": "13 checks passed; report in .artifacts/kiro/showdown-release-review/c529330dc724108d72035f9bc46ba726a0612d8a/modes-hidden-saves/browser-showdown-modes.json",
+      "reportSha256": "4daba2f84fc30884a65c53e45f94e4b383c63604b144642f2576ac08e110cf72",
+      "pageErrors": 0,
+      "pageSha256Matches": null
+    },
+    {
+      "id": "turn",
+      "command": "node scripts/browser-showdown-turn-check.mjs dist/cowboys-vs-wizards-board-duel.html .artifacts/kiro/showdown-release-review/c529330dc724108d72035f9bc46ba726a0612d8a/turn",
+      "exit": 0,
+      "seconds": 3.9,
+      "reportPath": ".artifacts/kiro/showdown-release-review/c529330dc724108d72035f9bc46ba726a0612d8a/turn/report.json",
+      "summary": "18 checks passed; report .artifacts/kiro/showdown-release-review/c529330dc724108d72035f9bc46ba726a0612d8a/turn/report.json",
+      "reportSha256": "12067e68bc275b13046cc31bf47fc41cdad0667ac7300b2d4e604176e7526c5b",
+      "pageErrors": 0,
+      "pageSha256Matches": null
+    },
+    {
+      "id": "keyboard",
+      "command": "node scripts/browser-showdown-keyboard-check.mjs dist/cowboys-vs-wizards-board-duel.html .artifacts/kiro/showdown-release-review/c529330dc724108d72035f9bc46ba726a0612d8a/keyboard",
+      "exit": 0,
+      "seconds": 54.5,
+      "reportPath": ".artifacts/kiro/showdown-release-review/c529330dc724108d72035f9bc46ba726a0612d8a/keyboard/browser-showdown-keyboard.json",
+      "summary": "7 checks passed; report in .artifacts/kiro/showdown-release-review/c529330dc724108d72035f9bc46ba726a0612d8a/keyboard/browser-showdown-keyboard.json",
+      "reportSha256": "1687839d76e3d08ee8a67b123884f1712a3292910a4f5df470a30356a3ce587e",
+      "pageErrors": 0,
+      "pageSha256Matches": null
+    },
+    {
+      "id": "ledger",
+      "command": "node scripts/browser-ledger-check.mjs dist/cowboys-vs-wizards-board-duel.html .artifacts/kiro/showdown-release-review/c529330dc724108d72035f9bc46ba726a0612d8a/ledger",
+      "exit": 0,
+      "seconds": 2.1,
+      "reportPath": ".artifacts/kiro/showdown-release-review/c529330dc724108d72035f9bc46ba726a0612d8a/ledger/browser-ledger.json",
+      "summary": "12 checks passed; report in .artifacts/kiro/showdown-release-review/c529330dc724108d72035f9bc46ba726a0612d8a/ledger/browser-ledger.json",
+      "reportSha256": "96f27c83d3b70ef6404871661dc76c216fc4e0926278b1bf52dcafe8d27942aa",
+      "pageErrors": 0,
+      "pageSha256Matches": null
+    }
+  ],
+  "after": {
+    "head": "c529330dc724108d72035f9bc46ba726a0612d8a",
+    "detached": true,
+    "clean": true
+  },
+  "failures": [],
+  "verdict": "pass",
+  "ended": "2026-11-20T16:46:40.567Z"
+}

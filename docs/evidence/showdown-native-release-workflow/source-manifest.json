@@ -1,0 +1,47 @@
+{
+  "sanitization": "Only absolute path prefixes replaced by <REVIEW_CHECKOUT>, <WORKTREE>, <PROJECT_ROOT>, <HOME>. No fields removed. Raw CLI stream, logs and screenshots not copied.",
+  "files": [
+    {
+      "file": "bad-sha-workflow-state.json",
+      "source": "<HOME>/.kiro/sessions/591472e52af4a559/workflows/wf_3f3cc7a5856eef24/workflow-state.json",
+      "sourceSha256": "2bdd052964159780151ed009eb87183914cdf946819efb964e61bc280bdf8259",
+      "savedSha256": "debb8fff4d9052c73f2e662e5d06b05ceee8df8a4e10e7751721eaec3c9859c7",
+      "bytes": 3266
+    },
+    {
+      "file": "positive-workflow-state.json",
+      "source": "<HOME>/.kiro/sessions/591472e52af4a559/workflows/wf_5fb9b905dc2ad28d/workflow-state.json",
+      "sourceSha256": "01a2bae8896f3a9e2cae4b0aea5f39d483abf1894f4233bd9dd43d3fd8ad5933",
+      "savedSha256": "19c24611d1d8147769d888a1db4aa3f9e50a3680253dda39619db96aa650bfec",
+      "bytes": 5180
+    },
+    {
+      "file": "workflow-definition.json",
+      "source": "<HOME>/.kiro/sessions/591472e52af4a559/workflows/wf_5fb9b905dc2ad28d/workflow-definition.json",
+      "sourceSha256": "ee9e9b6640ef6fab24c9d8f62fc86a1607de56163841a179a39c7e08869e8287",
+      "savedSha256": "ee9e9b6640ef6fab24c9d8f62fc86a1607de56163841a179a39c7e08869e8287",
+      "bytes": 3565
+    },
+    {
+      "file": "bad-sha-report.md",
+      "source": "<REVIEW_CHECKOUT>/.artifacts/kiro/showdown-release-review/2fcf39b7fe4db6f78cb33f6b2c474e053e89bbc7/report.md",
+      "sourceSha256": "98c2da85cee54bb2801b63ce5b2f10c3d6c5f99ed5b41045f6da3d8b70d8bac2",
+      "savedSha256": "98c2da85cee54bb2801b63ce5b2f10c3d6c5f99ed5b41045f6da3d8b70d8bac2",
+      "bytes": 1223
+    },
+    {
+      "file": "positive-report.md",
+      "source": "<REVIEW_CHECKOUT>/.artifacts/kiro/showdown-release-review/c529330dc724108d72035f9bc46ba726a0612d8a/report.md",
+      "sourceSha256": "765430ec6738ccc926ee94bd213b24d80978909301f9acb2de9b2a0f715c77cd",
+      "savedSha256": "765430ec6738ccc926ee94bd213b24d80978909301f9acb2de9b2a0f715c77cd",
+      "bytes": 3557
+    },
+    {
+      "file": "positive-receipt.json",
+      "source": "<REVIEW_CHECKOUT>/.artifacts/kiro/showdown-release-review/c529330dc724108d72035f9bc46ba726a0612d8a/receipt.json",
+      "sourceSha256": "d323236e18523d045401b87da9ea43e65c7f0caad3583205e51ee689543ea7c3",
+      "savedSha256": "d323236e18523d045401b87da9ea43e65c7f0caad3583205e51ee689543ea7c3",
+      "bytes": 7221
+    }
+  ]
+}
