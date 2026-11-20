@@ -395,4 +395,3 @@ The next substantial Kiro task is #56, boundary generation, failure reduction an
 - **Change**: `?turn=dragon-c5-70` and a second Camp control `#camp-turn-dragon-70` open seed 70's Cowboy turn 5 on the normal Showdown screen. The prefix is the canonical policy's own 7 actions, replayed legally from a fresh deal. `dragon-c5` is unchanged. Neutral draft lesson text for Fable. No rule, reward, bounty or log change.
 - **Verification**: Node turn tests 11/11 (state hash matches the fixture; A `w14`, B `c17`), `npm test` 606/606, turn browser check 29/29 on file and on staged HTTP, and the other graybox browser checks pass. [Evidence note](evidence/showdown-turn-k095.md#second-decision-seed-70-k-008-2026-11-20).
 - **Remaining**: human playtests ("What made you choose that target?") are pending, as are the hosted link after a deploy and Fable's review of the wording.
-
