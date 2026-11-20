@@ -1,0 +1,92 @@
+Positions from The Bone Fence, Cowboy seat, your turn. Choose RIDE or FIGHT for each.
+
+## case-a
+Turn 7. Cowboy Base 5/5. Wizard Base 4/4.
+Cowboy board: slot 0: Covered Wagon attack 1 orbs 1 [Guard]; slot 1: Outrider attack 1 orbs 3 [Ride]; slot 2: Sheriff attack 1 orbs 3
+Wizard board: slot 0: Wizard attack 2 orbs 3 (has attacked); slot 1: Skeleton attack 1 orbs 1; slot 2: empty
+Cowboy hand: Billy, Billy, Deadeye. Cowboy deck 9 cards. Cowboy graveyard: Deadeye.
+Wizard hand 4 cards (hidden), deck 8, face-down traps 0. Wizard graveyard: Singularity, Bone Wall.
+RIDE: your Outrider in slot 1 strikes the Wizard Base for 1 orb.
+FIGHT: your Outrider in slot 1 attacks the Wizard in Wizard slot 0.
+
+## case-b
+Turn 3. Cowboy Base 5/5. Wizard Base 4/4.
+Cowboy board: slot 0: Outrider attack 1 orbs 3 [Ride]; slot 1: empty; slot 2: empty
+Wizard board: slot 0: Skeleton attack 1 orbs 3; slot 1: empty; slot 2: empty
+Cowboy hand: Billy, Sheriff, Outrider, Covered Wagon. Cowboy deck 11 cards. Cowboy graveyard: none.
+Wizard hand 5 cards (hidden), deck 10, face-down traps 0. Wizard graveyard: none.
+RIDE: your Outrider in slot 0 strikes the Wizard Base for 1 orb.
+FIGHT: your Outrider in slot 0 attacks the Skeleton in Wizard slot 0.
+
+## case-c
+Turn 3. Cowboy Base 5/5. Wizard Base 4/4.
+Cowboy board: slot 0: Outrider attack 1 orbs 2 [Ride]; slot 1: empty; slot 2: empty
+Wizard board: slot 0: Skeleton attack 1 orbs 3; slot 1: empty; slot 2: empty
+Cowboy hand: Deadeye, Billy, Sheriff, Billy. Cowboy deck 11 cards. Cowboy graveyard: none.
+Wizard hand 4 cards (hidden), deck 10, face-down traps 0. Wizard graveyard: Singularity.
+RIDE: your Outrider in slot 0 strikes the Wizard Base for 1 orb.
+FIGHT: your Outrider in slot 0 attacks the Skeleton in Wizard slot 0.
+
+## case-d
+Turn 7. Cowboy Base 5/5. Wizard Base 4/4.
+Cowboy board: slot 0: Covered Wagon attack 1 orbs 1 [Guard]; slot 1: Covered Wagon attack 1 orbs 2 [Guard]; slot 2: Outrider attack 1 orbs 3 [Ride]
+Wizard board: slot 0: Wizard attack 2 orbs 3 (has attacked); slot 1: Skeleton attack 1 orbs 1; slot 2: empty
+Cowboy hand: Billy, Billy, Billy. Cowboy deck 9 cards. Cowboy graveyard: Deadeye.
+Wizard hand 4 cards (hidden), deck 8, face-down traps 0. Wizard graveyard: Singularity, Wizard.
+RIDE: your Outrider in slot 2 strikes the Wizard Base for 1 orb.
+FIGHT: your Outrider in slot 2 attacks the Wizard in Wizard slot 0.
+
+## case-e
+Turn 3. Cowboy Base 5/5. Wizard Base 4/4.
+Cowboy board: slot 0: Outrider attack 1 orbs 2 [Ride]; slot 1: empty; slot 2: empty
+Wizard board: slot 0: Skeleton attack 1 orbs 3; slot 1: empty; slot 2: empty
+Cowboy hand: Billy, Billy, Deadeye, Outrider. Cowboy deck 11 cards. Cowboy graveyard: none.
+Wizard hand 4 cards (hidden), deck 10, face-down traps 0. Wizard graveyard: Singularity.
+RIDE: your Outrider in slot 0 strikes the Wizard Base for 1 orb.
+FIGHT: your Outrider in slot 0 attacks the Skeleton in Wizard slot 0.
+
+## case-f
+Turn 3. Cowboy Base 5/5. Wizard Base 4/4.
+Cowboy board: slot 0: Outrider attack 1 orbs 3 [Ride]; slot 1: empty; slot 2: empty
+Wizard board: slot 0: Skeleton attack 1 orbs 3; slot 1: empty; slot 2: empty
+Cowboy hand: Deadeye, Billy, Billy, Covered Wagon. Cowboy deck 11 cards. Cowboy graveyard: none.
+Wizard hand 5 cards (hidden), deck 10, face-down traps 0. Wizard graveyard: none.
+RIDE: your Outrider in slot 0 strikes the Wizard Base for 1 orb.
+FIGHT: your Outrider in slot 0 attacks the Skeleton in Wizard slot 0.
+
+## case-g
+Turn 3. Cowboy Base 5/5. Wizard Base 4/4.
+Cowboy board: slot 0: Outrider attack 1 orbs 3 [Ride]; slot 1: empty; slot 2: empty
+Wizard board: slot 0: Skeleton attack 1 orbs 3; slot 1: empty; slot 2: empty
+Cowboy hand: Deadeye, Deadeye, Deadeye, Sheriff. Cowboy deck 11 cards. Cowboy graveyard: none.
+Wizard hand 5 cards (hidden), deck 10, face-down traps 0. Wizard graveyard: none.
+RIDE: your Outrider in slot 0 strikes the Wizard Base for 1 orb.
+FIGHT: your Outrider in slot 0 attacks the Skeleton in Wizard slot 0.
+
+## case-h
+Turn 7. Cowboy Base 5/5. Wizard Base 4/4.
+Cowboy board: slot 0: Covered Wagon attack 1 orbs 2 [Guard]; slot 1: Outrider attack 1 orbs 3 [Ride]; slot 2: empty
+Wizard board: slot 0: Wizard attack 2 orbs 3 (has attacked); slot 1: Skeleton attack 1 orbs 3; slot 2: empty
+Cowboy hand: Billy, Sheriff, Sheriff. Cowboy deck 9 cards. Cowboy graveyard: Deadeye, Covered Wagon.
+Wizard hand 3 cards (hidden), deck 8, face-down traps 0. Wizard graveyard: Singularity, Singularity, Bone Wall.
+RIDE: your Outrider in slot 1 strikes the Wizard Base for 1 orb.
+FIGHT: your Outrider in slot 1 attacks the Wizard in Wizard slot 0.
+
+## case-i
+Turn 3. Cowboy Base 5/5. Wizard Base 4/4.
+Cowboy board: slot 0: Outrider attack 1 orbs 2 [Ride]; slot 1: empty; slot 2: empty
+Wizard board: slot 0: Skeleton attack 1 orbs 3; slot 1: empty; slot 2: empty
+Cowboy hand: Deadeye, Sheriff, Sheriff, Sheriff. Cowboy deck 11 cards. Cowboy graveyard: none.
+Wizard hand 4 cards (hidden), deck 10, face-down traps 0. Wizard graveyard: Singularity.
+RIDE: your Outrider in slot 0 strikes the Wizard Base for 1 orb.
+FIGHT: your Outrider in slot 0 attacks the Skeleton in Wizard slot 0.
+
+## case-j
+Turn 7. Cowboy Base 5/5. Wizard Base 4/4.
+Cowboy board: slot 0: Outrider attack 1 orbs 3 [Ride]; slot 1: empty; slot 2: empty
+Wizard board: slot 0: Wizard attack 2 orbs 3 (has attacked); slot 1: empty; slot 2: empty
+Cowboy hand: Billy, Outrider, Deadeye. Cowboy deck 9 cards. Cowboy graveyard: Sheriff, Deadeye, Sheriff.
+Wizard hand 4 cards (hidden), deck 8, face-down traps 0. Wizard graveyard: Singularity, Singularity, Bone Wall.
+RIDE: your Outrider in slot 0 strikes the Wizard Base for 1 orb.
+FIGHT: your Outrider in slot 0 attacks the Wizard in Wizard slot 0.
+
