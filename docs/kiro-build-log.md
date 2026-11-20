@@ -401,3 +401,12 @@ The next substantial Kiro task is #56, boundary generation, failure reduction an
 Kiro CLI added per-duel build attribution to the Camp export. Separate workers exercised the rival’s one-shot Crew check-in, the staged Sheriff rejection and engine/UI steering controls. The release handoff links each receipt. The Devpost draft now leads with the two playable Dragon decisions and credits the earlier lane work separately.
 
 Kiro added the Bone Fence Outrider study and the Guard targeting check. Source precedents were TradeWizard’s parallel comparison and Last Rites’ file-scoped accessibility audit. The private Dragon cut is based on the two-position build at 96adf60. The submission script describes the capture and preserves the earlier lane credits.
+
+### 2026-11-20 — Even-fight package through the Night Shift (Kiro CLI, America/Los_Angeles, 09:30–10:05 PST)
+
+- **State**: two local commits on `kiro/showdown-sprint-even-proof` from `6a464e0`. Not merged or published.
+- **Performed in**: a Kiro CLI worker session (Claude Opus 5.5) on Alex's Mac. These were native local CLI runs, with no browser and no human play.
+- **Problem**: Fable's even-fight brief (`f079fdc`) asks for the whole rules package to go through `scripts/night-review.mjs` on deals 0–999 and 1000–1999 with a sealed bundle, for the Ledger to show it, and for Trail tables before and after the change. The Night Shift could only review one number on one card.
+- **Change**: `night-review.mjs package --base <sha> --candidate <sha>` writes a sealed `night-review/package@1` bundle, and `verify` checks it. The Ledger lists sealed package reviews with their recorded verdict, apart from the one-card reviews. There are unit tests for the gate and the Ledger line.
+- **Verification**: `npm test` 620/620 on the branch. The control `755df56` → `6a464e0` reproduces Fable's "today" rows exactly. The combined candidate `d5a799d` gives first player 49.50% and Cowboys 51.80% on deals 0–999, and 51.40% and 54.10% on deals 1000–1999. Both are inside the band. The **Trail gate failed**: three level-1 rows moved more than 3 points, the largest being Rival 1 at +6.7. `verify --rerun` replayed the same games. [Evidence note](evidence/even-fight-proof.md).
+- **Remaining**: Fable decides on the Trail moves. Nothing was retuned, and the package is not release eligible. The coordinator should regenerate the Ledger payload after joining, because the candidate changes the deck counts.

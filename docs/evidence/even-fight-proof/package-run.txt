@@ -1,0 +1,15 @@
+2026-11-20T17:47:16Z
+package package-755df56b-to-d5a799d6: 755df56b9903 -> d5a799d61a93; tune 0+1000, holdout 1000+1000, Trail 300 deals
+  tests: baseline 62/62, candidate 68/68
+  tune 0-999: first player 57.10% -> 49.50%, Cowboys 59.40% -> 51.80%
+  holdout 1000-1999: first player 58.25% -> 51.40%, Cowboys 61.05% -> 54.10%
+  Trail: largest move 6.7 points on Trail, rival and hunt rows (6.7 including the Open range) over 21 rows x 3 levels
+  verdict: failed
+    - Trail Rival 1. The Stargazer, level 1: 33.3% -> 40.0% moved more than 3 points
+    - Trail The Lantern Wraith, hunt 1, level 1: 91.3% -> 95.3% moved more than 3 points
+    - Trail The Lantern Wraith, hunt 2, level 1: 86.3% -> 92.3% moved more than 3 points
+  Stop and send Fable the numbers. Do not retune. Not release eligible.
+  docs/evidence/night-shift/even-fight-d5a799d6
+verify package-755df56b-to-d5a799d6: ok; recorded verdict failed; tool script matches the current file
+EXIT=1
+2026-11-20T17:49:53Z

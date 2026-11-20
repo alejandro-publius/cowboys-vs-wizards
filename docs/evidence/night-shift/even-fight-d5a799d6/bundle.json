@@ -1,0 +1,1419 @@
+{
+  "schema": "night-review/package@1",
+  "kind": "rules-package",
+  "id": "package-755df56b-to-d5a799d6",
+  "createdAt": "2026-11-20T17:49:53.014Z",
+  "surface": {
+    "kind": "local-cli",
+    "kiroWeb": "not used; this bundle was produced by the local CLI and is not a Kiro Web run"
+  },
+  "tool": {
+    "commit": "8dd5f9bd36b7bd3fc775f58fe9d0f0c8c74d3a59",
+    "script": "4a38ff21c20cbf6a01e1f2050de3c8059606fc8685a73204cd7753745ba09944",
+    "node": "v26.0.0"
+  },
+  "brief": {
+    "commit": "f079fdcafb066ba5142dc2be2f1c1fc74b2bce12",
+    "path": "docs/design/showdown-even-fight-kiro-brief.md",
+    "sha256": "43550888333e72093609a6d6074de9ce51b9e670c6e97aa738795afcfaa52ebb"
+  },
+  "source": {
+    "base": {
+      "commit": "755df56b9903a6c7ee27273c45efa62346cd8a2d",
+      "tree": "bb4e74fdaafbc1d5dfe6a14f1f9f34573f2583a9",
+      "hashes": {
+        "card": null,
+        "generated": "187bb9ca71516227e67edd9f6e248e038ae20028e7e3333b6fa28bdf18b40a8b",
+        "rules": "096eb8a22dced7ca527cd2ebc27b6d1c36922884f0570662a7c0762d62d5b61a",
+        "cards": "2e9c3c7df707c43bc61b6481b801211de4fabd6ada87d9aa35d52330b868ffe1",
+        "propertyReceipt": "4dfa7e77951274330dacb49090d64fd66471492bfc2f75a630405456115c6e1d",
+        "engineBundle": "cdfa82ff9c142874e680fe0a721deb324e308caa65444ccd6c48d452af1f0f69"
+      }
+    },
+    "candidate": {
+      "commit": "d5a799d61a93db8ed9a90499bc8ae7d68c7a845c",
+      "tree": "701fdf0faae00f7e5df6bcda2342955d2296b44a",
+      "hashes": {
+        "card": null,
+        "generated": "187bb9ca71516227e67edd9f6e248e038ae20028e7e3333b6fa28bdf18b40a8b",
+        "rules": "03f62013fbb7d1a26b30564f04a448183e9012b035ec1c29bcddbf45945a05b0",
+        "cards": "15276d95ca32d71f99d8af72bec1af0ab06790b4f672b4e85e32bdc627ee41b1",
+        "propertyReceipt": "1e5b834ee7c1584daaa9f0514df9ab655e82733007095906d8641f788365660c",
+        "engineBundle": "58c9b5280a89f86a5528d57178f73d4a9a4046f73f2d01bd69b12f530409bf78"
+      }
+    },
+    "attribution": {
+      "baseIsAncestor": true,
+      "commits": [
+        {
+          "commit": "d5a799d61a93db8ed9a90499bc8ae7d68c7a845c",
+          "author": "Alex <82622360+alejandro-publius@users.noreply.github.com>",
+          "committer": "Alex",
+          "date": "2026-11-20T09:45:29-08:00",
+          "subject": "Regenerate the Ledger with the candidate even-match deck counts"
+        },
+        {
+          "commit": "cee74a59c8280b21c469a4c0b36c7299efc9ea59",
+          "author": "Alex <82622360+alejandro-publius@users.noreply.github.com>",
+          "committer": "Alex",
+          "date": "2026-11-20T09:45:28-08:00",
+          "subject": "Merge commit '8dd5f9bd36b7bd3fc775f58fe9d0f0c8c74d3a59' into kiro/showdown-even-fight-candidate"
+        },
+        {
+          "commit": "4fc7afee0362abdc79cd5685451169388133caa6",
+          "author": "Alex <82622360+alejandro-publius@users.noreply.github.com>",
+          "committer": "Alex",
+          "date": "2026-11-20T09:45:28-08:00",
+          "subject": "Merge commit '395df34487a016b2c1024c636b2d4cc66cc7b288' into kiro/showdown-even-fight-candidate"
+        },
+        {
+          "commit": "8634633ff87bdac822a37828564e97af7f590ba6",
+          "author": "Alex <82622360+alejandro-publius@users.noreply.github.com>",
+          "committer": "Alex",
+          "date": "2026-11-20T09:45:28-08:00",
+          "subject": "Merge commit 'b5e87e206260d27b83f013a655811c64ce35759d' into kiro/showdown-even-fight-candidate"
+        },
+        {
+          "commit": "b5e87e206260d27b83f013a655811c64ce35759d",
+          "author": "Alex <82622360+alejandro-publius@users.noreply.github.com>",
+          "committer": "Alex",
+          "date": "2026-11-20T09:45:22-08:00",
+          "subject": "Showdown even fight: 3 Skeletons/2 Imps, second side on 7 Base orbs, spells skip cover"
+        },
+        {
+          "commit": "8dd5f9bd36b7bd3fc775f58fe9d0f0c8c74d3a59",
+          "author": "Alex <82622360+alejandro-publius@users.noreply.github.com>",
+          "committer": "Alex",
+          "date": "2026-11-20T09:41:53-08:00",
+          "subject": "Night Shift: review a whole rules package on pinned commits and show its sealed verdict in the Ledger"
+        },
+        {
+          "commit": "395df34487a016b2c1024c636b2d4cc66cc7b288",
+          "author": "Alex <82622360+alejandro-publius@users.noreply.github.com>",
+          "committer": "Alex",
+          "date": "2026-11-20T09:41:29-08:00",
+          "subject": "Show both hands once a Showdown duel ends (even-fight brief, item 4)"
+        },
+        {
+          "commit": "7fdc234a59bace2a809a77c188fb193e0846dea1",
+          "author": "Alex <82622360+alejandro-publius@users.noreply.github.com>",
+          "committer": "GitHub",
+          "date": "2026-11-20T09:39:02-08:00",
+          "subject": "Merge pull request #169 from alejandro-publius/kiro/showdown-strategy-review"
+        },
+        {
+          "commit": "7e7874635e855fb301f166ea2d97236fb3689449",
+          "author": "Alex <82622360+alejandro-publius@users.noreply.github.com>",
+          "committer": "Alex",
+          "date": "2026-11-20T09:35:38-08:00",
+          "subject": "Record Alex’s completed playtests and distinguish the retained outcomes"
+        },
+        {
+          "commit": "6a464e0680a4fc1b55e79d415c3bec94f34dfb63",
+          "author": "Alex <82622360+alejandro-publius@users.noreply.github.com>",
+          "committer": "Alex",
+          "date": "2026-11-20T09:20:24-08:00",
+          "subject": "Pin weekend cohorts to the live build and record Fable’s updated rulings"
+        },
+        {
+          "commit": "74525879acd6a560466c34fbda8378e4d4da9e39",
+          "author": "Alex <82622360+alejandro-publius@users.noreply.github.com>",
+          "committer": "Alex",
+          "date": "2026-11-20T09:19:19-08:00",
+          "subject": "Connect Showdown strategy, accessibility and the private judge cut to reproducible evidence"
+        },
+        {
+          "commit": "591b4d57c50075ed308f1f08b3396deefac4751e",
+          "author": "Alex <82622360+alejandro-publius@users.noreply.github.com>",
+          "committer": "Alex",
+          "date": "2026-11-20T09:19:19-08:00",
+          "subject": "Merge commit '4cddfb5374759b5dc8b176071558ec4e973208f7' into kiro/showdown-strategy-review"
+        },
+        {
+          "commit": "4cddfb5374759b5dc8b176071558ec4e973208f7",
+          "author": "Alex <82622360+alejandro-publius@users.noreply.github.com>",
+          "committer": "Alex",
+          "date": "2026-11-20T09:19:11-08:00",
+          "subject": "Outrider experiment: Cowboy policy input from viewFor (no seed), exact renamed-history controls"
+        },
+        {
+          "commit": "4a3d273e1f60a7d8cc200c31c26f65d66a4dc74e",
+          "author": "Alex <82622360+alejandro-publius@users.noreply.github.com>",
+          "committer": "Alex",
+          "date": "2026-11-20T09:18:28-08:00",
+          "subject": "Merge commit 'e3d4281' into kiro/showdown-strategy-review"
+        },
+        {
+          "commit": "8cf87e2f0d3f5496b702542cce98e68edc72abb2",
+          "author": "Alex <82622360+alejandro-publius@users.noreply.github.com>",
+          "committer": "Alex",
+          "date": "2026-11-20T09:18:28-08:00",
+          "subject": "Merge commit 'd56d02a' into kiro/showdown-strategy-review"
+        },
+        {
+          "commit": "e3d4281d5ff005a515c61ec7f841f72bcd1e02f6",
+          "author": "Alex <82622360+alejandro-publius@users.noreply.github.com>",
+          "committer": "Alex",
+          "date": "2026-11-20T09:18:02-08:00",
+          "subject": "Record Showdown Guard access evidence and Kiro CLI V3 hook dispatch"
+        },
+        {
+          "commit": "d56d02abf5ea1b7072fdc4ffbc37c8f4db08d22a",
+          "author": "Alex <82622360+alejandro-publius@users.noreply.github.com>",
+          "committer": "Alex",
+          "date": "2026-11-20T09:17:50-08:00",
+          "subject": "Lead the judge demo script with the scripted Showdown Dragon-decision cut; label lane script as history"
+        },
+        {
+          "commit": "e36e658a4a2227e983e22a00f87373d74113d0ea",
+          "author": "Alex <82622360+alejandro-publius@users.noreply.github.com>",
+          "committer": "Alex",
+          "date": "2026-11-20T09:16:08-08:00",
+          "subject": "Describe Showdown attack and spell targets with the screen prompt (Guard access)"
+        },
+        {
+          "commit": "de398c51b20525239dcff413ae641a3bed206ec6",
+          "author": "Alex <82622360+alejandro-publius@users.noreply.github.com>",
+          "committer": "Alex",
+          "date": "2026-11-20T09:15:07-08:00",
+          "subject": "Outrider vs Sheriff paired comparison on The Bone Fence, seeds 0-999"
+        },
+        {
+          "commit": "79cfb18a0f9a859ddde6ae98bed9db9bfeb7be28",
+          "author": "Alex <82622360+alejandro-publius@users.noreply.github.com>",
+          "committer": "Alex",
+          "date": "2026-11-20T09:10:24-08:00",
+          "subject": "Outrider experiment: acceptance and fixed seed policy before any run"
+        }
+      ],
+      "files": [
+        ".kiro/hooks/check-showdown-guard-access.json",
+        "docs/design/release-line.md",
+        "docs/evidence/kiro-showdown-outrider.md",
+        "docs/evidence/night-shift-native-showdown.md",
+        "docs/evidence/showdown-even-hands.md",
+        "docs/evidence/showdown-guard-access/README.md",
+        "docs/evidence/showdown-guard-access/chrome-after-fix.json",
+        "docs/evidence/showdown-guard-access/chrome-before-fix.json",
+        "docs/evidence/showdown-guard-access/kiro-cli-v2-probe-transcript.txt",
+        "docs/evidence/showdown-guard-access/kiro-cli-v3-hook-dispatch.jsonl",
+        "docs/evidence/showdown-guard-access/kiro-cli-v3-probe-transcript.txt",
+        "docs/evidence/showdown-guard-access/webkit-after-fix.json",
+        "docs/kiro-build-log.md",
+        "docs/submission/devpost-packet.md",
+        "docs/submission/judge-demo-script.md",
+        "docs/submission/kiro-brag-sheet.md",
+        "experiments/showdown-outrider/README.md",
+        "experiments/showdown-outrider/compare.js",
+        "experiments/showdown-outrider/outrider.test.js",
+        "experiments/showdown-outrider/run.mjs",
+        "prototypes/showdown/cards.csv",
+        "prototypes/showdown/contract.test.js",
+        "prototypes/showdown/even-setup.test.js",
+        "prototypes/showdown/rules.test.js",
+        "scripts/browser-showdown-check.mjs",
+        "scripts/browser-showdown-guard-access-check.mjs",
+        "scripts/browser-showdown-modes-check.mjs",
+        "scripts/build-sheriffs-ledger.mjs",
+        "scripts/night-review.mjs",
+        "scripts/showdown-guard-access-hook.mjs",
+        "src/game/showdown/cards.js",
+        "src/game/showdown/contract.js",
+        "src/game/showdown/progress.js",
+        "src/game/showdown/rules.js",
+        "src/game/showdown/trail.js",
+        "src/match/showdown-session.js",
+        "src/ui/sheriffs-ledger.data.js",
+        "src/ui/sheriffs-ledger.js",
+        "src/ui/showdown-screen.js",
+        "tests/assets/night-review.test.mjs",
+        "tests/helpers/boundary-properties/showdown/engine.js",
+        "tests/helpers/boundary-properties/showdown/minimal-cases.json",
+        "tests/helpers/boundary-properties/showdown/properties.js",
+        "tests/match/sheriffs-ledger.test.js",
+        "tests/match/showdown-session.test.js"
+      ]
+    }
+  },
+  "tests": {
+    "baseline": {
+      "passed": true,
+      "missing": [],
+      "tests": 62,
+      "pass": 62,
+      "fail": 0,
+      "files": [
+        "tests/game/showdown-properties.test.js",
+        "tests/game/showdown-fair-bot.test.js",
+        "prototypes/showdown/rules.test.js",
+        "prototypes/showdown/progress.test.js"
+      ]
+    },
+    "candidate": {
+      "passed": true,
+      "missing": [],
+      "tests": 68,
+      "pass": 68,
+      "fail": 0,
+      "files": [
+        "tests/game/showdown-properties.test.js",
+        "tests/game/showdown-fair-bot.test.js",
+        "prototypes/showdown/rules.test.js",
+        "prototypes/showdown/progress.test.js"
+      ]
+    }
+  },
+  "entry": {
+    "baseline": {
+      "seed": 0,
+      "seats": {
+        "cowboy": {
+          "nightShift": {
+            "cowboy": {
+              "base": 5,
+              "hand": 4,
+              "deck": 12,
+              "board": 0
+            },
+            "wizard": {
+              "base": 5,
+              "hand": 5,
+              "deck": 11,
+              "board": 0
+            }
+          },
+          "openRange": {
+            "cowboy": {
+              "base": 5,
+              "hand": 4,
+              "deck": 12,
+              "board": 0
+            },
+            "wizard": {
+              "base": 5,
+              "hand": 5,
+              "deck": 11,
+              "board": 0
+            }
+          }
+        },
+        "wizard": {
+          "nightShift": {
+            "cowboy": {
+              "base": 5,
+              "hand": 5,
+              "deck": 11,
+              "board": 0
+            },
+            "wizard": {
+              "base": 5,
+              "hand": 4,
+              "deck": 12,
+              "board": 0
+            }
+          },
+          "openRange": {
+            "cowboy": {
+              "base": 5,
+              "hand": 5,
+              "deck": 11,
+              "board": 0
+            },
+            "wizard": {
+              "base": 5,
+              "hand": 4,
+              "deck": 12,
+              "board": 0
+            }
+          }
+        }
+      },
+      "consistent": true
+    },
+    "candidate": {
+      "seed": 0,
+      "seats": {
+        "cowboy": {
+          "nightShift": {
+            "cowboy": {
+              "base": 5,
+              "hand": 4,
+              "deck": 12,
+              "board": 0
+            },
+            "wizard": {
+              "base": 7,
+              "hand": 5,
+              "deck": 11,
+              "board": 0
+            }
+          },
+          "openRange": {
+            "cowboy": {
+              "base": 5,
+              "hand": 4,
+              "deck": 12,
+              "board": 0
+            },
+            "wizard": {
+              "base": 7,
+              "hand": 5,
+              "deck": 11,
+              "board": 0
+            }
+          }
+        },
+        "wizard": {
+          "nightShift": {
+            "cowboy": {
+              "base": 7,
+              "hand": 5,
+              "deck": 11,
+              "board": 0
+            },
+            "wizard": {
+              "base": 5,
+              "hand": 4,
+              "deck": 12,
+              "board": 0
+            }
+          },
+          "openRange": {
+            "cowboy": {
+              "base": 7,
+              "hand": 5,
+              "deck": 11,
+              "board": 0
+            },
+            "wizard": {
+              "base": 5,
+              "hand": 4,
+              "deck": 12,
+              "board": 0
+            }
+          }
+        }
+      },
+      "consistent": true
+    },
+    "consistent": true
+  },
+  "sets": {
+    "tune": {
+      "seeds": {
+        "from": 0,
+        "to": 999,
+        "deals": 1000
+      },
+      "baseline": {
+        "games": 2000,
+        "cowboy": 1188,
+        "wizard": 812,
+        "draw": 0,
+        "first": 1142,
+        "second": 858,
+        "cowboyShare": 59.4,
+        "firstShare": 57.1,
+        "factionSkew": 9.399999999999999,
+        "seatSkew": 7.100000000000001
+      },
+      "candidate": {
+        "games": 2000,
+        "cowboy": 1036,
+        "wizard": 964,
+        "draw": 0,
+        "first": 990,
+        "second": 1010,
+        "cowboyShare": 51.8,
+        "firstShare": 49.5,
+        "factionSkew": 1.7999999999999972,
+        "seatSkew": 0.5
+      },
+      "flips": {
+        "towardCowboy": 164,
+        "towardWizard": 316,
+        "other": 0,
+        "same": 1520
+      }
+    },
+    "holdout": {
+      "seeds": {
+        "from": 1000,
+        "to": 1999,
+        "deals": 1000
+      },
+      "baseline": {
+        "games": 2000,
+        "cowboy": 1221,
+        "wizard": 779,
+        "draw": 0,
+        "first": 1165,
+        "second": 835,
+        "cowboyShare": 61.05,
+        "firstShare": 58.25,
+        "factionSkew": 11.049999999999997,
+        "seatSkew": 8.25
+      },
+      "candidate": {
+        "games": 2000,
+        "cowboy": 1082,
+        "wizard": 918,
+        "draw": 0,
+        "first": 1028,
+        "second": 972,
+        "cowboyShare": 54.1,
+        "firstShare": 51.4,
+        "factionSkew": 4.100000000000001,
+        "seatSkew": 1.3999999999999986
+      },
+      "flips": {
+        "towardCowboy": 195,
+        "towardWizard": 334,
+        "other": 0,
+        "same": 1471
+      }
+    }
+  },
+  "trail": {
+    "deals": {
+      "base": 300,
+      "candidate": 300
+    },
+    "rows": [
+      {
+        "label": "Trail 1. Boot Hill",
+        "id": "trail",
+        "levels": [
+          {
+            "level": 0,
+            "before": 99.33333333333333,
+            "after": 99.33333333333333,
+            "move": 0
+          },
+          {
+            "level": 1,
+            "before": 100,
+            "after": 100,
+            "move": 0
+          },
+          {
+            "level": 2,
+            "before": 100,
+            "after": 100,
+            "move": 0
+          }
+        ]
+      },
+      {
+        "label": "Trail 2. Raven Roost",
+        "id": "trail",
+        "levels": [
+          {
+            "level": 0,
+            "before": 99.66666666666667,
+            "after": 99.66666666666667,
+            "move": 0
+          },
+          {
+            "level": 1,
+            "before": 99.33333333333333,
+            "after": 99.33333333333333,
+            "move": 0
+          },
+          {
+            "level": 2,
+            "before": 100,
+            "after": 100,
+            "move": 0
+          }
+        ]
+      },
+      {
+        "label": "Trail 3. The Bone Fence",
+        "id": "trail",
+        "levels": [
+          {
+            "level": 0,
+            "before": 69,
+            "after": 69,
+            "move": 0
+          },
+          {
+            "level": 1,
+            "before": 87.66666666666667,
+            "after": 87,
+            "move": -0.6666666666666714
+          },
+          {
+            "level": 2,
+            "before": 99.66666666666667,
+            "after": 99.66666666666667,
+            "move": 0
+          }
+        ]
+      },
+      {
+        "label": "Trail 4. Imp Hollow",
+        "id": "trail",
+        "levels": [
+          {
+            "level": 0,
+            "before": 41.333333333333336,
+            "after": 40.666666666666664,
+            "move": -0.6666666666666714
+          },
+          {
+            "level": 1,
+            "before": 85,
+            "after": 85,
+            "move": 0
+          },
+          {
+            "level": 2,
+            "before": 89.33333333333333,
+            "after": 89.33333333333333,
+            "move": 0
+          }
+        ]
+      },
+      {
+        "label": "Trail 5. The Hexed Mile",
+        "id": "trail",
+        "levels": [
+          {
+            "level": 0,
+            "before": 20.333333333333332,
+            "after": 22.333333333333332,
+            "move": 2
+          },
+          {
+            "level": 1,
+            "before": 60.333333333333336,
+            "after": 63,
+            "move": 2.6666666666666643
+          },
+          {
+            "level": 2,
+            "before": 95.33333333333333,
+            "after": 95.33333333333333,
+            "move": 0
+          }
+        ]
+      },
+      {
+        "label": "Trail 6. Dragon's Roost",
+        "id": "trail",
+        "levels": [
+          {
+            "level": 0,
+            "before": 19.333333333333332,
+            "after": 19,
+            "move": -0.33333333333333215
+          },
+          {
+            "level": 1,
+            "before": 40.666666666666664,
+            "after": 41.333333333333336,
+            "move": 0.6666666666666714
+          },
+          {
+            "level": 2,
+            "before": 77.66666666666667,
+            "after": 78.33333333333333,
+            "move": 0.6666666666666572
+          }
+        ]
+      },
+      {
+        "label": "Rival 1. The Stargazer",
+        "id": "rival:stargazer",
+        "levels": [
+          {
+            "level": 0,
+            "before": 21.666666666666668,
+            "after": 21,
+            "move": -0.6666666666666679
+          },
+          {
+            "level": 1,
+            "before": 33.333333333333336,
+            "after": 40,
+            "move": 6.666666666666664
+          },
+          {
+            "level": 2,
+            "before": 90.33333333333333,
+            "after": 93.33333333333333,
+            "move": 3
+          }
+        ]
+      },
+      {
+        "label": "Rival 2. The Imp",
+        "id": "rival:imp",
+        "levels": [
+          {
+            "level": 0,
+            "before": 30.333333333333332,
+            "after": 29,
+            "move": -1.3333333333333321
+          },
+          {
+            "level": 1,
+            "before": 56,
+            "after": 58,
+            "move": 2
+          },
+          {
+            "level": 2,
+            "before": 88,
+            "after": 89,
+            "move": 1
+          }
+        ]
+      },
+      {
+        "label": "Rival 3. The Bonewright",
+        "id": "rival:bonewright",
+        "levels": [
+          {
+            "level": 0,
+            "before": 11,
+            "after": 11.333333333333334,
+            "move": 0.3333333333333339
+          },
+          {
+            "level": 1,
+            "before": 37,
+            "after": 37,
+            "move": 0
+          },
+          {
+            "level": 2,
+            "before": 91,
+            "after": 91,
+            "move": 0
+          }
+        ]
+      },
+      {
+        "label": "Rival 4. The Graveyard Coven",
+        "id": "rival:coven",
+        "levels": [
+          {
+            "level": 0,
+            "before": 8.333333333333334,
+            "after": 9,
+            "move": 0.6666666666666661
+          },
+          {
+            "level": 1,
+            "before": 11.666666666666666,
+            "after": 11.666666666666666,
+            "move": 0
+          },
+          {
+            "level": 2,
+            "before": 58,
+            "after": 59.333333333333336,
+            "move": 1.3333333333333357
+          }
+        ]
+      },
+      {
+        "label": "The Lantern Wraith, hunt 1",
+        "id": "hunt:lantern-wraith",
+        "levels": [
+          {
+            "level": 0,
+            "before": 89.33333333333333,
+            "after": 87.33333333333333,
+            "move": -2
+          },
+          {
+            "level": 1,
+            "before": 91.33333333333333,
+            "after": 95.33333333333333,
+            "move": 4
+          },
+          {
+            "level": 2,
+            "before": 97,
+            "after": 99,
+            "move": 2
+          }
+        ]
+      },
+      {
+        "label": "The Lantern Wraith, hunt 2",
+        "id": "hunt:lantern-wraith",
+        "levels": [
+          {
+            "level": 0,
+            "before": 76.66666666666667,
+            "after": 76.33333333333333,
+            "move": -0.3333333333333428
+          },
+          {
+            "level": 1,
+            "before": 86.33333333333333,
+            "after": 92.33333333333333,
+            "move": 6
+          },
+          {
+            "level": 2,
+            "before": 96.66666666666667,
+            "after": 98.66666666666667,
+            "move": 2
+          }
+        ]
+      },
+      {
+        "label": "The Lantern Wraith, hunt 3",
+        "id": "hunt:lantern-wraith",
+        "levels": [
+          {
+            "level": 0,
+            "before": 41,
+            "after": 42.333333333333336,
+            "move": 1.3333333333333357
+          },
+          {
+            "level": 1,
+            "before": 68,
+            "after": 68.66666666666667,
+            "move": 0.6666666666666714
+          },
+          {
+            "level": 2,
+            "before": 87,
+            "after": 87.33333333333333,
+            "move": 0.3333333333333286
+          }
+        ]
+      },
+      {
+        "label": "The Lantern Wraith, hunt 4",
+        "id": "hunt:lantern-wraith",
+        "levels": [
+          {
+            "level": 0,
+            "before": 32.666666666666664,
+            "after": 30.333333333333332,
+            "move": -2.333333333333332
+          },
+          {
+            "level": 1,
+            "before": 61,
+            "after": 63.666666666666664,
+            "move": 2.6666666666666643
+          },
+          {
+            "level": 2,
+            "before": 85.33333333333333,
+            "after": 86,
+            "move": 0.6666666666666714
+          }
+        ]
+      },
+      {
+        "label": "The Lantern Wraith, hunt 5",
+        "id": "hunt:lantern-wraith",
+        "levels": [
+          {
+            "level": 0,
+            "before": 15.666666666666666,
+            "after": 15,
+            "move": -0.6666666666666661
+          },
+          {
+            "level": 1,
+            "before": 39,
+            "after": 39.333333333333336,
+            "move": 0.3333333333333357
+          },
+          {
+            "level": 2,
+            "before": 62.333333333333336,
+            "after": 62.666666666666664,
+            "move": 0.3333333333333286
+          }
+        ]
+      },
+      {
+        "label": "The Graveyard Dragon, hunt 1",
+        "id": "hunt:graveyard-dragon",
+        "levels": [
+          {
+            "level": 0,
+            "before": 50.666666666666664,
+            "after": 48.666666666666664,
+            "move": -2
+          },
+          {
+            "level": 1,
+            "before": 60,
+            "after": 60.666666666666664,
+            "move": 0.6666666666666643
+          },
+          {
+            "level": 2,
+            "before": 95.33333333333333,
+            "after": 95.33333333333333,
+            "move": 0
+          }
+        ]
+      },
+      {
+        "label": "The Graveyard Dragon, hunt 2",
+        "id": "hunt:graveyard-dragon",
+        "levels": [
+          {
+            "level": 0,
+            "before": 27,
+            "after": 26,
+            "move": -1
+          },
+          {
+            "level": 1,
+            "before": 43.666666666666664,
+            "after": 44,
+            "move": 0.3333333333333357
+          },
+          {
+            "level": 2,
+            "before": 78.66666666666667,
+            "after": 78.66666666666667,
+            "move": 0
+          }
+        ]
+      },
+      {
+        "label": "The Graveyard Dragon, hunt 3",
+        "id": "hunt:graveyard-dragon",
+        "levels": [
+          {
+            "level": 0,
+            "before": 18.333333333333332,
+            "after": 17,
+            "move": -1.3333333333333321
+          },
+          {
+            "level": 1,
+            "before": 36.333333333333336,
+            "after": 35.666666666666664,
+            "move": -0.6666666666666714
+          },
+          {
+            "level": 2,
+            "before": 72.66666666666667,
+            "after": 72.33333333333333,
+            "move": -0.3333333333333428
+          }
+        ]
+      },
+      {
+        "label": "The Graveyard Dragon, hunt 4",
+        "id": "hunt:graveyard-dragon",
+        "levels": [
+          {
+            "level": 0,
+            "before": 11.666666666666666,
+            "after": 12.666666666666666,
+            "move": 1
+          },
+          {
+            "level": 1,
+            "before": 28,
+            "after": 26.666666666666668,
+            "move": -1.3333333333333321
+          },
+          {
+            "level": 2,
+            "before": 66.66666666666667,
+            "after": 65.66666666666667,
+            "move": -1
+          }
+        ]
+      },
+      {
+        "label": "The Graveyard Dragon, hunt 5",
+        "id": "hunt:graveyard-dragon",
+        "levels": [
+          {
+            "level": 0,
+            "before": 6,
+            "after": 6,
+            "move": 0
+          },
+          {
+            "level": 1,
+            "before": 20,
+            "after": 18.666666666666668,
+            "move": -1.3333333333333321
+          },
+          {
+            "level": 2,
+            "before": 55,
+            "after": 54.333333333333336,
+            "move": -0.6666666666666643
+          }
+        ]
+      },
+      {
+        "label": "Open range (the even match)",
+        "id": "open",
+        "levels": [
+          {
+            "level": 0,
+            "before": 10.333333333333334,
+            "after": 10,
+            "move": -0.3333333333333339
+          },
+          {
+            "level": 1,
+            "before": 14,
+            "after": 11.333333333333334,
+            "move": -2.666666666666666
+          },
+          {
+            "level": 2,
+            "before": 65.33333333333333,
+            "after": 58.666666666666664,
+            "move": -6.666666666666664
+          }
+        ]
+      }
+    ],
+    "missing": [],
+    "maxMovePp": 6.666666666666664,
+    "maxGatedMovePp": 6.666666666666664,
+    "raw": {
+      "baseline": {
+        "deals": 300,
+        "rows": [
+          {
+            "label": "Trail 1. Boot Hill",
+            "id": "trail",
+            "wins": [
+              298,
+              300,
+              300
+            ]
+          },
+          {
+            "label": "Trail 2. Raven Roost",
+            "id": "trail",
+            "wins": [
+              299,
+              298,
+              300
+            ]
+          },
+          {
+            "label": "Trail 3. The Bone Fence",
+            "id": "trail",
+            "wins": [
+              207,
+              263,
+              299
+            ]
+          },
+          {
+            "label": "Trail 4. Imp Hollow",
+            "id": "trail",
+            "wins": [
+              124,
+              255,
+              268
+            ]
+          },
+          {
+            "label": "Trail 5. The Hexed Mile",
+            "id": "trail",
+            "wins": [
+              61,
+              181,
+              286
+            ]
+          },
+          {
+            "label": "Trail 6. Dragon's Roost",
+            "id": "trail",
+            "wins": [
+              58,
+              122,
+              233
+            ]
+          },
+          {
+            "label": "Rival 1. The Stargazer",
+            "id": "rival:stargazer",
+            "wins": [
+              65,
+              100,
+              271
+            ]
+          },
+          {
+            "label": "Rival 2. The Imp",
+            "id": "rival:imp",
+            "wins": [
+              91,
+              168,
+              264
+            ]
+          },
+          {
+            "label": "Rival 3. The Bonewright",
+            "id": "rival:bonewright",
+            "wins": [
+              33,
+              111,
+              273
+            ]
+          },
+          {
+            "label": "Rival 4. The Graveyard Coven",
+            "id": "rival:coven",
+            "wins": [
+              25,
+              35,
+              174
+            ]
+          },
+          {
+            "label": "The Lantern Wraith, hunt 1",
+            "id": "hunt:lantern-wraith",
+            "wins": [
+              268,
+              274,
+              291
+            ]
+          },
+          {
+            "label": "The Lantern Wraith, hunt 2",
+            "id": "hunt:lantern-wraith",
+            "wins": [
+              230,
+              259,
+              290
+            ]
+          },
+          {
+            "label": "The Lantern Wraith, hunt 3",
+            "id": "hunt:lantern-wraith",
+            "wins": [
+              123,
+              204,
+              261
+            ]
+          },
+          {
+            "label": "The Lantern Wraith, hunt 4",
+            "id": "hunt:lantern-wraith",
+            "wins": [
+              98,
+              183,
+              256
+            ]
+          },
+          {
+            "label": "The Lantern Wraith, hunt 5",
+            "id": "hunt:lantern-wraith",
+            "wins": [
+              47,
+              117,
+              187
+            ]
+          },
+          {
+            "label": "The Graveyard Dragon, hunt 1",
+            "id": "hunt:graveyard-dragon",
+            "wins": [
+              152,
+              180,
+              286
+            ]
+          },
+          {
+            "label": "The Graveyard Dragon, hunt 2",
+            "id": "hunt:graveyard-dragon",
+            "wins": [
+              81,
+              131,
+              236
+            ]
+          },
+          {
+            "label": "The Graveyard Dragon, hunt 3",
+            "id": "hunt:graveyard-dragon",
+            "wins": [
+              55,
+              109,
+              218
+            ]
+          },
+          {
+            "label": "The Graveyard Dragon, hunt 4",
+            "id": "hunt:graveyard-dragon",
+            "wins": [
+              35,
+              84,
+              200
+            ]
+          },
+          {
+            "label": "The Graveyard Dragon, hunt 5",
+            "id": "hunt:graveyard-dragon",
+            "wins": [
+              18,
+              60,
+              165
+            ]
+          },
+          {
+            "label": "Open range (the even match)",
+            "id": "open",
+            "wins": [
+              31,
+              42,
+              196
+            ]
+          }
+        ]
+      },
+      "candidate": {
+        "deals": 300,
+        "rows": [
+          {
+            "label": "Trail 1. Boot Hill",
+            "id": "trail",
+            "wins": [
+              298,
+              300,
+              300
+            ]
+          },
+          {
+            "label": "Trail 2. Raven Roost",
+            "id": "trail",
+            "wins": [
+              299,
+              298,
+              300
+            ]
+          },
+          {
+            "label": "Trail 3. The Bone Fence",
+            "id": "trail",
+            "wins": [
+              207,
+              261,
+              299
+            ]
+          },
+          {
+            "label": "Trail 4. Imp Hollow",
+            "id": "trail",
+            "wins": [
+              122,
+              255,
+              268
+            ]
+          },
+          {
+            "label": "Trail 5. The Hexed Mile",
+            "id": "trail",
+            "wins": [
+              67,
+              189,
+              286
+            ]
+          },
+          {
+            "label": "Trail 6. Dragon's Roost",
+            "id": "trail",
+            "wins": [
+              57,
+              124,
+              235
+            ]
+          },
+          {
+            "label": "Rival 1. The Stargazer",
+            "id": "rival:stargazer",
+            "wins": [
+              63,
+              120,
+              280
+            ]
+          },
+          {
+            "label": "Rival 2. The Imp",
+            "id": "rival:imp",
+            "wins": [
+              87,
+              174,
+              267
+            ]
+          },
+          {
+            "label": "Rival 3. The Bonewright",
+            "id": "rival:bonewright",
+            "wins": [
+              34,
+              111,
+              273
+            ]
+          },
+          {
+            "label": "Rival 4. The Graveyard Coven",
+            "id": "rival:coven",
+            "wins": [
+              27,
+              35,
+              178
+            ]
+          },
+          {
+            "label": "The Lantern Wraith, hunt 1",
+            "id": "hunt:lantern-wraith",
+            "wins": [
+              262,
+              286,
+              297
+            ]
+          },
+          {
+            "label": "The Lantern Wraith, hunt 2",
+            "id": "hunt:lantern-wraith",
+            "wins": [
+              229,
+              277,
+              296
+            ]
+          },
+          {
+            "label": "The Lantern Wraith, hunt 3",
+            "id": "hunt:lantern-wraith",
+            "wins": [
+              127,
+              206,
+              262
+            ]
+          },
+          {
+            "label": "The Lantern Wraith, hunt 4",
+            "id": "hunt:lantern-wraith",
+            "wins": [
+              91,
+              191,
+              258
+            ]
+          },
+          {
+            "label": "The Lantern Wraith, hunt 5",
+            "id": "hunt:lantern-wraith",
+            "wins": [
+              45,
+              118,
+              188
+            ]
+          },
+          {
+            "label": "The Graveyard Dragon, hunt 1",
+            "id": "hunt:graveyard-dragon",
+            "wins": [
+              146,
+              182,
+              286
+            ]
+          },
+          {
+            "label": "The Graveyard Dragon, hunt 2",
+            "id": "hunt:graveyard-dragon",
+            "wins": [
+              78,
+              132,
+              236
+            ]
+          },
+          {
+            "label": "The Graveyard Dragon, hunt 3",
+            "id": "hunt:graveyard-dragon",
+            "wins": [
+              51,
+              107,
+              217
+            ]
+          },
+          {
+            "label": "The Graveyard Dragon, hunt 4",
+            "id": "hunt:graveyard-dragon",
+            "wins": [
+              38,
+              80,
+              197
+            ]
+          },
+          {
+            "label": "The Graveyard Dragon, hunt 5",
+            "id": "hunt:graveyard-dragon",
+            "wins": [
+              18,
+              56,
+              163
+            ]
+          },
+          {
+            "label": "Open range (the even match)",
+            "id": "open",
+            "wins": [
+              30,
+              34,
+              176
+            ]
+          }
+        ]
+      }
+    },
+    "tool": "prototypes/showdown/trail-sim.mjs (LADDER, winRate) from each snapshot"
+  },
+  "results": {
+    "games-tune-baseline.json.gz": "703ea0552db45fb5b068e9fb38e7b0ba723f9ffabeaf33c5b1117e4b2e5044d3",
+    "games-tune-candidate.json.gz": "157f943f5e2707572674568cd2d80371b6a46c0768460dfd5e5670f467b046a8",
+    "games-holdout-baseline.json.gz": "5ff90afceea9c52baeb303e8fe469d3380e4215ac800fa51064f5ae8af3aa4b4",
+    "games-holdout-candidate.json.gz": "28ec49ca1b7d117e839bcb6c0444459304ef671d01deaf94b77770d3c8cd8066"
+  },
+  "policy": {
+    "band": [
+      45,
+      55
+    ],
+    "shares": [
+      "firstShare",
+      "cowboyShare"
+    ],
+    "sets": [
+      "tune",
+      "holdout"
+    ],
+    "trailTolerancePp": 3,
+    "trailUngated": [
+      "open"
+    ],
+    "bot": "playTurn level 2 for both seats; each deal played once with each side first",
+    "onFail": "Stop and send Fable the numbers. Do not retune. Not release eligible."
+  },
+  "decision": {
+    "verdict": "failed",
+    "reasons": [
+      "Trail Rival 1. The Stargazer, level 1: 33.3% -> 40.0% moved more than 3 points",
+      "Trail The Lantern Wraith, hunt 1, level 1: 91.3% -> 95.3% moved more than 3 points",
+      "Trail The Lantern Wraith, hunt 2, level 1: 86.3% -> 92.3% moved more than 3 points"
+    ],
+    "meaning": "Stop and send Fable the numbers. Do not retune. Not release eligible."
+  },
+  "bundleSha256": "bd01f65586725b372cd3fcac26cad764d1c8c9f50183468ab6fa8775b0f09d4e"
+}

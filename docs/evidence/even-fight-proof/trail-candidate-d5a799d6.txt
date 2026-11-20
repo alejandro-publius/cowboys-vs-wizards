@@ -1,0 +1,24 @@
+# Native run of Fable's trail-sim.mjs (default 300 deals per duel) on a git-archive snapshot of d5a799d61a93db8ed9a90499bc8ae7d68c7a845c (combined even-fight candidate)
+# command (in the snapshot): node prototypes/showdown/trail-sim.mjs ; Node v26.0.0; run by Kiro CLI worker even-proof, 2026-11-20 09:51-09:53 PST
+duel                                careless  simple careful
+Trail 1. Boot Hill                       99%    100%    100%
+Trail 2. Raven Roost                    100%     99%    100%
+Trail 3. The Bone Fence                  69%     87%    100%
+Trail 4. Imp Hollow                      41%     85%     89%
+Trail 5. The Hexed Mile                  22%     63%     95%
+Trail 6. Dragon's Roost                  19%     41%     78%
+Rival 1. The Stargazer                   21%     40%     93%
+Rival 2. The Imp                         29%     58%     89%
+Rival 3. The Bonewright                  11%     37%     91%
+Rival 4. The Graveyard Coven              9%     12%     59%
+The Lantern Wraith, hunt 1               87%     95%     99%
+The Lantern Wraith, hunt 2               76%     92%     99%
+The Lantern Wraith, hunt 3               42%     69%     87%
+The Lantern Wraith, hunt 4               30%     64%     86%
+The Lantern Wraith, hunt 5               15%     39%     63%
+The Graveyard Dragon, hunt 1             49%     61%     95%
+The Graveyard Dragon, hunt 2             26%     44%     79%
+The Graveyard Dragon, hunt 3             17%     36%     72%
+The Graveyard Dragon, hunt 4             13%     27%     66%
+The Graveyard Dragon, hunt 5              6%     19%     54%
+Open range (the even match)              10%     11%     59%
