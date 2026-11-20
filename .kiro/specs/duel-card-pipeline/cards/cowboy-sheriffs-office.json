@@ -1,0 +1,1 @@
+{ "type": "cowboy-sheriffs-office", "side": "cowboy", "order": 15, "name": "Sheriff's Office", "kind": "location", "showdownOnly": true, "showdown": { "rarity": "rare", "effect": "office" } }

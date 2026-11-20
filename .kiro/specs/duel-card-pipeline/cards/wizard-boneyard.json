@@ -1,0 +1,1 @@
+{ "type": "wizard-boneyard", "side": "wizard", "order": 14, "name": "Boneyard", "kind": "location", "showdownOnly": true, "showdown": { "rarity": "rare", "effect": "boneyard" } }
