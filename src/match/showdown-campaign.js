@@ -3,7 +3,7 @@
 // pays, what is on offer) comes from src/game/showdown/progress.js; nothing here decides a reward.
 import {laneCapturedCards, loadCampaign, saveCampaign} from "../game/showdown/campaign-store.js";
 import {holdings, joinInherited} from "../game/showdown/inherited.js";
-import {choose, duelFor, duelList, owned, settle} from "../game/showdown/progress.js";
+import {choose, deckProblems, duelFor, duelList, newSave, openPack, owned, settle, withDeck} from "../game/showdown/progress.js";
 import {GRIT_CAP, TRAIL} from "../game/showdown/trail.js";
 
 export function createCampaign(storage) {
@@ -27,6 +27,9 @@ export function createCampaign(storage) {
     duels: () => duelList(progress),
     // The open Trail duel for this progress, or null while a card is on offer or the Trail is done.
     trailDuel: () => duelFor(progress, "trail"),
+    // Any duel by its duelList id ("trail", "rival:<id>", "hunt:<id>", "open"), or null when it cannot be played now.
+    // deck: the Cowboy deck to play (a best-of-three plays the match's own copy); defaults to the saved deck.
+    duel: (id, deck) => duelFor(progress, id, deck ?? progress.deck),
     owned: (type) => owned(progress, type),
     // Records a finished duel once. Returns what it paid and which earned cards went into the deck.
     settle(duel, won) {
@@ -38,5 +41,19 @@ export function createCampaign(storage) {
       return {won, earned: settled.earned, intoDeck, grit: Math.min(settled.save.losses[duel.id] ?? 0, GRIT_CAP)};
     },
     choose(type) { keep(choose(progress, type)); },
+    // Opens one pack; returns the three cards it held (already in the collection).
+    openPack() {
+      const pack = openPack(progress);
+      keep(pack.save);
+      return pack.cards;
+    },
+    deckProblems: (deck, side) => deckProblems(progress, deck, side),
+    // Saves a deck and side deck the player built; withDeck throws if deckProblems lists anything.
+    withDeck(deck, side) { keep(withDeck(progress, deck, side)); },
+    // A save read from a save code (savecode.js decodeSaveCode). Returns true when it was stored.
+    replace(save) { keep(save); return saved; },
+    // Start over: Showdown progress only. The keepsake record and the lane profile are not written
+    // (Fable's ruling, PR 148 issuecomment-7031816529).
+    reset() { keep(newSave()); return saved; },
   };
 }

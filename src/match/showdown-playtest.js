@@ -39,6 +39,11 @@ export function createPlaytestLog(storage) {
       try { storage.setItem(PLAYTEST_KEY, JSON.stringify(log)); saved = true; } catch { saved = false; }
       return true;
     },
+    // Start over erases the report with the progress, as the reference screen does.
+    clear() {
+      log = [];
+      try { storage.setItem(PLAYTEST_KEY, JSON.stringify(log)); saved = true; } catch { saved = false; }
+    },
     text: (progress) => report(log, progress),
   };
 }

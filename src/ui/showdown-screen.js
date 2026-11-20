@@ -4,11 +4,16 @@
 // reaches this module, and no Wizard hand, trap or deck card id is written into the page.
 // Slice 2: a finished duel is settled once through the campaign (src/match/showdown-campaign.js),
 // and the result shows what it paid and the card choice before the way back to Camp.
+// Slice 3: every Camp duel (Trail, rivals, Wanted hunts, the even match), best of three with the
+// side-deck swap between games (src/match/showdown-match.js), and two players on one screen. With
+// two players the board is drawn from the active seat's view only, and a curtain hides the whole
+// table, with no hand or trap in the page, while the screen changes hands.
 import {EFFECTS, KEYWORDS, RARITY, TYPES, cardOf, has, tributes, typeOf} from "../game/showdown/cards.js";
 import {presentEvent} from "../game/showdown/presenter.js";
 import {newRunId} from "../match/showdown-playtest.js";
 import {TRAP_SLOTS, attackOf, attackOutcome, canAttack, opponent} from "../game/showdown/rules.js";
-import {createShowdownSession} from "../match/showdown-session.js";
+import {createShowdownSession, twoPlayers} from "../match/showdown-session.js";
+import {matchOver, matchWinner, newMatch, nextGame, offersSwap, recordGame, swapPool, withSwap} from "../match/showdown-match.js";
 import {createCuePlayer, cuesFor} from "./showdown-cues.js";
 import {FRAMES} from "./card-frames.js";
 
@@ -33,6 +38,11 @@ export function face(type, extra = "") {
 
 const TEMPLATE = `
   <header><h1>Showdown</h1><button id="sd-home" type="button">Back to camp</button></header>
+  <section id="sd-curtain" aria-label="Pass the screen" hidden>
+    <p id="sd-curtain-text"></p>
+    <button type="button" id="sd-ready">I'm ready</button>
+  </section>
+  <div id="sd-table">
   <p id="sd-lesson"></p>
   <p id="sd-status" role="status"></p>
   <p id="sd-feedback" aria-live="polite"></p>
@@ -53,21 +63,32 @@ const TEMPLATE = `
     <p class="sd-note">Cowboys: <span id="sd-cowboy-graveyard"></span></p>
     <p class="sd-note">Wizards: <span id="sd-wizard-graveyard"></span></p>
   </section>
-  <section aria-label="Keywords"><h2>Keywords</h2><ul id="sd-keywords"></ul></section>`;
+  <section aria-label="Keywords"><h2>Keywords</h2><ul id="sd-keywords"></ul></section>
+  </div>`;
 
 export const OFFER_HEADING = "Bonus: pick 1 more card to keep";
 export const offerRow = (offer, owned) => `<div class="sd-row">${offer.map((type) => `<button type="button" class="sd-card cowboy ${TYPES[type].rarity} sd-can" data-frame="${TYPES[type].kind}" data-choose="${type}">
   ${face(type, `<span class="sd-note">You own ${owned(type)}.</span>`)}</button>`).join("")}</div>`;
 export const pays = (cards) => cards.map(([type, copies]) => `${TYPES[type].name}${copies > 1 ? ` ×${copies}` : ""}`).join(", ");
 
-// campaign: settle(duel, won) once per finished duel, choose(type), progress(), owned(type), trailDuel().
-// playtest (optional): add(entry) once per finished duel; every duel on this screen is solo against the bot.
+const FACTION = {cowboy: "Cowboy", wizard: "Wizard"};
+
+// campaign: settle(duel, won) once per decided solo duel, choose(type), progress(), owned(type), trailDuel(),
+// duel(id, deck) for any Camp duel. playtest (optional): add(entry) once per finished solo game.
+// nextSeed() deals each later game (the next game of a match, a repeat, two players again); a Rematch
+// after a loss is a fresh deal. onSwap(pool, deck, side, done) opens the between-games side-deck swap.
 // cueOptions go to createCuePlayer (showdown-cues.js); only a check sets them, to shorten the step.
-export function mountShowdown(root, {onHome, campaign, playtest, cueOptions}) {
+export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nextSeed = freshSeed, onSwap}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
   let session, duel, seed, lines, latest, pick, outcome, picked, run, started;
+  let players = 1, match = null, curtain = false;
   const cues = createCuePlayer(root, cueOptions);
+  const solo = () => players === 1;
+  const viewer = () => session.viewer();
+  // Solo wording speaks to the player; two players are named by faction.
+  const whoseBase = (side) => (solo() ? (side === viewer() ? "Your" : "Wizard") : FACTION[side]);
+  const sides = (side) => `${FACTION[side]}s`;
 
   // Logs a batch of events and returns its placeholder cues, each tied to its log line.
   function record(events, before) {
@@ -78,9 +99,19 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions}) {
     for (const cue of batch) lines[cue.line].cue = cue.kind;
     return batch;
   }
-  function start(nextDuel, nextSeed) {
-    [duel, seed] = [nextDuel, nextSeed];
-    session = createShowdownSession({seed, duel});
+  // best 3 plays a best of three. players 2: two people on one screen, starter decks, nothing saved.
+  function start(nextDuel, dealSeed, {players: seats = 1, best = 1} = {}) {
+    [duel, players] = [nextDuel, seats];
+    const progress = campaign.progress();
+    match = best > 1 ? newMatch(solo() ? {deck: progress.deck, side: progress.side} : {}) : null;
+    deal(dealSeed);
+  }
+  // One game: of a single duel, or the current game of a match (the match's deck, the loser opening).
+  function deal(dealSeed) {
+    seed = dealSeed;
+    const current = solo() && match ? campaign.duel(duel.id, match.deck) ?? duel : duel;
+    session = createShowdownSession({seed, duel: current, players, ...(match?.first ? {first: match.first} : {})});
+    curtain = !solo();
     lines = [{turn: true, text: `Turn 1: the ${session.view().first === "cowboy" ? "Cowboys" : "Wizards"}.`}];
     latest = [];
     pick = null;
@@ -96,20 +127,53 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions}) {
   }
   function act(action) {
     pick = null;
-    const before = session.view();
+    const [before, seat] = [session.view(), viewer()];
     const batch = record(session.act(action), before);
     finish();
+    // Two players: hide the table while the screen changes hands.
+    curtain = !solo() && !session.view().result && viewer() !== seat;
     render();
     cues.play(batch);
   }
-  // The duel counts once it is decided: settled exactly once, then saved by the campaign.
+  // A game counts once it ends; a solo duel is settled exactly once, when it (or its match) is decided.
   function finish() {
-    const result = session.view().result;
+    const view = session.view();
+    const result = view.result;
     if (!result || outcome) return;
-    outcome = campaign.settle(duel, result.winner === session.seat);
-    // The run id makes the log ignore a second report of this same finished duel.
-    playtest?.add({name: duel.name, won: result.winner === session.seat, turns: session.view().turn,
+    outcome = {winner: result.winner, matchOver: true};
+    if (match) {
+      match = recordGame(match, {winner: result.winner, first: view.first});
+      outcome.matchOver = matchOver(match);
+    }
+    if (!solo()) return;
+    // The run id makes the log ignore a second report of this same finished game.
+    playtest?.add({name: duel.name, won: result.winner === session.seat, turns: view.turn,
       seconds: Math.round((Date.now() - started) / 1000), rules: false, run, duel: duel.id, seed});
+    if (outcome.matchOver) Object.assign(outcome, campaign.settle(duel, match ? matchWinner(match) === session.seat : result.winner === session.seat));
+  }
+  // After a result: the next game of the match, a rematch, a repeat, or nothing (back to camp).
+  function againLabel() {
+    if (!outcome.matchOver) return `Game ${match.game + 1}`;
+    if (!solo()) return "Play again";
+    if (!outcome.won) return repeat() ? "Rematch" : null;
+    return duel.kind === "trail" || !repeat() ? null : "Play it again";
+  }
+  // The same Camp duel again, as progress now has it (the next hunt, grit after a loss), or null.
+  const repeat = () => (duel.kind === "trail" ? campaign.trailDuel() : duel.id ? campaign.duel(duel.id) : null);
+  function again() {
+    const best = match ? 3 : 1;
+    if (!outcome.matchOver) {
+      match = nextGame(match);
+      // Solo, with a side deck: the swap comes before the next game.
+      if (solo() && offersSwap(match) && onSwap) {
+        return onSwap(swapPool(match), match.deck, match.side, (deck, side) => { match = withSwap(match, deck, side); deal(nextSeed()); });
+      }
+      return deal(nextSeed());
+    }
+    if (!solo()) return start(twoPlayers(), nextSeed(), {players: 2, best});
+    // A loss is a fresh deal of the same duel; a repeat (a beaten rival, the next hunt, the even match) uses nextSeed.
+    const next = repeat();
+    if (next) start(next, outcome.won ? nextSeed() : freshSeed(), {best});
   }
   const playsOf = (cardId) => session.legal().filter((a) => a.cardId && name(a.cardId) === name(cardId));
 
@@ -143,7 +207,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions}) {
   // Why a card in hand cannot be played now, read from this seat's view.
   function blocked(view, cardId) {
     const card = cardOf(cardId);
-    const mine = view.sides[session.seat];
+    const mine = view.sides[viewer()];
     if (view.attacking) return "No more cards this turn: a troop has acted.";
     if (card.kind === "troop") {
       if (view.summonUsed) return "One troop a turn.";
@@ -158,7 +222,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions}) {
   // What an attack would do, computed on the public view: face-down traps are not counted.
   function preview(view, target) {
     const o = attackOutcome(view, pick.troop, target);
-    const foe = view.sides[opponent(session.seat)];
+    const foe = view.sides[opponent(viewer())];
     if (target === "base") return `<span class="sd-note sd-good">${foe.board.some(Boolean) ? "Ride past: " : ""}Hit the Base for ${o.baseDamage}</span>`;
     const lastStand = o.targetLeft === 0 && has(foe.board[target].cardId, "laststand") ? ". Its Last Stand costs yours 1 orb" : "";
     if (o.targetLeft === 0) return `<span class="sd-note sd-good">Defeated${o.baseDamage ? `, ${o.baseDamage} through to the Base` : foe.board[target].cover ? ", nothing reaches the Base" : ""}${lastStand}</span>`;
@@ -168,25 +232,39 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions}) {
   }
 
   // After a win: what it paid and the two cards to choose from. After a loss: the rematch's grit.
+  // A game inside a match and a two-player game pay nothing, but they still need the button that moves on.
   function rewardPanel() {
+    const label = againLabel();
+    const again = label ? `<button type="button" id="sd-again">${label}</button>` : "";
+    if (!outcome.earned) return `<div class="sd-row">${again}<button type="button" id="sd-camp">Back to camp</button></div>`;
     const {won, earned, intoDeck, grit} = outcome;
     const offer = campaign.progress().offer;
-    // A rematch is offered only for an unfinished Trail duel; a win moves on in Camp.
-    const again = !won && campaign.trailDuel() ? '<button type="button" id="sd-again">Rematch</button>' : "";
     return [
+      earned.captured ? `<h2>Captured</h2><div class="sd-row"><div class="sd-card cowboy ${TYPES[earned.captured].rarity}" data-frame="${TYPES[earned.captured].kind}">${face(earned.captured)}</div></div>` : "",
       earned.cards.length ? `<h2>New in your collection</h2><p class="sd-good">You earned ${pays(earned.cards)}.</p>` : "",
       intoDeck.length ? `<p class="sd-note">In your deck now: ${intoDeck.map(([type, copies, replaced]) => `${TYPES[type].name} ×${copies} in place of ${TYPES[replaced].name} ×${copies}`).join(", ")}.</p>` : "",
-      earned.packs ? `<p class="sd-good">You earned ${plural(earned.packs, "pack")}.</p>` : "",
+      earned.packs ? `<p class="sd-good">You earned ${plural(earned.packs, "pack")}. Open ${earned.packs > 1 ? "them" : "it"} in camp.</p>` : "",
+      earned.cards.length && !intoDeck.length ? `<p class="sd-note">${earned.cards.length > 1 ? "They are" : "It is"} in your collection, not your deck yet: use Build deck in camp.</p>` : "",
       won && offer ? `<h2>${OFFER_HEADING}</h2>${offerRow(offer, campaign.owned)}`
-        : picked ? `<p class="sd-good">Added ${TYPES[picked].name}: you now own ${campaign.owned(picked)}.</p>` : "",
+        : picked ? `<p class="sd-good">Added ${TYPES[picked].name}: you now own ${campaign.owned(picked)}. The new copy is not in your deck yet: use Build deck in camp.</p>` : "",
       !won && grit ? `<p class="sd-note">Grit: your Base starts the rematch with ${5 + grit} orbs.</p>` : "",
       `<div class="sd-row">${again}<button type="button" id="sd-camp">Back to camp</button></div>`,
     ].join("");
   }
 
   function render() {
+    // The curtain: nothing of either seat's hand or traps stays in the page while the screen is passed.
+    $("sd-curtain").hidden = !curtain;
+    $("sd-table").hidden = curtain;
+    if (curtain) {
+      for (const id of ["sd-board", "sd-hand", "sd-result", "sd-prompt", "sd-feedback", "sd-status", "sd-location"]) $(id).innerHTML = "";
+      $("sd-curtain-text").textContent = `Pass the screen to the ${FACTION[session.view().active]} player.`;
+      return;
+    }
     const view = session.view();
-    const own = session.seat, foe = opponent(own);
+    const own = viewer(), foe = opponent(own);
+    // Two players after the result: both look at the board, so no hand or set trap is shown.
+    const shared = !solo() && Boolean(view.result);
     const options = session.legal();
     const mine = options.length > 0;
     const attacking = pick?.troop !== undefined;
@@ -199,11 +277,11 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions}) {
       const s = view.sides[side];
       const isOwn = side === own;
       const baseOpen = !isOwn && aims.has("base");
-      const traps = isOwn ? (s.traps.length ? `Set: ${s.traps.map(name).join(", ")}` : "No trap set") : s.trapCount ? `${plural(s.trapCount, "card")} face down` : "Nothing face down";
+      const traps = isOwn && !shared ? (s.traps.length ? `Set: ${s.traps.map(name).join(", ")}` : "No trap set") : s.trapCount ? `${plural(s.trapCount, "card")} face down` : "Nothing face down";
       // The other seat's hand is card backs (the deck back's .card-back element) and a count, never faces.
-      const backs = isOwn ? "" : `<span class="sd-backs" role="img" aria-label="Wizard hand: ${plural(s.handCount, "card")}, face down">${'<span class="card-back" aria-hidden="true"></span>'.repeat(s.handCount)}</span>`;
+      const backs = isOwn ? "" : `<span class="sd-backs" role="img" aria-label="${FACTION[side]} hand: ${plural(s.handCount, "card")}, face down">${'<span class="card-back" aria-hidden="true"></span>'.repeat(s.handCount)}</span>`;
       const base = `<button type="button" class="sd-base ${side}${baseOpen ? " sd-can" : ""}" ${baseOpen ? 'data-enemy="base"' : "disabled"} data-base="${side}">
-        <strong>${isOwn ? "Your" : "Wizard"} Base</strong>${orbs(s.base, s.baseMax)}
+        <strong>${whoseBase(side)} Base</strong>${orbs(s.base, s.baseMax)}
         <span class="sd-note">Hand ${s.handCount} · Deck ${s.deckCount} · Graveyard ${s.discard.length}</span>${backs}
         <span class="sd-note">▲ ${traps}</span>${baseOpen ? preview(view, "base") : ""}</button>`;
       const slots = s.board.map((troop, slot) => {
@@ -236,7 +314,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions}) {
     $("sd-location").textContent = landing + (landing && view.location ? " " : "") + (view.location ? `■ Location: ${name(view.location.cardId)}. ${EFFECTS[cardOf(view.location.cardId).effect].text.replace("Location. ", "")}` : "");
 
     const playable = new Set(options.filter((a) => a.cardId).map((a) => name(a.cardId)));
-    $("sd-hand").innerHTML = view.sides[own].hand.map((cardId) => {
+    $("sd-hand").innerHTML = (shared ? [] : view.sides[own].hand).map((cardId) => {
       const card = cardOf(cardId);
       const on = playable.has(card.name);
       return `<button type="button" class="sd-card ${card.side} ${card.rarity}${pick?.card === cardId ? " sd-pick" : on ? " sd-can" : ""}" data-frame="${card.kind}" data-card="${cardId}" ${on ? "" : "disabled"}>
@@ -244,9 +322,11 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions}) {
     }).join("");
 
     const r = view.result;
-    const verdict = !r ? "" : r.winner === null ? "Draw." : r.winner === own ? "You win: the Wizard Base fell." : "You lose: your Base fell.";
-    $("sd-status").innerHTML = r ? `<span class="sd-result ${r.winner === own ? "sd-good" : "sd-warn"}">${verdict}</span>`
-      : `${duel.name} · turn ${view.turn} · ${view.active === own ? "your turn" : "the Wizards' turn"}`;
+    const score = match ? ` · game ${match.game} of 3 · ${solo() ? `you ${match.wins.cowboy}, Wizards ${match.wins.wizard}` : `Cowboys ${match.wins.cowboy}, Wizards ${match.wins.wizard}`}` : "";
+    const verdict = !r ? "" : r.winner === null ? "Draw." : !solo() ? `The ${sides(r.winner)} win: the ${FACTION[opponent(r.winner)]} Base fell.`
+      : r.winner === own ? "You win: the Wizard Base fell." : "You lose: your Base fell.";
+    $("sd-status").innerHTML = r ? `<span class="sd-result ${!solo() || r.winner === own ? "sd-good" : "sd-warn"}">${verdict}</span>${score}`
+      : `${duel.name}${score} · turn ${view.turn} · ${solo() ? (view.active === own ? "your turn" : "the Wizards' turn") : `the ${sides(view.active)}' turn`}`;
     $("sd-feedback").textContent = latest.length ? `Last: ${latest.join(" ")}` : "";
     $("sd-result").innerHTML = r ? rewardPanel() : "";
 
@@ -287,7 +367,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions}) {
   // The first enabled, shown match of the earliest selector in the list that has one.
   const usable = (...selectors) => {
     for (const selector of selectors) {
-      const found = selector && [...root.querySelectorAll(selector)].find((n) => !n.disabled && !n.hidden);
+      const found = selector && [...root.querySelectorAll(selector)].find((n) => !n.disabled && !n.hidden && n.getClientRects().length > 0);
       if (found) return found;
     }
     return null;
@@ -295,6 +375,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions}) {
   const pickStarted = (before) => pickKey(pick) !== null && pickKey(pick) !== pickKey(before);
   function refocus(key, before) {
     if (root.hidden) return;
+    if (curtain) return $("sd-ready").focus();
     const next = (pickStarted(before) ? usable("#sd-board button", "#sd-cover", "#sd-cancel") : null)
       ?? (before && !pick ? usable(origin) : null) ?? usable(key)
       ?? usable("#sd-hand button", "#sd-board [data-own]", "#sd-end", "#sd-result button", "#sd-home");
@@ -312,14 +393,15 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions}) {
     else if (b.id === "sd-end") act({type: "end"});
     else if (b.id === "sd-cover" && pick?.troop !== undefined) act(session.legal().find((a) => a.type === "cover" && a.slot === pick.troop));
     else if (b.id === "sd-cancel") { pick = null; render(); }
-    else if (b.id === "sd-restart") start(duel, seed);
+    else if (b.id === "sd-restart") deal(seed);
+    else if (b.id === "sd-ready" && curtain) { curtain = false; render(); }
     else if (d.choose && campaign.progress().offer?.includes(d.choose)) {
       campaign.choose(d.choose);
       picked = d.choose;
       render();
       $("sd-camp")?.focus();
     }
-    else if (b.id === "sd-again" && campaign.trailDuel()) start(campaign.trailDuel(), freshSeed());
+    else if (b.id === "sd-again" && outcome) again();
     else if (b.id === "sd-home" || b.id === "sd-camp") { cues.clear(); onHome(); }
     if (pickStarted(before)) origin = key;
     if (keyboard) refocus(key, before);
