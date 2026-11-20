@@ -154,6 +154,7 @@ try {
   assert.equal(await evaluate(`localStorage.length`), 0, "fresh Chrome profile has no saved data");
   const menu = await evaluate(`[...document.querySelectorAll('#title-screen nav > *')].filter(n=>!n.hidden).map(n=>n.textContent.trim())`);
   assert.deepEqual(menu, ["Play", "Lane duel (previous rules)"]);
+  // FH-R2.1 (.kiro/specs/showdown-first-hour/requirements.md)
   check("Normal entry on a clean profile offers Play and the lane duel link only", menu);
   await click("#menu-play");
   await wait(`${shown("showdown-camp")}&&document.getElementById('title-screen').hidden&&document.getElementById('showdown').hidden`);
@@ -164,6 +165,7 @@ try {
   assert.match(freshCamp.next, /^Start here: click Boot Hill to play your first duel\.$/);
   assert.deepEqual(freshCamp.offer, []);
   await shot("camp-fresh");
+  // FH-R2.2 (.kiro/specs/showdown-first-hour/requirements.md)
   check("Play on a clean profile opens the Camp: Boot Hill open, the other five Trail duels locked", freshCamp);
   await click("#camp-trail [data-duel=trail]");
   await wait(`${shown("showdown")}&&document.getElementById('showdown-camp').hidden`);
@@ -172,6 +174,7 @@ try {
   assert.match(opened.lesson, /^Win by removing every orb from the Wizard Base\./);
   assert.equal(await evaluate(`document.getElementById('arena').hidden`), true, "the lane arena stays closed");
   await assertPrivate();
+  // FH-R2.3 (.kiro/specs/showdown-first-hour/requirements.md)
   check("The Camp opens Trail duel 1, Boot Hill (Showdown), not the lane duel", opened);
   await click("#sd-home");
   await wait(`${shown("showdown-camp")}&&document.getElementById('showdown').hidden`);
@@ -180,6 +183,7 @@ try {
   assert.equal((await campReport()).text, "No duel has been finished yet.");
   await click("#camp-home");
   await wait(`${shown("title-screen")}&&document.getElementById('showdown-camp').hidden`);
+  // FH-R2.4 (.kiro/specs/showdown-first-hour/requirements.md)
   check("Back to camp leaves an unfinished duel unrecorded; Main menu returns to the title");
 
   // 2. Win Boot Hill and Raven Roost by clicks alone on a fixed deal (?seed=0 fixes every deal).
@@ -296,12 +300,14 @@ try {
   assert.equal(afterWin1.collection["cowboy-covered-wagon"], 2);
   assert.deepEqual([afterWin1.deck["cowboy-covered-wagon"], afterWin1.deck["cowboy-sheriff"]], [2, 6]);
   assert.deepEqual(afterWin1.offer, won1.offer);
+  // FH-R6.1 (.kiro/specs/showdown-first-hour/requirements.md)
   check("Boot Hill win pays Covered Wagon ×2 in place of Sheriff ×2, saved with the two-card offer", {earned: won1.earned, offer: won1.offer, deck: afterWin1.deck});
   const log1 = await savedLog();
   assert.equal(log1.length, 1);
   assert.deepEqual([log1[0].name, log1[0].won, log1[0].duel, log1[0].seed, log1[0].rules], ["Boot Hill", true, "trail", 0, false]);
   assert.ok(Number.isInteger(log1[0].turns) && log1[0].turns > 1 && Number.isInteger(log1[0].seconds) && typeof log1[0].run === "string");
   assert.deepEqual(Object.keys(log1[0]).sort(), ["duel", "name", "rules", "run", "seconds", "seed", "turns", "won"], "no other field is stored");
+  // FH-R3.9 (.kiro/specs/showdown-first-hour/requirements.md)
   check("The Boot Hill win is logged once under cvw-showdown-playtest-v1, with no personal fields", log1[0]);
   // Choice in the result panel, then back to the Camp.
   const pick1 = won1.offer[0];
@@ -310,6 +316,7 @@ try {
   const chose1 = await savedProgress();
   assert.equal(chose1.offer, null);
   assert.equal(chose1.collection[pick1], (afterWin1.collection[pick1] ?? 0) + 1);
+  // FH-R6.2 (.kiro/specs/showdown-first-hour/requirements.md)
   check("Choosing one offered card adds exactly one copy and clears the offer", {pick: pick1});
   await click("#sd-camp");
   await wait(shown("showdown-camp"));
@@ -317,6 +324,7 @@ try {
   assert.deepEqual(camp1.tiles.map((t) => t.on), [false, true, false, false, false, false]);
   assert.equal(camp1.tiles[0].name, "✓ Boot Hill");
   assert.equal(camp1.tiles[1].name, "Raven Roost");
+  // FH-R6.3 (.kiro/specs/showdown-first-hour/requirements.md)
   check("The Camp marks Boot Hill won and opens Raven Roost", camp1.tiles.slice(0, 2));
   assert.deepEqual(await savedLog(), log1, "choosing a card and returning to the Camp adds no log line");
 
@@ -327,6 +335,7 @@ try {
   const reloaded1 = await campState();
   assert.deepEqual(reloaded1.tiles, camp1.tiles);
   assert.match(reloaded1.cards, /Covered Wagon ×2/);
+  // FH-R6.5 (.kiro/specs/showdown-first-hour/requirements.md)
   check("After a reload the Camp keeps the Boot Hill win, the reward and the chosen card", reloaded1);
   assert.deepEqual(await savedLog(), log1, "a reload adds no log line");
   await click("#camp-report summary");
@@ -340,6 +349,7 @@ try {
   await wait(`/^(Copied\.|Selected: press Ctrl\+C or Cmd\+C to copy\.)$/.test(document.getElementById('camp-report-copied').textContent)`);
   const copied = await text("#camp-report-copied");
   await shot("camp-report-after-reload");
+  // FH-R3.9 (.kiro/specs/showdown-first-hour/requirements.md)
   check("After a reload the Camp's Playtest report shows the one logged win as plain text; Copy report answers", {report: report1.text, copied});
 
   await click("#camp-trail [data-duel=trail]");
@@ -349,6 +359,7 @@ try {
   assert.equal(afterWin2.wins, 2);
   assert.equal(afterWin2.collection["cowboy-outrider"], 2);
   assert.deepEqual([afterWin2.deck["cowboy-outrider"], afterWin2.deck["cowboy-sheriff"]], [2, 4]);
+  // FH-R6.3 (.kiro/specs/showdown-first-hour/requirements.md)
   check("Raven Roost win pays Outrider ×2 in place of Sheriff ×2", {earned: won2.earned, deck: afterWin2.deck});
   const log2 = await savedLog();
   assert.deepEqual(log2.slice(0, 1), log1);
@@ -362,6 +373,7 @@ try {
   assert.deepEqual(camp2.offer, afterWin2.offer);
   assert.ok(camp2.tiles.every((t) => !t.on), "no duel starts while a card is on offer");
   await shot("camp-offer");
+  // FH-R6.4 (.kiro/specs/showdown-first-hour/requirements.md)
   check("Back in the Camp the unclaimed offer comes first and every Trail tile is disabled", camp2);
   await navigate("?seed=0");
   await click("#menu-play");
@@ -381,11 +393,13 @@ try {
   assert.deepEqual(reloaded2.tiles, camp3.tiles);
   assert.ok(reloaded2.storage, "no storage warning while saving works");
   await shot("camp-after-two");
+  // FH-R6.5 (.kiro/specs/showdown-first-hour/requirements.md)
   check("The Camp choice clears the offer and opens The Bone Fence; a reload continues from there", reloaded2);
   assert.deepEqual(await savedLog(), log2, "results, Camp choices and reloads never duplicate a log line");
   const report2 = (await campReport()).text;
   assert.match(report2, /Finished 2 duels in .* won 2, lost 0\./);
   assert.match(report2, /\n1\. Boot Hill: won .*\n2\. Raven Roost: won /);
+  // FH-R3.9 (.kiro/specs/showdown-first-hour/requirements.md)
   check("Two wins, three reloads: the log holds exactly two lines and the report lists both", {lines: log2.length});
   check("Seat privacy held at every checked step", {steps: privacyChecks});
 
@@ -398,9 +412,11 @@ try {
   await wait(`!document.getElementById('arena').hidden&&document.querySelector('#match .match-slot')`, 30000);
   assert.equal(await evaluate(`document.getElementById('showdown').hidden`), true);
   await shot("lanes-play");
+  // FH-R2.5 (.kiro/specs/showdown-first-hour/requirements.md)
   check("?mode=lanes shows the lane menu, and Play opens the lane duel", lanes);
   await navigate("?mode=match&deck=starter&seed=0");
   await wait(`!document.getElementById('arena').hidden&&document.querySelector('#match .match-slot')`, 30000);
+  // FH-R2.5 (.kiro/specs/showdown-first-hour/requirements.md)
   check("?mode=match still auto-starts the lane duel used by the existing lane checks");
 
   assert.deepEqual(report.errors, [], "no page errors");

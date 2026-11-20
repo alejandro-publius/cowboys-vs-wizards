@@ -40,6 +40,7 @@ const showdownDragon = (() => {
 // What the next page load sees: a fresh campaign over the same storage.
 const reload = (storage) => createCampaign(storage);
 
+// FH-R5.1, FH-R3.8, FH-R7.2 (.kiro/specs/showdown-first-hour/requirements.md)
 test("a lane capture is owned by name in the Camp list, kept in its own record, and the progress is untouched", () => {
   const storage = memoryStorage({[LANE_KEY]: LANE.dragon});
   const campaign = createCampaign(storage);
@@ -53,6 +54,7 @@ test("a lane capture is owned by name in the Camp list, kept in its own record, 
   assert.equal(campaign.saved(), true);
 });
 
+// FH-R5.3 (.kiro/specs/showdown-first-hour/requirements.md)
 test("the record persists on its own: reloads, a Trail win and a later lane-profile loss keep it", () => {
   const storage = memoryStorage({[LANE_KEY]: LANE.both});
   let campaign = createCampaign(storage);
@@ -72,6 +74,7 @@ test("the record persists on its own: reloads, a Trail win and a later lane-prof
   assert.deepEqual(campaign.holdings().filter((row) => row.inherited).map((row) => row.type), [DRAGON.reward, WRAITH.reward]);
 });
 
+// FH-R5.4 (.kiro/specs/showdown-first-hour/requirements.md)
 test("a card owned in both games is listed once, at the Showdown count, and both records are kept", () => {
   const storage = memoryStorage({[LANE_KEY]: LANE.dragon, [SAVE_KEY]: JSON.stringify(showdownDragon)});
   const campaign = createCampaign(storage);
@@ -83,6 +86,7 @@ test("a card owned in both games is listed once, at the Showdown count, and both
   assert.equal(storage.data.get(LANE_KEY), LANE.dragon);
 });
 
+// FH-R5.5 (.kiro/specs/showdown-first-hour/requirements.md)
 test("partial lane hunts and a clean profile create no record and write nothing", () => {
   for (const entries of [{}, {[LANE_KEY]: LANE.partial}, {[LANE_KEY]: "{\"clearedHunts\": ["}]) {
     const storage = memoryStorage(entries);
@@ -93,6 +97,7 @@ test("partial lane hunts and a clean profile create no record and write nothing"
   }
 });
 
+// FH-R5.2 (.kiro/specs/showdown-first-hour/requirements.md)
 test("the record only grows, and a damaged record is never overwritten", () => {
   const storage = memoryStorage({[INHERITED_KEY]: JSON.stringify({v: 1, source: LANE_KEY, cards: [WRAITH.reward]})});
   assert.deepEqual(joinInherited(storage, [DRAGON.reward]).cards, [WRAITH.reward, DRAGON.reward]);
@@ -107,6 +112,7 @@ test("the record only grows, and a damaged record is never overwritten", () => {
   }
 });
 
+// FH-R5.2 (.kiro/specs/showdown-first-hour/requirements.md)
 test("blocked storage keeps ownership in memory and says it was not saved", () => {
   const storage = memoryStorage({[LANE_KEY]: LANE.dragon});
   storage.setItem = () => { throw new Error("blocked"); };
@@ -115,6 +121,7 @@ test("blocked storage keeps ownership in memory and says it was not saved", () =
   assert.equal(campaign.saved(), false);
 });
 
+// FH-R5.4 (listing order and unknown types) (.kiro/specs/showdown-first-hour/requirements.md)
 test("holdings lists Showdown cards first and ignores a type the catalog does not know", () => {
   const progress = settle(newSave(), "trail", true).save;
   const rows = holdings(progress, ["not-a-card", DRAGON.reward]);

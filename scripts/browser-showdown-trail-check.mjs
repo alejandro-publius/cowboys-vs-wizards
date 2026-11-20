@@ -370,11 +370,15 @@ async function newPlayer() {
     assert.deepEqual(camp.offer, []);
     s.assertHoldings(camp, newSave());
     await s.shot("camp-fresh");
+    // FH-R2.2 (.kiro/specs/showdown-first-hour/requirements.md)
     s.check("Normal entry on a clean profile: Play opens the Camp, Boot Hill is the only open Trail duel, starter deck shown", camp.trail);
 
+    // FH-R2.3 (.kiro/specs/showdown-first-hour/requirements.md)
     s.check("Boot Hill opens from its Camp tile with its lesson and a 3-orb Wizard Base", await s.startTrail(0));
     const win1 = await s.winTrail(0, s.run.duels);
+    // FH-R6.1 (.kiro/specs/showdown-first-hour/requirements.md)
     s.check("Boot Hill won by clicks alone (?seed=0 deal)", win1);
+    // FH-R6.1 (.kiro/specs/showdown-first-hour/requirements.md)
     s.check("The Boot Hill win names its payment with the result", await s.assertPaid(0));
     await s.shot("boot-hill-won");
     // The choice may be offered with the result or in the Camp; take it wherever it is first shown.
@@ -387,12 +391,16 @@ async function newPlayer() {
     let {progress} = await s.stored();
     assert.ok(progress, "progress is stored after the first win");
     assert.deepEqual(pick(progress.save), pick(reference.afterChoice1));
+    // FH-R6.1, FH-R6.2 (.kiro/specs/showdown-first-hour/requirements.md)
     s.check("After Boot Hill: Covered Wagon ×2 paid into the deck, the chosen card owned, Raven Roost open, stored progress equals the reference",
       {key: progress.key, at: progress.at, offered: reference.afterWin1.save.offer, chose: reference.choices[0]});
 
+    // FH-R2.3 (.kiro/specs/showdown-first-hour/requirements.md)
     s.check("Raven Roost opens from its Camp tile with its lesson and a 4-orb Wizard Base", await s.startTrail(1));
     const win2 = await s.winTrail(1, s.run.duels);
+    // FH-R6.3 (.kiro/specs/showdown-first-hour/requirements.md)
     s.check("Raven Roost won by clicks alone", {...win2, attempts: s.run.duels.filter((d) => d.duel === "Raven Roost").length});
+    // FH-R6.3 (.kiro/specs/showdown-first-hour/requirements.md)
     s.check("The Raven Roost win names its payment with the result", await s.assertPaid(1));
     await s.shot("raven-roost-won");
     ({progress} = await s.stored());
@@ -404,6 +412,7 @@ async function newPlayer() {
     camp = await s.readCamp();
     assert.deepEqual(camp.offer, reference.afterWin2.save.offer, "the unclaimed offer survives a reload unchanged");
     assert.ok(camp.trail.slice(2).every((t) => t.state !== "open"), "nothing else can start while a card is on offer");
+    // FH-R3.6, FH-R6.4 (.kiro/specs/showdown-first-hour/requirements.md)
     s.check("Reload with the second offer unclaimed: the Camp offers the same two cards and nothing else starts", camp.offer);
     await s.takeOffer(reference.afterWin2.save.offer, reference.choices[1]);
     await s.wait(`Boolean(camp())`, "the Camp after choosing");
@@ -419,15 +428,18 @@ async function newPlayer() {
     ({progress} = await s.stored());
     assert.deepEqual(pick(progress.save), pick(reference.final));
     await s.shot("camp-after-reload");
+    // FH-R6.5 (.kiro/specs/showdown-first-hour/requirements.md)
     s.check("Reload: Boot Hill and Raven Roost won, The Bone Fence open, deck and collection on screen and stored progress equal the reference",
       {stored: pick(progress.save), storageUnchangedByLoad: JSON.stringify(before) === JSON.stringify(await s.storage())});
 
     // Opening the next duel and leaving it records nothing.
     const kept = JSON.stringify(pick(progress.save));
+    // FH-R2.3 (.kiro/specs/showdown-first-hour/requirements.md)
     s.check("The Bone Fence opens from its Camp tile", await s.startTrail(2));
     s.run.leftBy = await s.backToCamp();
     ({progress} = await s.stored());
     assert.equal(JSON.stringify(pick(progress.save)), kept, "leaving an unfinished duel changes no stored progress");
+    // FH-R2.4 (.kiro/specs/showdown-first-hour/requirements.md)
     s.check("Leaving The Bone Fence unfinished changes no stored progress", {leftBy: s.run.leftBy});
   } finally { await s.close(); }
 }
@@ -441,6 +453,7 @@ async function laneVeteran() {
     await s.wait(`document.readyState==='complete'`, "the blank page");
     assert.deepEqual(await s.storage(), {}, "a fresh Chrome profile has no saved data");
     await s.evaluate(`(localStorage.setItem(${JSON.stringify(LANE_KEY)},${JSON.stringify(laneFixture.raw)}),true)`);
+    // FH-R5.7 (fixture) (.kiro/specs/showdown-first-hour/requirements.md)
     s.check("Lane-era profile written by the real lane store (five Graveyard Dragon hunts cleared) is the only stored data", JSON.parse(laneFixture.raw).clearedHunts);
 
     await s.load("?seed=0");
@@ -456,9 +469,11 @@ async function laneVeteran() {
     assert.ok(!deckText.includes(nameOf(laneFixture.captured)), "the captured card is owned, not put into the deck");
     assert.equal((await s.storage())[LANE_KEY], laneFixture.raw, "opening the Camp leaves the lane profile byte-identical");
     await s.shot("camp-veteran");
+    // FH-R5.1, FH-R5.7, FH-R3.8 (.kiro/specs/showdown-first-hour/requirements.md)
     s.check("Normal load: the Captured Dragon is shown as owned, the Trail has not advanced, the deck is the plain starter, the lane profile is byte-identical", camp.trail);
 
     await s.startTrail(0);
+    // FH-R5.7 (.kiro/specs/showdown-first-hour/requirements.md)
     s.check("Boot Hill won by clicks alone with the lane profile present", await s.winTrail(0, s.run.duels));
     await s.assertPaid(0);
     if (!(await s.evaluate(`buttons(document).some(n=>n.dataset.choose)`))) await s.backToCamp();
@@ -481,6 +496,7 @@ async function laneVeteran() {
       "the stored Showdown inherited-ownership record lists the captured card");
     const lane = JSON.parse(all[LANE_KEY]);
     assert.ok(laneFixture.hunts.every((id) => lane.clearedHunts.includes(id)), "the lane profile still lists the five cleared hunts");
+    // FH-R5.3, FH-R5.7, FH-R7.1 (own key) (.kiro/specs/showdown-first-hour/requirements.md)
     s.check("Reload after the win: Covered Wagon paid, the Captured Dragon still owned, the lane profile still holds its five cleared hunts", {
       key: progress.key, at: progress.at, capturedInStoredCollection: progress.save.collection[laneFixture.captured] ?? 0,
       laneByteIdentical: all[LANE_KEY] === laneFixture.raw, inheritedRecord: all["cvw-showdown-inherited-v1"], campCollection: camp.collection});

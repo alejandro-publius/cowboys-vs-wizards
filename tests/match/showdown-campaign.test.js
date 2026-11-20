@@ -25,6 +25,7 @@ const firstWinningSeed = (duel) => {
   throw new Error(`no seed in 0-49 wins ${duel.name}`);
 };
 
+// FH-R6.1, FH-R6.3, FH-R6.5 (.kiro/specs/showdown-first-hour/requirements.md)
 test("a fresh profile wins Trail duels 1 and 2, is paid the designed cards, and a reload keeps them", () => {
   const storage = memoryStorage();
   let campaign = createCampaign(storage);
@@ -62,6 +63,7 @@ test("a fresh profile wins Trail duels 1 and 2, is paid the designed cards, and 
   assert.deepEqual(campaign.duels().filter((d) => d.kind === "trail").map((d) => d.state), ["won", "won", "open", "locked", "locked", "locked"]);
 });
 
+// FH-R6.6 (.kiro/specs/showdown-first-hour/requirements.md)
 test("a loss pays nothing and gives the rematch one more Base orb, kept across a reload", () => {
   const storage = memoryStorage();
   const campaign = createCampaign(storage);
@@ -72,6 +74,7 @@ test("a loss pays nothing and gives the rematch one more Base orb, kept across a
   assert.equal(createCampaign(storage).trailDuel().options.baseOrbs.cowboy, 6);
 });
 
+// FH-R3.5, FH-R3.8 (.kiro/specs/showdown-first-hour/requirements.md)
 test("the lane profile is left as it was, and blocked storage plays on in memory", () => {
   const lane = JSON.stringify({deck: null, clearedHunts: ["wanted-lantern-wraith"], stats: {matches: 3, wins: 2}});
   const storage = memoryStorage({"cvw-player-v1": lane});

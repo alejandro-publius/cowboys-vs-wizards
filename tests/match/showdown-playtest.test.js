@@ -10,6 +10,7 @@ const memory = (seed = {}) => {
 };
 const entry = (run, won = true) => ({name: "Boot Hill", won, turns: 9, seconds: 80, rules: false, run, duel: "trail", seed: 0});
 
+// FH-R3.9 (.kiro/specs/showdown-first-hour/requirements.md)
 test("a finished duel is stored once under the prototype key, and a reload reads the same report", () => {
   const storage = memory();
   const log = createPlaytestLog(storage);
@@ -26,6 +27,7 @@ test("a finished duel is stored once under the prototype key, and a reload reads
   assert.equal(createPlaytestLog(storage).entries().length, 2);
 });
 
+// FH-R3.9 (.kiro/specs/showdown-first-hour/requirements.md)
 test("only known fields of well-formed lines are kept; nothing personal is stored", () => {
   const storage = memory({[PLAYTEST_KEY]: JSON.stringify([entry("a"), {name: 3}, null, {...entry("b"), player: "Ann", when: 1}])});
   const log = createPlaytestLog(storage);
@@ -36,6 +38,7 @@ test("only known fields of well-formed lines are kept; nothing personal is store
   assert.deepEqual(createPlaytestLog(memory({[PLAYTEST_KEY]: "{not json"})).entries(), []);
 });
 
+// FH-R3.9 (.kiro/specs/showdown-first-hour/requirements.md)
 test("blocked or missing storage keeps the log in memory and says it was not saved", () => {
   const blocked = {getItem() { throw new Error("blocked"); }, setItem() { throw new Error("full"); }};
   for (const storage of [blocked, null]) {

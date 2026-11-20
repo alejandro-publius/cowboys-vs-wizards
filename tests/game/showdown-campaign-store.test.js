@@ -38,12 +38,14 @@ function winTrail(save) {
   return {save: next.offer ? choose(next, next.offer[0]) : next, earned};
 }
 
+// FH-R3.1 (.kiro/specs/showdown-first-hour/requirements.md)
 test("a new profile loads as a new save and loading writes nothing", () => {
   const storage = memoryStorage();
   assert.deepEqual(loadCampaign(storage), newSave());
   assert.deepEqual(storage.writes, []);
 });
 
+// FH-R6.5 (.kiro/specs/showdown-first-hour/requirements.md)
 test("Trail duels 1 and 2 each pay their card once, and reloads keep them without paying again", () => {
   const storage = memoryStorage();
   let save = loadCampaign(storage);
@@ -69,6 +71,7 @@ test("Trail duels 1 and 2 each pay their card once, and reloads keep them withou
   }
 });
 
+// FH-R3.6 (.kiro/specs/showdown-first-hour/requirements.md)
 test("an unclaimed card offer survives a reload, so it cannot be rolled again", () => {
   const storage = memoryStorage();
   const {save} = settle(newSave(), "trail", true);
@@ -80,6 +83,7 @@ test("an unclaimed card offer survives a reload, so it cannot be rolled again", 
   assert.equal(duelFor(loaded, "trail"), null, "the offer must be taken before the next duel");
 });
 
+// FH-R3.2 (.kiro/specs/showdown-first-hour/requirements.md)
 test("the v1 Trail save loads as migrate() and the legacy save code read it, and keeps its key", () => {
   const v1 = JSON.stringify({wins: 2, losses: 2});
   const storage = memoryStorage({[OLD_SAVE_KEY]: v1});
@@ -92,6 +96,7 @@ test("the v1 Trail save loads as migrate() and the legacy save code read it, and
   assert.ok(sameSave(loadCampaign(storage), save), "v2 now wins over v1");
 });
 
+// FH-R3.7 (.kiro/specs/showdown-first-hour/requirements.md)
 test("whatever loads can be exported and strictly imported back unchanged", () => {
   let save = newSave();
   for (let i = 0; i < TRAIL.length; i++) save = winTrail(save).save;
@@ -100,6 +105,7 @@ test("whatever loads can be exported and strictly imported back unchanged", () =
   assert.ok(code.ok && !code.legacy && sameSave(code.save, save));
 });
 
+// FH-R3.3 (.kiro/specs/showdown-first-hour/requirements.md)
 test("progress the next load would reset is refused and nothing is written", () => {
   const storage = memoryStorage({[SAVE_KEY]: JSON.stringify(winTrail(newSave()).save)});
   const before = new Map(storage.data);
@@ -110,6 +116,7 @@ test("progress the next load would reset is refused and nothing is written", () 
   assert.deepEqual(storage.writes, []);
 });
 
+// FH-R3.4 (.kiro/specs/showdown-first-hour/requirements.md)
 test("a stored save the load refused is kept once under its own key before it is replaced", () => {
   const newer = JSON.stringify({...newSave(), v: 3, wins: 4});
   const storage = memoryStorage({[SAVE_KEY]: newer});
@@ -124,6 +131,7 @@ test("a stored save the load refused is kept once under its own key before it is
   assert.equal(clean.data.has(REFUSED_KEY), false);
 });
 
+// FH-R3.5 (.kiro/specs/showdown-first-hour/requirements.md)
 test("blocked storage loads a new save and reports a failed save without throwing", () => {
   const blocked = {getItem() { throw new Error("denied"); }, setItem() { throw new Error("denied"); }};
   assert.deepEqual(loadCampaign(blocked), newSave());
@@ -132,6 +140,7 @@ test("blocked storage loads a new save and reports a failed save without throwin
   assert.deepEqual(laneCapturedCards(blocked), []);
 });
 
+// FH-R3.8, FH-R5.6 (.kiro/specs/showdown-first-hour/requirements.md)
 test("a lane-era profile keeps its Captured cards owned in the lane store across Showdown loads and saves", () => {
   for (const [name, raw, expected] of [["dragon", LANE.dragon, [DRAGON.reward]], ["both", LANE.both, [DRAGON.reward, WRAITH.reward]], ["partial", LANE.partial, []]]) {
     const storage = memoryStorage({[LANE_KEY]: raw});
@@ -150,6 +159,7 @@ test("a lane-era profile keeps its Captured cards owned in the lane store across
 // Pending Fable (HANDOFF.md F1, F2, F5): migrate() accepts a Legendary only after the Trail and the
 // Showdown bounty's fifth hunt. Until Fable decides where a lane capture belongs, the join adds no
 // Showdown ownership, no Trail win, no hunt and no deck card. This test fails when that changes.
+// FH-R7.2 (.kiro/specs/showdown-first-hour/requirements.md)
 test("pending Fable F1/F2: a lane capture gives no Showdown ownership, Trail progress, hunt or power", () => {
   const storage = memoryStorage({[LANE_KEY]: LANE.both});
   const save = loadCampaign(storage);
@@ -161,6 +171,7 @@ test("pending Fable F1/F2: a lane capture gives no Showdown ownership, Trail pro
   assert.equal(saveCampaign(storage, added).ok, false);
 });
 
+// FH-R5.4 (.kiro/specs/showdown-first-hour/requirements.md)
 test("an existing Showdown save is kept when a lane capture is also stored", () => {
   let save = newSave();
   for (let i = 0; i < TRAIL.length; i++) save = winTrail(save).save;
