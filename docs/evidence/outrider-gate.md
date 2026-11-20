@@ -113,3 +113,17 @@ Native hook (this session, receipts 10–13 in [hook-receipts.jsonl](outrider-ga
 mutation save → failed, "Ledger: stale; links none; camp none; Night Watch e813ae8 engine differs"; revert save → passed,
 "Ledger: fresh … same 4 files"; comment-only save → passed with "engine differs: rules.js"; revert → passed. Each save was
 read before the next. The edits to `src/ui/*`, `scripts/*` and these docs produced no receipt (outside the matcher).
+
+## CI repair: shallow checkout (2026-11-20 PST, same Kiro CLI session)
+
+PR 173 CI (`actions/checkout`, depth 1) failed two assertions because the Night Watch receipt's commit e813ae8 is not
+fetched. Reproduced locally on a depth-one clone of ade247c: 8 pass, 2 fail with the same messages.
+Fix (426fd03): [`outrider-gate/night-watch-engine.json`](outrider-gate/night-watch-engine.json) records the four engine
+blob ids that `git rev-parse e813ae8:<path>` returns in a full-history checkout. `scripts/outrider-ledger.mjs` uses git
+whenever the commit is present, and refuses the comparison if the snapshot disagrees with git. Without the commit it uses
+the snapshot only if it names that commit and its `prototypes/showdown/rules.js` blob equals the receipt's `rulesBlob`.
+Current files are hashed as git blobs in Node. When there is neither history nor a snapshot it still reports "cannot compare".
+Depth-one clone of 426fd03: gate and Ledger tests 21/21; build "10 of 10 fresh"; engine `from` = snapshot, same 4 files;
+headless Chrome Outrider check 23/23 with the rendered "4 engine files ... byte-identical ... rules blob matches" line.
+Mismatch there (a comment added to `cards.js`): "engine differs: src/game/showdown/cards.js". Full history: Showdown
+suites 153/153; a tampered snapshot is refused (test).
