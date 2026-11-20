@@ -315,11 +315,13 @@ class LeanTests(unittest.TestCase):
 
 
 class PublishTests(unittest.TestCase):
-    def receipt(self):
+    def receipt(self, rules="blob-1"):
         counts = showdown_counts(first=1200, second=800, cowboy=1000)
-        return lean.build_receipt(record_for(counts, counts, {"low": 45, "high": 55}), PROVENANCE)
+        return lean.build_receipt(record_for(counts, counts, {"low": 45, "high": 55}),
+                                  dict(PROVENANCE, candidateRules=rules))
 
-    def fake_gh(self, open_issues):
+    def fake_gh(self, remote):
+        """remote: {number: (state, body)}. Records every argv; refuses anything but view/list/create."""
         calls = []
 
         def run(argv, **kwargs):
@@ -328,15 +330,16 @@ class PublishTests(unittest.TestCase):
             calls.append(argv)
             verb = argv[1:3]
             if verb == ["issue", "list"]:
-                out = json.dumps([{"number": n, "body": b} for n, b in open_issues.items()])
+                self.assertEqual(argv[argv.index("--state") + 1], "all")
+                out = json.dumps([{"number": n, "state": st, "body": b} for n, (st, b) in remote.items()])
             elif verb == ["issue", "view"]:
                 number = int(argv[3])
-                out = json.dumps({"number": number, "state": "OPEN" if number in open_issues else "CLOSED",
-                                  "body": open_issues.get(number, "")})
+                state, body = remote.get(number, ("CLOSED", ""))
+                out = json.dumps({"number": number, "state": state, "body": body})
             elif verb == ["issue", "create"]:
                 body = Path(argv[argv.index("--body-file") + 1]).read_text()
-                number = 100 + len(open_issues)
-                open_issues[number] = body
+                number = 100 + len(remote)
+                remote[number] = ("OPEN", body)
                 out = "https://github.com/owner/game/issues/%d\n" % number
             else:
                 raise AssertionError(argv)
@@ -349,10 +352,11 @@ class PublishTests(unittest.TestCase):
                                      run=lambda *a, **k: self.fail("dry run called gh"))
         self.assertEqual([r["action"] for r in results], ["would-check-then-create"])
         self.assertIn(issues.marker(results[0]["key"]), results[0]["body"])
+        self.assertIn(issues.rules_marker("blob-1"), results[0]["body"])
         self.assertIn("operator-configured", results[0]["body"])
 
     def test_publish_creates_one_labelled_issue_and_retries_reuse_it(self):
-        remote = {7: "unrelated issue that mentions night-watch-finding"}
+        remote = {7: ("OPEN", "unrelated issue that mentions night-watch-finding")}
         calls, run = self.fake_gh(remote)
         with tempfile.TemporaryDirectory() as folder:
             first = issues.publish(self.receipt(), "owner/game", folder, gh="/bin/gh", dry_run=False, run=run)
@@ -365,9 +369,38 @@ class PublishTests(unittest.TestCase):
         self.assertEqual((third[0]["action"], third[0]["number"]), ("exists", first[0]["number"]))
         creates = [c for c in calls if c[1:3] == ["issue", "create"]]
         self.assertEqual(len(creates), 1)
-        self.assertEqual(creates[0][creates[0].index("--label") + 1], "kiro")
+        self.assertEqual(creates[0][creates[0].index("--label") + 1], "night-watch")
 
-    def test_publish_refuses_bad_repo_and_edited_receipt(self):
+    def test_closed_finding_is_resolved_until_the_rules_change(self):
+        remote = {}
+        calls, run = self.fake_gh(remote)
+        with tempfile.TemporaryDirectory() as folder:
+            first = issues.publish(self.receipt(), "owner/game", folder, gh="/bin/gh", dry_run=False, run=run)
+            number = first[0]["number"]
+            remote[number] = ("CLOSED", remote[number][1])  # a maintainer resolves or dismisses it
+            retry = issues.publish(self.receipt(), "owner/game", folder, gh="/bin/gh", dry_run=False, run=run)
+            os.remove(os.path.join(folder, issues.LEDGER))
+            lost = issues.publish(self.receipt(), "owner/game", folder, gh="/bin/gh", dry_run=False, run=run)
+            changed = issues.publish(self.receipt(rules="blob-2"), "owner/game", folder, gh="/bin/gh", dry_run=False, run=run)
+        self.assertEqual((retry[0]["action"], retry[0]["number"]), ("resolved", number))
+        self.assertEqual((lost[0]["action"], lost[0]["number"]), ("resolved", number))
+        self.assertEqual(changed[0]["action"], "created")
+        self.assertEqual(len([c for c in calls if c[1:3] == ["issue", "create"]]), 2)
+
+    def test_issues_never_assign_kiro_web(self):
+        calls, run = self.fake_gh({})
+        with tempfile.TemporaryDirectory() as folder:
+            issues.publish(self.receipt(), "owner/game", folder, gh="/bin/gh", dry_run=False, run=run)
+        for argv in calls:
+            self.assertNotIn("kiro", [argv[i + 1] for i, a in enumerate(argv) if a == "--label"])
+            self.assertNotIn("comment", argv)
+            self.assertNotIn("edit", argv)
+        with self.assertRaises(issues.PublishError):
+            issues._no_web_trigger("text\n /kiro please fix\n")
+        self.assertIn("kiro", issues.WEB_TRIGGER_LABELS)
+        self.assertNotIn(issues.LABEL, issues.WEB_TRIGGER_LABELS)
+
+    def test_publish_refuses_bad_repo_edited_receipt_and_too_many_findings(self):
         with tempfile.TemporaryDirectory() as folder:
             with self.assertRaises(issues.PublishError):
                 issues.publish(self.receipt(), "owner/game; echo", folder, dry_run=True)
@@ -375,6 +408,68 @@ class PublishTests(unittest.TestCase):
             edited["samples"]["candidate"]["cowboy"] += 1
             with self.assertRaises(issues.PublishError):
                 issues.publish(edited, "owner/game", folder, dry_run=True)
+            with self.assertRaises(issues.PublishError):
+                issues.publish(self.receipt(), "owner/game", folder, dry_run=True, limit=0)
+
+
+class ScheduledIssueTests(unittest.TestCase):
+    """The scheduled job is read-only unless the saved setting opts in; then review gates every issue."""
+
+    def setUp(self):
+        self.folder = tempfile.TemporaryDirectory()
+        self.env = patch.dict(os.environ, {"NIGHT_WATCH_DATA_DIR": self.folder.name})
+        self.env.start()
+        counts = showdown_counts(first=1200, second=800, cowboy=1000)
+        record = record_for(counts, counts, {"low": 45, "high": 55})
+        record.update(id="r1", source="scheduled",
+                      receipt=lean.build_receipt(record, dict(PROVENANCE, candidateRules="blob-1")))
+        self.record = record
+        server.write_json("history.json", [record])
+        self.config = {"mode": "showdown", "band": {"low": 45, "high": 55}, "autoIssues": "lean", "issueRepo": ""}
+
+    def tearDown(self):
+        self.env.stop()
+        self.folder.cleanup()
+
+    def test_default_is_read_only(self):
+        result = server.scheduled_issues(self.record, dict(self.config, autoIssues="off"),
+                                         review=lambda r: self.fail("review ran"), run=lambda *a, **k: self.fail("gh ran"))
+        self.assertEqual(result, {"mode": "off"})
+        self.assertEqual(balance.DEFAULT_CONFIG["autoIssues"], "off")
+
+    def test_unreproduced_finding_is_not_published(self):
+        result = server.scheduled_issues(self.record, self.config, gh="/bin/gh",
+                                         review=lambda r: (False, "not reproduced (exit 1)"),
+                                         run=lambda *a, **k: self.fail("gh ran"))
+        self.assertEqual(result["state"], "not-published")
+
+    def test_reproduced_finding_is_filed_once_across_scheduled_retries(self):
+        remote = {}
+        calls, run = PublishTests.fake_gh(self, remote)
+        review = lambda r: (True, "reproduced all 2000 games")
+        first = server.scheduled_issues(self.record, self.config, gh="/bin/gh", review=review, run=run)
+        again = server.scheduled_issues(self.record, self.config, gh="/bin/gh", review=review, run=run)
+        self.assertEqual([i["action"] for i in first["issues"]], ["created"])
+        self.assertEqual([i["action"] for i in again["issues"]], ["exists"])
+        self.assertEqual(first["repository"], "owner/game")
+        body = next(iter(remote.values()))[1]
+        self.assertIn("Independent reproduction (scripts/night-review.mjs check): reproduced all 2000 games", body)
+        server.attach_publication(self.record, again)
+        self.assertEqual(server.load_reports()[0]["publication"]["issues"][0]["action"], "exists")
+
+    def test_missing_reviewer_fails_closed(self):
+        with patch.object(server, "REVIEWER", "/nonexistent/night-review.mjs"):
+            self.assertEqual(server.review_finding(self.record, node="/usr/bin/true")[0], False)
+
+    def test_opt_in_needs_showdown_and_band(self):
+        repo = str(Path(__file__).resolve().parents[3])
+        for values in ({"autoIssues": "lean"}, {"autoIssues": "lean", "band": {"low": 45, "high": 55}, "mode": "lanes"},
+                       {"autoIssues": "yes"}, {"issueRepo": "a b"}):
+            with self.subTest(values=values):
+                with self.assertRaises(balance.ConfigError):
+                    balance.validate_config({"repo": repo, **values})
+        ok = balance.validate_config({"repo": repo, "mode": "showdown", "band": {"low": 45, "high": 55}, "autoIssues": "lean"})
+        self.assertEqual(ok["autoIssues"], "lean")
 
 
 class HostGuardTests(unittest.TestCase):

@@ -1,9 +1,17 @@
 """Opt-in GitHub issue publication for Night Watch findings.
 
-One issue per finding key, labelled `kiro`. Titles and bodies are built from the
+One issue per finding key, labelled `night-watch`. The `kiro` label and `/kiro`
+comment command assign Kiro Web, so Night Watch never uses either: an issue it
+files cannot start an agent, and Night Watch never reads, comments on or edits an
+issue after creating it, so nothing loops. Titles and bodies are built from the
 receipt's recomputed numbers and commits only. Text read back from GitHub is
-compared with the marker string and never placed in a command. `gh` is run with
-an argument list, never through a shell.
+compared with marker strings and never placed in a command. `gh` is run with an
+argument list, never through a shell.
+
+Deduplication covers retries and closed issues: an open issue holding the
+finding marker is reused; a closed one holding the finding marker and the same
+rules-blob marker counts as resolved and is not filed again. Only a lean that
+persists after the rules file itself changed can open a new issue.
 """
 
 import json
@@ -14,7 +22,9 @@ import tempfile
 
 import lean
 
-LABEL = "kiro"
+LABEL = "night-watch"
+# Labels and comment commands that assign Kiro Web (https://kiro.dev/docs/web/github/). Never used.
+WEB_TRIGGER_LABELS = frozenset(["kiro"])
 LEDGER = "published.json"
 SLUG = re.compile(r"[A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9][A-Za-z0-9_.-]*")
 TIMEOUT = 30
@@ -28,6 +38,17 @@ def marker(key):
     return "<!-- night-watch-finding:%s -->" % key
 
 
+def rules_marker(blob):
+    return "<!-- night-watch-rules:%s -->" % blob
+
+
+def _no_web_trigger(text):
+    """Refuse any line that GitHub would read as a /kiro comment command."""
+    if any(line.strip().lower().startswith("/kiro") for line in text.splitlines()):
+        raise PublishError("The draft contains a /kiro command line. Night Watch never assigns Kiro Web.")
+    return text
+
+
 def _pct(value):
     return "n/a" if value is None else "%.2f%%" % value
 
@@ -36,7 +57,7 @@ def _ci(metric):
     return "n/a" if not metric["ci95"] else "%.2f-%.2f%%" % tuple(metric["ci95"])
 
 
-def issue_body(receipt, finding):
+def issue_body(receipt, finding, review=None):
     cand, base, seeds = receipt["candidate"], receipt["baseline"], receipt["seeds"]
     measured, samples = receipt["measured"]["candidate"], receipt["samples"]["candidate"]
     lines = [
@@ -62,19 +83,25 @@ def issue_body(receipt, finding):
     lines.append("- Lean verdict: %s; shift verdict: %s (threshold %g pp)" % (
         receipt["lean"]["verdict"], receipt["shift"]["state"], receipt["shift"]["threshold"]))
     lines.append("- Per-card data: not measured")
+    if review:
+        lines.append("- Independent reproduction (scripts/night-review.mjs check): %s" % review)
     lines += ["", "Reproduce:", ""]
     lines += ["    " + command for command in receipt["commands"]]
-    lines += ["", marker(finding["key"])]
-    return "\n".join(lines) + "\n"
+    lines += ["", "Night Shift review (local CLI, by hand; Fable/Alex choose the card and number, nothing is merged):", "",
+              "    node scripts/night-review.mjs run --finding <night-watch report.json> --card <card> --field <attack|health|stars> --to <n>",
+              "", "Night Watch does not read, comment on or edit this issue after filing it.",
+              "", marker(finding["key"]), rules_marker(receipt["candidate"].get("rulesBlob") or "unknown")]
+    return _no_web_trigger("\n".join(lines) + "\n")
 
 
-def plan(receipt):
-    """Recompute the findings from the counts, then draft one issue per finding."""
+def plan(receipt, kinds=None, review=None):
+    """Recompute the findings from the counts, then draft one issue per finding (optionally only some kinds)."""
     try:
         found = lean.recheck(receipt)
     except (KeyError, TypeError, ValueError) as error:
         raise PublishError("The receipt was not accepted: %s" % error)
-    return [{"key": f["key"], "title": f["title"], "body": issue_body(receipt, f)} for f in found]
+    return [{"key": f["key"], "kind": f["kind"], "title": _no_web_trigger(f["title"]), "body": issue_body(receipt, f, review)}
+            for f in found if kinds is None or f["kind"] in kinds]
 
 
 def read_ledger(folder):
@@ -114,25 +141,37 @@ def run_gh(gh, args, run=subprocess.run):
     return result.stdout
 
 
-def open_issue_with_marker(gh, slug, key, number, run):
-    """Return the issue number when an open issue holds this finding's marker."""
+def existing_issue(gh, slug, key, rules, number, run):
+    """("open", n) for an open issue with this finding's marker; ("resolved", n) for a closed one that also
+    holds this rules blob's marker; None otherwise. Searches every state, not only the label."""
+    wanted, same_rules = marker(key), rules_marker(rules)
+    candidates = []
     if number is not None:
-        data = json.loads(run_gh(gh, ["issue", "view", str(number), "--repo", slug, "--json", "number,state,body"], run))
-        if data.get("state") == "OPEN" and marker(key) in (data.get("body") or ""):
-            return data["number"]
-    found = json.loads(run_gh(gh, ["issue", "list", "--repo", slug, "--label", LABEL, "--state", "open",
-                                   "--search", key + " in:body", "--json", "number,body", "--limit", "20"], run))
-    for item in found:
-        if marker(key) in (item.get("body") or ""):
-            return item["number"]
-    return None
+        candidates.append(json.loads(run_gh(gh, ["issue", "view", str(number), "--repo", slug, "--json", "number,state,body"], run)))
+    candidates += json.loads(run_gh(gh, ["issue", "list", "--repo", slug, "--state", "all",
+                                         "--search", key + " in:body", "--json", "number,state,body", "--limit", "50"], run))
+    resolved = None
+    for item in candidates:
+        body = item.get("body") or ""
+        if wanted not in body:
+            continue
+        if item.get("state") == "OPEN":
+            return "open", item["number"]
+        if same_rules in body and resolved is None:
+            resolved = item["number"]
+    return ("resolved", resolved) if resolved is not None else None
 
 
-def publish(receipt, slug, folder, gh=None, dry_run=True, run=subprocess.run):
+def publish(receipt, slug, folder, gh=None, dry_run=True, run=subprocess.run, kinds=None, review=None, limit=None):
     """Dry run (default) or create one labelled issue per new finding. Returns one result per finding."""
     if not isinstance(slug, str) or not SLUG.fullmatch(slug):
         raise PublishError("Name the GitHub repository as owner/name.")
-    drafts = plan(receipt)
+    if LABEL in WEB_TRIGGER_LABELS:
+        raise PublishError("The issue label would assign Kiro Web.")
+    drafts = plan(receipt, kinds, review)
+    if limit is not None and len(drafts) > limit:
+        raise PublishError("%d findings exceed the limit of %d issues per run. Nothing was published." % (len(drafts), limit))
+    rules = receipt["candidate"].get("rulesBlob") or "unknown"
     ledger = read_ledger(folder)
     results = []
     for draft in drafts:
@@ -144,10 +183,12 @@ def publish(receipt, slug, folder, gh=None, dry_run=True, run=subprocess.run):
             continue
         if not gh:
             raise PublishError("Install the GitHub CLI (gh) and sign in to publish.")
-        number = open_issue_with_marker(gh, slug, draft["key"], known, run)
-        if number is not None:
-            results.append({"key": draft["key"], "title": draft["title"], "action": "exists", "number": number})
-            ledger[slug + "#" + draft["key"]] = {"number": number}
+        found = existing_issue(gh, slug, draft["key"], rules, known, run)
+        if found is not None:
+            state, number = found
+            action = "exists" if state == "open" else "resolved"
+            results.append({"key": draft["key"], "title": draft["title"], "action": action, "number": number})
+            ledger[slug + "#" + draft["key"]] = {"number": number, "state": state, "rules": rules}
             write_ledger(folder, ledger)
             continue
         handle, body_file = tempfile.mkstemp(prefix="night-watch-issue-", suffix=".md")
@@ -162,7 +203,7 @@ def publish(receipt, slug, folder, gh=None, dry_run=True, run=subprocess.run):
         if not created:
             raise PublishError("gh did not report the new issue's address. Check the repository before retrying.")
         number = int(created.group(1))
-        ledger[slug + "#" + draft["key"]] = {"number": number}
+        ledger[slug + "#" + draft["key"]] = {"number": number, "state": "open", "rules": rules}
         write_ledger(folder, ledger)
         results.append({"key": draft["key"], "title": draft["title"], "action": "created", "number": number})
     return results

@@ -8,6 +8,8 @@
 //   node scripts/night-review.mjs review --bundle <dir> [--holdout <from>:<deals>]
 //   node scripts/night-review.mjs verify --bundle <dir> [--rerun]
 //   node scripts/night-review.mjs run    (draft options) [--holdout <from>:<deals>]   draft + review + verify
+//   node scripts/night-review.mjs check  --finding <reports.json> [--report <id>]   re-run the finding's counts only
+//     (no candidate, no bundle; Night Watch calls this before an opt-in scheduled issue and prints one JSON line)
 // Exit status: 0 accepted (or verified), 1 rejected (or verification failed), 2 unusable input.
 import {spawnSync} from "node:child_process";
 import {createHash} from "node:crypto";
@@ -408,12 +410,24 @@ async function main(argv) {
   if (command === "draft") return (await draft(opts), 0);
   if (command === "review") return (await review(opts)) ? 0 : 1;
   if (command === "verify") return (await verify(opts)) ? 0 : 1;
+  if (command === "check") {
+    const finding = loadFinding(opts.finding, opts.report);
+    const dir = snapshot(finding.report.candidate.commit);
+    try {
+      const result = reproduce(dir, finding.report);
+      process.stdout.write(JSON.stringify({check: "reproduce", finding: finding.sha256, commit: finding.report.candidate.commit,
+        seeds: [finding.report.firstSeed, finding.report.firstSeed + finding.report.count - 1], ...result, surface: SURFACE.kind}) + "\n");
+      return result.reproduced ? 0 : 1;
+    } finally {
+      rmSync(dir, {recursive: true, force: true});
+    }
+  }
   if (command === "run") {
     const out = await draft(opts);
     const accepted = await review({bundle: out, holdout: opts.holdout});
     return (await verify({bundle: out})) ? (accepted ? 0 : 1) : 1;
   }
-  throw new InputError("usage: night-review.mjs draft|review|verify|run (see the header of scripts/night-review.mjs)");
+  throw new InputError("usage: night-review.mjs draft|review|verify|run|check (see the header of scripts/night-review.mjs)");
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

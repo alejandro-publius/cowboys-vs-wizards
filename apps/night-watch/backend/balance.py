@@ -31,7 +31,13 @@ DEFAULT_CONFIG = {
     # Absolute target band for first-player and Cowboy shares, {"low": %, "high": %}, or None.
     # Operator-configured; no design target has been approved, so the default is off.
     "band": None,
+    # Opt-in for scheduled runs only: "off" (default, read-only) or "lean" (file one deduplicated
+    # `night-watch` issue per out-of-band lean finding that the Night Shift check reproduces).
+    "autoIssues": "off",
+    # GitHub owner/name for those issues; empty means the checkout's GitHub origin.
+    "issueRepo": "",
 }
+AUTO_ISSUES = ("off", "lean")
 
 # "showdown" plays each deal twice with the first seat swapped (prototypes/showdown/sim.mjs);
 # "lanes" runs the lane duel through scripts/simulate-matches.mjs.
@@ -112,7 +118,18 @@ def validate_config(raw):
     except ValueError as error:
         raise ConfigError(str(error))
 
-    config = {"repo": repo, "firstSeed": first_seed, "count": count, "threshold": threshold, "mode": mode, "band": band}
+    auto = merged["autoIssues"]
+    if auto not in AUTO_ISSUES:
+        raise ConfigError("Scheduled issues must be one of %s." % ", ".join(AUTO_ISSUES))
+    if auto != "off" and (band is None or mode != "showdown"):
+        raise ConfigError("Scheduled issues need Showdown mode and a target band.")
+    issue_repo = merged["issueRepo"]
+    if not isinstance(issue_repo, str) or (issue_repo.strip() and not re.fullmatch(
+            r"[A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9][A-Za-z0-9_.-]*", issue_repo.strip())):
+        raise ConfigError("The issue repository must be empty or owner/name.")
+
+    config = {"repo": repo, "firstSeed": first_seed, "count": count, "threshold": threshold, "mode": mode, "band": band,
+              "autoIssues": auto, "issueRepo": issue_repo.strip()}
     for name in ("baseline", "candidate"):
         ref = merged[name]
         if not isinstance(ref, str) or not ref.strip() or len(ref) > 200 or re.search(r"[\x00-\x1f\x7f]", ref):

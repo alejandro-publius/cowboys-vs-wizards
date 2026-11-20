@@ -188,7 +188,8 @@ function Settings({ config, save, busy }) {
     const high = String(data.get("bandHigh")).trim();
     save({ ...Object.fromEntries(fields.map(({ key, min }) =>
       [key, min === undefined ? String(data.get(key)).trim() : Number(data.get(key))])), mode: String(data.get("mode")),
-    band: low === "" && high === "" ? null : { low: Number(low), high: Number(high) } });
+    band: low === "" && high === "" ? null : { low: Number(low), high: Number(high) },
+    autoIssues: String(data.get("autoIssues")), issueRepo: String(data.get("issueRepo")).trim() });
   }
   return h("section", { className: "settings panel", id: "night-watch-settings" },
     h("header", { className: "panel-heading" }, h("h2", null, "Comparison settings")),
@@ -209,8 +210,16 @@ function Settings({ config, save, busy }) {
           h("label", { key: name },
             h("span", null, label),
             h("input", { name, type: "number", min: 0, max: 100, step: "0.1", defaultValue: config.band?.[edge] ?? "",
-              placeholder: "optional" })))),
-      h("p", { className: "settings-note quiet" }, "Night Watch runs the engine from commits in this local checkout. Leave the target band empty unless you have chosen one; no design target has been approved."),
+              placeholder: "optional" }))),
+        h("label", { key: "autoIssues" },
+          h("span", null, "Scheduled issues"),
+          h("select", { name: "autoIssues", defaultValue: config.autoIssues || "off" },
+            h("option", { value: "off" }, "Off (read-only)"),
+            h("option", { value: "lean" }, "One issue per reproduced out-of-band lean"))),
+        h("label", { key: "issueRepo" },
+          h("span", null, "Issue repository"),
+          h("input", { name: "issueRepo", type: "text", defaultValue: config.issueRepo || "", placeholder: "owner/name (default: origin)" }))),
+      h("p", { className: "settings-note quiet" }, "Night Watch runs the engine from commits in this local checkout. Leave the target band empty unless you have chosen one; no design target has been approved. Scheduled issues need Showdown mode and a band; they are labelled night-watch, never kiro, so they do not assign Kiro Web."),
       h("button", { type: "submit", className: "action primary", disabled: Boolean(busy) },
         busy === "save" ? "Saving…" : "Save settings")));
 }

@@ -26,6 +26,10 @@ API_PREFIXES = ("/apps/" + APP_ID + "/api", "/api/apps/" + APP_ID, "/api")
 MAX_BODY = 64 * 1024
 MAX_REPORTS = 20
 NIGHTLY_MODE = "showdown"
+# The Night Shift reviewer in this app's own checkout (scripts/night-review.mjs), and its bounds.
+REVIEWER = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "scripts", "night-review.mjs"))
+REVIEW_TIMEOUT = 120
+MAX_ISSUES_PER_RUN = 2
 
 
 class Busy(Exception):
@@ -236,6 +240,65 @@ def serve():
         server.server_close()
 
 
+# ---------------------------------------------------------------- scheduled issues (opt-in)
+
+def review_finding(record, node=None, run=subprocess.run):
+    """Bounded independent check: the Night Shift reviewer re-runs the record's counts from a fresh snapshot.
+
+    Returns (reproduced, summary). Any failure, timeout or missing reviewer counts as not reproduced.
+    """
+    node = node or os.environ.get("NIGHT_WATCH_NODE") or shutil.which("node")
+    if not node or not os.path.isfile(REVIEWER):
+        return False, "reviewer unavailable (%s)" % ("node not found" if not node else "scripts/night-review.mjs missing")
+    handle, path = tempfile.mkstemp(prefix="night-watch-finding-", suffix=".json")
+    try:
+        with os.fdopen(handle, "w", encoding="utf-8") as out:
+            json.dump(record, out)
+        try:
+            result = run([node, REVIEWER, "check", "--finding", path], cwd=os.path.dirname(os.path.dirname(REVIEWER)),
+                         env=balance.child_env(), stdin=subprocess.DEVNULL, capture_output=True, text=True,
+                         timeout=REVIEW_TIMEOUT)
+        except (OSError, subprocess.TimeoutExpired) as error:
+            return False, "reviewer did not finish (%s)" % type(error).__name__
+    finally:
+        os.remove(path)
+    try:
+        line = json.loads((result.stdout or "").strip().splitlines()[-1])
+    except (ValueError, IndexError):
+        line = {}
+    if result.returncode == 0 and line.get("reproduced") is True:
+        return True, "reproduced all %d games for %s seeds %d-%d" % (
+            line["observed"]["games"], line["commit"][:12], line["seeds"][0], line["seeds"][1])
+    return False, "not reproduced (exit %d%s)" % (result.returncode,
+                                                  ", mismatched " + ", ".join(line["mismatched"]) if line.get("mismatched") else "")
+
+
+def scheduled_issues(record, config, gh=None, review=review_finding, run=subprocess.run):
+    """After a scheduled run: off by default; with autoIssues "lean", one deduplicated issue per reproduced lean finding."""
+    if config.get("autoIssues", "off") == "off":
+        return {"mode": "off"}
+    receipt = record.get("receipt")
+    if config.get("autoIssues") != "lean" or not config.get("band") or record.get("mode") != "showdown" or not receipt:
+        return {"mode": config.get("autoIssues"), "state": "skipped", "reason": "needs Showdown mode, a band and a receipt"}
+    if not [f for f in receipt["findings"] if f["kind"] == "lean"]:
+        return {"mode": "lean", "state": "no-finding"}
+    reproduced, summary = review(record)
+    if not reproduced:
+        return {"mode": "lean", "state": "not-published", "review": summary}
+    slug = config.get("issueRepo") or receipt.get("repository")
+    with file_lock("publish.lock", wait=False):
+        results = issues.publish(receipt, slug, data_dir(), gh=gh or shutil.which("gh"), dry_run=False, run=run,
+                                 kinds={"lean"}, review=summary, limit=MAX_ISSUES_PER_RUN)
+    return {"mode": "lean", "state": "published", "review": summary, "repository": slug,
+            "issues": [{"key": r["key"], "action": r["action"], "number": r["number"]} for r in results]}
+
+
+def attach_publication(record, publication):
+    record["publication"] = publication
+    with file_lock("state.lock", wait=True):
+        write_json("history.json", [record if r.get("id") == record["id"] else r for r in load_reports()])
+
+
 # ---------------------------------------------------------------- CLI
 
 def run_cli(source, mode=None):
@@ -250,7 +313,17 @@ def run_cli(source, mode=None):
     print("Night Watch %s (%s). %s" % (record["state"], record["id"], record["message"]))
     if record.get("issueUrl"):
         print("Issue draft link is saved with the report.")
-    return 1 if record["state"] == "failed" else 0
+    if source != "scheduled" or record["state"] == "failed":
+        return 1 if record["state"] == "failed" else 0
+    try:
+        publication = scheduled_issues(record, load_config())
+    except (issues.PublishError, Busy, StoreError, OSError, ValueError) as error:
+        publication = {"mode": "lean", "state": "error", "reason": str(error)}
+    attach_publication(record, publication)
+    if publication["mode"] != "off":
+        print("Scheduled issues: %s%s" % (publication["state"], "".join(
+            "; %s #%d" % (i["action"], i["number"]) for i in publication.get("issues", []))))
+    return 1 if publication.get("state") == "error" else 0
 
 
 def evaluate_cli(args):
@@ -292,7 +365,7 @@ def load_receipt(args):
 
 
 def issues_cli(args):
-    """Dry run unless --publish is given. Never called by the scheduled job."""
+    """Dry run unless --publish is given. The scheduled job uses scheduled_issues() instead, and only when opted in."""
     try:
         receipt = load_receipt(args)
         slug = args.repo or receipt.get("repository")
@@ -361,7 +434,7 @@ def main(argv):
     evaluate.add_argument("--band-low", type=float, help="operator target band low edge, percent")
     evaluate.add_argument("--band-high", type=float, help="operator target band high edge, percent")
     evaluate.add_argument("--out", help="receipt file (default: stdout)")
-    publish = commands.add_parser("issues", help="dry-run or publish one 'kiro' issue per finding")
+    publish = commands.add_parser("issues", help="dry-run or publish one 'night-watch' issue per finding")
     source = publish.add_mutually_exclusive_group()
     source.add_argument("--receipt", help="receipt JSON file")
     source.add_argument("--report", default="latest", help="stored report id, or latest")
