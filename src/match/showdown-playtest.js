@@ -3,18 +3,28 @@
 // (src/game/showdown/playtest.js). Nothing here decides a reward or touches the progress save.
 //
 // What a line holds: the duel name, won, turns, seconds of play, whether "All the rules" was opened,
-// plus the duel id, the deal seed and a random run id so the same finished duel is never logged twice.
+// plus the duel id, the deal seed and a random run id so the same finished duel is never logged twice,
+// and (K-087) the public label of the game build it was finished under: a commit prefix the build
+// script stamps into the page, the same for every player of that build. Lines from older builds have
+// no label and stay that way; a page never stamps its own label on a line it did not log.
 // No name, device, clock time or other personal detail is stored, and nothing leaves the browser.
 import {logged, report} from "../game/showdown/playtest.js";
 
 export const PLAYTEST_KEY = "cvw-showdown-playtest-v1";
+
+// Same shape as scripts/graybox-build-label.mjs: 12 hex characters of a commit, "+local" for uncommitted changes.
+const BUILD = /^[0-9a-f]{12}(\+local)?$/;
+export const buildLabel = (value) => (typeof value === "string" && BUILD.test(value) ? value : null);
+/* global __CVW_GRAYBOX_BUILD__ */
+// scripts/build-graybox.mjs defines this; unbundled (Node tests, other pages) the page has no label.
+export const PAGE_BUILD = typeof __CVW_GRAYBOX_BUILD__ === "undefined" ? null : buildLabel(__CVW_GRAYBOX_BUILD__);
 
 const whole = (n) => Number.isInteger(n) && n >= 0;
 // Keeps only well-formed lines, and only their known fields, from whatever the key holds.
 const clean = (entry) => entry && typeof entry.name === "string" && typeof entry.won === "boolean" && whole(entry.turns) && whole(entry.seconds)
   ? {name: entry.name, won: entry.won, turns: entry.turns, seconds: entry.seconds, rules: entry.rules === true,
     ...(typeof entry.run === "string" ? {run: entry.run} : {}), ...(typeof entry.duel === "string" ? {duel: entry.duel} : {}),
-    ...(Number.isFinite(entry.seed) ? {seed: entry.seed} : {})}
+    ...(Number.isFinite(entry.seed) ? {seed: entry.seed} : {}), ...(buildLabel(entry.build) ? {build: entry.build} : {})}
   : null;
 
 function read(storage) {
@@ -25,7 +35,9 @@ function read(storage) {
 }
 
 // storage: localStorage or any {getItem, setItem}; null or a throwing one keeps the log in memory only.
-export function createPlaytestLog(storage) {
+// build: this page's label, stamped on each duel it adds and named in the report (defaults to PAGE_BUILD).
+export function createPlaytestLog(storage, {build = PAGE_BUILD} = {}) {
+  const page = buildLabel(build);
   let log = read(storage);
   let saved = Boolean(storage);
   return {
@@ -33,7 +45,7 @@ export function createPlaytestLog(storage) {
     saved: () => saved,
     // Adds one finished duel. A run id already in the log is ignored. Returns true when it was added.
     add(entry) {
-      const line = clean(entry);
+      const line = clean(entry && {...entry, build: page ?? undefined});
       if (!line || (line.run && log.some((old) => old.run === line.run))) return false;
       log = logged(log, line);
       try { storage.setItem(PLAYTEST_KEY, JSON.stringify(log)); saved = true; } catch { saved = false; }
@@ -44,7 +56,7 @@ export function createPlaytestLog(storage) {
       log = [];
       try { storage.setItem(PLAYTEST_KEY, JSON.stringify(log)); saved = true; } catch { saved = false; }
     },
-    text: (progress) => report(log, progress),
+    text: (progress) => report(log, progress, {build: page}),
   };
 }
 
