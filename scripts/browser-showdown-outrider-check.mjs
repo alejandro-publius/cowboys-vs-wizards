@@ -15,7 +15,7 @@ import {readFileSync} from "node:fs";
 import {mkdir, mkdtemp, rm, writeFile} from "node:fs/promises";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
-import {DEFAULT_DIR, DEFAULT_RECEIPT, loadDecision, verifiedForBuild} from "./outrider-gate.mjs";
+import {CURATED, DEFAULT_DIR, DEFAULT_RECEIPT, loadDecision, verifiedForBuild} from "./outrider-gate.mjs";
 import {comparisonLines, nightWatchLine, researchLine} from "../src/ui/outrider-ledger.js";
 import {SAVE_KEY} from "../src/game/showdown/campaign-store.js";
 import {newSave} from "../src/game/showdown/progress.js";
@@ -202,7 +202,10 @@ try {
     await click("#menu-play");
     await wait(`!document.getElementById('showdown-camp').hidden`);
   }
-  for (const bad of ["?outrider=nope", "?outrider=__proto__", `?outrider=${encodeURIComponent('[{"type":"end"}]')}`, `?outrider=${encodeURIComponent(`${expected.cases[0]?.id ?? "x"} `)}`]) {
+  // Curated ids that were not verified for this build (all of them on a stale build) must not open either.
+  const unlinked = (curated?.compare ?? CURATED.compare).filter((id) => !expected.cases.some((c) => c.id === id)).map((id) => `?outrider=${id}`);
+  report.unlinkedTried = unlinked;
+  for (const bad of [...unlinked, "?outrider=nope", "?outrider=__proto__", `?outrider=${encodeURIComponent('[{"type":"end"}]')}`, `?outrider=${encodeURIComponent(`${expected.cases[0]?.id ?? "x"} `)}`]) {
     await navigate(bad);
     await sleep(100);
     assert.ok(await shown("title-screen") && !(await shown("showdown")), bad);
