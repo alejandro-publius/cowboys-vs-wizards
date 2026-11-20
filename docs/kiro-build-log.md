@@ -2,6 +2,9 @@
 
 Started November 14, 2026, in Pacific time. Entry dates use America/Los_Angeles. This file records work as it happens and supplies evidence for the Kiroween submission. Codex prepared this initial log and the accompanying steering file. Kiro activity starts when a Kiro session actually performs and records work.
 
+## November 20 · Boot Hill practice
+Kiro CLI built shareable, save-isolated Showdown deals 0 and 60, a two-seed native replay Workflow, and a portable practice skill. A separate Kiro session reviewed the combined implementation. Fable reviewed the practice wording. [Practice implementation](evidence/showdown-boot-hill-practice.md) · [Native replay](evidence/showdown-practice-workflow.md) · [Skill verification](evidence/showdown-practice-skill.md).
+
 ## Project direction
 
 Build a short, understandable haunted-Western card duel. Players select cards from a visible hand, summon 3D characters onto three tiles per side, sacrifice troops to summon stronger characters, and watch attacks change the board. Living characters show one to five health orbs overhead. The approved card back uses brass horseshoes and an amethyst on a dark red-purple ground.

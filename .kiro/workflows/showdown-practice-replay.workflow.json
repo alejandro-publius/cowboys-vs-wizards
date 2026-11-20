@@ -1,0 +1,37 @@
+{
+  "name": "showdown-practice-replay",
+  "description": "Showdown counterpart of orb-duel-replay (which stays for the 3D lane build): build the graybox root page once, replay the Boot Hill practice deals ?practice=0 and ?practice=60 in headless Chrome in two parallel workers (joinPolicy all: the first failure aborts the other), then one deterministic join that accepts only a seed-0 and a seed-60 receipt of this build and refuses duplicate, swapped, relabelled, missing and stale ones. Read-only for source. Inputs: none.",
+  "steps": [
+    {
+      "type": "step",
+      "id": "build",
+      "agent": "wf-coder",
+      "prompt": "Do not edit, create or commit any tracked file. From the project root run exactly these as one shell call: `git rev-parse HEAD && git status --porcelain && node scripts/build-graybox.mjs --hosted && shasum -a 256 dist/web/index.html`. Report in 4 short bullets: the literal Command, the Exit status, the HEAD SHA, and the build line and SHA-256 exactly as printed (say if git status printed anything). If the exit status is not 0, call send_message with severity error naming the first failing line; otherwise call send_message with severity success."
+    },
+    {
+      "type": "parallel",
+      "id": "seeds",
+      "joinPolicy": "all",
+      "branches": [
+        {
+          "type": "step",
+          "id": "seed-0",
+          "agent": "wf-coder",
+          "prompt": "You own exactly one output file: .artifacts/practice/wf/seed-0.json. Do not edit, create or commit anything else, do not rebuild the page and do not run the other seed. From the project root run exactly: `node scripts/browser-showdown-practice.mjs --seed 0 --page dist/web/index.html --out .artifacts/practice/wf/seed-0.json` as one shell call. Report in 3 short bullets: the literal Command, the Exit status, and the printed result lines verbatim. If the exit status is not 0, call send_message with severity error quoting the printed 'first failure' line; otherwise call send_message with severity success."
+        },
+        {
+          "type": "step",
+          "id": "seed-60",
+          "agent": "wf-coder",
+          "prompt": "You own exactly one output file: .artifacts/practice/wf/seed-60.json. Do not edit, create or commit anything else, do not rebuild the page and do not run the other seed. From the project root run exactly: `node scripts/browser-showdown-practice.mjs --seed 60 --page dist/web/index.html --out .artifacts/practice/wf/seed-60.json` as one shell call. Report in 3 short bullets: the literal Command, the Exit status, and the printed result lines verbatim. If the exit status is not 0, call send_message with severity error quoting the printed 'first failure' line; otherwise call send_message with severity success."
+        }
+      ]
+    },
+    {
+      "type": "step",
+      "id": "join",
+      "agent": "wf-coder",
+      "prompt": "Seed 0 worker: {{seed-0.output}}\nSeed 60 worker: {{seed-60.output}}\nDo not edit, create or commit any tracked file and do not judge the receipts yourself: the script decides. From the project root run exactly, as one shell call: `node scripts/browser-showdown-practice.mjs --join .artifacts/practice/wf/seed-0.json .artifacts/practice/wf/seed-60.json --page dist/web/index.html --out .artifacts/practice/wf/join.json; echo join-exit=$?; node scripts/browser-showdown-practice.mjs --join-controls .artifacts/practice/wf/seed-0.json .artifacts/practice/wf/seed-60.json --page dist/web/index.html --out .artifacts/practice/wf/controls.json; echo controls-exit=$?`. Report in 4 short bullets: the literal Command, both exit values, the join line verbatim, and every control line verbatim. If either exit value is not 0, call send_message with severity error quoting the first REFUSED or BAD line; otherwise call send_message with severity success."
+    }
+  ]
+}

@@ -6,12 +6,22 @@ import {holdings, joinInherited} from "../game/showdown/inherited.js";
 import {choose, deckProblems, duelFor, duelList, newSave, openPack, owned, settle, withDeck} from "../game/showdown/progress.js";
 import {GRIT_CAP, TRAIL} from "../game/showdown/trail.js";
 
-export function createCampaign(storage) {
+// deferImport (K-096, a direct ?practice boot): write nothing yet. The keepsake import and the career load wait
+// for enter(), the first Camp entry, so they read storage as it is then and run once. Default: both at once.
+export function createCampaign(storage, {deferImport = false} = {}) {
   let progress = loadCampaign(storage);
   let saved = true;
   // Cards already won in the lane game stay owned. They are kept in their own record, not in the
   // progress object, so the Trail deck, bounties and offers are unchanged (see inherited.js).
-  const inherited = joinInherited(storage, laneCapturedCards(storage));
+  let inherited = {cards: [], saved: true};
+  let entered = false;
+  const enter = () => {
+    if (entered) return;
+    entered = true;
+    if (deferImport) progress = loadCampaign(storage);
+    inherited = joinInherited(storage, laneCapturedCards(storage));
+  };
+  if (!deferImport) enter();
   // saveCampaign returns {ok} and never throws. Storage can be blocked or full: play on with the
   // progress in memory, and the Camp says so.
   const keep = (next) => {
@@ -19,6 +29,8 @@ export function createCampaign(storage) {
     saved = saveCampaign(storage, progress).ok === true;
   };
   return {
+    // The first Camp entry: imports the lane keepsakes (once) and, for a deferred campaign, reloads the career.
+    enter,
     progress: () => progress,
     saved: () => saved && inherited.saved,
     // Owned cards for the Camp list, each once: [{type, copies, inherited}].

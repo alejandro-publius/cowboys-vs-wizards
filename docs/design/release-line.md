@@ -24,6 +24,8 @@ Added by Kiro (Kiro CLI, coordinator job `graywave-assemble`) from GitHub `main`
 
 **First-turn and report checks (November 20).** Kiro added independent browser checks for Boot Hill’s first summon, the two Outrider choices and sharing a mixed-build Camp report. The release keeps automated WebKit touch and keyboard results separate from physical-device testing. [Timing and controls](../evidence/showdown-first-input.md) · [WebKit outcomes](../evidence/showdown-outrider-webkit.md) · [Camp report contents](../evidence/showdown-camp-export-privacy.md).
 
+**Boot Hill practice (November 20).** Camp opens two fixed starter-deck deals, also shareable as [deal 0](https://alejandro-publius.github.io/cowboys-vs-wizards/?practice=0) and [deal 60](https://alejandro-publius.github.io/cowboys-vs-wizards/?practice=60). Each can be replayed without awarding cards or adding a playtest entry. First-time direct visits defer the old keepsake import until the player enters Camp. Fable approved the practice labels and kept the two Outrider positions as examples only. [Entry and migration checks](../evidence/showdown-boot-hill-practice.md) · [Two-seed workflow](../evidence/showdown-practice-workflow.md) · [Portable skill](../evidence/showdown-practice-skill.md).
+
 **Milestones.**
 
 | State | What |

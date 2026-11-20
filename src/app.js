@@ -8,9 +8,9 @@ const node = (id) => document.getElementById(id);
 
 Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"), import("./ui/showdown-builder.js"), import("./match/showdown-campaign.js"),
   import("./match/showdown-playtest.js"), import("./match/showdown-session.js"), import("./match/showdown-turn.js"),
-  import("./match/showdown-outrider.js"), import("./ui/outrider-camp.js")])
-  .then(([{mountShowdown, freshSeed}, {mountCamp}, {mountBuilder}, {createCampaign}, {createPlaytestLog}, {twoPlayers}, {turnDuel},
-    {outriderTurn}, {VERIFIED, outriderControls}]) => {
+  import("./match/showdown-outrider.js"), import("./ui/outrider-camp.js"), import("./match/showdown-practice.js")])
+  .then(([{mountShowdown, freshSeed}, {mountCamp}, {mountBuilder}, {createCampaign}, {createPlaytestLog, PAGE_BUILD}, {twoPlayers}, {turnDuel},
+    {outriderTurn}, {VERIFIED, outriderControls}, {PRACTICE_SEEDS, practiceDuel, practiceFromQuery}]) => {
   const title = node("title-screen"), screen = node("showdown"), campRoot = node("showdown-camp"), builderRoot = node("showdown-builder"), play = node("menu-play");
   const seed = new URLSearchParams(location.search).get("seed");
   // ?seed fixes every deal started from the Camp and every later game of a match, so a scripted check replays the same duels.
@@ -18,13 +18,19 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   // The browser's storage is read through the canonical store; a blocked storage leaves progress in memory only.
   let storage = null;
   try { storage = window.localStorage; } catch { /* storage is blocked */ }
-  const campaign = createCampaign(storage);
+  // Precedence of the opening queries: ?turn, then ?outrider, then ?practice.
+  const query = new URLSearchParams(location.search);
+  const [turn, outrider] = [query.get("turn"), query.get("outrider")];
+  const practice = turn === null && outrider === null ? practiceFromQuery(location.search) : null;
+  // K-096: a direct practice visit writes no key until the player chooses the Camp (campaign.enter() in toCamp).
+  const campaign = createCampaign(storage, {deferImport: practice !== null});
   // One line per finished solo game for the Camp's playtest report, under the prototype's key.
   const playtest = createPlaytestLog(storage);
   const showOnly = (shown) => { for (const el of [title, screen, campRoot, builderRoot]) el.hidden = el !== shown; window.scrollTo(0, 0); };
   let last = null; // the Camp control that started the duel just left, so focus returns to it
   const toCamp = () => {
     showOnly(campRoot);
+    campaign.enter();
     camp.show();
     // When that control is now disabled (a win's card offer is open), the Camp's own order: the claim
     // (offer or pack), then the first open duel. Selectors are tried in turn, not in document order.
@@ -81,8 +87,28 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     return true;
   };
   campRoot.addEventListener("click", (event) => { const b = event.target.closest("button[data-outrider]"); if (b) openOutrider(b.dataset.outrider, b); });
-  const turn = new URLSearchParams(location.search).get("turn");
+  // K-096: Boot Hill practice, collapsed at the end of the Camp. Each deal is a native link (?practice=<seed>) that can
+  // be copied or opened in a new tab; a plain click or Enter opens the same duel here through openPractice.
+  // Only the seeds in showdown-practice.js open; nothing is saved (see that file).
+  campRoot.insertAdjacentHTML("beforeend", `<details id="camp-practice"${PAGE_BUILD ? ` data-build="${PAGE_BUILD}"` : ""}><summary>Practice Boot Hill</summary>
+    <p class="sd-note">The first Trail duel with the starter deck. Nothing here is saved. Each link opens one fixed deal.</p>
+    <div class="sd-row">${PRACTICE_SEEDS.map((s) => `<a id="camp-practice-${s}" data-practice="${s}" href="?practice=${s}">Deal ${s}</a>`).join(" ")}</div></details>`);
+  const openPractice = (seed) => {
+    const practice = practiceDuel(seed);
+    if (!practice) return false;
+    node("camp-practice").open = true; // so Back to camp can return focus to the link
+    last = `#camp-practice-${seed}`;
+    showOnly(screen);
+    showdown.start(practice.duel, practice.seed);
+    return true;
+  };
+  campRoot.addEventListener("click", (event) => {
+    const a = event.target.closest("a[data-practice]");
+    if (!a || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    openPractice(Number(a.dataset.practice));
+  });
   if (turn !== null) openTurn(turn);
-  const outrider = new URLSearchParams(location.search).get("outrider");
   if (outrider !== null && turn === null) openOutrider(outrider);
+  if (practice !== null) openPractice(practice);
   });
