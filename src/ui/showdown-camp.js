@@ -12,7 +12,7 @@ const TEMPLATE = `
   <section aria-labelledby="camp-trail-title"><h2 id="camp-trail-title">The Trail</h2><ol id="camp-trail" class="sd-row"></ol></section>
   <section aria-label="Your cards"><h2>Your cards</h2><p id="camp-collection" class="sd-note"></p></section>`;
 
-// campaign: progress(), saved(), duels(), owned(type), choose(type). onDuel(): start the open Trail duel.
+// campaign: progress(), saved(), duels(), holdings(), owned(type), choose(type). onDuel(): start the open Trail duel.
 export function mountCamp(root, {campaign, onDuel, onHome}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
@@ -33,8 +33,10 @@ export function mountCamp(root, {campaign, onDuel, onHome}) {
         <strong>${duel.state === "won" ? "✓ " : ""}${duel.name}</strong><span class="sd-note">${duel.state === "won" ? `Earned ${reward}` : duel.state === "locked" ? `Locked · win to earn ${reward}` : `Win to earn ${reward}`}</span></button></li>`;
     }).join("");
     const count = (counts) => Object.entries(counts).map(([type, copies]) => `${TYPES[type].name} ×${copies}`).join(", ");
+    const rows = campaign.holdings();
+    const listed = rows.map(({type, copies, inherited}) => `${TYPES[type].name} ×${copies}${inherited ? " (from the lane game)" : ""}`).join(", ");
     $("camp-collection").innerHTML = `<strong>Deck:</strong> ${count(progress.deck)}.<br><strong>Collection:</strong> Sheriff and Billy in any number${
-      Object.keys(progress.collection).length ? `, ${count(progress.collection)}` : ""}.`;
+      listed ? `, ${listed}` : ""}.${rows.some((row) => row.inherited) ? `<br>Cards from the lane game stay owned. They are not in your Trail deck and are not in save codes.` : ""}`;
   }
 
   root.addEventListener("click", (event) => {

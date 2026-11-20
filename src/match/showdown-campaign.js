@@ -1,13 +1,17 @@
 // The graybox Camp's progress (issue 143 slice 2). Holds the current progress object in memory and
 // writes it through the canonical store after every change. Every rule (what a duel is, what a win
 // pays, what is on offer) comes from src/game/showdown/progress.js; nothing here decides a reward.
-import {loadCampaign, saveCampaign} from "../game/showdown/campaign-store.js";
+import {laneCapturedCards, loadCampaign, saveCampaign} from "../game/showdown/campaign-store.js";
+import {holdings, joinInherited} from "../game/showdown/inherited.js";
 import {choose, duelFor, duelList, owned, settle} from "../game/showdown/progress.js";
 import {GRIT_CAP, TRAIL} from "../game/showdown/trail.js";
 
 export function createCampaign(storage) {
   let progress = loadCampaign(storage);
   let saved = true;
+  // Cards already won in the lane game stay owned. They are kept in their own record, not in the
+  // progress object, so the Trail deck, bounties and offers are unchanged (see inherited.js).
+  const inherited = joinInherited(storage, laneCapturedCards(storage));
   // saveCampaign returns {ok} and never throws. Storage can be blocked or full: play on with the
   // progress in memory, and the Camp says so.
   const keep = (next) => {
@@ -16,7 +20,10 @@ export function createCampaign(storage) {
   };
   return {
     progress: () => progress,
-    saved: () => saved,
+    saved: () => saved && inherited.saved,
+    // Owned cards for the Camp list, each once: [{type, copies, inherited}].
+    holdings: () => holdings(progress, inherited.cards),
+    inherited: () => inherited.cards,
     duels: () => duelList(progress),
     // The open Trail duel for this progress, or null while a card is on offer or the Trail is done.
     trailDuel: () => duelFor(progress, "trail"),
