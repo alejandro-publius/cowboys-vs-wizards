@@ -1,6 +1,6 @@
-// Experiment turns for review (K-095): one recorded decision from the Dragon strategy experiment
-// (experiments/showdown-dragon-strategy on kiro/graywave-dragon-referee, counter checkpoint
-// s3-C5-dragon-resting), opened as a normal solo Showdown duel. Not a bounty and no rule change:
+// Experiment turns for review (K-095, K-008): recorded decisions from the Dragon strategy experiment
+// (experiments/showdown-dragon-strategy: counter checkpoint s3-C5-dragon-resting, and the rival search's
+// seed-70 case of the same checkpoint), each opened as a normal solo Showdown duel. Not a bounty and no rule change:
 // the canonical engine replays the Cowboy actions below from a fresh deal, with the unchanged bot
 // playing the Wizard turns between them (showdown-session.js checks each action is legal).
 // Nothing is settled or logged to the playtest report, so a saved career is never touched.
@@ -30,6 +30,26 @@ export const TURNS = {
       {type: "attack", slot: 0, target: 0},
       {type: "end"},
       {type: "summon", cardId: "cowboy-dynamiter-1", tributes: []},
+    ],
+    at: 5,
+  },
+  // Rival case hunt5-s70-C5-ranger (experiments/showdown-dragon-strategy/rival-cases.json): the same hunt and
+  // policy on held-out seed 70, the shrunk counterexample. Its own id, so the seed-3 link above is unchanged.
+  "dragon-c5-70": {
+    seed: 70,
+    hunt: "hunt:graveyard-dragon",
+    name: "Experiment: another Dragon turn",
+    lesson: "Experiment for review, not a bounty: nothing here is saved. The Graveyard Dragon, hunt 5, your turn 5. "
+      + "Choose what your Ranger attacks, then play the duel out. Restart this duel tries the turn again.",
+    // Cowboy turns 1 and 3 as the same public-information policy played them, then turn 5's shared Covered Wagon.
+    prefix: [
+      {type: "summon", cardId: "cowboy-sheriff-3", tributes: []},
+      {type: "end"},
+      {type: "summon", cardId: "cowboy-ranger-1", tributes: [0]},
+      {type: "spell", cardId: "cowboy-deadeye-1", target: 0},
+      {type: "attack", slot: 0, target: 0},
+      {type: "end"},
+      {type: "summon", cardId: "cowboy-covered-wagon-2", tributes: []},
     ],
     at: 5,
   },

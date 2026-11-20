@@ -1,14 +1,20 @@
 // K-095: the experiment turn ?turn=dragon-c5 replays the referee's s3-C5-dragon-resting checkpoint
 // (experiments/showdown-dragon-strategy/counter-output.json on kiro/graywave-dragon-referee) through the
 // graybox session, and both recorded choices reach the referee's recorded results.
+// K-008: ?turn=dragon-c5-70 does the same for the rival search's seed-70 case (rival-cases.json
+// hunt5-s70-C5-ranger), from the same hunt-5 save and the same Cowboy policy.
 import assert from "node:assert/strict";
+import {createHash} from "node:crypto";
+import {readFileSync} from "node:fs";
 import test from "node:test";
 import {cardOf} from "../../src/game/showdown/cards.js";
-import {planTurn} from "../../src/game/showdown/rules.js";
+import {applyAction, createShowdown, planTurn, playTurn} from "../../src/game/showdown/rules.js";
 import {createShowdownSession} from "../../src/match/showdown-session.js";
 import {TURNS, turnDuel} from "../../src/match/showdown-turn.js";
 
-const open = () => { const {duel, seed} = turnDuel("dragon-c5"); return createShowdownSession({seed, duel}); };
+const open = (id = "dragon-c5") => { const {duel, seed} = turnDuel(id); return createShowdownSession({seed, duel}); };
+const RIVAL = JSON.parse(readFileSync(new URL("../../experiments/showdown-dragon-strategy/rival-cases.json", import.meta.url), "utf8"));
+const rivalCase = (seed) => RIVAL.cases.find((each) => each.seed === seed);
 const board = (view, side) => view.sides[side].board.map((t) => (t ? `${cardOf(t.cardId).name} ${t.health}${t.cover ? " cover" : ""}` : "-")).join(" | ");
 
 // The referee's Cowboy policy (counter.mjs): planTurn on a state rebuilt from the Cowboy's public view,
@@ -36,8 +42,8 @@ function playOut(session) {
 }
 
 test("only an allowlisted id opens a turn; a URL value never becomes actions", () => {
-  assert.deepEqual(Object.keys(TURNS), ["dragon-c5"]);
-  for (const id of [null, "", "dragon-c5 ", "DRAGON-C5", "__proto__", "constructor", "toString", '[{"type":"end"}]', "seed:3"]) assert.equal(turnDuel(id), null, String(id));
+  assert.deepEqual(Object.keys(TURNS), ["dragon-c5", "dragon-c5-70"]);
+  for (const id of [null, "", "dragon-c5 ", "DRAGON-C5", "dragon-c5-70 ", "DRAGON-C5-70", "dragon-c5-3", "dragon-c5-71", "__proto__", "constructor", "toString", '[{"type":"end"}]', "seed:3", "seed:70"]) assert.equal(turnDuel(id), null, String(id));
 });
 
 test("a fresh landing is the referee's decision state, with hidden zones as counts and no seed", () => {
@@ -75,11 +81,70 @@ test("choice B (Ranger hits the Jack, the policy's pick) reaches the referee's W
 });
 
 test("retry is a fresh replay: the same landing after a played line", () => {
-  const first = open().view();
-  const played = open();
-  played.act({type: "attack", slot: 0, target: 0});
-  playOut(played);
-  assert.deepEqual(open().view(), first);
+  for (const id of Object.keys(TURNS)) for (const target of [0, 1]) {
+    const first = open(id).view();
+    const played = open(id);
+    played.act({type: "attack", slot: 0, target});
+    playOut(played);
+    assert.deepEqual(open(id).view(), first, `${id} after target ${target}`);
+  }
+});
+
+// The rival search hashes the full engine state at the choice (rival-search.mjs `hash`). The same prefix,
+// replayed here through the engine alone, must reach that exact state for both ids.
+test("each recorded prefix reaches the rival fixture's exact engine state at the choice", () => {
+  const hash = (v) => createHash("sha256").update(JSON.stringify(v)).digest("hex").slice(0, 12);
+  for (const id of Object.keys(TURNS)) {
+    const {seed, duel} = turnDuel(id);
+    let state = createShowdown(seed, duel.options);
+    const bot = () => { while (!state.result && state.active !== "cowboy") state = playTurn(state, duel.level).state; };
+    bot();
+    for (const action of duel.prefix) { state = applyAction(state, action).state; bot(); }
+    assert.deepEqual([state.turn, state.active], [5, "cowboy"], id);
+    assert.equal(hash(state), rivalCase(seed).atChoiceHash, id);
+  }
+});
+
+test("dragon-c5-70: lands on the seed-70 decision, with hidden zones as counts and no seed", () => {
+  const session = open("dragon-c5-70");
+  const view = session.view();
+  assert.equal(session.duel.kind, "turn");
+  assert.equal(session.duel.id, "turn:dragon-c5-70");
+  assert.deepEqual([view.turn, view.active, view.sides.cowboy.base, view.sides.wizard.base], [5, "cowboy", 5, 4]);
+  assert.equal(board(view, "cowboy"), "Ranger 4 | Covered Wagon 4 | -");
+  assert.equal(board(view, "wizard"), "Dragon 4 | Jack-o'-Lantern 1 cover | -");
+  assert.equal(view.sides.wizard.board[0].cardId, "wizard-dragon-0");
+  assert.deepEqual(view.sides.cowboy.traps, []);
+  assert.equal(view.seed, undefined);
+  for (const hidden of ["hand", "traps", "deck"]) assert.equal(view.sides.wizard[hidden], undefined);
+  assert.equal(view.sides.cowboy.deck, undefined);
+  const legal = session.legal().map((a) => JSON.stringify(a));
+  for (const target of [0, 1]) assert.ok(legal.includes(JSON.stringify({type: "attack", slot: 0, target})));
+});
+
+test("dragon-c5-70 choice A (Ranger hits the resting Dragon) reaches the rival's Wizard win on turn 14", () => {
+  const session = open("dragon-c5-70");
+  session.act({type: "attack", slot: 0, target: 0});
+  assert.equal(session.view().sides.wizard.board[0].health, 2);
+  assert.equal(session.view().sides.cowboy.board[0].health, 1);
+  const out = playOut(session);
+  assert.equal(`${out.winner[0]}${out.turn}`, rivalCase(70).result.A);
+  assert.deepEqual(out, {winner: "wizard", turn: 14, bases: rivalCase(70).lines.A.bases});
+});
+
+test("dragon-c5-70 choice B (Ranger hits the Jack, the policy's pick) reaches the rival's Cowboy win on turn 17", () => {
+  const session = open("dragon-c5-70");
+  session.act({type: "attack", slot: 0, target: 1});
+  assert.equal(session.view().sides.wizard.board[1], null);
+  const out = playOut(session);
+  assert.equal(`${out.winner[0]}${out.turn}`, rivalCase(70).result.B);
+  assert.deepEqual(out, {winner: "cowboy", turn: 17, bases: rivalCase(70).lines.B.bases});
+});
+
+test("the seed-70 lesson adds only neutral text: no trap, outcome, bounty or other-case wording", () => {
+  const {lesson, name} = TURNS["dragon-c5-70"];
+  assert.match(lesson, /^Experiment for review, not a bounty: nothing here is saved\./);
+  for (const word of [/trap/i, /win/i, /lose/i, /best|correct|right|wrong|should/i, /seed/i, /reward|grit/i, /\brests?\b/i]) assert.doesNotMatch(`${name} ${lesson}`, word);
 });
 
 test("a prefix with an illegal or short action list refuses to open", () => {

@@ -50,15 +50,17 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
       showdown.start(duel, seedFor(), {players, best});
     }});
   play.addEventListener("click", toCamp);
-  // Experiment for review (K-095): one recorded Dragon turn, opened from this optional Camp control or
-  // ?turn=dragon-c5. Only ids allowlisted in showdown-turn.js open; it saves nothing.
+  // Experiment for review (K-095, K-008): two recorded Dragon turns, opened from these optional Camp controls or
+  // ?turn=dragon-c5 and ?turn=dragon-c5-70. Only ids allowlisted in showdown-turn.js open; it saves nothing.
+  const TURN_CONTROLS = {"dragon-c5": "camp-turn-dragon", "dragon-c5-70": "camp-turn-dragon-70"};
   campRoot.insertAdjacentHTML("beforeend", `<section id="camp-experiment" aria-labelledby="camp-experiment-title"><h2 id="camp-experiment-title">Experiment</h2>
     <p class="sd-note">For review, not a bounty. Nothing here is saved.</p>
-    <div class="sd-row"><button type="button" id="camp-turn-dragon" data-turn="dragon-c5">Try one Dragon turn</button></div></section>`);
+    <div class="sd-row"><button type="button" id="camp-turn-dragon" data-turn="dragon-c5">Try one Dragon turn</button>
+    <button type="button" id="camp-turn-dragon-70" data-turn="dragon-c5-70">Try another Dragon turn</button></div></section>`);
   const openTurn = (id) => {
     const turn = turnDuel(id);
     if (!turn) return false;
-    last = "#camp-turn-dragon";
+    last = `#${TURN_CONTROLS[id]}`;
     showOnly(screen);
     showdown.start(turn.duel, turn.seed);
     return true;

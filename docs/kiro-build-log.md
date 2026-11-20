@@ -387,3 +387,11 @@ The next substantial Kiro task is #56, boundary generation, failure reduction an
 - **Change**: test scripts and evidence notes only. `scripts/browser-showdown-turn-check.mjs` takes a file or an HTTP(S) URL and checks the earlier root path, a closed duel, a usable title or Camp entry and an intact career. `scripts/browser-ledger-check.mjs` enters by keyboard, counts the entry focus, requires Boot Hill before the ledger summary and retraces with Shift+Tab. No app, rules or wording change.
 - **Verification**: turn 18/18 on file (title) and 18/18 over HTTP at `/cowboys-vs-wizards/` with bfcache on (Camp restored). Ledger 12/12 on file and staged index, and it fails on two deliberately broken copies. Keyboard regression 7/7. [Evidence note](evidence/overnight-check-repair.md).
 - **Remaining**: Fable and the coordinator still have to decide whether Back should restore the Camp or show the menu. Human playtests are pending.
+
+### 2026-11-20 — K-008: the seed-70 Dragon decision from Camp (Kiro CLI, America/Los_Angeles, morning PST)
+
+- **State**: one local commit on `kiro/showdown-sprint-paired` from `2fcf39b`. Not merged or published.
+- **Performed in**: a Kiro CLI paired-sprint worker session (Claude Opus 5.5). Decision data from the rival search (`experiments/showdown-dragon-strategy/rival-cases.json`, case `hunt5-s70-C5-ranger`).
+- **Change**: `?turn=dragon-c5-70` and a second Camp control `#camp-turn-dragon-70` open seed 70's Cowboy turn 5 on the normal Showdown screen. The prefix is the canonical policy's own 7 actions, replayed legally from a fresh deal. `dragon-c5` is unchanged. Neutral draft lesson text for Fable. No rule, reward, bounty or log change.
+- **Verification**: Node turn tests 11/11 (state hash matches the fixture; A `w14`, B `c17`), `npm test` 606/606, turn browser check 29/29 on file and on staged HTTP, and the other graybox browser checks pass. [Evidence note](evidence/showdown-turn-k095.md#second-decision-seed-70-k-008-2026-11-20).
+- **Remaining**: human playtests ("What made you choose that target?") are pending, as are the hosted link after a deploy and Fable's review of the wording.

@@ -4,7 +4,8 @@
 //   node scripts/browser-showdown-turn-check.mjs http://127.0.0.1:PORT/cowboys-vs-wizards/ [outDir]   (a served build, e.g. staged dist/web)
 // Opens the Dragon turn from Play -> Camp -> #camp-turn-dragon (mouse) and from ?turn=dragon-c5, plays
 // both Ranger choices (mouse and keyboard), retries during and after the duel, returns to Camp, uses
-// reload and the browser's Back, and repeats the landing on a 375 px screen. A saved career written
+// reload and the browser's Back, and repeats the landing on a 375 px screen. K-008: the same for the seed-70
+// turn from #camp-turn-dragon-70 and ?turn=dragon-c5-70. A saved career written
 // before the run must be byte-identical after it. Screenshots and report.json go to outDir.
 // Browser Back from the direct URL must reach the earlier root document (same path, no ?turn) with the duel
 // closed, a normal entry usable and the career intact. Which entry shows is recorded, not prescribed: without
@@ -100,21 +101,25 @@ try {
   };
   const slot = (id) => evaluate(`document.querySelector('[data-slot="${id}"]')?.textContent.replace(/\\s+/g," ").trim()??""`);
   const orbsOf = (id) => evaluate(`document.querySelector('[data-slot="${id}"] .sd-orbs')?.getAttribute("aria-label")??null`);
-  // The decision state: the referee's s3-C5-dragon-resting after the shared Dynamiter.
-  const landing = async (label) => {
-    await wait(`!document.getElementById('showdown').hidden&&document.getElementById('sd-status').textContent.includes('Experiment')`);
+  // The decision state: the referee's s3-C5-dragon-resting after the shared Dynamiter, or (seed 70) the rival
+  // case after the shared Covered Wagon.
+  const SECOND = {"dragon-c5": /^Dynamiter/, "dragon-c5-70": /^Covered Wagon/};
+  const NAME = {"dragon-c5": "Experiment: one Dragon turn", "dragon-c5-70": "Experiment: another Dragon turn"};
+  const landing = async (label, id = "dragon-c5") => {
+    await wait(`!document.getElementById('showdown').hidden&&document.getElementById('sd-status').textContent.includes(${q(NAME[id])})`);
     assert.match(await evaluate(`document.getElementById('sd-status').textContent`), /turn 5 · your turn/);
     assert.match(await slot("wizard-0"), /^Dragon/);
     assert.equal(await orbsOf("wizard-0"), "4 of 5 orbs");
     assert.match(await slot("wizard-1"), /^Jack-o'-Lantern.*In cover/);
     assert.match(await slot("cowboy-0"), /^Ranger/);
-    assert.match(await slot("cowboy-1"), /^Dynamiter/);
+    assert.equal(await orbsOf("cowboy-0"), "4 of 4 orbs");
+    assert.match(await slot("cowboy-1"), SECOND[id]);
     assert.match(await evaluate(`document.getElementById('sd-lesson').textContent`), /^Experiment for review, not a bounty: nothing here is saved/);
     // No Wizard hand, deck or trap card and no seed in the page.
     const html = await evaluate(`document.getElementById('showdown').innerHTML`);
     assert.ok(!/data-card="wizard-/.test(html), "a Wizard card is in the hand row");
     assert.ok(!/seed/i.test(await evaluate(`document.getElementById('showdown').textContent`)), "the page names a seed");
-    ok(`${label}: lands on Cowboy turn 5, Dragon 4 resting, Jack in cover, Ranger and Dynamiter, no hidden card or seed`);
+    ok(`${label}: lands on Cowboy turn 5, Dragon 4 resting, Jack in cover, Ranger and ${id === "dragon-c5" ? "Dynamiter" : "Covered Wagon"}, no hidden card or seed`);
   };
   const choose = async (target) => { await click('[data-slot="cowboy-0"]'); await click(`[data-slot="wizard-${target}"]`); };
   const finish = async () => {
@@ -135,7 +140,8 @@ try {
   ok("a saved career is in storage before the experiment");
 
   // Normal entry: Play -> Camp -> the one optional control, by mouse.
-  assert.equal(await evaluate(`document.querySelectorAll('[data-turn]').length`), 1);
+  assert.deepEqual(await evaluate(`[...document.querySelectorAll('[data-turn]')].map((b)=>[b.id,b.dataset.turn])`),
+    [["camp-turn-dragon", "dragon-c5"], ["camp-turn-dragon-70", "dragon-c5-70"]]);
   await shot("01-camp-control");
   await click("#camp-turn-dragon");
   await landing("Camp control");
@@ -171,6 +177,37 @@ try {
   assert.equal(await storage(), before);
   ok("Back to camp returns focus to the Camp control; saved career byte-identical");
 
+  // K-008: the seed-70 turn from its own Camp control. Choice A by keyboard, Restart, choice B by mouse.
+  await shot("08-camp-two-controls");
+  await click("#camp-turn-dragon-70");
+  await landing("Camp control (seed 70)", "dragon-c5-70");
+  await shot("09-decision-70");
+  await evaluate(`document.activeElement?.blur()`);
+  await tabTo('[data-slot="cowboy-0"]');
+  await key("Enter");
+  await tabTo('[data-slot="wizard-0"]');
+  await key("Enter");
+  assert.equal(await orbsOf("wizard-0"), "2 of 5 orbs");
+  assert.equal(await orbsOf("cowboy-0"), "1 of 4 orbs");
+  ok("seed 70 choice A by keyboard: Ranger hits the resting Dragon, Dragon 4 -> 2, Ranger 4 -> 1");
+  await click("#sd-restart");
+  await landing("Restart this duel (seed 70)", "dragon-c5-70");
+  await choose(1);
+  assert.match(await slot("wizard-1"), /empty/);
+  assert.equal(await orbsOf("wizard-0"), "4 of 5 orbs");
+  ok("seed 70 choice B by mouse: Ranger defeats the Jack, the Dragon keeps 4");
+  await finish();
+  assert.equal(await evaluate(`document.getElementById('sd-again')?.textContent`), "Retry");
+  assert.ok(!(await evaluate(`/collection|earned|Grit/.test(document.getElementById('sd-result').textContent)`)), "the result pays or charges something");
+  ok(`seed 70 played out: "${await evaluate(`document.querySelector('#sd-status .sd-result').textContent`)}"; Retry and Back to camp, no reward or grit`);
+  await click("#sd-again");
+  await landing("Retry after the result (seed 70)", "dragon-c5-70");
+  await click("#sd-home");
+  await wait(`!document.getElementById('showdown-camp').hidden`);
+  assert.equal(await evaluate(`document.activeElement?.id`), "camp-turn-dragon-70");
+  assert.equal(await storage(), before);
+  ok("seed 70: Back to camp returns focus to its own control; saved career byte-identical");
+
   // Direct URL, reload, Back, and an id that is not allowlisted. The marker tells whether Back restores this
   // same root document (back/forward cache) or loads it afresh.
   await evaluate(`window.__turnCheckRoot = true`);
@@ -202,12 +239,22 @@ try {
   assert.ok(back.restored || back.entry === "title", `a freshly loaded root shows the Camp: ${JSON.stringify(back)}`);
   assert.equal(await storage(), before);
   ok(`browser Back from the direct URL reaches the earlier root ${back.pathname} without ?turn, duel closed, ${back.entry === "title" ? "title with Play" : "Camp with Boot Hill"} usable (${back.restored ? "document restored by the back/forward cache" : "fresh load"}); saved career byte-identical`);
-  for (const bad of ["?turn=nope", "?turn=__proto__", `?turn=${encodeURIComponent('[{"type":"end"}]')}`]) {
+  for (const bad of ["?turn=nope", "?turn=__proto__", `?turn=${encodeURIComponent('[{"type":"end"}]')}`, "?turn=dragon-c5-70%20", "?turn=DRAGON-C5-70", "?turn=dragon-c5-71"]) {
     await navigate(bad);
     await sleep(100);
     assert.ok(await shown("title-screen") && !(await shown("showdown")), bad);
   }
   ok("a ?turn value outside the allowlist opens the normal main menu");
+  assert.equal(await storage(), before);
+  // K-008: the seed-70 direct URL and its reload.
+  await navigate("?turn=dragon-c5-70");
+  await landing("Direct URL ?turn=dragon-c5-70", "dragon-c5-70");
+  await choose(0);
+  await finish();
+  ok(`seed 70 direct URL, choice A played out: "${await evaluate(`document.querySelector('#sd-status .sd-result').textContent`)}"`);
+  await send("Page.reload");
+  await wait(`document.readyState==='complete'&&document.getElementById('sd-status')`);
+  await landing("Reload of ?turn=dragon-c5-70", "dragon-c5-70");
   assert.equal(await storage(), before);
   ok("saved career still byte-identical after the direct-URL runs");
 
@@ -225,7 +272,18 @@ try {
   assert.ok(await evaluate(`(()=>{const r=document.getElementById('camp-turn-dragon').getBoundingClientRect();return r.width>0&&r.right<=innerWidth+1;})()`));
   await shot("07-small-camp");
   assert.equal(await storage(), before);
-  ok("375 px: Camp control fits; saved career byte-identical");
+  assert.ok(await evaluate(`(()=>{const r=document.getElementById('camp-turn-dragon-70').getBoundingClientRect();return r.width>0&&r.right<=innerWidth+1;})()`));
+  assert.ok(await evaluate(`document.documentElement.scrollWidth<=innerWidth+1`), "the Camp scrolls sideways at 375 px");
+  await click("#camp-turn-dragon-70");
+  await landing("375 x 740 screen, seed 70 from Camp", "dragon-c5-70");
+  assert.ok(await evaluate(`document.documentElement.scrollWidth<=innerWidth+1`), "the page scrolls sideways at 375 px");
+  await shot("10-small-decision-70");
+  await choose(0);
+  assert.equal(await orbsOf("wizard-0"), "2 of 5 orbs");
+  await click("#sd-home");
+  await wait(`!document.getElementById('showdown-camp').hidden`);
+  assert.equal(await storage(), before);
+  ok("375 px: both Camp controls fit; seed 70 from Camp, choice A by tap position; saved career byte-identical");
   assert.deepEqual(errors, []);
   ok("no page errors");
 } catch (error) {
