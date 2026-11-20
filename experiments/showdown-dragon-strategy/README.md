@@ -14,7 +14,7 @@ EXPERIMENT ONLY. Nothing here changes rules, cards, combat stats, AI, rewards, U
 The referee changed `counter.mjs` in one place only: it now reads the committed `contract.json`, not a file outside
 the checkout, and records that path relative to the repo. Its stdout is unchanged.
 
-## Commands (from a clean checkout of this branch, Node 22+, no install needed)
+## Commands (from a clean checkout of this branch; verified on Node v26.0.0; no install needed)
 
 ```
 node experiments/showdown-dragon-strategy/wizard.mjs --write     # rewrites wizard-cases.json receipts; byte-identical
