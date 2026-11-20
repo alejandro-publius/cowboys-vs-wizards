@@ -1,0 +1,59 @@
+{
+ "scoredAfter": "a7ea7c8",
+ "cases": 10,
+ "reviewerWins": 5,
+ "alwaysRideWins": 5,
+ "alwaysFightWins": 5,
+ "rows": [
+  {
+   "label": "case-a",
+   "choice": "RIDE",
+   "won": true
+  },
+  {
+   "label": "case-b",
+   "choice": "RIDE",
+   "won": true
+  },
+  {
+   "label": "case-c",
+   "choice": "RIDE",
+   "won": true
+  },
+  {
+   "label": "case-d",
+   "choice": "RIDE",
+   "won": true
+  },
+  {
+   "label": "case-e",
+   "choice": "RIDE",
+   "won": false
+  },
+  {
+   "label": "case-f",
+   "choice": "RIDE",
+   "won": true
+  },
+  {
+   "label": "case-g",
+   "choice": "RIDE",
+   "won": false
+  },
+  {
+   "label": "case-h",
+   "choice": "RIDE",
+   "won": false
+  },
+  {
+   "label": "case-i",
+   "choice": "RIDE",
+   "won": false
+  },
+  {
+   "label": "case-j",
+   "choice": "RIDE",
+   "won": false
+  }
+ ]
+}

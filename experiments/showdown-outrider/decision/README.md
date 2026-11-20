@@ -48,3 +48,44 @@ choice at the branch is recorded.
 Blind reviewer: a named agent (`.kiro/agents/showdown-strategy-reviewer.json`, no tools) receives
 only sanitized public boards with neutral labels, run in a separate sanitized workspace. Its
 choice and reason are committed before any comparison with outcomes.
+
+## Results (scripted, 2026-11-20 PST, Kiro; bot vs bot, no human play, no browser run)
+
+Wizard: shipped `playTurn` level 0 via `createShowdownSession`. Cowboy: the fixed greedy policy.
+Each pair is the same seed, shuffle, bot and branch position.
+
+| range | tried | branch reached | both win | both lose | ride only wins | fight only wins |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1000-1099 (worker A) | 100 | 62 | 55 | 1 | 2 | 4 |
+| 1100-1199 (worker B) | 100 | 62 | 50 | 2 | 5 | 5 |
+| 1200-1299 (holdout) | 100 | 60 | 49 | 4 | 5 | 2 |
+
+Clean reversals happen in both directions: 19 in 184 branched pairs (10.3%) and 300 seeds tried.
+At the branch the policy itself chose ride 176 times and another action 8 times.
+
+Cue: the pre-registered derivation on 1000-1199 picked `riderHealth <= 2 => fight`, right in 11 of 16
+reversals (always-ride 7, always-fight 9). On the holdout it was right in 3 of 7 (always-ride 5,
+always-fight 2), so **unsupported**. Following it won 52/60 holdout branches, against 54 for always
+ride and 51 for always fight. No public board cue is proven, and this gives no advice.
+
+Selected cases: all 10 reversals in 1000-1199 at turn 3 or turn 7 (5 ride-only, 5 fight-only).
+Labels `case-a` to `case-j` are ordered by a hash of the public view. Seeds are only in
+`replay.json`, outcomes only in `results/observed.json`, and no two cases share a public board.
+
+Blind reviewer (`reviewer/RECEIPT.md`, session sess_c01211f2-0841-4c4d-bb6c-65c8c7a9e1b2): it chose
+RIDE in all 10, each time reasoning that a 1-attack Outrider cannot kill a 3-orb troop and takes
+hit-back damage. Scored afterwards (`reviewer/score.json`): 5/10, the same as always-ride and as always-fight.
+
+Controls (`results/controls.json`, `check.mjs`): every case reopens to the identical public view.
+Both arms are legal there, each arm replays identically twice, and ride-vs-ride from two fresh
+sessions is identical. All 10 hold. Every pair in the search also asserts branch identity.
+
+Limitations: the reversals belong to this greedy continuation and this level-0 bot. After the branch
+the same hidden draws and bot hashes play out differently, so a reversal may reflect downstream
+chaos rather than a readable board feature. Only The Bone Fence was tested.
+
+## Commands
+
+    node experiments/showdown-outrider/decision/search.mjs a|b       # one range (workflow workers)
+    node experiments/showdown-outrider/decision/check.mjs [--case case-c]
+    node --test experiments/showdown-outrider/decision/decision.test.js
