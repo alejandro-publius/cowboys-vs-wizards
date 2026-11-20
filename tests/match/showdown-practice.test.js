@@ -115,3 +115,26 @@ test("a deferred campaign on blocked storage plays on in memory", () => {
   assert.equal(campaign.progress().wins, 1);
   createCampaign(null, {deferImport: true}).enter();
 });
+
+// Coordinator's tab-history finding: a direct practice boot created the playtest log at page load, so a line another
+// tab saved meanwhile was missing from the first Camp report, and the next append overwrote it. The log now reads
+// storage on first use.
+import {createPlaytestLog, PLAYTEST_KEY} from "../../src/match/showdown-playtest.js";
+
+test("the playtest log reads storage on first use: a line saved after creation is shown and kept by the next append", () => {
+  const storage = memory();
+  const log = createPlaytestLog(storage, {build: null}); // created at page load, during practice
+  const prior = [{name: "Raven Roost", won: true, turns: 11, seconds: 34, rules: false}];
+  storage.setItem(PLAYTEST_KEY, JSON.stringify(prior)); // the other tab finishes a duel
+  assert.deepEqual(log.entries(), prior);
+  assert.match(log.text(newSave()), /Raven Roost/);
+  assert.equal(log.add({name: "Boot Hill", won: false, turns: 9, seconds: 40, rules: false, run: "r1"}), true);
+  const stored = JSON.parse(storage.getItem(PLAYTEST_KEY));
+  assert.deepEqual(stored.map((line) => line.name), ["Raven Roost", "Boot Hill"]);
+  // Blocked storage keeps the log in memory.
+  const blocked = {getItem: () => { throw new Error("blocked"); }, setItem: () => { throw new Error("blocked"); }};
+  const offline = createPlaytestLog(blocked, {build: null});
+  offline.add({name: "Boot Hill", won: true, turns: 9, seconds: 40, rules: false, run: "r2"});
+  assert.equal(offline.saved(), false);
+  assert.deepEqual(offline.entries().map((line) => line.name), ["Boot Hill"]);
+});
