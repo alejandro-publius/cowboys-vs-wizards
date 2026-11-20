@@ -21,9 +21,11 @@ const label = grayboxBuildLabel(fileURLToPath(root));
 // directory, written only under .artifacts/ so it is never staged or shipped.
 const fixtureAt = process.argv.indexOf("--outrider-fixture");
 const fixture = fixtureAt >= 0 ? process.argv[fixtureAt + 1] : null;
-const outrider = await verifiedForBuild(fixture ? {dir: `${fixture}/decision`, receiptPath: `${fixture}/receipt.json`} : {});
+const outrider = await verifiedForBuild(fixture ? {dir: `${fixture}/decision`, receiptPath: `${fixture}/receipt.json`,
+  curated: JSON.parse(await read(`${fixture}/curated.json`))} : {});
 const options = {absWorkingDir: fileURLToPath(root), bundle: true, write: false, platform: "browser", target: "es2022", minify: true,
-  define: {__CVW_GRAYBOX_BUILD__: JSON.stringify(label), __CVW_OUTRIDER__: JSON.stringify(outrider.cases)}};
+  define: {__CVW_GRAYBOX_BUILD__: JSON.stringify(label), __CVW_OUTRIDER__: JSON.stringify({cases: outrider.cases, camp: outrider.camp}),
+    __CVW_OUTRIDER_LEDGER__: JSON.stringify(outrider.ledger)}};
 const [template, style, showdownStyle, bundle] = await Promise.all([
   read("src/ui/graybox.html"),
   read("src/ui/graybox.css"),
@@ -34,5 +36,10 @@ const script = bundle.outputFiles[0].text.replace(/<\/script/gi, "<\\/script");
 // A Pages tree built before slice 3 may still hold the old lane chunk; drop it so it is never staged.
 if (hosted) await rm(file("dist/web/chunks/"), {recursive: true, force: true});
 await mkdir(new URL("./", file(output)), {recursive: true});
+// The build receipt for the Ledger's Outrider section: exactly what this page was given. Kept under .artifacts/
+// (ignored) so it is never staged to the site.
+await mkdir(file(".artifacts/outrider-ledger/"), {recursive: true});
+await writeFile(file(`.artifacts/outrider-ledger/${output.replace(/[/.]/g, "_")}.json`), `${JSON.stringify({build: label, gate: outrider.note, camp: outrider.camp,
+  output, linked: outrider.cases.map((c) => c.id), ledger: outrider.ledger}, null, 2)}\n`);
 await writeFile(file(output), template.replace("@@STYLE@@", () => `${style}\n${showdownStyle}`).replace("@@SCRIPT@@", () => script));
 console.log(`Built ${output} (graybox, build ${label ?? "not identified"}); Outrider gate: ${outrider.note}`);

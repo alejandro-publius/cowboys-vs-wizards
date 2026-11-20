@@ -68,17 +68,19 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     return true;
   };
   campRoot.addEventListener("click", (event) => { const b = event.target.closest("button[data-turn]"); if (b) openTurn(b.dataset.turn); });
-  // K-011: Outrider turns, only the ids scripts/outrider-gate.mjs verified at build time (?outrider=<id> or the Camp control).
+  // K-011: Outrider turns, only the ids scripts/outrider-gate.mjs verified at build time: one Camp control, the Ledger's
+  // two position links (both inside the Camp root) and ?outrider=<id>.
   node("camp-experiment").insertAdjacentHTML("beforeend", outriderControls());
-  const openOutrider = (id) => {
+  const openOutrider = (id, from = null) => {
     const turn = outriderTurn(id, VERIFIED);
     if (!turn) return false;
-    last = `[data-outrider="${id}"]`;
+    // Focus returns to the control that opened it: the Camp entry or the Ledger link.
+    last = from?.closest("#ledger-outrider") ? `#ledger-outrider [data-outrider="${id}"]` : "#camp-outrider-turn";
     showOnly(screen);
     showdown.start(turn.duel, turn.seed);
     return true;
   };
-  campRoot.addEventListener("click", (event) => { const b = event.target.closest("button[data-outrider]"); if (b) openOutrider(b.dataset.outrider); });
+  campRoot.addEventListener("click", (event) => { const b = event.target.closest("button[data-outrider]"); if (b) openOutrider(b.dataset.outrider, b); });
   const turn = new URLSearchParams(location.search).get("turn");
   if (turn !== null) openTurn(turn);
   const outrider = new URLSearchParams(location.search).get("outrider");

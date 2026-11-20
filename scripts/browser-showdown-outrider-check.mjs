@@ -11,10 +11,12 @@
 // byte-identical at the end. Outcomes are not judged here: the gate's Node replay does that.
 import assert from "node:assert/strict";
 import {spawn} from "node:child_process";
+import {readFileSync} from "node:fs";
 import {mkdir, mkdtemp, rm, writeFile} from "node:fs/promises";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
 import {DEFAULT_DIR, DEFAULT_RECEIPT, loadDecision, verifiedForBuild} from "./outrider-gate.mjs";
+import {comparisonLines, nightWatchLine, researchLine} from "../src/ui/outrider-ledger.js";
 import {SAVE_KEY} from "../src/game/showdown/campaign-store.js";
 import {newSave} from "../src/game/showdown/progress.js";
 
@@ -29,7 +31,9 @@ const withQuery = (query) => { const u = new URL(page); u.search = query; return
 const out = path.resolve(args[1] ?? ".artifacts/showdown-outrider");
 await mkdir(out, {recursive: true});
 const dir = fixture ? `${fixture}/decision` : DEFAULT_DIR, receiptPath = fixture ? `${fixture}/receipt.json` : DEFAULT_RECEIPT;
-const expected = await verifiedForBuild({dir, receiptPath});
+const curated = fixture ? JSON.parse(readFileSync(path.join(fixture, "curated.json"), "utf8")) : undefined;
+const expected = await verifiedForBuild({dir, receiptPath, curated});
+const ledger = expected.ledger;
 const decision = expected.cases.length ? await loadDecision(dir) : null;
 const armsOf = (id) => decision.cases.find((c) => c.id === id).arms;
 
@@ -55,7 +59,7 @@ ws.addEventListener("message", ({data}) => {
 const send = (method, params = {}) => { const id = ++next; ws.send(JSON.stringify({id, method, params, ...(sessionId ? {sessionId} : {})}));
   return new Promise((resolve, reject) => waiting.set(id, {resolve, reject, method})); };
 
-const report = {page, chrome: CHROME, decision: dir, gate: expected.note, expected: expected.cases.map((c) => c.id), checks: [], shots: [], errors};
+const report = {page, chrome: CHROME, decision: dir, gate: expected.note, camp: expected.camp, expected: expected.cases.map((c) => c.id), ledgerStatus: ledger.status, checks: [], shots: [], errors};
 const ok = (name) => { report.checks.push(name); console.log(`ok - ${name}`); };
 let failed = null;
 try {
@@ -113,17 +117,62 @@ try {
   await wait(`!document.getElementById('showdown-camp').hidden`);
   const before = await storage();
   ok("a saved career is in storage before the experiment");
-  const controls = await evaluate(`[...document.querySelectorAll('[data-outrider]')].map((b)=>[b.dataset.outrider,b.textContent])`);
-  assert.deepEqual(controls.map(([id]) => id), expected.cases.map((c) => c.id));
-  for (const [, text] of controls) assert.doesNotMatch(text, /\bwin|\blose|best|should|seed|\bride\b|\bfight\b/i);
+  const campControls = await evaluate(`[...document.querySelectorAll('#camp-experiment [data-outrider]')].map((b)=>[b.dataset.outrider,b.textContent])`);
+  assert.deepEqual(campControls, expected.camp ? [[expected.camp, "Try an Outrider turn"]] : []);
   await shot("01-camp");
-  ok(expected.cases.length ? `Camp shows exactly the ${controls.length} verified Outrider control(s), neutral labels` : `Camp shows no Outrider control (${expected.note})`);
+  ok(expected.camp ? `Camp shows one neutral Outrider control (${expected.camp})` : `Camp shows no Outrider control (${expected.note})`);
   assert.ok(await evaluate(`Boolean(document.querySelector('[data-duel]:not(:disabled)'))&&Boolean(document.getElementById('camp-turn-dragon'))`), "the rest of the Camp is usable");
+  // Live-game privacy: nothing measured is in the DOM before the reader reveals it.
+  const noResults = async (where) => assert.ok(!(await evaluate(`/won on turn|fresh reversals|always riding|unsupported/.test([...document.body.querySelectorAll('*')].filter((n)=>n.tagName!=='SCRIPT'&&!n.closest('script')).map((n)=>[...n.childNodes].filter((c)=>c.nodeType===3).map((c)=>c.data).join('')+[...n.attributes].map((a)=>a.value).join(' ')).join(' '))`)), `measured results in the DOM ${where}`);
+  await noResults("on the Camp");
+
+  // The Sheriff's Ledger section: collapsed, then opened; neutral before the reveal; links only when fresh.
+  assert.equal(await evaluate(`document.getElementById('camp-ledger').open`), false);
+  await click("#camp-ledger > summary");
+  await wait(`document.getElementById('camp-ledger').open`);
+  const section = await evaluate(`(()=>{const s=document.getElementById('ledger-outrider');return {status:s.querySelector('#ledger-outrider-status').dataset.status,
+    statusText:s.querySelector('#ledger-outrider-status').textContent,text:s.textContent,links:[...s.querySelectorAll('[data-outrider]')].map((b)=>[b.dataset.outrider,b.textContent]),
+    reveal:Boolean(s.querySelector('#ledger-outrider-reveal')),nw:s.querySelector('#ledger-outrider-nightwatch')?.textContent??null,
+    right:s.getBoundingClientRect().right,width:innerWidth}})()`);
+  report.ledgerSection = section;
+  assert.equal(section.status, ledger.status);
+  assert.equal(section.statusText, ledger.statusText);
+  assert.equal(section.nw, nightWatchLine(ledger));
+  assert.doesNotMatch(section.text, /\bwon\b|\bwins?\b|\blose|best|should|better|unsupported|reversal|always riding/i);
+  assert.ok(section.right <= section.width + 1, "the Ledger section is wider than the viewport");
+  if (ledger.status === "fresh") {
+    assert.deepEqual(section.links, ledger.positions.map((p) => [p.id, `Open ${p.label}`]));
+    assert.ok(section.reveal);
+    await shot("04-ledger-before-reveal");
+    await click("#ledger-outrider-reveal");
+    const shownText = await evaluate(`document.getElementById('ledger-outrider-results').textContent`);
+    for (const line of comparisonLines(ledger)) assert.ok(shownText.includes(line), line);
+    if (researchLine(ledger)) assert.ok(shownText.includes(researchLine(ledger)), "research line");
+    await shot("05-ledger-revealed");
+    ok(`Ledger: ${ledger.positions.map((p) => p.label).join(" and ")} shown neutral; the reveal shows the measured comparison and the search's limits`);
+    await click("#ledger-outrider-reveal");
+    assert.equal(await evaluate(`document.getElementById('ledger-outrider-results').innerHTML`), "");
+    await noResults("after hiding the comparison");
+    ok("Hiding the comparison removes it from the DOM");
+  } else {
+    assert.deepEqual(section.links, []);
+    assert.equal(section.reveal, false);
+    await shot("04-ledger-stale");
+    ok(`Ledger: readable ${ledger.status} status, no results, no reveal and no position links ("${section.statusText.slice(0, 80)}...")`);
+  }
+  await click("#camp-ledger > summary");
+  await wait(`!document.getElementById('camp-ledger').open`);
 
   for (const [i, c] of expected.cases.entries()) {
     const {ride, fight} = armsOf(c.id);
-    await click(`[data-outrider="${c.id}"]`);
-    await landing(`case ${i} from the Camp`, c.at);
+    const fromCamp = c.id === expected.camp;
+    const control = fromCamp ? "#camp-outrider-turn" : `#ledger-outrider [data-outrider="${c.id}"]`;
+    const openLedger = async () => { if (!fromCamp && !(await evaluate(`document.getElementById('camp-ledger').open`))) { await click("#camp-ledger > summary"); await wait(`document.getElementById('camp-ledger').open`); } };
+    await openLedger();
+    await click(control);
+    await landing(`case ${i} (${c.id}) from the ${fromCamp ? "Camp" : "Ledger"}`, c.at);
+    await noResults("during the duel");
+    assert.ok(await evaluate(`document.getElementById('showdown-camp').hidden`), "the Camp and its Ledger stay hidden during the duel");
     await shot(`02-landing-${i}`);
     await pickOutrider(ride.slot);
     await click(`[data-base="wizard"]`);
@@ -140,9 +189,10 @@ try {
     await landing(`case ${i} after Retry`, c.at);
     await click("#sd-home");
     await wait(`!document.getElementById('showdown-camp').hidden`);
+    report[`focus-${c.id}`] = await evaluate(`document.activeElement?.id||document.activeElement?.tagName`);
     assert.equal(await evaluate(`document.activeElement?.dataset.outrider`), c.id);
     assert.equal(await storage(), before);
-    ok(`case ${i}: played out, Retry, Back to camp (cancel) returns focus to its control; saved career byte-identical`);
+    ok(`case ${i}: played out, Retry, Back to camp (cancel) returns focus to its ${fromCamp ? "Camp control" : "Ledger link"}; saved career byte-identical`);
     await navigate(`?outrider=${encodeURIComponent(c.id)}`);
     await landing(`case ${i} direct URL`, c.at);
     await send("Page.reload");
@@ -162,7 +212,7 @@ try {
   await navigate("");
   await click("#menu-play");
   await wait(`!document.getElementById('showdown-camp').hidden`);
-  assert.ok(await evaluate(`document.documentElement.scrollWidth<=innerWidth+1&&[...document.querySelectorAll('[data-outrider]')].every((b)=>{const r=b.getBoundingClientRect();return r.width>0&&r.right<=innerWidth+1;})`), "the Camp scrolls sideways at 375 px");
+  assert.ok(await evaluate(`document.documentElement.scrollWidth<=innerWidth+1&&[...document.querySelectorAll('#camp-experiment [data-outrider]')].every((b)=>{const r=b.getBoundingClientRect();return r.width>0&&r.right<=innerWidth+1;})`), "the Camp scrolls sideways at 375 px");
   await shot("03-small-camp");
   ok("375 px: the Camp and every Outrider control fit without sideways scroll");
   assert.equal(await storage(), before);

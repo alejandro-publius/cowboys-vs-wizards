@@ -9,6 +9,7 @@
 //   node scripts/outrider-gate.mjs --write            write the receipt, only when every outcome matches results.json
 //   --dir <path>                                       the decision directory (default experiments/showdown-outrider/decision)
 //                                                      (results.json or results/observed.json, see LAYOUTS)
+//   --ledger                                           also print the Ledger section's status, links and Night Watch identity
 //   --receipt <path>                                   the receipt (default docs/evidence/outrider-gate/receipt.json)
 import {createHash} from "node:crypto";
 import {existsSync, mkdirSync, readFileSync, writeFileSync} from "node:fs";
@@ -91,18 +92,35 @@ export function sourceHashes(root = ROOT) {
   return Object.fromEntries(SOURCES.map((f) => [f, sha(readFileSync(join(root, f)))]));
 }
 
-// What the build may ship: the replay setup of fresh cases only (no outcome, no transcript). [] when anything is off.
-export async function verifiedForBuild({dir = DEFAULT_DIR, receiptPath = DEFAULT_RECEIPT, root = ROOT} = {}) {
+// The curated pair (K-011 repair): one Camp entry and two opposite measured reversals for the Ledger. Every recorded
+// case stays in the research record and is still checked; only these ids are linked from the page.
+export const CURATED = Object.freeze({camp: "case-e", compare: ["case-e", "case-a"]});
+
+// What the build may ship: the replay setup of the curated cases that are fresh now (no outcome, no transcript),
+// the Camp id, and the Ledger section (scripts/outrider-ledger.mjs). Nothing linkable when anything is off.
+export async function verifiedForBuild({dir = DEFAULT_DIR, receiptPath = DEFAULT_RECEIPT, root = ROOT, curated = CURATED} = {}) {
+  const {outriderLedger} = await import("./outrider-ledger.mjs");
+  let decision = null, verdicts = [];
   try {
-    const decision = await loadDecision(dir, root);
-    if (decision.missing.length) return {cases: [], note: `no frozen Outrider cases in ${dir} (missing ${decision.missing.join(", ")})`};
+    decision = await loadDecision(dir, root);
+    if (decision.missing.length) {
+      return {cases: [], camp: null, ledger: outriderLedger({curated, verdicts, decision, root, dir}),
+        note: `no frozen Outrider cases in ${dir} (missing ${decision.missing.join(", ")})`};
+    }
     const receipt = existsSync(join(root, receiptPath)) ? JSON.parse(readFileSync(join(root, receiptPath), "utf8")) : null;
-    const verdicts = judge(replayAll(decision), receipt);
-    const fresh = new Set(verdicts.filter((v) => v.fresh).map((v) => v.id));
-    const stale = verdicts.filter((v) => !v.fresh);
-    return {cases: decision.cases.filter((c) => fresh.has(c.id)).map(({id, setup, seed, prefix, at}) => ({id, setup, seed, prefix, at})),
-      note: stale.length ? `${fresh.size} verified; withheld stale: ${stale.map((v) => v.id).join(", ")} (details: node scripts/outrider-gate.mjs --check)` : `${fresh.size} verified`};
-  } catch (error) { return {cases: [], note: `gate error, nothing shipped: ${error.message}`}; }
+    verdicts = judge(replayAll(decision), receipt);
+  } catch (error) {
+    return {cases: [], camp: null, ledger: outriderLedger({curated, verdicts: [], decision: {missing: ["(gate error)"]}, root, dir}), note: `gate error, nothing shipped: ${error.message}`};
+  }
+  const fresh = new Set(verdicts.filter((v) => v.fresh).map((v) => v.id));
+  const stale = verdicts.filter((v) => !v.fresh);
+  const ledger = outriderLedger({curated, verdicts, decision, root, dir});
+  // A Ledger link exists only when the whole comparison is fresh; the Camp entry only when its own case is.
+  const linked = ledger.status === "fresh" ? curated.compare : [];
+  const cases = decision.cases.filter((c) => linked.includes(c.id) && fresh.has(c.id)).map(({id, setup, seed, prefix, at}) => ({id, setup, seed, prefix, at}));
+  return {cases, camp: cases.some((c) => c.id === curated.camp) ? curated.camp : null, ledger,
+    note: `${fresh.size} of ${verdicts.length} fresh; linked ${cases.map((c) => c.id).join(", ") || "none"}`
+      + (stale.length ? `; withheld stale: ${stale.map((v) => v.id).join(", ")} (details: node scripts/outrider-gate.mjs --check)` : "")};
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
@@ -133,6 +151,11 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const verdicts = judge(rows, receipt);
   if (args.includes("--json")) console.log(JSON.stringify(verdicts, null, 2));
   for (const v of verdicts) console.log(`${v.fresh ? "fresh" : "STALE"} ${v.id}${v.problems.length ? `: ${v.problems.join("; ")}` : ""}`);
+  if (args.includes("--ledger")) {
+    const built = await verifiedForBuild({dir, receiptPath});
+    const nw = built.ledger.nightWatch, e = nw?.engine;
+    console.log(`Ledger: ${built.ledger.status}; links ${built.cases.map((c) => c.id).join(", ") || "none"}; camp ${built.camp ?? "none"}; Night Watch ${nw ? `${nw.commit.slice(0, 7)} engine ${!e.checked ? `not compared (${e.reason})` : e.same ? `same ${e.files} files` : `differs: ${e.differ.join(", ")}`}` : "no receipt"}`);
+  }
   const stale = verdicts.filter((v) => !v.fresh).length;
   console.log(`Outrider gate: ${verdicts.length - stale} fresh, ${stale} stale${stale ? "; stale cases get no Camp link" : ""}.`);
   process.exit(stale ? 1 : 0);
