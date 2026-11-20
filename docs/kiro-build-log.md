@@ -401,3 +401,12 @@ The next substantial Kiro task is #56, boundary generation, failure reduction an
 Kiro CLI added per-duel build attribution to the Camp export. Separate workers exercised the rival’s one-shot Crew check-in, the staged Sheriff rejection and engine/UI steering controls. The release handoff links each receipt. The Devpost draft now leads with the two playable Dragon decisions and credits the earlier lane work separately.
 
 Kiro added the Bone Fence Outrider study and the Guard targeting check. Source precedents were TradeWizard’s parallel comparison and Last Rites’ file-scoped accessibility audit. The private Dragon cut is based on the two-position build at 96adf60. The submission script describes the capture and preserves the earlier lane credits.
+
+### 2026-11-20 — K-006, K-034, K-036: the post–Raven Roost deck reaches The Bone Fence (Kiro, America/Los_Angeles, 11:40 PST)
+
+- **State**: one local commit on `kiro/showdown-deck-to-combat` from `7fdc234`. Not merged or published.
+- **Performed in**: Kiro, native Workflow child agent `wf-coder` (workflow `wf_0caa098302291536`, child 1 of 2, the keyboard UX implementer). A separate reviewer child owns the verdict. Only scripts ran; no human played.
+- **Problem**: no check proved that a deck edited in the Camp is the Cowboy deck a real duel is created with.
+- **Change**: `scripts/browser-showdown-deck-check.mjs`, test only. A fresh career is played from Play through Boot Hill and Raven Roost (seed 0, picks Covered Wagon and Outrider). Then, by keyboard only, the check edits and cancels (save byte-identical), edits and saves Sheriff −1, Outrider +1, reloads and launches The Bone Fence at `?seed=3`. A CDP logpoint in the built `createShowdown` records the Cowboy deck at duel creation. No `src/` change.
+- **Verification**: deck check 6/6. Capture: seed 3, Sheriff 3, Billy 5, Deadeye 3, Covered Wagon 2, Outrider 3. The opening hand on screen equals Node's deal, and both the capture and the hand differ from the default and off-by-one decks. The `DECK_CHECK_EXPECT=default` and `offByOne` runs exit 1 as intended. The keyboard regression passed 7/7, and the build is `7fdc234a59ba`. [Evidence note](evidence/showdown-deck-to-combat.md).
+- **Remaining**: the reviewer child's verdict. The check covers one seed and one edit. Human playtests are pending.
