@@ -27,7 +27,7 @@ Each side has a **Base** with 5 orbs. A Base with no orbs loses. You bring a dec
 ## 3. Setting up
 
 1. Shuffle both decks. Each side draws 4 cards.
-2. One side goes first. The side that goes second draws 1 more card.
+2. One side goes first. The side that goes second draws 1 more card and, outside the Trail, rivals and bounties, starts with 7 Base orbs.
 3. Each side's board has 3 troop slots and 2 trap slots. There is one location slot for the whole table.
 
 ## 4. A turn
@@ -60,7 +60,8 @@ Pick one of your troops, then what it attacks.
 Instead of attacking, a troop may take cover, even on the turn it arrives. Until your next turn:
 
 - damage beyond its last orb does not reach your Base;
-- it does not hit back.
+- it does not hit back;
+- spells cannot choose it, and Hellfire passes over it.
 
 ## 7. Traps
 
@@ -100,6 +101,7 @@ Instead of attacking, a troop may take cover, even on the turn it arrives. Until
 - **Last Stand** fires in a fight, whether its troop attacked or was attacked. It does not fire for a tribute, a spell, a trap or Sweep. If both troops fall, it does nothing.
 - **Ghostly** stops spells that choose a target. Hellfire chooses none, so it still burns a Ghostly troop. Traps and attacks are not spells.
 - **Cover and Last Stand.** A troop in cover that is defeated still makes its Last Stand.
+- **Cover and spells.** A troop in cover cannot be chosen by Deadeye, Lasso or Singularity, and Hellfire does not burn it. If every enemy troop is in cover, Hellfire cannot be played. Ghostly is different: it stops only spells that choose a target.
 - **Bear Trap and gear.** A troop the trap defeats takes its gear to the graveyard.
 - **Stun.** Stunning a troop that is already stunned is not allowed.
 - **Zero attack.** A troop with no attack cannot attack. A location or gear that gives it attack lets it.
