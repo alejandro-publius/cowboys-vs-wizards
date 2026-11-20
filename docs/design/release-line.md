@@ -4,6 +4,34 @@ Fable 5.2, Wednesday November 18, 2026, Pacific. Based on Alex's four decisions 
 
 **Updated Thursday November 19** after Alex played Showdown and chose it for the December 4 entry, and after pull requests 139 to 145 merged.
 
+## Current handoff, November 19, 10:15 p.m. PT
+
+Added by Kiro (Kiro CLI) from GitHub at `main` `046dbae`. It records state and quotes Fable's decisions; it makes none. Fable's text below is unchanged and reads as of its own date, so where it differs, this section and the latest Fable comment on [issue 143](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143) are current.
+
+**Target.** Showdown is the December 4 fight and the game being built.
+
+**Milestones.**
+
+| State | What |
+| --- | --- |
+| Merged to `main` | Slice 1 and Kiro's fixes (144), one 29-card catalog (145), combat cues (146), the Showdown-first brief (147), slice 2 spec (149), fair Scout bot (150), Night Watch Showdown mode (151), docs (152, 155), Kiro profile and hook mode (153), seven generated engine properties (154), keyboard focus (156), hosted graybox no longer downloads the lane duel (157) |
+| In review | Slice 2, Trail and Camp in the game: [pull request 148](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/148). An assigned worker owns it. At 10:15 p.m. GitHub reported it as conflicting with `main`. The coordinator merges. |
+| Queued | Slice 3, which starts once 148 is merged: the rest of Showdown in the game, lane play out of the graybox, Showdown as the site's front page |
+
+**Keepsakes** (Fable on [pull request 148](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/148#issuecomment-7031816529)): "A card captured in the lane game does not enter the Showdown collection, before the Trail ends or after it. It stays in the separate record and shows in the Camp as a keepsake." Each Showdown bounty pays its Legendary to every player. "**Nothing from the lane game carries into Showdown progress.**" Start over resets Showdown progress only, and keepsakes stay out of save codes.
+
+**Lane route retirement** (Fable on [issue 143](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143#issuecomment-7031863563)): slice 3 no longer waits for the playtest. It removes the "Lane duel (previous rules)" entry, every `?mode=` that opens lane play and the lane-only screens. Done when no lane play is reachable from the graybox game by menu or URL. Until then `?mode=lanes` still works.
+
+**The 3D exception.** The illustrated 3D page (`src/main.js`, now at `/`) runs on the lane rules, and it is the only place the models, board and motion live. Fable: "Keep exactly what the 3D page imports, and its tests, until the 3D board is driven by Showdown." Slice 3 moves it to its own path, labelled as the earlier build, and makes Showdown the front page ([comment](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143#issuecomment-7031817176)).
+
+**Where future decisions appear.** Fable posts game decisions as comments on [issue 143](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143), or on the pull request they concern. Agents read the latest Fable comment there before starting Showdown work.
+
+**Canonical base and branch ownership.** Branch from the current GitHub `main`, one branch and one worktree per worker. A worker edits only its assigned paths and never another worker's branch. Pull requests go to `main`. The coordinator merges, and no agent merges its own pull request.
+
+**Held drafts.** [Pull request 10](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/10) (Wizard Firebolt and burning reaction) is held because its release gate is unmet: it needs approved Firebolt card art, a clip chosen by Alex, rendered frame review and seed 0 and 60 replays. [Pull request 53](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/53) (Billy's sourced pistol idle) is held because review found the supporting hand misses the grip. Both are 3D lane-build work and stay drafts.
+
+**Human playtests.** No first-time player has played Showdown or the lane duel. Alex's own play chose the fight but does not count. The three first-time tests in [the playtest guide](../../prototypes/showdown/PLAYTEST.md) are still pending, and they now tune the fight rather than decide it.
+
 This file is the one place that says what is in the game, what is waiting, and what is out. If something is not listed under "In the game", it is not in the submission.
 
 ## What we are building
