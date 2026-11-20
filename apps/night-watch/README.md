@@ -29,6 +29,28 @@ Night Watch resolves the refs to commits, runs the candidate's game-rule tests a
 
 The defaults compare seeds 0–999 (deals in Showdown) and flag a faction win-share shift of at least 10 percentage points or a first-seat advantage that grows by at least that much. Results describe these CPU policies and seeds. A rules failure is recorded with diagnostic output. When the checkout has a GitHub origin, eligible reports include an **Open GitHub issue draft** link with the run details.
 
+## Target band (lean) and receipts
+
+The shift check above is relative: it compares the candidate with the baseline. A lean check is absolute: it compares the candidate's first-player share and Cowboy share (over decisive games) with a **target band** you set, for example 45–55%. It runs even when baseline and candidate are the same commit. No design target has been approved, so the band is empty by default and the lean verdict reads `unconfigured`.
+
+Each share carries a Wilson 95% interval and its sample size. A metric is `within` when its whole interval lies inside the band, `lean` (toward first/second or cowboy/wizard) when its whole interval lies outside, and `inconclusive` otherwise. Games are treated as independent, an approximation, since each Showdown deal is played from both seats. No per-card data is measured.
+
+Every report stores a `night-watch-receipt/1` object under `receipt`: full commit SHAs, the rules blob, seed range, raw two-seat counts, shares and intervals, band, lean and shift verdicts, runner hash and commands that reproduce the counts. For a one-off check that leaves the saved settings and history alone:
+
+~~~sh
+python3 backend/server.py evaluate --repo /path/to/checkout --candidate origin/main \
+  --first-seed 0 --count 1000 --band-low 45 --band-high 55 --out receipt.json
+~~~
+
+## Publish findings as GitHub issues (opt-in)
+
+~~~sh
+python3 backend/server.py issues --receipt receipt.json            # dry run: prints each draft
+python3 backend/server.py issues --receipt receipt.json --publish  # creates issues with gh
+~~~
+
+`--report latest` (or a report id) reads a stored report instead of a file. Each finding (a lean metric or a shift alert) becomes at most one open issue labelled `kiro`, found again by the `<!-- night-watch-finding:KEY -->` marker in its body, so retries do not duplicate it. The lean key leaves out the commit, so a lean that persists across commits keeps one open issue. Night Watch recomputes the verdicts from the receipt's counts before drafting, builds titles and bodies from those numbers only, and runs `gh` with an argument list. The repository must already have a `kiro` label. The scheduled job never publishes.
+
 ## Schedule a nightly check
 
 Save the settings and verify one manual run first. From this app directory, register a Kiro Crew command job.

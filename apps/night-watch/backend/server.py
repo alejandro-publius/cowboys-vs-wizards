@@ -18,6 +18,7 @@ from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import balance
+import issues
 
 APP_ID = "kiroween-night-watch"
 SCHEDULE_OWNER = "app:kiroween-night-watch/balance"
@@ -252,6 +253,67 @@ def run_cli(source, mode=None):
     return 1 if record["state"] == "failed" else 0
 
 
+def evaluate_cli(args):
+    """On-demand check: writes a receipt file; leaves saved settings and history untouched."""
+    band = None
+    if args.band_low is not None or args.band_high is not None:
+        band = {"low": args.band_low, "high": args.band_high}
+    raw = {"repo": args.repo, "baseline": args.baseline or args.candidate, "candidate": args.candidate,
+           "firstSeed": args.first_seed, "count": args.count, "threshold": args.threshold,
+           "mode": args.mode, "band": band}
+    try:
+        config = balance.validate_config(raw)
+        record = balance.build_report(config, "on-demand")
+    except balance.ConfigError as error:
+        print("Night Watch could not run. %s" % error, file=sys.stderr)
+        return 1
+    receipt = record["receipt"]
+    text = json.dumps(receipt, indent=2) + "\n"
+    if args.out:
+        with open(args.out, "w", encoding="utf-8") as out:
+            out.write(text)
+    else:
+        sys.stdout.write(text)
+    summary = sys.stderr if not args.out else sys.stdout
+    print("Night Watch on-demand: shift %s, lean %s. %s" % (
+        record["state"], receipt["lean"]["verdict"], record["message"]), file=summary)
+    return 1 if record["state"] == "failed" else 0
+
+
+def load_receipt(args):
+    if args.receipt:
+        with open(args.receipt, encoding="utf-8") as handle:
+            return json.load(handle)
+    reports = load_reports()
+    wanted = [r for r in reports if args.report in ("latest", r.get("id"))]
+    if not wanted or "receipt" not in wanted[0]:
+        raise issues.PublishError("No stored report %s has a receipt." % args.report)
+    return wanted[0]["receipt"]
+
+
+def issues_cli(args):
+    """Dry run unless --publish is given. Never called by the scheduled job."""
+    try:
+        receipt = load_receipt(args)
+        slug = args.repo or receipt.get("repository")
+        with file_lock("publish.lock", wait=False):
+            results = issues.publish(receipt, slug, data_dir(), gh=shutil.which("gh"), dry_run=not args.publish)
+    except (issues.PublishError, Busy, StoreError, OSError, ValueError) as error:
+        print("Night Watch did not publish. %s" % error, file=sys.stderr)
+        return 1
+    if not results:
+        print("No findings in this receipt. Nothing to publish.")
+    for result in results:
+        if result["action"] == "would-check-then-create":
+            print("DRY RUN %s: %s" % (result["key"], result["title"]))
+            print("  would search open '%s' issues in %s for its marker, then create one if none exists%s" % (
+                issues.LABEL, slug, "; ledger lists #%d" % result["ledgerIssue"] if result["ledgerIssue"] else ""))
+            print("  " + result["body"].replace("\n", "\n  ").rstrip())
+        else:
+            print("%s %s: #%d %s" % (result["action"].upper(), result["key"], result["number"], result["title"]))
+    return 0
+
+
 def schedule_cli(args):
     crew = shutil.which("kirocrew")
     if not crew:
@@ -288,7 +350,28 @@ def main(argv):
     schedule.add_argument("--time", default="02:00", help="local nightly time as HH:MM")
     schedule.add_argument("--timezone", default="America/Los_Angeles", help="IANA timezone for the schedule")
     schedule.add_argument("--remove", action="store_true", help="remove the Night Watch job")
+    evaluate = commands.add_parser("evaluate", help="on-demand check that writes a receipt and keeps saved state")
+    evaluate.add_argument("--repo", required=True, help="absolute path of a local checkout")
+    evaluate.add_argument("--candidate", required=True, help="candidate Git ref")
+    evaluate.add_argument("--baseline", help="baseline Git ref (defaults to the candidate)")
+    evaluate.add_argument("--mode", choices=balance.MODES, default="showdown")
+    evaluate.add_argument("--first-seed", type=int, default=0)
+    evaluate.add_argument("--count", type=int, default=1000, help="deals (Showdown) or matches (lanes)")
+    evaluate.add_argument("--threshold", type=float, default=10, help="shift alert threshold in pp")
+    evaluate.add_argument("--band-low", type=float, help="operator target band low edge, percent")
+    evaluate.add_argument("--band-high", type=float, help="operator target band high edge, percent")
+    evaluate.add_argument("--out", help="receipt file (default: stdout)")
+    publish = commands.add_parser("issues", help="dry-run or publish one 'kiro' issue per finding")
+    source = publish.add_mutually_exclusive_group()
+    source.add_argument("--receipt", help="receipt JSON file")
+    source.add_argument("--report", default="latest", help="stored report id, or latest")
+    publish.add_argument("--repo", help="GitHub owner/name (defaults to the receipt's repository)")
+    publish.add_argument("--publish", action="store_true", help="really create issues; without it this is a dry run")
     args = parser.parse_args(argv)
+    if args.command == "evaluate":
+        return evaluate_cli(args)
+    if args.command == "issues":
+        return issues_cli(args)
     if args.command == "schedule":
         return schedule_cli(args)
     if args.command == "run":

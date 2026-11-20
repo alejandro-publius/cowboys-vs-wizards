@@ -67,6 +67,36 @@ function ComparisonTable({ metrics, report, caption }) {
           h("td", null, difference(baseline.counts[key], candidate.counts[key], count)))))));
 }
 
+const leanLabels = {
+  within: "Within target band", lean: "Outside target band", inconclusive: "Inconclusive",
+  unconfigured: "No target band set", "not-measured": "Not measured", "no-data": "No decisive games",
+};
+const shareText = (metric) => metric?.share == null ? "—"
+  : metric.share.toFixed(1) + "% (95% CI " + metric.ci95[0].toFixed(1) + "–" + metric.ci95[1].toFixed(1) + "%, n=" + number.format(metric.decisive) + ")";
+
+// Absolute lean of the candidate against the operator's band; separate from the baseline shift above.
+function LeanPanel({ receipt }) {
+  const measured = receipt.measured?.candidate;
+  const rows = [["firstPlayer", "First-player share", "firstPlayer"], ["cowboy", "Cowboy share", "faction"]];
+  return h("section", { className: "panel lean-panel", "aria-label": "Target band check" },
+    h("header", { className: "panel-heading" },
+      h("h2", null, "Target band"),
+      h("span", { className: "quiet" }, receipt.band
+        ? receipt.band.low + "–" + receipt.band.high + "% (operator-configured)" : "Not configured")),
+    h("p", { className: "finding" }, leanLabels[receipt.lean?.verdict] || receipt.lean?.verdict),
+    measured && h("dl", { className: "run-metadata" }, rows.map(([key, label, verdictKey]) => {
+      const verdict = receipt.lean?.[verdictKey];
+      return h("div", { key },
+        h("dt", null, label),
+        h("dd", null, shareText(measured[key]),
+          verdict && " · " + (leanLabels[verdict.verdict] || verdict.verdict) + (verdict.direction ? " toward " + verdict.direction : "")));
+    })),
+    h("p", { className: "settings-note quiet" },
+      (receipt.sameCommit ? "Baseline and candidate are the same commit. " : "") +
+      "Seeds " + number.format(receipt.seeds.from) + "–" + number.format(receipt.seeds.to) +
+      " · candidate " + receipt.candidate.commit.slice(0, 10) + " · per-card data not measured"));
+}
+
 function Report({ report }) {
   const ready = Boolean(report.baseline?.counts && report.candidate?.counts);
   const rulesMessage = report.rules?.state === "passed"
@@ -108,6 +138,7 @@ function Report({ report }) {
           "Open GitHub issue draft", h("span", { "aria-hidden": true }, "↗")))),
     report.detail && h("details", { className: "diagnostic panel" },
       h("summary", null, "Check output"), h("pre", null, report.detail)),
+    report.receipt && h(LeanPanel, { receipt: report.receipt }),
     ready && h("section", { className: "panel seat-panel" },
       h("header", { className: "panel-heading" }, h("h2", null, "First-seat advantage")),
       h(ComparisonTable, { metrics: seatMetrics, report, caption: "Win share by starting seat" })),
@@ -153,8 +184,11 @@ function Settings({ config, save, busy }) {
   function submit(event) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    const low = String(data.get("bandLow")).trim();
+    const high = String(data.get("bandHigh")).trim();
     save({ ...Object.fromEntries(fields.map(({ key, min }) =>
-      [key, min === undefined ? String(data.get(key)).trim() : Number(data.get(key))])), mode: String(data.get("mode")) });
+      [key, min === undefined ? String(data.get(key)).trim() : Number(data.get(key))])), mode: String(data.get("mode")),
+    band: low === "" && high === "" ? null : { low: Number(low), high: Number(high) } });
   }
   return h("section", { className: "settings panel", id: "night-watch-settings" },
     h("header", { className: "panel-heading" }, h("h2", null, "Comparison settings")),
@@ -170,8 +204,13 @@ function Settings({ config, save, busy }) {
           h("span", null, "Mode"),
           h("select", { name: "mode", defaultValue: config.mode || "lanes" },
             h("option", { value: "showdown" }, "Showdown (each deal from both seats)"),
-            h("option", { value: "lanes" }, "Lane duel")))),
-      h("p", { className: "settings-note quiet" }, "Night Watch runs the engine from commits in this local checkout."),
+            h("option", { value: "lanes" }, "Lane duel"))),
+        [["bandLow", "low", "Target band low (%)"], ["bandHigh", "high", "Target band high (%)"]].map(([name, edge, label]) =>
+          h("label", { key: name },
+            h("span", null, label),
+            h("input", { name, type: "number", min: 0, max: 100, step: "0.1", defaultValue: config.band?.[edge] ?? "",
+              placeholder: "optional" })))),
+      h("p", { className: "settings-note quiet" }, "Night Watch runs the engine from commits in this local checkout. Leave the target band empty unless you have chosen one; no design target has been approved."),
       h("button", { type: "submit", className: "action primary", disabled: Boolean(busy) },
         busy === "save" ? "Saving…" : "Save settings")));
 }
