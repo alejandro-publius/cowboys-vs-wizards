@@ -195,7 +195,7 @@ const RECEIPT_TOOL = {
   inputSchema: {type: "object", properties: {receipt: {type: "string", enum: Object.keys(SHOWDOWN_RECEIPTS), default: "installed-power-boot-hill"}}, additionalProperties: false},
 };
 async function showdownReceipt(id) {
-  const base = {receiptId: id, receiptPath: SHOWDOWN_RECEIPTS[id], kind: "showdown-gameplay-proof"};
+  const base = {power: {name: "orb-duel-review", version: VERSION}, receiptId: id, receiptPath: SHOWDOWN_RECEIPTS[id], kind: "showdown-gameplay-proof"};
   if (unavailable) return {...base, verdict: "unavailable", reasons: [unavailable]};
   const file = readFixed(SHOWDOWN_RECEIPTS[id]);
   if (file.error) return {...base, verdict: file.error === "absent" ? "absent" : "malformed", reasons: [`receipt ${file.error}`]};
