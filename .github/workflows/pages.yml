@@ -33,11 +33,10 @@ jobs:
 
       - run: npm run build:art -- --web
 
+      # Writes only dist/web/graybox/: index.html plus the lane duel as chunks/lanes-<hash>.js,
+      # fetched only by ?mode=lanes and the other lane modes. The offline single file is unchanged.
       - name: Add the rules-first graybox at /graybox/
-        run: |
-          npm run build
-          mkdir -p dist/web/graybox
-          cp dist/cowboys-vs-wizards-board-duel.html dist/web/graybox/index.html
+        run: npm run build -- --hosted
 
       - name: Add the Showdown prototype at /showdown/
         run: |

@@ -1,0 +1,62 @@
+{
+ "requests": [
+  {
+   "phase": "initial",
+   "url": "http://127.0.0.1:48732/cowboys-vs-wizards/graybox/?seed=0",
+   "type": "Document",
+   "status": 200,
+   "mimeType": "text/html",
+   "contentType": "text/html; charset=utf-8",
+   "fromCache": false,
+   "encodedDataLength": 173137
+  },
+  {
+   "phase": "initial",
+   "url": "http://127.0.0.1:48732/cowboys-vs-wizards/graybox/?seed=0",
+   "type": "Document",
+   "status": 200,
+   "mimeType": "text/html",
+   "contentType": "text/html; charset=utf-8",
+   "fromCache": false,
+   "encodedDataLength": 173137
+  }
+ ],
+ "page": "http://127.0.0.1:48732/cowboys-vs-wizards/graybox/",
+ "chrome": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+ "viewport": [
+  1440,
+  900
+ ],
+ "checks": [
+  {
+   "name": "300 ms latency run 1",
+   "passed": true,
+   "detail": {
+    "atLoad": {
+     "visible": [
+      "Play",
+      "Lane duel (previous rules)"
+     ],
+     "t": 427
+    },
+    "showdownReadyMs": 428
+   }
+  },
+  {
+   "name": "300 ms latency run 2",
+   "passed": true,
+   "detail": {
+    "atLoad": {
+     "visible": [
+      "Play",
+      "Lane duel (previous rules)"
+     ],
+     "t": 426
+    },
+    "showdownReadyMs": 427
+   }
+  }
+ ],
+ "errors": [],
+ "clicks": 0
+}

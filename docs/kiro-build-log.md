@@ -256,3 +256,11 @@ The next substantial Kiro task is #56, boundary generation, failure reduction an
 - **Change**: [docs/submission/kiro-brag-sheet.md](submission/kiro-brag-sheet.md) now describes `main` at `6c14686`, adds #150 (Scout before/after), #151 (Night Watch Showdown, balance steady) and #153 (profile) with commit-pinned evidence and CI links, and replaces the status table with pinned links for #149 (merged into the candidate branch only), #148 and #154. Demo steps unchanged.
 - **Verification**: every link on the page resolved (local paths, anchors, and remote URLs with HTTP 200). The demo's four actions were replayed through `src/match/showdown-session.js` at `6c14686` in Node and gave the same events; no browser run on the new build.
 - **Not verified here**: a scheduled Crew run of Night Watch on Showdown, the #148 code, and any human play.
+
+### 2026-11-19 — Hosted /graybox/ loads Showdown without the lane duel (Kiro CLI, America/Los_Angeles, 22:02 PST)
+
+- **State**: verified locally on branch `kiro/graywave-hosted` (base `a9aa828`). PR opened for review, not merged.
+- **Performed in**: a Kiro CLI 3.5.0 worker session (Claude Opus 5.5).
+- **Change**: `scripts/build-graybox.mjs --hosted` writes `dist/web/graybox/` with the lane duel (`src/graybox.js`) as a separate hashed file that `src/app.js`'s existing dynamic import fetches only in lane modes. The Pages workflow uses it instead of copying the offline file. The offline and `--web` outputs are byte-identical to `a9aa828`. No `src/` change.
+- **Verification**: Showdown's first request fell from 172945 to 54090 raw bytes (58341 to 17993 gzip-9). In real Chrome over local HTTP with cache disabled, the lane file was never requested during Boot Hill play, and `?mode=lanes`, `?mode=match` and the other lane modes fetched it and worked. The PR #148 head passed its own check (25 of 25) with this script. `npm test` passed 530 of 530. An ES-module splitting attempt was rejected because it showed the lane menu until the chunks arrived. [Evidence](evidence/graywave-hosted/README.md)
+- **Remaining**: live Pages and WebKit checks.
