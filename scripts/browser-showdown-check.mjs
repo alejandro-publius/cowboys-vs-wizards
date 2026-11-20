@@ -13,6 +13,7 @@ import {mkdir, mkdtemp, rm, writeFile} from "node:fs/promises";
 import path from "node:path";
 import {fileURLToPath, pathToFileURL} from "node:url";
 import {grayboxBuildLabel} from "./graybox-build-label.mjs";
+import {TYPES} from "../src/game/showdown/cards.js";
 
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const WIDTH = 1440, HEIGHT = 900;
@@ -144,6 +145,32 @@ try {
     return p;
   };
 
+  // After the result (Fable's even-fight brief, item 4): both hands are named on their Bases, one name
+  // per card counted, each a card of that side; still no Wizard card id in the page, no card backs,
+  // and the Wizard traps stay face down. The Cowboy names match the Cowboy hand buttons.
+  const SIDE_NAMES = {cowboy: new Set(), wizard: new Set()};
+  for (const card of Object.values(TYPES)) SIDE_NAMES[card.side].add(card.name);
+  const assertHandsShown = async () => {
+    const p = await evaluate(`(()=>{const body=document.getElementById("showdown").outerHTML;const ids=body.match(/wizard-[a-z-]+-\\d+/g)||[];
+      const side=(s)=>{const base=document.querySelector('#sd-board [data-base='+s+']');const line=base.querySelector('[data-hand='+s+']')?.textContent??null;
+        return{line,count:Number(base.textContent.match(/Hand (\\d+)/)[1]),trapLine:base.textContent.match(/▲ ([^\\n]*)/)[1].trim()};};
+      return{ids,backs:document.querySelectorAll('#sd-board .sd-backs').length,cowboy:side('cowboy'),wizard:side('wizard'),
+        own:[...document.querySelectorAll('#sd-hand [data-card] strong')].map(n=>n.textContent)};})()`);
+    assert.deepEqual(p.ids, [], `Wizard card ids in the page after the result: ${p.ids}`);
+    assert.equal(p.backs, 0, "no card backs once both hands are shown");
+    const names = {};
+    for (const side of ["cowboy", "wizard"]) {
+      const {line, count} = p[side];
+      assert.match(line ?? "", /^Hand: /, `the ${side} Base names its hand`);
+      names[side] = line === "Hand: empty" ? [] : line.slice("Hand: ".length).split(", ");
+      assert.equal(names[side].length, count, `${side}: one name per card in hand`);
+      assert.ok(names[side].every((n) => SIDE_NAMES[side].has(n)), `${side} hand names ${names[side]}`);
+    }
+    assert.deepEqual(names.cowboy, p.own, "the Cowboy Base names the same hand as the hand row");
+    assert.match(p.wizard.trapLine, /^(Nothing face down|\d+ cards? face down)$/, "Wizard traps stay face down");
+    return names;
+  };
+
   const shown = (id) => `!document.getElementById('${id}').hidden`;
   const campState = () => evaluate(`({tiles:[...document.querySelectorAll('#camp-trail button')].map(n=>({name:n.querySelector('strong').textContent,on:!n.disabled,note:n.querySelector('.sd-note').textContent})),
     offer:[...document.querySelectorAll('#camp-claim [data-choose]')].map(n=>n.dataset.choose),next:document.getElementById('camp-next')?.textContent??null,
@@ -246,8 +273,8 @@ try {
     assert.deepEqual([finish.hand, finish.end, finish.targets, finish.restart, finish.again], [0, true, 0, true, false], "nothing is playable after the result");
     assert.ok(sawPreview, "every offered target showed an attack preview");
     assert.ok(sawWizardTurn, "the Wizard turns were shown in the log");
-    await assertPrivate();
-    check(`${label} (?seed=0) won by clicks alone; inputs close after the result`, {...finish, turns, attacks, clicks: report.clicks});
+    const hands = await assertHandsShown();
+    check(`${label} (?seed=0) won by clicks alone; inputs close after the result; both hands shown, Wizard traps face down`, {...finish, hands, turns, attacks, clicks: report.clicks});
     return finish;
   }
 

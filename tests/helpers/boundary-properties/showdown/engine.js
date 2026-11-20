@@ -20,6 +20,7 @@ export const ENGINE = Object.freeze({
   playTurn: rules.playTurn,
   opponent: rules.opponent,
   viewFor: contract.viewFor,
+  finishedViewFor: contract.finishedViewFor,
   EVENTS: contract.EVENTS,
   BOARD_SIZE: rules.BOARD_SIZE,
   HAND_CAP: rules.HAND_CAP,
