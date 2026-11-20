@@ -1,0 +1,42 @@
+[
+ {
+  "id": "e6713af867dc",
+  "at": "2026-11-20T07:41:11Z",
+  "source": "scheduled",
+  "mode": "showdown",
+  "firstSeed": 0,
+  "count": 1000,
+  "rules": {
+   "state": "passed",
+   "tests": null
+  },
+  "baseline": {
+   "commit": "6b6caeff465be6175eb2fe62ae16b3c54ead2598"
+  },
+  "candidate": {
+   "commit": "e813ae8a3fdb5efbda75caddc28805d407ae8802",
+   "counts": {
+    "games": 2000,
+    "cowboy": 1188,
+    "wizard": 812,
+    "draw": 0,
+    "first": 1142,
+    "second": 858,
+    "byStartingSide": {
+     "cowboy": {
+      "cowboy": 665,
+      "wizard": 335,
+      "draw": 0
+     },
+     "wizard": {
+      "cowboy": 523,
+      "wizard": 477,
+      "draw": 0
+     }
+    }
+   }
+  },
+  "lean": "lean",
+  "_staged": "STAGED reconstruction for a native tooling test (K-071). Rebuilt from docs/evidence/night-shift/staged-scheduled.json run e6713af867dc plus byStartingSide from guard-sheriff-health-3-to-4/proposal.json. The original /tmp/nj/finding.json (sha256 2abc834f...) no longer exists. Illustrative band 45-55 was not a design target. rules.tests unknown; the run published only after its rule tests passed."
+ }
+]
