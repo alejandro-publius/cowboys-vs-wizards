@@ -95,8 +95,7 @@ kiro-cli chat --v3 --no-interactive --trust-workspace --output-format stream-jso
   "Use run_workflow once with workflowPath \"$PWD/.kiro/workflows/independent-release-review.workflow.json\", inputs {\"expected_sha\": \"$SHA\"}, runLabel \"independent-release-review-showdown-$SHA\". Do not read or edit files yourself. Wait for its terminal notification, then give the workflowId, status and the report's last line." > .artifacts/kiro/release-workflow-stream.jsonl
 ```
 
-`node_modules` must be a real directory with symlinked children. A symlink in its place would show as
-untracked and trigger the refusal. Repeat the command with a wrong 40-character SHA to see the refusal.
+`node_modules` may also be a symlink when Git ignores it. The fresh checkout must resolve its dependencies and produce an empty `git status --porcelain --untracked-files=all`. Repeat the command with a wrong 40-character SHA to see the refusal.
 In that case the parent exits 1 with `runError … (1 failed)`. A PTY is not needed. `--trust-workspace`
 applies to this launch only.
 
