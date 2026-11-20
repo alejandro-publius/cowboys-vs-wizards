@@ -206,7 +206,7 @@ assertions. Each Node test and browser check listed here carries a comment namin
 classes are those defined above.
 
 Shorthands: `prog` = `prototypes/showdown/progress.test.js`, `store` = `tests/game/showdown-campaign-store.test.js`,
-`inh` = `tests/game/showdown-inherited.test.js`, `ramp` = `tests/game/showdown-trail-ramp.test.js`,
+`inh` = `tests/game/showdown-inherited.test.js`, `keep` = `tests/game/showdown-keepsake-compat.test.js`, `ramp` = `tests/game/showdown-trail-ramp.test.js`,
 `camp` = `tests/match/showdown-campaign.test.js`, `plog` = `tests/match/showdown-playtest.test.js`,
 `B-entry` = `scripts/browser-showdown-check.mjs`, `B-trail` = `scripts/browser-showdown-trail-check.mjs`
 (Run A new player, Run B lane veteran). Browser receipts:
@@ -249,8 +249,8 @@ the built pages at `cd764f1` are byte-identical to the ones checked
 | FH-R6.4 | browser | `B-entry` "Back in the Camp the unclaimed offer comes first and every Trail tile is disabled"; `B-trail` "Reload with the second offer unclaimed…" | |
 | FH-R6.5 | browser + direct | `B-entry` "After a reload the Camp keeps…", "The Camp choice clears the offer and opens The Bone Fence…"; `B-trail` "Reload: Boot Hill and Raven Roost won, The Bone Fence open…stored progress equal the reference"; `store` "Trail duels 1 and 2 each pay their card once…" | |
 | FH-R6.6 | direct | `camp` "a loss pays nothing and gives the rematch one more Base orb, kept across a reload"; `prog` "a loss gives the rematch one more Base orb…" | |
-| FH-R7.1 | partial | `B-trail` Run B checks that the record is in its own key; no test for save codes | Device-local: true by construction (`savecode.js` encodes Progress only, the record is a separate key). No test asserts an inherited card is absent from a save code. The graybox Camp offers no save code. |
-| FH-R7.2 | direct | `store` "pending Fable F1/F2: a lane capture gives no Showdown ownership, Trail progress, hunt or power"; `inh` first test (`owned(progress) = 0`) | This test is meant to fail when Fable changes the policy. External compat check A1 fails on all 7 capture cases for the same reason ([table](evidence/kiro-143-slice2-integrate/compat-A1-A5.md)). |
-| FH-R7.3 | missing (open) | none | F3–F5 are Fable's open decisions; nothing to test yet. |
+| FH-R7.1 | direct (reference) | `keep` "save codes exclude keepsakes: a veteran's code equals a new player's…"; `B-trail` Run B checks that the record is in its own key | Uses `prototypes/showdown/savecode.js`; the graybox Camp offers no save code until slice 3. |
+| FH-R7.2 | direct | `keep` "keepsake compat A1-A5" (14 cases), "a genuine Showdown bounty pays its Legendary to a lane veteran and a new player alike"; `store` "Fable F1: a lane capture gives no Showdown ownership, Trail progress, hunt or power"; `inh` first test | Fable's ruling, PR 148 issuecomment-7031816529. Until 2026-11-19 this row was "pending Fable F1/F2" and external A1 failed on 7 cases ([historical table](evidence/kiro-143-slice2-integrate/compat-A1-A5.md)). |
+| FH-R7.3 | direct (reference) + todo | `keep` "partial lane hunts and lane Frontier cards do not carry into Showdown", "reference Start over resets Showdown progress only…"; `test.todo` "slice 3: the graybox Camp's own Start over…" | Start over is checked as the reference prototype's reset (`keep(newSave())`, `keepLog([])`); the graybox has none until slice 3. Until 2026-11-19 this row was "missing (open)". |
 
 Not mapped, pending: human playtests of the first hour (clarity, fun, Camp wording). None run.

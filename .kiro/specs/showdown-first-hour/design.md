@@ -29,18 +29,19 @@ It proposes no new behaviour.
 
 `migrate()` accepts a Legendary in the collection only after the Trail and the matching Showdown bounty's
 fifth hunt. A lane capture put into Progress would make the next load reset the save (FH-R7.2), or would
-need a Progress change that grants Trail or bounty state. Both are rule and balance decisions (Fable's F1/F2).
+need a Progress change that grants Trail or bounty state. Fable ruled (F1/F2, 2026-11-19) that it stays out of Progress.
 The separate record keeps the brief's ownership promise without touching `progress.js`, `migrate()`, the
 Trail, the deck, bounties, offers, rewards or `cvw-player-v1`.
 
-This is also why the external compat check A1 (`owned(progress) > 0` for a capture) still fails on its 7
-capture cases ([compat-A1-A5.md](../../../docs/evidence/kiro-143-slice2-integrate/compat-A1-A5.md)). A1
-is not met under this design; it waits on Fable.
+Fable's ruling flipped compat check A1: the keepsake record must hold the capture and Progress must not.
+The 14 A1–A5 cases now run in `npm test` as `tests/game/showdown-keepsake-compat.test.js`, and pass. The
+earlier external run, where the old A1 (`owned(progress) > 0`) failed on 7 capture cases, is kept as
+history in [compat-A1-A5.md](../../../docs/evidence/kiro-143-slice2-integrate/compat-A1-A5.md).
 
 ## Ownership scope: device versus policy
 
 - **Device scope (integration fact).** The Inherited record lives in the same browser storage as the lane profile. The save code is built from Progress only, so a save code moved to another device does not carry inherited cards. The graybox Camp offers no save code; only the prototype screen does.
-- **Balance policy (Fable).** Whether an inherited card is equippable, counts toward deck rarity limits, or changes a bounty payout is not decided. The current code grants display ownership only.
+- **Balance policy (Fable, decided).** An inherited card is not equippable, does not count in the Showdown collection, and does not change a bounty payout. The code grants display only.
 
 These are kept apart so a later Fable decision on policy does not silently change where the record is
 stored, and a later portability change does not silently grant power.
@@ -58,5 +59,4 @@ stored, and a later portability change does not silently grant power.
 ## Known gaps (also in the map)
 
 - No automated check enforces FH-R1.2 (purity of `src/game/showdown/`). It was checked by a source grep for DOM, storage globals and Node imports in this job only.
-- No test asserts FH-R7.1's "not in save codes" for an inherited card. It holds because `savecode.js` encodes Progress only; only the Camp text states it.
-- FH-R7.3 (F3–F5) has no required behaviour and no test.
+- FH-R7.1 and FH-R7.3 are tested against the reference prototype's save code and Start over, because the graybox Camp has neither until slice 3. A `test.todo` in the keepsake compat test marks the slice 3 graybox Start over check.

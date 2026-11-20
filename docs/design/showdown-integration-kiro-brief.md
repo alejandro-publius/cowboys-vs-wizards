@@ -54,7 +54,7 @@ Each slice ends in something a person can open and something a test proves. Do n
 **Done when**
 
 1. `progress.test.js` passes with only import paths changed, including the ramp test.
-2. A test loads a saved lane-era profile and shows its captured cards are still owned.
+2. A test loads a saved lane-era profile and shows its captured cards are still on record and shown in the Camp.
 3. In a browser a new profile wins Trail duels 1 and 2 and is paid a card each time, and reloading the page keeps them.
 
 ### 3. The rest, and retiring the lanes

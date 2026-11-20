@@ -17,8 +17,9 @@ T9 were done in this job.
 - [x] T7 Browser acceptance: new player Run A and lane veteran Run B, with the persisted record required (FH-R5.7, FH-R6). Workers: accept (`e009df5`), integration (`c74a7d6`).
 - [x] T8 This spec, the slice 2 section of `docs/requirement-test-map.md`, and comments in each slice 2 test naming the requirement it proves. No assertion, title or behaviour changed. `prototypes/showdown/progress.test.js` is left untouched so FH-R4.1 stays literally true.
 - [x] T9 Focused Node tests re-run after T8 (see the job report).
-- [ ] T10 Fable: decide F1/F2 (may an inherited Legendary count in Progress, and what its Showdown bounty pays). Then revise FH-R7.2 and compat A1.
-- [ ] T11 Fable: decide F3–F5, including whether save codes or Start over carry inherited cards. Then revise FH-R7.1/FH-R7.3 and add a test for the save-code rule.
+- [x] T10 Fable decided F1/F2 on 2026-11-19 (PR 148 issuecomment-7031816529): no carryover, bounties unchanged. FH-R7.2 revised; compat A1 flipped and imported as `tests/game/showdown-keepsake-compat.test.js` (14 cases).
+- [x] T11 The same ruling settles F3–F5: partial hunts and Frontier cards do not carry, Start over resets Showdown only, save codes exclude keepsakes. FH-R7.3 revised; tested against the reference reset and `savecode.js`.
+- [ ] T15 Slice 3: test the graybox Camp's own Start over once it exists (`test.todo` in the keepsake compat test).
 - [ ] T12 Add an automated purity check for `src/game/showdown/` (FH-R1.2), if the coordinator wants one. Not done here: it would be a new check, not a citation.
 - [ ] T13 Human playtest of the first hour (clarity, fun). Pending, none claimed.
 - [ ] T14 Land the Scout fix (`7e8e6eb`) before slice 2, per the PR 147 brief, and re-run the slice 2 checks.

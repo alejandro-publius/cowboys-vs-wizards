@@ -67,7 +67,11 @@ The pilot packaging commit `bc8390f` was not merged. It is independent and its d
 - `npm test` passed 556 of 556 again.
 - The three built pages are byte-identical to the hashes above, so the Chrome results apply to them. The Chrome suites were not re-run for the docs-only change.
 
-## Open
+## Current status (2026-11-19, after Fable's ruling)
+
+Fable ruled on F1/F2 in PR 148 issuecomment-7031816529: nothing from the lane game carries into Showdown progress. A lane capture stays a keepsake in the separate record and in the Camp; each Showdown bounty still pays its Legendary to every player. That also settles F3–F5. Compat A1 is flipped and now runs in `npm test` as `tests/game/showdown-keepsake-compat.test.js` (14 cases plus bounty, partial-hunt/Frontier, reference Start over and save-code checks). The current test and browser results for PR 148 are in the PR body, not here.
+
+## Open (historical, written before Fable's ruling; kept unchanged)
 
 - **Fable (smallest decision):** may a lane-captured Legendary count in the Showdown progress collection, and so be equippable, before the Trail is done? If yes, what does that boss's Showdown bounty pay? (F1/F2 in the compat handoff.)
   - Until Fable decides, A1 fails, and ownership is display plus a separate persisted record.

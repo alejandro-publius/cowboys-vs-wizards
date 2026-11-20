@@ -156,11 +156,12 @@ test("a lane-era profile keeps its Captured cards owned in the lane store across
   }
 });
 
-// Pending Fable (HANDOFF.md F1, F2, F5): migrate() accepts a Legendary only after the Trail and the
-// Showdown bounty's fifth hunt. Until Fable decides where a lane capture belongs, the join adds no
-// Showdown ownership, no Trail win, no hunt and no deck card. This test fails when that changes.
+// Fable's F1 ruling (PR 148 issuecomment-7031816529): nothing from the lane game carries into Showdown
+// progress. migrate() accepts a Legendary only after the Trail and the Showdown bounty's fifth hunt, so
+// the join adds no Showdown ownership, no Trail win, no hunt and no deck card. The full ruling is checked
+// in tests/game/showdown-keepsake-compat.test.js.
 // FH-R7.2 (.kiro/specs/showdown-first-hour/requirements.md)
-test("pending Fable F1/F2: a lane capture gives no Showdown ownership, Trail progress, hunt or power", () => {
+test("Fable F1: a lane capture gives no Showdown ownership, Trail progress, hunt or power", () => {
   const storage = memoryStorage({[LANE_KEY]: LANE.both});
   const save = loadCampaign(storage);
   assert.deepEqual(save, newSave());

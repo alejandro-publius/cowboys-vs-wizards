@@ -93,8 +93,10 @@ This requirement records two different questions so they are not merged. Where t
 integration fact Kiro owns. What the card may do in Showdown is balance policy Fable owns.
 
 1. *Storage scope (integration).* Inherited ownership SHALL be local to the browser profile that holds the lane profile. It SHALL NOT be carried in the save code. The Camp SHALL say "They are not in your Trail deck and are not in save codes."
-2. *Balance policy (pending Fable F1/F2).* Until Fable decides, a lane capture SHALL give no Showdown Progress ownership (`owned(progress, type) = 0`), no Trail win, no hunt, no deck card and no power. Putting it into the Progress collection SHALL make `migrate()` reset the save, so the join SHALL NOT do it.
-3. *Open (Fable F3–F5).* Partial lane hunts, lane frontier cards, and whether Start over or a save code should carry inherited cards are not decided. No behaviour is required for them here beyond FH-R5.5 and FH-R7.1.
+2. *Balance policy (Fable F1/F2, decided 2026-11-19, PR 148 issuecomment-7031816529).* A lane capture SHALL give no Showdown Progress ownership (`owned(progress, type)` is what Showdown alone loads), no Trail win, no hunt, no deck or side-deck card and no power, before or after the Trail. It SHALL stay in the keepsake record and be shown in the Camp. Each Showdown bounty SHALL pay its Legendary on its fifth hunt to every player, lane veteran or not.
+3. *Carryover (same ruling: nothing from the lane game carries into Showdown progress).* Partial lane hunts and lane Frontier cards SHALL NOT carry. Start over SHALL reset Showdown progress only and SHALL leave the keepsake record and `cvw-player-v1` unchanged. Save codes SHALL NOT carry keepsakes. The graybox Camp has no Start over or save code until slice 3; until then the reference prototype's reset and `savecode.js` are checked.
+
+*History:* before 2026-11-19 FH-R7.2 read "pending Fable F1/F2" and FH-R7.3 left F3–F5 open.
 
 ## Not covered by this spec
 

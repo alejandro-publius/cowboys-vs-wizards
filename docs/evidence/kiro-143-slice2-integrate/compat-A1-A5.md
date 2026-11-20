@@ -1,3 +1,7 @@
+> **Historical receipt.** This is the run under the old A1 (`owned(progress) > 0`), before Fable's ruling
+> (PR 148 issuecomment-7031816529) flipped A1. The current check is
+> `tests/game/showdown-keepsake-compat.test.js`, which runs in `npm test`.
+
 Loader: /tmp/gwi/loader.mjs
 | lane fixture | showdown fixture | result | failed checks |
 | --- | --- | --- | --- |

@@ -64,9 +64,8 @@ export function saveCampaign(storage, progress) {
 
 // The Captured cards the lane game says this profile owns, read through the lane store itself
 // (five cleared hunts of a boss). Read-only: the lane profile is not written.
-// They are not added to the Showdown progress: progress.js only accepts a Legendary that the
-// Showdown bounty paid after the Trail, and where a lane capture belongs there is Fable's open
-// decision (experiments/showdown-profile-compat/HANDOFF.md, F1 and F2).
+// They are not added to the Showdown progress: nothing from the lane game carries into it (Fable's
+// F1 ruling, PR 148 issuecomment-7031816529). They are kept as keepsakes in inherited.js.
 export function laneCapturedCards(storage) {
   try {
     return Object.freeze(earnedRewards(createProfileStore(storage).get()));

@@ -1,10 +1,11 @@
-// Cards a player already owns from the lane game, kept as their own Showdown record (issue 143 slice 2:
-// "a Captured card already won in the lane game stays owned").
+// Cards a player captured in the lane game, kept as keepsakes in their own record and shown in the Camp
+// (issue 143 slice 2; Fable's ruling, PR 148 issuecomment-7031816529).
 //
 // The record is separate from the progress object on purpose. progress.js decides what the Trail deck,
 // the bounties and the offers may hold, and migrate() accepts a Legendary only after the Showdown bounty
-// paid it. Putting a lane capture there would reset the save or advance the Trail (Fable's open F1/F2).
-// This record grants ownership only: no deck slot, no bounty progress, no offer change.
+// paid it. Fable ruled (F1) that a lane capture never enters the Showdown collection and is not
+// equippable, and (F2) that each Showdown bounty still pays its Legendary to every player. This record
+// is display only: no deck slot, no bounty progress, no offer change. Start over leaves it alone.
 //
 //   cvw-showdown-inherited-v1  {v: 1, source: "cvw-player-v1", cards: [type, ...]}
 //

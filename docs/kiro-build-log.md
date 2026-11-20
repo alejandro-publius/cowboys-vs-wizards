@@ -277,3 +277,12 @@ The next substantial Kiro task is #56, boundary generation, failure reduction an
   - The PR 147 brief orders the Scout fix `7e8e6eb` before slice 2. It is not on this branch.
   - The slice 2 Requirements-First spec has not been written.
   - `github/main` `a9aa828` (PRs 145–147) was merged in; the change was docs-only. `npm test` passed again, and the built pages kept the same hashes.
+
+### 2026-11-19 — Keepsake ruling for PR 148 (Kiro CLI, America/Los_Angeles)
+
+- **State**: committed on `kiro/graywave-keepsakes`, for PR 148's head `kiro/graywave-integrate`. Not merged.
+- **Performed in**: a Kiro CLI keepsakes worker session (Claude Opus 5.5). The ruling is Fable's (PR 148 issuecomment-7031816529).
+- **Problem**: compat A1 asked for lane captures in Showdown progress. Fable ruled the opposite: nothing from the lane game carries into Showdown progress; captures stay keepsakes in the separate record and the Camp; bounties pay every player.
+- **Change**: `tests/game/showdown-keepsake-compat.test.js` imports the 14 A1–A5 cases from the readiness harness (`cli-progression` `d2efc98`) with A1 flipped and the real loader `createCampaign`. It adds checks for the bounty paying a veteran and a new player identically, partial hunts and Frontier cards, the reference prototype's Start over, and save codes. A `test.todo` marks the slice 3 graybox Start over. Brief slice 2 done-when 2 reworded as Fable approved. FH-R7, design, tasks, the test map and the evidence README updated; earlier text kept and labelled as history. No rule, reward or Scout change.
+- **Verification**: the new file passes 18 tests with 1 todo. Mutation runs: dropping the keepsake join failed 9 tests, and adding captures to progress failed 11. `npm test` 574 pass, 0 fail, 1 todo before the main merge. Browser checks on final source are recorded in the PR 148 body.
+- **Remaining**: the graybox Start over and save code (slice 3). Wording approval is Fable's. Human playtests are pending.
