@@ -211,3 +211,14 @@ test("inspect_showdown_receipt: pass on the same engine, stale or rejected when 
   assert.equal((await check()).verdict, "absent");
   for (const args of [{receipt: "../../etc/passwd"}, {path: "/x"}]) assert.equal((await s.tool("inspect_showdown_receipt", args)).protocolError.code, -32602);
 });
+
+test("the installed-Power Boot Hill receipt passes on this checkout's Showdown engine", async () => {
+  const fs = await import("node:fs");
+  const {engineFingerprint, inspectShowdownReceipt} = await import("../showdown.mjs");
+  const receipt = JSON.parse(fs.readFileSync(join(root, "docs/evidence/showdown-installed-power/boot-hill-receipt.json"), "utf8"));
+  assert.equal(receipt.debugSeed, false);
+  assert.equal(receipt.startCommitment, receipt.proof.commitment);
+  assert.equal(receipt.proof.actions.length, receipt.surfacedToolCalls["@orb-duel-review/review/act_showdown"]);
+  const verdict = inspectShowdownReceipt(engine, engineFingerprint(root), receipt);
+  assert.equal(verdict.verdict, "pass", JSON.stringify(verdict.reasons));
+});
