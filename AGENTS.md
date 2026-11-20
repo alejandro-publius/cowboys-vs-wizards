@@ -29,15 +29,20 @@ possible. Use human playtests to judge clarity and fun.
   user before creating it. Apply this to Blender, in-game visual effects and
   poses, and work delegated to Fable or Kiro.
 - Preserve the approved haunted Western art and existing attack demo.
-- Showdown is the game being built (docs/design/release-line.md). Its engine
-  is src/game/showdown/ and Play on the graybox page (src/app.js) opens it.
-  Its rules are prototypes/showdown/RULEBOOK.md; the full Trail reference
-  page is prototypes/showdown/. Start Showdown work from docs/AGENT-ROUTER.md.
+- Showdown is the game being built. Current state, paths and the remaining
+  human gate: docs/design/release-line.md ("Current status"); Fable's
+  decisions: the latest Fable comment on issue 143. Its engine is
+  src/game/showdown/ and Play on the graybox page (src/app.js, served at the
+  site root) opens its Camp. Its rules are prototypes/showdown/RULEBOOK.md;
+  the full reference page is prototypes/showdown/. Start Showdown work from
+  docs/AGENT-ROUTER.md.
 - The earlier lane duel (three lanes per side, tribute summons, one-to-five
-  life orbs per living troop) stays playable at ?mode=lanes and in the
-  illustrated build. Its draft rules and known contradictions are in
-  docs/kiro-task-01.md. Keep it working. Do not invent mechanics to fill
-  asset gaps.
+  life orbs per living troop) is retired from the graybox: no menu entry or
+  ?mode= URL opens it there. It lives only in the earlier illustrated 3D
+  build (src/main.js, served at /3d/), which keeps exactly the lane files it
+  imports and their tests. Its draft rules and known contradictions are in
+  docs/kiro-task-01.md. Keep the 3D build working. Do not invent mechanics to
+  fill asset gaps.
 - Keep plain JavaScript, Three.js, Rapier and esbuild. Rules in src/game/ must
   have no DOM, rendering, filesystem, network or model dependencies.
 - Prefer direct functions and explicit data. Split modules by purpose. Avoid

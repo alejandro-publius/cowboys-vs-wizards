@@ -7,8 +7,11 @@ fileMatchPattern: ["src/match/**", "src/render/**", "src/ui/**", "scripts/browse
 
 Use for quick changes to match presentation, card art or the browser route.
 README.md has the build command and check table. For Showdown screens and
-their checks, use the Showdown rows in `docs/AGENT-ROUTER.md`; the contracts
-below are the lane duel's and the illustrated build's.
+their checks, use the Showdown rows in `docs/AGENT-ROUTER.md`; the current
+release state is in `docs/design/release-line.md` ("Current status") and issue
+143. The contracts below are the lane duel's, which since slice 3 runs only in
+the earlier illustrated 3D build (`src/main.js`, served at `/3d/`), not in the
+graybox.
 
 ## Contracts to keep
 

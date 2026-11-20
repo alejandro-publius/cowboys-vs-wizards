@@ -2,22 +2,19 @@
 
 **A haunted-Western card duel: cowboys against wizards, where you choose every attack and your troops shield your Base.** It takes what long-running card games already proved (tribute summons, spells that answer a board, a graveyard, a deck you build) and keeps a duel short and easy to read.
 
-## Status on November 19, 2026
+## Status on November 20, 2026
 
-The rules are being built first, in a plain "graybox" page: a flat board, text cards, life orbs and a clash log. [Play the graybox in the browser](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/): Play opens the first Showdown duel, Boot Hill. Showdown is the fight this game is being built on. Its Trail of duels, rivals, bounties and deck builder are still on a separate page until they are moved in: [play the full Showdown page](https://alejandro-publius.github.io/cowboys-vs-wizards/showdown/) or read [what is in it](prototypes/showdown/README.md). The earlier three-lane duel is still playable at [graybox/?mode=lanes](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/?mode=lanes). The 3D models, animation and board go on top once the rules are locked, because motion is expensive to change. An earlier illustrated 3D duel is still [live in the browser](https://alejandro-publius.github.io/cowboys-vs-wizards/). It predates most of what is listed below, so this page shows no screenshots until the 3D layer matches the current rules.
+The rules are being built first, in a plain "graybox" page: a flat board, text cards and a duel log. Showdown is the fight this game is being built on, and the graybox is now Showdown only. [Play it in the browser](https://alejandro-publius.github.io/cowboys-vs-wizards/): **Play** opens the Camp, which starts the Trail of duels and, after it, the rivals, Wanted bounties, packs, the deck builder with a side deck, best of three and two players. The same page is at [/graybox/](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) for older links. The [full Showdown reference page](https://alejandro-publius.github.io/cowboys-vs-wizards/showdown/) is kept, and [what is in it](prototypes/showdown/README.md) is listed there.
 
-No first-time human player has tested the current rules yet. Every balance figure in this repository comes from bot play. The [release line and scoreboard](docs/design/release-line.md) says what is in the game, what is waiting on a playtest, and what was cut.
+The earlier three-lane duel is no longer playable in the graybox; an old `?mode=` address opens the Showdown menu. It survives only in the [earlier illustrated 3D build](https://alejandro-publius.github.io/cowboys-vs-wizards/3d/), which holds the models, animation and board and is labelled as the earlier build. The 3D layer goes on top of Showdown once the rules are locked, because motion is expensive to change. (These site paths apply once issue 143 slice 3 is merged and deployed.)
 
-## What is playable in the earlier lane duel
+No first-time human player has tested the current rules yet. Every balance figure in this repository comes from bot play. The [release line and scoreboard](docs/design/release-line.md) says what is in the game, what is waiting on a playtest, and what was cut. Fable's game decisions are posted on [issue 143](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143).
 
-- **The duel.** Twelve-card decks, three lanes, one summon and one spell a turn, tributes for stronger troops, and both sides striking at once. Eighteen cards: twelve Cowboy, six Wizard.
-- **A guided first duel** on a fixed, forgiving deal.
-- **Wanted bounties.** Five notices each for the Lantern Wraith and the Graveyard Dragon. Clearing a boss earns its card and a showcase duel.
-- **The Frontier cards.** Six Cowboy cards unlocked by wins, including riders that can change lanes, and two ready-made decks.
-- **Rivals.** The Stargazer and the Imp, each built to make one deck rethink its plan.
-- **Practice decisions.** Two short positions that open on the turn of a choice.
-- **The Dragon Fire arc.** A boss fight that teaches a move, then a rival, the Bonewright, who answers it.
-- **A deck builder** with drafts you can try before saving.
+## What the earlier 3D lane build has
+
+- **The duel.** Twelve-card decks, three lanes, one summon and one spell a turn, tributes for stronger troops, and both sides striking at once.
+- **A title menu** with settings, achievements, a deck workbench and the Wanted board.
+- **The models and motion:** Sheriff, Wizard, Dragon, Mounted Billy and Skeleton, and the original attack demo at `?mode=demo`.
 
 Every card is listed in the [card spreadsheet](docs/cards.csv), and the rules in the [rules sheet](docs/rules.csv).
 
@@ -30,20 +27,13 @@ npm ci
 npm run build
 ```
 
-Open `dist/cowboys-vs-wizards-board-duel.html` in a desktop browser. Turns resolve immediately. Useful address endings:
+Open `dist/cowboys-vs-wizards-board-duel.html` in a desktop browser. **Play** opens the Showdown Camp. `?seed=N` fixes every deal started from the Camp. Any old lane address (`?mode=lanes`, `match`, `ride-out`, `practice-*`, `fire-arc`) opens the same Showdown menu.
 
-| Ending | Opens |
-| --- | --- |
-| none | Showdown. **Play** opens the first duel, Boot Hill; `?seed=N` fixes the deal. |
-| `?mode=lanes` | The earlier lane duel's main menu. **How to Play → Start guided duel** is its best first match. |
-| `?mode=match&deck=starter&seed=690` | The guided deal without hints |
-| `?mode=fire-arc` | The Dragon Fire arc |
-| `?mode=practice-dynamiter`, `?mode=practice-tribute` | The two practice decisions |
-| `?mode=ride-out` | The Ride Out lesson |
+`npm run build -- --web` writes the same single file to `dist/web/index.html`, and `npm run build -- --hosted` writes the Pages copy there. `node prototypes/showdown/build.mjs` writes the full Showdown page to `dist/showdown.html`.
 
-`npm run build -- --web` writes the self-contained graybox to `dist/web/index.html`. `npm run build -- --hosted` writes the Pages copy to `dist/web/graybox/`, with the lane duel in a separate file that only the lane modes fetch. `node prototypes/showdown/build.mjs` writes the full Showdown page to `dist/showdown.html`.
+`npm run build:art` builds the earlier illustrated 3D duel and attack demo at the same path, `dist/cowboys-vs-wizards-board-duel.html`, replacing the graybox there. That build needs WebGL 2 and includes the models and card art. `npm run build:art -- --web` writes it with content-hashed assets to `dist/web/3d/`.
 
-`npm run build:art` builds the illustrated 3D duel and attack demo at the same path, `dist/cowboys-vs-wizards-board-duel.html`, replacing the graybox there. That build needs WebGL 2 and includes the models and card art. `npm run build:art -- --web` writes it with content-hashed assets to `dist/web/`. The Pages workflow publishes that build at `/`, the graybox at `/graybox/` and the full Showdown page at `/showdown/`.
+`node scripts/stage-pages.mjs` stages the whole site in `dist/web/` exactly as the Pages workflow does: the graybox at `/` and `/graybox/`, the Showdown page at `/showdown/` and the 3D build at `/3d/`. `node scripts/check-pages-tree.mjs --browser` serves that tree under `/cowboys-vs-wizards/` and checks it.
 
 ## How it is made
 
@@ -55,16 +45,23 @@ Three tools share the work, and each is credited for what it did.
 
 ## Verify
 
+Start with the normal Showdown Play path. Build once with `npm run build`; each browser check takes the built file.
+
 | What you need | Command |
 | --- | --- |
-| Illustrated title screen, settings, custom deck and pause/resume in Chrome | `node scripts/browser-menu-check.mjs http://127.0.0.1:PORT/?seed=0` (serve the illustrated web build) |
-| Game, presenter and asset tests | `node scripts/verify-duel.mjs` |
-| The same tests by their npm name, as run on every pull request | `npm test` |
-| The same tests, a fresh illustrated build and an eight-step Chrome replay | `node scripts/verify-duel.mjs --browser` |
-| Title menu, match start, WebGL 2 and one summon in WebKit, the Safari engine | `npx -y -p playwright-core@1.64.1 node scripts/browser-webkit-smoke.mjs http://127.0.0.1:PORT/` (serve `dist/web/` first; once: `npx -y playwright-core@1.64.1 install webkit`) |
-| Attack demo geometry, grip and event order | `npm run check` |
-| Which commit the live site is (after a Pages deploy) | `curl https://alejandro-publius.github.io/cowboys-vs-wizards/build.json`; CI compares it and the live `index.html` digest with the built release ([evidence](docs/evidence/kiro-build-identity.md)) |
-| A seeded rules trace | `node scripts/play-match.mjs --seed 60` |
+| Play opens the Camp; Boot Hill won with clicks; seat privacy; every retired lane address opens Showdown | `node scripts/browser-showdown-check.mjs dist/cowboys-vs-wizards-board-duel.html` |
+| Camp modes: rivals, Wanted, packs, deck builder and side deck, best of three, two players, save code, Start over | `node scripts/browser-showdown-modes-check.mjs dist/cowboys-vs-wizards-board-duel.html` |
+| Trail duels paid and kept after reload; lane keepsakes shown, not carried | `node scripts/browser-showdown-trail-check.mjs dist/cowboys-vs-wizards-board-duel.html` |
+| Keyboard-only and mouse play | `node scripts/browser-showdown-keyboard-check.mjs dist/cowboys-vs-wizards-board-duel.html` |
+| Combat cues | `node scripts/browser-showdown-cues-check.mjs dist/cowboys-vs-wizards-board-duel.html` |
+| Game, presenter and asset tests, as run on every pull request | `npm test` (the same as `node scripts/verify-duel.mjs`) |
+| The staged Pages site, as CI checks it (add `--browser` for Chrome, including `/3d/` model loading) | `node scripts/stage-pages.mjs --commit <sha>`, then `node scripts/check-pages-tree.mjs --commit <sha>` |
+| Which commit the live site is (after a Pages deploy) | `curl https://alejandro-publius.github.io/cowboys-vs-wizards/build.json`; CI compares it and the live `index.html` digest, also at `/graybox/`, with the built release ([evidence](docs/evidence/kiro-build-identity.md)) |
+| Earlier 3D build: the tests, a fresh illustrated build and an eight-step Chrome replay | `node scripts/verify-duel.mjs --browser` |
+| Earlier 3D build: attack demo geometry, grip and event order | `npm run check` |
+| A seeded lane rules trace | `node scripts/play-match.mjs --seed 60` |
+
+The older lane harnesses (`browser-menu-check`, `browser-webkit-smoke` and the other lane `scripts/browser-*.mjs`) drive only the earlier 3D build at `/3d/`; [docs/AGENT-ROUTER.md](docs/AGENT-ROUTER.md#earlier-illustrated-3d-build-lane-rules-3d) lists which ones are current and how to point them at it.
 
 The Chrome check on macOS writes the receipt and screenshots to `.artifacts/kiro/replay/` when invoked through `verify-duel.mjs`. The saved **orb-duel-replay** Workflow runs the same command. See the [Kiro write-up](docs/kiro-brag-sheet.md) for the Spec, hooks, tests, review Power and MCP evidence.
 
@@ -100,8 +97,9 @@ For ongoing balance review, the separate [Night Watch Kiro Crew app](https://git
 | `src/match/` | Selection, controller, scheduler and event playback |
 | `src/render/` | Three.js scene, rigs, orbs and combat cues |
 | `src/ui/` | Illustrated hand, interactive overlay and menus |
-| `src/graybox.js` | Graybox entry point and instant cues |
-| `src/main.js` | Illustrated game boot, mode switching and frame loop |
+| `src/app.js` | Graybox entry point: the Showdown title, Camp, deck builder and duel screens |
+| `src/game/showdown/` | Showdown rules, cards, screen contract, progress and save codes |
+| `src/main.js` | Earlier illustrated 3D build: boot, mode switching and frame loop (lane rules) |
 | `assets/` | Optimized Tripo models, card illustrations and media |
 | `scripts/`, `tests/` | Build, replay, simulation and verification |
 | `.kiro/`, `docs/` | Workspace guidance, requirements, research and evidence |

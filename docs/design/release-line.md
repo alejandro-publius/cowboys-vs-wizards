@@ -4,25 +4,32 @@ Fable 5.2, Wednesday November 18, 2026, Pacific. Based on Alex's four decisions 
 
 **Updated Thursday November 19** after Alex played Showdown and chose it for the December 4 entry, and after pull requests 139 to 145 merged.
 
-## Current handoff, November 19, 10:15 p.m. PT
+## Current status, November 20 (supersedes the November 19, 10:15 p.m. handoff)
 
-Added by Kiro (Kiro CLI) from GitHub at `main` `046dbae`. It records state and quotes Fable's decisions; it makes none. Fable's text below is unchanged and reads as of its own date, so where it differs, this section and the latest Fable comment on [issue 143](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143) are current.
+Added by Kiro (Kiro CLI, coordinator job `graywave-assemble`) from GitHub `main` `4d52642`, the merge of pull request 148. It records state and quotes Fable's decisions; it makes none. Fable's text further down is unchanged and reads as of its own date. Where it differs, this section and the latest Fable comment on [issue 143](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143) are current. The 10:15 p.m. handoff that stood here is replaced: slice 2 (148) has merged, and slice 3 is built and in review.
 
-**Target.** Showdown is the December 4 fight and the game being built.
+**Target.** Showdown is the December 4 fight and the game being built. It is the only game in the graybox.
 
 **Milestones.**
 
 | State | What |
 | --- | --- |
-| Merged to `main` | Slice 1 and Kiro's fixes (144), one 29-card catalog (145), combat cues (146), the Showdown-first brief (147), slice 2 spec (149), fair Scout bot (150), Night Watch Showdown mode (151), docs (152, 155), Kiro profile and hook mode (153), seven generated engine properties (154), keyboard focus (156), hosted graybox no longer downloads the lane duel (157) |
-| In review | Slice 2, Trail and Camp in the game: [pull request 148](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/148). An assigned worker owns it. At 10:15 p.m. GitHub reported it as conflicting with `main`. The coordinator merges. |
-| Queued | Slice 3, which starts once 148 is merged: the rest of Showdown in the game, lane play out of the graybox, Showdown as the site's front page |
+| Merged to `main` | Pull requests 144 to 158, including slice 1 (144), the 29-card catalog (145), slice 2's Trail and Camp (148) and the hosted graybox bootstrap (157) |
+| In review | Slice 3 on one release-candidate branch, `kiro/graywave-assemble`, in one combined pull request linked from issue 143. It contains the Camp modes (pull request 159, which it supersedes), the lane retirement as its own commit, the site layout, and the graybox CSS and old-harness cleanup. The coordinator merges after review. |
+| Pending, human | Three first-time playtests (below). Fable's approval of first-draft wording: the Camp and mode labels, and the `/3d/` label. |
 
-**Keepsakes** (Fable on [pull request 148](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/148#issuecomment-7031816529)): "A card captured in the lane game does not enter the Showdown collection, before the Trail ends or after it. It stays in the separate record and shows in the Camp as a keepsake." Each Showdown bounty pays its Legendary to every player. "**Nothing from the lane game carries into Showdown progress.**" Start over resets Showdown progress only, and keepsakes stay out of save codes.
+**Site layout after slice 3** (built by `node scripts/stage-pages.mjs`, checked by `node scripts/check-pages-tree.mjs`):
 
-**Lane route retirement** (Fable on [issue 143](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143#issuecomment-7031863563)): slice 3 no longer waits for the playtest. It removes the "Lane duel (previous rules)" entry, every `?mode=` that opens lane play and the lane-only screens. Done when no lane play is reachable from the graybox game by menu or URL. Until then `?mode=lanes` still works.
+| Path | What |
+| --- | --- |
+| `/` | The graybox game. Play opens the Showdown Camp. |
+| `/graybox/` | The same file, for existing links |
+| `/showdown/` | The Showdown reference page |
+| `/3d/` | The earlier illustrated 3D build on the lane rules, labelled as the earlier build. It holds the models, board and motion. |
 
-**The 3D exception.** The illustrated 3D page (`src/main.js`, now at `/`) runs on the lane rules, and it is the only place the models, board and motion live. Fable: "Keep exactly what the 3D page imports, and its tests, until the 3D board is driven by Showdown." Slice 3 moves it to its own path, labelled as the earlier build, and makes Showdown the front page ([comment](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143#issuecomment-7031817176)).
+**Lane play.** No lane play is reachable from the graybox, by menu or URL. An old `?mode=` address opens the Showdown menu. The lane rules stay only where the 3D page (`src/main.js`) imports them, as Fable ruled on [issue 143](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143#issuecomment-7031863563). Lane evidence and specs stay as history.
+
+**Keepsakes** (Fable on [pull request 148](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/148#issuecomment-7031816529)): "**Nothing from the lane game carries into Showdown progress.**" A lane capture shows in the Camp as a keepsake and is not equippable. Start over resets Showdown progress only, and keepsakes stay out of save codes.
 
 **Where future decisions appear.** Fable posts game decisions as comments on [issue 143](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143), or on the pull request they concern. Agents read the latest Fable comment there before starting Showdown work.
 
@@ -30,7 +37,7 @@ Added by Kiro (Kiro CLI) from GitHub at `main` `046dbae`. It records state and q
 
 **Held drafts.** [Pull request 10](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/10) (Wizard Firebolt and burning reaction) is held because its release gate is unmet: it needs approved Firebolt card art, a clip chosen by Alex, rendered frame review and seed 0 and 60 replays. [Pull request 53](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/53) (Billy's sourced pistol idle) is held because review found the supporting hand misses the grip. Both are 3D lane-build work and stay drafts.
 
-**Human playtests.** No first-time player has played Showdown or the lane duel. Alex's own play chose the fight but does not count. The three first-time tests in [the playtest guide](../../prototypes/showdown/PLAYTEST.md) are still pending, and they now tune the fight rather than decide it.
+**Human playtests (the remaining gate).** No first-time player has played Showdown or the lane duel. Alex's own play chose the fight but does not count. The three first-time tests in [the playtest guide](../../prototypes/showdown/PLAYTEST.md) are still pending. Bot and browser checks support flow, storage and privacy claims only, not clarity or fun.
 
 This file is the one place that says what is in the game, what is waiting, and what is out. If something is not listed under "In the game", it is not in the submission.
 
@@ -46,7 +53,7 @@ Alex played the lane duel that night and found it was not fun: strong troops did
 
 - Its engine is in the game (`src/game/showdown/`, pull request 144). Play in the graybox opens its first duel, Boot Hill.
 - The Trail, rivals, bounties, packs and the deck builder are still only on the [Showdown page](../../prototypes/showdown/README.md). Moving the Trail in is slice 2 of the [integration brief](showdown-integration-kiro-brief.md).
-- The lane duel stays reachable at `?mode=lanes` until slice 3 retires it. No new lane content is written.
+- The lane duel stays reachable at `?mode=lanes` until slice 3 retires it. No new lane content is written. *(Kiro, November 20: slice 3 retires it; see Current status above.)*
 
 ## Three finish lines, in order
 
@@ -96,7 +103,7 @@ The graybox is the playable entry, described honestly as the rules-first build. 
 | Trail of six duels, pick-of-two rewards, save | Showdown page; slice 2 moves it in | no |
 | Rivals, bounties, packs, deck builder with side deck, best of three, two players | Showdown page; slice 3 | no |
 
-### Lane duel (at `?mode=lanes` until slice 3)
+### Lane duel (at `?mode=lanes` until slice 3; slice 3 retires it from the graybox, and the earlier 3D build at `/3d/` keeps its own lane build)
 
 | Piece | From | Seen by a person |
 | --- | --- | --- |

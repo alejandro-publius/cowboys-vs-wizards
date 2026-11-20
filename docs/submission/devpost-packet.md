@@ -122,7 +122,8 @@ An animation can look convincing and still misrepresent a simultaneous attack. P
 [Narration and shot list](judge-demo-script.md): planned 2:40, 325 spoken words, timed segments, each shot marked EXISTS or NEEDED. Narration and Kiro UI footage are not recorded yet. The rules forbid third-party trademarks in the video; see the [rules check](rules-check.md#risks-to-settle-before-submitting).
 
 ## URLs
-- Game: https://alejandro-publius.github.io/cowboys-vs-wizards/
+- Game: https://alejandro-publius.github.io/cowboys-vs-wizards/ (after issue 143 slice 3 is deployed: the graybox Showdown game; Play opens the Camp. Current state: [release line](../design/release-line.md))
+- Earlier illustrated 3D build (lane rules, models and motion): https://alejandro-publius.github.io/cowboys-vs-wizards/3d/
 - Source: https://github.com/alejandro-publius/cowboys-vs-wizards
 - Kiro usage write-up: https://github.com/alejandro-publius/cowboys-vs-wizards/blob/main/docs/kiro-brag-sheet.md
 - Crew app: https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch

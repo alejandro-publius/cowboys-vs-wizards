@@ -115,3 +115,19 @@ test("rejects bad expectations and non-https remote URLs before any request", as
   await assert.rejects(verifyLive({ ...quiet, url: "https://example.test/", commit: COMMIT, htmlSha256: "x" }), /sha256/);
   await assert.rejects(verifyLive({ ...quiet, url: "http://example.test/", commit: COMMIT, htmlSha256: HTML_SHA }), /https/);
 });
+
+test("an alias must serve the same index.html bytes as the root", async () => {
+  const good = await serve({ "/site/build.json": manifestFor(COMMIT, HTML_SHA), "/site/index.html": HTML, "/site/graybox/index.html": HTML });
+  try {
+    await verifyLive({ ...quiet, url: good.url, commit: COMMIT, htmlSha256: HTML_SHA, aliases: ["graybox/"], attempts: 1 });
+    assert.ok(good.hits.some(hit => hit.path === "/site/graybox/index.html" && hit.query.startsWith("cb=")));
+  } finally { await good.close(); }
+  for (const [name, alias] of Object.entries({ "stale alias": HTML + "old", "missing alias": undefined })) {
+    const site = await serve({ "/site/build.json": manifestFor(COMMIT, HTML_SHA), "/site/index.html": HTML, "/site/graybox/index.html": alias });
+    try {
+      await assert.rejects(verifyLive({ ...quiet, url: site.url, commit: COMMIT, htmlSha256: HTML_SHA, aliases: ["graybox/"], attempts: 2 }), /after 2 attempts/, name);
+    } finally { await site.close(); }
+  }
+  for (const alias of ["graybox", "/graybox/", "../x/", "https://evil.test/", "a/./", "x/?q/"])
+    await assert.rejects(verifyLive({ ...quiet, url: "https://example.test/", commit: COMMIT, htmlSha256: HTML_SHA, aliases: [alias] }), /alias/, alias);
+});

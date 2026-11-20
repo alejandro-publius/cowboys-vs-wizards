@@ -2,7 +2,7 @@
 // (dist/cowboys-vs-wizards-board-duel.html). It speaks the DevTools protocol
 // over Node's built-in WebSocket, so it needs no extra dependency.
 //
-//   npm run build && node scripts/browser-match-check.mjs [--seed N] [--url URL] [--swiftshader] [--summary] [--out-dir PATH] [--showcase] [--escape]
+//   npm run build:art && node scripts/browser-match-check.mjs [--seed N] [--url URL] [--swiftshader] [--summary] [--out-dir PATH] [--showcase] [--escape]
 //
 // --escape checks only the Escape key against the selection (no full match)
 // and writes to .artifacts/fable-escape-cancel/browser/ unless --out-dir is given.
@@ -757,6 +757,8 @@ async function resourceBytes(url) {
   return Buffer.from(await response.arrayBuffer());
 }
 const pageBytes = servedUrl ? await resourceBytes(baseUrl) : await readFile(pagePath);
+// The offline path is shared with the graybox build (Showdown only since #143 slice 3); refuse it here.
+if (!pageBytes.includes('class="title-art"')) throw new Error("The page is not the illustrated build; run npm run build:art");
 const result = {
   date: new Date().toLocaleString("en-US", {timeZone: "America/Los_Angeles", timeZoneName: "short"}),
   commit: shell("git", ["rev-parse", "--short", "HEAD"]),

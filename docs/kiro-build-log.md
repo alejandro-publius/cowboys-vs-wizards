@@ -310,3 +310,21 @@ The next substantial Kiro task is #56, boundary generation, failure reduction an
 - **Change**: `tests/game/showdown-keepsake-compat.test.js` imports the 14 A1–A5 cases from the readiness harness (`cli-progression` `d2efc98`) with A1 flipped and the real loader `createCampaign`. It adds checks for the bounty paying a veteran and a new player identically, partial hunts and Frontier cards, the reference prototype's Start over, and save codes. A `test.todo` marks the slice 3 graybox Start over. Brief slice 2 done-when 2 reworded as Fable approved. FH-R7, design, tasks, the test map and the evidence README updated; earlier text kept and labelled as history. No rule, reward or Scout change.
 - **Verification**: the new file passes 18 tests with 1 todo. Mutation runs: dropping the keepsake join failed 9 tests, and adding captures to progress failed 11. `npm test` 574 pass, 0 fail, 1 todo before the main merge. Browser checks on final source are recorded in the PR 148 body.
 - **Remaining**: the graybox Start over and save code (slice 3). Wording approval is Fable's. Human playtests are pending.
+
+### 2026-11-19 — Issue 143 slice 3 Camp modes in the graybox (Kiro CLI, America/Los_Angeles, 23:05 PST)
+
+- **State**: committed on `kiro/graywave-modes` for a PR against `main`. Not merged; the coordinator merges.
+- **Performed in**: a Kiro CLI modes worker session (Claude Opus 5.5). Rulings: Fable, PR 148 issuecomment-7031816529 and issue 143 issuecomment-7031863563.
+- **Problem**: slice 3 asks for rivals, bounties, packs, the deck builder with a side deck, best of three and two players in the game's Camp. The graybox had only the Trail, and no save code or Start over.
+- **Change**: Camp, duel screen, a new builder and a pure best-of-three module are mounted on the canonical progress, session and save-code modules (`savecode.js` moved unchanged into `src/game/showdown/`). Two players draw from the active seat's view behind a curtain. Start over resets Showdown progress and the report only. No rule, reward, Scout, lane or 3D change.
+- **Verification**: `npm test` 606/606. New `scripts/browser-showdown-modes-check.mjs` 13/13. Existing graybox checks and the six reference-page checks all pass. Receipts: [evidence note](evidence/showdown-modes-143.md).
+- **Remaining**: the lane removal and the front page are separate slice 3 work. Wording is Fable's first draft. Human playtests are pending.
+
+### 2026-11-20 — Issue 143 slice 3 release candidate (Kiro CLI, America/Los_Angeles, 23:30 PST Nov 19 onward)
+
+- **State**: one combined branch `kiro/graywave-assemble` and one PR against `main`. Not merged; the coordinator merges after review. It supersedes PR #159 (Camp modes), which it contains.
+- **Performed in**: a Kiro CLI coordinator session (Claude Opus 5.5), merging the modes, retire, topology and cleanup worker branches. Rulings: Fable, PR 148 issuecomment-7031816529 and issue 143 issuecomment-7031863563.
+- **Problem**: slice 3's three parts (Camp modes, lane retirement, Showdown at the front page) were built on separate branches. The hosted build still had a lane-chunk path from #157, and the docs still said lane play was reachable from the graybox.
+- **Change**: `--no-ff` merges keep the removal commit `4ebbb16` separate. `src/app.js` conflict resolved to Showdown only with the full Camp. The hosted build has no lane-chunk path, and the staged-tree check asserts none. README, AGENTS.md, CLAUDE.md, the router, Kiro steering, the duel-presenter description, the judge guide and Devpost URLs, the release line (its Nov 19 handoff replaced) and the brief's status now name `/`, `/graybox/`, `/showdown/` and `/3d/`.
+- **Verification**: `npm test` 578/578; Showdown browser checks 22, 13, 16, 6 and 5 ok; staged Pages tree 8/8 with Chrome; `/3d/` menu and accessibility harnesses pass, replay 7 of 8 as on `main`. Receipts: [evidence note](evidence/showdown-slice3-release-candidate.md).
+- **Remaining**: three first-time human playtests; Fable's wording approval; the live Pages deploy after merge.

@@ -1,0 +1,306 @@
+{
+  "page": "graybox build over loopback HTTP",
+  "chrome": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "viewport": [
+    1440,
+    900
+  ],
+  "runs": {
+    "gated": {
+      "checks": [
+        {
+          "name": "New profile: rivals, Wanted, the even match and best of three are locked 'after the Trail'; two players is open",
+          "passed": true,
+          "detail": {
+            "The Stargazer": "The Stargazer\nAfter the Trail",
+            "The Imp": "The Imp\nAfter the Trail",
+            "The Bonewright": "The Bonewright\nAfter the Trail",
+            "The Graveyard Coven": "The Graveyard Coven\nAfter the Trail",
+            "The Lantern Wraith": "The Lantern Wraith\nAfter the Trail",
+            "The Graveyard Dragon": "The Graveyard Dragon\nAfter the Trail",
+            "The even match": "The even match (after the Trail)",
+            "Best of three, with your side deck": "Best of three, with your side deck"
+          }
+        },
+        {
+          "name": "Build deck lists only owned cards; Cancel returns to Camp and saves nothing",
+          "passed": true,
+          "detail": [
+            "cowboy-billy",
+            "cowboy-deadeye",
+            "cowboy-sheriff"
+          ]
+        }
+      ],
+      "clicks": 3,
+      "games": []
+    },
+    "packs": {
+      "checks": [
+        {
+          "name": "Post-Trail pack: opened from the Camp, cards equal progress.js openPack(), kept after a reload",
+          "passed": true,
+          "detail": [
+            "Mounted Billy",
+            "Deadeye",
+            "Bear Trap"
+          ]
+        }
+      ],
+      "clicks": 4,
+      "games": []
+    },
+    "builder": {
+      "checks": [
+        {
+          "name": "A deck one card short is refused with its reason; Save is disabled",
+          "passed": true,
+          "detail": "Deck 15 of 16 · side deck 1 of 4. A deck is exactly 16 cards; this one has 15."
+        },
+        {
+          "name": "A legal deck and side deck are saved, listed in the Camp ('Side deck: Sheriff ×1') and kept after a reload",
+          "passed": true,
+          "detail": {
+            "deck": {
+              "cowboy-sheriff": 2,
+              "cowboy-billy": 3,
+              "cowboy-deadeye": 1,
+              "cowboy-covered-wagon": 2,
+              "cowboy-outrider": 2,
+              "cowboy-ranger": 1,
+              "cowboy-lasso": 1,
+              "cowboy-dynamiter": 1,
+              "cowboy-bear-trap": 1,
+              "cowboy-mounted-billy": 1,
+              "cowboy-gatling-crew": 1
+            },
+            "side": {
+              "cowboy-sheriff": 1
+            },
+            "limitOf": [
+              "cowboy-deadeye",
+              "3"
+            ]
+          }
+        }
+      ],
+      "clicks": 7,
+      "games": []
+    },
+    "rival": {
+      "checks": [
+        {
+          "name": "After the Trail: The Stargazer is open and The Imp waits for her",
+          "passed": true,
+          "detail": "The Imp\nBeat the rival before"
+        },
+        {
+          "name": "The Stargazer won by clicks (seed 0, 1 game(s)); pays Six-Shooter and a pack; The Imp opens; rematch offered",
+          "passed": true,
+          "detail": {
+            "seed": 0,
+            "results": [
+              true
+            ],
+            "took": "cowboy-mounted-billy"
+          }
+        }
+      ],
+      "clicks": 50,
+      "games": [
+        {
+          "status": "You win: the Wizard Base fell.",
+          "turns": 10,
+          "curtains": 0,
+          "handsSeen": {
+            "cowboy": 4,
+            "wizard": 0
+          },
+          "opened": "cowboy",
+          "won": true
+        }
+      ]
+    },
+    "bounty": {
+      "checks": [
+        {
+          "name": "Wanted: The Lantern Wraith hunt 1 won (seed 0), repeated from the result as hunt 2 and won; stored hunts 2 after a reload",
+          "passed": true,
+          "detail": {
+            "first": [
+              true
+            ],
+            "second": [
+              true
+            ]
+          }
+        },
+        {
+          "name": "The fifth The Lantern Wraith hunt (seed 0) captures Captured Wraith; the tile reads Captured; no repeat",
+          "passed": true,
+          "detail": [
+            true
+          ]
+        }
+      ],
+      "clicks": 175,
+      "games": [
+        {
+          "status": "You win: the Wizard Base fell.",
+          "turns": 11,
+          "curtains": 0,
+          "handsSeen": {
+            "cowboy": 4,
+            "wizard": 0
+          },
+          "opened": "cowboy",
+          "won": true
+        },
+        {
+          "status": "You win: the Wizard Base fell.",
+          "turns": 11,
+          "curtains": 0,
+          "handsSeen": {
+            "cowboy": 4,
+            "wizard": 0
+          },
+          "opened": "cowboy",
+          "won": true
+        },
+        {
+          "status": "You win: the Wizard Base fell.",
+          "turns": 11,
+          "curtains": 0,
+          "handsSeen": {
+            "cowboy": 4,
+            "wizard": 0
+          },
+          "opened": "cowboy",
+          "won": true
+        }
+      ]
+    },
+    "bo3": {
+      "checks": [
+        {
+          "name": "Best of three with a side deck (?seed=4): WW; 1 swap(s); loser opens; nothing saved between games; settled once",
+          "passed": true,
+          "detail": {
+            "games": [
+              {
+                "won": true,
+                "opened": "cowboy",
+                "turns": 8
+              },
+              {
+                "won": true,
+                "opened": "wizard",
+                "turns": 8
+              }
+            ],
+            "openWins": 1
+          }
+        }
+      ],
+      "clicks": 119,
+      "games": [
+        {
+          "status": "You win: the Wizard Base fell. · game 1 of 3 · you 1, Wizards 0",
+          "turns": 8,
+          "curtains": 0,
+          "handsSeen": {
+            "cowboy": 4,
+            "wizard": 0
+          },
+          "opened": "cowboy",
+          "won": true
+        },
+        {
+          "status": "You win: the Wizard Base fell. · game 2 of 3 · you 2, Wizards 0",
+          "turns": 8,
+          "curtains": 0,
+          "handsSeen": {
+            "cowboy": 6,
+            "wizard": 0
+          },
+          "opened": "wizard",
+          "won": true
+        }
+      ]
+    },
+    "hotseat": {
+      "checks": [
+        {
+          "name": "Two players best of three (?seed=3): curtain every hand-over with nothing private in the page; each seat saw only its own hand; 2-0; storage unchanged",
+          "passed": true,
+          "detail": [
+            {
+              "won": "cowboy",
+              "opened": "cowboy",
+              "turns": 10,
+              "curtains": 11
+            },
+            {
+              "won": "cowboy",
+              "opened": "wizard",
+              "turns": 17,
+              "curtains": 18
+            }
+          ]
+        }
+      ],
+      "clicks": 165,
+      "games": [
+        {
+          "status": "The Cowboys win: the Wizard Base fell. · game 1 of 3 · Cowboys 1, Wizards 0",
+          "turns": 10,
+          "curtains": 11,
+          "handsSeen": {
+            "cowboy": 4,
+            "wizard": 6
+          },
+          "opened": "cowboy",
+          "won": "cowboy"
+        },
+        {
+          "status": "The Cowboys win: the Wizard Base fell. · game 2 of 3 · Cowboys 2, Wizards 0",
+          "turns": 17,
+          "curtains": 18,
+          "handsSeen": {
+            "cowboy": 6,
+            "wizard": 4
+          },
+          "opened": "wizard",
+          "won": "cowboy"
+        }
+      ]
+    },
+    "saves": {
+      "checks": [
+        {
+          "name": "Save code: preview, Cancel and a damaged code change nothing; Replace loads the pasted progress",
+          "passed": true,
+          "detail": {
+            "loaded": 2
+          }
+        },
+        {
+          "name": "Start over (confirm accepted) resets Showdown progress and the report only; cvw-player-v1 and the keepsake record unchanged; keepsake still shown",
+          "passed": true,
+          "detail": {
+            "keys": [
+              "cvw-player-v1",
+              "cvw-showdown-inherited-v1",
+              "cvw-showdown-playtest-v1",
+              "cvw-showdown-save-v2"
+            ]
+          }
+        }
+      ],
+      "clicks": 11,
+      "games": []
+    }
+  },
+  "errors": [],
+  "note": "Bot-driven browser acceptance of flow, privacy and storage. Human playtests are pending and are not simulated here."
+}

@@ -6,7 +6,6 @@
 // lanes in the brief are 1-based, slots here are 0-based.
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import { CARDS } from "../../src/game/cards.js";
 import { createMatch } from "../../src/game/state.js";
 import { applyAction } from "../../src/game/actions.js";
@@ -17,9 +16,7 @@ import { emptySelection, selectionOptions, selectionStep } from "../../src/match
 import { guideLine, guideProgress, OPENER_TIP } from "../../src/match/guide.js";
 
 const SEED = 690;
-const graybox = readFileSync(new URL("../../src/graybox.js", import.meta.url), "utf8");
-
-// The guided duel's engine options in src/graybox.js: starter deck, no Ride Out.
+// The guided duel's engine options (the retired graybox guided duel): starter deck, no Ride Out.
 const deal = () => createMatch(SEED, { rideOut: false });
 
 function wizardActs(state) {
@@ -77,15 +74,6 @@ function play(script) {
   }
   return state;
 }
-
-test("AC1: Start guided duel deals seed 690; seed links and ?seed= stay ordinary", () => {
-  assert.match(graybox, /const GUIDED_SEED = "690";/);
-  assert.match(graybox, /controller\.start\(guided \? GUIDED_SEED : params\.get\("seed"\) \?\? undefined\)/);
-  // The guided deal keeps the starter deck, Normal Wizard and no Ride Out.
-  assert.match(graybox, /const counts = guided \|\| requestedDeck === "starter" \? null/);
-  assert.match(graybox, /rideOut: !guided &&/);
-  assert.match(graybox, /\(guided(?: \|\| deal\?\.posse)? \? chooseAction : chosenCpu\)\(view\)/);
-});
 
 test("AC1: seed 690 first input: round 1, Wizard acted, Skeleton (3 orbs) in lane 1, hand Sheriff, Sheriff, Deadeye, Billy, opener tip", () => {
   const start = deal();

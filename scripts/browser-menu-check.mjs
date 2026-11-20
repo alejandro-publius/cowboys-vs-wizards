@@ -1,4 +1,7 @@
 // Real-browser title/menu checks using the same isolated Chrome protocol as browser-match-check.
+// Target: the earlier illustrated build (lane duel, 3D board), built by `npm run build:art -- --web`
+// and published at /3d/. The graybox build (`npm run build`) is Showdown only since #143 slice 3
+// and has none of the lane screens this script drives.
 import assert from "node:assert/strict";
 import {spawn} from "node:child_process";
 import {mkdtemp,rm,mkdir,writeFile} from "node:fs/promises";

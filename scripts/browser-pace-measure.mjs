@@ -2,8 +2,14 @@
 // dependency: DevTools protocol over Node's built-in WebSocket, and a
 // loopback-only static server for the built web page. No src/ change.
 //
-//   npm run build -- --web && node scripts/browser-pace-measure.mjs [--seeds 0,60] [--samples 3] [--turns 2]
+//   npm run build:art -- --web && node scripts/browser-pace-measure.mjs [--seeds 0,60] [--samples 3] [--turns 2]
 //     [--modes default,fast] [--route passive|clash] [--dir dist/web] [--out FILE.json] [--swiftshader]
+//
+// Target: the earlier illustrated build (lane duel, 3D board), built by `npm run build:art -- --web`
+// and published at /3d/. The graybox build (`npm run build`) is Showdown only since #143 slice 3
+// and has none of the lane screens this script drives.
+// --dir defaults to dist/web/3d when it holds a page (the Pages layout), else dist/web; a graybox
+// page there is refused before Chrome starts.
 //
 // For each sample, seed and mode it opens a fresh Chrome with a temporary
 // profile on ?mode=match&deck=starter&seed=N[&pace=fast] and, on each of the
@@ -43,6 +49,7 @@
 import {spawn} from "node:child_process";
 import {createHash} from "node:crypto";
 import {createServer} from "node:http";
+import {existsSync} from "node:fs";
 import {mkdtemp, readFile, rm, stat, writeFile} from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -71,7 +78,7 @@ export function parseArgs(argv) {
   const route = opt("--route", "passive");
   if (!ROUTES.has(route)) throw new Error(`--route accepts passive and clash, got ${route}`);
   return {seeds, modes, route, samples: int("--samples", 3, 20), turns: int("--turns", 2, 10),
-    dir: path.resolve(root, opt("--dir", "dist/web")), out: opt("--out", null), swiftshader: argv.includes("--swiftshader")};
+    dir: path.resolve(root, opt("--dir", existsSync(path.join(root, "dist/web/3d/index.html")) ? "dist/web/3d" : "dist/web")), out: opt("--out", null), swiftshader: argv.includes("--swiftshader")};
 }
 
 // The page query for one run. Default mode adds no pace parameter at all.
@@ -387,7 +394,9 @@ export function markdown(rec) {
 
 async function main() {
   const cfg = parseArgs(process.argv.slice(2));
-  const html = createHash("sha256").update(await readFile(path.join(cfg.dir, "index.html"))).digest("hex");
+  const page = await readFile(path.join(cfg.dir, "index.html"));
+  if (!page.includes('class="title-art"')) throw new Error(`${path.join(cfg.dir, "index.html")} is not the illustrated build; run npm run build:art -- --web`);
+  const html = createHash("sha256").update(page).digest("hex");
   const server = await serve(cfg.dir);
   const runs = [];
   try {

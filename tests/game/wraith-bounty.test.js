@@ -11,7 +11,6 @@ import {DEFAULT_COUNTS, deckIds, validateDeck} from "../../src/game/deck-builder
 import {legalActions} from "../../src/game/legal.js";
 import {createMatch} from "../../src/game/state.js";
 import {publicState} from "../../src/game/view.js";
-import {clashForecast} from "../../src/match/clash-forecast.js";
 import {createProfileStore} from "../../src/profile/player-profile.js";
 import {cardModel} from "../../src/ui/card-model.js";
 import {label, playPlan, winningPlans} from "../helpers/hunt-solver.js";
@@ -96,7 +95,7 @@ test("each Wraith board has the documented one-clash solution and a different se
   assert.equal(answers.size, 5, "no two boards share the same winning first turns");
 });
 
-test("the lane mark, the clash preview and the clash all follow one pending drift", () => {
+test("the lane mark and the clash follow one pending drift", () => {
   for (const hunt of WRAITH_HUNTS) {
     // Every legal first action, then the end of the turn: the telegraph must match what happens.
     const start = createHunt(hunt);
@@ -110,17 +109,11 @@ test("the lane mark, the clash preview and the clash all follow one pending drif
       assert.equal(marked.length, 1, `${hunt.id} ${first ? label(first) : "hold"}: one mark`);
       assert.equal(marked[0].lane, hunt.markLane);
       assert.equal(marked[0].mark, plan ? "drift" : "blocked");
-      const forecast = clashForecast(view, {step: "idle", playableCardIds: [], canRideOut: false});
-      assert.equal(forecast.timing.includes("drifts"), Boolean(plan), `${hunt.id} ${first ? label(first) : "hold"}: preview`);
       state = endTurn(state);
       assert.ok(state.ok);
       const wizardEnd = endTurn(state.state);
       const drift = wizardEnd.events.find((event) => event.type === "ride-out");
       assert.deepEqual(drift ? {slot: drift.slot, destination: drift.destination, side: drift.side} : null, plan && {...plan, side: "wizard"});
-      // The preview's Base numbers are the clash's.
-      const after = wizardEnd.state.sides;
-      assert.ok(forecast.bases.startsWith(`Your Base ${view.sides.cowboy.baseOrbs} → ${after.cowboy.baseOrbs}`), `${hunt.id} ${first ? label(first) : "hold"}: ${forecast.bases}`);
-      assert.ok(forecast.bases.includes(`Enemy Base ${view.sides.wizard.baseOrbs} → ${after.wizard.baseOrbs}`));
       // No second move and no mark after the first clash.
       if (!wizardEnd.state.result) {
         assert.equal(pendingDrift(wizardEnd.state), null);

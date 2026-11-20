@@ -9,9 +9,9 @@ Fable 5.2, November 18, 2026. This hands the Showdown engine to Kiro for integra
 - Fable owns the rules, the progression numbers and the contract below. Kiro owns integration, the screens, the card pipeline, the presenter, the property tests and the checks.
 - Showdown is the fight in the December 4 entry. Alex played it on November 19 and chose it over the lane duel. The [playtest](../../prototypes/showdown/PLAYTEST.md) now tunes the fight; it no longer decides whether it ships.
 
-## Status on November 19
+## Status on November 20
 
-Slice 1 and the card pipeline are merged (pull requests 144 and 145): the engine is in `src/game/showdown/`, the graybox's Play opens Boot Hill, and the lane duel is at `?mode=lanes`. Next, in this order: the Scout fix below, then slice 2. The three jobs under [Kiro's own tools, pointed at Showdown](#kiros-own-tools-pointed-at-showdown) can run beside slice 2.
+*Kiro (Kiro CLI), November 20. This replaces the November 19 status, which read: slice 1 merged, the lane duel at `?mode=lanes`, the Scout fix and slice 2 next.* Slices 1 and 2 are merged (pull requests 144 and 148), and so is the Scout fix (150). Slice 3 is built on the release-candidate branch `kiro/graywave-assemble`, in one combined pull request linked from issue 143. Paths, ownership and checks are in the [release line](release-line.md#current-status-november-20-supersedes-the-november-19-1015-pm-handoff) and [`docs/AGENT-ROUTER.md`](../AGENT-ROUTER.md). The remaining gate is human: the three first-time playtests, and Fable's approval of the first-draft wording.
 
 ## What is not decided
 
@@ -59,7 +59,11 @@ Each slice ends in something a person can open and something a test proves. Do n
 
 ### 3. The rest, and retiring the lanes
 
-Rivals, bounties, packs, the deck builder with a side deck, best of three and two players are already in the reference screen; integrate them as one slice after the playtest result. In the same slice, each lane feature is replaced or dropped:
+Fable 5.2, November 19 ([issue 143](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143#issuecomment-7031863563)): Alex asked for the lane duel to come out of the game, so slice 3 no longer waits for the playtest. It can start as soon as slice 2 (#148) is merged. In this order:
+
+1. Move the rest of Showdown into the game: rivals, bounties, packs, the deck builder with a side deck, best of three, two players.
+2. Take the lane duel out of the graybox game: the "Lane duel (previous rules)" entry, every `?mode=` that opens lane play, and the lane-only screens (practice, fire arc, ride out, guided duel). The table below says what replaces each.
+3. Make the Showdown game the site's front page.
 
 | Lane feature | In Showdown |
 | --- | --- |
@@ -71,7 +75,16 @@ Rivals, bounties, packs, the deck builder with a side deck, best of three and tw
 | Guided first duel | Trail duel 1 and its one-line lesson |
 | Practice decisions, lane previews, clash forecast | Dropped; the attack preview on each target replaces them |
 
-**Done when** the lane engine and its tests are removed in one pull request that changes no Showdown file, and `npm test` still passes.
+The lane engine and its tests are not removed outright yet. The 3D page (`src/main.js`) runs on the lane rules (`src/game/state.js`, `cpu.js`, `src/match/`), and it is the only place the models, board and motion live. Keep exactly what the 3D page imports, and its tests, until the 3D board is driven by Showdown. Delete the rest.
+
+**Done when**
+
+1. No lane play is reachable from the graybox game, by menu or by URL.
+2. The pull request lists the lane files that remain and names the 3D page import that keeps each one.
+3. The 3D page still builds and loads at its own path, labelled as the earlier build.
+4. `npm test` passes, and no file under `src/game/showdown/` changes in the removal commit.
+
+Kiro's lane evidence and specs stay untouched as history.
 
 ## The card pipeline
 
