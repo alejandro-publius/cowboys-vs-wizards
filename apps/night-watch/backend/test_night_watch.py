@@ -105,6 +105,74 @@ class NightWatchTests(unittest.TestCase):
         })
 
 
+class ShowdownModeTests(unittest.TestCase):
+    """Showdown mode: each deal played twice with the first seat swapped (prototypes/showdown/sim.mjs)."""
+
+    def test_config_accepts_only_known_modes_and_keeps_lanes_default(self):
+        repo = str(Path(__file__).resolve().parents[3])
+        self.assertEqual(balance.DEFAULT_CONFIG["mode"], "lanes")
+        self.assertEqual(balance.validate_config({"repo": repo, "mode": "showdown"})["mode"], "showdown")
+        with self.assertRaises(balance.ConfigError):
+            balance.validate_config({"repo": repo, "mode": "trail"})
+
+    def test_parse_requires_both_seats_for_every_deal(self):
+        config = {"firstSeed": 0, "count": 2, "mode": "showdown"}
+        good = {"mode": "showdown", "seeds": {"from": 0, "to": 1, "deals": 2},
+                "games": 4, "cowboy": 3, "wizard": 1, "draw": 0, "first": 2, "second": 2}
+        self.assertEqual(balance.parse_showdown(good, config)["games"], 4)
+        for change in ({"games": 2, "cowboy": 1, "wizard": 1}, {"first": 3}, {"seeds": {"from": 1, "to": 2, "deals": 2}}):
+            with self.subTest(change=change):
+                with self.assertRaises(balance.CheckError):
+                    balance.parse_showdown({**good, **change}, config)
+
+    def test_judge_divides_showdown_shifts_by_games_not_deals(self):
+        config = {"count": 1000, "threshold": 10}
+        base = {"games": 2000, "cowboy": 1186, "wizard": 814, "draw": 0, "first": 1150, "second": 850}
+        # +150 Cowboy wins is 7.5 pp of 2,000 games (it would be 15 pp of 1,000 deals).
+        cand = {**base, "cowboy": 1336, "wizard": 664}
+        self.assertEqual(balance.judge(config, base, cand)[0], "steady")
+        cand = {**base, "cowboy": 1386, "wizard": 614}
+        status, detail = balance.judge(config, base, cand)
+        self.assertEqual(status, "alert")
+        self.assertIn("Cowboy win share rose 10.0 pp.", detail)
+
+    def test_nightly_job_selects_showdown(self):
+        calls = []
+        with tempfile.TemporaryDirectory() as data, patch.dict(os.environ, {"NIGHT_WATCH_DATA_DIR": data}), \
+                patch.object(server.shutil, "which", return_value="/usr/bin/kirocrew"), \
+                patch.object(server, "load_config", return_value={"repo": "/tmp/x"}), \
+                patch.object(server.subprocess, "run", side_effect=lambda argv: calls.append(argv) or subprocess.CompletedProcess(argv, 0)):
+            self.assertEqual(server.main(["schedule", "--time", "02:00"]), 0)
+        command = calls[0][calls[0].index("--command") + 1]
+        self.assertTrue(command.endswith("run --scheduled --mode showdown"), command)
+
+    @unittest.skipUnless(shutil.which("node") and shutil.which("git"), "needs node and git")
+    def test_runner_plays_each_deal_from_both_seats_in_an_extracted_snapshot(self):
+        rules = (
+            "export function createShowdown(seed, {first}) { return {seed, first, turn: 0, result: null}; }\n"
+            "export function playTurn(state) {\n"
+            "  const winner = state.seed % 3 === 2 ? null : state.seed % 3 === 0 ? state.first : 'cowboy';\n"
+            "  return {state: {...state, turn: 1, result: {winner, reason: 'base'}}, events: []};\n"
+            "}\n"
+        )
+        with tempfile.TemporaryDirectory(prefix="night-watch-showdown-") as directory:
+            repo = os.path.join(directory, "repo")
+            for name, body in {"package.json": '{"type": "module"}', "src/game/engine.js": "",
+                               "prototypes/showdown/rules.js": rules}.items():
+                os.makedirs(os.path.dirname(os.path.join(repo, name)), exist_ok=True)
+                Path(repo, name).write_text(body)
+            git = ["git", "-C", repo, "-c", "user.name=t", "-c", "user.email=t@example.com"]
+            subprocess.run(["git", "init", "-q", repo], check=True)
+            subprocess.run(git + ["add", "-A"], check=True)
+            subprocess.run(git + ["commit", "-q", "-m", "fixture"], check=True)
+            commit = subprocess.run(git + ["rev-parse", "HEAD"], check=True, capture_output=True, text=True).stdout.strip()
+            snapshot = os.path.join(directory, "snapshot")
+            balance.extract_snapshot(repo, commit, snapshot, "showdown")
+            counts = balance.simulate(snapshot, balance.node_command(), {"firstSeed": 0, "count": 3, "mode": "showdown"})
+        # Seed 0: the first seat wins both games. Seed 1: Cowboys win both. Seed 2: two draws.
+        self.assertEqual(counts, {"games": 6, "cowboy": 3, "wizard": 1, "draw": 2, "first": 3, "second": 1})
+
+
 class HostGuardTests(unittest.TestCase):
     def request(self, port, host, path="/health", extra=None):
         conn = HTTPConnection("127.0.0.1", port, timeout=5)
