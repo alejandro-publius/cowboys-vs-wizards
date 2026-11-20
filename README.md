@@ -34,15 +34,16 @@ Open `dist/cowboys-vs-wizards-board-duel.html` in a desktop browser. Turns resol
 
 | Ending | Opens |
 | --- | --- |
-| none | The main menu. **How to Play → Start guided duel** is the best first match. |
+| none | Showdown. **Play** opens the first duel, Boot Hill; `?seed=N` fixes the deal. |
+| `?mode=lanes` | The earlier lane duel's main menu. **How to Play → Start guided duel** is its best first match. |
 | `?mode=match&deck=starter&seed=690` | The guided deal without hints |
 | `?mode=fire-arc` | The Dragon Fire arc |
 | `?mode=practice-dynamiter`, `?mode=practice-tribute` | The two practice decisions |
 | `?mode=ride-out` | The Ride Out lesson |
 
-`npm run build -- --web` writes the self-contained graybox to `dist/web/index.html`.
+`npm run build -- --web` writes the self-contained graybox to `dist/web/index.html`. `node prototypes/showdown/build.mjs` writes the full Showdown page to `dist/showdown.html`.
 
-`npm run build:art` builds the illustrated 3D duel and attack demo at the same path. That build needs WebGL 2 and includes the models and card art. `npm run build:art -- --web` writes it with content-hashed assets, and the Pages workflow publishes that build.
+`npm run build:art` builds the illustrated 3D duel and attack demo at the same path, `dist/cowboys-vs-wizards-board-duel.html`, replacing the graybox there. That build needs WebGL 2 and includes the models and card art. `npm run build:art -- --web` writes it with content-hashed assets to `dist/web/`. The Pages workflow publishes that build at `/`, the graybox at `/graybox/` and the full Showdown page at `/showdown/`.
 
 ## How it is made
 
