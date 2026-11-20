@@ -13,7 +13,7 @@ import {parseGlb} from "./glb.mjs";
 import {createTable, engineFingerprint, inspectShowdownReceipt, loadEngine} from "./showdown.mjs";
 import {RIDE_CASES, inspectRideDecision} from "./ride.mjs";
 
-const VERSION = "1.4.0";
+const VERSION = "1.5.0";
 
 // Project binding: with PLUGIN_DATA set, only PLUGIN_DATA/project.json (written by setup.mjs)
 // names the project. Never inferred. Without PLUGIN_DATA (workspace MCP), the source checkout.
@@ -212,7 +212,7 @@ async function showdownReceipt(id) {
 
 const RIDE_TOOL = {
   name: "inspect_ride_decision",
-  description: `Check a recorded Showdown Outrider ride decision (ride past enemy troops to the Base, or decline) against the bound game: game commit, decision code fingerprint, built page hash, replay URL if the game routes it, the Cowboy seat's public position, and whether ride advice is supported. Optional case: ${Object.keys(RIDE_CASES).join(", ")}.`,
+  description: `Check a recorded Showdown Outrider ride decision (ride past enemy troops to the Base, or decline) against the bound game: game commit and build label, semantic freshness by the game's own gate, built page identity, the Camp ?outrider= link only from a page built at this head, the Cowboy seat's public position, judge-only measured lines for both choices, and whether ride advice is supported (one example only). Optional case: ${Object.keys(RIDE_CASES).join(", ")}.`,
   inputSchema: {type: "object", properties: {case: {type: "string", enum: Object.keys(RIDE_CASES), default: Object.keys(RIDE_CASES)[0]}}, additionalProperties: false},
 };
 async function rideDecision(id) {

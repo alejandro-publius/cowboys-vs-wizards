@@ -10,6 +10,7 @@ import {existsSync, readFileSync, realpathSync, writeFileSync} from "node:fs";
 import {join} from "node:path";
 import {fileURLToPath, pathToFileURL} from "node:url";
 import {engineFingerprint} from "./showdown.mjs";
+import {inspectCampCase} from "./camp.mjs";
 
 const HERE = fileURLToPath(new URL("./", import.meta.url));
 // The decision's code closure: the experiment that derives it and the game's turn-route allowlist.
@@ -17,6 +18,7 @@ export const RIDE_ENTRIES = ["experiments/showdown-outrider/compare.js", "src/ma
 export const PAGE = "dist/cowboys-vs-wizards-board-duel.html";
 // Fixed case ids mapped to package files. Input never becomes a path.
 export const RIDE_CASES = {
+  "outrider-camp-case": "cases/outrider-camp-case.json",
   "outrider-ride-search": "cases/outrider-ride-search.json",
   "outrider-replay-infrastructure": "cases/outrider-replay-infrastructure.json",
 };
@@ -104,6 +106,14 @@ export async function inspectRideDecision(root, id, override) {
   let receipt = override;
   try { receipt ??= JSON.parse(readFileSync(join(HERE, RIDE_CASES[id]), "utf8")); } catch {
     return {...base, verdict: "absent", reasons: ["case receipt is absent or not JSON"], advice: {allowed: false, reasons: ["no case receipt"]}};
+  }
+  if (receipt.derive?.source === "gate") {
+    try {
+      return {...base, scope: receipt.scope, status: receipt.status ?? null, ...(await inspectCampCase(root, receipt, gitCommit))};
+    } catch (error) {
+      return {...base, verdict: "unavailable", reasons: [`the bound project cannot re-derive this case: ${error.message}`],
+        advice: {allowed: false, general: false, reasons: ["the bound project cannot re-derive this case"]}};
+    }
   }
   const game = gitCommit(root);
   const pageFile = join(root, PAGE);
