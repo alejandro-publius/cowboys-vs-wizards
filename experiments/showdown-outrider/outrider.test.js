@@ -4,7 +4,8 @@ import assert from "node:assert/strict";
 import {deckIds, tributes} from "../../src/game/showdown/cards.js";
 import {applyAction, createShowdown} from "../../src/game/showdown/rules.js";
 import {deckAfter} from "../../src/game/showdown/trail.js";
-import {RELABEL, TO_CONTROL, cardDiff, cowboyAct, cowboyView, deals, paired, play, rename, replay, setup, summarize} from "./compare.js";
+import {viewFor} from "../../src/game/showdown/contract.js";
+import {RELABEL, TO_CONTROL, VIEW_KEYS, cardDiff, cowboyAct, cowboyView, deals, paired, play, rename, replay, setup, summarize} from "./compare.js";
 
 const ctx = setup();
 const small = {from: 0, to: 99};
@@ -36,20 +37,62 @@ test("the control deal is the treatment deal with Outriders renamed in place", (
   }
 });
 
-test("the Cowboy policy reads public information only", () => {
-  for (let seed = 0; seed < 30; seed++) {
-    let state = deals(seed, ctx).treatment;
-    for (let i = 0; i < 40 && !state.result; i++) {
-      if (state.active === "cowboy") {
-        const scrambled = structuredClone(state);
-        scrambled.sides.wizard.hand = [...scrambled.sides.wizard.hand].reverse().map(() => "wizard-skeleton-9");
-        scrambled.sides.wizard.deck.reverse();
-        scrambled.sides.cowboy.deck.reverse();
-        assert.deepEqual(cowboyAct(cowboyView(scrambled)), cowboyAct(cowboyView(state)));
-        state = applyAction(state, cowboyAct(cowboyView(state))).state;
-      } else state = applyAction(state, {type: "end"}).state;
+// The Cowboy decision points of the first `games` treatment deals, under the primary Wizard.
+function cowboyPoints(games = 30) {
+  const points = [];
+  for (let seed = 0; seed < games; seed++) play(deals(seed, ctx).treatment, {stopAt: (_, state) => { points.push(state); return false; }});
+  return points;
+}
+
+test("the policy input has no seed and no hidden card: exactly viewFor plus empty hidden lists", () => {
+  const view = cowboyView(deals(7, ctx).treatment);
+  assert.equal("seed" in view, false);
+  assert.equal(view.seed, undefined);
+  assert.deepEqual(Object.keys(view).sort(), VIEW_KEYS.table);
+  assert.deepEqual(Object.keys(view.sides.cowboy).sort(), VIEW_KEYS.cowboy);
+  assert.deepEqual(Object.keys(view.sides.wizard).sort(), VIEW_KEYS.wizard);
+  for (const state of cowboyPoints()) {
+    const v = cowboyView(state);
+    const canonical = viewFor(state, "cowboy");
+    assert.equal("seed" in v, false);
+    assert.deepEqual(v.sides.cowboy.deck, []);
+    assert.deepEqual([v.sides.wizard.hand, v.sides.wizard.deck, v.sides.wizard.traps], [[], [], []]);
+    // Apart from the four empty lists, the input is the engine's canonical view, field for field.
+    const {deck: _d, ...cowboy} = v.sides.cowboy;
+    const {hand: _h, deck: _e, traps: _t, ...wizard} = v.sides.wizard;
+    assert.deepEqual({...v, sides: {cowboy, wizard}}, canonical);
+    // No hidden Wizard card id appears anywhere in the input.
+    const text = JSON.stringify(v);
+    for (const id of [...state.sides.wizard.hand, ...state.sides.wizard.deck, ...state.sides.wizard.traps]) {
+      if (!state.sides.wizard.discard.includes(id) && !state.sides.wizard.board.some((t) => t?.cardId === id)) assert.equal(text.includes(`"${id}"`), false, id);
     }
   }
+});
+
+test("the Cowboy choice does not change when the seed or any hidden identity changes", () => {
+  const points = cowboyPoints();
+  assert.ok(points.length > 300);
+  for (const [i, state] of points.entries()) {
+    const choice = cowboyAct(cowboyView(state));
+    const varied = structuredClone(state);
+    varied.seed = state.seed + 1000 + i;
+    const pool = ["wizard-dragon-9", "wizard-imp-9", "wizard-hex-9", "wizard-hellfire-9"];
+    varied.sides.wizard.hand = varied.sides.wizard.hand.map((_, k) => pool[(i + k) % pool.length]);
+    varied.sides.wizard.deck = [...varied.sides.wizard.deck].reverse().map((_, k) => pool[(i + 2 * k) % pool.length]);
+    varied.sides.wizard.traps = varied.sides.wizard.traps.map(() => "wizard-hex-8");
+    varied.sides.cowboy.deck = [...varied.sides.cowboy.deck].reverse();
+    assert.deepEqual(cowboyAct(cowboyView(varied)), choice, `point ${i}, seed ${state.seed}`);
+    // The real deal's seed is never what the policy decides on.
+    const reseeded = {...structuredClone(state), seed: -1};
+    assert.deepEqual(cowboyAct(cowboyView(reseeded)), choice);
+  }
+});
+
+test("negative controls compare exact renamed histories, not card types", () => {
+  const relabel = (seed) => { const {control} = deals(seed, ctx); return [control, rename(control, RELABEL)]; };
+  // With the right map every game matches id for id; with no map the renamed copies show up as differences.
+  assert.equal(summarize(paired(relabel, {seeds: small, map: RELABEL})).identical, 100);
+  assert.ok(summarize(paired(relabel, {seeds: small})).identical < 100);
 });
 
 test("a Sheriff never gets a Base attack past troops; the paired run is deterministic", () => {
@@ -65,7 +108,7 @@ test("negative controls play identical games", () => {
   const same = (seed) => { const {control} = deals(seed, ctx); return [control, structuredClone(control)]; };
   const relabel = (seed) => { const {control} = deals(seed, ctx); return [control, rename(control, RELABEL)]; };
   assert.equal(summarize(paired(same, {seeds: small})).identical, 100);
-  assert.equal(summarize(paired(relabel, {seeds: small})).identical, 100);
+  assert.equal(summarize(paired(relabel, {seeds: small, map: RELABEL})).identical, 100);
 });
 
 test("the replay reaches a legal visible ride position", () => {
@@ -83,7 +126,7 @@ test("the replay reaches a legal visible ride position", () => {
 
 test("with rides never taken, the Outrider deck plays exactly like the Sheriff deck", () => {
   const both = (seed) => { const d = deals(seed, ctx); return [d.treatment, d.control]; };
-  const probe = summarize(paired(both, {seeds: small, noRide: true}));
+  const probe = summarize(paired(both, {seeds: small, noRide: true, map: TO_CONTROL}));
   assert.equal(probe.identical, 100);
   assert.equal(probe.points.taken, 0);
 });

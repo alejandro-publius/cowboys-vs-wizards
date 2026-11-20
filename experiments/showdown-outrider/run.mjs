@@ -19,10 +19,10 @@ if (args[0] === "--replay") {
     process.exitCode = seed === undefined ? 1 : 0;
   } else {
     const {view} = found;
-    console.log(`Seed ${found.seed}, The Bone Fence, two-win deck, turn ${view.turn} (Cowboys), after ${found.prefix.length} logged actions.`);
-    console.log(`Wizard Base ${view.sides.wizard.base}  board ${board(view.sides.wizard)}  hand ${view.hidden.wizardHand} cards  deck ${view.hidden.wizardDeck}`);
+    console.log(`Seed ${found.seed} (harness only; not in the policy input), The Bone Fence, two-win deck, turn ${view.turn} (Cowboys), after ${found.prefix.length} logged actions.`);
+    console.log(`Wizard Base ${view.sides.wizard.base}  board ${board(view.sides.wizard)}  hand ${view.sides.wizard.handCount} cards  deck ${view.sides.wizard.deckCount}`);
     console.log(`Cowboy Base ${view.sides.cowboy.base}  board ${board(view.sides.cowboy)}`);
-    console.log(`Cowboy hand ${view.sides.cowboy.hand.join(", ") || "(empty)"}  deck ${view.hidden.cowboyDeck}`);
+    console.log(`Cowboy hand ${view.sides.cowboy.hand.join(", ") || "(empty)"}  deck ${view.sides.cowboy.deckCount}`);
     console.log(`Ride offered: ${JSON.stringify(found.ride)}  legal: ${found.legal}  policy chose: ${JSON.stringify(found.chosen)}`);
     process.exitCode = found.legal ? 0 : 1;
   }
@@ -41,7 +41,7 @@ if (args[0] === "--replay") {
       "Primary (fixed-stream level-0 Wizard, public-info greedy Cowboy):",
       `  Cowboy wins  Outrider ${pct(p.winsA, p.pairs)}  Sheriff ${pct(p.winsB, p.pairs)}`,
       `  Paired results (Outrider/Sheriff): ${JSON.stringify(p.table)}`,
-      `  Discordant: Outrider-only wins ${p.discordant.aOnly}, Sheriff-only wins ${p.discordant.bOnly}; games identical apart from the name ${p.identical}; step cap ${p.stepCap}`,
+      `  Discordant: Outrider-only wins ${p.discordant.aOnly}, Sheriff-only wins ${p.discordant.bOnly}; games identical with Outrider ids renamed ${p.identical}; step cap ${p.stepCap}`,
       `  Mean final turn  Outrider ${p.meanTurns.a.toFixed(2)}  Sheriff ${p.meanTurns.b.toFixed(2)}`,
       `  Games: Outrider drawn ${pct(p.games.drawn, p.pairs)}; could attack into troops ${pct(p.games.riderReady, p.pairs)}; ride offered ${pct(p.games.offered, p.pairs)}; Guard blocked ${pct(p.games.guardBlocked, p.pairs)}; ride taken ${pct(p.games.taken, p.pairs)}`,
       `  Decision points: ${p.points.decisions}; Outrider could attack into troops ${p.points.riderReady}; ride offered ${pct(p.points.offered, p.points.riderReady)}; Guard blocked ${pct(p.points.guardBlocked, p.points.riderReady)}; ride taken ${pct(p.points.taken, p.points.offered)} of offers`,

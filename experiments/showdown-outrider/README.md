@@ -79,7 +79,8 @@ Primary arm (fixed-stream level-0 Wizard):
 | Mean final turn | 13.70 | 12.62 |
 
 Paired (Outrider/Sheriff): win/win 935, loss/win 50, loss/loss 15, win/loss 0. Every one
-of the 50 discordant pairs had a ride taken. Games played the same apart from the name: 443.
+of the 50 discordant pairs had a ride taken. Games identical id for id once the two Outrider
+ids are renamed to the Sheriff ids they replaced: 443.
 
 | Count | Games (of 1000) | Decision points |
 | --- | --- | --- |
@@ -97,7 +98,7 @@ Under this policy the whole outcome difference comes from the rides it takes.
 
 Secondary arm (shipped `playTurn(state, 0)` Wizard): Outrider 936/1000, Sheriff 989/1000;
 paired win/win 930, loss/win 59, win/loss 6, loss/loss 5. Its relabel control is identical
-in only 148/1000 games (wins 989 v 991), so hidden Cowboy copy ids move that bot. This is
+in only 130/1000 games (wins 989 v 991), so hidden Cowboy copy ids move that bot. This is
 why the primary arm uses a fixed stream.
 
 Replay (`--replay`): seed 0, turn 7, after 17 logged actions. Wizard Base 4 with one Wizard
@@ -111,3 +112,38 @@ card. Level 0 Wizards are the Trail's weakest opponent. Only The Bone Fence was 
 The TradeWizard X-044 `shadow-consensus.ts` file is not in this repo and was not read;
 "shadow" here means both arms play the same deal and are compared pair by pair. Whether to
 change the Outrider, the Trail reward or the lesson text is Fable's decision.
+
+## Correction: policy input boundary (2026-11-20 PST, same worker, same scope)
+
+An independent review found that the first `cowboyView` copied the whole state and kept
+`seed` (`cowboyView(deals(7).treatment).seed` was 7). The engine's `viewFor` leaves the seed
+out because the seed encodes both deals. The greedy policy never read the field, but the
+policy input broke the stated "public information only" rule.
+
+Fix: `cowboyView` now starts from `viewFor(state, "cowboy")`. It only adds empty `deck`
+(Cowboy) and `hand`/`deck`/`traps` (Wizard) lists, because `legalActions` and `applyAction`
+need them. Their sizes stay visible only as viewFor's public counts. No seed and no full state
+reach `cowboyAct`. The seed is still printed by `run.mjs` so a run can be reproduced. The
+harness uses it to deal and to drive the Wizard opponent, never as policy input.
+
+New tests in `outrider.test.js`:
+- the input has no `seed` and exactly the fields in `VIEW_KEYS`;
+- apart from the four empty lists it equals `viewFor` at every Cowboy decision point of
+  30 deals, and no hidden Wizard card id appears in it;
+- at all those points the choice is unchanged when the seed is changed or set to -1, the
+  Wizard hand, deck and trap ids are replaced, and the Cowboy deck is reversed;
+- negative controls match only on exact histories.
+
+Negative controls tightened: a pair is "identical" only when arm A's full action history,
+renamed with that arm's exact copy-id map (`TO_CONTROL` or `RELABEL`), equals arm B's history
+id for id, and A's renamed final state equals B's. Copies are no longer merged by card type.
+A test checks that the relabel control drops below 100% without the map.
+
+Rerun on seeds 0-999 after the fix, diffed against the run before it. Every win count,
+paired table, ride/Guard/drawn count and denominator is unchanged: 935 v 985; 50 discordant
+pairs, all with a ride; 561 offered; 411 blocked; 1258/1328 taken; 0 Sheriff rides past troops.
+Same-deck control 1000/1000, relabel control 1000/1000 and rides-off probe 1000/1000 also
+hold under the exact comparison, and the primary identical count stays 443. The only changes
+are in the secondary arm's identical counts under the stricter comparison: 51 to 46 for
+treatment vs control, and 148 to 130 for its relabel control. The replay is still seed 0,
+turn 7, legal, and seed 17 is still a null result.

@@ -1,8 +1,9 @@
 // Paired comparison: the two Outriders a two-win career holds vs the two Sheriffs they replaced,
 // on The Bone Fence. Pure: no DOM, storage or network. See README.md for the acceptance rules.
-import {TYPES, cardOf, has, typeOf} from "../../src/game/showdown/cards.js";
+import {TYPES, cardOf, has} from "../../src/game/showdown/cards.js";
 import {applyAction, attackOf, canAttack, createShowdown, legalActions, playTurn} from "../../src/game/showdown/rules.js";
 import {deckProblems, duelFor, newSave, settle} from "../../src/game/showdown/progress.js";
+import {viewFor} from "../../src/game/showdown/contract.js";
 
 export const SEEDS = Object.freeze({from: 0, to: 999});
 const OUTRIDER = "cowboy-outrider";
@@ -59,17 +60,26 @@ export function deals(seed, ctx = setup()) {
   return {treatment, control: rename(treatment, TO_CONTROL)};
 }
 
-// What the Cowboy player can see: the Wizard hand, deck and trap identities and its own deck order are removed.
+// What the Cowboy player can see, built from the engine's own viewFor(state, "cowboy"): no seed,
+// no Wizard hand, deck or trap identities, no deck order for either side. legalActions and
+// applyAction need full side records, so the hidden lists are filled with empty arrays only;
+// their sizes stay readable as the public counts viewFor gives (handCount, deckCount, trapCount).
 export function cowboyView(state) {
-  const view = structuredClone(state);
-  const wizard = view.sides.wizard;
-  view.hidden = {wizardHand: wizard.hand.length, wizardDeck: wizard.deck.length, wizardTraps: wizard.traps.length, cowboyDeck: view.sides.cowboy.deck.length};
+  const view = viewFor(state, "cowboy");
+  const {cowboy, wizard} = view.sides;
+  cowboy.deck = [];
   wizard.hand = [];
   wizard.deck = [];
   wizard.traps = [];
-  view.sides.cowboy.deck = [];
   return view;
 }
+
+// Every field the policy input may hold. A test fails if the view gains any other field.
+export const VIEW_KEYS = Object.freeze({
+  table: ["active", "arrivals", "attacking", "castUsed", "first", "location", "result", "setUsed", "sides", "summonUsed", "turn", "viewer"],
+  cowboy: ["base", "baseMax", "board", "deck", "deckCount", "discard", "hand", "handCount", "trapCount", "traps"],
+  wizard: ["base", "baseMax", "board", "deck", "deckCount", "discard", "hand", "handCount", "trapCount", "traps"],
+});
 
 const worth = (state, troop) => (troop ? 2 * attackOf(state, troop) + troop.health : 0);
 function score(state) {
@@ -160,17 +170,20 @@ export function play(start, {wizard = "fixed", stopAt, noRide = false} = {}) {
 }
 
 const outcome = (result) => result.winner ?? "draw";
-// A game's actions with copy ids reduced to card types, so two copies of one card compare equal,
-// and Outrider written as Sheriff, so "identical" means the same play apart from the card's name.
-const plain = (log) => JSON.stringify(log, (key, value) => (key === "cardId" ? typeOf(value).replace(OUTRIDER, SHERIFF) : value));
+const renameLog = (log, map) => JSON.stringify(log, (key, value) => (key === "cardId" && map[value] ? map[value] : value));
+const sameState = (a, b, map) => JSON.stringify(rename(a, map)) === JSON.stringify(b);
 
 // Runs two arms on every seed and pairs them. arms: (seed) => [stateA, stateB].
-export function paired(arms, {seeds = SEEDS, wizard = "fixed", noRide = false} = {}) {
+// map: the copy-id rename that turns arm A's deal into arm B's. A pair is identical only when A's
+// whole action history, with that exact rename, equals B's history id for id, and A's final state
+// renamed the same way equals B's final state. No copy is merged with another copy.
+export function paired(arms, {seeds = SEEDS, wizard = "fixed", noRide = false, map = {}} = {}) {
   const pairs = [];
   for (let seed = seeds.from; seed <= seeds.to; seed++) {
     const [a, b] = arms(seed).map((state) => play(state, {wizard, noRide}));
+    const identical = renameLog(a.log, map) === JSON.stringify(b.log) && sameState(a.state, b.state, map);
     pairs.push({seed, a: outcome(a.result), b: outcome(b.result), reasonA: a.result.reason, reasonB: b.result.reason,
-      turnsA: a.state.turn, turnsB: b.state.turn, identical: plain(a.log) === plain(b.log) && a.state.turn === b.state.turn, tally: a.tally, tallyB: b.tally});
+      turnsA: a.state.turn, turnsB: b.state.turn, identical, tally: a.tally, tallyB: b.tally});
   }
   return pairs;
 }
@@ -209,12 +222,12 @@ export function experiment({seeds = SEEDS} = {}) {
   return {
     seeds, treatment: ctx.treatment, control: ctx.control, duel: {name: ctx.duel.name, level: ctx.duel.level, ...ctx.duel.options},
     card: cardDiff(),
-    primary: summarize(paired(both, {seeds})),
+    primary: summarize(paired(both, {seeds, map: TO_CONTROL})),
     negativeSame: summarize(paired(same, {seeds})),
-    negativeRelabel: summarize(paired(relabel, {seeds})),
-    rideDeclined: summarize(paired(both, {seeds, noRide: true})),
-    shipped: summarize(paired(both, {seeds, wizard: "shipped"})),
-    shippedRelabel: summarize(paired(relabel, {seeds, wizard: "shipped"})),
+    negativeRelabel: summarize(paired(relabel, {seeds, map: RELABEL})),
+    rideDeclined: summarize(paired(both, {seeds, noRide: true, map: TO_CONTROL})),
+    shipped: summarize(paired(both, {seeds, wizard: "shipped", map: TO_CONTROL})),
+    shippedRelabel: summarize(paired(relabel, {seeds, wizard: "shipped", map: RELABEL})),
   };
 }
 
