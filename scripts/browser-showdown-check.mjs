@@ -1,10 +1,11 @@
-// Issue 143 slice 1: real-browser acceptance check of the graybox Showdown entry.
+// Issue 143 slices 1 and 2: real-browser acceptance check of the graybox Showdown entry and Camp.
 //   node scripts/build-graybox.mjs
 //   node scripts/browser-showdown-check.mjs dist/cowboys-vs-wizards-board-duel.html [outDir]
 // Native headless Chrome with a fresh profile, driven only by mouse events over the DevTools
 // protocol (same isolated Chrome launch as browser-menu-check.mjs). It checks that Play on a clean
-// profile opens Boot Hill, that Boot Hill can be won by clicks alone (?seed=0), seat privacy, action
-// legality and visible feedback at every step, and that ?mode=lanes and ?mode=match still load the lane duel.
+// profile opens the Camp and Boot Hill, that Trail duels 1 and 2 can be won by clicks alone (?seed=0)
+// and pay their designed cards and a one-card choice, that reloads keep the progress, seat privacy,
+// action legality and visible feedback at every step, and that ?mode=lanes and ?mode=match still load the lane duel.
 import assert from "node:assert/strict";
 import {spawn} from "node:child_process";
 import {mkdir, mkdtemp, rm, writeFile} from "node:fs/promises";
@@ -122,7 +123,7 @@ try {
 
   // Seat privacy, read from the page itself: no Wizard card id anywhere in the DOM, the Wizard hand
   // only as card backs matching its count, no Wizard trap named, and no hand card that is not a Cowboy card.
-  const privacy = () => evaluate(`(()=>{const body=document.getElementById("showdown").outerHTML+document.getElementById("title-screen").outerHTML;const ids=body.match(/wizard-[a-z-]+-\\d+/g)||[];
+  const privacy = () => evaluate(`(()=>{const body=document.getElementById("showdown").outerHTML+document.getElementById("showdown-camp").outerHTML+document.getElementById("title-screen").outerHTML;const ids=body.match(/wizard-[a-z-]+-\\d+/g)||[];
     const base=document.querySelector('#sd-board [data-side=wizard] [data-base=wizard]');const backs=base.querySelectorAll('.sd-backs .card-back').length;
     const count=Number(base.textContent.match(/Hand (\\d+)/)[1]);const label=base.querySelector('.sd-backs').getAttribute('aria-label');
     const hand=[...document.querySelectorAll('#sd-hand [data-card]')].map(n=>n.dataset.card);
@@ -139,28 +140,109 @@ try {
     return p;
   };
 
-  // 1. Normal entry on a clean profile.
+  const shown = (id) => `!document.getElementById('${id}').hidden`;
+  const campState = () => evaluate(`({tiles:[...document.querySelectorAll('#camp-trail button')].map(n=>({name:n.querySelector('strong').textContent,on:!n.disabled,note:n.querySelector('.sd-note').textContent})),
+    offer:[...document.querySelectorAll('#camp-claim [data-choose]')].map(n=>n.dataset.choose),next:document.getElementById('camp-next')?.textContent??null,
+    cards:document.getElementById('camp-collection').textContent.replace(/\\s+/g,' ').trim(),storage:document.getElementById('camp-storage').hidden})`);
+  const savedProgress = () => evaluate(`JSON.parse(localStorage.getItem('cvw-showdown-save-v2'))`);
+
+  // 1. Normal entry on a clean profile: Play opens the Camp, and the Camp opens Boot Hill.
   await navigate("");
   assert.equal(await evaluate(`localStorage.length`), 0, "fresh Chrome profile has no saved data");
   const menu = await evaluate(`[...document.querySelectorAll('#title-screen nav > *')].filter(n=>!n.hidden).map(n=>n.textContent.trim())`);
   assert.deepEqual(menu, ["Play", "Lane duel (previous rules)"]);
   check("Normal entry on a clean profile offers Play and the lane duel link only", menu);
   await click("#menu-play");
-  await wait(`!document.getElementById('showdown').hidden&&document.getElementById('title-screen').hidden`);
+  await wait(`${shown("showdown-camp")}&&document.getElementById('title-screen').hidden&&document.getElementById('showdown').hidden`);
+  const freshCamp = await campState();
+  assert.deepEqual(freshCamp.tiles.map((t) => t.on), [true, false, false, false, false, false]);
+  assert.equal(freshCamp.tiles[0].name, "Boot Hill");
+  assert.equal(freshCamp.tiles[0].note, "Win to earn Covered Wagon ×2");
+  assert.match(freshCamp.next, /^Start here: click Boot Hill to play your first duel\.$/);
+  assert.deepEqual(freshCamp.offer, []);
+  await shot("camp-fresh");
+  check("Play on a clean profile opens the Camp: Boot Hill open, the other five Trail duels locked", freshCamp);
+  await click("#camp-trail [data-duel=trail]");
+  await wait(`${shown("showdown")}&&document.getElementById('showdown-camp').hidden`);
   const opened = {status: await text("#sd-status"), lesson: await text("#sd-lesson")};
   assert.match(opened.status, /^Boot Hill · turn 1 · your turn$/);
   assert.match(opened.lesson, /^Win by removing every orb from the Wizard Base\./);
   assert.equal(await evaluate(`document.getElementById('arena').hidden`), true, "the lane arena stays closed");
   await assertPrivate();
-  check("Play on a clean profile opens Trail duel 1, Boot Hill (Showdown), not the lane duel", opened);
+  check("The Camp opens Trail duel 1, Boot Hill (Showdown), not the lane duel", opened);
   await click("#sd-home");
-  await wait(`!document.getElementById('title-screen').hidden&&document.getElementById('showdown').hidden`);
-  check("Main menu returns to the title");
+  await wait(`${shown("showdown-camp")}&&document.getElementById('showdown').hidden`);
+  assert.equal(await evaluate(`localStorage.getItem('cvw-showdown-save-v2')`), null, "leaving an unfinished duel records nothing");
+  await click("#camp-home");
+  await wait(`${shown("title-screen")}&&document.getElementById('showdown-camp').hidden`);
+  check("Back to camp leaves an unfinished duel unrecorded; Main menu returns to the title");
 
-  // 2. Win Boot Hill by clicks alone on a fixed deal.
+  // 2. Win Boot Hill and Raven Roost by clicks alone on a fixed deal (?seed=0 fixes every deal).
+  // Turn loop: play every card the screen enables, attack with every ready troop (the Base when
+  // open, else the first target), end the turn. Every step is a mouse click on an enabled button.
+  async function winDuel(label, wizardBase) {
+    await wait(`${shown("showdown")}&&/ · turn 1 · your turn$/.test(document.getElementById('sd-status').textContent)`);
+    assert.match(await evaluate(`document.querySelector('#sd-log li').textContent`), /^Turn 1: the Cowboys\.$/, "each duel starts a clear event log");
+    let turns = 0, attacks = 0, sawPreview = false, sawWizardTurn = false;
+    const endTurn = async () => {
+      await click("#sd-end");
+      await wait(`/your turn$/.test(document.getElementById('sd-status').textContent)||document.querySelector('.sd-result')`);
+      turns += 1;
+      const log = await evaluate(`[...document.querySelectorAll('#sd-log li')].map(n=>n.textContent)`);
+      if (log.some((line) => /^Turn \d+: the Wizards\.$/.test(line))) sawWizardTurn = true;
+    };
+    const over = () => evaluate(`Boolean(document.querySelector('.sd-result'))`);
+    while (!(await over()) && turns < 40) {
+      await assertPrivate();
+      for (let played = 0; played < 4; played += 1) {
+        const card = await evaluate(`document.querySelector('#sd-hand [data-card]:not(:disabled)')?.dataset.card??null`);
+        if (!card) break;
+        await click(`#sd-hand [data-card="${card}"]`);
+        for (let i = 0; i < 3 && !(await evaluate(`document.getElementById('sd-cancel').hidden`)); i += 1) {
+          const prompt = await text("#sd-prompt");
+          if (/as payment|to carry/.test(prompt)) await click("#sd-board [data-side=cowboy] .sd-slot.sd-can[data-own]");
+          else if (/Choose an enemy troop/.test(prompt)) await click(".sd-slot[data-enemy]");
+          else await click("#sd-cancel");
+        }
+      }
+      for (let i = 0; i < 3; i += 1) {
+        const ready = await evaluate(`[...document.querySelectorAll('#sd-board [data-side=cowboy] [data-own]')].find(n=>/Can attack/.test(n.textContent))?.dataset.slot??null`);
+        if (!ready) break;
+        await click(`#sd-board [data-slot="${ready}"]`);
+        const aim = await evaluate(`({base:Boolean(document.querySelector('[data-enemy=base]')),troops:document.querySelectorAll('.sd-slot[data-enemy]').length,
+          preview:[...document.querySelectorAll('[data-enemy]')].map(n=>n.querySelector('.sd-note:last-child')?.textContent)})`);
+        assert.ok(aim.base || aim.troops > 0, "a ready troop has a target");
+        if (aim.preview.every(Boolean)) sawPreview = true;
+        const before = await text("#sd-feedback");
+        await click(aim.base ? "[data-enemy=base]" : ".sd-slot[data-enemy]");
+        await wait(`document.getElementById('sd-feedback').textContent!==${JSON.stringify(before)}`);
+        attacks += 1;
+        if (await over()) break;
+      }
+      if (await over()) break;
+      await endTurn();
+    }
+    const finish = await evaluate(`({status:document.getElementById('sd-status').textContent,
+      wizardBase:document.querySelector('[data-base=wizard] .sd-orbs').getAttribute('aria-label'),feedback:document.getElementById('sd-feedback').textContent,
+      hand:document.querySelectorAll('#sd-hand [data-card]:not(:disabled)').length,end:document.getElementById('sd-end').hidden,targets:document.querySelectorAll('[data-enemy],[data-own]').length,
+      restart:document.getElementById('sd-restart').hidden,earned:document.getElementById('sd-result').textContent.match(/You earned ([^.]*)\\./)?.[1]??null,
+      offer:[...document.querySelectorAll('#sd-result [data-choose]')].map(n=>n.dataset.choose),again:Boolean(document.getElementById('sd-again'))})`);
+    assert.equal(finish.status, "You win: the Wizard Base fell.");
+    assert.equal(finish.wizardBase, `0 of ${wizardBase} orbs`);
+    assert.match(finish.feedback, /struck the Wizards' Base for \d+/);
+    assert.deepEqual([finish.hand, finish.end, finish.targets, finish.restart, finish.again], [0, true, 0, true, false], "nothing is playable after the result");
+    assert.ok(sawPreview, "every offered target showed an attack preview");
+    assert.ok(sawWizardTurn, "the Wizard turns were shown in the log");
+    await assertPrivate();
+    check(`${label} (?seed=0) won by clicks alone; inputs close after the result`, {...finish, turns, attacks, clicks: report.clicks});
+    return finish;
+  }
+
   await navigate("?seed=0");
   await click("#menu-play");
-  await wait(`!document.getElementById('showdown').hidden`);
+  await wait(shown("showdown-camp"));
+  await click("#camp-trail [data-duel=trail]");
+  await wait(shown("showdown"));
   await shot("boot-hill-opening");
 
   // Legality on the opening turn: nothing attacks, own troops and the Wizard Base are not clickable.
@@ -189,7 +271,6 @@ try {
   assert.ok(troopRefusals.length > 0 && troopRefusals.every(([, why]) => why === "One troop a turn."), JSON.stringify(afterSummon.refused));
   assert.doesNotMatch(afterSummon.slotNote, /Can attack/, "nothing attacks on the opening turn");
   check("A summon shows its event line, and further troop cards are disabled with 'One troop a turn.'", afterSummon);
-  // A real click on a refused card changes nothing.
   const handBefore = await evaluate(`document.getElementById('sd-hand').innerHTML`);
   await click(`#sd-hand [data-card="${troopRefusals[0][0]}"]`);
   await sleep(150);
@@ -197,65 +278,81 @@ try {
   check("Clicking a disabled card applies nothing");
   await assertPrivate();
   await shot("boot-hill-after-summon");
-
-  // Turn loop: play one card, attack with every ready troop (the Base when open, else the first
-  // target), end the turn. Every step is a mouse click on a button the screen enabled.
-  let turns = 0, attacks = 0, sawPreview = false, sawWizardTurn = false;
-  const endTurn = async () => {
-    await click("#sd-end");
-    await wait(`/your turn$/.test(document.getElementById('sd-status').textContent)||document.querySelector('.sd-result')`);
-    turns += 1;
-    const log = await evaluate(`[...document.querySelectorAll('#sd-log li')].map(n=>n.textContent)`);
-    if (log.some((line) => /^Turn \d+: the Wizards\.$/.test(line))) sawWizardTurn = true;
-  };
-  await endTurn();
-  while (!(await evaluate(`Boolean(document.querySelector('.sd-result'))`)) && turns < 40) {
-    await assertPrivate();
-    // Play every card the screen enables, finishing each pick the prompt asks for.
-    for (let played = 0; played < 4; played += 1) {
-      const card = await evaluate(`document.querySelector('#sd-hand [data-card]:not(:disabled)')?.dataset.card??null`);
-      if (!card) break;
-      await click(`#sd-hand [data-card="${card}"]`);
-      for (let i = 0; i < 3 && !(await evaluate(`document.getElementById('sd-cancel').hidden`)); i += 1) {
-        const prompt = await text("#sd-prompt");
-        if (/as payment|to carry/.test(prompt)) await click("#sd-board [data-side=cowboy] .sd-slot.sd-can[data-own]");
-        else if (/Choose an enemy troop/.test(prompt)) await click(".sd-slot[data-enemy]");
-        else await click("#sd-cancel");
-      }
-    }
-    for (let i = 0; i < 3; i += 1) {
-      const ready = await evaluate(`[...document.querySelectorAll('#sd-board [data-side=cowboy] [data-own]')].find(n=>/Can attack/.test(n.textContent))?.dataset.slot??null`);
-      if (!ready) break;
-      await click(`#sd-board [data-slot="${ready}"]`);
-      const aim = await evaluate(`({base:Boolean(document.querySelector('[data-enemy=base]')),troops:document.querySelectorAll('.sd-slot[data-enemy]').length,
-        preview:[...document.querySelectorAll('[data-enemy]')].map(n=>n.querySelector('.sd-note:last-child')?.textContent)})`);
-      assert.ok(aim.base || aim.troops > 0, "a ready troop has a target");
-      if (aim.preview.every(Boolean)) sawPreview = true;
-      const before = await text("#sd-feedback");
-      await click(aim.base ? "[data-enemy=base]" : ".sd-slot[data-enemy]");
-      await wait(`document.getElementById('sd-feedback').textContent!==${JSON.stringify(before)}`);
-      attacks += 1;
-      if (await evaluate(`Boolean(document.querySelector('.sd-result'))`)) break;
-    }
-    if (await evaluate(`Boolean(document.querySelector('.sd-result'))`)) break;
-    await endTurn();
-  }
-  const finish = await evaluate(`({status:document.getElementById('sd-status').textContent,result:document.getElementById('sd-result').textContent.replace(/\\s+/g,' ').trim(),
-    wizardBase:document.querySelector('[data-base=wizard] .sd-orbs').getAttribute('aria-label'),feedback:document.getElementById('sd-feedback').textContent,
-    hand:document.querySelectorAll('#sd-hand [data-card]:not(:disabled)').length,end:document.getElementById('sd-end').hidden,targets:document.querySelectorAll('[data-enemy],[data-own]').length})`);
-  assert.equal(finish.status, "You win: the Wizard Base fell.");
-  assert.match(finish.wizardBase, /^0 of 3 orbs$/);
-  assert.match(finish.feedback, /struck the Wizards' Base for \d+/);
-  assert.deepEqual([finish.hand, finish.end, finish.targets], [0, true, 0], "nothing is playable after the result");
-  assert.ok(sawPreview, "every offered target showed an attack preview");
-  assert.ok(sawWizardTurn, "the Wizard turns were shown in the log");
-  await assertPrivate();
+  // Restart replays the same deal from turn 1, with a clear log, before anything is recorded.
+  await click("#sd-restart");
+  const won1 = await winDuel("Boot Hill", 3);
   await shot("boot-hill-won");
-  check("Boot Hill (?seed=0) won by clicks alone; inputs close after the result", {...finish, turns, attacks, clicks: report.clicks});
+
+  // Settled once on the win: the designed reward, saved before any choice is made.
+  assert.equal(won1.earned, "Covered Wagon ×2");
+  assert.equal(won1.offer.length, 2);
+  const afterWin1 = await savedProgress();
+  assert.equal(afterWin1.wins, 1);
+  assert.equal(afterWin1.collection["cowboy-covered-wagon"], 2);
+  assert.deepEqual([afterWin1.deck["cowboy-covered-wagon"], afterWin1.deck["cowboy-sheriff"]], [2, 6]);
+  assert.deepEqual(afterWin1.offer, won1.offer);
+  check("Boot Hill win pays Covered Wagon ×2 in place of Sheriff ×2, saved with the two-card offer", {earned: won1.earned, offer: won1.offer, deck: afterWin1.deck});
+  // Choice in the result panel, then back to the Camp.
+  const pick1 = won1.offer[0];
+  await click(`#sd-result [data-choose="${pick1}"]`);
+  await wait(`!document.querySelector('#sd-result [data-choose]')&&/Added [A-Za-z' -]+: you now own \\d/.test(document.getElementById('sd-result').textContent)`);
+  const chose1 = await savedProgress();
+  assert.equal(chose1.offer, null);
+  assert.equal(chose1.collection[pick1], (afterWin1.collection[pick1] ?? 0) + 1);
+  check("Choosing one offered card adds exactly one copy and clears the offer", {pick: pick1});
+  await click("#sd-camp");
+  await wait(shown("showdown-camp"));
+  const camp1 = await campState();
+  assert.deepEqual(camp1.tiles.map((t) => t.on), [false, true, false, false, false, false]);
+  assert.equal(camp1.tiles[0].name, "✓ Boot Hill");
+  assert.equal(camp1.tiles[1].name, "Raven Roost");
+  check("The Camp marks Boot Hill won and opens Raven Roost", camp1.tiles.slice(0, 2));
+
+  // Reload keeps the progress.
+  await navigate("?seed=0");
+  await click("#menu-play");
+  await wait(shown("showdown-camp"));
+  const reloaded1 = await campState();
+  assert.deepEqual(reloaded1.tiles, camp1.tiles);
+  assert.match(reloaded1.cards, /Covered Wagon ×2/);
+  check("After a reload the Camp keeps the Boot Hill win, the reward and the chosen card", reloaded1);
+
+  await click("#camp-trail [data-duel=trail]");
+  const won2 = await winDuel("Raven Roost", 4);
+  assert.equal(won2.earned, "Outrider ×2");
+  const afterWin2 = await savedProgress();
+  assert.equal(afterWin2.wins, 2);
+  assert.equal(afterWin2.collection["cowboy-outrider"], 2);
+  assert.deepEqual([afterWin2.deck["cowboy-outrider"], afterWin2.deck["cowboy-sheriff"]], [2, 4]);
+  check("Raven Roost win pays Outrider ×2 in place of Sheriff ×2", {earned: won2.earned, deck: afterWin2.deck});
+  // This time leave the choice for the Camp: it is still on offer there, and it blocks every duel.
+  await click("#sd-camp");
+  await wait(shown("showdown-camp"));
+  const camp2 = await campState();
+  assert.deepEqual(camp2.offer, afterWin2.offer);
+  assert.ok(camp2.tiles.every((t) => !t.on), "no duel starts while a card is on offer");
+  await shot("camp-offer");
+  check("Back in the Camp the unclaimed offer comes first and every Trail tile is disabled", camp2);
+  await navigate("?seed=0");
+  await click("#menu-play");
+  await wait(shown("showdown-camp"));
+  assert.deepEqual((await campState()).offer, afterWin2.offer, "the offer survives a reload unchanged");
+  const pick2 = afterWin2.offer[1];
+  await click(`#camp-claim [data-choose="${pick2}"]`);
+  await wait(`!document.querySelector('#camp-claim [data-choose]')`);
+  const camp3 = await campState();
+  assert.deepEqual(camp3.tiles.map((t) => t.on), [false, false, true, false, false, false]);
+  assert.equal(camp3.tiles[2].name, "The Bone Fence");
+  assert.equal((await savedProgress()).collection[pick2], (afterWin2.collection[pick2] ?? 0) + 1);
+  await navigate("?seed=0");
+  await click("#menu-play");
+  await wait(shown("showdown-camp"));
+  const reloaded2 = await campState();
+  assert.deepEqual(reloaded2.tiles, camp3.tiles);
+  assert.ok(reloaded2.storage, "no storage warning while saving works");
+  await shot("camp-after-two");
+  check("The Camp choice clears the offer and opens The Bone Fence; a reload continues from there", reloaded2);
   check("Seat privacy held at every checked step", {steps: privacyChecks});
-  await click("#sd-again");
-  await wait(`/^Boot Hill · turn 1 · your turn$/.test(document.getElementById('sd-status').textContent)`);
-  check("'Play Boot Hill again' deals a new Boot Hill");
 
   // 3. The lane duel stays reachable.
   await navigate("?mode=lanes");
