@@ -36,3 +36,13 @@
 .sd-tile { width: 9.5rem; min-height: 5.25rem; padding: .6rem; text-align: left; display: block; }
 .sd-tile strong { display: block; }
 .sd-tile.open { border-color: #8fd18f; } .sd-tile.locked { opacity: .6; }
+/* Placeholder cues before any 3D work (src/ui/showdown-cues.js): an outline flash on the place an
+   event touched and a marked log line. Reduced motion, or .sd-cue-still, shows the outline without the flash. */
+#sd-cue { min-height: 1.4rem; margin: 0; font-size: .9rem; }
+.sd-cue-label { display: inline-block; border: 1px solid #f2d27a; border-radius: 4px; padding: 0 .35rem; color: #f2d27a; }
+#showdown .sd-cue { outline: 3px solid #f2d27a; outline-offset: 2px; animation: sd-cue-flash .7s ease-out; }
+#sd-log li[data-cue-kind] { border-left: 3px solid var(--line); padding-left: .35rem; }
+#sd-log li.sd-cue { outline: none; border-left-color: #f2d27a; color: inherit; }
+#showdown .sd-cue-still { animation: none; }
+@keyframes sd-cue-flash { from { outline-color: #fff; background-color: rgba(242, 210, 122, .25); } to { outline-color: #f2d27a; } }
+@media (prefers-reduced-motion: reduce) { #showdown .sd-cue { animation: none; } }
