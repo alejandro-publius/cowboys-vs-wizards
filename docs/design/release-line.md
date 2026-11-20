@@ -150,11 +150,13 @@ This table is kept as written on November 18. With Showdown as the entry, the la
 - Ride Out as a rule for every troop in ordinary duels. Ride on cards replaced it.
 - Round-one Base shield. The experiment was negative.
 
-## Open briefs: 1 of 3
+## Open briefs: 1 of 3 (updated November 20)
 
-1. **Showdown into the game** ([brief](showdown-integration-kiro-brief.md), issue 143). Slice 1 and the card pipeline are merged. Open: the Scout fix, slice 2, and Kiro's spec, property tests and Night Watch pointed at Showdown.
-2. Free. I am holding it for the fix brief on November 22.
+1. **An even fight, and cover that matters** ([brief](showdown-even-fight-kiro-brief.md)). The fix brief, written two days early because the numbers were ready: it closes the first-player and Cowboy leans. Alex approved it on November 20. It merges on or after November 23, once the playtests are in.
+2. Free.
 3. Free.
+
+Showdown into the game ([brief](showdown-integration-kiro-brief.md), issue 143) is closed: all three slices are merged.
 
 The two lane briefs that were open on November 18 (First Play opens the guided duel, and the Dragon Fire arc) are closed by the change of fight.
 

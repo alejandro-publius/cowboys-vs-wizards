@@ -21,6 +21,7 @@ Every number in these briefs comes from bot runs on scratch copies of the rules,
 | [Depth arc](depth-arc-kiro-brief.md) | Ember Gulch and the Bonewright | Built and merged, waiting on a person |
 | [Card types and bounties](card-types-and-bounties.md) | The frame says the type; bosses are their own category; bounties as a Kiro and Tripo pipeline | Frames built in the graybox, look waiting on approval, pipeline parked |
 | [Showdown into the game](showdown-integration-kiro-brief.md) | Hands the Showdown engine to Kiro in three slices, with the screen contract | Handed to Kiro as issue 143; card names approved |
+| [An even fight, and cover that matters](showdown-even-fight-kiro-brief.md) | Wizard deck 3 Skeletons and 2 Imps; the side going second starts with 7 Base orbs; cover stops spells; both hands shown when a duel ends | Approved by Alex on November 20; not built; lands after the playtest |
 | [Showdown rules](../../prototypes/showdown/README.md) | The chosen fight: picked attacks, keywords, types, traps, gear, locations, 29 cards, and the first-hours ladder | Playable prototype; not yet the main game |
 | [Cover Swap](cover-swap-handoff.md) | Opt-in Ride Out variant | Cut; stays an experiment |
 | [Mounted Billy decision](mounted-billy-decision-handoff.md), [playtest boards](mounted-billy-playtest-handoff.md) | Attack 3 against 4 lab | Cut |
