@@ -24,7 +24,8 @@
 // this tree deals for its seed; its build, revision or HTML digest differ from the page given here or from this
 // checkout's HEAD; the two openings share a fingerprint. --join-controls runs the join on the genuine pair and
 // on duplicate, swapped, relabelled, missing and stale variants written to a temporary directory; each variant
-// must be refused for its own reason. Scripted Chrome: no human played; it says nothing about clarity or fun.
+// must be refused for its own reason, as must seed-0 receipts still marked pass whose own route records a
+// changed storage digest, a failure, or a missing or null part (routeContradiction). Scripted Chrome: no human played; it says nothing about clarity or fun.
 import {execFileSync} from "node:child_process";
 import {createHash} from "node:crypto";
 import {existsSync} from "node:fs";
@@ -250,7 +251,29 @@ async function runSeed({seed, page: file, out}) {
 const ROUTE_KEYS = ["url", "status", "opening", "fingerprint", "firstAction", "storage", "campUnchanged", "errors", "remote", "failures"];
 const sameKeys = (o, keys) => o && typeof o === "object" && !Array.isArray(o) && Object.keys(o).sort().join() === [...keys].sort().join();
 
-export async function join(files, {page: file, head = git("rev-parse", "HEAD")}) {
+// A route's own recorded facts must agree with a pass: no failure, error or off-loopback request; the storage
+// digest the same before and after; the first card left the hand and landed; the Camp unchanged.
+// Returns the first contradiction, or null. Anything missing or of the wrong type is a contradiction.
+const DIGEST = (x) => typeof x === "string" && DIGEST_PATTERN.test(x);
+export function routeContradiction(r) {
+  if (!Array.isArray(r?.failures)) return "failures is not a list";
+  if (r.failures.length) return `reports failure "${r.failures[0]}"`;
+  if (r.errors !== 0 || r.remote !== 0) return `records ${r.errors} page errors and ${r.remote} off-loopback requests`;
+  const s = r.storage, a = r.firstAction;
+  if (!s || !DIGEST(s.before) || !DIGEST(s.after)) return "storage digests are missing or malformed";
+  if (s.before !== s.after || s.unchanged !== true) return "storage changed (before and after digests differ)";
+  if (!a || !(a.handAfter === a.handBefore - 1 && a.troopsAfter === a.troopsBefore + 1 && a.logAfter > a.logBefore))
+    return "first action did not change hand, board and log";
+  if (r.campUnchanged !== true) return "Camp text or report changed";
+  return null;
+}
+
+export async function join(files, opts) {
+  try { return await joinUnchecked(files, opts); }
+  catch (e) { return {schema: "showdown-practice-join/1", pass: false, failure: `malformed receipt: ${e.message}`}; }
+}
+
+async function joinUnchecked(files, {page: file, head = git("rev-parse", "HEAD")}) {
   const {text, info} = await pageInfo(file);
   const refuse = (reason) => ({schema: "showdown-practice-join/1", pass: false, failure: reason, page: info});
   const receipts = [];
@@ -267,6 +290,10 @@ export async function join(files, {page: file, head = git("rev-parse", "HEAD")})
       return refuse(`${at}: keys differ from ${SCHEMA}`);
     if (r.seed !== SEEDS[i]) return refuse(`${at}: is seed ${r.seed}, expected seed ${SEEDS[i]} in this position`);
     if (r.pass !== true || r.failures.length) return refuse(`${at}: did not pass (${r.failures[0] ?? "pass is not true"})`);
+    for (const via of ["camp", "direct"]) {
+      const why = routeContradiction(r.routes[via]);
+      if (why) return refuse(`${at}: marked pass but its ${via} route ${why}`);
+    }
     const want = fingerprint(expectedOpening(r.seed));
     for (const [name, got] of [["expected", r.expected], ["camp", r.routes.camp], ["direct", r.routes.direct]])
       if (fingerprint(got.opening) !== got.fingerprint || got.fingerprint !== want)
@@ -287,6 +314,7 @@ async function joinControls(files, opts) {
   const stale = structuredClone(r60);
   stale.revision = BASE; stale.page.build = BASE.slice(0, 12); stale.page.sha256 = sha256("an older build");
   const relabel = {...structuredClone(r60), seed: 0};
+  const torn = (edit) => { const r = structuredClone(r0); edit(r); return r; };
   const cases = [
     {name: "genuine", files, accept: true},
     {name: "duplicate", files: [files[0], files[0]], reason: /is seed 0, expected seed 60/},
@@ -294,6 +322,13 @@ async function joinControls(files, opts) {
     {name: "relabelled", files: [await put("relabelled", relabel), files[1]], reason: /not the seed-0 deal/},
     {name: "missing", files: [files[0], path.join(dir, "absent.json")], reason: /missing receipt/},
     {name: "stale", files: [files[0], await put("stale", stale)], reason: /stale or other build/},
+    // Torn or misreported receipts: still marked pass, but a route's own facts contradict it.
+    {name: "changed-save", files: [await put("changed-save", torn((r) => { r.routes.camp.storage.after = "0".repeat(64); })), files[1]],
+      reason: /camp route storage changed/},
+    {name: "route-reports-failure", files: [await put("route-reports-failure", torn((r) => { r.routes.direct.failures.push("deliberate QA inconsistency"); })), files[1]],
+      reason: /direct route reports failure/},
+    {name: "no-storage", files: [await put("no-storage", torn((r) => { delete r.routes.camp.storage; })), files[1]], reason: /keys differ|storage digests/},
+    {name: "null-route", files: [await put("null-route", torn((r) => { r.routes.direct = null; })), files[1]], reason: /keys differ|malformed receipt/},
   ];
   const results = [];
   try {
