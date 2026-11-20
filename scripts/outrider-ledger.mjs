@@ -4,6 +4,7 @@
 // The page gets this object through build-graybox.mjs (__CVW_OUTRIDER_LEDGER__); the build also writes it to
 // dist/outrider-ledger.json as the build receipt.
 import {execFileSync} from "node:child_process";
+import {createHash} from "node:crypto";
 import {existsSync, readFileSync} from "node:fs";
 import {dirname, join, normalize} from "node:path";
 import {cardOf} from "../src/game/showdown/cards.js";
@@ -42,25 +43,45 @@ export function closure(entry, read) {
 
 const git = (root, args) => { try { return execFileSync("git", args, {cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"]}); } catch { return null; } };
 
+export const ENGINE_SNAPSHOT = "docs/evidence/outrider-gate/night-watch-engine.json";
+// Git's blob id of a file's bytes (sha1 of "blob <size>\0" + bytes), so a checkout without git still compares.
+export const blobId = (bytes) => createHash("sha1").update(`blob ${bytes.length}\0`).update(bytes).digest("hex");
+const readHere = (root) => (f) => (existsSync(join(root, f)) ? readFileSync(join(root, f), "utf8") : null);
+
+// The engine blob ids at the receipt's commit: from git when the commit is present (then the checked-in snapshot must
+// agree), otherwise from the snapshot when it names that commit and its entry blob equals the receipt's rulesBlob.
+export function engineAt(commit, rulesBlob, root) {
+  const path = join(root, ENGINE_SNAPSHOT);
+  const snap = existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : null;
+  if (commit && git(root, ["cat-file", "-e", `${commit}^{commit}`]) !== null) {
+    const files = closure(NIGHT_WATCH_ENTRY, (f) => git(root, ["show", `${commit}:${f}`]));
+    const blobs = Object.fromEntries(files.map((f) => [f, git(root, ["rev-parse", "--verify", "--quiet", `${commit}:${f}`])?.trim() ?? null]));
+    if (snap && snap.commit === commit && JSON.stringify(snap.files) !== JSON.stringify(blobs)) return {error: `${ENGINE_SNAPSHOT} disagrees with git objects at ${commit.slice(0, 7)}`};
+    return {blobs, from: "git"};
+  }
+  if (!snap || snap.commit !== commit) return {error: `commit ${commit?.slice(0, 7) ?? "?"} is not in this checkout and no engine snapshot names it`};
+  if (snap.files?.[NIGHT_WATCH_ENTRY] !== rulesBlob) return {error: `${ENGINE_SNAPSHOT} rules blob does not equal the receipt's rulesBlob`};
+  return {blobs: snap.files, from: ENGINE_SNAPSHOT};
+}
+
 // Byte identity of the engine the Night Watch run measured (its commit) against this tree's working files.
-export function engineIdentity(commit, root) {
-  if (!commit || git(root, ["cat-file", "-e", `${commit}^{commit}`]) === null) return {checked: false, reason: `commit ${commit?.slice(0, 7) ?? "?"} is not in this checkout`};
-  const atCommit = closure(NIGHT_WATCH_ENTRY, (f) => git(root, ["show", `${commit}:${f}`]));
-  const here = closure(NIGHT_WATCH_ENTRY, (f) => (existsSync(join(root, f)) ? readFileSync(join(root, f), "utf8") : null));
-  const files = [...new Set([...atCommit, ...here])].sort();
-  const blob = (f) => git(root, ["rev-parse", "--verify", "--quiet", `${commit}:${f}`])?.trim() ?? null;
-  const now = (f) => (existsSync(join(root, f)) ? git(root, ["hash-object", "--", f])?.trim() ?? null : null);
-  const differ = files.filter((f) => blob(f) !== now(f));
-  const outrider = closure(OUTRIDER_ENTRY, (f) => (existsSync(join(root, f)) ? readFileSync(join(root, f), "utf8") : null));
-  const entryBlob = now(NIGHT_WATCH_ENTRY);
-  return {checked: true, files: files.length, same: differ.length === 0, differ, entryBlob, notMeasured: outrider.filter((f) => !files.includes(f))};
+export function engineIdentity(commit, root, rulesBlob = null) {
+  const at = engineAt(commit, rulesBlob, root);
+  if (at.error) return {checked: false, reason: at.error};
+  const here = closure(NIGHT_WATCH_ENTRY, readHere(root));
+  const files = [...new Set([...Object.keys(at.blobs), ...here])].sort();
+  const now = (f) => (existsSync(join(root, f)) ? blobId(readFileSync(join(root, f))) : null);
+  const differ = files.filter((f) => (at.blobs[f] ?? null) !== now(f));
+  const outrider = closure(OUTRIDER_ENTRY, readHere(root));
+  return {checked: true, from: at.from, files: files.length, same: differ.length === 0, differ, entryBlob: now(NIGHT_WATCH_ENTRY),
+    notMeasured: outrider.filter((f) => !files.includes(f))};
 }
 
 export function nightWatch(root) {
   const path = join(root, NIGHT_WATCH_RECEIPT);
   if (!existsSync(path)) return null;
   const r = JSON.parse(readFileSync(path, "utf8"));
-  const engine = engineIdentity(r.candidate.commit, root);
+  const engine = engineIdentity(r.candidate.commit, root, r.candidate.rulesBlob);
   return {source: NIGHT_WATCH_RECEIPT, at: r.generatedAt, local: laTime(r.generatedAt), trigger: r.trigger, bot: r.bot,
     commit: r.candidate.commit, rulesBlob: r.candidate.rulesBlob, seeds: {from: r.seeds.from, to: r.seeds.to}, games: r.seeds.games,
     engine, rulesBlobMatch: engine.checked ? engine.entryBlob === r.candidate.rulesBlob : null};

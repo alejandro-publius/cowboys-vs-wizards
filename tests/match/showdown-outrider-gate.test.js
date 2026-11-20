@@ -175,3 +175,32 @@ test("Ledger section: neutral before the reveal, results only when fresh, links 
   const differs = {...built.ledger, nightWatch: {...built.ledger.nightWatch, rulesBlobMatch: false, engine: {...built.ledger.nightWatch.engine, same: false, differ: ["src/game/showdown/rules.js"]}}};
   assert.match(nightWatchLine(differs), /differs from this build in src\/game\/showdown\/rules\.js, so its numbers describe the earlier rules/);
 });
+
+// CI repair: a shallow or exported checkout lacks the Night Watch commit. The checked-in snapshot of its four engine
+// blob ids then stands in, bound to the receipt's rulesBlob; with history present it must agree with git.
+test("Night Watch engine identity without history: snapshot compares, mismatched source differs, bad snapshot refuses", async () => {
+  const {engineIdentity, ENGINE_SNAPSHOT, NIGHT_WATCH_RECEIPT} = await import("../../scripts/outrider-ledger.mjs");
+  const receipt = JSON.parse(readFileSync(path.join(root, NIGHT_WATCH_RECEIPT), "utf8")).candidate;
+  const full = engineIdentity(receipt.commit, root, receipt.rulesBlob);
+  const dir = mkdtempSync(path.join(tmpdir(), "nw-engine-")); // no .git: history is unavailable
+  try {
+    for (const f of ["src", "prototypes/showdown", "docs/evidence/outrider-gate"]) cpSync(path.join(root, f), path.join(dir, f), {recursive: true});
+    const bare = engineIdentity(receipt.commit, dir, receipt.rulesBlob);
+    assert.deepEqual([bare.checked, bare.from, bare.files, bare.same], [true, ENGINE_SNAPSHOT, 4, full.same]);
+    assert.deepEqual(bare.notMeasured, full.notMeasured);
+    writeFileSync(path.join(dir, "src/game/showdown/cards.js"), `${readFileSync(path.join(dir, "src/game/showdown/cards.js"), "utf8")}\n// changed\n`);
+    assert.deepEqual(engineIdentity(receipt.commit, dir, receipt.rulesBlob).differ, ["src/game/showdown/cards.js"]);
+    assert.match(engineIdentity(receipt.commit, dir, "0".repeat(40)).reason, /does not equal the receipt's rulesBlob/);
+    assert.match(engineIdentity("f".repeat(40), dir, receipt.rulesBlob).reason, /not in this checkout and no engine snapshot names it/);
+    rmSync(path.join(dir, ENGINE_SNAPSHOT));
+    assert.equal(engineIdentity(receipt.commit, dir, receipt.rulesBlob).checked, false, "no history and no snapshot cannot compare");
+  } finally { rmSync(dir, {recursive: true, force: true}); }
+  // With history, the snapshot must equal git's objects for that commit, or the comparison is refused.
+  if (full.from === "git") {
+    const file = path.join(root, ENGINE_SNAPSHOT), text = readFileSync(file, "utf8");
+    try {
+      writeFileSync(file, text.replace("7b3290207121834bd563741dc878a7b57b333ae9", "0".repeat(40)));
+      assert.match(engineIdentity(receipt.commit, root, receipt.rulesBlob).reason, /disagrees with git objects/);
+    } finally { writeFileSync(file, text); }
+  }
+});
