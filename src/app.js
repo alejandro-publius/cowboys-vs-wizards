@@ -18,13 +18,19 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   // The browser's storage is read through the canonical store; a blocked storage leaves progress in memory only.
   let storage = null;
   try { storage = window.localStorage; } catch { /* storage is blocked */ }
-  const campaign = createCampaign(storage);
+  // Precedence of the opening queries: ?turn, then ?outrider, then ?practice.
+  const query = new URLSearchParams(location.search);
+  const [turn, outrider] = [query.get("turn"), query.get("outrider")];
+  const practice = turn === null && outrider === null ? practiceFromQuery(location.search) : null;
+  // K-096: a direct practice visit writes no key until the player chooses the Camp (campaign.enter() in toCamp).
+  const campaign = createCampaign(storage, {deferImport: practice !== null});
   // One line per finished solo game for the Camp's playtest report, under the prototype's key.
   const playtest = createPlaytestLog(storage);
   const showOnly = (shown) => { for (const el of [title, screen, campRoot, builderRoot]) el.hidden = el !== shown; window.scrollTo(0, 0); };
   let last = null; // the Camp control that started the duel just left, so focus returns to it
   const toCamp = () => {
     showOnly(campRoot);
+    campaign.enter();
     camp.show();
     // When that control is now disabled (a win's card offer is open), the Camp's own order: the claim
     // (offer or pack), then the first open duel. Selectors are tried in turn, not in document order.
@@ -102,11 +108,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     event.preventDefault();
     openPractice(Number(a.dataset.practice));
   });
-  // Precedence: ?turn, then ?outrider, then ?practice.
-  const turn = new URLSearchParams(location.search).get("turn");
   if (turn !== null) openTurn(turn);
-  const outrider = new URLSearchParams(location.search).get("outrider");
   if (outrider !== null && turn === null) openOutrider(outrider);
-  const practice = practiceFromQuery(location.search);
-  if (practice !== null && turn === null && outrider === null) openPractice(practice);
+  if (practice !== null) openPractice(practice);
   });

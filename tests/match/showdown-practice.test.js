@@ -5,6 +5,11 @@ import test from "node:test";
 import {duelFor, newSave, settle} from "../../src/game/showdown/progress.js";
 import {createShowdownSession, bootHill} from "../../src/match/showdown-session.js";
 import {PRACTICE_SEEDS, practiceDuel, practiceFromQuery, practiceSeed} from "../../src/match/showdown-practice.js";
+import {createCampaign} from "../../src/match/showdown-campaign.js";
+import {createProfileStore} from "../../src/profile/player-profile.js";
+import {BOSSES} from "../../src/game/bounty-hunt.js";
+import {INHERITED_KEY} from "../../src/game/showdown/inherited.js";
+import {SAVE_KEY} from "../../src/game/showdown/campaign-store.js";
 
 test("only the exact strings 0 and 60 open practice", () => {
   assert.deepEqual(PRACTICE_SEEDS, [0, 60]);
@@ -48,4 +53,65 @@ test("the same seed deals the same opening every time; 0 and 60 differ", () => {
   // Same deal as Camp's Boot Hill on that seed: only the duel's name and id differ.
   const camp = createShowdownSession({seed: 0, duel: bootHill()}).view();
   assert.deepEqual(view(0), camp);
+});
+
+// Coordinator's compatibility edge (legacy-check): a direct ?practice boot must not import lane keepsakes, or
+// write any key, before the player chooses the real Camp. createCampaign(storage, {deferImport: true}) holds the
+// import and the career load until enter(); the default constructor is unchanged.
+
+const memory = (entries = {}) => {
+  const map = new Map(Object.entries(entries));
+  return {getItem: (k) => (map.has(k) ? map.get(k) : null), setItem: (k, v) => map.set(k, String(v)), map};
+};
+// An unimported lane profile that cleared all of the first boss's hunts (an earned keepsake), made by the lane store.
+const laneProfile = () => {
+  const store = memory();
+  const profile = createProfileStore(store);
+  for (const hunt of BOSSES[0].hunts) profile.recordBounty(hunt, {clean: false});
+  return store.getItem("cvw-player-v1");
+};
+const snapshot = (s) => JSON.stringify([...s.map].sort());
+
+test("a deferred campaign writes nothing until enter(); enter() imports the keepsake once", () => {
+  const lane = laneProfile();
+  assert.ok(lane);
+  const storage = memory({"cvw-player-v1": lane});
+  const before = snapshot(storage);
+  const campaign = createCampaign(storage, {deferImport: true});
+  campaign.progress(); campaign.saved();
+  assert.equal(snapshot(storage), before, "no key written before the Camp");
+  campaign.enter();
+  const record = storage.getItem(INHERITED_KEY);
+  assert.ok(record && JSON.parse(record).cards.length > 0, "keepsake imported on first Camp entry");
+  assert.ok(campaign.holdings().some((row) => row.inherited));
+  campaign.enter();
+  assert.equal(storage.getItem(INHERITED_KEY), record, "a second entry imports nothing more");
+  assert.equal(storage.getItem("cvw-player-v1"), lane, "lane profile untouched");
+  // The default constructor still imports at once, as the normal boot does.
+  const normal = memory({"cvw-player-v1": lane});
+  createCampaign(normal);
+  assert.equal(normal.getItem(INHERITED_KEY), record);
+});
+
+test("enter() loads the career stored at that moment, so a deferred boot never writes back a stale snapshot", () => {
+  const storage = memory();
+  const campaign = createCampaign(storage, {deferImport: true});
+  // Another tab wins Boot Hill while this one is practising.
+  const other = createCampaign(storage);
+  other.settle(other.trailDuel(), true);
+  const saved = storage.getItem(SAVE_KEY);
+  campaign.enter();
+  assert.equal(campaign.progress().wins, 1);
+  assert.equal(storage.getItem(SAVE_KEY), saved);
+});
+
+test("a deferred campaign on blocked storage plays on in memory", () => {
+  const blocked = {getItem: () => { throw new Error("blocked"); }, setItem: () => { throw new Error("blocked"); }};
+  const campaign = createCampaign(blocked, {deferImport: true});
+  campaign.enter();
+  assert.equal(campaign.progress().wins, 0);
+  campaign.settle(campaign.trailDuel(), true);
+  assert.equal(campaign.saved(), false);
+  assert.equal(campaign.progress().wins, 1);
+  createCampaign(null, {deferImport: true}).enter();
 });
