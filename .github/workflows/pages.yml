@@ -31,21 +31,16 @@ jobs:
 
       - run: node scripts/verify-duel.mjs
 
-      - run: npm run build:art -- --web
+      # One script stages the whole tree, as it does locally: the graybox game at / (Play opens
+      # Showdown's Camp), the same index.html at /graybox/ for existing links, the Showdown reference
+      # page at /showdown/, the earlier illustrated 3D build with its models at /3d/, and build.json.
+      - name: Stage the Pages tree
+        run: node scripts/stage-pages.mjs --commit "$GITHUB_SHA"
 
-      # Writes only dist/web/graybox/: index.html plus the lane duel as chunks/lanes-<hash>.js,
-      # fetched only by ?mode=lanes and the other lane modes. The offline single file is unchanged.
-      - name: Add the rules-first graybox at /graybox/
-        run: npm run build -- --hosted
-
-      - name: Add the Showdown prototype at /showdown/
-        run: |
-          node prototypes/showdown/build.mjs
-          mkdir -p dist/web/showdown
-          cp dist/showdown.html dist/web/showdown/index.html
-
-      - name: Write dist/web/build.json
-        run: node scripts/write-build-identity.mjs --commit "$GITHUB_SHA"
+      # Node only: serves dist/web/ under /cowboys-vs-wizards/ on localhost and checks build.json, the
+      # /graybox/ alias bytes and every /3d/ asset URL. The Chrome half (--browser) runs locally.
+      - name: Check the staged tree before upload
+        run: node scripts/check-pages-tree.mjs --commit "$GITHUB_SHA"
 
       - name: Record SHA-256 of dist/web/index.html
         id: identity
@@ -91,11 +86,11 @@ jobs:
         with:
           node-version: 22
 
-      - name: Check the live site serves this commit and this index.html
+      - name: Check the live site serves this commit and this index.html, also at /graybox/
         env:
           PAGE_URL: ${{ needs.deploy.outputs.page_url }}
           EXPECTED_HTML_SHA256: ${{ needs.build.outputs.html_sha256 }}
         run: >
           node scripts/verify-build-identity.mjs
-          --url "$PAGE_URL" --commit "$GITHUB_SHA" --html-sha256 "$EXPECTED_HTML_SHA256"
+          --url "$PAGE_URL" --commit "$GITHUB_SHA" --html-sha256 "$EXPECTED_HTML_SHA256" --alias graybox/
           --attempts 8 --delay-ms 5000 --timeout-ms 10000
