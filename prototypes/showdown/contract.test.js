@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {EVENTS, viewFor} from "../../src/game/showdown/contract.js";
+import {EVENTS, finishedViewFor, viewFor} from "../../src/game/showdown/contract.js";
 import {applyAction, createShowdown, legalActions, opponent, planTurn, playTurn} from "../../src/game/showdown/rules.js";
 import {duelFor} from "./progress.js";
 import {LADDER} from "./trail-sim.mjs";
@@ -74,4 +74,30 @@ test("a side's view names its own hand and traps and nothing hidden of the other
   viewFor(state, "cowboy").sides.cowboy.board[0] = "x";
   assert.equal(state.sides.cowboy.board[0], null);
   assert.ok(legalActions(state).length > 0);
+});
+
+// Fable's even-fight brief, item 4 (done-when 6): once `result` is set both hands are in the
+// finished view; set traps, both decks and the seed never are, and mid-duel it is refused.
+test("a finished duel's view shows both hands, and never a deck card, the other side's traps or the seed", () => {
+  let finished = 0, revealed = 0;
+  everyDuel(({state}) => {
+    for (const side of ["cowboy", "wizard"]) {
+      if (!state.result) { assert.throws(() => finishedViewFor(state, side), /not finished/); continue; }
+      const other = opponent(side);
+      const view = finishedViewFor(state, side);
+      const text = JSON.stringify(view);
+      assert.deepEqual(view.sides[side].hand, state.sides[side].hand);
+      assert.deepEqual(view.sides[other].hand, state.sides[other].hand);
+      assert.equal(view.sides[other].traps, undefined);
+      for (const hidden of [...state.sides[other].traps, ...state.sides.cowboy.deck, ...state.sides.wizard.deck]) {
+        assert.ok(!text.includes(`"${hidden}"`), `${side}'s finished view shows ${hidden}`);
+      }
+      assert.ok(!("seed" in view));
+      // Everything else is the running view's picture.
+      assert.deepEqual({...view, sides: {}}, {...viewFor(state, side), sides: {}});
+      finished += 1;
+      if (state.sides[other].hand.length) revealed += 1;
+    }
+  });
+  assert.ok(finished >= 2 && revealed > 0, `${finished} finished views, ${revealed} with an other hand to show`);
 });

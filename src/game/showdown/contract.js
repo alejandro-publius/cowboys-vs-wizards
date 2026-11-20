@@ -19,6 +19,17 @@ export function viewFor(state, side) {
   return {...structuredClone(table), viewer: side, sides: {[side]: seen(side), [opponent(side)]: seen(opponent(side))}};
 }
 
+// A finished duel as `side` may see it: viewFor plus the other side's hand, so both hands are
+// shown once `result` is set (the even-fight brief, item 4: a screen change, not a rule). Set
+// traps stay face down, and neither deck's order nor the seed is shown. Mid-duel it refuses,
+// so viewFor stays the only picture a seat, the bot or a pass-the-screen turn has while playing.
+export function finishedViewFor(state, side) {
+  if (!state.result) throw new Error("the duel is not finished: only viewFor is shown");
+  const view = viewFor(state, side);
+  view.sides[opponent(side)].hand = [...state.sides[opponent(side)].hand];
+  return view;
+}
+
 // fields: every key the event carries besides `type`. shows: what a player must be able to see happen.
 // hidden: a field the other side must not be shown (the event still reaches both screens).
 export const EVENTS = Object.freeze({

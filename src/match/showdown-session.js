@@ -3,7 +3,7 @@
 // Solo (players 1): the other seat is the bot. Two players on one screen (players 2): no bot, and
 // the seat that may act and see its own hand is whichever side is active (issue 143 slice 3).
 import {DECKS} from "../game/showdown/cards.js";
-import {viewFor} from "../game/showdown/contract.js";
+import {finishedViewFor, viewFor} from "../game/showdown/contract.js";
 import {applyAction, createShowdown, legalActions, playTurn} from "../game/showdown/rules.js";
 import {duelFor, newSave} from "../game/showdown/progress.js";
 
@@ -50,6 +50,9 @@ export function createShowdownSession({seed, duel, seat = "cowboy", players = 1,
     viewer,
     // The viewing seat's whole picture of the duel. Hidden zones of the other seat are counts only.
     view: () => viewFor(state, viewer()),
+    // Once the duel has a result, the same picture with both hands face up, for the screen only;
+    // view() and anything recorded from it are unchanged. Null while the duel is running.
+    finished: () => (state.result ? finishedViewFor(state, viewer()) : null),
     legal,
     // Applies one of the active seat's legal actions once, then (solo) the bot's reply. Returns every event in order.
     act(action) {
