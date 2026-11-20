@@ -10,9 +10,13 @@
 //   - with the guide on, the opening, end-phase and first-clash tips are visible, each prompt starts with the guide-off prompt,
 //     and the Confirm/Cancel/Skip buttons are visible only at steps where a card is selected;
 //   - the guide stops in round 3 (after the first tribute summon) and at the match result, and restart brings the opening tip back.
+// Both pages must be illustrated builds (the offline file is shared with the graybox build, which is refused).
 // Screenshots (desktop 1440x900) and a mobile-size (390x844) legibility check go to docs/evidence/guided-first-match/ by default.
+// Target: the earlier illustrated build (lane duel, 3D board), built by `npm run build:art -- --web`
+// and published at /3d/. The graybox build (`npm run build`) is Showdown only since #143 slice 3
+// and has none of the lane screens this script drives.
 import {spawn} from "node:child_process";
-import {mkdir, mkdtemp, rm, writeFile} from "node:fs/promises";
+import {mkdir, mkdtemp, readFile, rm, writeFile} from "node:fs/promises";
 import path from "node:path";
 import {fileURLToPath, pathToFileURL} from "node:url";
 
@@ -23,6 +27,7 @@ const option = (name) => { const i = args.indexOf(name); return i < 0 ? undefine
 const page = path.join(root, "dist/cowboys-vs-wizards-board-duel.html");
 const basePage = option("--base");
 if (!basePage) throw new Error("--base needs the pre-change build's HTML path");
+for (const file of [page, basePage]) if (!(await readFile(file, "utf8")).includes('class="title-art"')) throw new Error(`${file} is not the illustrated build; run node scripts/build.mjs`);
 const outDir = path.resolve(option("--out-dir") ?? path.join(root, "docs/evidence/guided-first-match"));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const QUERY = "?mode=match&deck=starter&seed=0";

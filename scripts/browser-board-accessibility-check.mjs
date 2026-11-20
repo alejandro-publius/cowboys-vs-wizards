@@ -4,6 +4,9 @@
 // is the stated starting point on the title screen's Play control.
 // Usage: node scripts/browser-board-accessibility-check.mjs <url> [outputdirectory]
 // Chrome launch and CDP plumbing follow scripts/browser-menu-check.mjs.
+// Target: the earlier illustrated build (lane duel, 3D board), built by `npm run build:art -- --web`
+// and published at /3d/. The graybox build (`npm run build`) is Showdown only since #143 slice 3
+// and has none of the lane screens this script drives.
 import {spawn} from "node:child_process";
 import {mkdtemp, rm, mkdir, writeFile} from "node:fs/promises";
 import path from "node:path";

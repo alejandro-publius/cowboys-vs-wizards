@@ -757,6 +757,8 @@ async function resourceBytes(url) {
   return Buffer.from(await response.arrayBuffer());
 }
 const pageBytes = servedUrl ? await resourceBytes(baseUrl) : await readFile(pagePath);
+// The offline path is shared with the graybox build (Showdown only since #143 slice 3); refuse it here.
+if (!pageBytes.includes('class="title-art"')) throw new Error("The page is not the illustrated build; run npm run build:art");
 const result = {
   date: new Date().toLocaleString("en-US", {timeZone: "America/Los_Angeles", timeZoneName: "short"}),
   commit: shell("git", ["rev-parse", "--short", "HEAD"]),
