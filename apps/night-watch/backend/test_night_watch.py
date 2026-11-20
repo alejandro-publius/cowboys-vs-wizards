@@ -395,8 +395,11 @@ class PublishTests(unittest.TestCase):
             self.assertNotIn("kiro", [argv[i + 1] for i, a in enumerate(argv) if a == "--label"])
             self.assertNotIn("comment", argv)
             self.assertNotIn("edit", argv)
-        with self.assertRaises(issues.PublishError):
-            issues._no_web_trigger("text\n /kiro please fix\n")
+        for text in ("text\n /kiro please fix\n", "see /kiro", "/kiro fix", "x\t/kiro."):
+            with self.assertRaises(issues.PublishError):
+                issues._no_web_trigger(text)
+        for text in ("/kirocrew", "src/kiro/index.ts", "path/kiro"):
+            self.assertEqual(issues._no_web_trigger(text), text)
         self.assertIn("kiro", issues.WEB_TRIGGER_LABELS)
         self.assertNotIn(issues.LABEL, issues.WEB_TRIGGER_LABELS)
 

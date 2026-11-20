@@ -25,6 +25,7 @@ import lean
 LABEL = "night-watch"
 # Labels and comment commands that assign Kiro Web (https://kiro.dev/docs/web/github/). Never used.
 WEB_TRIGGER_LABELS = frozenset(["kiro"])
+WEB_TRIGGER = re.compile(r"(?:^|\s)/kiro(?![A-Za-z0-9_])", re.IGNORECASE)
 LEDGER = "published.json"
 SLUG = re.compile(r"[A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9][A-Za-z0-9_.-]*")
 TIMEOUT = 30
@@ -43,8 +44,8 @@ def rules_marker(blob):
 
 
 def _no_web_trigger(text):
-    """Refuse any line that GitHub would read as a /kiro comment command."""
-    if any(line.strip().lower().startswith("/kiro") for line in text.splitlines()):
+    """Refuse text Kiro Web would read as a /kiro command: at the start or after whitespace, not followed by [A-Za-z0-9_]."""
+    if WEB_TRIGGER.search(text):
         raise PublishError("The draft contains a /kiro command line. Night Watch never assigns Kiro Web.")
     return text
 

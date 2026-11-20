@@ -7,14 +7,24 @@ import {SHOWDOWN_SPECS} from "../../src/game/card-specs.generated.js";
 import {DECKS} from "../../src/game/showdown/cards.js";
 import {LEDGER} from "../../src/ui/sheriffs-ledger.data.js";
 import {ledgerHtml, ledgerRows, rulesetSummary} from "../../src/ui/sheriffs-ledger.js";
-import {R1_1_CARDS, buildLedger, laTime, latestShowdownRun, matchPerCard, render} from "../../scripts/build-sheriffs-ledger.mjs";
+import {DEFAULT_RECEIPT, R1_1_CARDS, buildLedger, defaultInputs, laTime, latestShowdownRun, matchPerCard, render, runFromReceipt} from "../../scripts/build-sheriffs-ledger.mjs";
 
 const REPORT_PATH = "docs/evidence/night-watch-showdown/scout-pair-reports.json";
 const reports = JSON.parse(readFileSync(REPORT_PATH, "utf8"));
 
-test("the payload regenerates byte for byte from the catalog and the Night Watch records", () => {
-  assert.equal(render(buildLedger({reports})), readFileSync("src/ui/sheriffs-ledger.data.js", "utf8"));
+test("the payload regenerates byte for byte from the catalog and the checked-in Night Watch receipt", () => {
+  assert.equal(render(buildLedger(defaultInputs())), readFileSync("src/ui/sheriffs-ledger.data.js", "utf8"));
   assert.equal(render(buildLedger({reports})), render(buildLedger({reports: [...reports].reverse()})), "input order does not matter");
+});
+
+test("the Camp shows the checked-in receipt's real run: its commit, rules blob and counts", () => {
+  const receipt = JSON.parse(readFileSync(DEFAULT_RECEIPT, "utf8"));
+  const run = runFromReceipt(receipt);
+  assert.equal(LEDGER.run.source, DEFAULT_RECEIPT);
+  assert.equal(LEDGER.run.revision, receipt.candidate.commit);
+  assert.equal(LEDGER.run.rulesBlob, receipt.candidate.rulesBlob);
+  assert.deepEqual([LEDGER.run.games, LEDGER.run.first, LEDGER.run.cowboy], [run.candidate.counts.games, run.candidate.counts.first, run.candidate.counts.cowboy]);
+  assert.equal(receipt.cards.measured, false);
 });
 
 test("one row per catalog card, in catalog order, with real starter counts and spec paths", () => {
@@ -33,13 +43,14 @@ test("R1.1 is linked only to the eight cards the requirement names", () => {
   assert.ok(LEDGER.cards.every((c) => c.requirement === "R1" || R1_1_CARDS.includes(c.name)));
 });
 
-test("the run is the newest Showdown report, tied to its commit and seeds, labelled ruleset-wide", () => {
+test("from a report file the run is the newest Showdown report, tied to its commit and seeds, labelled ruleset-wide", () => {
   const latest = latestShowdownRun(reports);
-  assert.equal(LEDGER.run.id, latest.id);
-  assert.equal(LEDGER.run.revision, latest.candidate.commit);
-  assert.deepEqual([LEDGER.run.firstSeed, LEDGER.run.count, LEDGER.run.games], [latest.firstSeed, latest.count, latest.candidate.counts.games]);
+  const fromReports = buildLedger({reports});
+  assert.equal(fromReports.run.id, latest.id);
+  assert.equal(fromReports.run.revision, latest.candidate.commit);
+  assert.deepEqual([fromReports.run.firstSeed, fromReports.run.count, fromReports.run.games], [latest.firstSeed, latest.count, latest.candidate.counts.games]);
   assert.equal(laTime("2026-11-20T05:43:40Z"), "November 19, 2026, 9:43 PM PST");
-  const line = rulesetSummary();
+  const line = rulesetSummary(fromReports);
   assert.match(line, new RegExp(`commit ${latest.candidate.commit.slice(0, 7)} against ${latest.baseline.commit.slice(0, 7)}, seeds 0–999, 2,000 games`));
   assert.match(line, /First player won 1,142 \(57\.1%\)\. Cowboys won 1,188 \(59\.4%\)\./);
   assert.match(ledgerHtml(), /Whole ruleset \(not per card\)/);
@@ -96,7 +107,7 @@ test("a night-watch-receipt/1 receipt feeds the same ruleset line; per-card clai
   const ledger = buildLedger({receipt, reportPath: "test-only-receipt.json"});
   assert.equal(ledger.run.revision, run.candidate.commit);
   assert.equal(ledger.run.rulesBlob, "0".repeat(40));
-  assert.equal(rulesetSummary(ledger).split(": commit")[1], rulesetSummary().split(": commit")[1]);
+  assert.equal(rulesetSummary(ledger).split(": commit")[1], rulesetSummary(buildLedger({reports})).split(": commit")[1]);
   assert.ok(ledgerRows(ledger).every((row) => row.latest === "Not observed"));
   assert.throws(() => buildLedger({receipt: {...receipt, cards: {measured: true}}}), /per-card/);
   assert.throws(() => buildLedger({receipt: {...receipt, mode: "lanes"}}), /Showdown/);

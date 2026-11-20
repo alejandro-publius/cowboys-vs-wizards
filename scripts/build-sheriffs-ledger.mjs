@@ -1,7 +1,8 @@
 // Writes src/ui/sheriffs-ledger.data.js, the static payload behind the Sheriff's Ledger in the Showdown Camp
 // ("The Night Shift" loop). Inputs, all checked in and read offline:
 //   - the 29-card catalog (src/game/card-specs.generated.js via src/game/showdown/cards.js) and the starter decks;
-//   - the newest Showdown run in a Night Watch report file (default docs/evidence/night-watch-showdown/scout-pair-reports.json);
+//   - by default the checked-in Night Watch receipt docs/evidence/night-shift/receipt.json (the one source of the run);
+//   - or --report <file>: the newest Showdown run in a Night Watch report file (docs/evidence/night-watch-showdown/scout-pair-reports.json);
 //   - the Showdown engine properties SP1-SP7 (tests/helpers/boundary-properties/showdown/properties.js);
 //   - or --receipt <file>: a Night Watch receipt (schema night-watch-receipt/1, ../graywave-night-meter-contract.md),
 //     used instead of the report file. Its `cards.measured` must be false: the receipt defines no per-card counts.
@@ -19,6 +20,12 @@ import {PROPERTIES} from "../tests/helpers/boundary-properties/showdown/properti
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUTPUT = join(root, "src/ui/sheriffs-ledger.data.js");
 const DEFAULT_REPORT = "docs/evidence/night-watch-showdown/scout-pair-reports.json";
+export const DEFAULT_RECEIPT = "docs/evidence/night-shift/receipt.json";
+// The inputs the payload is built from when no option is given: the receipt when it is checked in.
+export function defaultInputs() {
+  if (!existsSync(join(root, DEFAULT_RECEIPT))) return {reports: JSON.parse(readFileSync(join(root, DEFAULT_REPORT), "utf8"))};
+  return {reports: [], reportPath: DEFAULT_RECEIPT, receipt: JSON.parse(readFileSync(join(root, DEFAULT_RECEIPT), "utf8"))};
+}
 const SPEC_DIR = ".kiro/specs/duel-card-pipeline/cards";
 const REQUIREMENTS = ".kiro/specs/duel-card-pipeline/requirements.md";
 // R1.1 names the initial migration's cards exactly; every later card is covered by R1 as a "further spec".
@@ -102,13 +109,13 @@ export function render(ledger) {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2);
   const opt = (name) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : null; };
-  const reportPath = opt("--report") ?? DEFAULT_REPORT;
+  const reportPath = opt("--report");
   const perCardPath = opt("--per-card");
   const receiptPath = opt("--receipt");
-  const receipt = receiptPath ? JSON.parse(readFileSync(join(root, receiptPath), "utf8")) : null;
-  const reports = receipt ? [] : JSON.parse(readFileSync(join(root, reportPath), "utf8"));
+  const inputs = receiptPath ? {reports: [], reportPath: receiptPath, receipt: JSON.parse(readFileSync(join(root, receiptPath), "utf8"))}
+    : reportPath ? {reports: JSON.parse(readFileSync(join(root, reportPath), "utf8")), reportPath} : defaultInputs();
   const perCard = perCardPath ? {...JSON.parse(readFileSync(join(root, perCardPath), "utf8")), source: relative(root, join(root, perCardPath))} : null;
-  const text = render(buildLedger({reports, reportPath: receiptPath ?? reportPath, receipt, perCard}));
+  const text = render(buildLedger({...inputs, perCard}));
   if (args.includes("--check")) {
     const current = existsSync(OUTPUT) ? readFileSync(OUTPUT, "utf8") : "";
     if (current !== text) { console.error("src/ui/sheriffs-ledger.data.js is stale: run node scripts/build-sheriffs-ledger.mjs"); process.exit(1); }

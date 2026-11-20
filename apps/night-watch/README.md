@@ -49,7 +49,19 @@ python3 backend/server.py issues --receipt receipt.json            # dry run: pr
 python3 backend/server.py issues --receipt receipt.json --publish  # creates issues with gh
 ~~~
 
-`--report latest` (or a report id) reads a stored report instead of a file. Each finding (a lean metric or a shift alert) becomes at most one open issue labelled `kiro`, found again by the `<!-- night-watch-finding:KEY -->` marker in its body, so retries do not duplicate it. The lean key leaves out the commit, so a lean that persists across commits keeps one open issue. Night Watch recomputes the verdicts from the receipt's counts before drafting, builds titles and bodies from those numbers only, and runs `gh` with an argument list. The repository must already have a `kiro` label. The scheduled job never publishes.
+`--report latest` (or a report id) reads a stored report instead of a file. Each finding (a lean metric or a shift alert) becomes at most one issue labelled `night-watch`. Night Watch finds it again by the `<!-- night-watch-finding:KEY -->` marker in any state. An open issue is reused. A closed issue that also holds the same `<!-- night-watch-rules:BLOB -->` marker counts as resolved and is not filed again, so retries and closed findings never duplicate. Only a lean that persists after the rules file changed opens a new issue. The lean key leaves out the commit, so a lean that persists across commits keeps one issue. Night Watch recomputes the verdicts from the receipt's counts before drafting, builds titles and bodies from those numbers only, and runs `gh` with an argument list. The repository must already have a `night-watch` label.
+
+Night Watch never uses the `kiro` label or a `/kiro` line, which assign Kiro Web ([docs](https://kiro.dev/docs/web/github/)). It never reads, comments on or edits an issue after filing it, so a filed issue cannot start an agent or another run.
+
+### Scheduled issues (opt-in project setting)
+
+The scheduled job is read-only by default (`autoIssues: "off"`). Set **Scheduled issues** to *One issue per reproduced out-of-band lean* (`autoIssues: "lean"`, which needs Showdown mode and a target band) to let each scheduled run file issues. Optionally set **Issue repository** (`issueRepo`, owner/name). Then, after each scheduled run:
+
+1. Only lean findings count (the whole 95% interval outside the band). Shift alerts stay as draft links.
+2. The Night Shift reviewer re-runs the finding's counts from a fresh `git archive` snapshot: `node scripts/night-review.mjs check --finding <report>` in this app's checkout, with a 120 s limit. If the reviewer is missing, times out or gets different counts, nothing is filed.
+3. At most two issues per run, deduplicated as above. The run's report records the outcome under `publication`.
+
+Choosing a card and a number, and any change to cards or rules, stays with Fable/Alex through `node scripts/night-review.mjs run …` (see `docs/evidence/night-shift-review.md`). Nothing is merged automatically.
 
 ## Schedule a nightly check
 
@@ -59,7 +71,7 @@ Save the settings and verify one manual run first. From this app directory, regi
 python3 backend/server.py schedule --time 02:00 --timezone America/Los_Angeles
 ~~~
 
-The job runs `server.py run --scheduled --mode showdown`, so nightly checks play Showdown whatever mode the manual settings hold. Run `python3 backend/server.py run --mode lanes` for a one-off lane comparison.
+The job runs `server.py run --scheduled --mode showdown`, so nightly checks play Showdown whatever mode the manual settings hold. It files issues only when Scheduled issues is on (see above). Run `python3 backend/server.py run --mode lanes` for a one-off lane comparison.
 
 Crew runs the scheduled command locally. It records a report in the same history as manual runs, with **Scheduled** as the trigger. Manage the job in Crew’s **Schedule** panel. To remove it from the terminal, use this command.
 

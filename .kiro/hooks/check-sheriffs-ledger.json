@@ -4,7 +4,7 @@
     {
       "name": "check-sheriffs-ledger",
       "trigger": "PostFileSave",
-      "matcher": "(^|/)(\\.kiro/specs/duel-card-pipeline/cards/[^/]+\\.json|docs/evidence/night-watch-showdown/[^/]+\\.json|src/ui/sheriffs-ledger(\\.data)?\\.js)$",
+      "matcher": "(^|/)(\\.kiro/specs/duel-card-pipeline/cards/[^/]+\\.json|docs/evidence/night-watch-showdown/[^/]+\\.json|docs/evidence/night-shift/receipt\\.json|src/ui/sheriffs-ledger(\\.data)?\\.js)$",
       "action": {
         "type": "command",
         "command": "node scripts/build-sheriffs-ledger.mjs --check"
