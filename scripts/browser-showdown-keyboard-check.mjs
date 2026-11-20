@@ -247,6 +247,21 @@ try {
   check("Boot Hill (?seed=0) won with Tab, Shift+Tab, Enter and Escape only; focus usable after every Enter",
     {...finish, turns, attackPicks, cardPicks, cancels, keys: report.keys, activations: report.activations.length});
 
+  // 4b. Back to camp by keyboard while the win's card offer is still open (bugfix spec
+  // .kiro/specs/showdown-camp-return-focus): the Trail tile that started the duel is disabled, so focus
+  // goes to the first offered card, not the Camp's Main menu, and the next Enter cannot leave the Camp.
+  if (await evaluate(`Boolean(document.querySelector('#sd-result [data-choose]'))`)) {
+    await tabTo("#sd-home");
+    await key("Enter");
+    await wait(CAMP);
+    await sleep(30);
+    const back = await evaluate(`(()=>{const a=document.activeElement;return{id:a===document.body?'body':a.id?'#'+a.id:a.outerHTML.slice(0,60),
+      choose:a.dataset?.choose??null,first:document.querySelector('#camp-claim [data-choose]')?.dataset.choose??null};})()`);
+    assert.ok(back.first, "the Camp shows the card offer");
+    assert.equal(back.choose, back.first, `Back to camp with an offer open focuses the first offered card, not ${back.id}`);
+    check("Back to camp by Enter with the card offer open focuses the first offered card", back);
+  }
+
   // 5. Mouse play: the screen never moves focus or scrolls for a click. Cleared storage, so a
   // Camp build opens Boot Hill again rather than the next Trail duel.
   await evaluate(`localStorage.clear()`);
