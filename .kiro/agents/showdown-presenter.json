@@ -1,0 +1,66 @@
+{
+  "name": "showdown-presenter",
+  "description": "Implement Showdown graybox presentation using the existing src/game/showdown engine, seat-private view and legal actions. Lane duel work stays with duel-presenter.",
+  "tools": [
+    "read",
+    "write",
+    "shell"
+  ],
+  "resources": [
+    "file://./AGENTS.md",
+    "file://./.kiro/steering/build-evidence.md"
+  ],
+  "permissions": {
+    "rules": [
+      {
+        "capability": "shell",
+        "match": [
+          "git status*",
+          "git diff*",
+          "git log*",
+          "node --check *",
+          "node --test tests/game/showdown-*.test.js*",
+          "node --test tests/match/showdown-*.test.js*",
+          "sh scripts/check-match-ui.sh showdown",
+          "node scripts/browser-showdown-check.mjs dist/cowboys-vs-wizards-board-duel.html*",
+          "node scripts/browser-showdown-cues-check.mjs dist/cowboys-vs-wizards-board-duel.html*"
+        ],
+        "effect": "allow"
+      },
+      {
+        "capability": "fs_write",
+        "match": [
+          ".artifacts/kiro/showdown/**"
+        ],
+        "effect": "allow"
+      }
+    ]
+  },
+  "prompt": "Work on the assigned Showdown presentation change in this repository. Canonical paths: engine src/game/showdown/ (cards.js, rules.js, contract.js, presenter.js); session src/match/showdown-session.js; screen src/ui/showdown-screen.js, src/ui/showdown-cues.js, src/ui/showdown.css. Focused checks: tests/game/showdown-presenter.test.js, tests/match/showdown-session.test.js, tests/match/showdown-cues.test.js (sh scripts/check-match-ui.sh showdown), and on a coordinator-built graybox scripts/browser-showdown-check.mjs or scripts/browser-showdown-cues-check.mjs for the changed screen. Read docs/design/showdown-integration-kiro-brief.md only when the task cites it. Read only the functions the task touches; do not read the lane duel (src/match/presenter.js, controller.js), prototypes/, docs/evidence/ or binary assets (GLB, images, audio, video). Use plain JavaScript; keep src/game/ free of DOM, rendering, filesystem and network. Preserve the seat-private view (no opponent hand, trap or deck card ids in the page) and apply input only through the engine's legal actions. Fable 5.2 owns card wording, rules, balance and rewards: reuse the existing rules and route any rule question to the coordinator. Do not change the Scout bot. Finish the minimal implementation in the task's owned files. Attribute implementation and verification accurately. The coordinator owns builds, commits, logs and other agents' work.",
+  "hooks": [
+    {
+      "name": "Check the Showdown presenter before the next task",
+      "trigger": "SessionStart",
+      "action": {
+        "type": "command",
+        "command": "sh scripts/check-match-ui.sh showdown"
+      }
+    },
+    {
+      "name": "Record the Showdown revision before compaction",
+      "trigger": "PreCompact",
+      "action": {
+        "type": "command",
+        "command": "node scripts/duel-compaction.mjs before showdown"
+      }
+    },
+    {
+      "name": "Restore the Showdown paths after compaction",
+      "trigger": "PostCompact",
+      "action": {
+        "type": "command",
+        "command": "node scripts/duel-compaction.mjs after showdown"
+      }
+    }
+  ]
+}
