@@ -21,6 +21,8 @@ Showdown is the game being built ([release line](design/release-line.md)). The l
 | Moving reference features into the graybox | [integration brief](design/showdown-integration-kiro-brief.md); open slice work may already be in a PR, so check open PRs first | the rows above for the paths touched |
 | Lane duel compatibility (`?mode=lanes`, `match`, `ride-out`, `practice-*`, `fire-arc`) | `LANE_MODES` in `src/app.js` loads `src/graybox.js`; rules in `src/game/*.js` outside `showdown/`; the lane save `cvw-player-v1` is read and written by `src/profile/player-profile.js` | `node --test tests/game/player-profile.test.js`; `browser-showdown-check.mjs` above also loads `?mode=lanes` and `?mode=match` |
 
+Kiro agent: [`.kiro/agents/showdown-presenter.json`](../.kiro/agents/showdown-presenter.json) for Showdown presentation work (its SessionStart hook runs `sh scripts/check-match-ui.sh showdown`); [`duel-presenter.json`](../.kiro/agents/duel-presenter.json) stays for the lane duel.
+
 `npm run build` puts both games' code in the one graybox file. Each mode runs only the modules its branch of `src/app.js` imports; `src/graybox.js` runs only for the lane modes. Lane rules in [`docs/kiro-task-01.md`](kiro-task-01.md) do not apply to Showdown.
 
 ## Lane duel and illustrated build

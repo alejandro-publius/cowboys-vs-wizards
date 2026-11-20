@@ -1,6 +1,6 @@
 # Showdown (prototype)
 
-The fight Alex chose on November 18, 2026 to build the deeper rules on: you choose every attack, your troops shield your Base, and turns alternate. Everything here is separate from the main game in `src/`, which is untouched.
+The fight Alex chose on November 18, 2026 to build the deeper rules on: you choose every attack, your troops shield your Base, and turns alternate. Its engine now lives in `src/game/showdown/`; `rules.js`, `cards.js` and `contract.js` here re-export it. The Trail, progress, save codes and this page's screens are still only here, and the main graybox opens Showdown's first duel.
 
 ```sh
 node prototypes/showdown/build.mjs        # writes dist/showdown.html; open it in a browser
