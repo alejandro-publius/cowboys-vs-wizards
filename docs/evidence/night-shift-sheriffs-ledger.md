@@ -31,6 +31,10 @@ A collapsed `<details>` at the end of the Camp (after the Trail, Your cards and 
 
 Scripted browser runs support claims about layout, flow and focus. Appearance and clarity have not been reviewed or playtested.
 
+## Integration with `kiro/graywave-modes` (trial, not kept)
+
+A scratch merge of `kiro/graywave-modes` at `605e826` into this branch conflicted only in `src/ui/showdown-camp.js` (the import line: keep modes' `face` import and add `import {mountLedger} from "./sheriffs-ledger.js";`) and `src/ui/showdown.css` (keep both blocks, modes' first). The ledger's `<details>` and `mountLedger` call merged cleanly. On that merged tree: `npm run build`; 37 Node tests passed (ledger, modes, session, cues, campaign, playtest); `browser-ledger-check.mjs` 10, `browser-showdown-modes-check.mjs` 13 and `browser-showdown-check.mjs` 23 checks passed. The scratch branch was deleted; the coordinator does the real integration.
+
 ## Open decisions (Fable / Alex)
 
 - Placement and wording follow the brief, not Fable's screenshot, which this worker did not have.
