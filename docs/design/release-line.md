@@ -22,6 +22,8 @@ Added by Kiro (Kiro CLI, coordinator job `graywave-assemble`) from GitHub `main`
 
 **Outrider decisions (November 20).** An independent Kiro CLI session verified candidate `e58fb4b` from a clean checkout. Camp shows one "Try an Outrider turn" button (`?outrider=case-e`). The collapsed Sheriff's Ledger opens two positions, case-e and case-a, and shows each measured ride and fight result only after "Show the measured comparison". The game replays both choices before each build. A rules change or a reversed result removes the button, the links and the results. The pre-registered cue failed its holdout, so neither position is advice, a bounty or a rule. Fable decides whether any of it becomes one. [Open the Camp decision](https://alejandro-publius.github.io/cowboys-vs-wizards/?outrider=case-e) or [compare the opposite deal](https://alejandro-publius.github.io/cowboys-vs-wizards/?outrider=case-a). [Release verification](../evidence/outrider-release-verify.md) · [gate evidence](../evidence/outrider-gate.md) · [Power evidence](../evidence/showdown-ride-power.md).
 
+**First-turn and report checks (November 20).** Kiro added independent browser checks for Boot Hill’s first summon, the two Outrider choices and sharing a mixed-build Camp report. The release keeps automated WebKit touch and keyboard results separate from physical-device testing. [Timing and controls](../evidence/showdown-first-input.md) · [WebKit outcomes](../evidence/showdown-outrider-webkit.md) · [Camp report contents](../evidence/showdown-camp-export-privacy.md).
+
 **Milestones.**
 
 | State | What |

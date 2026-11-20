@@ -1,6 +1,6 @@
 # Showdown Camp export privacy (K-094)
 
-Owner: Kiro CLI worker, export worktree. Status: expectation recorded before the first run; results below.
+Kiro CLI recorded the expected result before running the clipboard check.
 
 ## Expectation (recorded before running)
 
@@ -11,7 +11,7 @@ career totals. It must contain none of the harmless canary strings planted in fi
 One way a fake pass could arise: the planted data never reaches the page (wrong origin, the save is reset, the
 clipboard read returns stale or empty text), so "no canary" holds trivially. Controls are listed under Results.
 
-## Run (2026-11-19, America/Los_Angeles; Kiro CLI, scripted headless Chrome)
+## Run (2026-11-20, America/Los_Angeles; Kiro CLI, scripted headless Chrome)
 
 ```
 node scripts/build-graybox.mjs

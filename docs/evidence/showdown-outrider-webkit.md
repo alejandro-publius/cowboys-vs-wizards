@@ -57,7 +57,7 @@ Every defect failed at the expected check. A defect that went undetected would f
 
 - No UI fix was needed. `src/ui/outrider-*` is unchanged.
 - One fixed arm per run. Outcomes after the first action are not judged here; the Node gate judges them.
-- The keyboard run reports focus offscreen, but no covered or offscreen control was run for keyboard.
+- The keyboard flow checks focus visibility. The covered-target and offscreen negative controls ran on the touch path.
 - Descriptions are read from DOM `aria-describedby`, because this WebKit build has no native accessibility tree.
 - Option+Tab stands in for Safari's "Press Tab to highlight each item" setting.
 - Not covered: native Safari, iOS, real touch hardware, screen readers, and human clarity or fun.
