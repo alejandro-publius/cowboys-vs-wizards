@@ -6,5 +6,5 @@
       hashes, unrelated-edit control (G1-G4)
 - [x] 4. Headless Chrome check on the fixture page and on the no-case build (G5, G6, G8)
 - [x] 5. Native PostFileSave hook with receipts; trigger and skip observed (G7)
-- [ ] 6. Import the search worker's frozen cases from `../cases-ready.json`, write the receipt with `--write`,
-      rerun `--check`, `npm run build` and the browser check on the real cases (G1, G6). Pending while the search runs.
+- [x] 6. Import the search worker's frozen cases from `../cases-ready.json`, write the receipt with `--write`,
+      rerun `--check`, `npm run build` and the browser check on the real cases (G1, G6). Done: 10 cases from 6ab8899.

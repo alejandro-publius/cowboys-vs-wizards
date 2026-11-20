@@ -101,7 +101,7 @@ export async function verifiedForBuild({dir = DEFAULT_DIR, receiptPath = DEFAULT
     const fresh = new Set(verdicts.filter((v) => v.fresh).map((v) => v.id));
     const stale = verdicts.filter((v) => !v.fresh);
     return {cases: decision.cases.filter((c) => fresh.has(c.id)).map(({id, setup, seed, prefix, at}) => ({id, setup, seed, prefix, at})),
-      note: stale.length ? `withheld stale: ${stale.map((v) => `${v.id} (${v.problems.join("; ")})`).join(", ")}` : `${fresh.size} verified`};
+      note: stale.length ? `${fresh.size} verified; withheld stale: ${stale.map((v) => v.id).join(", ")} (details: node scripts/outrider-gate.mjs --check)` : `${fresh.size} verified`};
   } catch (error) { return {cases: [], note: `gate error, nothing shipped: ${error.message}`}; }
 }
 

@@ -35,11 +35,13 @@ under the recorded continuation policy and the shipped Trail bot".
 
 | Req | Proof | Status |
 | --- | --- | --- |
-| G1 | `tests/match/showdown-outrider-gate.test.js` "positive"; `node scripts/outrider-gate.mjs --check` | fixture: passed. Real cases: see `docs/evidence/outrider-gate.md` |
+| G1 | `tests/match/showdown-outrider-gate.test.js` "positive"; `node scripts/outrider-gate.mjs --check` | passed: fixture, and 10/10 imported cases (both arms) |
 | G2 | same test file "fail closed", "changed branch outcome"; browser check on the no-case build | passed |
-| G3 | same test file "genuine gameplay mutation", "negative control" (disposable copy of `src/`) | passed |
+| G3 | same test file "genuine gameplay mutation", "negative control" (disposable copy of `src/`); clean-worktree mutation on the real cases | passed |
 | G4 | same test file "build ships nothing...", "only a verified id opens" | passed |
-| G5 | same test file; `scripts/browser-showdown-outrider-check.mjs` lesson and label asserts | passed on fixture page |
-| G6 | `scripts/browser-showdown-outrider-check.mjs` (headless Chrome, fresh profile) | passed on fixture page; real cases pending until `cases-ready.json` |
+| G5 | same test file; `scripts/browser-showdown-outrider-check.mjs` lesson and label asserts | passed: fixture page and real-case build |
+| G6 | `scripts/browser-showdown-outrider-check.mjs` (headless Chrome, fresh profile) | passed: 85 checks on the clean c4e9723 build with the 10 cases |
 | G7 | `.kiro/hooks/check-outrider-gate.json`, `.artifacts/outrider-gate-hook/receipts.jsonl` | native trigger and skip observed, see evidence |
 | G8 | `npm run build` log line; browser check "Camp shows no Outrider control" | passed |
+
+Evidence and exact commands: [`docs/evidence/outrider-gate.md`](../../../docs/evidence/outrider-gate.md).
