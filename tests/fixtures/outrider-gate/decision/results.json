@@ -1,0 +1,41 @@
+{
+  "note": "TEST FIXTURE ONLY.",
+  "cases": {
+    "fixture-a": {
+      "ride": {
+        "winner": "cowboy",
+        "turn": 28,
+        "bases": {
+          "cowboy": 2,
+          "wizard": 0
+        }
+      },
+      "fight": {
+        "winner": "wizard",
+        "turn": 16,
+        "bases": {
+          "cowboy": 0,
+          "wizard": 3
+        }
+      }
+    },
+    "fixture-b": {
+      "ride": {
+        "winner": "cowboy",
+        "turn": 26,
+        "bases": {
+          "cowboy": 1,
+          "wizard": 0
+        }
+      },
+      "fight": {
+        "winner": "wizard",
+        "turn": 10,
+        "bases": {
+          "cowboy": 0,
+          "wizard": 4
+        }
+      }
+    }
+  }
+}

@@ -7,8 +7,10 @@
 const node = (id) => document.getElementById(id);
 
 Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"), import("./ui/showdown-builder.js"), import("./match/showdown-campaign.js"),
-  import("./match/showdown-playtest.js"), import("./match/showdown-session.js"), import("./match/showdown-turn.js")])
-  .then(([{mountShowdown, freshSeed}, {mountCamp}, {mountBuilder}, {createCampaign}, {createPlaytestLog}, {twoPlayers}, {turnDuel}]) => {
+  import("./match/showdown-playtest.js"), import("./match/showdown-session.js"), import("./match/showdown-turn.js"),
+  import("./match/showdown-outrider.js"), import("./ui/outrider-camp.js")])
+  .then(([{mountShowdown, freshSeed}, {mountCamp}, {mountBuilder}, {createCampaign}, {createPlaytestLog}, {twoPlayers}, {turnDuel},
+    {outriderTurn}, {VERIFIED, outriderControls}]) => {
   const title = node("title-screen"), screen = node("showdown"), campRoot = node("showdown-camp"), builderRoot = node("showdown-builder"), play = node("menu-play");
   const seed = new URLSearchParams(location.search).get("seed");
   // ?seed fixes every deal started from the Camp and every later game of a match, so a scripted check replays the same duels.
@@ -66,6 +68,19 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     return true;
   };
   campRoot.addEventListener("click", (event) => { const b = event.target.closest("button[data-turn]"); if (b) openTurn(b.dataset.turn); });
+  // K-011: Outrider turns, only the ids scripts/outrider-gate.mjs verified at build time (?outrider=<id> or the Camp control).
+  node("camp-experiment").insertAdjacentHTML("beforeend", outriderControls());
+  const openOutrider = (id) => {
+    const turn = outriderTurn(id, VERIFIED);
+    if (!turn) return false;
+    last = `[data-outrider="${id}"]`;
+    showOnly(screen);
+    showdown.start(turn.duel, turn.seed);
+    return true;
+  };
+  campRoot.addEventListener("click", (event) => { const b = event.target.closest("button[data-outrider]"); if (b) openOutrider(b.dataset.outrider); });
   const turn = new URLSearchParams(location.search).get("turn");
   if (turn !== null) openTurn(turn);
+  const outrider = new URLSearchParams(location.search).get("outrider");
+  if (outrider !== null && turn === null) openOutrider(outrider);
   });

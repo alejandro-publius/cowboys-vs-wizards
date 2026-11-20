@@ -1,0 +1,75 @@
+{
+  "schema": "outrider-gate-receipt/1",
+  "decision": {
+    "tests/fixtures/outrider-gate/decision/replay.json": "79e58957d45abd3de51d7144f16f48728d0f92a76059cd0d9f04dad8a87be2ad",
+    "tests/fixtures/outrider-gate/decision/results.json": "5d54fcf47e1f4e2f0cb71f60d9d2ec04408d85e9624145a9e30e7332b81d346e",
+    "tests/fixtures/outrider-gate/decision/policy.js": "d4448c3e38d99b3357a02b111674282f1d0d3fd81f134ba798446ab620b4832a"
+  },
+  "sources": {
+    "src/game/showdown/rules.js": "096eb8a22dced7ca527cd2ebc27b6d1c36922884f0570662a7c0762d62d5b61a",
+    "src/game/showdown/cards.js": "2e9c3c7df707c43bc61b6481b801211de4fabd6ada87d9aa35d52330b868ffe1",
+    "src/game/card-specs.generated.js": "187bb9ca71516227e67edd9f6e248e038ae20028e7e3333b6fa28bdf18b40a8b",
+    "src/game/showdown/progress.js": "6eec06618efbfb13d7b965d5d3bce9a7b9d0f4f5f54cd3e11aac41e0de5ef1d0",
+    "src/game/showdown/trail.js": "8fa27db59ee2d6cceaecd72012c198c6ef00d98c88994866509cfe51704fd528",
+    "src/game/showdown/contract.js": "85a356ee3ff9b530162cca870eefead5fb773e45d857b95cfed125e942f1b2be",
+    "src/match/showdown-session.js": "6ffdf75b79fb706632e9ee6b445d4b658bdc3ec9859e2897088a1fe8f1512c00",
+    "src/match/showdown-outrider.js": "e8f1c1a81c2566bb5dc747eb8b91f12fa0893b2ab387b08bd753fd72f742e1ac"
+  },
+  "note": "Transcript digests are sha256 of each arm's full event list; source hashes are informational only.",
+  "cases": [
+    {
+      "id": "fixture-a",
+      "arms": {
+        "ride": {
+          "outcome": {
+            "winner": "cowboy",
+            "turn": 28,
+            "bases": {
+              "cowboy": 2,
+              "wizard": 0
+            }
+          },
+          "transcript": "dc7de1b85d8f7ad9c0572bdaac0164c02dd4c1b42cfc5ce054baa9074c2058db"
+        },
+        "fight": {
+          "outcome": {
+            "winner": "wizard",
+            "turn": 16,
+            "bases": {
+              "cowboy": 0,
+              "wizard": 3
+            }
+          },
+          "transcript": "eb3d3c032e848cd52b50bc8e9fb5ac15f8db8ed3aa41adfc5c43b337ebc1f8d9"
+        }
+      }
+    },
+    {
+      "id": "fixture-b",
+      "arms": {
+        "ride": {
+          "outcome": {
+            "winner": "cowboy",
+            "turn": 26,
+            "bases": {
+              "cowboy": 1,
+              "wizard": 0
+            }
+          },
+          "transcript": "23b85dc40475db28773406b68f279e1b5331165a3f6df520c1e774eb98770a8e"
+        },
+        "fight": {
+          "outcome": {
+            "winner": "wizard",
+            "turn": 10,
+            "bases": {
+              "cowboy": 0,
+              "wizard": 4
+            }
+          },
+          "transcript": "794a229eb8c0ea7b775097a0f17ce2edd23a662b2586c003c7d802f1d036c961"
+        }
+      }
+    }
+  ]
+}
