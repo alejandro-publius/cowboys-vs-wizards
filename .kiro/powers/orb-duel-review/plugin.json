@@ -1,13 +1,14 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "orb-duel-review",
-  "version": "1.2.0",
-  "description": "Independent, read-only review of the Cowboys vs. Wizards Chrome replay receipt against the current built page.",
+  "version": "1.3.0",
+  "description": "Independent, read-only review of the Cowboys vs. Wizards Chrome replay receipt against the current built page, plus Showdown seat play and engine-bound Showdown proof replay.",
   "author": {
     "name": "Cowboys vs. Wizards"
   },
   "keywords": [
     "orb duel replay review",
-    "cowboys vs wizards"
+    "cowboys vs wizards",
+    "showdown boot hill proof"
   ]
 }
