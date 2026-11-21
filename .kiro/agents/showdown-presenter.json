@@ -33,6 +33,13 @@
           ".artifacts/kiro/showdown/**"
         ],
         "effect": "allow"
+      },
+      {
+        "capability": "fs_write",
+        "match": [
+          "src/game/showdown/rules.js"
+        ],
+        "effect": "deny"
       }
     ]
   },
