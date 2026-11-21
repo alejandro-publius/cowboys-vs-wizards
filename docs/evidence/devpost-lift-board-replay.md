@@ -23,12 +23,29 @@ npx -y -p playwright-core@1.64.1 node scripts/browser-showdown-board-zones.mjs -
 - Sensitivity, on throwaway copies of the built page: one copy writes graveyard instance ids. On it, `trap` fails four ways: name missing, a hidden id in the page, an id in the graveyard line, and an id behind the curtain. The other copy appends "Bear Trap" to the opponent's face-down line. On it, `trap` fails on the trap line and on page text naming the trap. Both copies were deleted afterwards.
 - Run 1 failed while I was writing the script, because the orb read used troop text (`●○○`). It now reads the slot's `.sd-orbs` aria-label. The page was not at fault.
 
-## Hook expectations for Fable's table UI (not agreed, reported only)
+## Second pass: baseline and zones candidate (same session)
 
-The receipt counts these selectors and never fails on them. Today every count is 0:
-`[data-zone="graveyard"][data-side="cowboy|wizard"]`, `[data-zone="deck"][data-side]`, `[data-zone="hand"][data-side]`, `[data-zone="traps"][data-side]`.
-When the final selectors are agreed, add these assertions on them: the graveyard zone lists the same names as `#sd-<side>-graveyard`, and the hand and deck zones match the Base `Hand N · Deck N` counts. The opponent's trap zone shows a count only, and while the curtain is up no zone contains a card id.
+The script now detects the page layout from the built HTML. `baseline` is main `ea183ee` (Base count text and `#sd-<side>-graveyard`). `zones` is the Boot Hill table UI: `[data-zone-side]` rails, `[data-graveyard]` piles, `dialog#sd-graveyard-sheet` and `#sd-zone-move`. `--require-zones` exits 1 on a page without zones. `--witness leak-name|break-pile|break-move` re-applies one DOM-only fault after every render through a test-only MutationObserver, and that run must exit 1. The exact commands are in `../board-qa-command.txt`, outside the repository.
+
+The candidate was a disposable tree in /tmp: `git archive` of this branch plus `src/ui/showdown-screen.js` (sha256 `0e32aa68…`), `showdown-zones.js` (`87a2bf18…`) and `showdown.css` (`cb8d49c6…`, the same as main) copied from `../board-ui-tree`. I did not edit `../board-ui-tree`. Its owner later stashed the screen change while still working, so the candidate is that earlier working copy. Built page sha256 `af1dfed64e14e141`, build label not identified (no git).
+
+| Run | Result |
+| --- | --- |
+| baseline, auto-detected | PASS ×3, exit 0 |
+| baseline `--require-zones` | exit 1 (layout baseline) |
+| candidate `--require-zones` | PASS ×3, exit 0 |
+| candidate `--witness leak-name` | trap FAIL (Wizard seat sees `1 card face down · Bear Trap`, name in HTML), exit 1 |
+| candidate `--witness break-pile` | raise/raise-narrow FAIL (Wizard pile not empty-marked), trap FAIL (top blank, rows ≠ pile), exit 1 |
+| candidate `--witness break-move` | all three FAIL on `#sd-zone-move`, exit 1 |
+
+Observed on the candidate:
+- Raise: the move line reads `Skeleton → Wizard Boot Hill (tribute) · Skeleton ← Wizard Boot Hill (Raise)`, and the Wizard pile is `[data-graveyard-empty]` with no Raise dot.
+- Trap: the Wizard seat sees `1 card face down` and no `Bear Trap` in the HTML. After the spring, the pile top reads `Bear Trap` (count 1), the flip reads `Sprung: Bear Trap`, and the move line reads `Bear Trap → Cowboy Boot Hill (trap spent)`.
+- Sheet, opened with Enter on the pile: a modal titled `Cowboy Boot Hill graveyard · 1 card, newest first`. Focus lands on row 0 (`Bear Trap`). Enter expands its rules text (`aria-expanded="true"`). There is no `[data-raise-target]`, as expected for the Cowboy pile. Escape closes the sheet, empties it and returns focus to `[data-graveyard="cowboy"]`.
+- Curtains hold no rail, sheet or move text. Both seats' saves are byte-identical after Restart.
+
+The first candidate run failed with `Escape left the sheet with rows`. The dialog's `close` event is a queued task and the script read before it ran. The script now waits up to 2 s for the sheet to settle; the page was not at fault.
 
 ## Limits
 
-The routes cover one deal each and the two-player trap from one seat order. Dry Gulch is not played to a result. These checks say nothing about clarity or fun.
+`[data-raise-target]` on a Wizard pile with an Undead troop is not reached on these deals; only its absence on the Cowboy pile is asserted. The candidate CSS was unchanged from main, so narrow layout was not tested against new zone CSS. The routes cover one deal each and the two-player trap from one seat order. Dry Gulch is not played to a result. These checks say nothing about clarity or fun.
