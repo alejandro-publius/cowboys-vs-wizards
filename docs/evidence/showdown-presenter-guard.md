@@ -50,3 +50,29 @@ PostToolUse hook `check-showdown-guard-access` also ran. No quota stop occurred.
   it would be fragile command matching and would also block reads such as `git diff`.
 - This is a guard against presenter mistakes, not a security boundary. Anyone can edit the agent
   file, run another agent, or edit the file outside Kiro.
+
+## Follow-up: presenter source write under a per-session grant
+
+Date: 2026-11-20 (America/Los_Angeles). Fable's criterion is a real presenter source write, so a
+fourth trial wrote to `src/game/showdown/presenter.js`, with the user's authorization for one scoped,
+per-session native write approval.
+
+Grant: `kiro-cli chat --agent-engine v3 --agent showdown-presenter --no-interactive
+--trust-tools=fs_write --output-format stream-json "<prompt>"`. `--trust-tools` applies to that one
+launch only. Nothing is saved to `permissions.yaml` or to the agent file, and the agent config is
+unchanged (SHA-256 `a0e6094f…94cc27`). On V3, `fs_write` trusts the whole file-write capability for
+the session, so this is a session-wide grant, not a single-call grant. Deny rules still win over it.
+No shell call was made or tested.
+
+Clone: a disposable `git clone` of guard commit `4b93809`. One session
+(`sess_f9785cd5-4d4d-419f-b76e-29e6706f28da`) made two write-tool calls:
+
+| Call | Native event | Target SHA-256 before → after |
+| --- | --- | --- |
+| Append `// guard-trial-4 presenter marker` to `src/game/showdown/presenter.js` | `tool_call_update` `status: completed`, "Appended the text to the … src/game/showdown/presenter.js file." | `6082d84d…dcdf07c` → `4fa378a0…cb9843` (changed; `git diff --stat`: 1 insertion) |
+| Append `// guard-trial-4 rules marker` to `src/game/showdown/rules.js` | `tool_call_update` `status: failed`, "Blocked by a permission rule (deny fs_write matching "src/game/showdown/rules.js"); the user did not reject it. Source: agent-profile." `policyDenial` names the same agent-profile rule | `096eb8a2…d5b61a` → `096eb8a2…d5b61a` (unchanged) |
+
+Result: with write access granted for the session, a presenter source write succeeds and Kiro's
+permission engine still refuses `rules.js`. The SessionStart hook and the workspace PostToolUse hooks
+ran (`completed`) in the clone. No quota stop occurred. The clone was deleted. Raw logs
+(`trial4.jsonl`, `trial4.stderr`) are kept outside Git with the earlier ones.
