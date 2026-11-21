@@ -8,6 +8,9 @@
 // side-deck swap between games (src/match/showdown-match.js), and two players on one screen. With
 // two players the board is drawn from the active seat's view only, and a curtain hides the whole
 // table, with no hand or trap in the page, while the screen changes hands.
+// Wizard seat (for the proposed Wizard campaign, docs/design/showdown-wizard-campaign-brief.md): start(..., {seat:
+// "wizard"}) gives the human the Wizards against the bot's Cowboys. It settles only through a campaign passed to
+// that start, never through the mount's (Cowboy) campaign, and adds no playtest line.
 import {EFFECTS, KEYWORDS, RARITY, TYPES, cardOf, has, tributes, typeOf} from "../game/showdown/cards.js";
 import {presentEvent} from "../game/showdown/presenter.js";
 import {newRunId} from "../match/showdown-playtest.js";
@@ -67,13 +70,13 @@ const TEMPLATE = `
   </div>`;
 
 export const OFFER_HEADING = "Bonus: pick 1 more card to keep";
-export const offerRow = (offer, owned) => `<div class="sd-row">${offer.map((type) => `<button type="button" class="sd-card cowboy ${TYPES[type].rarity} sd-can" data-frame="${TYPES[type].kind}" data-choose="${type}">
+export const offerRow = (offer, owned) => `<div class="sd-row">${offer.map((type) => `<button type="button" class="sd-card ${TYPES[type].side} ${TYPES[type].rarity} sd-can" data-frame="${TYPES[type].kind}" data-choose="${type}">
   ${face(type, `<span class="sd-note">You own ${owned(type)}.</span>`)}</button>`).join("")}</div>`;
 export const pays = (cards) => cards.map(([type, copies]) => `${TYPES[type].name}${copies > 1 ? ` ×${copies}` : ""}`).join(", ");
 
 const FACTION = {cowboy: "Cowboy", wizard: "Wizard"};
 
-// campaign: settle(duel, won) once per decided solo duel, choose(type), progress(), owned(type), trailDuel(),
+// campaign: the Cowboy seat's campaign. settle(duel, won) once per decided solo duel, choose(type), progress(), owned(type), trailDuel(),
 // duel(id, deck) for any Camp duel. playtest (optional): add(entry) once per finished solo game.
 // nextSeed() deals each later game (the next game of a match, a repeat, two players again); a Rematch
 // after a loss is a fresh deal. onSwap(pool, deck, side, done) opens the between-games side-deck swap.
@@ -82,12 +85,13 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
   let session, duel, seed, lines, latest, pick, outcome, picked, run, started;
-  let players = 1, match = null, curtain = false;
+  // seat: the solo player's side. camp: the campaign this duel settles through, or null (nothing is settled).
+  let players = 1, match = null, curtain = false, seat = "cowboy", camp = campaign;
   const cues = createCuePlayer(root, cueOptions);
   const solo = () => players === 1;
   const viewer = () => session.viewer();
   // Solo wording speaks to the player; two players are named by faction.
-  const whoseBase = (side) => (solo() ? (side === viewer() ? "Your" : "Wizard") : FACTION[side]);
+  const whoseBase = (side) => (solo() && side === viewer() ? "Your" : FACTION[side]);
   const sides = (side) => `${FACTION[side]}s`;
 
   // Logs a batch of events and returns its placeholder cues, each tied to its log line.
@@ -100,17 +104,20 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     return batch;
   }
   // best 3 plays a best of three. players 2: two people on one screen, starter decks, nothing saved.
-  function start(nextDuel, dealSeed, {players: seats = 1, best = 1} = {}) {
-    [duel, players] = [nextDuel, seats];
-    const progress = campaign.progress();
-    match = best > 1 ? newMatch(solo() ? {deck: progress.deck, side: progress.side} : {}) : null;
+  // seat "wizard" (solo): the human plays the Wizards. Its campaign, if any, comes with this start; without one the
+  // Wizard seat settles nothing. The Cowboy seat keeps the mount's campaign unless another is passed.
+  function start(nextDuel, dealSeed, {players: seats = 1, best = 1, seat: side = "cowboy", campaign: own} = {}) {
+    [duel, players, seat] = [nextDuel, seats, seats === 1 ? side : "cowboy"];
+    camp = own ?? (seat === "cowboy" ? campaign : null);
+    const progress = solo() ? camp?.progress() : null;
+    match = best > 1 ? newMatch(progress ? {deck: progress.deck, side: progress.side} : {}) : null;
     deal(dealSeed);
   }
   // One game: of a single duel, or the current game of a match (the match's deck, the loser opening).
   function deal(dealSeed) {
     seed = dealSeed;
-    const current = solo() && match ? campaign.duel(duel.id, match.deck) ?? duel : duel;
-    session = createShowdownSession({seed, duel: current, players, ...(match?.first ? {first: match.first} : {})});
+    const current = solo() && match && camp ? camp.duel(duel.id, match.deck) ?? duel : duel;
+    session = createShowdownSession({seed, duel: current, players, seat, ...(match?.first ? {first: match.first} : {})});
     curtain = !solo();
     lines = [{turn: true, text: `Turn 1: the ${session.view().first === "cowboy" ? "Cowboys" : "Wizards"}.`}];
     latest = [];
@@ -148,10 +155,10 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     }
     // Two players and an experiment turn (showdown-turn.js) settle nothing and add no playtest line.
     if (!solo() || duel.kind === "turn") return;
-    // The run id makes the log ignore a second report of this same finished game.
-    playtest?.add({name: duel.name, won: result.winner === session.seat, turns: view.turn,
+    // The run id makes the log ignore a second report of this same finished game. The log is the Cowboy career's.
+    if (seat === "cowboy") playtest?.add({name: duel.name, won: result.winner === session.seat, turns: view.turn,
       seconds: Math.round((Date.now() - started) / 1000), rules: false, run, duel: duel.id, seed});
-    if (outcome.matchOver) Object.assign(outcome, campaign.settle(duel, match ? matchWinner(match) === session.seat : result.winner === session.seat));
+    if (outcome.matchOver && camp) Object.assign(outcome, camp.settle(duel, match ? matchWinner(match) === session.seat : result.winner === session.seat));
   }
   // After a result: the next game of the match, a rematch, a repeat, or nothing (back to camp).
   function againLabel() {
@@ -162,7 +169,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     return duel.kind === "trail" || !repeat() ? null : "Play it again";
   }
   // The same Camp duel again, as progress now has it (the next hunt, grit after a loss), or null.
-  const repeat = () => (duel.kind === "trail" ? campaign.trailDuel() : duel.id ? campaign.duel(duel.id) : null);
+  const repeat = () => (!camp ? null : duel.kind === "trail" ? camp.trailDuel() : duel.id ? camp.duel(duel.id) : null);
   function again() {
     const best = match ? 3 : 1;
     if (!outcome.matchOver) {
@@ -177,7 +184,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     if (duel.kind === "turn") return deal(seed);
     // A loss is a fresh deal of the same duel; a repeat (a beaten rival, the next hunt, the even match) uses nextSeed.
     const next = repeat();
-    if (next) start(next, outcome.won ? nextSeed() : freshSeed(), {best});
+    if (next) start(next, outcome.won ? nextSeed() : freshSeed(), {best, seat, campaign: camp});
   }
   const playsOf = (cardId) => session.legal().filter((a) => a.cardId && name(a.cardId) === name(cardId));
 
@@ -242,15 +249,15 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     const again = label ? `<button type="button" id="sd-again">${label}</button>` : "";
     if (!outcome.earned) return `<div class="sd-row">${again}<button type="button" id="sd-camp">Back to camp</button></div>`;
     const {won, earned, intoDeck, grit} = outcome;
-    const offer = campaign.progress().offer;
+    const offer = camp.progress().offer;
     return [
-      earned.captured ? `<h2>Captured</h2><div class="sd-row"><div class="sd-card cowboy ${TYPES[earned.captured].rarity}" data-frame="${TYPES[earned.captured].kind}">${face(earned.captured)}</div></div>` : "",
+      earned.captured ? `<h2>Captured</h2><div class="sd-row"><div class="sd-card ${TYPES[earned.captured].side} ${TYPES[earned.captured].rarity}" data-frame="${TYPES[earned.captured].kind}">${face(earned.captured)}</div></div>` : "",
       earned.cards.length ? `<h2>New in your collection</h2><p class="sd-good">You earned ${pays(earned.cards)}.</p>` : "",
       intoDeck.length ? `<p class="sd-note">In your deck now: ${intoDeck.map(([type, copies, replaced]) => `${TYPES[type].name} ×${copies} in place of ${TYPES[replaced].name} ×${copies}`).join(", ")}.</p>` : "",
       earned.packs ? `<p class="sd-good">You earned ${plural(earned.packs, "pack")}. Open ${earned.packs > 1 ? "them" : "it"} in camp.</p>` : "",
       earned.cards.length && !intoDeck.length ? `<p class="sd-note">${earned.cards.length > 1 ? "They are" : "It is"} in your collection, not your deck yet: use Build deck in camp.</p>` : "",
-      won && offer ? `<h2>${OFFER_HEADING}</h2>${offerRow(offer, campaign.owned)}`
-        : picked ? `<p class="sd-good">Added ${TYPES[picked].name}: you now own ${campaign.owned(picked)}. The new copy is not in your deck yet: use Build deck in camp.</p>` : "",
+      won && offer ? `<h2>${OFFER_HEADING}</h2>${offerRow(offer, camp.owned)}`
+        : picked ? `<p class="sd-good">Added ${TYPES[picked].name}: you now own ${camp.owned(picked)}. The new copy is not in your deck yet: use Build deck in camp.</p>` : "",
       !won && grit ? `<p class="sd-note">Grit: your Base starts the rematch with ${5 + grit} orbs.</p>` : "",
       `<div class="sd-row">${again}<button type="button" id="sd-camp">Back to camp</button></div>`,
     ].join("");
@@ -329,11 +336,11 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     }).join("");
 
     const r = view.result;
-    const score = match ? ` · game ${match.game} of 3 · ${solo() ? `you ${match.wins.cowboy}, Wizards ${match.wins.wizard}` : `Cowboys ${match.wins.cowboy}, Wizards ${match.wins.wizard}`}` : "";
+    const score = match ? ` · game ${match.game} of 3 · ${solo() ? `you ${match.wins[own]}, ${sides(foe)} ${match.wins[foe]}` : `Cowboys ${match.wins.cowboy}, Wizards ${match.wins.wizard}`}` : "";
     const verdict = !r ? "" : r.winner === null ? "Draw." : !solo() ? `The ${sides(r.winner)} win: the ${FACTION[opponent(r.winner)]} Base fell.`
-      : r.winner === own ? "You win: the Wizard Base fell." : "You lose: your Base fell.";
+      : r.winner === own ? `You win: the ${FACTION[foe]} Base fell.` : "You lose: your Base fell.";
     $("sd-status").innerHTML = r ? `<span class="sd-result ${!solo() || r.winner === own ? "sd-good" : "sd-warn"}">${verdict}</span>${score}`
-      : `${duel.name}${score} · turn ${view.turn} · ${solo() ? (view.active === own ? "your turn" : "the Wizards' turn") : `the ${sides(view.active)}' turn`}`;
+      : `${duel.name}${score} · turn ${view.turn} · ${solo() ? (view.active === own ? "your turn" : `the ${sides(foe)}' turn`) : `the ${sides(view.active)}' turn`}`;
     $("sd-feedback").textContent = latest.length ? `Last: ${latest.join(" ")}` : "";
     $("sd-result").innerHTML = r ? rewardPanel() : "";
 
@@ -402,8 +409,8 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     else if (b.id === "sd-cancel") { pick = null; render(); }
     else if (b.id === "sd-restart") deal(seed);
     else if (b.id === "sd-ready" && curtain) { curtain = false; render(); }
-    else if (d.choose && campaign.progress().offer?.includes(d.choose)) {
-      campaign.choose(d.choose);
+    else if (d.choose && camp?.progress().offer?.includes(d.choose)) {
+      camp.choose(d.choose);
       picked = d.choose;
       render();
       $("sd-camp")?.focus();
