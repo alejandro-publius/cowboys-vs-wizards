@@ -109,7 +109,7 @@ The run exits 0 when A, B and C all hold. It writes the following outside Git, i
 
 - `raw/` with 284 PNGs: full frames and crops at actual board scale.
 - `report.json` with every edge share.
-- `cue-proof-sheet.pdf`: 13 pages, an overview and then one page per cue with initial lines.
+- `cue-proof-sheet.pdf`: 11 pages, an overview and then one page per cue with initial lines.
 - `cue-proof-overview.png`.
 - The two harness pages.
 
@@ -118,5 +118,3 @@ The run exits 0 when A, B and C all hold. It writes the following outside Git, i
 - Alex's review and initials on each cue page are pending.
 - Human clarity and fun have not been tested.
 - The location bottom edge needs a decision from Fable and Alex.
-- `docs/kiro-build-log.md` was not edited, because this task allowed only this note; the
-  coordinator owns that log entry.

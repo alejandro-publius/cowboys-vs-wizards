@@ -552,7 +552,7 @@ function sheetHtml(r) {
     const [n, d] = byKind(kind);
     const strip = (x) => x.frames.map((f) => `<figure>${img(f.crop)}<figcaption><b>${f.motion} · ${f.t} ms</b> ${mark(f.functional && f.pixels)} · ${f.expectMarked ? "expected outlined" : "expected expired"}<br>
       ring share: ${esc(share(f))}${f.dimmed.length ? `<br><b>dimmed edge:</b> ${esc(f.dimmed.join("; "))}` : ""}<br>marks: ${esc(f.marks.map((m) => `${m.where}${m.still ? " (still)" : ""} anim=${m.animation}`).join(", ") || "none")}</figcaption></figure>`).join("");
-    return `<section class="cue"><h2>${kind} <small>“${esc(n.text)}”</small></h2>
+    return `<section class="cue" data-proof-kind="${esc(kind)}"><h2>${kind} <small>“${esc(n.text)}”</small></h2>
       <p>Synthetic fixture event (not real play): <code>${esc(JSON.stringify(n.event))}</code><br>Expected targets: <b>${esc(n.targets.join(" + "))}</b>. ${esc(NOTE[kind] ?? "")}</p>
       <div class="strip"><figure>${img(n.control.crop)}<figcaption><b>before / control</b> (no cue) ${mark(n.control.clear)}<br>ring share: ${esc(share({rings: n.control.rings}))}</figcaption></figure></div>
       <div class="strip">${strip(n)}</div><div class="strip">${strip(d)}</div>
@@ -562,6 +562,8 @@ function sheetHtml(r) {
   const ngFrames = ng.results.filter((x) => ["cover", "sweep"].includes(x.kind)).flatMap((x) => x.frames.filter((f) => f.t === 0));
   return `<!doctype html><meta charset="utf-8"><title>Showdown cue strip — review sheet</title><style>
     @page { size: 16in 24in; margin: .4in; }
+    @page tall { size: 16in 34in; margin: .4in; }
+    #overview, .cue[data-proof-kind="sweep"] { page: tall; }
     body { font: 13px/1.35 -apple-system, Helvetica, Arial, sans-serif; color: #111; background: #fff; margin: 0; }
     h1 { font-size: 22px; margin: 0 0 .3em; } h2 { font-size: 18px; margin: 0 0 .3em; } h2 small { font-weight: normal; color: #444; }
     table { border-collapse: collapse; } td, th { border: 1px solid #999; padding: 3px 6px; text-align: center; vertical-align: middle; }

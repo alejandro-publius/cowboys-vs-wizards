@@ -4,6 +4,8 @@ Fable 5.2 (Claude Code) leads core mechanics, progression and engine contracts. 
 
 Start with the [release line and scoreboard](release-line.md): what is in the game, what is waiting, and what was cut.
 
+For the current scope, read Fable’s [Camp after the Trail handoff](showdown-remaining-handoff.md) and [Wizard campaign and two-player proposal](showdown-wizard-campaign-brief.md). The table below records the November 18 state.
+
 Every number in these briefs comes from bot runs on scratch copies of the rules, unless the brief says otherwise. As of November 18, 2026 no first-time human player has tested any of it.
 
 | Brief | Decision | State on November 18 |
