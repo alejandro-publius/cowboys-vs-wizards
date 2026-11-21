@@ -33,3 +33,7 @@ Parent presenter: 2 pass, 1 fail (seed 18 printed "its attack was cancelled."). 
 | changed lines | 12, every one a fatal trap: "its attack was cancelled." became "defeated before it struck." |
 
 Two runs gave the same digests. The result holds for this corpus and bot only.
+
+## Native spec and independent check
+
+Kiro IDE 1.4.178 ran its built-in Bug Fix flow on the unchanged parent checkout. Its session “Generate Showdown Bear Trap Combat Log Spec” invoked the native bugfix-workflow and produced [the requirements](../../.kiro/specs/showdown-bear-trap-log/bugfix.md). The [IDE metadata](../../.kiro/specs/showdown-bear-trap-log/.config.kiro) marks the spec as a bugfix. The implementation and spec ran independently in separate worktrees. Codex repeated the three seeded tests against both revisions and the 80-game comparison.
