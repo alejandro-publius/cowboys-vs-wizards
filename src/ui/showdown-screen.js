@@ -83,6 +83,8 @@ const FACTION = {cowboy: "Cowboy", wizard: "Wizard"};
 export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nextSeed = freshSeed, onSwap}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
+  // The one #sd-location node; render() moves it between the board sides (see the board write below).
+  const locationLine = $("sd-location");
   let session, duel, seed, lines, latest, pick, outcome, picked, run, started;
   // moves: the latest batch's Boot Hill moves (showdown-zones.js movesOf). sheet: the open pile, {side, open}, or null.
   let moves = null, sheet = null;
@@ -301,6 +303,9 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     $("sd-curtain").hidden = !curtain;
     $("sd-table").hidden = curtain;
     if (curtain) {
+      // The shared Location line lives inside the board between the two sides; park it at its template place
+      // before the board is emptied so #sd-location survives every curtain.
+      $("sd-board").before(locationLine);
       for (const id of ["sd-board", "sd-hand", "sd-result", "sd-prompt", "sd-feedback", "sd-status", "sd-location", "sd-zone-move", "sd-graveyard-sheet"]) $(id).innerHTML = "";
       $("sd-curtain-text").textContent = `Pass the screen to the ${FACTION[session.view().active]} player.`;
       if (rises && !root.hidden) $("sd-ready").focus();
@@ -356,7 +361,10 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     // the seat at the table (never on a shared result); the other side's traps are a count until their trap event.
     const rail = (side) => railHtml(side, view.sides[side], {own: side === own, named: side === own && !shared,
       raise: raiseTarget(view.sides[side].discard, duel.options.decks?.[side]), sprung: moves?.sprung[side], grew: moves?.grew[side]});
-    $("sd-board").innerHTML = rail(foe) + row(foe) + row(own) + rail(own);
+    // The shared Location line sits between the two sides, in a dedicated slot; the same #sd-location node is moved
+    // in on every render, so cue marks on it survive rerenders.
+    $("sd-board").innerHTML = rail(foe) + row(foe) + `<div class="sd-board-location" data-board-location></div>` + row(own) + rail(own);
+    $("sd-board").querySelector("[data-board-location]").append(locationLine);
     // Picking a tribute, gear carrier or target: the rail stays visible but inert.
     if (pick) for (const pile of $("sd-board").querySelectorAll("[data-graveyard]")) pile.disabled = true;
     $("sd-zone-move").textContent = moves?.lines.length ? `${moves.lines.length > 4 ? `(+${moves.lines.length - 4} earlier) ` : ""}${moves.lines.slice(-4).join(" · ")}` : "";

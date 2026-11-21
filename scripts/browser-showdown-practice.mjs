@@ -77,7 +77,13 @@ const READ_OPENING = () => {
   const side = (name) => {
     const base = document.querySelector(`#sd-board [data-side="${name}"] [data-base="${name}"]`);
     const orbs = base?.querySelector(".sd-orbs")?.getAttribute("aria-label")?.match(/^(\d+) of (\d+) orbs$/);
-    const counts = base?.textContent.match(/Hand (\d+) · Deck (\d+) · Graveyard (\d+)/);
+    // Deck, hand and graveyard counts sit in the side's zone rail (showdown-zones.js). The seat's own rail has no
+    // hand-count cell (its hand is shown), and an empty pile shows no count.
+    const rail = document.querySelector(`#sd-board .sd-zone-rail[data-zone-side="${name}"]`);
+    const zone = (z) => rail?.querySelector(`[data-zone="${z}"] .sd-zone-count`)?.textContent.trim();
+    const handCell = rail?.querySelector('[data-zone="hand-count"]');
+    const counts = rail ? [null, handCell ? zone("hand-count") : document.querySelectorAll("#sd-hand [data-card]").length,
+      zone("deck"), rail.querySelector('[data-zone="graveyard"] [data-graveyard-empty]') ? 0 : zone("graveyard")] : null;
     const board = [...document.querySelectorAll(`#sd-board [data-side="${name}"] [data-slot^="${name}-"]`)]
       .map((n) => (n.dataset.frame === "troop" ? n.querySelector("strong")?.textContent.trim() ?? "?" : null));
     return {base: Number(orbs?.[1]), baseMax: Number(orbs?.[2]), hand: Number(counts?.[1]), deck: Number(counts?.[2]),

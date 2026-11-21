@@ -249,8 +249,8 @@ async function session(label) {
   // Seat privacy during a duel, as in browser-showdown-check.mjs.
   const assertPrivate = async () => {
     const p = await evaluate(`(()=>{const body=document.getElementById("showdown").outerHTML+(camp()?.outerHTML??'');const ids=body.match(/wizard-[a-z-]+-\\d+/g)||[];
-      const base=document.querySelector('#sd-board [data-side=wizard] [data-base=wizard]');const backs=base.querySelectorAll('.sd-backs .card-back').length;
-      const count=Number(base.textContent.match(/Hand (\\d+)/)[1]);
+      const base=document.querySelector('#sd-board .sd-zone-rail[data-zone-side=wizard]');const backs=base.querySelectorAll('[data-zone=hand-count] .sd-backs .card-back').length;
+      const count=Number(base.querySelector('[data-zone=hand-count] .sd-zone-count').textContent);
       const hand=[...document.querySelectorAll('#sd-hand [data-card]')].map(n=>n.dataset.card);
       return{ids,backs,count,handSides:[...new Set(hand.map(id=>id.split('-')[0]))]};})()`);
     assert.deepEqual(p.ids, [], `Wizard card ids in the page: ${p.ids}`);
