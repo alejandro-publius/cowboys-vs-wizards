@@ -15,15 +15,16 @@ const WIZARD_BASE = 5;
 export const WIZARD_STARTER = Object.freeze({"wizard-skeleton": 10, "wizard-wizard": 3, "wizard-singularity": 3});
 
 // level: how well the Cowboy bot plays (rules.js playTurn). base: Cowboy Base orbs. The Wizards open every duel.
-// reward: [card earned, card it replaces, copies], paid on the first win. Numbers are Fable's table, unmeasured.
+// reward: [card earned, card it replaces, copies], paid on the first win. Numbers are Fable's final table (../ruling.md):
+// Wagon Ring's deck is the one measured replacement; Trapline Pass ships at Cowboy Base 3. The Wizard Base is 5 + grit.
 export const WIZARD_TRACK = Object.freeze([
   {id: "dry-gulch", name: "Dry Gulch", level: 0, base: 3, deck: {"cowboy-sheriff": 16},
     lesson: "Your Wizard costs one tribute, then raises the last Undead in your graveyard with 1 orb. Pay with a Skeleton and it returns, unless all three slots are full.",
     reward: [["wizard-raven-familiar", "wizard-skeleton", 2]]},
-  {id: "wagon-ring", name: "Wagon Ring", level: 0, base: 4, deck: deckAfter(2),
-    lesson: "A Raven Familiar draws a card when it arrives. Pay for the Wizard with it and an earlier Skeleton rises instead.",
+  {id: "wagon-ring", name: "Wagon Ring", level: 0, base: 4, deck: {"cowboy-sheriff": 14, "cowboy-covered-wagon": 2},
+    lesson: "A Raven Familiar draws a card when it arrives. Pay for the Wizard with it and an earlier Skeleton rises instead. A Covered Wagon has Guard: it must fall first.",
     reward: [["wizard-bone-wall", "wizard-skeleton", 2]]},
-  {id: "trapline-pass", name: "Trapline Pass", level: 1, base: 4, deck: deckAfter(4),
+  {id: "trapline-pass", name: "Trapline Pass", level: 1, base: 3, deck: deckAfter(4),
     lesson: "A Bone Wall has Guard. Their face-down card is a Bear Trap: send a raised 1-orb Skeleton in first.",
     reward: [["wizard-imp", "wizard-skeleton", 1], ["wizard-hex", "wizard-singularity", 1]]},
   {id: "high-noon", name: "High Noon", level: 1.5, base: 4, deck: DECKS.cowboy,
@@ -60,10 +61,18 @@ function valid(raw) {
     && Object.keys(raw).sort().join() === "losses,v,wins"
     && raw.v === 1 && whole(raw.wins) && raw.wins <= WIZARD_TRACK.length && whole(raw.losses);
 }
-// The stored value, or null when it is absent, unreadable or invalid.
-function read(storage) {
+// The stored text: a string, null when the key is absent, undefined when storage cannot be read.
+function text(storage) {
   try {
-    const raw = JSON.parse(storage?.getItem(WIZARD_PREVIEW_KEY) ?? "null");
+    return typeof storage?.getItem === "function" ? storage.getItem(WIZARD_PREVIEW_KEY) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+// The save a stored text holds, or null when it is absent or invalid.
+function parse(stored) {
+  try {
+    const raw = JSON.parse(stored ?? "null");
     return valid(raw) ? {v: 1, wins: raw.wins, losses: raw.losses} : null;
   } catch {
     return null;
@@ -82,17 +91,30 @@ const trackId = (duel) => `wizard:${duel.id}`;
 const empty = () => ({cards: [], packs: 0, captured: null});
 
 export function createWizardPreview(storage) {
-  let save = read(storage) ?? fresh();
+  // synced: the stored text as this tab last read or wrote it.
+  let synced = text(storage);
+  let save = parse(synced) ?? fresh();
   let saved = true;
+  // A failed write keeps the progress in memory; synced stays what storage holds, so it is not thrown away later.
   const keep = (next) => {
     save = next;
     try {
       if (typeof storage?.setItem !== "function") throw new Error("no storage");
-      storage.setItem(WIZARD_PREVIEW_KEY, JSON.stringify(save));
+      const written = JSON.stringify(save);
+      storage.setItem(WIZARD_PREVIEW_KEY, written);
+      synced = written;
       saved = true;
     } catch {
       saved = false;
     }
+  };
+  // Another tab (or "Start preview over" there) changed the key since this tab last read or wrote it: that value wins,
+  // so an old tab can neither pay a win twice nor bring back a save that was started over. An unreadable store changes nothing.
+  const sync = () => {
+    const stored = text(storage);
+    if (stored === undefined || stored === synced) return;
+    synced = stored;
+    save = parse(stored) ?? fresh();
   };
   const deck = () => wizardDeckAfter(save.wins);
   const done = () => save.wins >= WIZARD_TRACK.length;
@@ -123,10 +145,9 @@ export function createWizardPreview(storage) {
     owned: (type) => deck()[type] ?? 0,
     choose() { throw new Error("the Wizard preview has no offers"); },
     // Records a finished duel once, won from the Wizard's side. Only the duel open now counts: a second settle,
-    // a stale tab or a retry of a won duel pays nothing. The key is read again first so another tab's win counts.
+    // a stale tab or a retry of a won duel pays nothing. The key is read again first (sync above).
     settle(finished, won) {
-      const stored = read(storage);
-      if (stored && (stored.wins > save.wins || (stored.wins === save.wins && stored.losses > save.losses))) save = stored;
+      sync();
       const index = save.wins;
       const open = WIZARD_TRACK[index];
       const nothing = {won: Boolean(won), earned: empty(), intoDeck: [], grit: open ? Math.min(save.losses, GRIT_CAP) : 0};

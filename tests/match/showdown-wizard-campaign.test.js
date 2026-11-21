@@ -1,6 +1,7 @@
 // The Wizard preview (Fable's ruling): four fixed duels from the Wizard seat, fixed reward swaps and grit,
 // then Open range. Its own key holds only {v: 1, wins, losses}; Cowboy keys and the playtest log are never written.
 import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
 import test from "node:test";
 import {DECKS, RARITY, TYPES} from "../../src/game/showdown/cards.js";
 import {applyAction, createShowdown, legalActions, planTurn, playTurn} from "../../src/game/showdown/rules.js";
@@ -53,8 +54,9 @@ function seedFor(duel, wizardWins) {
 test("the track is Fable's table: names, AI decks, levels, Bases, rewards, Wizards open", () => {
   assert.equal(PREVIEW_LABEL, "Wizard preview");
   assert.deepEqual(WIZARD_TRACK.map((d) => [d.id, d.name, d.level, d.base]),
-    [["dry-gulch", "Dry Gulch", 0, 3], ["wagon-ring", "Wagon Ring", 0, 4], ["trapline-pass", "Trapline Pass", 1, 4], ["high-noon", "High Noon", 1.5, 4]]);
-  assert.deepEqual(WIZARD_TRACK.map((d) => d.deck), [{"cowboy-sheriff": 16}, deckAfter(2), deckAfter(4), DECKS.cowboy]);
+    [["dry-gulch", "Dry Gulch", 0, 3], ["wagon-ring", "Wagon Ring", 0, 4], ["trapline-pass", "Trapline Pass", 1, 3], ["high-noon", "High Noon", 1.5, 4]]);
+  assert.deepEqual(WIZARD_TRACK.map((d) => d.deck), [{"cowboy-sheriff": 16}, {"cowboy-sheriff": 14, "cowboy-covered-wagon": 2}, deckAfter(4), DECKS.cowboy]);
+  assert.ok(WIZARD_TRACK[1].lesson.endsWith(" A Covered Wagon has Guard: it must fall first."), "Fable's final lesson 2 sentence");
   assert.ok(Object.keys(deckAfter(4)).includes("cowboy-bear-trap"), "Trapline Pass's face-down card is a Bear Trap");
   assert.deepEqual(WIZARD_TRACK.map((d) => d.reward), [
     [["wizard-raven-familiar", "wizard-skeleton", 2]], [["wizard-bone-wall", "wizard-skeleton", 2]],
@@ -85,6 +87,73 @@ test("lesson claims hold on the card table: Raven is not Undead, Imp has Quickdr
   assert.ok(TYPES["wizard-imp"].keys.includes("quickdraw"));
   assert.equal(TYPES["wizard-hex"].effect, "hex");
   assert.ok(TYPES["wizard-wizard"].keys.includes("raise"));
+});
+
+// The shipping card list (prototypes/showdown/cards.csv), read as a table, must agree with every lesson and swap.
+function csvCards() {
+  const rows = [];
+  for (const line of readFileSync(new URL("../../prototypes/showdown/cards.csv", import.meta.url), "utf8").trim().split("\n")) {
+    const cells = [];
+    let cell = "", quoted = false;
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      if (quoted && char === '"' && line[i + 1] === '"') { cell += '"'; i++; }
+      else if (char === '"') quoted = !quoted;
+      else if (char === "," && !quoted) { cells.push(cell); cell = ""; }
+      else cell += char;
+    }
+    rows.push([...cells, cell]);
+  }
+  const [head, ...body] = rows;
+  return body.map((cells) => Object.fromEntries(head.map((name, i) => [name, cells[i]])));
+}
+test("the shipping cards.csv agrees with every lesson claim and rarity cap the preview uses", () => {
+  const csv = csvCards();
+  const row = (type) => {
+    const found = csv.filter((each) => each.Card === TYPES[type].name && each.Faction.toLowerCase() === TYPES[type].side);
+    assert.equal(found.length, 1, type);
+    return found[0];
+  };
+  const used = new Set([...Object.keys(WIZARD_STARTER), ...WIZARD_TRACK.flatMap((d) => d.reward.flat().filter((x) => typeof x === "string")),
+    ...WIZARD_TRACK.flatMap((d) => Object.keys(d.deck))]);
+  for (const type of used) {
+    const card = row(type);
+    assert.equal(card.Rarity, RARITY[TYPES[type].rarity][0], type);
+    assert.equal(card["Copies per deck"], TYPES[type].rarity === "basic" ? "Any number" : String(RARITY[TYPES[type].rarity][1]), type);
+  }
+  for (let wins = 0; wins <= 4; wins++) {
+    for (const [type, copies] of Object.entries(wizardDeckAfter(wins))) {
+      const cap = row(type)["Copies per deck"];
+      assert.ok(cap === "Any number" || copies <= Number(cap), `${type} ×${copies} after ${wins} wins, csv cap ${cap}`);
+    }
+  }
+  for (const duel of WIZARD_TRACK) {
+    for (const [type, copies] of Object.entries(duel.deck)) {
+      const cap = row(type)["Copies per deck"];
+      assert.ok(cap === "Any number" || copies <= Number(cap), `${duel.name}: ${type} ×${copies}, csv cap ${cap}`);
+    }
+  }
+  // Lesson 1: the Wizard costs one tribute and raises an Undead; a Skeleton is Undead.
+  assert.equal(row("wizard-wizard")["Tributes to summon"], "1");
+  assert.equal(row("wizard-wizard").Keywords, "Raise");
+  assert.match(row("wizard-wizard")["What it does"], /last Undead troop in your graveyard returns with 1 orb/);
+  assert.equal(row("wizard-skeleton").Type, "Undead");
+  // Lesson 2: Raven Familiar draws on arrival and is not Undead; a Covered Wagon has Guard.
+  assert.equal(row("wizard-raven-familiar").Keywords, "Scout");
+  assert.match(row("wizard-raven-familiar")["What it does"], /When it arrives, draw a card/);
+  assert.notEqual(row("wizard-raven-familiar").Type, "Undead");
+  assert.equal(row("cowboy-covered-wagon").Keywords, "Guard");
+  assert.match(row("cowboy-covered-wagon")["What it does"], /must attack this troop before any other troop/);
+  // Lesson 3: Bone Wall has Guard; the face-down Cowboy card in Trapline Pass is a Bear Trap and its only trap.
+  assert.equal(row("wizard-bone-wall").Keywords, "Guard");
+  const traps = Object.keys(WIZARD_TRACK[2].deck).filter((type) => TYPES[type].kind === "trap");
+  assert.deepEqual(traps, ["cowboy-bear-trap"]);
+  assert.equal(row("cowboy-bear-trap").Kind, "Trap");
+  // Lesson 4: the Imp strikes the turn it arrives; the Hex cancels an attack.
+  assert.equal(row("wizard-imp").Keywords, "Quickdraw");
+  assert.match(row("wizard-imp")["What it does"], /attack on the turn it arrives/);
+  assert.equal(row("wizard-hex").Kind, "Trap");
+  assert.match(row("wizard-hex")["What it does"], /the attack is cancelled/);
 });
 
 test("Fable's fixture: tribute [0] raises a 1-orb Skeleton; with all three slots full, nothing rises", () => {
@@ -171,10 +240,50 @@ test("no double pay: a second settle, a reload, a stale tab and a retry of a won
   assert.deepEqual(tabA.settle(duel, true).earned.cards, [], "the same finished duel settled twice");
   assert.deepEqual(tabB.settle(tabB.trailDuel(), true).earned.cards, [], "a stale tab's Dry Gulch");
   assert.deepEqual(createWizardPreview(storage).settle(duel, true).earned.cards, [], "after a reload");
+  assert.equal(tabB.trailDuel().name, "Wagon Ring", "the stale tab took the stored win");
   assert.deepEqual(tabA.settle({...duel, id: "wizard:wagon-ring"}, true).earned.cards, [], "a forged id with the wrong index");
   assert.deepEqual(tabA.settle({...duel, kind: "trail"}, true).earned.cards, []);
   assert.deepEqual(tabA.settle(null, true).earned.cards, []);
   assert.equal(storage.map.get(WIZARD_PREVIEW_KEY), JSON.stringify({v: 1, wins: 1, losses: 0}));
+});
+
+test("an old tab cannot bring back a save that was started over, and its later win is not paid on top", () => {
+  const storage = memory();
+  const old = createWizardPreview(storage);
+  for (let i = 0; i < 2; i++) old.settle(old.trailDuel(), true);
+  const stale = old.trailDuel(); // Trapline Pass, open in the old tab
+  const other = createWizardPreview(storage);
+  assert.equal(other.reset(), true); // "Start preview over" in another tab
+  assert.deepEqual(old.settle(stale, true).earned.cards, [], "the old tab's Trapline Pass win pays nothing");
+  assert.equal(storage.map.get(WIZARD_PREVIEW_KEY), JSON.stringify({v: 1, wins: 0, losses: 0}));
+  assert.equal(old.trailDuel().name, "Dry Gulch", "the old tab now follows the reset");
+  // A loss in the old tab after the reset counts on the fresh save, not the old one.
+  old.settle(stale, false);
+  assert.equal(storage.map.get(WIZARD_PREVIEW_KEY), JSON.stringify({v: 1, wins: 0, losses: 0}));
+  old.settle(old.trailDuel(), false);
+  assert.equal(storage.map.get(WIZARD_PREVIEW_KEY), JSON.stringify({v: 1, wins: 0, losses: 1}));
+  // An invalid value written elsewhere is a fresh save too, never the old tab's memory.
+  storage.setItem(WIZARD_PREVIEW_KEY, "garbage");
+  const dryGulch = old.trailDuel();
+  assert.equal(dryGulch.options.baseOrbs.wizard, 6, "before the corrupt write, memory had one loss");
+  assert.deepEqual(old.settle(dryGulch, true).earned.cards, [["wizard-raven-familiar", 2]], "Dry Gulch is open on the fresh save: paid once");
+  assert.equal(storage.map.get(WIZARD_PREVIEW_KEY), JSON.stringify({v: 1, wins: 1, losses: 0}));
+});
+
+test("a write that fails keeps the progress in memory, and a later write that works saves all of it", () => {
+  const storage = memory({[WIZARD_PREVIEW_KEY]: JSON.stringify({v: 1, wins: 0, losses: 0})});
+  let full = true;
+  const flaky = {getItem: (key) => storage.getItem(key), setItem(key, value) { if (full) throw new Error("full"); storage.setItem(key, value); }};
+  const preview = createWizardPreview(flaky);
+  assert.equal(preview.settle(preview.trailDuel(), true).earned.cards.length, 1);
+  assert.equal(preview.saved(), false);
+  assert.equal(preview.settle(preview.trailDuel(), false).grit, 1, "Wagon Ring lost, still in memory");
+  assert.equal(preview.trailDuel().name, "Wagon Ring");
+  assert.equal(preview.trailDuel().options.baseOrbs.wizard, 6);
+  full = false;
+  assert.equal(preview.settle(preview.trailDuel(), true).earned.cards.length, 1);
+  assert.equal(preview.saved(), true);
+  assert.equal(storage.map.get(WIZARD_PREVIEW_KEY), JSON.stringify({v: 1, wins: 2, losses: 0}));
 });
 
 test("invalid stored values start fresh; a valid one loads", () => {
@@ -200,6 +309,15 @@ test("blocked, missing or full storage: play goes on in memory and saved() says 
     assert.equal(preview.saved(), false);
     assert.equal(preview.trailDuel().name, "Wagon Ring", "the win is kept in memory");
     assert.equal(preview.reset(), false);
+  }
+});
+
+test("every track duel: Wizard Base 5 + grit (cap 2), Fable's Cowboy Base, Wizards open", () => {
+  for (const [wins, track] of WIZARD_TRACK.entries()) {
+    for (let losses = 0; losses <= 4; losses++) {
+      const duel = createWizardPreview(memory({[WIZARD_PREVIEW_KEY]: JSON.stringify({v: 1, wins, losses})})).trailDuel();
+      assert.deepEqual([duel.name, duel.options.baseOrbs, duel.options.first], [track.name, {wizard: 5 + Math.min(losses, 2), cowboy: track.base}, "wizard"]);
+    }
   }
 });
 
