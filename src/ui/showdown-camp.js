@@ -34,9 +34,10 @@ export function nextLine(save) {
   const hunt = list.find((duel) => duel.kind === "hunt" && duel.state === "open");
   const huntName = (duel) => `<strong>${duel.name}</strong>, hunt ${duel.cleared + 1} of ${HUNTS}.`;
   if (at >= 0) {
-    const note = rivalNote(save, at, "open");
+    // With nothing left to earn the line stops at the rival (Fable's ruling); its tile still reads "Win to beat <name>.".
+    const pay = RIVALS[at].reward.length || pool(save).length ? ` ${rivalNote(save, at, "open")}.` : "";
     const or = hunt && (save.losses[rivals[at].id] ?? 0) > 0 ? ` Or hunt ${huntName(hunt)}` : "";
-    return `Next: <strong>${RIVALS[at].name}</strong>, rival ${at + 1} of ${RIVALS.length}. ${note}${note.endsWith(".") ? "" : "."}${or}`;
+    return `Next: <strong>${RIVALS[at].name}</strong>, rival ${at + 1} of ${RIVALS.length}.${pay}${or}`;
   }
   if (hunt) return `Next: ${huntName(hunt)} Five capture ${TYPES[BOUNTIES.find((each) => `hunt:${each.id}` === hunt.id).reward].name}.`;
   return "Every rival is beaten and both bosses are captured. Open range and two players stay open.";

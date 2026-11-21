@@ -268,7 +268,10 @@ test("Camp after the Trail: a saturated save keeps its unopenable packs, and no 
   let before = createCampaign(stored(postTrail())).progress();
   for (const rival of RIVALS.slice(0, 3)) before = claimAll(settle(before, `rival:${rival.id}`, true).save);
   assert.deepEqual([pool(before), rivalNotes(before)], [[], ["Beaten.", "Beaten.", "Beaten.", "Win to beat The Graveyard Coven."]]);
-  assert.equal(nextLine(before), "Next: <strong>The Graveyard Coven</strong>, rival 4 of 4. Win to beat The Graveyard Coven.");
+  assert.equal(nextLine(before), "Next: <strong>The Graveyard Coven</strong>, rival 4 of 4.");
+  assert.equal(nextLine(before).replace(/<\/?strong>/g, ""), "Next: The Graveyard Coven, rival 4 of 4.", "Fable's text, word for word");
+  assert.equal(nextLine({...before, losses: {...before.losses, "rival:coven": 1}}),
+    "Next: <strong>The Graveyard Coven</strong>, rival 4 of 4. Or hunt <strong>The Lantern Wraith</strong>, hunt 1 of 5.", "the after-loss hunt stays");
   // While two card types are left, a beaten rival is still a rematch for a card.
   const early = claimAll(settle(claimAll(postTrail()), "rival:stargazer", true).save);
   assert.ok(pool(early).length >= 2);
