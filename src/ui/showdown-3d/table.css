@@ -79,9 +79,9 @@
     #sd-prompt,
     #sd-location,
     #sd-table > section:not(#sd-hand),
-    #sd-result > :not(.sd-row),
-    .table-card-original
-  ) {
+    #sd-result > :not(.sd-row)
+  ),
+.table-card-original {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -162,7 +162,7 @@
   align-items: end;
   z-index: 4;
 }
-.sd-diorama :is(#sd-hand, #sd-result) .sd-card {
+:is(#sd-hand, #sd-result, #camp-claim) .sd-card.table-card-painted {
   --foil: #c99960;
   --ink: #332230;
   --contrast: #9e734c;
@@ -182,26 +182,26 @@
   color: #f9e7c9;
   overflow: hidden;
 }
-.sd-diorama :is(#sd-hand, #sd-result) .sd-card.wizard {
+:is(#sd-hand, #sd-result, #camp-claim) .sd-card.table-card-painted.wizard {
   --foil: #aa91c1;
   --ink: #312645;
   --contrast: #6b577f;
   --paper: #d6c4e9;
 }
-.sd-diorama :is(#sd-hand, #sd-result) .sd-card[data-frame="spell"] {
+:is(#sd-hand, #sd-result, #camp-claim) .sd-card.table-card-painted[data-frame="spell"] {
   --foil: #c0c2cf;
 }
-.sd-diorama :is(#sd-hand, #sd-result) .sd-card[data-frame="trap"] {
+:is(#sd-hand, #sd-result, #camp-claim) .sd-card.table-card-painted[data-frame="trap"] {
   --foil: #a19a9d;
 }
-.sd-diorama :is(#sd-hand, #sd-result) .sd-card[data-frame="gear"] {
+:is(#sd-hand, #sd-result, #camp-claim) .sd-card.table-card-painted[data-frame="gear"] {
   --foil: #bc885a;
   --ink: #49302a;
 }
-.sd-diorama :is(#sd-hand, #sd-result) .sd-card[data-frame="location"] {
+:is(#sd-hand, #sd-result, #camp-claim) .sd-card.table-card-painted[data-frame="location"] {
   --foil: #ae9f96;
 }
-.sd-diorama :is(#sd-hand, #sd-result) .sd-card.table-captured {
+:is(#sd-hand, #sd-result, #camp-claim) .sd-card.table-card-painted.table-captured {
   --foil: #cfaa71;
   --ink: #604431;
 }
@@ -229,7 +229,7 @@
     0 0 0 1px #f8d791,
     0 7px 12px #14111a;
 }
-.sd-diorama .table-card-face {
+.table-card-face {
   box-sizing: border-box;
   width: 100%;
   height: 100%;
@@ -243,7 +243,7 @@
   border: 1px solid var(--contrast);
   overflow: hidden;
 }
-.sd-diorama .table-card-title {
+.table-card-title {
   text-align: center;
   color: #fff0cc;
   font:
@@ -253,8 +253,8 @@
   align-self: center;
   overflow-wrap: anywhere;
 }
-.sd-diorama .table-card-painting,
-.sd-diorama .table-card-face .sd-card-art {
+.table-card-painting,
+.table-card-face .sd-card-art {
   box-sizing: border-box;
   display: block;
   width: 100%;
@@ -266,11 +266,11 @@
   border-radius: 2px;
   aspect-ratio: auto;
 }
-.sd-diorama .table-card-painting {
+.table-card-painting {
   object-fit: cover;
   object-position: 50% 32%;
 }
-.sd-diorama .table-card-copy {
+.table-card-copy {
   display: grid;
   align-content: start;
   gap: 1px;
@@ -280,18 +280,18 @@
     650 clamp(7px, 0.63vw, 9.5px) / 1.08 system-ui,
     sans-serif;
 }
-.sd-diorama .table-card-kind {
+.table-card-kind {
   letter-spacing: 0.06em;
   text-align: center;
 }
-.sd-diorama .table-card-rule {
+.table-card-rule {
   text-align: center;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.sd-diorama .table-card-stats {
+.table-card-stats {
   display: flex;
   justify-content: space-between;
   color: #fff0cc;

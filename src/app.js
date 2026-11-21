@@ -72,7 +72,8 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
       showOnly(builderRoot);
       builder.openSwap({pool, deck, side, done: (nextDeck, nextSide) => { showOnly(screen); done(nextDeck, nextSide); }});
     }});
-  const camp = mountCamp(campRoot, {campaign, playtest, onHome: () => { showOnly(title); play.focus(); },
+  const camp = mountCamp(campRoot, {campaign, playtest, paintCardFaces: diorama?.paintCardFaces,
+    onHome: () => { showOnly(title); play.focus(); },
     onBuild: () => {
       showOnly(builderRoot);
       last = "#camp-build";

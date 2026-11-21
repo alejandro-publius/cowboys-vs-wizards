@@ -33,6 +33,10 @@ const paintings = diorama ? Object.fromEntries(await Promise.all(Object.entries(
   "cowboy-deadeye": "deadeye", "wizard-skeleton": "skeleton", "wizard-wizard": "wizard",
   "wizard-dragon": "dragon", "wizard-singularity": "singularity",
 }).map(async ([id,name]) => [id, "data:image/webp;base64," + await readFile(file(`assets/cards/${name}-card.webp`),"base64")]))) : {};
+const frontier = diorama ? await Promise.all(["title", "camp"].map(async (view) => {
+  const image = await readFile(file(`assets/scenes/showdown-${view}.webp`), "base64");
+  return `--frontier-${view}:url("data:image/webp;base64,${image}");`;
+})) : [];
 const options = {absWorkingDir: fileURLToPath(root), bundle: true, write: false, platform: "browser", target: "es2022", minify: true,
   define: {__CVW_GRAYBOX_BUILD__: JSON.stringify(label), __CVW_OUTRIDER__: JSON.stringify({cases: outrider.cases, camp: outrider.camp}),
     __CVW_OUTRIDER_LEDGER__: JSON.stringify(outrider.ledger), __CVW_DIORAMA__: JSON.stringify(diorama),
@@ -41,7 +45,11 @@ const [template, style, showdownStyle, boardStyle, boardLicense, bundle] = await
   read("src/ui/graybox.html"),
   read("src/ui/graybox.css"),
   read("src/ui/showdown.css"),
-  diorama ? Promise.all([read("src/ui/showdown-3d/board.css"),read("src/ui/showdown-3d/table.css")]).then(parts=>parts.join("\n")) : "",
+  diorama ? Promise.all([
+    read("src/ui/showdown-3d/frontier.css"),
+    read("src/ui/showdown-3d/board.css"),
+    read("src/ui/showdown-3d/table.css"),
+  ]).then(parts => [`:root{${frontier.join("")}}`, ...parts].join("\n")) : "",
   diorama ? read("src/ui/showdown-3d/graphics/THREE-LICENSE") : "",
   build({...options, entryPoints: ["src/app.js"]}),
 ]);
@@ -55,5 +63,6 @@ await mkdir(file(".artifacts/outrider-ledger/"), {recursive: true});
 await writeFile(file(`.artifacts/outrider-ledger/${output.replace(/[/.]/g, "_")}.json`), `${JSON.stringify({build: label, gate: outrider.note, camp: outrider.camp,
   output, linked: outrider.cases.map((c) => c.id), ledger: outrider.ledger}, null, 2)}\n`);
 await writeFile(file(output), template.replace("@@STYLE@@", () => `${style}\n${showdownStyle}\n${boardStyle}`)
+  .replace("Cowboys vs. Wizards | Graybox", diorama ? "Cowboys vs. Wizards" : "Cowboys vs. Wizards | Graybox")
   .replace("@@SCRIPT@@", () => script + (boardLicense ? `\n/*\n${boardLicense}\n*/` : "")));
 console.log(`Built ${output} (${diorama ? "3D diorama" : "graybox"}, build ${label ?? "not identified"}); Outrider gate: ${outrider.note}`);

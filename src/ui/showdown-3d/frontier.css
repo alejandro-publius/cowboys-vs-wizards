@@ -1,0 +1,515 @@
+/* Ink, brass and stone from the Showdown board, shared by the front of the game. */
+:root {
+  --frontier-night: #17243a;
+  --frontier-ink: #132031;
+  --frontier-light: #f2e3ca;
+  --frontier-muted: #cbbaaa;
+  --frontier-brass: #e9b775;
+  --frontier-violet: #cebbef;
+  --frontier-display: Georgia, "Times New Roman", serif;
+  --panel: #253041;
+  --line: #586277;
+  --muted: var(--frontier-muted);
+  background: var(--frontier-ink);
+  color: var(--frontier-light);
+}
+
+:is(#title-screen, #showdown-camp, #showdown-builder, .sd-gallery) :focus-visible {
+  outline: 2px solid var(--frontier-brass);
+  outline-offset: 3px;
+}
+
+:is(#title-screen, #showdown-camp, #showdown-builder, .sd-gallery) :is(h1, h2, h3, summary) {
+  font-family: var(--frontier-display);
+}
+
+#title-screen {
+  position: relative;
+  isolation: isolate;
+  max-width: none;
+  padding: 0;
+  background-color: var(--frontier-ink);
+}
+
+#title-screen::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 23%;
+  background-image: var(--frontier-title);
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: min(100%, 1750px) auto;
+}
+
+.title-scene {
+  justify-items: center;
+  grid-template-rows: 1fr auto auto;
+  min-height: max(100svh, 480px);
+  padding: clamp(54px, 11svh, 117px) 24px clamp(12px, 3svh, 28px);
+  gap: 8px;
+}
+
+.title-scene h1 {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.26em;
+  margin: 0;
+  font-size: clamp(2.4rem, 6vw, 5.9rem);
+  letter-spacing: -0.049em;
+  line-height: 1;
+  text-shadow: 0 0.055em #0e1828;
+}
+
+.title-scene nav {
+  width: min(280px, 100%);
+}
+#menu-play {
+  width: 100%;
+}
+
+.title-versus {
+  color: var(--frontier-brass);
+  font-size: 0.54em;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+}
+
+#menu-play,
+.frontier-plaque {
+  min-width: min(280px, 100%);
+  min-height: 64px;
+  padding-inline: 1.4em;
+  color: #563423;
+  background: #e9c18e;
+  border: 0;
+  border-radius: 3px;
+  box-shadow:
+    inset 0 -3px #b18154,
+    0 4px #0c1524;
+  font: 700 clamp(1.22rem, 2vw, 1.8rem) / 1.12 var(--frontier-display);
+}
+
+#menu-play:hover,
+.frontier-plaque:not(:disabled):hover {
+  background: #f4d6a4;
+}
+
+#menu-play:active,
+.frontier-plaque:not(:disabled):active {
+  transform: translateY(3px);
+  box-shadow: inset 0 -1px #b18154;
+}
+
+#title-screen .sd-open-gallery {
+  justify-self: center;
+  color: var(--frontier-light);
+  background: transparent;
+  border: 0;
+  min-height: 56px;
+  font: 600 1.2rem/1.15 var(--frontier-display);
+  text-decoration: underline;
+  text-underline-offset: 0.23em;
+  margin: 0;
+}
+
+#title-screen .sd-open-gallery:hover {
+  color: var(--frontier-brass);
+}
+
+@media (max-width: 630px) {
+  #title-screen::before {
+    inset-block-end: 26%;
+    background-size: max(100%, 615px) auto;
+    background-position: center 76%;
+  }
+  .title-scene {
+    padding-top: clamp(60px, 11svh, 108px);
+  }
+  .title-scene h1 {
+    display: block;
+    text-align: center;
+  }
+  .title-cowboys {
+    display: block;
+  }
+  .title-scene nav,
+  #menu-play {
+    width: 100%;
+  }
+}
+
+#camp-home,
+#camp-build {
+  color: var(--frontier-light);
+  background: none;
+  border: 0;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+}
+
+#showdown-camp {
+  max-width: 1490px;
+  padding: clamp(18px, 3vw, 46px);
+  gap: 0;
+}
+
+#showdown-camp > header h1 {
+  font-size: clamp(2.45rem, 4vw, 4.4rem);
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+#showdown-camp h2 {
+  color: var(--frontier-light);
+  font-size: clamp(1.38rem, 2.2vw, 1.9rem);
+  margin: 0 0 0.52em;
+}
+
+#camp-claim:not(:empty) {
+  margin: 1rem 0 0;
+}
+.camp-diorama #camp-claim:has(> #camp-next:only-child) {
+  margin: 0;
+}
+.camp-diorama #camp-next {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+#camp-claim .sd-row {
+  margin-block: 0.7rem;
+}
+#camp-claim .sd-card.table-card-painted {
+  width: clamp(115px, 13vw, 158px);
+}
+#camp-claim .table-card-title {
+  font-size: clamp(0.87rem, 1.18vw, 1.1rem);
+}
+#camp-claim .table-card-copy {
+  font-size: clamp(0.65rem, 0.8vw, 0.76rem);
+}
+.camp-map {
+  margin: 1.4rem 0 1.65rem;
+}
+.camp-diorama .camp-map {
+  display: grid;
+  grid-template-columns: minmax(0, 2.12fr) minmax(245px, 1fr);
+  align-items: start;
+  column-gap: clamp(20px, 3vw, 48px);
+}
+
+.camp-map > h2 {
+  grid-column: 1 / -1;
+}
+.camp-trail-rail {
+  display: grid;
+  gap: 0.55rem;
+  align-content: start;
+  padding: 0.5rem 0 0.2rem;
+}
+
+.camp-trail-rail h3 {
+  font: 700 clamp(1.75rem, 3.3vw, 3.35rem) / 1.05 var(--frontier-display);
+  letter-spacing: -0.024em;
+}
+
+#camp-current-reward {
+  font-size: 1.05rem;
+  color: var(--frontier-muted);
+}
+#camp-start-trail {
+  justify-self: start;
+  margin: 0.35rem 0 0.65rem;
+  padding: 0.55rem 0.9rem;
+}
+
+.camp-rail-tools,
+.camp-rail-utility {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.2rem 0.8rem;
+  border-block-start: 1px solid #a292813d;
+  padding-block: 0.3rem;
+}
+
+.camp-trail-rail nav button {
+  padding: 0.3rem 0;
+  min-height: 56px;
+  border: 0;
+  text-align: left;
+  background: none;
+  color: var(--frontier-light);
+  font: 600 1.2rem/1.2 var(--frontier-display);
+}
+
+.camp-trail-rail nav button:hover {
+  color: var(--frontier-brass);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.camp-rail-utility button {
+  color: var(--frontier-muted);
+}
+
+#camp-trail {
+  display: block;
+  position: relative;
+  isolation: isolate;
+  aspect-ratio: 1440 / 590;
+  background: var(--frontier-camp) center / 100% 100% no-repeat;
+  image-rendering: pixelated;
+}
+
+#camp-trail::before,
+#camp-trail::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(to right, #48384bbb 0 12px, transparent 12px 19px);
+  clip-path: polygon(
+    11% 53%,
+    26% 37%,
+    42% 54%,
+    58% 34%,
+    74% 54%,
+    89% 40%,
+    89% 41.3%,
+    74% 55.3%,
+    58% 35.3%,
+    42% 55.3%,
+    26% 38.3%,
+    11% 54.3%
+  );
+  pointer-events: none;
+}
+
+#camp-trail::after {
+  background: #ffe7b692;
+  mask-image: linear-gradient(to right, black var(--reached, 11%), transparent var(--reached, 11%));
+}
+
+#camp-trail:has([data-trail="1"].open) {
+  --reached: 26%;
+}
+#camp-trail:has([data-trail="2"].open) {
+  --reached: 42%;
+}
+#camp-trail:has([data-trail="3"].open) {
+  --reached: 58%;
+}
+#camp-trail:has([data-trail="4"].open) {
+  --reached: 74%;
+}
+#camp-trail:has([data-trail="5"]:is(.open, .won)) {
+  --reached: 89%;
+}
+
+#camp-trail li {
+  position: absolute;
+  z-index: 1;
+  top: var(--trail-y);
+  left: var(--trail-x);
+  width: clamp(112px, 14%, 186px);
+  transform: translateX(-50%);
+}
+
+#camp-trail li:nth-child(1) {
+  --trail-x: 11%;
+  --trail-y: 53%;
+}
+#camp-trail li:nth-child(2) {
+  --trail-x: 26%;
+  --trail-y: 37%;
+}
+#camp-trail li:nth-child(3) {
+  --trail-x: 42%;
+  --trail-y: 54%;
+}
+#camp-trail li:nth-child(4) {
+  --trail-x: 58%;
+  --trail-y: 34%;
+}
+#camp-trail li:nth-child(5) {
+  --trail-x: 74%;
+  --trail-y: 54%;
+}
+#camp-trail li:nth-child(6) {
+  --trail-x: 89%;
+  --trail-y: 40%;
+}
+
+#camp-trail .sd-tile {
+  position: relative;
+  width: 100%;
+  min-height: 56px;
+  padding: 0.98rem 0.16rem 0.24rem;
+  background: none;
+  border: 0;
+  border-radius: 1px;
+  color: #fff1d6;
+  text-align: center;
+  text-shadow:
+    0 1px 2px #131c2c,
+    1px 0 #1d2634,
+    -1px 0 #1d2634,
+    0 -1px #1d2634,
+    0 2px 7px #172333;
+  opacity: 1;
+}
+
+#camp-trail .sd-tile::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 13px;
+  aspect-ratio: 1;
+  translate: -50% -25%;
+  rotate: 45deg;
+  border: 2px solid #dcc0a1;
+  background: #46394b;
+  box-shadow: 2px 2px #1d2634;
+}
+
+#camp-trail .sd-tile.won::before {
+  background: #987445;
+  border-color: #ffdfac;
+}
+
+#camp-trail .sd-tile.open::before {
+  width: 17px;
+  background: #fff0bd;
+  border-color: #704127;
+  box-shadow:
+    0 0 0 2px #f9d598,
+    2px 2px #1d2634;
+}
+
+#camp-trail .sd-tile strong {
+  font: 700 clamp(1rem, 1.45vw, 1.38rem) / 1.12 var(--frontier-display);
+}
+
+#camp-trail .sd-tile.open strong {
+  color: #ffe1a5;
+}
+
+#camp-trail .sd-tile .sd-note {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+#camp-trail .sd-tile.open:not(:disabled):is(:hover, :focus-visible) strong {
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+#showdown-camp > .camp-stop-list {
+  padding-block: 1.15rem;
+  border-block-start: 1px solid #a292813d;
+}
+
+#showdown-camp .camp-stop-list :is(.sd-row, ol) {
+  gap: 0.32rem 1.3rem;
+}
+
+#showdown-camp .camp-stop-list button {
+  width: auto;
+  border: 0;
+  border-radius: 0;
+  min-height: 44px;
+  padding: 0.24rem 0.18rem;
+  color: var(--frontier-light);
+  background: none;
+  font: 600 1.02rem/1.25 var(--frontier-display);
+  text-align: left;
+}
+
+#showdown-camp .camp-stop-list button:disabled {
+  opacity: 0.64;
+}
+
+#showdown-camp .camp-stop-list button:not(:disabled):hover {
+  color: var(--frontier-brass);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+#showdown-camp .camp-stop-list .sd-note {
+  margin-top: 0.18em;
+  font-family: system-ui, sans-serif;
+}
+#showdown-camp details {
+  margin-top: 0.55rem;
+}
+#showdown-camp summary {
+  width: fit-content;
+  padding: 0.52rem 0.04rem;
+  min-height: 43px;
+  cursor: pointer;
+  color: var(--frontier-light);
+  font-size: 1.03rem;
+}
+
+#showdown-camp textarea {
+  background: #1d2839;
+  border: 1px solid var(--line);
+  color: inherit;
+}
+
+@media (max-width: 780px) {
+  .camp-diorama .camp-map {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .camp-trail-rail {
+    margin-top: 1rem;
+  }
+  #camp-start-trail {
+    width: 100%;
+  }
+  #camp-trail {
+    display: grid;
+    gap: 0;
+    aspect-ratio: auto;
+    padding: min(39vw, 190px) 0 0 1.54rem;
+    background-position: top center;
+    background-size: 100% auto;
+  }
+  #camp-trail::before {
+    inset: min(39vw, 190px) auto 22px 13px;
+    width: 2px;
+    background: #9d8268;
+    clip-path: none;
+  }
+  #camp-trail::after {
+    display: none;
+  }
+  #camp-trail li {
+    position: relative;
+    inset: auto;
+    transform: none;
+    width: auto;
+  }
+  #camp-trail .sd-tile {
+    padding: 0.62rem 0.48rem;
+    min-height: 56px;
+    text-align: left;
+    text-shadow: none;
+  }
+  #camp-trail .sd-tile::before {
+    left: -10px;
+    top: 1.08rem;
+    width: 10px;
+  }
+  #camp-trail .sd-tile.open::before {
+    width: 12px;
+  }
+}

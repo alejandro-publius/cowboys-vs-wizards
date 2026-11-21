@@ -45,6 +45,19 @@ function paintedFace(type) {
   return face;
 }
 
+export function paintCardFaces(root, selector) {
+  for (const card of root.querySelectorAll(selector)) {
+    if (card.querySelector(".table-card-face")) continue;
+    const type = card.dataset.choose ?? card.dataset.opened ?? typeOf(card.dataset.card);
+    const original = el("span", "table-card-original");
+    original.append(...card.childNodes);
+    card.append(original, paintedFace(type));
+    card.classList.add("table-card-painted");
+    card.classList.toggle("table-captured", type.startsWith("cowboy-captured-"));
+    card.title = original.textContent.replace(/\s+/g, " ").trim();
+  }
+}
+
 export function bindTableUI(root) {
   const table = root.querySelector("#sd-table");
   const field = root.querySelector("#sd-field");
@@ -70,15 +83,7 @@ export function bindTableUI(root) {
       const ended = Boolean(view.result);
       table.classList.toggle("table-resolved", ended);
       root.classList.toggle("table-resolved", ended);
-      for (const button of root.querySelectorAll("#sd-hand [data-card], #sd-result [data-choose]")) {
-        if (button.querySelector(".table-card-face")) continue;
-        const type = button.dataset.choose ?? typeOf(button.dataset.card);
-        const original = el("span", "table-card-original");
-        original.append(...button.childNodes);
-        button.append(original, paintedFace(type));
-        button.classList.toggle("table-captured", type.startsWith("cowboy-captured-"));
-        button.title = original.textContent.replace(/\s+/g, " ").trim();
-      }
+      paintCardFaces(root, "#sd-hand [data-card], #sd-result [data-choose]");
       const handCards = [...hand.querySelectorAll("[data-card]")];
       handCards.forEach((button, i) => {
         const fan = i - (handCards.length - 1) / 2;

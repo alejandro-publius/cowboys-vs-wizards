@@ -13,6 +13,7 @@ import { tableCamera } from "./table-camera.js";
 import { createTableTransfers } from "./table-transfers.js";
 import { dressTable } from "./table-dressing.js";
 export { mountGallery } from "./gallery.js";
+export { paintCardFaces } from "./table-ui.js";
 import { COLORS, SIDES, zone } from "./layout.js";
 
 const FACEDOWN = 0x2a213b;

@@ -5,6 +5,13 @@ Build the offline preview with `npm ci` and `npm run build -- --diorama`. Open
 The seeded `?seed=0` and recorded `?turn=dragon-c5` URLs work here as they do in
 the graybox.
 
+The title and Camp use two camera views rendered from the same terrain,
+landmarks and models as the duel. The embedded WebP stills in
+`assets/scenes/` keep both screens playable offline and on browsers without
+WebGL. Camp's native Trail buttons are positioned over the map. Its Play
+button opens the same available duel, and Camp's rewards reuse the board's
+illustrated card faces.
+
 The Cowboy and Wizard districts frame three troop spaces, two face-down trap
 spaces, a Base, a deck and a graveyard per side, and one shared Location. The
 native Showdown buttons handle all moves. The 3D scene reads the current
