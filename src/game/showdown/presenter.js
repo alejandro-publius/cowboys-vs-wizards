@@ -38,7 +38,7 @@ export const PRESENTERS = Object.freeze({
   location: (e) => `${owned(e.side, e.cardId)} is now the location.`,
   set: (e) => `The ${side(e.side)} set a card face down.`,
   cover: (e) => `${owned(e.side, e.cardId)} took cover.`,
-  trap: (e) => `Trap! ${owned(e.side, e.cardId)} caught ${name(e.target)}: ${e.stopped ? "its attack was cancelled" : e.left === 0 ? "defeated before it struck" : `it dropped to ${e.left} and attacked anyway`}.`,
+  trap: (e) => `Trap! ${owned(e.side, e.cardId)} caught ${name(e.target)}: ${e.left === 0 ? "defeated before it struck" : e.stopped ? "its attack was cancelled" : `it dropped to ${e.left} and attacked anyway`}.`,
   attack: attackText,
   laststand: (e) => `Last Stand: ${name(e.cardId)} took an orb off ${name(e.target)}${e.left === 0 ? ", defeating it" : ""}.`,
   sweep: (e) => `Sweep: ${name(e.cardId)} also hit ${plural(e.count, "other troop")} for 1.`,

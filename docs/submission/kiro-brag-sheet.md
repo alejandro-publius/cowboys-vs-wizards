@@ -37,6 +37,8 @@ This page is the one judge-facing description. The [Devpost packet](devpost-pack
 
 **Share a Showdown opening.** Ask Kiro how to replay Boot Hill and what to click first. The portable skill gives a real practice link and identifies the Sheriff. Two fresh Kiro CLI project setups exercised the same skill bytes. The native Workflow opens each deal in Chrome through Camp and its direct link, plays a Sheriff, and checks that both workers tested the same build. Refusal controls cover missing, swapped, stale and contradictory results. Try [deal 0](https://alejandro-publius.github.io/cowboys-vs-wizards/?practice=0) and [deal 60](https://alejandro-publius.github.io/cowboys-vs-wizards/?practice=60). [Skill use and controls](../evidence/showdown-practice-skill.md) · [Workflow run and replay](../evidence/showdown-practice-workflow.md) · [Career isolation](../evidence/showdown-boot-hill-practice.md).
 
+**Bear Trap tells you when it defeats an attacker.** Kiro IDE generated a native Bug Fix spec. A Kiro CLI worker fixed the combat log, and Codex checked all 80 games against the parent. Only the 12 fatal Bear Trap messages changed. [Requirements, red/green result and preservation check](../evidence/showdown-bear-trap.md).
+
 ## Release evidence
 
 The two-position release passed 606 repository tests and 29 HTTP browser checks. A separate Chrome run selected both targets on both seeds and compared the saved career after each. [Paired decisions in PR 165](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/165).
