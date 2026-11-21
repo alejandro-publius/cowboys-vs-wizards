@@ -239,8 +239,19 @@ try {
       for (const m of rec.marks) if (m.slot && m.name && ["cover", "gear", "raise"].includes(kind)) assert.ok(text.includes(m.name), `${kind} slot ${m.slot} holds ${m.name}: ${text}`);
       if (kind === "trap") {
         const v = rec.labels[0].variant;
-        // A trap that defeats the attacker also stops it, and presenter.js words a stopped attack first: both subcases read "cancelled".
-        assert.match(text, v === "through" ? /attacked anyway/ : /attack was cancelled/, `trap ${v}`);
+        // Each subcase has its own wording (.kiro/specs/showdown-bear-trap-log/bugfix.md): a fatal Bear Trap
+        // (left 0, checked before stopped) reads "defeated before it struck" (2.1, 2.2); a Bear Trap the troop
+        // survives reads "it dropped to N and attacked anyway", N > 0 (3.2); Hex reads "its attack was cancelled" (3.1).
+        // In the card catalog (card-specs.generated.js) Bear Trap is the Cowboys' only trap and Hex the Wizards' only trap.
+        const TRAP_LINE = {
+          defeated: [/Trap! The Cowboys' Bear Trap caught .+: defeated before it struck\.$/, "cowboy"],
+          through: [/Trap! The Cowboys' Bear Trap caught .+: it dropped to [1-9]\d* and attacked anyway\.$/, "cowboy"],
+          cancelled: [/Trap! The Wizards' Hex caught .+: its attack was cancelled\.$/, "wizard"],
+        };
+        assert.ok(Object.hasOwn(TRAP_LINE, v), `trap variant ${v}`);
+        const [line, owner] = TRAP_LINE[v];
+        assert.match(text, line, `trap ${v}`);
+        assert.equal(rec.marks.find((m) => m.base).base, owner, `trap ${v}: the trap owner's Base is marked`);
         assert.notEqual(rec.marks.find((m) => m.base).base, sideOf(rec.marks.find((m) => m.slot)), "the trap's owner is not the attacker");
       }
       if (kind === "laststand") assert.equal(/, defeating it\.$/.test(text), rec.labels[0].variant === "defeated", `last stand ${text}`);

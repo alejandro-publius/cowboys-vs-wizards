@@ -28,20 +28,23 @@ possible. Use human playtests to judge clarity and fun.
   and record the source. Plan any new design, asset or animation with the
   user before creating it. Apply this to Blender, in-game visual effects and
   poses, and work delegated to Fable or Kiro.
-- Preserve the approved haunted Western art and existing attack demo.
-- Showdown is the game being built. Current state, paths and the remaining
+- Preserve the approved haunted Western art and the source assets in
+  assets/ (models, clips, card paintings). Card art briefs for every
+  Showdown card: prototypes/showdown/ART-DIRECTION.md, generated from
+  prototypes/showdown/art.js by `node prototypes/showdown/export-art.mjs`.
+- Showdown is the one supported game. Current state, paths and the remaining
   human gate: docs/design/release-line.md ("Current status"); Fable's
   decisions: the latest Fable comment on issue 143. Its engine is
   src/game/showdown/ and Play on the graybox page (src/app.js, served at the
   site root) opens its Camp. Its rules are prototypes/showdown/RULEBOOK.md;
   the full reference page is prototypes/showdown/. Start Showdown work from
   docs/AGENT-ROUTER.md.
-- The earlier lane duel (three lanes per side, tribute summons, one-to-five
-  life orbs per living troop) is retired from the graybox: no menu entry or
-  ?mode= URL opens it there. It lives only in the earlier illustrated 3D
-  build (src/main.js, served at /3d/), which keeps exactly the lane files it
-  imports and their tests. Its draft rules and known contradictions are in
-  docs/kiro-task-01.md. Keep the 3D build working. Do not invent mechanics to
+- The earlier lane duel and its illustrated 3D build (src/main.js, /3d/) are
+  retired. Old /3d/ links and ?mode= URLs lead to Showdown. The last playable
+  lane and 3D source is in Git history at main ea183ee29dbd; lane evidence
+  stays as history. Do not assign work to lane or 3D paths, or run their
+  harnesses, unless the user reopens them. Lane progress does not carry into
+  Showdown (keepsakes only; see release-line.md). Do not invent mechanics to
   fill asset gaps.
 - Keep plain JavaScript, Three.js, Rapier and esbuild. Rules in src/game/ must
   have no DOM, rendering, filesystem, network or model dependencies.

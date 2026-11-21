@@ -2,6 +2,12 @@
 
 Started November 14, 2026, in Pacific time. Entry dates use America/Los_Angeles. This file records work as it happens and supplies evidence for the Kiroween submission. Codex prepared this initial log and the accompanying steering file. Kiro activity starts when a Kiro session actually performs and records work.
 
+## November 20 · Showdown becomes the sole playable build
+
+Parallel Kiro CLI 3.5 sessions on Claude Opus 5.5 handled Pages staging, documentation, legacy dependency review, and mixed-test cleanup. Codex integrated the changes and removed the retired runtime, build dependencies, and obsolete browser checks. The old `/3d/` entry now redirects to Showdown. Existing keepsakes and source art stay available. The [art catalog](../prototypes/showdown/ART-DIRECTION.md) regenerated without changing the committed file and covers all 29 card IDs.
+
+An independent Chrome run found that the cue test still expected the old fatal Bear Trap wording. Kiro CLI corrected the fixture. Chrome passed all trap variants and the separate rendered-strip control detected all 50 missing outlines. Native Kiro Workflow `wf_beff7e5cc43679d8` also rejected the original unbound cue report, then accepted a regenerated report tied to the same Showdown revision and page digest on its second pass.
+
 ## November 20 · Four Wizard duels
 
 Fable 5.2 designed the Wizard track and chose a new Wagon Ring opponent after Kiro CLI measured the first version. Separate Kiro CLI workers implemented the Wizard seat, isolated save, entry and browser checks. The track ends in a playable Dragon reward. [Difficulty checks](evidence/showdown-wizard-ramp.md) · [Wizard campaign brief](design/showdown-wizard-campaign-brief.md).
@@ -75,7 +81,7 @@ Copy this block when a meaningful task starts and complete it as work finishes. 
 - **State** — imported source inspected. Geometry and attack-timeline checks previously passed against the matching handoff source. Full-match behavior and Kiro implementation are pending.
 - **Performed in** — Codex. The user opened the extracted project in Kiro IDE. The eight GLBs derive from the project's Tripo exports.
 - **Observed product** — a six-tile board, Billy and wizard figures, revolver, saloon, portal, and individual fire/Singularity/exchange controls. The runtime currently starts both figures at 100 health. The orb interface and card match remain proposed features.
-- **Evidence** — [starting board render](../assets/media/board.jpg), [recorded exchange](../assets/media/replay.mp4), [scene source](../src/render/scene.js), [browser entry point](../src/main.js), and [verification code](../scripts/verify-scene.mjs).
+- **Evidence** — [starting board render](../assets/media/board.jpg), [recorded exchange](../assets/media/replay.mp4), [scene source](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df/src/render/scene.js), [browser entry point](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df/src/main.js), and [verification code](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df/scripts/verify-scene.mjs).
 - **Recorded check** — `npm run check` completed with exit code 0 in `/tmp/cvw-board-duel/handoff` during the preceding audit. The source fingerprints below were compared against the opened project and matched on November 14, 2026, Pacific time. Verification used Node with placeholder image decoding. Texture, shader, and animation appearance require rendered review.
 - **Measured output** — six tiles, maximum Billy lift 1.4978164082128924, staff socket drift 0, wizard foot drift 0, and 36 affected orbiting pieces. Distances use the scene's coordinate units. These measurements describe the existing prototype.
 - **Asset inventory** — eight reduced GLBs. Sheriff, Skeleton Minion, Mounted Billy, and Dragon are absent from this imported asset folder. The original Sheriff export was found separately in Downloads during the earlier inventory.

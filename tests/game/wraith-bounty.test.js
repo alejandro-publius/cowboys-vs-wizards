@@ -12,7 +12,6 @@ import {legalActions} from "../../src/game/legal.js";
 import {createMatch} from "../../src/game/state.js";
 import {publicState} from "../../src/game/view.js";
 import {createProfileStore} from "../../src/profile/player-profile.js";
-import {cardModel} from "../../src/ui/card-model.js";
 import {label, playPlan, winningPlans} from "../helpers/hunt-solver.js";
 
 const WRAITH = BOSSES.find((boss) => boss.id === "lantern-wraith");
@@ -104,21 +103,14 @@ test("the lane mark and the clash follow one pending drift", () => {
       if (state.result || state.activeSide !== "cowboy") continue;
       const view = publicState(state, "cowboy");
       const plan = pendingDrift(view);
-      const model = cardModel({displayed: view, options: null, status: "accepting_input"});
-      const marked = model.lanes.filter((lane) => lane.mark);
-      assert.equal(marked.length, 1, `${hunt.id} ${first ? label(first) : "hold"}: one mark`);
-      assert.equal(marked[0].lane, hunt.markLane);
-      assert.equal(marked[0].mark, plan ? "drift" : "blocked");
       state = endTurn(state);
       assert.ok(state.ok);
       const wizardEnd = endTurn(state.state);
       const drift = wizardEnd.events.find((event) => event.type === "ride-out");
       assert.deepEqual(drift ? {slot: drift.slot, destination: drift.destination, side: drift.side} : null, plan && {...plan, side: "wizard"});
-      // No second move and no mark after the first clash.
+      // No second move after the first clash.
       if (!wizardEnd.state.result) {
         assert.equal(pendingDrift(wizardEnd.state), null);
-        const later = cardModel({displayed: publicState(wizardEnd.state, "cowboy"), options: null, status: "accepting_input"});
-        assert.equal(later.lanes.some((lane) => lane.mark), false);
       }
     }
   }

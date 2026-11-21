@@ -15,7 +15,7 @@ Release `c4ec67c` passed 107 Node tests and both public Chrome routes, 8 of 8 ch
 | Dragon | Twelve bones, wing and neck motion with contact at frame 18 at 30 fps | Identical first and last pose, zero measured hind-foot drift and a round-trip pose error below 0.000001 scene units at sampled frames. Some short edges near the wing root stretch at full impact. |
 | Mounted Billy | Eleven bones, a restrained mounted recoil with contact at frame 20 at 30 fps | Identical first and last pose, zero measured hoof drift, and about 1.11× hand-edge stretch in the revised clip. The connected reins stay with the mount. |
 
-Each character has its own skeleton and mixer. The match scheduler maps the clip contact pose to the game’s 400 ms impact and returns it to rest at 800 ms. The same scheduler handles reset and simultaneous attack playback. [Attack tests](../../tests/match/attack-clips.test.js)
+Each character has its own skeleton and mixer. The match scheduler maps the clip contact pose to the game’s 400 ms impact and returns it to rest at 800 ms. The same scheduler handles reset and simultaneous attack playback. [Attack tests](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df/tests/match/attack-clips.test.js)
 
 The final character release `44e2729` passed 112 Node tests and all 12 checks across both public Chrome replays, with zero console errors. The public HTML and the 2:16 recording use the same build SHA-256, `51733084f2b3f59a1aa359845ef6cc23373fd6ec17904c8d76234cc440c18bd2`. [Deployment run](https://github.com/alejandro-publius/cowboys-vs-wizards/actions/runs/43949511553)
 

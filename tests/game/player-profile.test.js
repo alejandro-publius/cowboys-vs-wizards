@@ -194,7 +194,6 @@ test('explicit deck-saved events unlock only Deck Builder without fictional stat
 test('an accepted Cowboy spell action records progress and unlocks First Spell', async () => {
   const { createMatch } = await import('../../src/game/state.js');
   const { applyAction } = await import('../../src/game/actions.js');
-  const { readFile } = await import('node:fs/promises');
   const state = createMatch(0);
   const { cowboy, wizard } = state.sides;
   const cardId = [...cowboy.hand, ...cowboy.deck].find((id) => id.startsWith('cowboy-deadeye'));
@@ -205,10 +204,6 @@ test('an accepted Cowboy spell action records progress and unlocks First Spell',
   const result = applyAction(state, { type: 'spell', side: 'cowboy', cardId, target: 0, revision: state.revision });
   assert.equal(result.ok, true);
   assert.equal(result.events[0].type, 'spell');
-
-  // src/main.js records on the action type the engine accepts ('spell', not 'cast').
-  const main = await readFile(new URL('../../src/main.js', import.meta.url), 'utf8');
-  assert.match(main, /action\.type==="spell"\)profile\.record\("spell"/);
 
   const store = createProfileStore(null);
   assert.equal(store.get().achievements['first-spell'], undefined);

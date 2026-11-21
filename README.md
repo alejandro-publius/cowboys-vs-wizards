@@ -4,19 +4,23 @@
 
 ## Status on November 20, 2026
 
-The rules are being built first, in a plain "graybox" page: a flat board, text cards and a duel log. Showdown is the fight this game is being built on, and the graybox is now Showdown only. [Play it in the browser](https://alejandro-publius.github.io/cowboys-vs-wizards/): **Play** opens the Camp, which starts the Trail of duels and, after it, the rivals, Wanted bounties, packs, the deck builder with a side deck, best of three and two players. The same page is at [/graybox/](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) for older links. The [full Showdown reference page](https://alejandro-publius.github.io/cowboys-vs-wizards/showdown/) is kept, and [what is in it](prototypes/showdown/README.md) is listed there.
+The game is **Showdown**, and it is the only supported game in this repository. The rules are being built first, in a plain "graybox" page: a flat board, text cards and a duel log. [Play it in the browser](https://alejandro-publius.github.io/cowboys-vs-wizards/): **Play** opens the Camp, which starts the Trail of duels and, after it, the rivals, Wanted bounties, packs, the deck builder with a side deck, best of three and two players. The same page is at [/graybox/](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) for older links. The [full Showdown reference page](https://alejandro-publius.github.io/cowboys-vs-wizards/showdown/) is kept, and [what is in it](prototypes/showdown/README.md) is listed there.
 
-The earlier three-lane duel is no longer playable in the graybox; an old `?mode=` address opens the Showdown menu. It survives only in the [earlier illustrated 3D build](https://alejandro-publius.github.io/cowboys-vs-wizards/3d/), which holds the models, animation and board and is labelled as the earlier build. The 3D layer goes on top of Showdown once the rules are locked, because motion is expensive to change. (These site paths apply once issue 143 slice 3 is merged and deployed.)
+The earlier three-lane duel and its illustrated 3D build are retired. Old `/3d/` links lead to Showdown, and an old `?mode=` address opens the Showdown menu. The last playable lane and 3D source is preserved in Git history at `main` commit `ea183ee29dbd` (`git checkout ea183ee29dbd`). Saved lane progress does not carry into Showdown: a lane capture shows in the Camp as a keepsake only ([keepsake ruling](docs/design/release-line.md#current-status-november-20-supersedes-the-november-19-1015-pm-handoff)). The 3D layer will be rebuilt on top of Showdown once the rules are locked, because motion is expensive to change.
 
 No first-time human player has tested the current rules yet. Every balance figure in this repository comes from bot play. The [release line and scoreboard](docs/design/release-line.md) says what is in the game, what is waiting on a playtest, and what was cut. Fable's game decisions are posted on [issue 143](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143).
 
-## What the earlier 3D lane build has
+## Card art library
 
-- **The duel.** Twelve-card decks, three lanes, one summon and one spell a turn, tributes for stronger troops, and both sides striking at once.
-- **A title menu** with settings, achievements, a deck workbench and the Wanted board.
-- **The models and motion:** Sheriff, Wizard, Dragon, Mounted Billy and Skeleton, and the original attack demo at `?mode=demo`.
+The [Showdown art direction catalog](prototypes/showdown/ART-DIRECTION.md) has prompts for all 29 cards, a shared style guide, 18 environment and prop briefs, and 13 model sheets. The [Sheriff](assets/cards/sheriff-card.webp) and [Dragon](assets/cards/dragon-card.webp) paintings are the style references.
 
-Every card is listed in the [card spreadsheet](docs/cards.csv), and the rules in the [rules sheet](docs/rules.csv).
+Regenerate it after editing the briefs in [`prototypes/showdown/art.js`](prototypes/showdown/art.js):
+
+```sh
+node prototypes/showdown/export-art.mjs
+```
+
+The [Showdown card spreadsheet](prototypes/showdown/cards.csv) uses the same visual direction. Regenerate it with `node prototypes/showdown/export-cards.mjs`.
 
 ## Play
 
@@ -27,13 +31,13 @@ npm ci
 npm run build
 ```
 
-Open `dist/cowboys-vs-wizards-board-duel.html` in a desktop browser. **Play** opens the Showdown Camp. `?seed=N` fixes every deal started from the Camp. Any old lane address (`?mode=lanes`, `match`, `ride-out`, `practice-*`, `fire-arc`) opens the same Showdown menu.
+Open `dist/cowboys-vs-wizards-board-duel.html` in a desktop browser. **Play** opens the Showdown Camp. `?seed=N` fixes every deal started from the Camp, and `?practice=0` or `?practice=60` opens a fixed Boot Hill practice deal. Any old lane address (`?mode=lanes`, `match`, `ride-out`, `practice-*`, `fire-arc`) opens the same Showdown menu.
 
 `npm run build -- --web` writes the same single file to `dist/web/index.html`, and `npm run build -- --hosted` writes the Pages copy there. `node prototypes/showdown/build.mjs` writes the full Showdown page to `dist/showdown.html`.
 
-`npm run build:art` builds the earlier illustrated 3D duel and attack demo at the same path, `dist/cowboys-vs-wizards-board-duel.html`, replacing the graybox there. That build needs WebGL 2 and includes the models and card art. `npm run build:art -- --web` writes it with content-hashed assets to `dist/web/3d/`.
+`node scripts/stage-pages.mjs` stages the whole site in `dist/web/` exactly as the Pages workflow does: Showdown at `/` and `/graybox/`, the Showdown reference page at `/showdown/`, and old `/3d/` links leading to Showdown. `node scripts/check-pages-tree.mjs --browser` serves that tree under `/cowboys-vs-wizards/` and checks it.
 
-`node scripts/stage-pages.mjs` stages the whole site in `dist/web/` exactly as the Pages workflow does: the graybox at `/` and `/graybox/`, the Showdown page at `/showdown/` and the 3D build at `/3d/`. `node scripts/check-pages-tree.mjs --browser` serves that tree under `/cowboys-vs-wizards/` and checks it.
+Every Showdown card is in the [Showdown card spreadsheet](prototypes/showdown/cards.csv), and the rules are in the [rulebook](prototypes/showdown/RULEBOOK.md). `docs/cards.csv` and `docs/rules.csv` describe the retired lane duel and are kept as history.
 
 ## How it is made
 
@@ -54,36 +58,32 @@ Start with the normal Showdown Play path. Build once with `npm run build`; each 
 | Trail duels paid and kept after reload; lane keepsakes shown, not carried | `node scripts/browser-showdown-trail-check.mjs dist/cowboys-vs-wizards-board-duel.html` |
 | Keyboard-only and mouse play | `node scripts/browser-showdown-keyboard-check.mjs dist/cowboys-vs-wizards-board-duel.html` |
 | Combat cues | `node scripts/browser-showdown-cues-check.mjs dist/cowboys-vs-wizards-board-duel.html` |
-| Game, presenter and asset tests, as run on every pull request | `npm test` (the same as `node scripts/verify-duel.mjs`) |
-| The staged Pages site, as CI checks it (add `--browser` for Chrome, including `/3d/` model loading) | `node scripts/stage-pages.mjs --commit <sha>`, then `node scripts/check-pages-tree.mjs --commit <sha>` |
+| Showdown rules | `node --test prototypes/showdown/rules.test.js prototypes/showdown/contract.test.js tests/game/showdown-presenter.test.js` |
+| Tests as run on every pull request | `npm test` |
+| The staged Pages site, as CI checks it (add `--browser` for Chrome) | `node scripts/stage-pages.mjs --commit <sha>`, then `node scripts/check-pages-tree.mjs --commit <sha>` |
 | Which commit the live site is (after a Pages deploy) | `curl https://alejandro-publius.github.io/cowboys-vs-wizards/build.json`; CI compares it and the live `index.html` digest, also at `/graybox/`, with the built release ([evidence](docs/evidence/kiro-build-identity.md)) |
-| Earlier 3D build: the tests, a fresh illustrated build and an eight-step Chrome replay | `node scripts/verify-duel.mjs --browser` |
-| Earlier 3D build: attack demo geometry, grip and event order | `npm run check` |
-| A seeded lane rules trace | `node scripts/play-match.mjs --seed 60` |
 
-The older lane harnesses (`browser-menu-check`, `browser-webkit-smoke` and the other lane `scripts/browser-*.mjs`) drive only the earlier 3D build at `/3d/`; [docs/AGENT-ROUTER.md](docs/AGENT-ROUTER.md#earlier-illustrated-3d-build-lane-rules-3d) lists which ones are current and how to point them at it.
-
-The Chrome check on macOS writes the receipt and screenshots to `.artifacts/kiro/replay/` when invoked through `verify-duel.mjs`. The saved **orb-duel-replay** Workflow runs the same command. See the [Kiro write-up](docs/kiro-brag-sheet.md) for the Spec, hooks, tests, review Power and MCP evidence.
+The saved **showdown-practice-replay** Workflow replays Boot Hill deals `?practice=0` and `?practice=60` in headless Chrome. Run `node scripts/verify-duel.mjs --browser` to test the staged Showdown site and the `/3d/` redirect. See the [Kiro write-up](docs/kiro-brag-sheet.md) for specs, hooks, tests, and replay evidence.
 
 ## Architecture at a glance
 
-The rules engine decides which moves are legal and what damage happens; the renderer shows those decisions at the correct moment. This keeps gameplay reproducible while animated attacks can overlap.
+The Showdown engine decides which moves are legal and what damage happens; the screen shows those decisions. This keeps every seeded deal reproducible.
 
 ```mermaid
 flowchart LR
-    Player["Player: cards and lanes"] --> Select["Selection + controller"]
-    Select --> Engine["Seeded match engine"]
-    CPU["Wizard CPU"] -->|public game view| Engine
-    Engine -->|accepted actions and events| Presenter["Presenter + scheduler"]
-    Presenter --> Scene["3D characters, spells and orbs"]
-    Presenter --> Hand["Card hand + match UI"]
+    Player["Player: Camp, hand and attacks"] --> Screen["Showdown screen (src/ui)"]
+    Screen --> Session["Session and Camp (src/match)"]
+    CPU["Wizard CPU"] -->|seat-private view| Engine
+    Session --> Engine["Seeded Showdown engine (src/game/showdown)"]
+    Engine -->|legal actions and events| Session
+    Session --> Screen
 ```
 
 [Architecture and source ownership](docs/ARCHITECTURE.md) · [Current verified state and next priorities](docs/PROJECT-STATUS.md) · [Index of all documents](docs/README.md)
 
 ## Built with Kiro
 
-Kiro's Requirements-First Orb Duel spec, custom agent, workspace steering, hooks, replay Workflow, and review Power/MCP are part of this repository—not a narrative added after the fact. The Kiro work is distinguished from Fable's match rules/CPU and Codex's integration and verification.
+Kiro's Requirements-First Orb Duel spec, custom agent, workspace steering, hooks, replay Workflow, and review Power/MCP are part of this repository—not a narrative added after the fact. The Orb Duel spec and its replay receipts record the retired lane build and stay as history. The Kiro work is distinguished from Fable's match rules/CPU and Codex's integration and verification.
 
 [Follow the judge evidence trail](docs/JUDGE-GUIDE.md) · [Kiro usage and receipts](docs/kiro-brag-sheet.md) · [Actual build log](docs/kiro-build-log.md) · [Active closeout queue](docs/kiro-closeout-queue.md) · [Research/source register](docs/kiro-source-register.md)
 
@@ -93,23 +93,24 @@ For ongoing balance review, the separate [Night Watch Kiro Crew app](https://git
 
 | Path | Owns |
 | --- | --- |
-| `src/game/` | Seeded rules, legal actions, public views and CPU |
-| `src/match/` | Selection, controller, scheduler and event playback |
-| `src/render/` | Three.js scene, rigs, orbs and combat cues |
-| `src/ui/` | Illustrated hand, interactive overlay and menus |
-| `src/app.js` | Graybox entry point: the Showdown title, Camp, deck builder and duel screens |
 | `src/game/showdown/` | Showdown rules, cards, screen contract, progress and save codes |
-| `src/main.js` | Earlier illustrated 3D build: boot, mode switching and frame loop (lane rules) |
-| `assets/` | Optimized Tripo models, card illustrations and media |
+| `src/app.js` | Entry point: the Showdown title, Camp, deck builder and duel screens |
+| `src/ui/showdown-*.js`, `src/ui/showdown.css` | Showdown screen, Camp, builder and cues |
+| `src/match/showdown-*.js` | Showdown session, campaign and match flow |
+| `prototypes/showdown/` | Rulebook, reference page, card spreadsheet and the [art direction](prototypes/showdown/ART-DIRECTION.md) |
+| `.kiro/specs/duel-card-pipeline/cards/` | Card specs that the Showdown card table reads |
+| `assets/` | Optimized Tripo models, card illustrations and media (source assets, kept) |
 | `scripts/`, `tests/` | Build, replay, simulation and verification |
 | `.kiro/`, `docs/` | Workspace guidance, requirements, research and evidence |
 
-Contributing with an AI agent? Start with [AGENTS.md](AGENTS.md), then use the [task-specific file router](docs/AGENT-ROUTER.md) rather than scanning the whole repository. Work on one owned area in a separate worktree and run its affected check. The engine decides outcomes. The presenter renders the events and their before and after values.
+Legacy headless utilities still support archived rules experiments and reading old profile keepsakes. The playable lane build is in Git history at `ea183ee29dbd`.
+
+Contributing with an AI agent? Start with [AGENTS.md](AGENTS.md), then use the [task-specific file router](docs/AGENT-ROUTER.md) rather than scanning the whole repository. Work on one owned area in a separate worktree and run its affected check. The engine decides outcomes. The screen renders the events and their before and after values.
 
 ## Assets and attribution
 
-Dragon and Mounted Billy play articulated Blender attack clips. Skeleton uses its fitted Tripo mesh with the duel’s summon, hit and defeat cues. Billy and Wizard use procedural rigs. Sheriff combines the approved sourced Mixamo idle with the existing procedural draw/fire sequence and runtime transition blending. See the [animation plan](docs/character-animation-plan.md) before adding clips or replacing an export.
+The models and clips in `assets/` are kept as source assets for the Showdown 3D layer. Dragon and Mounted Billy have articulated Blender attack clips. Skeleton has its fitted Tripo mesh. Sheriff has the approved sourced Mixamo idle. See the [animation plan](docs/character-animation-plan.md) before adding clips or replacing an export.
 
-The build includes Three.js (MIT) and Rapier (Apache-2.0) notices. The pinned Lucca Cerf references and their MIT license are in [docs/references/lucca-character-factory](docs/references/lucca-character-factory). The [build log](docs/kiro-build-log.md) attributes work by Kiro, Fable, Codex, Tripo and the user.
+The pinned Lucca Cerf references and their MIT license are in [docs/references/lucca-character-factory](docs/references/lucca-character-factory). The [build log](docs/kiro-build-log.md) attributes work by Kiro, Fable, Codex, Tripo and the user.
 
 [Verified closeout deployment](docs/evidence/kiro-closeout-deployment.md)
