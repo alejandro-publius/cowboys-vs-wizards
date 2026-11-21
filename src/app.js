@@ -10,10 +10,10 @@ const node = (id) => document.getElementById(id);
 Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"), import("./ui/showdown-builder.js"), import("./match/showdown-campaign.js"),
   import("./match/showdown-playtest.js"), import("./match/showdown-session.js"), import("./match/showdown-turn.js"),
   import("./match/showdown-outrider.js"), import("./ui/outrider-camp.js"), import("./match/showdown-practice.js"),
-  import("./match/showdown-wizard-campaign.js"), import("./ui/showdown-wizard-camp.js")])
+  import("./match/showdown-wizard-campaign.js"), import("./ui/showdown-wizard-camp.js"), import("./match/showdown-earned.js")])
   .then(([{mountShowdown, freshSeed}, {mountCamp}, {mountBuilder}, {createCampaign}, {createPlaytestLog, PAGE_BUILD}, {twoPlayers}, {turnDuel},
     {outriderTurn}, {VERIFIED, outriderControls}, {PRACTICE_SEEDS, practiceDuel, practiceFromQuery},
-    {createWizardPreview, wizardFromQuery, previewUnlocked, WIZARD_TRACK}, {mountWizardCamp}]) => {
+    {createWizardPreview, wizardFromQuery, previewUnlocked, WIZARD_TRACK}, {mountWizardCamp}, {earnedControl, earnedDuel}]) => {
   const title = node("title-screen"), screen = node("showdown"), campRoot = node("showdown-camp"), builderRoot = node("showdown-builder"), play = node("menu-play");
   const seed = new URLSearchParams(location.search).get("seed");
   // ?seed fixes every deal started from the Camp and every later game of a match, so a scripted check replays the same duels.
@@ -49,6 +49,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     campaign.enter();
     camp.show();
     wizardCamp.show("camp", {unlocked: previewUnlocked(campaign.progress())});
+    showEarned();
     // When that control is now disabled (a win's card offer is open), the Camp's own order: the claim
     // (offer or pack), then the first open duel. Selectors are tried in turn, not in document order.
     const usable = (selector) => campRoot.querySelector(`${selector}:not(:disabled)`);
@@ -151,6 +152,24 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     showdown.start(duel, seedFor(), {seat: duel.seat, campaign: preview});
   };
   const wizardCamp = mountWizardCamp(node("camp-wizard"), {preview, track: WIZARD_TRACK, onDuel: openWizard, onCowboyCamp: toCamp});
+  // Earned decks (showdown-earned.js, Fable's ruling): one two-player game, the Camp's Cowboy deck against the Wizard
+  // preview deck, after the Camp's two-player buttons once the preview has a win. Read-only: the two-player screen
+  // settles nothing and logs nothing. Refreshed on each Camp entry and after any Camp click (Start preview over).
+  node("camp-open").insertAdjacentHTML("afterend", `<div id="camp-earned-row" class="sd-row" hidden></div>`);
+  const showEarned = () => {
+    const html = earnedControl(earnedDuel(campaign.progress(), preview.progress()));
+    const row = node("camp-earned-row");
+    if (row.innerHTML !== html) row.innerHTML = html;
+    row.hidden = !html;
+  };
+  campRoot.addEventListener("click", (event) => {
+    if (!event.target.closest("button[data-earned]")) return showEarned();
+    const duel = earnedDuel(campaign.progress(), preview.progress());
+    if (!duel) return showEarned();
+    last = "#camp-earned";
+    showOnly(screen);
+    showdown.start(duel, seedFor(), {players: 2});
+  });
   if (turn !== null) openTurn(turn);
   if (outrider !== null && turn === null) openOutrider(outrider);
   if (practice !== null) openPractice(practice);

@@ -25,7 +25,13 @@
 //               from this match's cards; the match settles once (openWins), one playtest line per game.
 //   hotseat     two players, best of three: the curtain hides the table with no hand in the page; each turn
 //               shows only the active seat's hand (all its own ids) and no id of the other seat's hand or
-//               traps; the match runs to two wins; Showdown progress and the playtest log are unchanged.
+//               traps; the match runs to two wins; Showdown progress and the playtest log are unchanged; Play again
+//               deals the starter decks.
+//   earned      Earned decks (showdown-earned.js): absent with no teaser until the first Wizard preview win; with an
+//               empty Cowboy save, the starter deck; then the Camp deck, chosen with Tab and Enter only; the curtain
+//               first; the Wizards open; each seat's first hand equals the engine's deal of that seed; one game to a
+//               result with the board open and no hand; the rematch keeps the decks, the label and the opener; Back to
+//               camp returns focus; the Cowboy save, the preview save and the playtest log are byte-identical.
 //   saves       post-Trail save plus a lane veteran's keepsake: a pasted code previews, Cancel changes
 //               nothing, Replace loads it; Start over (confirm accepted) resets Showdown progress only:
 //               cvw-player-v1 and the keepsake record are byte-identical and the keepsake still shown.
@@ -44,6 +50,9 @@ import {INHERITED_KEY} from "../src/game/showdown/inherited.js";
 import {PLAYTEST_KEY} from "../src/match/showdown-playtest.js";
 import {BOSSES} from "../src/game/bounty-hunt.js";
 import {createProfileStore} from "../src/profile/player-profile.js";
+import {DECKS} from "../src/game/showdown/cards.js";
+import {applyAction, createShowdown} from "../src/game/showdown/rules.js";
+import {earnedDuel} from "../src/match/showdown-earned.js";
 
 const CHROME = process.env.CHROME_PATH ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const WIDTH = 1440, HEIGHT = 900;
@@ -315,7 +324,13 @@ async function session(label) {
   };
   const toCamp = async () => { await press(byText("/^Back to camp$/"), "Back to camp"); await wait(`Boolean(camp())`, "the Camp"); };
 
-  return {send, evaluate, wait, press, click, byText, text, shot, storage, progress, seedStorage, load, openCamp, tile, tileState, startFrom,
+  // A real key press over the DevTools protocol, to whatever has focus.
+  const key = async (name) => {
+    const code = {Tab: 9, Enter: 13}[name];
+    await send("Input.dispatchKeyEvent", {type: "keyDown", key: name, code: name, windowsVirtualKeyCode: code, ...(name === "Enter" ? {text: "\r"} : {})});
+    await send("Input.dispatchKeyEvent", {type: "keyUp", key: name, code: name, windowsVirtualKeyCode: code});
+  };
+  return {key, send, evaluate, wait, press, click, byText, text, shot, storage, progress, seedStorage, load, openCamp, tile, tileState, startFrom,
     winSolo, playGame, takeOffer, toCamp, assertCurtain, curtainUp, check, run, dialogs: () => dialogs,
     close: async () => { cdp.close(); await chrome.close(); }};
 }
@@ -559,8 +574,122 @@ const RUNS = {
     const after = await s.storage();
     assert.deepEqual(after, before, "two players changes no stored data: no progress and no playtest line");
     await s.shot("hotseat-done");
+    // Play again is a new best of three with the starter decks: its first hand is the engine's starter deal of ?seed=3.
+    const fresh = createShowdown(3, {decks: DECKS});
+    await s.click("#sd-again");
+    await s.wait(`vis(document.getElementById('sd-curtain'))`, "the curtain for the new match");
+    await s.click("#sd-ready");
+    await s.wait(`vis(document.getElementById('sd-table'))`, "the table");
+    assert.deepEqual(await s.evaluate(`[...document.querySelectorAll('#sd-hand [data-card]')].map(n=>n.dataset.card).sort()`), [...fresh.sides[fresh.first].hand].sort());
     s.check(`Two players best of three (?seed=3): curtain every hand-over with nothing private in the page; each seat saw only its own hand; ${wins.cowboy}-${wins.wizard}; storage unchanged`,
       games.map((g) => ({won: g.won, opened: g.opened, turns: g.turns, curtains: g.curtains})));
+  },
+
+  async earned(s) {
+    // Fable's ruling (../ruling.md): shown only after the first Wizard preview win, one game, the Wizards open.
+    // Fixtures: a Cowboy who has won Boot Hill with the card offer still open and two packs, a playtest line, and a
+    // Wizard preview save (the career module's own shape; the read-back below fails if it differs).
+    const {WIZARD_PREVIEW_KEY, createWizardPreview} = await import("../src/match/showdown-wizard-campaign.js");
+    const cowboy = {...settle(newSave(), "trail", true).save, packs: 2};
+    const previewRaw = (wins) => JSON.stringify({v: 1, wins, losses: 0});
+    const readBack = (wins) => createWizardPreview({getItem: (k) => (k === WIZARD_PREVIEW_KEY ? previewRaw(wins) : null),
+      setItem: () => { throw Error("the preview wrote on read"); }, removeItem: () => {}}).progress();
+    assert.equal(readBack(1).wins, 1, "the fixture is a one-win preview");
+    const SEED = 7;
+    // The engine's deal for this seed: the Wizards' opening hand, then the Cowboys' hand when their first turn starts.
+    const dealt = (cowboySave, wins) => {
+      const duel = earnedDuel(cowboySave, readBack(wins));
+      const engine = createShowdown(SEED, duel.options);
+      assert.equal(engine.first, "wizard", "the Wizards open");
+      return {decks: duel.options.decks, wizard: engine.sides.wizard.hand, cowboy: applyAction(engine, {type: "end"}).state.sides.cowboy.hand};
+    };
+    const handOnScreen = () => s.evaluate(`[...document.querySelectorAll('#sd-hand [data-card]')].map(n=>n.dataset.card).sort()`);
+    const sorted = (ids) => [...ids].sort();
+    const toReady = async () => {
+      // The screen does not move focus onto "I'm ready" when a two-player game opens (the same for the Camp's own
+      // two-player buttons), so the keyboard player tabs to it.
+      let n = 0;
+      while (!(await s.evaluate(`document.activeElement?.id==='sd-ready'`)) && n < 50) { await s.key("Tab"); n += 1; }
+      assert.ok(n < 50, "I'm ready is reached with Tab");
+      return n;
+    };
+    const passTo = async (seat) => {
+      await s.wait(`vis(document.getElementById('sd-curtain'))`, `the curtain for the ${seat} player`);
+      assert.equal(await s.assertCurtain(), `Pass the screen to the ${seat === "cowboy" ? "Cowboy" : "Wizard"} player.`);
+      const tabs = await toReady();
+      await s.key("Enter");
+      await s.wait(`vis(document.getElementById('sd-table'))`, "the table");
+      return tabs;
+    };
+    const visibleText = () => s.evaluate(`txt(document.getElementById('showdown'))`);
+
+    // No teaser: absent on a new profile, and after a Boot Hill win while the preview has no win.
+    for (const entries of [[], [[SAVE_KEY, JSON.stringify(cowboy)]], [[SAVE_KEY, JSON.stringify(cowboy)], [WIZARD_PREVIEW_KEY, previewRaw(0)]]]) {
+      await s.seedStorage(entries);
+      await s.load();
+      await s.openCamp();
+      assert.equal(await s.evaluate(`document.getElementById('camp-earned')`), null, `no Earned decks with ${JSON.stringify(entries.map(([k]) => k))}`);
+      assert.equal(await s.evaluate(`/earned decks/i.test(txt(camp()))`), false, "no teaser text");
+    }
+    s.check("Earned decks: absent, with no teaser, on a new profile, after Boot Hill alone, and with a preview at 0 wins");
+
+    // An empty Cowboy save after a direct preview win: the starter deck against the preview deck.
+    const starter = dealt(newSave(), 1);
+    await s.seedStorage([[WIZARD_PREVIEW_KEY, previewRaw(1)]]);
+    await s.load(`?seed=${SEED}`);
+    await s.openCamp();
+    await s.click("#camp-earned");
+    await passTo("wizard");
+    assert.deepEqual(await handOnScreen(), sorted(starter.wizard), "Wizard hand, empty Cowboy save");
+    await s.click("#sd-end");
+    await passTo("cowboy");
+    assert.deepEqual(await handOnScreen(), sorted(starter.cowboy), "Cowboy starter hand");
+    s.check(`Earned decks with an empty Cowboy save: starter deck; both first hands equal the engine's ?seed=${SEED} deal, Wizards first`, starter);
+
+    // The full game: the earned Camp deck, chosen with the keyboard, played to a result.
+    const earned = dealt(cowboy, 1);
+    assert.notDeepEqual(earned.cowboy, starter.cowboy, "the seed tells the Camp deck from the starter deck");
+    const playtestRaw = JSON.stringify([{name: "Boot Hill", won: true, turns: 6, seconds: 90, rules: false}]);
+    await s.seedStorage([[SAVE_KEY, JSON.stringify(cowboy)], [WIZARD_PREVIEW_KEY, previewRaw(1)], [PLAYTEST_KEY, playtestRaw]]);
+    await s.load(`?seed=${SEED}`);
+    await s.openCamp();
+    const before = await s.storage();
+    assert.equal(before[SAVE_KEY], JSON.stringify(cowboy), "the Cowboy career as seeded");
+    assert.equal(before[WIZARD_PREVIEW_KEY], previewRaw(1), "the Wizard career as seeded");
+    let tabs = 0;
+    while (!(await s.evaluate(`document.activeElement?.id==='camp-earned'`)) && tabs < 300) { await s.key("Tab"); tabs += 1; }
+    assert.ok(tabs < 300, "Earned decks is reached with Tab");
+    await s.key("Enter");
+    const readyTabs = await passTo("wizard");
+    assert.match(await s.text("#sd-status"), /^Earned decks \(not an even match\) · turn 1 · the Wizards' turn$/);
+    assert.match(await s.text("#sd-lesson"), /Not an even match\. Nothing is saved\./);
+    assert.deepEqual(await handOnScreen(), sorted(earned.wizard), "Wizard hand is the engine's deal");
+    await s.click("#sd-end");
+    await passTo("cowboy");
+    assert.deepEqual(await handOnScreen(), sorted(earned.cowboy), "Cowboy hand (Camp deck) is the engine's deal");
+    s.check(`Earned decks chosen with ${tabs} Tab presses and Enter; curtain first (I'm ready after ${readyTabs} Tab); Wizards open; both first hands equal the engine's ?seed=${SEED} deal`, earned);
+
+    const game = await s.playGame({two: true});
+    assert.ok(game.won, "a winner is named");
+    assert.doesNotMatch(game.status, /game \d of 3/, "a single game, not a best of three");
+    assert.equal(await s.evaluate(`document.querySelectorAll('#sd-hand [data-card]').length`), 0, "no hand after the result");
+    assert.equal(await s.evaluate(`['cowboy','wizard'].every(side=>vis(document.querySelector('#sd-board [data-side='+side+']')))`), true, "both boards open");
+    assert.equal(await s.evaluate(`vis(document.getElementById('sd-curtain'))`), false, "no curtain after the result");
+    assert.deepEqual(await s.storage(), before, "nothing stored after the game");
+    await s.shot("earned-result");
+    assert.equal(await s.text("#sd-again"), "Rematch: earned decks, not an even match");
+    await s.click("#sd-again");
+    await passTo("wizard");
+    assert.match(await s.text("#sd-status"), /^Earned decks \(not an even match\) · turn 1 · the Wizards' turn$/, "the rematch: Wizards open again");
+    assert.deepEqual(await handOnScreen(), sorted(earned.wizard), "the rematch deals the earned decks again");
+    assert.match(await visibleText(), /Not an even match/);
+    await s.toCamp();
+    assert.equal(await s.evaluate(`document.activeElement?.id`), "camp-earned", "focus returns to Earned decks");
+    const after = await s.storage();
+    assert.deepEqual(Object.keys(after), Object.keys(before));
+    for (const k of Object.keys(before)) assert.equal(after[k], before[k], `${k} byte-identical`);
+    s.check(`Earned decks game to its result (${game.status}); open board, no hand; the rematch keeps the decks, the label and the Wizard opener; both careers and the log byte-identical`,
+      {turns: game.turns, curtains: game.curtains, keys: Object.keys(after)});
   },
 
   async saves(s) {
