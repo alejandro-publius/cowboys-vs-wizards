@@ -4,7 +4,7 @@
 // time, the saved deck and collection, Build deck, the save code with Start over, and the playtest report.
 // Every rule (what is open, what a win pays, what a pack holds) comes from progress.js through the campaign.
 import {TYPES} from "../game/showdown/cards.js";
-import {BOUNTIES, HUNTS, RIVALS, trailDone} from "../game/showdown/progress.js";
+import {BOUNTIES, HUNTS, RIVALS, duelList, pool, trailDone} from "../game/showdown/progress.js";
 import {decodeSaveCode, describeSave, encodeSave, sameSave} from "../game/showdown/savecode.js";
 import {TRAIL} from "../game/showdown/trail.js";
 import {OFFER_HEADING, face, offerRow, pays} from "./showdown-screen.js";
@@ -12,6 +12,36 @@ import {mountLedger} from "./sheriffs-ledger.js";
 
 const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
 const sum = (counts) => Object.values(counts).reduce((total, copies) => total + copies, 0);
+const rivalReward = (rival) => [pays(rival.reward.map((type) => [type, 1])), plural(rival.packs, "pack")].filter(Boolean).join(" and ");
+
+// The Camp after the Trail (Fable, November 20): never promise a card it cannot pay. "Can be earned" is
+// progress.js pool(), the list settle and openPack draw from. A pack is opened only while that list is not empty.
+export const packOpens = (save) => save.packs > 0 && pool(save).length > 0;
+
+// A rival tile's note. i: the rival's place in RIVALS; state: its duelList state.
+export function rivalNote(save, i, state) {
+  const rival = RIVALS[i];
+  if (state === "won") return pool(save).length >= 2 ? "Beaten. Rematch for a card." : "Beaten."; // a rematch offers two cards or none
+  if (state === "locked") return trailDone(save) ? `Beat ${RIVALS[i - 1].name} first` : "After the Trail";
+  return !rival.reward.length && !pool(save).length ? `Win to beat ${rival.name}.` : `Win to earn ${rivalReward(rival)}`;
+}
+
+// After the Trail, the one next duel (#camp-next): the first open rival, then the first open hunt, in duelList order.
+export function nextLine(save) {
+  const list = duelList(save);
+  const rivals = list.filter((duel) => duel.kind === "rival");
+  const at = rivals.findIndex((duel) => duel.state === "open");
+  const hunt = list.find((duel) => duel.kind === "hunt" && duel.state === "open");
+  const huntName = (duel) => `<strong>${duel.name}</strong>, hunt ${duel.cleared + 1} of ${HUNTS}.`;
+  if (at >= 0) {
+    // With nothing left to earn the line stops at the rival (Fable's ruling); its tile still reads "Win to beat <name>.".
+    const pay = RIVALS[at].reward.length || pool(save).length ? ` ${rivalNote(save, at, "open")}.` : "";
+    const or = hunt && (save.losses[rivals[at].id] ?? 0) > 0 ? ` Or hunt ${huntName(hunt)}` : "";
+    return `Next: <strong>${RIVALS[at].name}</strong>, rival ${at + 1} of ${RIVALS.length}.${pay}${or}`;
+  }
+  if (hunt) return `Next: ${huntName(hunt)} Five capture ${TYPES[BOUNTIES.find((each) => `hunt:${each.id}` === hunt.id).reward].name}.`;
+  return "Every rival is beaten and both bosses are captured. Open range and two players stay open.";
+}
 const TEMPLATE = `
   <header><h1>Camp</h1><button id="camp-home" type="button">Main menu</button></header>
   <p id="camp-storage" class="sd-note" role="status" hidden>This browser did not save your progress, so a reload will lose it. To keep it, open Save code in the Camp and copy the code.</p>
@@ -62,13 +92,16 @@ export function mountCamp(root, {campaign, playtest, onDuel, onHome, onBuild, co
     const list = campaign.duels();
     const next = TRAIL[progress.wins];
     $("camp-storage").hidden = campaign.saved();
+    const opens = packOpens(progress);
     const hint = picked ? `<p class="sd-good">Added ${TYPES[picked].name}: you now own ${campaign.owned(picked)}. The new copy is not in your deck yet: use Build deck below.</p>` : "";
     // First things first: a card to choose, then a pack to open. While a card is on offer no solo duel can start.
     $("camp-claim").innerHTML = progress.offer ? `<h2>${OFFER_HEADING}</h2><p class="sd-note">You won. The one you pick goes into your collection.</p>${offerRow(progress.offer, campaign.owned)}`
       : opened ? `<h2>In the pack</h2><div class="sd-row">${opened.map((type) => `<div class="sd-card cowboy ${TYPES[type].rarity}" data-frame="${TYPES[type].kind}" data-opened="${type}">${face(type)}</div>`).join("")}</div>
-        <div class="sd-row"><button type="button" id="camp-pack-done">${progress.packs ? `Open the next pack (${progress.packs} left)` : "Add them to my collection"}</button></div>`
-      : progress.packs ? `${hint}<h2>${plural(progress.packs, "pack")} to open</h2><div class="sd-row"><button type="button" id="camp-pack">Open a pack: three cards</button></div>`
-      : `${hint}${next ? `<p id="camp-next">${progress.wins === 0 ? "Start here" : "Next"}: click <strong>${next.name}</strong> to play ${progress.wins === 0 ? "your first duel" : "it"}.</p>` : "<p>You have won the whole Trail.</p>"}`;
+        <div class="sd-row"><button type="button" id="camp-pack-done">${opens ? `Open the next pack (${progress.packs} left)` : "Add them to my collection"}</button></div>`
+      : opens ? `${hint}<h2>${plural(progress.packs, "pack")} to open</h2><div class="sd-row"><button type="button" id="camp-pack">Open a pack</button></div>`
+      // Packs that hold nothing new stay in the save, unopened, and open again once a rival's card is released.
+      : `${hint}${progress.packs ? `<p id="camp-packs-empty" class="sd-note">${plural(progress.packs, "pack")} ${progress.packs === 1 ? "holds" : "hold"} nothing new: every card you can earn now is yours.</p>` : ""}${
+        next ? `<p id="camp-next">${progress.wins === 0 ? "Start here" : "Next"}: click <strong>${next.name}</strong> to play ${progress.wins === 0 ? "your first duel" : "it"}.</p>` : `<p id="camp-next">${nextLine(progress)}</p>`}`;
 
     const tile = (duel, note, off = duel.state !== "open") => `<li><button type="button" class="sd-tile ${duel.state}" ${duel.kind === "trail" ? `data-trail="${duel.index}" ` : ""}${off || progress.offer ? "disabled" : `data-duel="${duel.id}"`}>
       <strong>${duel.state === "won" ? "✓ " : ""}${duel.name}</strong><span class="sd-note">${note}</span></button></li>`;
@@ -76,12 +109,8 @@ export function mountCamp(root, {campaign, playtest, onDuel, onHome, onBuild, co
       const reward = pays(TRAIL[duel.index].reward.map(([type, , copies]) => [type, copies]));
       return tile(duel, duel.state === "won" ? `Earned ${reward}` : duel.state === "locked" ? `Locked · win to earn ${reward}` : `Win to earn ${reward}`);
     }).join("");
-    $("camp-rivals").innerHTML = list.filter((duel) => duel.kind === "rival").map((duel, i) => {
-      const rival = RIVALS[i];
-      const reward = [pays(rival.reward.map((type) => [type, 1])), plural(rival.packs, "pack")].filter(Boolean).join(" and ");
-      // A beaten rival can be fought again for the card choice.
-      return tile(duel, duel.state === "won" ? "Beaten. Rematch for a card." : duel.state === "locked" ? (trailDone(progress) ? "Beat the rival before" : "After the Trail") : `Win to earn ${reward}`, duel.state === "locked");
-    }).join("");
+    // A beaten rival can be fought again; it pays a card choice only while two cards can be earned.
+    $("camp-rivals").innerHTML = list.filter((duel) => duel.kind === "rival").map((duel, i) => tile(duel, rivalNote(progress, i, duel.state), duel.state === "locked")).join("");
     $("camp-bounties").innerHTML = list.filter((duel) => duel.kind === "hunt").map((duel) => {
       const bounty = BOUNTIES.find((each) => `hunt:${each.id}` === duel.id);
       return tile(duel, duel.state === "won" ? `Captured: ${TYPES[bounty.reward].name}` : duel.state === "locked" ? "After the Trail"
@@ -176,7 +205,7 @@ export function mountCamp(root, {campaign, playtest, onDuel, onHome, onBuild, co
     } else if (d.duel && !campaign.progress().offer) onDuel(d.duel, {});
     else if (d.match && !campaign.progress().offer) onDuel(d.match, {best: 3});
     else if (d.two) onDuel("two", {players: 2, best: Number(d.two)});
-    else if (b.id === "camp-pack" || (b.id === "camp-pack-done" && campaign.progress().packs)) {
+    else if ((b.id === "camp-pack" || b.id === "camp-pack-done") && packOpens(campaign.progress())) {
       opened = campaign.openPack();
       picked = null;
       render();

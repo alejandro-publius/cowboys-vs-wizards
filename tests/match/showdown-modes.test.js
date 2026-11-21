@@ -3,9 +3,10 @@
 // Expected values come from src/game/showdown/progress.js itself; nothing here restates a reward.
 import assert from "node:assert/strict";
 import test from "node:test";
-import {TYPES} from "../../src/game/showdown/cards.js";
+import {RARITY, TYPES} from "../../src/game/showdown/cards.js";
 import {SAVE_KEY} from "../../src/game/showdown/campaign-store.js";
-import {BOUNTIES, DECK_SIZE, HUNTS, RIVALS, choose, newSave, openPack, settle, trailDone} from "../../src/game/showdown/progress.js";
+import {BOUNTIES, DECK_SIZE, HUNTS, RIVALS, choose, duelList, migrate, newSave, openPack, owned, pool, settle, trailDone} from "../../src/game/showdown/progress.js";
+import {nextLine, packOpens, rivalNote} from "../../src/ui/showdown-camp.js";
 import {decodeSaveCode, encodeSave} from "../../src/game/showdown/savecode.js";
 import {TRAIL} from "../../src/game/showdown/trail.js";
 import {createCampaign} from "../../src/match/showdown-campaign.js";
@@ -186,4 +187,109 @@ test("a save code from the Camp loads into a fresh browser through campaign.repl
   assert.equal(campaign.replace(decoded.save), true);
   assert.deepEqual(createCampaign(elsewhere).progress(), save);
   assert.equal(TRAIL.length, createCampaign(elsewhere).progress().wins);
+});
+
+// Fable's first Kiro task for "the Camp after the Trail" (docs/design manuscript, November 20): play from a new
+// save through the Trail and all four rivals, taking the first offered card and every pack that can hold a card,
+// and record when nothing more can be earned. "Can be earned" is progress.js pool(), the list settle and openPack draw from.
+const EARNABLE = Object.keys(TYPES).filter((type) => TYPES[type].side === "cowboy" && !["basic", "legendary"].includes(TYPES[type].rarity));
+const earnedCopies = (save) => EARNABLE.reduce((n, type) => n + Math.min(owned(save, type), RARITY[TYPES[type].rarity][1]), 0);
+function fullRun() {
+  let save = newSave();
+  const steps = [];
+  const claim = () => {
+    const took = {offer: save.offer ? save.offer[0] : null, packs: []};
+    if (save.offer) save = choose(save, save.offer[0]);
+    while (save.packs && pool(save).length) { const out = openPack(save); save = out.save; took.packs.push(out.cards); }
+    return took;
+  };
+  while (!trailDone(save)) {
+    save = settle(save, "trail", true).save;
+    const before = earnedCopies(save);
+    steps.push({duel: `trail ${save.wins}`, before, ...claim(), after: earnedCopies(save), pool: pool(save).length, left: save.packs});
+  }
+  for (const rival of RIVALS) {
+    save = settle(save, `rival:${rival.id}`, true).save;
+    const before = earnedCopies(save);
+    steps.push({duel: `rival:${rival.id}`, before, ...claim(), after: earnedCopies(save), pool: pool(save).length, left: save.packs});
+  }
+  return {save, steps};
+}
+
+test("progress pool: 33 copies can be earned; every offer and pack taken, the pool empties at the Bonewright and the Coven's packs hold none", () => {
+  assert.equal(EARNABLE.reduce((n, type) => n + RARITY[TYPES[type].rarity][1], 0), 33);
+  const {save, steps} = fullRun();
+  assert.deepEqual(fullRun(), {save, steps}, "deterministic");
+  const at = Object.fromEntries(steps.map((step) => [step.duel, step]));
+  assert.deepEqual([at["trail 6"].before, at["trail 6"].after], [18, 22], "the sixth Trail win (18), then its offer (19) and pack (22)");
+  assert.deepEqual(at["trail 6"].packs.map((cards) => cards.length), [3]);
+  assert.deepEqual(at["rival:stargazer"].packs.map((cards) => cards.length), [3]);
+  assert.deepEqual(at["rival:imp"].packs.map((cards) => cards.length), [3]);
+  assert.deepEqual([at["rival:bonewright"].offer, at["rival:bonewright"].packs], [null, [["cowboy-gatling-crew"]]], "no offer; its pack holds one card");
+  assert.deepEqual([at["rival:coven"].offer, at["rival:coven"].packs, at["rival:coven"].after], [null, [], 33]);
+  assert.deepEqual([pool(save), save.packs, save.offer], [[], 2, null], "nothing left to earn; the Coven's 2 packs stay unopened");
+  // openPack on an empty pool would still spend a pack: the Camp must decline it, not call it.
+  assert.deepEqual([openPack(save).cards, openPack(save).save.packs], [[], 1]);
+});
+
+// Fable's pass list for the Camp after the Trail. The strings are Fable's, word for word; <strong> is the Camp's bold.
+const claimAll = (save) => {
+  if (save.offer) save = choose(save, save.offer[0]);
+  while (packOpens(save)) save = openPack(save).save;
+  return save;
+};
+const rivalNotes = (save) => duelList(save).filter((duel) => duel.kind === "rival").map((duel, i) => rivalNote(save, i, duel.state));
+
+test("Camp after the Trail: the next line names the first open rival, then the first open hunt", () => {
+  const trail = claimAll(postTrail());
+  assert.equal(trail.packs, 0, "Trail won, offer taken, pack opened");
+  assert.equal(nextLine(trail), "Next: <strong>The Stargazer</strong>, rival 1 of 4. Win to earn Six-Shooter and 1 pack.");
+  assert.equal(nextLine({...trail, losses: {...trail.losses, "rival:stargazer": 1}}),
+    "Next: <strong>The Stargazer</strong>, rival 1 of 4. Win to earn Six-Shooter and 1 pack. Or hunt <strong>The Lantern Wraith</strong>, hunt 1 of 5.");
+  assert.deepEqual(rivalNotes(trail), ["Win to earn Six-Shooter and 1 pack", "Beat The Stargazer first", "Beat The Imp first", "Beat The Bonewright first"]);
+  let rivals = trail;
+  for (const rival of RIVALS) rivals = claimAll(settle(rivals, `rival:${rival.id}`, true).save);
+  const hunting = {...rivals, hunts: {"lantern-wraith": HUNTS, "graveyard-dragon": 2}, collection: {...rivals.collection, "cowboy-captured-wraith": 1}};
+  assert.equal(nextLine(hunting), "Next: <strong>The Graveyard Dragon</strong>, hunt 3 of 5. Five capture Captured Dragon.");
+  assert.equal(nextLine({...rivals, hunts: {"graveyard-dragon": 1}}), "Next: <strong>The Lantern Wraith</strong>, hunt 1 of 5. Five capture Captured Wraith.");
+  assert.equal(nextLine({...hunting, hunts: {"lantern-wraith": HUNTS, "graveyard-dragon": HUNTS}}),
+    "Every rival is beaten and both bosses are captured. Open range and two players stay open.");
+  // An old first-version save that finished the Trail reads the same way.
+  assert.match(nextLine(migrate({wins: TRAIL.length, losses: 0})), /^Next: <strong>The Stargazer<\/strong>, rival 1 of 4\./);
+});
+
+test("Camp after the Trail: a saturated save keeps its unopenable packs, and no tile promises a card it cannot pay", () => {
+  const {save} = fullRun();
+  assert.deepEqual([save.packs, packOpens(save)], [2, false], "all 33 copies and 2 packs: no pack can be opened");
+  assert.deepEqual(rivalNotes(save), ["Beaten.", "Beaten.", "Beaten.", "Beaten."]);
+  const storage = stored(save);
+  assert.equal(createCampaign(storage).progress().packs, 2, "packs is still 2 after a reload");
+  // The Coven, still open with nothing left to earn, is played to beat it.
+  let before = createCampaign(stored(postTrail())).progress();
+  for (const rival of RIVALS.slice(0, 3)) before = claimAll(settle(before, `rival:${rival.id}`, true).save);
+  assert.deepEqual([pool(before), rivalNotes(before)], [[], ["Beaten.", "Beaten.", "Beaten.", "Win to beat The Graveyard Coven."]]);
+  assert.equal(nextLine(before), "Next: <strong>The Graveyard Coven</strong>, rival 4 of 4.");
+  assert.equal(nextLine(before).replace(/<\/?strong>/g, ""), "Next: The Graveyard Coven, rival 4 of 4.", "Fable's text, word for word");
+  assert.equal(nextLine({...before, losses: {...before.losses, "rival:coven": 1}}),
+    "Next: <strong>The Graveyard Coven</strong>, rival 4 of 4. Or hunt <strong>The Lantern Wraith</strong>, hunt 1 of 5.", "the after-loss hunt stays");
+  // While two card types are left, a beaten rival is still a rematch for a card.
+  const early = claimAll(settle(claimAll(postTrail()), "rival:stargazer", true).save);
+  assert.ok(pool(early).length >= 2);
+  assert.equal(rivalNotes(early)[0], "Beaten. Rematch for a card.");
+});
+
+test("Camp after the Trail: packs that hold nothing wait in a returning save and open once a rival releases its card", () => {
+  // Every earnable copy except the rivals' held cards, the Trail done and two packs left: a player who skipped the rivals.
+  const trail = postTrail();
+  const held = RIVALS.flatMap((rival) => rival.reward);
+  const collection = Object.fromEntries(EARNABLE.filter((type) => !held.includes(type)).map((type) => [type, RARITY[TYPES[type].rarity][1]]));
+  const returning = migrate(JSON.parse(JSON.stringify({...trail, collection, packs: 2, offer: null})));
+  assert.deepEqual([returning.packs, returning.collection], [2, collection], "the save is accepted as it is");
+  assert.deepEqual([pool(returning), packOpens(returning)], [[], false]);
+  const beaten = settle(returning, "rival:stargazer", true).save;
+  assert.equal(beaten.packs, 3);
+  assert.deepEqual([beaten.offer, pool(beaten), packOpens(beaten)], [null, ["cowboy-six-shooter"], true], "the Six-Shooter is released");
+  const opened = openPack(beaten);
+  assert.deepEqual(opened.cards, ["cowboy-six-shooter", "cowboy-six-shooter"], "a pack shows one or two cards, never none");
+  assert.deepEqual([opened.save.packs, packOpens(opened.save)], [2, false], "the other two wait again");
 });
