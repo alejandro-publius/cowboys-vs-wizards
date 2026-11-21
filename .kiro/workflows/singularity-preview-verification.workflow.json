@@ -1,0 +1,37 @@
+{
+  "name": "singularity-preview-verification",
+  "description": "Verify the approved illustrated Showdown Singularity replay against generated slot layouts and a real browser. Join independent results in a fresh reviewer context.",
+  "steps": [
+    {
+      "type": "step",
+      "id": "build",
+      "agent": "wf-coder",
+      "prompt": "Run shell commands as separate tool calls. Write only generated assets or outputs under the ignored dist/ and .artifacts/ paths. Report exact exit codes and evidence. If a required command fails, signal error and report that failure. Run git rev-parse HEAD, then git diff --exit-code 172890d0cd812b6665804e0b92313f7c698c33fe -- src assets, then node scripts/build-graybox.mjs --diorama. Report the commit, whether protected source and assets are identical to the approved revision, and the build result. If all passed signal success."
+    },
+    {
+      "type": "parallel",
+      "id": "verification",
+      "joinPolicy": "all",
+      "branches": [
+        {
+          "type": "step",
+          "id": "properties",
+          "agent": "wf-coder",
+          "prompt": "Run shell commands as separate tool calls. Write only generated assets or outputs under the ignored dist/ and .artifacts/ paths. Report exact exit codes and evidence. If a required command fails, signal error and report that failure. Run exactly: node --test tests/match/showdown-3d-presentation.test.js. Record the test counts, the generated Singularity layouts and the dropped-hit control; report any limitations. If it passed, signal success."
+        },
+        {
+          "type": "step",
+          "id": "browser",
+          "agent": "wf-coder",
+          "prompt": "Run shell commands as separate tool calls. Write only generated assets or outputs under the ignored dist/ and .artifacts/ paths. Report exact exit codes and evidence. If a required command fails, signal error and report that failure. Use the existing HTML from the build step. Run exactly: node scripts/browser-showdown-singularity.mjs dist/cowboys-vs-wizards-showdown-3d.html .artifacts/kiro/singularity/native. Read the machine-readable result and report its HTML SHA-256, both outcomes, and which motion modes were checked. If the browser checks pass, signal success."
+        }
+      ]
+    },
+    {
+      "type": "step",
+      "id": "review",
+      "agent": "wf-code-reviewer",
+      "prompt": "You are an independent reviewer. You did not write the implementation or the tests. Compare the two outputs below against .kiro/specs/singularity-preview-verification/requirements.md. Read the browser receipt in .artifacts/kiro/singularity/native/ and cross-check the actual HTML using openssl dgst -sha256 dist/cowboys-vs-wizards-showdown-3d.html. Read tests/match/showdown-3d-presentation.test.js only as needed to distinguish real checks from planted controls. State a PASS, FAIL, or BLOCKED verdict, and give observations and limits. Preserve the distinction between recorded telemetry and aesthetic judgment. Do not edit the source or retry a failing test. Use separate shell calls if needed. Signal your final verdict.\nProperty worker: {{properties.output}}\nBrowser worker: {{browser.output}}"
+    }
+  ]
+}
