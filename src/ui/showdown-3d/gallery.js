@@ -231,7 +231,11 @@ export function mountGallery(title, duel, makeAttackStage) {
       select(ROSTER[(order.get(active) + Number(button.dataset.step) + ROSTER.length) % ROSTER.length]);
   dialog.querySelector(".sd-gallery-close").onclick = () => dialog.close();
   reel.onclick = () => {
-    if (playingAll) return stopReel();
+    if (playingAll) {
+      stopReel();
+      restoreModel();
+      return;
+    }
     playingAll = true;
     reel.textContent = "Stop reel";
     playReel(0);
