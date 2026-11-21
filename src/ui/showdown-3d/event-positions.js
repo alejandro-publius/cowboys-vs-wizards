@@ -1,120 +1,243 @@
-// Public Showdown events route effects to the slots they touch. Keep a running board for batches
-// that include a bot turn, and retain departed positions for Last Stand and damage overflow.
-import { BOARD_SIZE, TRAP_SLOTS, opponent } from "../../game/showdown/rules.js";
-import { SIDES } from "./layout.js";
+// A temporary display timeline derived from real action snapshots. No rule state is mutated.
+// A killed piece stays in the contact snapshot at zero orbs, long enough to show the reaction.
+import { attackOf, opponent, TRAP_SLOTS } from "../../game/showdown/rules.js";
+import { cardOf, has, typeOf } from "../../game/showdown/cards.js";
 
-export function eventPositions(events, before, after) {
-  const live = Object.fromEntries(
-    SIDES.map((side) => [side, before.sides[side].board.map((t) => t?.cardId ?? null)]),
-  );
-  const traps = Object.fromEntries(SIDES.map((side) => [side, before.sides[side].trapCount]));
-  const departed = new Map();
-  let priorTarget = null;
-  const out = [];
-  const zone = (side, at, slot) => ({ side, at, slot });
-  const push = (kind, from, to = null, cardId) => out.push({ kind, from, to, cardId });
-  const find = (side, id) => {
-    const slot = live[side].indexOf(id);
-    if (slot >= 0) return { side, slot };
-    const lost = departed.get(id);
-    if (lost?.side === side) return lost;
-    const next = after.sides[side].board.findIndex((t) => t?.cardId === id);
-    return next >= 0 ? { side, slot: next } : zone(side, "row");
-  };
-  const remove = (pos) => {
-    if (pos.slot === undefined) return;
-    const id = live[pos.side][pos.slot];
-    if (id) departed.set(id, pos);
-    live[pos.side][pos.slot] = null;
-  };
-  const arrive = (side, id) => {
-    const at = live[side].indexOf(null);
-    if (at < 0 || at >= BOARD_SIZE) return find(side, id);
-    departed.delete(id);
-    live[side][at] = id;
-    return { side, slot: at };
-  };
+const zone = (side, at, slot) => ({ side, at, slot });
+const source = (side, at) => zone(side, at);
+const timings = {
+  gun: [720, 300],
+  blade: [710, 350],
+  breath: [940, 540],
+  ride: [1240, 770],
+  sweep: [850, 535],
+  laststand: [720, 470],
+  trap: [690, 395],
+  lasso: [680, 465],
+  shell: [630, 380],
+  hellfire: [710, 410],
+  vortex: [670, 420],
+  summon: [480, 215],
+  raise: [490, 235],
+  cover: [350, 165],
+  set: [340, 160],
+  fatigue: [420, 205],
+  overflow: [390, 230],
+  gear: [350, 190],
+  location: [410, 200],
+  tribute: [340, 220],
+  burn: [285, 160],
+};
 
-  for (const e of events) {
-    const { side: s, type: k } = e;
-    const o = opponent(s);
-    const own = (id) => find(s, id);
-    const foe = (id) => find(o, id);
-    const base = zone(s, "base");
-    switch (k) {
-      case "draw":
-        break;
-      case "burn":
-        push(k, zone(s, "deck"), zone(s, "discard"));
-        break;
-      case "fatigue":
-        push(k, base);
-        break;
-      case "set": {
-        const slot = Math.min(traps[s]++, TRAP_SLOTS - 1);
-        push(k, zone(s, "trap", slot));
-        break;
+function attackKind(id, to, standing) {
+  const type = id ? typeOf(id) : "";
+  if (id && to.at === "base" && standing && has(id, "ride")) return "ride";
+  if (type.endsWith("-dragon")) return "breath";
+  if (type.startsWith("cowboy-") && !type.endsWith("-wraith")) return "gun";
+  return "blade";
+}
+
+export function presentationBeats(trace) {
+  const beats = [];
+  for (const { before, after, events } of trace) {
+    const table = structuredClone(before);
+    const fallen = new Map();
+    const find = (side, id) => {
+      const slot = table.sides[side].board.findIndex((t) => t?.cardId === id);
+      return slot < 0 ? (fallen.get(id)?.mark ?? source(side, "row")) : { side, slot };
+    };
+    const get = (mark) => (mark.slot === undefined ? null : table.sides[mark.side].board[mark.slot]);
+    const hurt = (mark, hp) => {
+      const t = get(mark);
+      if (t) t.health = hp;
+    };
+    const clear = (mark) => {
+      const t = get(mark);
+      if (t) {
+        fallen.set(t.cardId, { mark, troop: structuredClone(t) });
+        table.sides[mark.side].board[mark.slot] = null;
       }
-      case "location":
-        push(k, zone(null, "location"));
-        break;
-      case "summon":
-        push(k, arrive(s, e.cardId));
-        break;
-      case "raise":
-        push(k, zone(s, "discard"), arrive(s, e.cardId));
-        break;
-      case "cover":
-        push(k, own(e.cardId));
-        break;
-      case "tribute": {
-        const at = own(e.cardId);
-        remove(at);
-        push(k, at, zone(s, "discard"));
-        break;
-      }
-      case "gear":
-        push(k, own(e.target));
-        break;
-      case "spell": {
-        const to = foe(e.target);
-        push(k, zone(s, "row"), to, e.cardId);
-        if (e.left === 0) remove(to);
-        break;
-      }
-      case "trap": {
-        const from = zone(s, "trap", 0);
-        const to = foe(e.target);
-        push(k, from, to, e.cardId);
-        traps[s] = Math.max(0, traps[s] - 1);
-        if (e.left === 0) remove(to);
-        break;
-      }
-      case "attack": {
-        const from = own(e.cardId);
-        const to = e.target === "base" ? zone(o, "base") : foe(e.target);
-        priorTarget = to.slot;
-        push(k, from, to);
-        if (e.hitBack) push("counter", to, from);
-        if (e.baseDamage && e.target !== "base") push("overflow", to, zone(o, "base"));
-        if (e.targetLeft === 0) remove(to);
-        if (e.attackerLeft === 0) remove(from);
-        break;
-      }
-      case "laststand": {
-        const to = foe(e.target);
-        push(k, own(e.cardId), to);
-        if (e.left === 0) remove(to);
-        break;
-      }
-      case "sweep": {
-        for (let slot = 0; slot < BOARD_SIZE; slot++) {
-          if (slot !== priorTarget && live[o][slot]) push(k, own(e.cardId), { side: o, slot });
+    };
+    const spawn = (side, id, at, raised) => {
+      if (at.slot === undefined) return;
+      const known = after.sides[side].board[at.slot];
+      table.sides[side].board[at.slot] =
+        known?.cardId === id
+          ? structuredClone(known)
+          : { cardId: id, health: raised ? 1 : cardOf(id).health, gear: [], cover: false, stunned: false };
+    };
+    const add = (kind, from, targets, details, apply) => {
+      const [duration, contact] = timings[kind];
+      const pre = structuredClone(table);
+      const receiver = targets.map((mark) => ({ mark, hp: get(mark)?.health ?? null }));
+      const fromTroop = get(from) ?? (details.cardId ? fallen.get(details.cardId)?.troop : null);
+      apply?.();
+      const hit = structuredClone(table);
+      beats.push({ kind, from, targets, receiver, duration, contact, pre, hit, fromTroop, ...details });
+      for (const target of targets) if (get(target)?.health === 0) clear(target);
+    };
+    let primary = null;
+    for (let i = 0; i < events.length; i++) {
+      const e = events[i],
+        s = e.side,
+        other = opponent(s),
+        base = source(s, "base");
+      const own = (id) => find(s, id),
+        foe = (id) => find(other, id);
+      switch (e.type) {
+        case "turn":
+          table.active = s;
+          table.sides[s].board.forEach((t) => {
+            if (t) t.cover = false;
+          });
+          table.sides[other].board.forEach((t) => {
+            if (t) t.stunned = false;
+          });
+          break;
+        case "draw":
+          table.sides[s].deckCount = Math.max(0, table.sides[s].deckCount - 1);
+          table.sides[s].handCount++;
+          break;
+        case "burn":
+          add("burn", source(s, "deck"), [source(s, "discard")], e, () => {
+            table.sides[s].deckCount = after.sides[s].deckCount;
+            table.sides[s].discard.push(e.cardId);
+          });
+          break;
+        case "fatigue":
+          add("fatigue", base, [base], e, () => {
+            table.sides[s].base = after.sides[s].base;
+          });
+          break;
+        case "set": {
+          const at = zone(s, "trap", Math.min(table.sides[s].trapCount, TRAP_SLOTS - 1));
+          add("set", base, [at], e, () => {
+            table.sides[s].trapCount = after.sides[s].trapCount;
+          });
+          break;
         }
-        // The contract carries the count, so this effect never decides which troops are removed.
-        break;
+        case "location":
+          add("location", base, [source(null, "location")], e, () => {
+            table.location = after.location;
+          });
+          break;
+        case "summon":
+        case "raise": {
+          const slot = table.sides[s].board.indexOf(null);
+          const at = slot < 0 ? own(e.cardId) : { side: s, slot };
+          add(e.type, e.type === "raise" ? source(s, "discard") : base, [at], e, () =>
+            spawn(s, e.cardId, at, e.type === "raise"),
+          );
+          break;
+        }
+        case "tribute": {
+          const at = own(e.cardId);
+          add("tribute", at, [source(s, "discard")], e, () => {
+            clear(at);
+            table.sides[s].discard.push(e.cardId);
+          });
+          break;
+        }
+        case "cover": {
+          const at = own(e.cardId);
+          add("cover", at, [at], e, () => {
+            const t = get(at);
+            if (t) t.cover = true;
+          });
+          break;
+        }
+        case "gear": {
+          const at = own(e.target);
+          add("gear", base, [at], e, () => {
+            const t = get(at);
+            const actual = after.sides[s].board[at.slot];
+            if (t && actual) {
+              t.gear = actual.gear;
+              t.health = actual.health;
+            }
+          });
+          break;
+        }
+        case "trap": {
+          const at = foe(e.target);
+          add("trap", zone(s, "trap", 0), [at], e, () => {
+            table.sides[s].trapCount = Math.max(0, table.sides[s].trapCount - 1);
+            table.sides[s].discard.push(e.cardId);
+            hurt(at, e.left);
+          });
+          break;
+        }
+        case "spell": {
+          const kind =
+            { tie: "lasso", hellfire: "hellfire" }[cardOf(e.cardId).effect] ??
+            (typeOf(e.cardId) === "wizard-singularity" ? "vortex" : "shell");
+          const hits = [e];
+          while (kind === "hellfire" && events[i + 1]?.type === "spell" && events[i + 1].cardId === e.cardId)
+            hits.push(events[++i]);
+          const targets = hits.map((h) => foe(h.target));
+          add(kind, kind === "lasso" ? base : source(s, "row"), targets, e, () => {
+            hits.forEach((h, j) => {
+              hurt(targets[j], h.left);
+              const t = get(targets[j]);
+              if (t && h.stunned) t.stunned = true;
+            });
+          });
+          break;
+        }
+        case "attack": {
+          const enemyBase = source(other, "base");
+          const from = own(e.cardId);
+          const to = e.target === "base" ? enemyBase : foe(e.target);
+          primary = to.slot;
+          const footing = table.sides[other].board.some(Boolean);
+          const kind = attackKind(e.cardId, to, footing);
+          const damage = to.at === "base" ? e.baseDamage : Math.max(0, (get(to)?.health ?? 0) - e.targetLeft);
+          const shooter = get(from);
+          const blocked = shooter && e.covered ? Math.max(0, attackOf(before, shooter) - damage) : 0;
+          add(kind, from, [to], { ...e, damage, blocked }, () => {
+            if (e.target === "base")
+              table.sides[other].base = Math.max(0, table.sides[other].base - e.baseDamage);
+            else hurt(to, e.targetLeft);
+          });
+          if (e.hitBack) {
+            add(
+              attackKind(e.target, from, false),
+              to,
+              [from],
+              {
+                cardId: e.target,
+                damage: e.hitBack,
+                counter: true,
+              },
+              () => hurt(from, e.attackerLeft),
+            );
+          }
+          if (e.baseDamage && e.target !== "base") {
+            add("overflow", to, [enemyBase], { damage: e.baseDamage, cardId: e.cardId }, () => {
+              table.sides[other].base = Math.max(0, table.sides[other].base - e.baseDamage);
+            });
+          }
+          break;
+        }
+        case "laststand": {
+          const to = foe(e.target);
+          add("laststand", own(e.cardId), [to], e, () => hurt(to, e.left));
+          break;
+        }
+        case "sweep": {
+          const targets = table.sides[other].board.flatMap((t, slot) =>
+            t && slot !== primary ? [{ side: other, slot }] : [],
+          );
+          // No summons can occur within one attack. The canonical after state tells us
+          // which of these other occupied slots lost their last orb.
+          if (targets.length === e.count)
+            add("sweep", own(e.cardId), targets, e, () => {
+              for (const at of targets) hurt(at, after.sides[other].board[at.slot]?.health ?? 0);
+            });
+          break;
+        }
       }
     }
   }
-  return out;
+  return beats;
 }

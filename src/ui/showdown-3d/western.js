@@ -84,27 +84,6 @@ export function addWestern(b) {
     return { cx, w, x0, zf };
   };
 
-  // 1. SALOON: ochre siding, brick-red trim, tallest false front.
-  const s = building({
-    x0: -6.75,
-    x1: -5.05,
-    zb: -4.0,
-    zf: -2.62,
-    h: 1.65,
-    ff: 0.75,
-    wall: P.ochre,
-    wallDk: P.ochreDk,
-    trim: P.brick,
-    awning: P.brickDk,
-    sign: "SALOON",
-    face: "#7a4a24",
-    ink: "#f6deb0",
-  });
-  for (const sx of [-1, 1])
-    box(P.ochre, s.cx + sx * 0.085, 0.3, s.zf + 0.04, 0.15, 0.3, 0.025, 0, sx * 18 * R); // batwings
-  box(P.brick, s.cx, 1.12, s.zf + 0.08, s.w - 0.1, 0.05, 0.16); // balcony ledge
-  for (let x = s.cx - 0.7; x <= s.cx + 0.71; x += 0.14)
-    box(P.woodLt, x, 1.17, s.zf + 0.14, 0.025, 0.2, 0.025);
   // 2. MARSHAL office: teal-gray, lower, barred window + star.
   const m = building({
     x0: -4.88,
@@ -181,31 +160,6 @@ export function addWestern(b) {
   box(P.woodDk, -4.4, 0.12, -2.12, 0.4, 0.05, 0.12);
   box(P.woodDk, -4.4, 0.12, -2.03, 0.4, 0.04, 0.03);
   box(P.white, -3.75, 0.45, m.zf + 0.02, 0.14, 0.18, 0.01);
-
-  // Weathered water tower, outer left (x ~ -7.4), clear of card sightlines.
-  const tx = -7.35,
-    tz = -2.0;
-  for (const [dx, dz] of [
-    [-0.3, -0.3],
-    [0.3, -0.3],
-    [-0.3, 0.3],
-    [0.3, 0.3],
-  ]) {
-    box(P.woodDk, tx + dx, 0, tz + dz, 0.08, 1.85, 0.08, dz * -10 * R, 0, dx * 10 * R);
-    box(P.stone, tx + dx * 1.05, 0, tz + dz * 1.05, 0.14, 0.1, 0.14);
-  }
-  for (const y of [0.55, 1.25]) {
-    box(P.wood, tx, y, tz + 0.3, 0.62, 0.04, 0.04, 0, 0, 35 * R);
-    box(P.wood, tx, y, tz - 0.3, 0.62, 0.04, 0.04, 0, 0, -35 * R);
-    box(P.wood, tx + 0.3, y, tz, 0.04, 0.04, 0.62, 35 * R);
-  }
-  box(P.plank, tx, 1.82, tz, 0.86, 0.06, 0.86);
-  pc("round", 0x8b6a4a, tx, 1.88, tz, 0.84, 0.82, 0.84);
-  for (const y of [1.98, 2.3, 2.6]) pc("round", P.rust, tx, y, tz, 0.865, 0.04, 0.865);
-  pc("cone", P.roof, tx, 2.7, tz, 1.0, 0.5, 1.0);
-  pc("round", P.tin, tx, 3.18, tz, 0.06, 0.1, 0.06);
-  box(P.tin, tx + 0.45, 1.85, tz + 0.1, 0.05, 0.05, 0.3, 0, 0, -30 * R); // spout
-  for (let y = 0.2; y < 1.8; y += 0.18) box(P.woodLt, tx + 0.36, y, tz + 0.36, 0.14, 0.025, 0.025, 0, 45 * R); // ladder
 
   // Cacti and scrub along left perimeter.
   const cactus = (x, z, h, arms) => {

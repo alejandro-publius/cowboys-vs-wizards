@@ -103,13 +103,15 @@ export const ART = {
   },
   "cowboy-mounted-billy"(b) {
     horse(b, false);
-    person(b, -0.048, 0.854, 0.01, 0.73);
+    b.group("rider", () => person(b, -0.048, 0.854, 0.01, 0.73));
     b.box(brass, 0.322, 1.535, 0.076, 0.639, 0.036, 0.037, 0, 0, -0.45);
   },
   "cowboy-outrider"(b) {
     horse(b, true);
-    person(b, 0.299, 0.77, 0, 0.72, true);
-    b.piece("box", 0x9a805e, -0.065, 1.359, 0.018, 0.572, 0.187, 0.249, 0, 0, 0.34);
+    b.group("rider", () => {
+      person(b, 0.299, 0.77, 0, 0.72, true);
+      b.piece("box", 0x9a805e, -0.065, 1.359, 0.018, 0.572, 0.187, 0.249, 0, 0, 0.34);
+    });
   },
   "cowboy-covered-wagon"(b) {
     b.box(brown, 0, 0.5, 0, 1.99, 0.33, 0.948);

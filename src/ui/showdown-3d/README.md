@@ -24,6 +24,18 @@ revealed traps, spells, gear, and the active Location. The hand atlas is a
 six-column WebP of gallery renders in `TYPES` catalog order. Traps stay face
 down on the game board until Showdown reveals them.
 
+The board uses the Saloon and Rune Gateway for the Bases. Their porch
+lanterns and runes follow the actual orb count. The rail siding, Boot Hill
+plots, corral, telegraph, crypts and flagstones follow Fable's expanded
+presentation brief. The board keeps clear paths around the troop pads.
+
+Combat playback uses the public before and after snapshots of each real
+action. Contact beats stage the orb change and let the defeated piece
+finish its reaction. A newer input clears the old effects. The small-screen
+and reduced-motion views use the resolved position. The event planner
+handles shots, melee, Ride, breath and Sweep, cover and overflow, Last Stand,
+traps, and spells without adding damage.
+
 Kiro CLI with Claude Opus 5.5 built the original Western storefronts and
 drafted the public event-to-position adapter, which was revised against the
 engine. It also built the initial wizard and wraith miniatures and the

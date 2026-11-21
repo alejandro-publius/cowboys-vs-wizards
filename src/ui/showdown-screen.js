@@ -138,14 +138,15 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
   function act(action) {
     pick = null;
     const [before, seat] = [session.view(), viewer()];
-    const events = session.act(action);
+    const trace = [];
+    const events = session.act(action, boardPresentation ? (step) => trace.push(step) : undefined);
     const batch = record(events, before);
     finish();
     // Two players: hide the table while the screen changes hands.
     curtain = !solo() && !session.view().result && viewer() !== seat;
-    render();
+    render(trace[0]?.before);
     cues.play(batch);
-    if (!curtain) boardPresentation?.animate(events, before, session.view());
+    if (!curtain) boardPresentation?.animate(trace);
   }
   // A game counts once it ends; a solo duel is settled exactly once, when it (or its match) is decided.
   function finish() {
@@ -268,7 +269,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     ].join("");
   }
 
-  function render() {
+  function render(presentationStart) {
     // The curtain: nothing of either seat's hand or traps stays in the page while the screen is passed.
     // Focus moves only when the curtain goes up or down: onto "I'm ready" when it rises, and off the hidden curtain
     // onto the table when it clears (a mouse click on "I'm ready" would otherwise leave focus on a hidden button).
@@ -379,7 +380,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     $("sd-keywords").innerHTML = Object.entries(KEYWORDS).filter(([key]) => inPlay.has(key)).map(([, [word, rule]]) => `<li><strong>${word}.</strong> ${rule}</li>`).join("")
       || "<li>No keywords in this duel.</li>";
     cues.paint();
-    boardPresentation?.paint(view);
+    boardPresentation?.paint(view,presentationStart);
     if (lost && !root.hidden) usable("#sd-hand button", "#sd-board [data-own]", "#sd-end", "#sd-result button")?.focus();
   }
 

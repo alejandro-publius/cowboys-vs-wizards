@@ -429,7 +429,7 @@ function simpleStep(state, level) {
 
 // Plays the active side's whole turn with the bot. Level 2 plans the whole turn; 0, 1 and 1.5 are weaker opponents.
 // A sprung trap or a Scout draw changes what level 2 knows, so the rest of its plan is made again.
-export function playTurn(state, level = 2) {
+export function playTurn(state, level = 2, onAction) {
   if (state.result) return {state, events: []};
   const side = state.active;
   // Level 1.5 plans every other turn of its own and plays the rest as level 1.
@@ -442,6 +442,7 @@ export function playTurn(state, level = 2) {
       plan = planTurn(state);
     }
     const applied = applyAction(state, plan.shift());
+    onAction?.(state, applied);
     state = applied.state;
     events.push(...applied.events);
     if (state.result || state.active !== side) break;

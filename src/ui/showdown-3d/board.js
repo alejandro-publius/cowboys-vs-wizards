@@ -3,6 +3,7 @@ import { addWestern } from "./western.js";
 import { addArcane } from "./arcane.js";
 import { BOARD_SIZE, TRAP_SLOTS } from "../../game/showdown/rules.js";
 import { COLORS, SIDES, zone } from "./layout.js";
+import { westernDetail, wizardDetail, duskDetail } from "./presentation-set.js";
 
 // Flat-shaded miniatures use one palette and a small library of shared geometry.
 class SetBuilder {
@@ -78,7 +79,7 @@ function tile(b, [x, y, z], color, trim, width, depth) {
 
 function field(b) {
   for (const side of SIDES) {
-    const { tile: surface, line, dark, metal } = COLORS[side];
+    const { tile: surface, line, dark } = COLORS[side];
     for (let slot = 0; slot < BOARD_SIZE; slot++)
       tile(b, zone(side, "troop", slot), surface, line, 3.33, 2.35);
     for (let slot = 0; slot < TRAP_SLOTS; slot++)
@@ -87,16 +88,6 @@ function field(b) {
     tile(b, zone(side, "discard"), dark, surface, 1.87, 1.57);
     const [x, , z] = zone(side, "base");
     b.piece("round", dark, x, 0.132, z, 3.28, 0.264, 2.85);
-    b.piece("round", metal, x, 0.33, z, 2.61, 0.2, 2.27);
-    b.piece("ring", line, x, 0.47, z, 2.25, 0.38, 1.98);
-    for (const [dx, dz] of [
-      [-0.97, -0.44],
-      [0.97, -0.44],
-      [0, -0.89],
-    ]) {
-      b.piece("round", metal, x + dx, 0.48, z + dz, 0.3, 0.62, 0.3);
-      b.piece("crystal", line, x + dx, 0.85, z + dz, 0.22, 0.26, 0.22);
-    }
   }
   const [x, , z] = zone(null, "location");
   b.piece("round", 0x594557, x, 0.081, z, 2.73, 0.157, 2.29);
@@ -175,6 +166,9 @@ export function makeBoard(scene, addLandmarks) {
   groundDetails(b);
   field(b);
   addLandmarks(b);
+  westernDetail(b);
+  wizardDetail(b);
+  duskDetail(b);
   b.finish();
   scenery(island, addWestern, -6.25, -3.65);
   scenery(island, addArcane, 7.85, -4.02);

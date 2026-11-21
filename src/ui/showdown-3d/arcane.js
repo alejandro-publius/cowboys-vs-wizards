@@ -105,7 +105,6 @@ export function addArcane(b) {
   hall(b, 2.06, -3.62);
   b.box(mortar, 4.79, 0.63, -3.57, 2.99, 1.26, 1.07);
   b.box(0x746b8a, 4.79, 1.225, -3.56, 2.91, 0.16, 1.2);
-  tower(b, 4.36, -3.58, 1.45, 2.46);
   tower(b, 6.08, -3.19, 1.17, 1.66);
   lookout(b, 5.34, -0.85);
   for (const [x, z, size] of [

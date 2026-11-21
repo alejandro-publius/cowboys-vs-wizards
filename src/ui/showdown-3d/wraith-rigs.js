@@ -155,24 +155,26 @@ export const ART = {
     b.piece("box", bone, 1.0, 1.08, 0, 0.42, 0.16, 0.16, 0, 0, -0.5); // skull
     for (const s of [-1, 1]) glow(b, "orb", fire, 0.94, 1.16, s * 0.09, 0.07, 0.06, 0.03); // eyes
     // tall black-violet rider, no head
-    for (const s of [-1, 1]) bar(b, robe, -0.05, 0.92, 0.12, 0.6, s * 0.18, 0.1); // legs
-    b.piece("box", robe, -0.05, 1.2, 0, 0.3, 0.5, 0.26); // torso
-    b.piece("box", 0x150c1e, -0.2, 1.05, 0, 0.08, 0.6, 0.4, 0, 0, 0.15); // cape
-    b.piece("cone", robe, -0.05, 1.5, 0, 0.36, 0.16, 0.32, PI); // flared high collar
-    glow(b, "cone", fire, -0.05, 1.6, 0, 0.24, 0.28, 0.20); // neck flame
-    glow(b, "cone", 0xb8ff9a, -0.05, 1.72, 0.02, 0.08, 0.16, 0.08, 0, 0, 0.2);
-    bar(b, robe, 0.06, 1.38, 0.3, 1.2, 0.16, 0.09); // sword arm
-    b.piece("box", 0x9a8a3a, 0.32, 1.2, 0.16, 0.12, 0.03, 0.06); // guard
-    // curved sabre in short segments
-    let x = 0.33,
-      y = 1.22,
-      a = 0.3;
-    for (let i = 0; i < 5; i++, a -= 0.18) {
-      const nx = x + Math.sin(a) * 0.11,
-        ny = y + Math.cos(a) * 0.11;
-      bar(b, 0xcfd6de, x, y, nx, ny, 0.16, 0.035);
-      x = nx;
-      y = ny;
-    }
+    b.group("rider", () => {
+      for (const s of [-1, 1]) bar(b, robe, -0.05, 0.92, 0.12, 0.6, s * 0.18, 0.1); // legs
+      b.piece("box", robe, -0.05, 1.2, 0, 0.3, 0.5, 0.26); // torso
+      b.piece("box", 0x150c1e, -0.2, 1.05, 0, 0.08, 0.6, 0.4, 0, 0, 0.15); // cape
+      b.piece("cone", robe, -0.05, 1.5, 0, 0.36, 0.16, 0.32, PI); // flared high collar
+      glow(b, "cone", fire, -0.05, 1.6, 0, 0.24, 0.28, 0.2); // neck flame
+      glow(b, "cone", 0xb8ff9a, -0.05, 1.72, 0.02, 0.08, 0.16, 0.08, 0, 0, 0.2);
+      bar(b, robe, 0.06, 1.38, 0.3, 1.2, 0.16, 0.09); // sword arm
+      b.piece("box", 0x9a8a3a, 0.32, 1.2, 0.16, 0.12, 0.03, 0.06); // guard
+      // curved sabre in short segments
+      let x = 0.33,
+        y = 1.22,
+        a = 0.3;
+      for (let i = 0; i < 5; i++, a -= 0.18) {
+        const nx = x + Math.sin(a) * 0.11,
+          ny = y + Math.cos(a) * 0.11;
+        bar(b, 0xcfd6de, x, y, nx, ny, 0.16, 0.035);
+        x = nx;
+        y = ny;
+      }
+    });
   },
 };

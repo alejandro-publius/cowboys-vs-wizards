@@ -16,6 +16,11 @@
 .sd-world-labels {
   display: none;
 }
+@media (min-width: 800px) {
+  .sd-diorama #sd-board button[data-preview-swap="1"] {
+    opacity: 0;
+  }
+}
 .sd-world-detail {
   display: contents;
 }
