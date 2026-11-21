@@ -15,7 +15,7 @@ import {EFFECTS, KEYWORDS, RARITY, TYPES, cardOf, has, tributes, typeOf} from ".
 import {presentEvent} from "../game/showdown/presenter.js";
 import {newRunId} from "../match/showdown-playtest.js";
 import {TRAP_SLOTS, attackOf, attackOutcome, canAttack, opponent} from "../game/showdown/rules.js";
-import {createShowdownSession, twoPlayers} from "../match/showdown-session.js";
+import {createShowdownSession} from "../match/showdown-session.js";
 import {matchOver, matchWinner, newMatch, nextGame, offersSwap, recordGame, swapPool, withSwap} from "../match/showdown-match.js";
 import {createCuePlayer, cuesFor} from "./showdown-cues.js";
 import {FRAMES} from "./card-frames.js";
@@ -164,7 +164,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
   function againLabel() {
     if (!outcome.matchOver) return `Game ${match.game + 1}`;
     if (duel.kind === "turn") return "Retry";
-    if (!solo()) return "Play again";
+    if (!solo()) return duel.kind === "earned" ? "Rematch: earned decks, not an even match" : "Play again";
     if (!outcome.won) return repeat() ? "Rematch" : null;
     return duel.kind === "trail" || !repeat() ? null : "Play it again";
   }
@@ -180,7 +180,8 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
       }
       return deal(nextSeed());
     }
-    if (!solo()) return start(twoPlayers(), nextSeed(), {players: 2, best});
+    // Two players again with the same decks (the starter decks, or the earned decks of showdown-earned.js).
+    if (!solo()) return start(duel, nextSeed(), {players: 2, best});
     if (duel.kind === "turn") return deal(seed);
     // A loss is a fresh deal of the same duel; a repeat (a beaten rival, the next hunt, the even match) uses nextSeed.
     const next = repeat();
@@ -265,11 +266,16 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
 
   function render() {
     // The curtain: nothing of either seat's hand or traps stays in the page while the screen is passed.
+    // Focus moves only when the curtain goes up or down: onto "I'm ready" when it rises, and off the hidden curtain
+    // onto the table when it clears (a mouse click on "I'm ready" would otherwise leave focus on a hidden button).
+    const [rises, clears] = [curtain && $("sd-curtain").hidden, !curtain && !$("sd-curtain").hidden];
+    const lost = clears && (!document.activeElement || document.activeElement === document.body || $("sd-curtain").contains(document.activeElement));
     $("sd-curtain").hidden = !curtain;
     $("sd-table").hidden = curtain;
     if (curtain) {
       for (const id of ["sd-board", "sd-hand", "sd-result", "sd-prompt", "sd-feedback", "sd-status", "sd-location"]) $(id).innerHTML = "";
       $("sd-curtain-text").textContent = `Pass the screen to the ${FACTION[session.view().active]} player.`;
+      if (rises && !root.hidden) $("sd-ready").focus();
       return;
     }
     const view = session.view();
@@ -368,6 +374,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     $("sd-keywords").innerHTML = Object.entries(KEYWORDS).filter(([key]) => inPlay.has(key)).map(([, [word, rule]]) => `<li><strong>${word}.</strong> ${rule}</li>`).join("")
       || "<li>No keywords in this duel.</li>";
     cues.paint();
+    if (lost && !root.hidden) usable("#sd-hand button", "#sd-board [data-own]", "#sd-end", "#sd-result button")?.focus();
   }
 
   // Each render replaces the board and hand buttons, which drops keyboard focus. After a keyboard
