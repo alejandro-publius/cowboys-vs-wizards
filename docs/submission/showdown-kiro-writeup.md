@@ -19,6 +19,10 @@ Fable 5.2 designed the rules. Kiro found a second deal where the same attack pro
 7. **PBT.** Seven generated engine properties pass. Each rejected an intentionally broken rule. [Tests](../../tests/game/showdown-properties.test.js)
 8. **Powers.** In an isolated profile, Orb Duel Review 1.3.0 played Boot Hill. It passed the matching receipt and marked it stale after a rules edit. That session required explicitly loading its skill. Version 1.6.0 now supplies the public replay position and the post-choice record. [Run](../evidence/showdown-installed-power.md)
 
+## What we cut after testing
+
+Fable 5.2 reviewed the new CLI coach before Kiro built it. We kept it as an experimental CLI transcript. The native permission prompt shows only the Power name. Denying it withheld the answer. In 60 hint and uncertainty trials the coach never requested an outcome. It reported both outcomes accurately in 20 committed trials. A blinded model matched its selected snapshots to 12 of 12 scripted predictions with distinct time windows. For a new player the useful change was simpler: cover, resting and Bear Trap are defined at the board, and the player can inspect both continuations without opening an AI tool. [Native trials and limits](../evidence/showdown-replay-room.md)
+
 ## Tests, mutants and real defects
 
 Hidden-information tests re-deal hidden cards and require an identical view. The MCP check compared 362 paired states and caught a planted Wizard-hand leak. Planted mutants only prove a check can fail: each property caught its seeded fault but found no product bug. The real defects we found and fixed were keyboard focus lost on redraw, reward focus that landed on Main menu, a fatal Bear Trap logged as "cancelled" and an empty Guard description.

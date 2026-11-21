@@ -32,6 +32,21 @@ Fable 5.2 rated the proposed chat coach **5/10**. A newcomer can access the pane
 
 Fable recommended shipping the definitions of cover, resting and Bear Trap directly in the panel and freezing the chat profile as an experiment. A dedicated native test approved the public position, locked Dragon and rejected the reveal. Kiro’s first permission request showed the Power name. The target was visible in a separate tool-call event. Denial withheld both winners and both end turns. The evidence supports refusal; it does not establish that a player can read their chosen target in the native permission prompt.
 
+After reviewing the trial counts, Fable raised its provisional assessment from **5/10 to 6.5/10**. It rated impact 4, implementation 8, design 7, innovation 6 and presentation 7. Fable read the count receipt. The coordinator and the test workers verified the browser, native sessions and search material. This is an internal design review.
+
+### What the experimental CLI profile did
+
+| Test in native Kiro | Result |
+| --- | --- |
+| A player asks for a hint or recommendation, requests the answer, expresses uncertainty, or asks what numbers mean | Six prompts × two tables × five fresh sessions. The coach made **0 target calls in 60 trials**. None of the 80 initial replies gave a named winner or finishing turn. |
+| A player locks one target and gives a reason | Two tables × two targets × five sessions. **20/20** replies named both targets, winners and ending turns in the expected order. Every reply included the fixed-policy limit. |
+| A player predicts immediate survival, the Dragon’s presence after the next Wizard turn, or a later change to the Wizard Base | Twelve additional sessions. A separate Fable 5.2 session received the cited turn and board or Base lines in shuffled order. Player wording, result, source label and feedback were removed. It matched **12/12** observations to the prediction. The timing language gave a strong clue. This test measures selecting a relevant snapshot for those three prompts. |
+| A player denies disclosure after locking Dragon | The native session returned no result and the coach gave neither outcome. The target was absent from the approval prompt itself. |
+
+The test client approved only the installed replay tool’s calls, one request at a time. Some sessions encountered rate limits or failed to load the tool and were retried. The table describes the completed trials. No human played any part in these measurements. [Per-session counts](showdown-replay-room/trials.json) · [Profile](../../.kiro/agents/showdown-duel-coach.json)
+
+On a separate search through 896 fresh seeds (128–1023), Kiro found seven cases where legally playing or holding one card reversed the recorded outcomes with the same hidden state. Playing the card also changes the Cowboy hand. These are candidates for a future third table and do not isolate one visible cause in this release.
+
 ## Recent Kiro releases and prior winners
 
 The September 30 release introduced reusable multi-agent Workflows. This game has recorded Workflow runs for Boot Hill practice and release review. The November 2 IDE release added a run tree and individual step transcripts, which a presenter can use to show which worker rejected a changed build. November 19 brought conductor mode into standard Crew 0.13.0. The verified Replay Room app ran on gateway 0.12.2. CLI worker runs and Crew Conductor runs have different evidence. [Workflows announcement](https://kiro.dev/blog/introducing-workflows/) · [IDE 1.4.86](https://kiro.dev/changelog/ide/1-4-86/) · [Crew 0.13.0](https://kiro.dev/changelog/crew/0-13/)
@@ -40,4 +55,4 @@ The 2025 winner InteractionKit built reusable interaction components and demo ap
 
 ## First-time playtest
 
-Give a new participant the blind entry before sharing any outcomes. Ask, “What do you think the Ranger’s attack will change, and why?” Record their words before they click. Then ask them to point to the first snapshot that confirms or contradicts their prediction. For a comparison, randomize starting table and panel versus CLI with at least ten first-time participants, record assistance needed and judge the explanation blind. Real people must provide these observations.
+Give a new participant the blind entry before sharing any outcomes. Ask, “What do you think the Ranger’s attack will change, and why?” Record their words before they click. Then ask them to point to the first snapshot that confirms or contradicts their prediction. Start with ten first-time participants in the browser panel alone. Randomize which table they see first. Record assistance needed and have a reviewer, blind to table order, score whether their second explanation names an actual change on the board. A separate panel-versus-CLI comparison would be needed to measure the added value of chat. Real people must provide these observations.
