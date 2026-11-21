@@ -2,6 +2,10 @@
 
 Started November 14, 2026, in Pacific time. Entry dates use America/Los_Angeles. This file records work as it happens and supplies evidence for the Kiroween submission. Codex prepared this initial log and the accompanying steering file. Kiro activity starts when a Kiro session actually performs and records work.
 
+## November 20 · Bear Trap, presenter permissions and combat cues
+
+Kiro generated the [fatal Bear Trap spec](evidence/showdown-bear-trap.md) in the IDE and used parallel CLI sessions for the message fix, a [presenter permission check](evidence/showdown-presenter-guard.md) and a [ten-cue Chrome review sheet](evidence/showdown-cue-strip.md). Independent replays preserved all 4,934 engine events and reproduced the visual negative control. Alex’s review of the outlines is pending.
+
 ## November 20 · Boot Hill practice
 Kiro CLI built shareable, save-isolated Showdown deals 0 and 60, a two-seed native replay Workflow, and a portable practice skill. A separate Kiro session reviewed the combined implementation. Fable reviewed the practice wording. [Practice implementation](evidence/showdown-boot-hill-practice.md) · [Native replay](evidence/showdown-practice-workflow.md) · [Skill verification](evidence/showdown-practice-skill.md).
 
