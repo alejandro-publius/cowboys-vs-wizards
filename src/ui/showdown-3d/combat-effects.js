@@ -29,7 +29,7 @@ function body(cardId = "") {
   return "foot";
 }
 
-export function createCombatEffects(parent, pawnAt, bases) {
+export function createCombatEffects(parent, pawnAt, bases, camera) {
   const effect = new T.Group();
   parent.add(effect);
   const shapes = {
@@ -44,7 +44,17 @@ export function createCombatEffects(parent, pawnAt, bases) {
     violet: [0xb38dd3, 0xe1b1e2, 0x795e9f],
     bone: [0xdccfb6, 0xf6e6ca, 0x9d9089],
   };
-  const pool = Array.from({ length: 88 }, () => {
+  const lens = new T.Group();
+  const disc = new T.CircleGeometry(1, 28);
+  for (const [color, radius, depth] of [[0x493975, 1.13, 0], [0xc6a5f1, 1.04, 0.015], [0x080611, 1, 0.035]]) {
+    const layer = new T.Mesh(disc, new T.MeshBasicMaterial({color, side: T.DoubleSide}));
+    layer.position.z = depth;
+    layer.scale.setScalar(radius);
+    lens.add(layer);
+  }
+  lens.visible = false;
+  effect.add(lens);
+  const pool = Array.from({ length: 148 }, () => {
     const child = new T.Mesh(shapes.shard, new T.MeshBasicMaterial());
     child.visible = false;
     effect.add(child);
@@ -290,6 +300,106 @@ export function createCombatEffects(parent, pawnAt, bases) {
         );
     }
   }
+  function areaVortex(step, t, edge) {
+    const {from, targets} = step;
+    const age = t - edge;
+    const gather = smooth(t, 0.13, edge - 0.15);
+    const collapse = 1 - smooth(age, 0.02, 0.31);
+    const pull = gather * (1 - smooth(age, 0.05, 0.48));
+    const side = targets[0].side;
+    const direction = side === "cowboy" ? 1 : -1;
+    const center = new T.Vector3(-direction * 2.65, 1.42, -0.18);
+    const wizard = pawnAt(from);
+    if (wizard) movePawn(wizard, -direction * 0.11 * gather, 0, 0, -direction * 0.22 * pull);
+
+    lens.visible = gather * collapse > 0.025;
+    lens.position.copy(center);
+    lens.quaternion.copy(camera.quaternion);
+    const radius = (0.15 + 1.02 * gather) * collapse;
+    lens.scale.set(radius, radius * 0.85, radius);
+    const horiz = new T.Vector3().setFromMatrixColumn(camera.matrixWorld, 0);
+    const up = new T.Vector3().setFromMatrixColumn(camera.matrixWorld, 1);
+    // Broken bands feed into the edge. Their trailing pieces are always farther from the void.
+    if (lens.visible) {
+      for (let arm = 0; arm < 3; arm++) {
+        for (let i = 0; i < 12; i++) {
+          const band = (offset) => {
+            const segment = (i + offset) / 12;
+            const angle = arm * Math.PI * 2 / 3 + segment * 2.35 - (t * 2.65 + gather * 1.8);
+            const r = radius * (1.03 + segment * 1.59);
+            return center.clone().addScaledVector(horiz, Math.cos(angle) * r).addScaledVector(up, Math.sin(angle) * r * 0.79);
+          };
+          bar(band(0), band(0.74), [0x654d91, 0xa282c6, 0xeacdf6][i < 3 ? 2 : i < 7 ? 1 : 0],
+            (0.11 - i * 0.005) * gather * collapse);
+        }
+      }
+    }
+
+    // Large chipped cobbles lead the dust. Each piece begins on the floor before it arcs inward.
+    for (let i = 0; i < 39; i++) {
+      const delay = 0.17 + (i % 9) * 0.063;
+      const ingest = edge + 0.12 - (i % 5) * 0.075;
+      if (t <= delay || t >= ingest) continue;
+      const f = smooth(t, delay, ingest);
+      const spiral = i * 2.39996 + f * (1.06 + i % 3 * 0.29);
+      const distance = (1 - f) * (3.38 + (i % 7) * 0.57);
+      const point = center.clone().add(new T.Vector3(
+        Math.cos(spiral) * distance, 0, Math.sin(spiral) * distance * 0.82,
+      ));
+      point.y = 0.17 + f * 1.18 + Math.sin(Math.PI * f) * (0.68 + (i % 3) * 0.21);
+      const stone = i % 5 < 2;
+      const width = (stone ? 0.27 + (i % 4) * 0.06 : 0.055 + (i % 4) * 0.022) *
+        (1 - smooth(f, 0.79, 1)) * smooth(t, delay, delay + 0.09);
+      if (width > 0.008) dot("chip", (stone ? [0x85909d, 0x586779, 0xaba085] : [0xb9a2c1, 0x8e7590, 0xc5aa93])[i % 3],
+        point, width, width * (stone ? 0.49 : 0.84), width * 0.66, i + f, t * 2 + i, i + f * 4);
+    }
+
+    for (const mark of targets) {
+      const token = pawnAt(mark);
+      if (!token) continue;
+      const [fromX, , fromZ] = zone(mark.side, "troop", mark.slot);
+      const isDragon = body(token.id) === "dragon";
+      const dead = step.hit.sides[mark.side].board[mark.slot]?.health === 0;
+      const shattered = dead && body(token.id) === "bone";
+      const recoil = pulse(age, 0.01, 0.10, 0.47);
+      const follow = (isDragon ? 0.052 : 0.116) * pull;
+      const drop = shattered ? 0.43 * smooth(age, 0, 0.15) : 0;
+      const shifted = (center.x - fromX) * follow - direction * 0.26 * recoil;
+      token.rig?.pose({brace: isDragon ? pull : 0, charge: isDragon ? 0.55 * pull : 0, recoil, time: 0});
+      movePawn(token, shifted, -(isDragon ? 0.20 : 0.07) * pull - drop,
+        (center.z - fromZ) * follow, -direction * (pull * (isDragon ? 0.14 : 0.32) - 0.18 * recoil));
+      const broken = shattered && age > 0.105;
+      token.skin?.effect(1 - 0.53 * pull, broken);
+      if (!token.skin) token.model.visible = !broken;
+      const chest = at(mark, "hit");
+      for (let j = 0; j < 4 && age < 0; j++) {
+        const f = (t * 1.95 + j / 4 + mark.slot * 0.13) % 1;
+        if (gather > 0.08) bar(chest.clone().lerp(center, f), chest.clone().lerp(center, Math.min(1, f + 0.12)),
+          j % 2 ? 0x9b72bd : 0xd1a8d5, 0.047 * gather);
+      }
+      if (age >= 0.035 && age < 0.47) {
+        const height = isDragon ? 2.66 : 3.06;
+        const orb = new T.Vector3(fromX, height, fromZ - 0.08);
+        flecks(orb, age - 0.035, side === "cowboy" ? palette.gold : [0xa0e7d6, 0xd6fff5, 0x5fa7b0], 5);
+      }
+      if (shattered && age >= 0.05 && age < 0.73) {
+        for (let j = 0; j < 18; j++) {
+          const f = age - 0.05;
+          const angle = (j + 1) * 2.39996;
+          const reach = f * (1.32 + (j % 5) * 0.45);
+          const shard = new T.Vector3(
+            fromX + Math.cos(angle) * reach + direction * (0.25 + f * 0.63),
+            Math.max(0.39, 0.64 + (j % 5) * 0.24 + f * (1.2 + (j % 4) * 0.46) - f * f * 6.0),
+            fromZ + Math.sin(angle) * reach,
+          );
+          const size = (0.13 + (j % 4) * 0.04) * (1 - smooth(f, 0.48, 0.68));
+          dot("chip", j % 7 === 0 ? 0x7f465c : palette.bone[j % 3], shard, size, size * 1.7, size * 0.62, angle + f * 5, f * 4, angle - f);
+        }
+      } else if (isDragon && age > 0.018 && age < 0.30) {
+        coals(new T.Vector3(fromX - direction * 0.61, 0.32, fromZ + 0.21), age, [0xb8aac6, 0x807287, 0xc69b76], 0.83);
+      }
+    }
+  }
   function teardown() {
     if (prop) effect.remove(prop);
     prop = null;
@@ -299,6 +409,7 @@ export function createCombatEffects(parent, pawnAt, bases) {
     }
     spare = null;
     active = null;
+    lens.visible = false;
     for (const n of pool) n.visible = false;
   }
   return {
@@ -307,7 +418,7 @@ export function createCombatEffects(parent, pawnAt, bases) {
       teardown();
       active = beat;
       discardSpare = disposeCameo;
-      if (beat.fromTroop && !pawnAt(beat.from) && beat.from.slot !== undefined) {
+      if (beat.kind !== "burial" && beat.fromTroop && !pawnAt(beat.from) && beat.from.slot !== undefined) {
         spare = makeCameo(beat.from, beat.fromTroop);
         effect.add(spare.group);
       }
@@ -588,6 +699,9 @@ export function createCombatEffects(parent, pawnAt, bases) {
             explode(chest, age, c, 0.93);
           });
           break;
+        case "area-vortex":
+          areaVortex(step, t, edge);
+          break;
         case "vortex": {
           const drift = fly(a, b, smooth(t, 0.04, edge), 0.18);
           showProp(step.cardId, drift, drift, 1, 0, { width: 1.37, height: 1.11, depth: 0.89 });
@@ -651,7 +765,7 @@ export function createCombatEffects(parent, pawnAt, bases) {
           flecks(b, age, from.side === "wizard" ? palette.violet : palette.gold, 5);
       }
       if (
-        !["lasso", "summon", "raise", "cover", "set", "gear", "location", "tribute", "burn"].includes(kind) &&
+        !["area-vortex", "lasso", "summon", "raise", "cover", "set", "gear", "location", "tribute", "burn"].includes(kind) &&
         !(kind === "trap" && typeOf(step.cardId) === "wizard-hex")
       ) {
         for (const mark of targets) {

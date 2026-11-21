@@ -17,6 +17,7 @@ const timings = {
   shell: [630, 380],
   hellfire: [710, 410],
   vortex: [670, 420],
+  "area-vortex": [2370, 1625],
   summon: [480, 215],
   raise: [490, 235],
   cover: [350, 165],
@@ -199,15 +200,16 @@ export function presentationBeats(trace) {
           break;
         }
         case "spell": {
-          const kind =
+          const kind = e.areaVortex ? "area-vortex" :
             { tie: "lasso", hellfire: "hellfire" }[cardOf(e.cardId).effect] ??
             (typeOf(e.cardId) === "wizard-singularity" ? "vortex" : "shell");
           const hits = [e];
-          while (kind === "hellfire" && events[i + 1]?.type === "spell" && events[i + 1].cardId === e.cardId)
+          while ((kind === "hellfire" || kind === "area-vortex") &&
+            events[i + 1]?.type === "spell" && events[i + 1].cardId === e.cardId)
             hits.push(events[++i]);
           const targets = hits.map((h) => foe(h.target));
           add("play", source(s, "hand"), [source(s, "row")], e);
-          add(kind, kind === "lasso" ? base : source(s, "row"), targets, e, () => {
+          add(kind, e.caster ? own(e.caster) : kind === "lasso" ? base : source(s, "row"), targets, e, () => {
             hits.forEach((h, j) => {
               hurt(targets[j], h.left);
               const t = get(targets[j]);

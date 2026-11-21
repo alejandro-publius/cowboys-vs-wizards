@@ -323,6 +323,22 @@
   overflow: hidden;
   background: #17243a var(--frontier-panorama, none) center 26% / cover no-repeat;
 }
+.sd-gallery-attack[data-spell="singularity"] {
+  background-image: linear-gradient(rgb(8 9 21 / var(--spell-darkness, 0)), rgb(8 9 21 / var(--spell-darkness, 0))),
+    var(--frontier-panorama, none);
+}
+.sd-gallery-attack[data-spell="singularity"] .sd-world-labels span:not([data-piece-label], [data-vortex-orbs], [data-grave-label]) {
+  display: none;
+}
+.sd-gallery-attack[data-spell="singularity"] .sd-world-labels span[data-vortex-orbs] {
+  translate: -50% -50%;
+  color: #ffd589;
+  letter-spacing: 0.16em;
+  font-size: clamp(10px, 1.3vw, 17px);
+}
+.sd-gallery-attack[data-spell="singularity"] .sd-world-labels span[data-vortex-orbs="wizard"] {
+  color: #abe8dc;
+}
 .sd-gallery-attack canvas {
   display: block;
   width: 100%;

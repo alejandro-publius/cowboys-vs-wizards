@@ -124,6 +124,12 @@ export function tableCamera(canvas, camera, changed, initialZoom = 1, initialFoc
       initialZoom = nextZoom;
       reset();
     },
+    lookAt(position, yaw, tilt) {
+      focus.set(...position);
+      azimuth = yaw;
+      pitch = tilt;
+      refresh();
+    },
     resize(width, height) {
       w = width;
       h = height;

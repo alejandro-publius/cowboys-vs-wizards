@@ -89,11 +89,11 @@ export function storyActor(cardId, holder, model, camera) {
   const world = new T.Vector3(),
     right = new T.Vector3(),
     up = new T.Vector3();
-  let position = "idle";
+  let position = "idle", fallingApart = false;
   function sync() {
     const pose = frames.get(type)?.[position];
     if (!pose) return;
-    sprite.visible = true;
+    sprite.visible = !fallingApart;
     model.visible = false;
     if (sprite.material.map !== pose.map) {
       if (!sprite.material.map) sprite.material.needsUpdate = true;
@@ -107,6 +107,11 @@ export function storyActor(cardId, holder, model, camera) {
   }
   return {
     sync,
+    effect(light, broken = false) {
+      sprite.material.color.setScalar(light);
+      fallingApart = broken;
+      sync();
+    },
     pose(name) {
       position = name;
       sync();

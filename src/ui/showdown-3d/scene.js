@@ -135,6 +135,8 @@ function pawn(side, id, camera) {
       miniature.getObjectByName("dagger-arm")?.rotation.set(0, 0, 0);
       miniature.scale.set(restScale, restScale * (troop.stunned ? 0.92 : troop.cover ? 0.9 : 1), restScale);
       if (rig) rig.pose({});
+      if (!skin) miniature.visible = true;
+      skin?.effect(1);
       skin?.pose("idle");
       stun.visible = Boolean(troop.stunned);
       while (pips.children.length > troop.health) pips.remove(pips.children.at(-1));
@@ -202,7 +204,7 @@ function build(host, canvas, screen, closeup = false) {
     height = 0,
     locationId = null;
   const pawnAt = (mark) => (mark?.slot === undefined || mark.at ? null : held.get(mark.side + mark.slot));
-  const fx = createCombatEffects(moves, pawnAt, bases);
+  const fx = createCombatEffects(moves, pawnAt, bases, camera);
   const cameraControl = tableCamera(
     canvas,
     camera,
@@ -299,6 +301,13 @@ function build(host, canvas, screen, closeup = false) {
         if (btn) btn.dataset.previewSwap = temporary ? "1" : "";
         const word = troop ? cardOf(troop.cardId).name : "";
         label(side + "snapshot" + slot, [x, 0.08, z + 1.3], word);
+        if (closeup) {
+          const orbs = side + "orbs" + slot;
+          const dragon = troop && typeOf(troop.cardId).endsWith("-dragon");
+          label(orbs, [x, dragon ? 2.66 : 3.06, z - 0.08],
+            host.dataset.spell && troop?.health ? "●".repeat(troop.health) : "");
+          worldLabels.get(orbs).dataset.vortexOrbs = side;
+        }
         const text = worldLabels.get(side + "snapshot" + slot);
         text.dataset.pieceLabel = "1";
         text.dataset.runeLabel = side === "wizard" ? "1" : "";
@@ -319,6 +328,7 @@ function build(host, canvas, screen, closeup = false) {
         stack.visible = count > 0;
         stack.scale.y = Math.min(4, 1 + count / 7);
         label(side + at, [x, 0.071, z + 0.7], title + " " + count, count > 0);
+        if (at === "discard") worldLabels.get(side + at).dataset.graveLabel = side;
       }
       const [x, , z] = zone(side, "trap", TRAP_SLOTS - 1);
       // A trap's identity never leaves Showdown's own seat-scoped controls.
@@ -406,9 +416,16 @@ function build(host, canvas, screen, closeup = false) {
     size();
   }
 
+  function spellDarkness(alpha) {
+    hemi.intensity = 2.28 * (1 - alpha * 0.80);
+    sun.intensity = 2.34 * (1 - alpha * 0.89);
+    moon.intensity = 0.83 + alpha * 0.2;
+    host.style.setProperty("--spell-darkness", alpha.toFixed(3));
+  }
   function stop() {
     epoch++;
     fx.clear();
+    if (host.dataset.spell) spellDarkness(0);
     transfers.clear();
     dressing.reset();
     bases.cowboy.swing(0);
@@ -475,6 +492,12 @@ function build(host, canvas, screen, closeup = false) {
         }
       }
       canvas.dataset.motion = beat.kind;
+      if (host.dataset.spell) {
+        const darkness = beat.kind === "area-vortex"
+          ? 0.86 * T.MathUtils.smoothstep(local, 120, 910) * (1 - T.MathUtils.smoothstep(local, beat.contact + 45, beat.duration))
+          : 0;
+        spellDarkness(darkness);
+      }
       dressing.frame(beat, local);
       bases.cowboy.swing(
         beat.kind === "summon" && beat.from.side === "cowboy"
@@ -503,7 +526,7 @@ function build(host, canvas, screen, closeup = false) {
     const visible = closeup ? screen.open : !screen.hidden && !document.querySelector("dialog[open]");
     if (view && visible && !canvas.hidden && !canvas.dataset.motion && !REDUCED.matches) draw();
   }, 145);
-  return { paint, clear, animate, size, frame: cameraControl.frame };
+  return { paint, clear, animate, size, frame: cameraControl.frame, lookAt: cameraControl.lookAt };
 }
 
 export function mountGallery(title, duel) {
