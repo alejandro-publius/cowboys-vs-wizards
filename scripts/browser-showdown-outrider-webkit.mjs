@@ -99,8 +99,8 @@ async function invariants(page, where) {
   const seen = await page.evaluate(() => ({
     orbs: [...document.querySelectorAll("#sd-board .sd-orbs")].map((n) => n.getAttribute("aria-label")),
     wizardFaces: [...document.querySelectorAll("#sd-hand [data-card]")].filter((n) => n.dataset.card.startsWith("wizard-")).length,
-    backs: [...document.querySelectorAll('#sd-board .sd-side[data-side="wizard"] .sd-backs .card-back')].length,
-    handNote: document.querySelector('#sd-board [data-base="wizard"]')?.textContent.match(/Hand (\d+)/)?.[1] ?? null,
+    backs: [...document.querySelectorAll('#sd-board .sd-zone-rail[data-zone-side="wizard"] [data-zone="hand-count"] .sd-backs .card-back')].length,
+    handNote: document.querySelector('#sd-board .sd-zone-rail[data-zone-side="wizard"] [data-zone="hand-count"] .sd-zone-count')?.textContent.trim() ?? null,
   }));
   for (const label of seen.orbs) { const [, now, max] = label.match(/^(\d+) of (\d+) orbs$/) ?? []; assert.ok(now !== undefined && +now >= 0 && +now <= +max, `${where}: orb label "${label}"`); }
   assert.equal(seen.wizardFaces, 0, `${where}: a Wizard card face is in the hand row`);

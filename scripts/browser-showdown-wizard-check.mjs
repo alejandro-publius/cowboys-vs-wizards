@@ -138,10 +138,13 @@ const READ = (cowboyId) => {
   const rows = [...document.querySelectorAll("#sd-board .sd-side")];
   const side = (row) => {
     const name = row?.dataset.side, base = row?.querySelector(`[data-base="${name}"]`);
-    const counts = base?.textContent.match(/Hand (\d+) · Deck (\d+) · Graveyard (\d+)/);
+    // Hand count, card backs and trap text sit in the side's zone rail (showdown-zones.js), beside the Base.
+    const rail = document.querySelector(`#sd-board .sd-zone-rail[data-zone-side="${name}"]`);
+    const count = rail?.querySelector('[data-zone="hand-count"] .sd-zone-count')?.textContent.trim();
     return {side: name ?? null, label: base?.querySelector("strong")?.textContent.trim() ?? null,
-      orbs: base?.querySelector(".sd-orbs")?.getAttribute("aria-label") ?? null, hand: counts ? Number(counts[1]) : null,
-      backs: base?.querySelectorAll(".sd-backs .card-back").length ?? 0, traps: base?.textContent.match(/▲ ([^\n]*)/)?.[1].trim() ?? null};
+      orbs: base?.querySelector(".sd-orbs")?.getAttribute("aria-label") ?? null, hand: count ? Number(count) : null,
+      backs: rail?.querySelectorAll('[data-zone="hand-count"] .sd-backs .card-back').length ?? 0,
+      traps: rail?.querySelector('[data-zone="traps"] .sd-trap-line')?.textContent.trim() ?? null};
   };
   const html = document.querySelector("#showdown")?.outerHTML ?? "";
   return {status: document.querySelector("#sd-status")?.textContent.trim() ?? "", own: side(rows.at(-1)), foe: side(rows[0]),

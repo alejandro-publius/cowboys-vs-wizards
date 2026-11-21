@@ -128,10 +128,10 @@ try {
   // Seat privacy, read from the page itself: no Wizard card id anywhere in the DOM, the Wizard hand
   // only as card backs matching its count, no Wizard trap named, and no hand card that is not a Cowboy card.
   const privacy = () => evaluate(`(()=>{const body=document.getElementById("showdown").outerHTML+document.getElementById("showdown-camp").outerHTML+document.getElementById("title-screen").outerHTML;const ids=body.match(/wizard-[a-z-]+-\\d+/g)||[];
-    const base=document.querySelector('#sd-board [data-side=wizard] [data-base=wizard]');const backs=base.querySelectorAll('.sd-backs .card-back').length;
-    const count=Number(base.textContent.match(/Hand (\\d+)/)[1]);const label=base.querySelector('.sd-backs').getAttribute('aria-label');
+    const base=document.querySelector('#sd-board .sd-zone-rail[data-zone-side=wizard]');const backs=base.querySelectorAll('[data-zone=hand-count] .sd-backs .card-back').length;
+    const count=Number(base.querySelector('[data-zone=hand-count] .sd-zone-count').textContent);const label=base.querySelector('[data-zone=hand-count] .sd-backs').getAttribute('aria-label');
     const hand=[...document.querySelectorAll('#sd-hand [data-card]')].map(n=>n.dataset.card);
-    return{ids,backs,count,label,trapLine:base.textContent.match(/▲ ([^\\n]*)/)[1].trim(),handSides:[...new Set(hand.map(id=>id.split('-')[0]))]};})()`);
+    return{ids,backs,count,label,trapLine:base.querySelector('[data-zone=traps] .sd-trap-line').textContent.trim(),handSides:[...new Set(hand.map(id=>id.split('-')[0]))]};})()`);
   let privacyChecks = 0;
   const assertPrivate = async () => {
     const p = await privacy();

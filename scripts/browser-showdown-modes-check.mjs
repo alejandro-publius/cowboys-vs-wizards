@@ -238,8 +238,8 @@ async function session(label) {
   const assertPrivate = async (seat) => {
     const p = await evaluate(`(()=>{const seat=${JSON.stringify(seat)},foe=seat==='cowboy'?'wizard':'cowboy';const body=document.getElementById('showdown').outerHTML;
       const ids=[...new Set(body.match(new RegExp(foe+'-[a-z-]+-\\\\d+','g'))||[])];
-      const base=document.querySelector('#sd-board [data-side='+foe+'] [data-base='+foe+']');
-      return{ids,backs:base.querySelectorAll('.sd-backs .card-back').length,count:Number(base.textContent.match(/Hand (\\d+)/)[1]),
+      const base=document.querySelector('#sd-board .sd-zone-rail[data-zone-side='+foe+']');
+      return{ids,backs:base.querySelectorAll('[data-zone=hand-count] .sd-backs .card-back').length,count:Number(base.querySelector('[data-zone=hand-count] .sd-zone-count').textContent),
         hand:[...document.querySelectorAll('#sd-hand [data-card]')].map(n=>n.dataset.card)};})()`);
     // The screen writes card ids only on the seat's own hand buttons, so no id of the other seat may appear at all.
     assert.deepEqual(p.ids, [], `${seat} on screen, ids of the other seat in the page: ${p.ids}`);

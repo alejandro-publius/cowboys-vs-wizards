@@ -19,6 +19,7 @@ import {createShowdownSession} from "../match/showdown-session.js";
 import {matchOver, matchWinner, newMatch, nextGame, offersSwap, recordGame, swapPool, withSwap} from "../match/showdown-match.js";
 import {createCuePlayer, cuesFor} from "./showdown-cues.js";
 import {FRAMES} from "./card-frames.js";
+import {movesOf, railHtml, raiseTarget, sheetHtml} from "./showdown-zones.js";
 
 const name = (cardId) => cardOf(cardId).name;
 const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
@@ -60,12 +61,10 @@ const TEMPLATE = `
     <button type="button" id="sd-cancel" hidden>Cancel</button>
     <button type="button" id="sd-restart">Restart this duel</button>
   </div>
+  <p id="sd-zone-move" aria-live="polite"></p>
   <section id="sd-hand" aria-label="Your hand"></section>
   <section aria-label="What happened"><h2>What happened</h2><ol id="sd-log"></ol></section>
-  <section aria-label="Graveyards"><h2>Graveyards</h2>
-    <p class="sd-note">Cowboys: <span id="sd-cowboy-graveyard"></span></p>
-    <p class="sd-note">Wizards: <span id="sd-wizard-graveyard"></span></p>
-  </section>
+  <dialog id="sd-graveyard-sheet" aria-labelledby="sd-graveyard-title"></dialog>
   <section aria-label="Keywords"><h2>Keywords</h2><ul id="sd-keywords"></ul></section>
   </div>`;
 
@@ -84,7 +83,11 @@ const FACTION = {cowboy: "Cowboy", wizard: "Wizard"};
 export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nextSeed = freshSeed, onSwap}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
+  // The one #sd-location node; render() moves it between the board sides (see the board write below).
+  const locationLine = $("sd-location");
   let session, duel, seed, lines, latest, pick, outcome, picked, run, started;
+  // moves: the latest batch's Boot Hill moves (showdown-zones.js movesOf). sheet: the open pile, {side, open}, or null.
+  let moves = null, sheet = null;
   // seat: the solo player's side. camp: the campaign this duel settles through, or null (nothing is settled).
   let players = 1, match = null, curtain = false, seat = "cowboy", camp = campaign;
   const cues = createCuePlayer(root, cueOptions);
@@ -97,6 +100,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
   // Logs a batch of events and returns its placeholder cues, each tied to its log line.
   function record(events, before) {
     latest = events.map((event) => presentEvent(event));
+    moves = before ? movesOf(events, before, session.view()) : null;
     const first = lines.length;
     for (const [i, event] of events.entries()) lines.push({turn: event.type === "turn", text: latest[i]});
     const batch = cuesFor(events, before, session.view()).map((cue) => ({...cue, line: first + cue.index}));
@@ -126,6 +130,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     picked = null;
     run = newRunId();
     started = Date.now();
+    closeSheet(false);
     cues.clear();
     const batch = record(session.opening, null);
     finish();
@@ -135,6 +140,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
   }
   function act(action) {
     pick = null;
+    closeSheet(false);
     const [before, seat] = [session.view(), viewer()];
     const batch = record(session.act(action), before);
     finish();
@@ -264,6 +270,30 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     ].join("");
   }
 
+  // The Boot Hill sheet: one side's public discard, newest first. Both piles are open to both players. It closes on any
+  // action, deal or pass (before the board is redrawn), and on close focus returns to that side's pile cell.
+  const sheetEl = () => $("sd-graveyard-sheet");
+  function paintSheet() {
+    const discard = session.view().sides[sheet.side].discard;
+    sheetEl().innerHTML = sheetHtml(sheet.side, discard, raiseTarget(discard, duel.options.decks?.[sheet.side]), sheet.open, (id) => face(typeOf(id)));
+  }
+  function openSheet(side) {
+    if (curtain || !session.view().sides[side].discard.length) return;
+    sheet = {side, open: null};
+    paintSheet();
+    if (!sheetEl().open) sheetEl().showModal();
+    sheetEl().querySelector("[data-graveyard-card]")?.focus();
+  }
+  function closeSheet(refocusPile = true) {
+    const side = sheet?.side;
+    sheet = null;
+    if (sheetEl().open) sheetEl().close();
+    sheetEl().innerHTML = "";
+    if (refocusPile && side && !root.hidden) (usable(`[data-graveyard="${side}"]`) ?? usable("#sd-hand button", "#sd-end", "#sd-home"))?.focus();
+  }
+  // Escape (the native cancel) closes through the same path, so focus returns to the pile.
+  sheetEl().addEventListener("close", () => { if (sheet) closeSheet(); });
+
   function render() {
     // The curtain: nothing of either seat's hand or traps stays in the page while the screen is passed.
     // Focus moves only when the curtain goes up or down: onto "I'm ready" when it rises, and off the hidden curtain
@@ -273,7 +303,10 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     $("sd-curtain").hidden = !curtain;
     $("sd-table").hidden = curtain;
     if (curtain) {
-      for (const id of ["sd-board", "sd-hand", "sd-result", "sd-prompt", "sd-feedback", "sd-status", "sd-location"]) $(id).innerHTML = "";
+      // The shared Location line lives inside the board between the two sides; park it at its template place
+      // before the board is emptied so #sd-location survives every curtain.
+      $("sd-board").before(locationLine);
+      for (const id of ["sd-board", "sd-hand", "sd-result", "sd-prompt", "sd-feedback", "sd-status", "sd-location", "sd-zone-move", "sd-graveyard-sheet"]) $(id).innerHTML = "";
       $("sd-curtain-text").textContent = `Pass the screen to the ${FACTION[session.view().active]} player.`;
       if (rises && !root.hidden) $("sd-ready").focus();
       return;
@@ -297,13 +330,8 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
       const s = view.sides[side];
       const isOwn = side === own;
       const baseOpen = !isOwn && aims.has("base");
-      const traps = isOwn && !shared ? (s.traps.length ? `Set: ${s.traps.map(name).join(", ")}` : "No trap set") : s.trapCount ? `${plural(s.trapCount, "card")} face down` : "Nothing face down";
-      // The other seat's hand is card backs (the deck back's .card-back element) and a count, never faces.
-      const backs = isOwn ? "" : `<span class="sd-backs" role="img" aria-label="${FACTION[side]} hand: ${plural(s.handCount, "card")}, face down">${'<span class="card-back" aria-hidden="true"></span>'.repeat(s.handCount)}</span>`;
       const base = `<button type="button" class="sd-base ${side}${baseOpen ? " sd-can" : ""}" ${baseOpen ? 'data-enemy="base"' : "disabled"}${isOwn ? "" : aiming} data-base="${side}">
-        <strong>${whoseBase(side)} Base</strong>${orbs(s.base, s.baseMax)}
-        <span class="sd-note">Hand ${s.handCount} · Deck ${s.deckCount} · Graveyard ${s.discard.length}</span>${backs}
-        <span class="sd-note">▲ ${traps}</span>${baseOpen ? preview(view, "base") : ""}</button>`;
+        <strong>${whoseBase(side)} Base</strong>${orbs(s.base, s.baseMax)}${baseOpen ? preview(view, "base") : ""}</button>`;
       const slots = s.board.map((troop, slot) => {
         if (!troop) return `<button type="button" class="sd-slot ${side}" data-slot="${side}-${slot}" disabled><span class="sd-note">empty</span></button>`;
         const card = cardOf(troop.cardId);
@@ -329,7 +357,17 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
       }).join("");
       return `<div class="sd-side" data-side="${side}">${base}${slots}</div>`;
     };
-    $("sd-board").innerHTML = row(foe) + row(own);
+    // The zone rails (showdown-zones.js): the rival's above its troops, the seat's own below. Own trap names only for
+    // the seat at the table (never on a shared result); the other side's traps are a count until their trap event.
+    const rail = (side) => railHtml(side, view.sides[side], {own: side === own, named: side === own && !shared,
+      raise: raiseTarget(view.sides[side].discard, duel.options.decks?.[side]), sprung: moves?.sprung[side], grew: moves?.grew[side]});
+    // The shared Location line sits between the two sides, in a dedicated slot; the same #sd-location node is moved
+    // in on every render, so cue marks on it survive rerenders.
+    $("sd-board").innerHTML = rail(foe) + row(foe) + `<div class="sd-board-location" data-board-location></div>` + row(own) + rail(own);
+    $("sd-board").querySelector("[data-board-location]").append(locationLine);
+    // Picking a tribute, gear carrier or target: the rail stays visible but inert.
+    if (pick) for (const pile of $("sd-board").querySelectorAll("[data-graveyard]")) pile.disabled = true;
+    $("sd-zone-move").textContent = moves?.lines.length ? `${moves.lines.length > 4 ? `(+${moves.lines.length - 4} earlier) ` : ""}${moves.lines.slice(-4).join(" · ")}` : "";
     const landing = view.arrivals.map((due) => `${TYPES[due.type].name} lands at the start of turn ${Math.max(due.turn, view.turn + (view.active === due.side ? 2 : 1))}.`).join(" ");
     $("sd-location").textContent = landing + (landing && view.location ? " " : "") + (view.location ? `■ Location: ${name(view.location.cardId)}. ${EFFECTS[cardOf(view.location.cardId).effect].text.replace("Location. ", "")}` : "");
 
@@ -368,7 +406,6 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     $("sd-lesson").textContent = duel.lesson;
     $("sd-log").innerHTML = lines.map((l, i) => `<li data-line="${i}"${l.cue ? ` data-cue-kind="${l.cue}"` : ""}${l.turn ? ' class="sd-turn"' : ""}>${l.text}</li>`).join("");
     $("sd-log").scrollTop = $("sd-log").scrollHeight;
-    for (const side of ["cowboy", "wizard"]) $(`sd-${side}-graveyard`).textContent = view.sides[side].discard.map(name).join(", ") || "empty";
     // Keywords from the duel's two public deck lists, so the list never depends on a hidden card.
     const inPlay = new Set(Object.values(duel.options.decks).flatMap((counts) => Object.keys(counts)).flatMap((type) => TYPES[type].keys ?? []));
     $("sd-keywords").innerHTML = Object.entries(KEYWORDS).filter(([key]) => inPlay.has(key)).map(([, [word, rule]]) => `<li><strong>${word}.</strong> ${rule}</li>`).join("")
@@ -383,7 +420,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
   // play. A mouse click (detail 1 or more) never moves focus, and Escape moves it only from a duel button.
   let origin = null; // the button that opened the current pick
   const pickKey = (p) => p ? p.card ?? `troop-${p.troop}` : null;
-  const keyOf = (b) => !b || !root.contains(b) ? null : b.id ? `#${b.id}`
+  const keyOf = (b) => !b || !root.contains(b) ? null : b.id ? `#${b.id}` : b.dataset.graveyard ? `[data-graveyard="${b.dataset.graveyard}"]`
     : b.dataset.card ? `[data-card="${b.dataset.card}"]` : b.dataset.slot ? `[data-slot="${b.dataset.slot}"]` : b.dataset.base ? `[data-base="${b.dataset.base}"]` : null;
   // The first enabled, shown match of the earliest selector in the list that has one.
   const usable = (...selectors) => {
@@ -408,6 +445,13 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     if (!b || b.disabled || !session) return;
     const [key, before, keyboard] = [keyOf(b), pick, event.detail === 0];
     const d = b.dataset;
+    if (d.graveyard) return openSheet(d.graveyard);
+    if (d.graveyardCard !== undefined && sheet) {
+      sheet.open = sheet.open === Number(d.graveyardCard) ? null : Number(d.graveyardCard);
+      paintSheet();
+      return sheetEl().querySelector(`[data-graveyard-card="${d.graveyardCard}"]`)?.focus();
+    }
+    if (d.graveyardClose !== undefined) return closeSheet();
     if (d.card) clickCard(d.card);
     else if (d.own) clickOwn(Number(d.own));
     else if (d.enemy) clickEnemy(d.enemy === "base" ? "base" : Number(d.enemy));
@@ -423,12 +467,12 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
       $("sd-camp")?.focus();
     }
     else if (b.id === "sd-again" && outcome) again();
-    else if (b.id === "sd-home" || b.id === "sd-camp") { cues.clear(); onHome(); }
+    else if (b.id === "sd-home" || b.id === "sd-camp") { closeSheet(false); cues.clear(); onHome(); }
     if (pickStarted(before)) origin = key;
     if (keyboard) refocus(key, before);
   });
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && pick && !root.hidden) {
+    if (event.key === "Escape" && pick && !sheet && !root.hidden) {
       const [key, before] = [keyOf(document.activeElement), pick];
       pick = null;
       render();
