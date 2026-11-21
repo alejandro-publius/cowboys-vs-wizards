@@ -26,7 +26,12 @@ jobs:
 
       - run: npm test
 
-      - run: npm run build -- --web
+      # The Pages tree as pages.yml stages it: Showdown at / and /graybox/, the reference page at
+      # /showdown/, a script-free redirect at /3d/, and nothing from the retired 3D lane build.
+      - name: Stage and check the Pages tree
+        run: |
+          node scripts/stage-pages.mjs --commit "$GITHUB_SHA"
+          node scripts/check-pages-tree.mjs --commit "$GITHUB_SHA"
 
       - name: Kiro review server tests
         run: node --test .kiro/powers/orb-duel-review/test/server.test.mjs

@@ -2,31 +2,24 @@
 
 [Back to game](../README.md) · [AI task router](AGENT-ROUTER.md)
 
-The game is a JavaScript browser app built with Three.js, Rapier and esbuild. Its pure match engine determines gameplay; a controller and presenter turn accepted events into card/3D animation without recalculating damage.
+Showdown is a JavaScript browser game bundled by esbuild. The rules engine owns the duel state and outcomes. The session applies legal actions and hands the seat-specific view and accepted events to the screen.
 
 ```mermaid
 flowchart TD
-  Player["Card, lane, tribute input"] --> Selection["src/match/selection.js"]
-  Selection --> Controller["src/match/controller.js"]
-  CPU["src/game/cpu.js (public view only)"] --> Controller
-  Controller --> Engine["src/game: actions, state, legal, clash"]
-  Engine --> Events["accepted state + ordered events"]
-  Events --> Presenter["src/match/presenter.js"]
-  Scheduler["src/match/scheduler.js (epochs)"] --- Presenter
-  Presenter --> Board["src/render: rigs, GLBs, attacks, orbs"]
-  Presenter --> UI["src/ui: cards and controls"]
-  Board --> Browser["WebGL game / recorded replay"]
-  UI --> Browser
+  Player["Cards and board controls"] --> Screen["Showdown screen"]
+  Screen --> Session["Showdown session"]
+  Session --> Engine["Showdown rules and contract"]
+  Engine -->|Seat view and events| Session
+  Session --> Screen
 ```
 
 ## Contracts worth preserving
 
-- **Engine authority:** `src/game/` has no DOM, network, renderer or asset dependencies. It owns card conservation, legal actions, phase changes, simultaneous combat and outcomes.
-- **Public information:** `publicState(state, side)` hides opposing cards and both deck orders. The CPU and side-specific views use only their public snapshot.
-- **Action identity:** `src/match/selection.js` constructs choices; the controller applies accepted actions once; the presenter consumes the resulting event ordering and before/after values.
-- **Timed playback:** `src/match/scheduler.js` uses an epoch to cancel stale callbacks after restart or mode switch. Damage/orb updates appear at the event impact, not before.
-- **Asset boundary:** `assets/models/` stores optimized GLBs and `assets/cards/` the approved illustrations. Keep source exports intact. A GLB measurement does not replace review in the actual browser.
-- **Build and release:** `scripts/build.mjs` emits the single-file HTML or `dist/web/` with relative assets. `.github/workflows/pages.yml` verifies the game and publishes the web build.
+- **Rules.** `src/game/showdown/` owns legal actions, card conservation, turn changes and duel outcomes. `viewFor` in its contract limits each seat to the information it may see.
+- **Session and screen.** `src/match/showdown-session.js` applies actions. `src/ui/showdown-screen.js` draws the resulting board and `src/ui/showdown-cues.js` presents combat cues from the event stream.
+- **Progress.** Campaign progress goes through `src/game/showdown/campaign-store.js`. The legacy profile reader supports keepsakes in the Camp.
+- **Art.** `assets/` contains source models and illustrations for future presentation work. The [art catalog](../prototypes/showdown/ART-DIRECTION.md) covers all current cards.
+- **Release.** `scripts/build-graybox.mjs` builds the offline page. `scripts/stage-pages.mjs` stages the supported site, including the redirect from `/3d/`, for GitHub Pages.
 
 ## Smallest useful checks
 
@@ -34,7 +27,7 @@ flowchart TD
 | --- | --- |
 | Card rules, spells, CPU | `node --test tests/game/<closest>.test.js` |
 | Controller, presenter, timing | `node --test tests/match/<closest>.test.js` |
-| Animation rigs or models | `node --test tests/match/<closest>.test.js`; then browser frames |
+| Combat cues | `node scripts/browser-showdown-cues-check.mjs dist/cowboys-vs-wizards-board-duel.html` |
 | Gameplay integration | `node scripts/verify-duel.mjs` |
 | Visual/browser integration | `node scripts/verify-duel.mjs --browser` on a machine with the supported Chrome setup |
 | Build or deployment | `npm run build -- --web`; inspect GitHub Actions and browser artifact |

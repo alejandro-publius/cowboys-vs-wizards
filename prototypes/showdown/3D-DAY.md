@@ -2,9 +2,12 @@
 
 A short runbook for making the first models. Generating a picture or a model is Alex's step to start: nothing here runs on its own. The rules may still change after the playtest, so start with the cards a new player meets first and stop when the day is up; any troop without a model still plays as a placeholder token.
 
+## Current status
+
+Showdown has no 3D renderer integration today. The standalone 3D lane build is retired: `/3d/` redirects to `/` and serves no second game, and `src/render/` with its model registry is no longer on main. Steps 1 to 4 below (picture, model, size, file) still apply. Steps 5 to 7 are historical: they describe the retired 3D build, whose source is pinned at commit [`ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df`](https://github.com/alejandro-publius/cowboys-vs-wizards/tree/ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df). Do not recreate those files on main; plan any Showdown renderer integration with the user first.
+
 ## Before you start
 
-- Pull request 141 must be merged. It adds `src/render/presentation-manifest.js`, the one file where a model is registered.
 - Have the style block and the two reference cards ready: [ART-DIRECTION.md](ART-DIRECTION.md), section 1 and "How to use it".
 
 ## The order
@@ -17,7 +20,9 @@ Thirteen troops have no model. Make them in this order, which is the order a pla
 2. **Model.** Give that picture to Tripo. Ask for one mesh with textures.
 3. **Size.** The shipped models are 44,000 to 62,000 triangles and 2.5 to 4.8 MB each. Reduce a new one to **60,000 triangles or fewer and under 5 MB** before it goes in the repository. Tripo's raw output is far larger.
 4. **File.** Save it as `assets/models/<name>.glb`, lower case with hyphens, for example `covered-wagon.glb`.
-5. **Register it.** Add one entry to `CARD_MODELS` in `src/render/presentation-manifest.js`:
+Steps 5 to 7 are historical, for the retired 3D build at commit `ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df` only. They do not register or show a model in the current Showdown game.
+
+5. **Register it (historical).** In the archived build, add one entry to `CARD_MODELS` in `src/render/presentation-manifest.js`:
 
    ```js
    "cowboy-covered-wagon": {kind: "covered-wagon", asset: "covered-wagon", height: 1.4, footprint: 2.0, yaw: Math.PI},
@@ -26,7 +31,7 @@ Thirteen troops have no model. Make them in this order, which is the order a pla
    - `height`: metres. Billy is 1.93, the Skeleton 1.2, the Dragon 1.25, Mounted Billy 1.7.
    - `footprint`: the widest it may stand on its tile; about 1.2 for a person, about 2 for a mount or a wagon.
    - `yaw`: the turn that makes it face the other side. Cowboys face the Wizards; if it faces the wrong way, add or remove `Math.PI`.
-6. **Check.**
+6. **Check (historical).** In the archived build:
 
    ```sh
    node scripts/audit-assets.mjs assets/models          # the file is valid; read its triangle count
@@ -34,7 +39,7 @@ Thirteen troops have no model. Make them in this order, which is the order a pla
    npm run build:art                                    # then open the 3D duel and look at it
    ```
 
-7. **Look.** Stand it next to the Sheriff or the Skeleton on the board. Same level of detail, same colours, same scale? If not, fix the picture, not the model.
+7. **Look (historical).** In the archived build, stand it next to the Sheriff or the Skeleton on the board. Same level of detail, same colours, same scale? If not, fix the picture, not the model.
 
 ## What not to do yet
 

@@ -4,7 +4,7 @@ Date: 2026-11-17, 15:26–15:29 PST (America/Los_Angeles). Author and executor: 
 
 ## Method
 
-[`scripts/browser-pace-measure.mjs`](../../scripts/browser-pace-measure.mjs) serves `dist/web/` from a `127.0.0.1`-only Node HTTP server and drives installed headless Chrome over the DevTools protocol. It uses no dependency and makes no remote request. Each run gets a fresh temporary profile, which is deleted afterwards. A host resolver rule maps every host except 127.0.0.1 to NOTFOUND, and any non-loopback request fails the receipt. The game is operated only through real CDP input: `Input.dispatchMouseEvent` press and release on the element's centre (after an `elementFromPoint` hit check), and `Input.dispatchKeyEvent` for Escape.
+[`scripts/browser-pace-measure.mjs`](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df/scripts/browser-pace-measure.mjs) serves `dist/web/` from a `127.0.0.1`-only Node HTTP server and drives installed headless Chrome over the DevTools protocol. It uses no dependency and makes no remote request. Each run gets a fresh temporary profile, which is deleted afterwards. A host resolver rule maps every host except 127.0.0.1 to NOTFOUND, and any non-loopback request fails the receipt. The game is operated only through real CDP input: `Input.dispatchMouseEvent` press and release on the element's centre (after an `elementFromPoint` hit check), and `Input.dispatchKeyEvent` for Escape.
 
 Instrumentation needs no `src/` change. A read-only probe added with `Page.addScriptToEvaluateOnNewDocument` records:
 

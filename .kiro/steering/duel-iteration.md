@@ -9,9 +9,10 @@ Use for quick changes to match presentation, card art or the browser route.
 README.md has the build command and check table. For Showdown screens and
 their checks, use the Showdown rows in `docs/AGENT-ROUTER.md`; the current
 release state is in `docs/design/release-line.md` ("Current status") and issue
-143. The contracts below are the lane duel's, which since slice 3 runs only in
-the earlier illustrated 3D build (`src/main.js`, served at `/3d/`), not in the
-graybox.
+143. The lane duel and its standalone 3D build are retired: `/3d/` and old
+`?mode=` URLs redirect to Showdown at `/`, and the last lane and 3D source is
+at commit `ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df`. Do not work on lane or
+3D paths unless the user reopens them.
 
 ## Contracts to keep
 
@@ -21,11 +22,11 @@ graybox.
   hand shows card backs.
 - Apply each action once. The match epoch governs timers, animations and CPU
   requests. Include a cancellation check when changing those interactions.
-- Reuse the eight approved fronts and the deck back when changing playback or
-  inputs. Verify the original exchange at `?mode=demo` after a mode change.
-- Dragon and Mounted Billy use fitted GLBs with authored attack clips;
-  Skeleton uses its optimized Tripo mesh. Sheriff uses a procedural rig and
-  revolver cue. Keep the original exports and browser timing intact.
+- Preserve the approved card art and source assets in `assets/` (models,
+  clips, card paintings). Dragon and Mounted Billy GLBs contain authored attack
+  clips; keep the original Tripo exports intact.
+- Historical (lane build only, at the commit above): the eight lane fronts and
+  deck back, the `?mode=demo` attack exchange, and the Sheriff procedural rig.
 
 ## Iterate cheaply
 

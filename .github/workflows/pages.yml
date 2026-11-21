@@ -33,12 +33,14 @@ jobs:
 
       # One script stages the whole tree, as it does locally: the graybox game at / (Play opens
       # Showdown's Camp), the same index.html at /graybox/ for existing links, the Showdown reference
-      # page at /showdown/, the earlier illustrated 3D build with its models at /3d/, and build.json.
+      # page at /showdown/, a script-free redirect to the game at /3d/ for old links, and build.json.
+      # Nothing from the retired 3D lane build is built or staged.
       - name: Stage the Pages tree
         run: node scripts/stage-pages.mjs --commit "$GITHUB_SHA"
 
       # Node only: serves dist/web/ under /cowboys-vs-wizards/ on localhost and checks build.json, the
-      # /graybox/ alias bytes and every /3d/ asset URL. The Chrome half (--browser) runs locally.
+      # /graybox/ alias bytes, the exact staged file list and the /3d/ redirect. The Chrome half
+      # (--browser) runs locally.
       - name: Check the staged tree before upload
         run: node scripts/check-pages-tree.mjs --commit "$GITHUB_SHA"
 

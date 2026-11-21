@@ -3,8 +3,7 @@
 // Open range, plus two players at any time. The Wizard preview (four Wizard-seat duels with their own save) is the
 // Camp's last section after Boot Hill and opens on its own at ?wizard=1. Slice 3 retired the lane duel from this
 // page, so no URL opens it here; an old lane address (?mode=lanes, match, ride-out, practice-*,
-// fire-arc) loads this same Showdown menu. The lane rules stay only where the 3D page (src/main.js)
-// imports them. esbuild inlines the dynamic imports, so the page stays one offline file.
+// fire-arc) loads this same Showdown menu. The old 3D page has been removed. esbuild inlines the dynamic imports, so the page stays one offline file.
 const node = (id) => document.getElementById(id);
 
 Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"), import("./ui/showdown-builder.js"), import("./match/showdown-campaign.js"),

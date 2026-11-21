@@ -30,7 +30,7 @@ The game code at `e1e901d` passed 107 Node tests. Chrome observed 8 of 8 opening
 
 ## Kiro compaction check
 
-On November 16, Codex ran `kiro-cli chat --v3 --trust-workspace --agent duel-presenter` on `861af78` and invoked `/compact` after four turns. `PreCompact` logged the Git revision. `PostCompact` received the summary and returned the replay plan along with receipt `861af78-1794855476196`. In a resumed Kiro CLI 3.3.0 session, Kiro named seed 0 for the opening and seed 60 for the Mounted Billy showdown and quoted that exact receipt from its context. [Hook profile](../../.kiro/agents/duel-presenter.json) · [Receipt script](../../scripts/duel-compaction.mjs)
+On November 16, Codex ran `kiro-cli chat --v3 --trust-workspace --agent duel-presenter` on `861af78` and invoked `/compact` after four turns. `PreCompact` logged the Git revision. `PostCompact` received the summary and returned the replay plan along with receipt `861af78-1794855476196`. In a resumed Kiro CLI 3.3.0 session, Kiro named seed 0 for the opening and seed 60 for the Mounted Billy showdown and quoted that exact receipt from its context. [Hook profile](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df/.kiro/agents/duel-presenter.json) · [Receipt script](../../scripts/duel-compaction.mjs)
 
 The hook appends the phase, revision, receipt ID, and whether Kiro supplied a summary to `.artifacts/kiro/duel-compaction.jsonl`. The game checks are defined in the existing replay scripts.
 
@@ -56,7 +56,7 @@ Chrome 157 replayed the release from GitHub Pages at 1440 × 900. Seed 0 passed 
 
 While recording the demo, Claude Fable 5.2 found cream rectangles on the summon and draw animations. Both moving cards copied the illustration and paper layers from the hand. The copies needed the same depth and corner radius as the hand, so Codex applied those values to both. A Chrome frame captured during the Sheriff summon shows the original illustration in flight.
 
-The opening replay now checks that the illustrated face is in front of the paper, as well as checking its landing position. The change at `5b69ac7` passed 107 Node tests and the opening replay passed 8 of 8 checks with zero console errors. The updated web HTML SHA-256 is `62944140752eee187b2af23425d494d0eefc27b27b2096ccee9c1eb4d6c6e371`. The two recordings use that web build. [Replay check](../../scripts/browser-match-check.mjs)
+The opening replay now checks that the illustrated face is in front of the paper, as well as checking its landing position. The change at `5b69ac7` passed 107 Node tests and the opening replay passed 8 of 8 checks with zero console errors. The updated web HTML SHA-256 is `62944140752eee187b2af23425d494d0eefc27b27b2096ccee9c1eb4d6c6e371`. The two recordings use that web build. [Replay check](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df/scripts/browser-match-check.mjs)
 
 ## Clash property check
 

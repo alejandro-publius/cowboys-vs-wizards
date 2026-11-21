@@ -8,6 +8,8 @@ Fable 5.2, Wednesday November 18, 2026, Pacific. Based on Alex's four decisions 
 
 Added by Kiro (Kiro CLI, coordinator job `graywave-assemble`) from GitHub `main` `4d52642`, the merge of pull request 148; milestones refreshed by job `graywave-night-join` from `main` `6b6caef`. It records state and quotes Fable's decisions; it makes none. Fable's text further down is unchanged and reads as of its own date. Where it differs, this section and the latest Fable comment on [issue 143](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143) are current. The 10:15 p.m. handoff that stood here is replaced: slices 2 and 3 are on main.
 
+**Lane and 3D retirement, November 20 (Alex's decision).** Showdown is the one supported game. The earlier lane duel and its illustrated 3D build are retired: old `/3d/` links lead to Showdown, and old `?mode=` addresses open the Showdown menu. The last playable lane and 3D source is `main` commit `ea183ee29dbd`. Lane evidence, specs and the held lane drafts below stay as history; no worker is assigned to lane or 3D paths. This supersedes Fable's earlier plan to retire the lane engine only when a Showdown 3D page replaces it.
+
 **Local earned decks, November 20.** After a Wizard wins Dry Gulch, Cowboy Camp offers a single two-player game with both saved decks. The Wizards open. Each hand is hidden while players pass the screen. The match pays no reward and leaves both careers intact. The original two-player game remains available.
 
 **Wizard preview, November 20.** Fable approved four graybox duels from the Wizard seat, each with a fixed reward for the next one. Try the [Wizard preview](https://alejandro-publius.github.io/cowboys-vs-wizards/?wizard=1), or open it at the end of Camp after winning Boot Hill. It uses its own save and keeps the Cowboy playtest report separate. After all four wins, Open Range lets the player use the earned Dragon. [Design scope](showdown-wizard-campaign-brief.md) · [Seeded difficulty checks](../evidence/showdown-wizard-ramp.md).
@@ -48,9 +50,9 @@ Added by Kiro (Kiro CLI, coordinator job `graywave-assemble`) from GitHub `main`
 | `/` | The graybox game. Play opens the Showdown Camp. |
 | `/graybox/` | The same file, for existing links |
 | `/showdown/` | The Showdown reference page |
-| `/3d/` | The earlier illustrated 3D build on the lane rules, labelled as the earlier build. It holds the models, board and motion. |
+| `/3d/` | Retired November 20: old links lead to Showdown. Until then it served the earlier illustrated 3D build on the lane rules; its source is at `ea183ee29dbd`. |
 
-**Lane play.** No lane play is reachable from the graybox, by menu or URL. An old `?mode=` address opens the Showdown menu. The lane rules stay only where the 3D page (`src/main.js`) imports them, as Fable ruled on [issue 143](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143#issuecomment-7031863563). Lane evidence and specs stay as history.
+**Lane play.** No lane play is reachable, by menu or URL. An old `?mode=` address opens the Showdown menu. Fable ruled on [issue 143](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143#issuecomment-7031863563) that the lane rules stay where the 3D page imported them; with the 3D page retired, the last playable lane source is `ea183ee29dbd`. Lane evidence and specs stay as history.
 
 **Keepsakes** (Fable on [pull request 148](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/148#issuecomment-7031816529)): "**Nothing from the lane game carries into Showdown progress.**" A lane capture shows in the Camp as a keepsake and is not equippable. Start over resets Showdown progress only, and keepsakes stay out of save codes.
 

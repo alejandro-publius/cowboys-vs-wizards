@@ -1,4 +1,8 @@
-# Project status — observed November 16, 2026
+# Project status
+
+The [Showdown release line](design/release-line.md#current-status-november-20-supersedes-the-november-19-1015-pm-handoff) tracks the supported game and its current release decisions. The lane build described below was retired on November 20. Its final playable source is [archived in Git](https://github.com/alejandro-publius/cowboys-vs-wizards/tree/ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df).
+
+## November 16, 2026 snapshot
 
 **Current integration (November 16, Pacific):** PR #55 is on main at `4c0723d`: build identity and post-deploy verification are live, with recovered actual CLI session credit records. [Live deployment receipt](evidence/kiro-build-identity.md). This guide integration adds Kiro's opt-in `?guide=1` implementation after correcting hidden idle tips. [Guide receipts](evidence/kiro-guided-first-match.md).
 
