@@ -3,12 +3,12 @@
 import * as T from "three";
 
 const PAL = {
-  coat: 0xb8312a,
-  coatDark: 0x8a2220,
-  coatLight: 0xd9574a,
+  coat: 0x825336,
+  coatDark: 0x5e3b2e,
+  coatLight: 0xcead81,
   shirt: 0xf1e3c4,
-  scarf: 0x1f9a8f,
-  scarfDark: 0x14746b,
+  scarf: 0xae4737,
+  scarfDark: 0x7e3029,
   skin: 0xe9b48c,
   skinRuddy: 0xd98c6c,
   hair: 0x5b3a22,
@@ -207,11 +207,11 @@ function solveLeg(L, hx, hy, ax, ay, footTilt = 0) {
 
 function buildArm(parent, side, burn) {
   const shoulder = group(parent, [0, 0.54, 0.33 * side], side > 0 ? "armNear" : "armFar");
-  add(shoulder, sphere(0.115), M.coat, [0, 0.01, 0], [0, 0, 0], [1, 0.95, 1]);
-  add(shoulder, capsule(0.088, 0.19), M.coat, [0, -0.15, 0]);
+  add(shoulder, sphere(0.115), M.shirt, [0, 0.01, 0], [0, 0, 0], [1, 0.95, 1]);
+  add(shoulder, capsule(0.088, 0.19), M.shirt, [0, -0.15, 0]);
   const elbow = group(shoulder, [0, -0.3, 0], "elbow");
-  add(elbow, sphere(0.084), M.coat);
-  add(elbow, new T.CylinderGeometry(0.078, 0.07, 0.2, 14), M.coat, [0, -0.1, 0]);
+  add(elbow, sphere(0.084), M.skin);
+  add(elbow, new T.CylinderGeometry(0.078, 0.07, 0.2, 14), M.skin, [0, -0.1, 0]);
   // Chunky turned-back cuff.
   add(elbow, cyl(0.1, 0.092, 0.075), M.coatLight, [0, -0.22, 0]);
   add(elbow, new T.TorusGeometry(0.098, 0.014, 6, 16), M.coatDark, [0, -0.185, 0], [Math.PI / 2, 0, 0]);

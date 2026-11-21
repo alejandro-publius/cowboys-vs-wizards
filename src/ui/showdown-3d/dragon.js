@@ -3,7 +3,7 @@
 import * as T from "three";
 
 const C = {
-  body: 0x77465f, // plum scales
+  body: 0x675177, // plum scales
   bodyDark: 0x50364f,
   belly: 0xd9cfae, // old bone
   plum: 0x4a2a4f, // wing supports, ridges
@@ -76,21 +76,22 @@ function paint(g, hex, lo = 0.6, hi = 1.12) {
   return g;
 }
 
-function makeMats() {
+function makeMats(captured) {
+  const fire = captured ? 0xffac38 : C.glow;
   const std = (o) => new T.MeshStandardMaterial({ vertexColors: true, color: 0xffffff, ...o });
   return {
     paint: std({ roughness: 0.85, metalness: 0 }),
     brass: std({ roughness: 0.38, metalness: 0.6 }),
     membrane: std({ roughness: 0.9, side: T.DoubleSide }),
     glow: new T.MeshStandardMaterial({
-      color: C.glow,
-      emissive: C.glow,
+      color: fire,
+      emissive: fire,
       emissiveIntensity: 1.4,
       roughness: 0.4,
     }),
     eye: new T.MeshStandardMaterial({
-      color: 0xc8ffb0,
-      emissive: C.glow,
+      color: captured ? 0xffedb0 : 0xc8ffb0,
+      emissive: fire,
       emissiveIntensity: 1.0,
       roughness: 0.3,
     }),
@@ -200,7 +201,7 @@ function makeWing(M, side) {
   return { pivot, fold, side };
 }
 
-function makeHead(M, glowMats) {
+function makeHead(M, glowMats, captured) {
   const head = new T.Group();
   const skull = new T.Group();
   skull.position.x = -0.2;
@@ -251,6 +252,21 @@ function makeHead(M, glowMats) {
     h1.rotation.set(s * -0.25, 0, -1.15);
     const h2 = mesh(hornB, M.paint, 0.22, 0.04, s * 0.2, skull);
     h2.rotation.set(s * -0.5, 0, -1.4);
+  }
+  if (captured) {
+    const knot = paint(rbox(0.21, 0.14, 0.19, 0.024), 0xc14c38);
+    mesh(knot, M.paint, 0.29, 0.24, 0.165, skull);
+    for (const side of [-1, 1]) {
+      const ribbon = mesh(
+        paint(rbox(0.14, 0.29, 0.044, 0.009), 0xc54c3d),
+        M.paint,
+        0.43,
+        0.14,
+        0.235 + side * 0.021,
+        skull,
+      );
+      ribbon.rotation.z = side * 0.35;
+    }
   }
   // upper teeth
   const tooth = paint(new T.ConeGeometry(0.022, 0.07, 5).rotateX(Math.PI), C.horn);
@@ -308,8 +324,8 @@ function makeHead(M, glowMats) {
 
 // ---------- assembly ----------
 
-export function makeDragon() {
-  const M = makeMats();
+export function makeDragon({ captured = false } = {}) {
+  const M = makeMats(captured);
   const glowMats = { glow: M.glow.clone(), eye: M.eye.clone() };
   const root = new T.Group();
   root.name = "GraveyardDragon";
@@ -321,6 +337,30 @@ export function makeDragon() {
   mesh(paint(rbox(0.98, 0.86, 0.86, 0.2), C.body), M.paint, -0.34, 0.05, 0, body);
   mesh(paint(rbox(0.86, 0.72, 0.76, 0.18), C.body), M.paint, 0.4, -0.02, 0, body);
   mesh(paint(rbox(1.2, 0.2, 0.6, 0.08), C.belly), M.paint, -0.1, -0.33, 0, body);
+  mesh(new T.BoxGeometry(0.73, 0.042, 0.305), glowMats.glow, -0.257, -0.432, 0, body);
+  if (captured) {
+    for (const side of [-1, 1]) {
+      const strap = mesh(
+        paint(rbox(0.14, 0.64, 0.06, 0.02), 0x704433),
+        M.paint,
+        -0.51,
+        0.03,
+        side * 0.453,
+        body,
+      );
+      strap.rotation.z = -0.48;
+      for (const y of [-0.16, 0.02, 0.2])
+        mesh(
+          paint(new T.BoxGeometry(0.065, 0.047, 0.027), 0xdca65e),
+          M.brass,
+          -0.51 + y * 0.51,
+          y,
+          side * 0.491,
+          body,
+        );
+    }
+    mesh(paint(new T.OctahedronGeometry(0.104), 0xf7c373), M.brass, -0.92, -0.19, 0.17, body);
+  }
   const chestPlate = mesh(paint(rbox(0.22, 0.62, 0.62, 0.08), C.belly), M.paint, -0.8, -0.04, 0, body);
   chestPlate.rotation.z = -0.15;
   // belly bands
@@ -383,7 +423,7 @@ export function makeDragon() {
     r.rotation.z = -0.4;
     r.scale.set(0.8, 0.8, 0.5);
   }
-  const { head, jaw, mouth } = makeHead(M, glowMats);
+  const { head, jaw, mouth } = makeHead(M, glowMats, captured);
   head.position.x = -0.4;
   n1.add(head);
 

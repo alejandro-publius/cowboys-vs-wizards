@@ -85,6 +85,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
       showOnly(screen);
       showdown.start(duel, seedFor(), {players, best});
     }});
+  diorama?.mountGallery(title, screen);
   play.addEventListener("click", toCamp);
   // Experiment for review (K-095, K-008): two recorded Dragon turns, opened from these optional Camp controls or
   // ?turn=dragon-c5 and ?turn=dragon-c5-70. Only ids allowlisted in showdown-turn.js open; it saves nothing.

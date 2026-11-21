@@ -13,11 +13,22 @@ On narrow screens the same controls flow below the 3D scene. If WebGL is
 unavailable, the normal board controls continue to work.
 
 The terrain and geometry carry forward the Boot Hill split-board work in
-`9ac122f`. Kiro CLI with Claude Opus 5.5 produced the original Western
-storefronts and drafted the public event-to-position adapter, which was
-revised against the engine. Our Castle's renderer and palette are carried
-over byte for byte. Sheriff, Dragon, Skeleton and Jack-o'-Lantern have
-miniatures. Other troops use faction tokens on their named slots.
+`9ac122f`. Our Castle's renderer and palette are carried over byte for byte.
+From the title or a match, open **Card gallery** to rotate each of Showdown's
+29 card subjects. The gallery also opens directly at `?gallery=1` and shows
+the matching subject, scene, and visual cue from
+[Fable's art direction](../../../prototypes/showdown/ART-DIRECTION.md).
+
+The miniatures power the gallery, hand portraits, occupied troop slots,
+revealed traps, spells, gear, and the active Location. The hand atlas is a
+six-column WebP of gallery renders in `TYPES` catalog order. Traps stay face
+down on the game board until Showdown reveals them.
+
+Kiro CLI with Claude Opus 5.5 built the original Western storefronts and
+drafted the public event-to-position adapter, which was revised against the
+engine. It also built the initial wizard and wraith miniatures and the
+spell, trap, gear and Location models, which were checked and refined
+against Fable's briefs.
 
 The preview is opt-in at build time. The standard and hosted builds keep
 the graybox presentation.

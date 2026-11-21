@@ -1,12 +1,13 @@
 import * as T from "three";
 import { BOARD_SIZE, TRAP_SLOTS } from "../../game/showdown/rules.js";
-import { cardOf } from "../../game/showdown/cards.js";
+import { cardOf, typeOf } from "../../game/showdown/cards.js";
 import { PixelRenderer } from "./graphics/pixel-renderer.js";
 import { makeBoard } from "./board.js";
 import { addLandmarks } from "./landmarks.js";
 import { eventPositions } from "./event-positions.js";
-import { makeSheriff } from "./sheriff.js";
-import { makeDragon } from "./dragon.js";
+import { makeCardModel } from "./card-models.js";
+import { portrait } from "./gallery.js";
+export { mountGallery } from "./gallery.js";
 import { COLORS, SIDES, zone } from "./layout.js";
 
 const FACEDOWN = 0x2a213b;
@@ -34,60 +35,26 @@ function cardPiece(parent, color, scale = 1) {
   mark.rotation.y = Math.PI / 4;
 }
 
-function skeleton(group) {
-  const bone = solid(0xddcfaa);
-  const shade = solid(0x595368);
-  mesh(group, "box", bone, [0, 1.16, 0], [0.43, 0.39, 0.36]);
-  mesh(group, "box", bone, [0.02, 0.958, 0.01], [0.29, 0.11, 0.31]);
-  mesh(group, "box", bone, [0, 0.68, -0.03], [0.13, 0.5, 0.16]);
-  for (const y of [0.6, 0.7, 0.8]) mesh(group, "box", bone, [0, y, 0.012], [0.44, 0.058, 0.25]);
-  for (const side of [-1, 1]) {
-    mesh(group, "box", shade, [side * 0.102, 1.194, 0.181], [0.098, 0.1, 0.035]);
-    const arm = mesh(group, "box", bone, [side * 0.284, 0.699, 0.03], [0.096, 0.39, 0.105]);
-    arm.rotation.z = side * 0.2;
-    mesh(group, "box", bone, [side * 0.132, 0.31, 0], [0.1, 0.39, 0.126]);
-  }
-}
-
-function jack(group) {
-  mesh(group, "gem", solid(0xde6e2e), [0, 0.61, 0], [0.98, 0.9, 0.96]);
-  mesh(group, "box", solid(0x5a7850), [0, 1.05, -0.02], [0.13, 0.22, 0.13]).rotation.z = 0.22;
-  const glow = flat(0xffcb64);
-  for (const side of [-1, 1])
-    mesh(group, "box", glow, [side * 0.166, 0.69, 0.21], [0.102, 0.114, 0.059]).rotation.z = side * 0.38;
-  mesh(group, "box", glow, [0, 0.535, 0.305], [0.19, 0.042, 0.042]);
-}
-
 function pawn(side, id) {
   const group = new T.Group();
   const { tile, line, dark, orb } = COLORS[side];
   mesh(group, "box", solid(dark), [0, 0.052, 0], [2.8, 0.105, 1.87]);
   mesh(group, "box", solid(tile), [0, 0.112, 0], [2.61, 0.025, 1.7]);
-  const miniature = new T.Group();
-  miniature.scale.setScalar(1.12);
+  const wide = [
+    "wizard-dragon",
+    "cowboy-captured-dragon",
+    "cowboy-mounted-billy",
+    "cowboy-covered-wagon",
+    "cowboy-gatling-crew",
+    "wizard-bone-wall",
+    "wizard-headless-horseman",
+  ].includes(typeOf(id));
+  const miniature = makeCardModel(id, { width: wide ? 3.23 : 2.65, height: wide ? 2.25 : 1.91, depth: 1.87 });
+  miniature.position.set(0, 0.146, -0.07);
   group.add(miniature);
-  const name = cardOf(id).name;
-  const isDragon = name === "Dragon" || name === "Captured Dragon";
-  const figure = name === "Sheriff" ? makeSheriff() : isDragon ? makeDragon() : null;
-  if (figure) {
-    figure.root.scale.setScalar(name === "Sheriff" ? 0.84 : 0.69);
-    figure.root.position.set(0, 0.145, -0.07);
-    figure.root.rotation.y = isDragon && side === "cowboy" ? Math.PI : 0;
-    miniature.add(figure.root);
-  } else if (name === "Skeleton") {
-    skeleton(miniature);
-  } else if (name === "Jack-o'-Lantern") {
-    jack(miniature);
-  } else {
-    // The actual card name and game values are displayed by the original control above this standee.
-    const badge = mesh(miniature, "badge", solid(tile), [0, 0.73, -0.06], [0.96, 0.15, 0.96]);
-    badge.rotation.x = Math.PI / 2;
-    const face = mesh(miniature, "badge", flat(line), [0, 0.73, 0.035], [0.67, 0.042, 0.67]);
-    face.rotation.x = Math.PI / 2;
-    const mark = mesh(miniature, "box", solid(dark), [0, 0.73, 0.074], [0.28, 0.3, 0.056]);
-    mark.rotation.z = Math.PI / 4;
-    mesh(miniature, "box", solid(dark), [0, 0.31, -0.055], [0.37, 0.38, 0.18]);
-  }
+  const gear = new T.Group();
+  group.add(gear);
+  let equipped = "";
   const pips = new T.Group();
   pips.position.set(0, 0.21, 0.76);
   group.add(pips);
@@ -106,8 +73,15 @@ function pawn(side, id) {
         pip.position.x = (i - (troop.health - 1) / 2) * 0.241;
       });
       cover.visible = troop.cover;
-      if (figure)
-        figure.pose(name === "Sheriff" ? { brace: troop.cover ? 1 : 0 } : { charge: troop.cover ? 0.6 : 0 });
+      if (troop.gear.join() !== equipped) {
+        equipped = troop.gear.join();
+        gear.clear();
+        troop.gear.forEach((id, i) => {
+          const object = makeCardModel(id, { width: 0.56, height: 0.53, depth: 0.47 });
+          object.position.set((i % 2 ? -1 : 1) * 0.98, 0.135, 0.41 - Math.floor(i / 2) * 0.32);
+          gear.add(object);
+        });
+      }
     },
   };
 }
@@ -137,6 +111,8 @@ function build(host, canvas) {
   scene.add(moves);
   const held = new Map();
   const labelLayer = host.querySelector(".sd-world-labels");
+  const locationGroup = new T.Group();
+  moves.add(locationGroup);
   const worldLabels = new Map();
   const sideMarks = new Map();
   const viewTarget = new T.Vector3(0, 0.64, -0.13);
@@ -151,6 +127,8 @@ function build(host, canvas) {
     epoch = 0,
     width = 0,
     height = 0;
+  let locationId = null;
+  let eventModel = null;
 
   function label(key, [x, y, z], word, active = true) {
     if (!worldLabels.has(key)) {
@@ -226,8 +204,16 @@ function build(host, canvas) {
       label(side + "traps", [x, 0.066, z + 0.74], "Traps " + s.trapCount + "/" + TRAP_SLOTS, s.trapCount > 0);
     }
     const location = view.location?.cardId;
-    const tile = pieceAt(null, "location");
-    tile.visible = Boolean(location);
+    if ((location ?? null) !== locationId) {
+      locationId = location ?? null;
+      locationGroup.clear();
+      if (locationId) {
+        const prop = makeCardModel(locationId, { width: 2.38, height: 1.41, depth: 1.58 });
+        prop.position.set(...zone(null, "location"));
+        prop.position.y = 0.17;
+        locationGroup.add(prop);
+      }
+    }
     label("location", [0, 0.08, 1.5], location ? cardOf(location).name : "Location", Boolean(location));
   }
 
@@ -264,6 +250,13 @@ function build(host, canvas) {
   function paint(next) {
     canvas.hidden = false;
     view = next;
+    for (const button of host.closest("#showdown").querySelectorAll("#sd-hand [data-card]")) {
+      if (button.querySelector(".sd-card-art")) continue;
+      const id = typeOf(button.dataset.card);
+      const art = portrait(id);
+      if (art) button.prepend(art);
+      button.classList.toggle("sd-captured-art", id.startsWith("cowboy-captured-"));
+    }
     for (const side of SIDES) {
       view.sides[side].board.forEach((troop, slot) => {
         const k = side + slot;
@@ -289,6 +282,8 @@ function build(host, canvas) {
   }
   function stop() {
     epoch++;
+    if (eventModel) moves.remove(eventModel);
+    eventModel = null;
     flash.visible = bolt.visible = false;
   }
   function clear() {
@@ -305,7 +300,8 @@ function build(host, canvas) {
     if (!steps.length) return draw();
     const start = performance.now();
     const selected = epoch;
-    const beat = 245;
+    const beat = 340;
+    let previous;
     function frame(now) {
       if (epoch !== selected) return;
       const elapsed = now - start;
@@ -324,6 +320,20 @@ function build(host, canvas) {
       pos(effect.to ?? effect.from, to);
       bolt.visible = Boolean(effect.to) && !from.equals(to);
       flash.visible = true;
+      if (effect !== previous) {
+        previous = effect;
+        if (eventModel) moves.remove(eventModel);
+        eventModel = null;
+        if (effect.cardId && (effect.kind === "trap" || effect.kind === "spell")) {
+          eventModel = makeCardModel(effect.cardId, { width: 2.05, height: 1.45, depth: 1.38 });
+          moves.add(eventModel);
+        }
+      }
+      if (eventModel) {
+        bolt.visible = flash.visible = false;
+        eventModel.position.copy(from).lerp(to, effect.kind === "trap" ? 0 : Math.min(1, (1 - fade) * 3));
+        eventModel.position.y = effect.kind === "trap" ? 0.22 : 0.64 + Math.sin(fade * Math.PI) * 0.23;
+      }
       bolt.material.color.setHex(effect.from.side === "wizard" ? 0xc1c3ff : 0xffd698);
       bolt.position.copy(from).lerp(to, 0.5);
       direction.copy(to).sub(from);
@@ -347,8 +357,10 @@ function disposePawn(group) {
     geometries = new Set();
   group.traverse((node) => {
     if (!node.isMesh) return;
-    materials.add(node.material);
-    if (!Object.values(meshes).includes(node.geometry)) geometries.add(node.geometry);
+    for (const material of [node.material].flat())
+      if (!material.userData.showdownShared) materials.add(material);
+    if (!node.geometry.userData.showdownShared && !Object.values(meshes).includes(node.geometry))
+      geometries.add(node.geometry);
   });
   materials.forEach((material) => material.dispose());
   geometries.forEach((geometry) => geometry.dispose());

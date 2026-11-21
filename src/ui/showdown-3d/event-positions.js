@@ -12,7 +12,7 @@ export function eventPositions(events, before, after) {
   let priorTarget = null;
   const out = [];
   const zone = (side, at, slot) => ({ side, at, slot });
-  const push = (kind, from, to = null) => out.push({ kind, from, to });
+  const push = (kind, from, to = null, cardId) => out.push({ kind, from, to, cardId });
   const find = (side, id) => {
     const slot = live[side].indexOf(id);
     if (slot >= 0) return { side, slot };
@@ -78,14 +78,14 @@ export function eventPositions(events, before, after) {
         break;
       case "spell": {
         const to = foe(e.target);
-        push(k, zone(s, "row"), to);
+        push(k, zone(s, "row"), to, e.cardId);
         if (e.left === 0) remove(to);
         break;
       }
       case "trap": {
         const from = zone(s, "trap", 0);
         const to = foe(e.target);
-        push(k, from, to);
+        push(k, from, to, e.cardId);
         traps[s] = Math.max(0, traps[s] - 1);
         if (e.left === 0) remove(to);
         break;

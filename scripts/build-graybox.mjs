@@ -24,9 +24,14 @@ const fixtureAt = process.argv.indexOf("--outrider-fixture");
 const fixture = fixtureAt >= 0 ? process.argv[fixtureAt + 1] : null;
 const outrider = await verifiedForBuild(fixture ? {dir: `${fixture}/decision`, receiptPath: `${fixture}/receipt.json`,
   curated: JSON.parse(await read(`${fixture}/curated.json`))} : {});
+const atlas = diorama ? await readFile(file("assets/cards/showdown-diorama.webp"), "base64").catch((error) => {
+  if (error.code === "ENOENT") return "";
+  throw error;
+}) : "";
 const options = {absWorkingDir: fileURLToPath(root), bundle: true, write: false, platform: "browser", target: "es2022", minify: true,
   define: {__CVW_GRAYBOX_BUILD__: JSON.stringify(label), __CVW_OUTRIDER__: JSON.stringify({cases: outrider.cases, camp: outrider.camp}),
-    __CVW_OUTRIDER_LEDGER__: JSON.stringify(outrider.ledger), __CVW_DIORAMA__: JSON.stringify(diorama)}};
+    __CVW_OUTRIDER_LEDGER__: JSON.stringify(outrider.ledger), __CVW_DIORAMA__: JSON.stringify(diorama),
+    __CVW_DIORAMA_ATLAS__: JSON.stringify(atlas)}};
 const [template, style, showdownStyle, boardStyle, boardLicense, bundle] = await Promise.all([
   read("src/ui/graybox.html"),
   read("src/ui/graybox.css"),
