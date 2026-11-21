@@ -44,6 +44,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   const showCowboyParts = () => { for (const el of hiddenForWizard) el.hidden = false; hiddenForWizard = []; };
   const toCamp = () => {
     showCowboyParts();
+    campRoot.removeAttribute("aria-labelledby"); // the landmark is "Camp" again (its aria-label)
     showOnly(campRoot);
     campaign.enter();
     camp.show();
@@ -58,7 +59,10 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     showOnly(campRoot);
     hiddenForWizard = [...hiddenForWizard, ...[...campRoot.children].filter((el) => el.id !== "camp-wizard" && !el.hidden)];
     for (const el of hiddenForWizard) el.hidden = true;
+    // One name for the direct page: the landmark takes its label from the visible "Wizard preview" heading.
+    campRoot.setAttribute("aria-labelledby", "wizard-direct-title");
     wizardCamp.show("direct");
+    wizardCamp.focus(null); // the open tile; Back from a duel then moves focus to the tile that started it
   };
   const builder = mountBuilder(builderRoot, {campaign});
   const showdown = mountShowdown(screen, {onHome: home, campaign, playtest, nextSeed: seedFor,

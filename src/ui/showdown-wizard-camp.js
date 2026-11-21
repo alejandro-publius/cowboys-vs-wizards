@@ -9,8 +9,8 @@ import {GRIT_CAP} from "../game/showdown/trail.js";
 import {pays} from "./showdown-screen.js";
 
 const TEMPLATE = `<summary>Wizard preview</summary>
-  <header id="wizard-direct" hidden><h1>Wizard preview</h1><button type="button" id="wizard-to-camp">Cowboy Camp</button></header>
-  <p class="sd-note">A preview: you play the Wizards against the Cowboy bot. Four duels with fixed rewards, then Open range. It has its own save in this browser and never changes your Cowboy career.</p>
+  <header id="wizard-direct" hidden><h1 id="wizard-direct-title">Wizard preview</h1><button type="button" id="wizard-to-camp">Cowboy Camp</button></header>
+  <p class="sd-note">You play the Wizards against the Cowboy bot: four duels with fixed rewards, then Open range. It has its own save in this browser and never changes your Cowboy career. Preview: these duels have not been tested with players.</p>
   <p id="wizard-storage" class="sd-note" role="status" hidden>This browser did not save the Wizard preview, so a reload will lose it.</p>
   <p id="wizard-next" role="status"></p>
   <ol id="wizard-track" class="sd-row"></ol>
@@ -35,11 +35,11 @@ export function mountWizardCamp(root, {preview, track, onDuel, onCowboyCamp, con
     $("wizard-storage").hidden = preview.saved();
     $("wizard-next").innerHTML = next
       ? `Next: <strong>${next.name}</strong>. Win it to put ${swaps(next.reward)} into your Wizard deck${progress.wins + 1 < track.length ? `, then ${track[progress.wins + 1].name} opens` : ", then Open range opens"}. ${next.lesson}${
-        grit ? ` Grit: your Base starts with ${5 + grit} orbs after your ${progress.losses > 1 ? "losses" : "loss"}.` : ""}`
-      : "You have won all four Wizard duels, and the Dragon is in your deck. Next: <strong>Open range, Wizard seat</strong>, your final deck against the full Cowboy deck played with a plan. It pays nothing; play it to test the deck you earned.";
+        grit ? ` Grit: your Base starts the rematch with ${5 + grit} orbs.` : ""}`
+      : "You have won all four Wizard duels, and the Dragon is in your deck. Next: <strong>Open range, Wizard seat</strong>, your final deck against the full Cowboy deck. No reward.";
     $("wizard-track").innerHTML = list.map((duel) => {
       const step = track[duel.index];
-      const note = !step ? (duel.state === "open" ? "Even match · pays nothing" : "Locked · after High Noon")
+      const note = !step ? (duel.state === "open" ? "No reward" : "Locked · after High Noon")
         : duel.state === "won" ? `Earned ${earned(step.reward)}` : duel.state === "locked" ? `Locked · win to earn ${earned(step.reward)}` : `Win to earn ${earned(step.reward)}`;
       return `<li><button type="button" class="sd-tile ${duel.state}" id="${tileId(duel.id)}" data-wizard-duel="${duel.id}"${duel.state === "open" ? "" : " disabled"}>
         <strong>${duel.state === "won" ? "✓ " : ""}${duel.name}</strong><span class="sd-note">${note}</span></button></li>`;
@@ -58,11 +58,11 @@ export function mountWizardCamp(root, {preview, track, onDuel, onCowboyCamp, con
     $("wizard-reset-note").textContent = "";
     render();
   }
-  // Focus after a preview duel: the tile that started it, or the next open one when that is now won.
+  // Focus after a preview duel: the tile that started it, or the next open one when that is now won (id null: the open one).
   function focus(id) {
     root.open = true;
     const usable = (selector) => root.querySelector(`${selector}:not(:disabled)`);
-    (usable(`#${tileId(id)}`) ?? usable("[data-wizard-duel]") ?? $("wizard-reset")).focus();
+    ((id && usable(`#${tileId(id)}`)) ?? usable("[data-wizard-duel]") ?? $("wizard-reset")).focus();
   }
 
   root.addEventListener("click", (event) => {
