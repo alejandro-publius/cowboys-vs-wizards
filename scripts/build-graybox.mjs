@@ -11,7 +11,8 @@ const read = (name) => readFile(file(name), "utf8");
 // /graybox/ alias). It is the same single offline file as the other builds: the graybox game is
 // Showdown only (issue 143 slice 3), so no lane chunk exists and none is fetched.
 const hosted = process.argv.includes("--hosted");
-const output = process.argv.includes("--outrider-fixture") ? ".artifacts/outrider-fixture/graybox.html"
+const diorama = process.argv.includes("--diorama") && !hosted;
+const output = diorama ? "dist/cowboys-vs-wizards-showdown-3d.html" : process.argv.includes("--outrider-fixture") ? ".artifacts/outrider-fixture/graybox.html"
   : hosted || process.argv.includes("--web") ? "dist/web/index.html" : "dist/cowboys-vs-wizards-board-duel.html";
 // K-087: the page's public build label (commit, "+local" if uncommitted), so the Camp's playtest report can say
 // which build each duel was finished under. Null without git: the report then says the build is not identified.
@@ -25,11 +26,13 @@ const outrider = await verifiedForBuild(fixture ? {dir: `${fixture}/decision`, r
   curated: JSON.parse(await read(`${fixture}/curated.json`))} : {});
 const options = {absWorkingDir: fileURLToPath(root), bundle: true, write: false, platform: "browser", target: "es2022", minify: true,
   define: {__CVW_GRAYBOX_BUILD__: JSON.stringify(label), __CVW_OUTRIDER__: JSON.stringify({cases: outrider.cases, camp: outrider.camp}),
-    __CVW_OUTRIDER_LEDGER__: JSON.stringify(outrider.ledger)}};
-const [template, style, showdownStyle, bundle] = await Promise.all([
+    __CVW_OUTRIDER_LEDGER__: JSON.stringify(outrider.ledger), __CVW_DIORAMA__: JSON.stringify(diorama)}};
+const [template, style, showdownStyle, boardStyle, boardLicense, bundle] = await Promise.all([
   read("src/ui/graybox.html"),
   read("src/ui/graybox.css"),
   read("src/ui/showdown.css"),
+  diorama ? read("src/ui/showdown-3d/board.css") : "",
+  diorama ? read("src/ui/showdown-3d/graphics/THREE-LICENSE") : "",
   build({...options, entryPoints: ["src/app.js"]}),
 ]);
 const script = bundle.outputFiles[0].text.replace(/<\/script/gi, "<\\/script");
@@ -41,5 +44,6 @@ await mkdir(new URL("./", file(output)), {recursive: true});
 await mkdir(file(".artifacts/outrider-ledger/"), {recursive: true});
 await writeFile(file(`.artifacts/outrider-ledger/${output.replace(/[/.]/g, "_")}.json`), `${JSON.stringify({build: label, gate: outrider.note, camp: outrider.camp,
   output, linked: outrider.cases.map((c) => c.id), ledger: outrider.ledger}, null, 2)}\n`);
-await writeFile(file(output), template.replace("@@STYLE@@", () => `${style}\n${showdownStyle}`).replace("@@SCRIPT@@", () => script));
-console.log(`Built ${output} (graybox, build ${label ?? "not identified"}); Outrider gate: ${outrider.note}`);
+await writeFile(file(output), template.replace("@@STYLE@@", () => `${style}\n${showdownStyle}\n${boardStyle}`)
+  .replace("@@SCRIPT@@", () => script + (boardLicense ? `\n/*\n${boardLicense}\n*/` : "")));
+console.log(`Built ${output} (${diorama ? "3D diorama" : "graybox"}, build ${label ?? "not identified"}); Outrider gate: ${outrider.note}`);

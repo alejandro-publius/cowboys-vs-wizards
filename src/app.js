@@ -9,10 +9,11 @@ const node = (id) => document.getElementById(id);
 Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"), import("./ui/showdown-builder.js"), import("./match/showdown-campaign.js"),
   import("./match/showdown-playtest.js"), import("./match/showdown-session.js"), import("./match/showdown-turn.js"),
   import("./match/showdown-outrider.js"), import("./ui/outrider-camp.js"), import("./match/showdown-practice.js"),
-  import("./match/showdown-wizard-campaign.js"), import("./ui/showdown-wizard-camp.js"), import("./match/showdown-earned.js")])
+  import("./match/showdown-wizard-campaign.js"), import("./ui/showdown-wizard-camp.js"), import("./match/showdown-earned.js"),
+  typeof __CVW_DIORAMA__ !== "undefined" && __CVW_DIORAMA__ ? import("./ui/showdown-3d/scene.js") : null])
   .then(([{mountShowdown, freshSeed}, {mountCamp}, {mountBuilder}, {createCampaign}, {createPlaytestLog, PAGE_BUILD}, {twoPlayers}, {turnDuel},
     {outriderTurn}, {VERIFIED, outriderControls}, {PRACTICE_SEEDS, practiceDuel, practiceFromQuery},
-    {createWizardPreview, wizardFromQuery, previewUnlocked, WIZARD_TRACK}, {mountWizardCamp}, {earnedControl, earnedDuel}]) => {
+    {createWizardPreview, wizardFromQuery, previewUnlocked, WIZARD_TRACK}, {mountWizardCamp}, {earnedControl, earnedDuel}, diorama]) => {
   const title = node("title-screen"), screen = node("showdown"), campRoot = node("showdown-camp"), builderRoot = node("showdown-builder"), play = node("menu-play");
   const seed = new URLSearchParams(location.search).get("seed");
   // ?seed fixes every deal started from the Camp and every later game of a match, so a scripted check replays the same duels.
@@ -65,7 +66,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     wizardCamp.focus(null); // the open tile; Back from a duel then moves focus to the tile that started it
   };
   const builder = mountBuilder(builderRoot, {campaign});
-  const showdown = mountShowdown(screen, {onHome: home, campaign, playtest, nextSeed: seedFor,
+  const showdown = mountShowdown(screen, {onHome: home, campaign, playtest, nextSeed: seedFor, mountBoard: diorama?.mountDiorama,
     // Between the games of a best of three with a side deck: the swap, then the next game.
     onSwap: (pool, deck, side, done) => {
       showOnly(builderRoot);

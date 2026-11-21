@@ -1,0 +1,138 @@
+#showdown.sd-diorama {
+  max-width: 1600px;
+  padding: clamp(0.65rem, 2vw, 1.45rem);
+}
+.sd-diorama #sd-field {
+  position: relative;
+  margin-block: 0.15rem 0.5rem;
+}
+.sd-world {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2;
+  background: #17243a;
+}
+.sd-world-labels {
+  display: none;
+}
+
+@media (min-width: 800px) {
+  .sd-diorama #sd-board,
+  .sd-world-labels {
+    position: absolute;
+    inset: 0;
+    display: block;
+  }
+  .sd-diorama #sd-board {
+    pointer-events: none;
+  }
+  .sd-world-labels {
+    pointer-events: none;
+  }
+  .sd-world-labels span {
+    position: absolute;
+    translate: -50% 0;
+    white-space: nowrap;
+    color: #f6e9d3;
+    font:
+      650 clamp(0.62rem, 0.9vw, 0.81rem) / 1.2 system-ui,
+      sans-serif;
+    text-shadow:
+      -1px -1px 0 #131c2c,
+      1px 1px 0 #131c2c,
+      0 2px 2px #121b2c;
+  }
+  .sd-world-labels .empty {
+    color: #d1c8bf;
+  }
+  .sd-diorama #sd-board .sd-side {
+    display: contents;
+  }
+  .sd-diorama #sd-board :is(.sd-base, .sd-slot) {
+    position: absolute;
+    translate: -50% -50%;
+    width: max-content;
+    min-width: 66px;
+    max-width: clamp(80px, 10vw, 139px);
+    min-height: 34px;
+    padding: 3px 7px;
+    line-height: 1.12;
+    font-size: clamp(0.66rem, 0.93vw, 0.875rem);
+    text-align: center;
+    pointer-events: auto;
+    border-radius: 3px;
+    border: 1px solid #a97658;
+    color: #faf3e9;
+    background: #362923ec;
+    box-shadow: 0 1px 0 #18141c;
+    opacity: 1;
+  }
+  .sd-diorama #sd-board :is(.sd-base, .sd-slot).wizard {
+    background: #2e2a42ee;
+    border-color: #8c7aa9;
+  }
+  .sd-diorama #sd-board .sd-base {
+    min-width: 93px;
+    max-width: clamp(106px, 12vw, 160px);
+  }
+  .sd-diorama #sd-board .sd-base > .sd-backs {
+    display: none;
+  }
+  .sd-diorama #sd-board :is(.sd-base, .sd-slot[data-frame]) .sd-note:not(.sd-good) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .sd-diorama
+    #sd-board
+    :is(.sd-base, .sd-slot[data-frame]):is(:hover, :focus-visible, .sd-pick, .sd-chosen)
+    > .sd-note {
+    position: static;
+    width: auto;
+    height: auto;
+    clip-path: none;
+    overflow: visible;
+  }
+  .sd-diorama #sd-board .sd-base .sd-note {
+    font-size: 0.68rem;
+    margin-top: 0.15rem;
+  }
+  .sd-diorama #sd-board [data-slot]:not([data-frame]) {
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+  }
+  .sd-diorama #sd-board [data-slot]:not([data-frame]) .sd-note {
+    color: #f0e4d5;
+    text-shadow: 0 1px 2px #171421;
+  }
+  .sd-diorama #sd-board .sd-slot[data-frame] .sd-type,
+  .sd-diorama #sd-board .sd-slot[data-frame] .sd-key {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .sd-diorama #sd-board .sd-slot .sd-note {
+    font-size: 0.65rem;
+    margin-top: 2px;
+  }
+  .sd-diorama #sd-board .sd-slot .sd-note:not(.sd-good) {
+    color: #f0e4d5;
+  }
+  .sd-diorama #sd-board :is(.sd-slot, .sd-base).sd-can {
+    border-color: #a9e0a7;
+    box-shadow: 0 0 0 1px #223030;
+    z-index: 1;
+  }
+  .sd-diorama #sd-board :is(.sd-chosen, .sd-pick, :focus-visible) {
+    z-index: 2;
+  }
+  .sd-diorama #sd-board :is(.sd-slot, .sd-base):hover {
+    z-index: 3;
+  }
+}

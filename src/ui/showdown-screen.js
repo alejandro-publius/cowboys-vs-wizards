@@ -52,7 +52,7 @@ const TEMPLATE = `
   <p id="sd-cue" aria-hidden="true"></p>
   <div id="sd-result"></div>
   <p id="sd-location" class="sd-note"></p>
-  <section id="sd-board" aria-label="Board"></section>
+  <div id="sd-field"><section id="sd-board" aria-label="Board"></section></div>
   <p id="sd-prompt"></p>
   <div class="sd-row" id="sd-actions">
     <button type="button" id="sd-end">End turn</button>
@@ -81,13 +81,14 @@ const FACTION = {cowboy: "Cowboy", wizard: "Wizard"};
 // nextSeed() deals each later game (the next game of a match, a repeat, two players again); a Rematch
 // after a loss is a fresh deal. onSwap(pool, deck, side, done) opens the between-games side-deck swap.
 // cueOptions go to createCuePlayer (showdown-cues.js); only a check sets them, to shorten the step.
-export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nextSeed = freshSeed, onSwap}) {
+export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nextSeed = freshSeed, onSwap, mountBoard}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
   let session, duel, seed, lines, latest, pick, outcome, picked, run, started;
   // seat: the solo player's side. camp: the campaign this duel settles through, or null (nothing is settled).
   let players = 1, match = null, curtain = false, seat = "cowboy", camp = campaign;
   const cues = createCuePlayer(root, cueOptions);
+  const boardPresentation = mountBoard?.(root);
   const solo = () => players === 1;
   const viewer = () => session.viewer();
   // Solo wording speaks to the player; two players are named by faction.
@@ -127,6 +128,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     run = newRunId();
     started = Date.now();
     cues.clear();
+    boardPresentation?.clear();
     const batch = record(session.opening, null);
     finish();
     render();
@@ -136,12 +138,14 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
   function act(action) {
     pick = null;
     const [before, seat] = [session.view(), viewer()];
-    const batch = record(session.act(action), before);
+    const events = session.act(action);
+    const batch = record(events, before);
     finish();
     // Two players: hide the table while the screen changes hands.
     curtain = !solo() && !session.view().result && viewer() !== seat;
     render();
     cues.play(batch);
+    if (!curtain) boardPresentation?.animate(events, before, session.view());
   }
   // A game counts once it ends; a solo duel is settled exactly once, when it (or its match) is decided.
   function finish() {
@@ -273,6 +277,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     $("sd-curtain").hidden = !curtain;
     $("sd-table").hidden = curtain;
     if (curtain) {
+      boardPresentation?.clear();
       for (const id of ["sd-board", "sd-hand", "sd-result", "sd-prompt", "sd-feedback", "sd-status", "sd-location"]) $(id).innerHTML = "";
       $("sd-curtain-text").textContent = `Pass the screen to the ${FACTION[session.view().active]} player.`;
       if (rises && !root.hidden) $("sd-ready").focus();
@@ -374,6 +379,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     $("sd-keywords").innerHTML = Object.entries(KEYWORDS).filter(([key]) => inPlay.has(key)).map(([, [word, rule]]) => `<li><strong>${word}.</strong> ${rule}</li>`).join("")
       || "<li>No keywords in this duel.</li>";
     cues.paint();
+    boardPresentation?.paint(view);
     if (lost && !root.hidden) usable("#sd-hand button", "#sd-board [data-own]", "#sd-end", "#sd-result button")?.focus();
   }
 
@@ -423,7 +429,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
       $("sd-camp")?.focus();
     }
     else if (b.id === "sd-again" && outcome) again();
-    else if (b.id === "sd-home" || b.id === "sd-camp") { cues.clear(); onHome(); }
+    else if (b.id === "sd-home" || b.id === "sd-camp") { cues.clear(); boardPresentation?.clear(); onHome(); }
     if (pickStarted(before)) origin = key;
     if (keyboard) refocus(key, before);
   });
