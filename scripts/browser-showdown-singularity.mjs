@@ -28,7 +28,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const sha256 = (data) => createHash("sha256").update(data).digest("hex");
 const git = (...args) => { try { return execFileSync("git", ["-C", root, ...args], {encoding: "utf8", stdio: ["ignore", "pipe", "ignore"]}).trim(); } catch { return null; } };
 
-const [htmlArg, outArg, reelCheck] = process.argv.slice(2);
+const [htmlArg, outArg, scope] = process.argv.slice(2);
 if (!htmlArg || !outArg) {
   console.error("usage: node scripts/browser-showdown-singularity.mjs <built diorama HTML> <out directory>");
   process.exit(2);
@@ -314,7 +314,7 @@ try {
   check("reduced motion: graveyard 1, Skeleton absent, Dragon 4",
     rgClicked.at(-1)?.wizardGrave === 1 && !rgClicked.at(-1)?.wizardNames.includes(skeleton) && JSON.stringify(rgClicked.at(-1)?.wizardOrbs) === "[4]",
     rgClicked.at(-1));
-  if (reelCheck === "--check-reel-stop") {
+  if (scope === "--check-reel-stop" || scope === "--check-maintenance") {
     await send("Emulation.setEmulatedMedia", {features: [{name: "prefers-reduced-motion", value: "no-preference"}]});
     await wait('!matchMedia("(prefers-reduced-motion: reduce)").matches');
     await click(".sd-gallery-reel");
@@ -333,6 +333,31 @@ try {
       await wait('document.querySelectorAll(".sd-gallery-moves [data-attack-mode]").length === 2');
       check("the gallery stays usable after stopping the reel", true);
     }
+  }
+  if (scope === "--check-maintenance") {
+    await click(".sd-gallery-close");
+    await wait('!document.querySelector("dialog.sd-gallery").open');
+    await click("#menu-play");
+    await click('[data-camp-destination="camp-open-title"]');
+    await click('#camp-open [data-two="1"]');
+    await wait('!document.querySelector("#showdown").hidden');
+    await click("#sd-home");
+    const returned = await evaluate(`({
+      room: document.querySelector(".outpost-range").open,
+      focused: document.activeElement?.dataset.two
+    })`);
+    check("returning from a local match restores its Camp room and focused control",
+      returned.room && returned.focused === "1", returned);
+    if (returned.room) await click(".outpost-range > header button");
+    await click("#camp-home");
+    await click("#menu-play");
+    const entered = await evaluate(`({
+      openRoom: document.querySelector("dialog.camp-outpost[open]")?.id ?? null,
+      focused: document.activeElement?.id ?? "",
+      camp: !document.querySelector("#showdown-camp").hidden
+    })`);
+    check("opening Camp from the title clears the previous duel room",
+      entered.camp && entered.openRoom === null && entered.focused === "camp-start-trail", entered);
   }
 } catch (e) {
   fatal = e.message.split("\n")[0];

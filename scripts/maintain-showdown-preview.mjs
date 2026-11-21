@@ -15,16 +15,16 @@ const id = randomUUID();
 const run = path.join(preview, "runs", id);
 const checkout = path.join(root, ".worktrees", "showdown-preview-" + id);
 const html = "dist/cowboys-vs-wizards-showdown-3d.html";
-const repairFile = "src/ui/showdown-3d/gallery.js";
-const repairCheck = "stopping the troop reel clears the active replay";
+const spec = ".kiro/specs/showdown-preview-maintenance";
+const worktrees = [];
 const node = process.execPath;
 const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const git = async (args, cwd = root) => (await exec("git", args, {cwd, timeout: 30000})).stdout.trim();
 
-async function command(executable, args, label, timeout = 120000) {
+async function command(executable, args, label, timeout = 120000, cwd = checkout) {
   let output, status = 0;
   try {
-    output = await exec(executable, args, {cwd: checkout, timeout, maxBuffer: 4 * 1024 * 1024});
+    output = await exec(executable, args, {cwd, timeout, maxBuffer: 4 * 1024 * 1024});
   } catch (error) {
     output = error;
     status = typeof error.code === "number" ? error.code : -1;
@@ -64,56 +64,96 @@ async function sourceFor(head, published) {
   throw new Error("The preview and the checkout have diverged. Integrate the accepted preview before updating.");
 }
 
-async function verify(revision, label) {
+async function repairsFrom(candidate) {
+  const tasks = JSON.parse(await readFile(path.join(candidate, spec, "repairs.json"), "utf8"));
+  const wording = await readFile(path.join(candidate, spec, "requirements.md"), "utf8");
+  const requirements = new Map([...wording.matchAll(/^- \*\*(PM\d+)\.\*\* (.+)$/gm)]
+    .map(([, id, statement]) => [id, statement]));
+  for (const field of ["id", "requirement", "check", "file", "agent"]) {
+    if (new Set(tasks.map((task) => task[field])).size !== tasks.length) {
+      throw new Error("Repair cases must use distinct " + field + " values.");
+    }
+  }
+  return new Map(tasks.map((task) => {
+    const statement = requirements.get(task.requirement);
+    if (!statement || !/^[a-z0-9-]+$/.test(task.id) || !/^[a-z0-9-]+$/.test(task.agent) ||
+      !/^src(?:\/[a-z0-9-]+)+\.js$/.test(task.file) || !task.check || !task.commit) {
+      throw new Error("Invalid preview repair case: " + task.id);
+    }
+    return [task.check, {...task, statement}];
+  }));
+}
+
+async function addCheckout(directory, revision, dependencies = false) {
+  await git(["worktree", "add", "--detach", directory, revision]);
+  worktrees.push(directory);
+  if (!dependencies) return;
+  await mkdir(path.join(directory, "node_modules"));
+  for (const dependency of ["esbuild", "three"]) {
+    await symlink(path.join(root, "node_modules", dependency), path.join(directory, "node_modules", dependency), "dir");
+  }
+}
+
+async function verify(revision, label, tasks) {
   const nodeStatus = await command(node, ["--test", "tests/match/showdown-3d-presentation.test.js"], label + "-node");
   if (nodeStatus) throw new Error(label + ": Showdown presentation tests failed.");
   const buildStatus = await command(node, ["scripts/build-graybox.mjs", "--diorama"], label + "-build");
   if (buildStatus) throw new Error(label + ": the illustrated build failed.");
   const folder = path.join(run, label);
   const browserStatus = await command(node, ["scripts/browser-showdown-singularity.mjs", html, folder,
-    "--check-reel-stop"], label + "-chrome");
+    "--check-maintenance"], label + "-chrome");
   const receipt = JSON.parse(await readFile(path.join(folder, "singularity.json"), "utf8"));
   const sha256 = hash(await readFile(path.join(checkout, html)));
   if (receipt.schema !== "showdown-singularity-receipt/1" || receipt.revision !== revision ||
     receipt.page.sha256 !== sha256 || !receipt.page.buildLabelInHtml) {
     throw new Error(label + ": the browser check examined a different build.");
   }
-  if (receipt.pass && browserStatus === 0) return {pass: true, sha256, count: receipt.checks.length};
-  const failure = receipt.checks.filter((check) => !check.pass);
-  if (browserStatus === 1 && failure.length === 1 && failure[0].name === repairCheck) {
-    return {pass: false, check: failure[0].name, observed: failure[0].detail};
+  for (const name of tasks.keys()) {
+    if (receipt.checks.filter((check) => check.name === name).length !== 1) {
+      throw new Error(label + ": exactly one browser check must run for " + name);
+    }
   }
-  throw new Error(label + ": Chrome reported an issue outside this repair scope.");
+  const failures = receipt.checks.filter((check) => !check.pass);
+  if (receipt.pass && browserStatus === 0 && !failures.length) {
+    return {pass: true, sha256, count: receipt.checks.length};
+  }
+  if (browserStatus !== 1 || !failures.length || failures.some((check) => !tasks.has(check.name))) {
+    throw new Error(label + ": Chrome reported an issue outside the declared repair cases.");
+  }
+  return {pass: false, failures};
 }
 
-async function repair(base, failure) {
+async function repair(base, task, failure) {
+  const directory = checkout + "-" + task.id;
+  await addCheckout(directory, base);
   const prompt = [
-    "Fix this reproduced issue in the current Showdown gallery.",
-    "While Watch all troops is playing a troop attack, clicking Stop reel must clear the active board replay immediately and restore the selected card model.",
-    "The gallery must still open both Singularity preview buttons afterward.",
-    "Use the existing helpers in src/ui/showdown-3d/gallery.js, the only file this task may write.",
-    "Do not change the artwork, combat or test files. Do not commit.",
-    "Observed by the browser: " + JSON.stringify(failure.observed),
+    "Repair " + task.requirement + " in the current Showdown build.",
+    task.statement,
+    "You may edit only " + task.file + ". Do not change the spec, tests, game rules or art. Do not commit.",
+    "Browser check: " + failure.name,
+    "Observed: " + JSON.stringify(failure.detail),
   ].join("\n");
   const status = await command(process.env.KIRO_PREVIEW_CLI ?? "kiro-cli", ["chat", "--v3",
-    "--no-interactive", "--trust-workspace", "--agent", "showdown-preview-maintainer",
-    "--model", "claude-sonnet-5.5", "--trust-tools", "fs_read,grep,glob,list_directory", prompt], "kiro", 180000);
-  if (status) throw new Error("Kiro stopped before proposing a repair.");
-  const touched = await git(["status", "--porcelain", "--untracked-files=all"], checkout);
-  if (await git(["rev-parse", "HEAD"], checkout) !== base || touched !== "M " + repairFile) {
-    throw new Error("Kiro did not produce exactly one working-tree edit to the gallery.");
+    "--no-interactive", "--trust-workspace", "--agent", task.agent,
+    "--model", "claude-sonnet-5.5", "--trust-tools", "fs_read,grep,glob,list_directory", prompt],
+    "kiro-" + task.id, 180000, directory);
+  if (status) throw new Error(task.requirement + ": Kiro stopped before proposing a repair.");
+  const touched = await git(["status", "--porcelain", "--untracked-files=all"], directory);
+  if (await git(["rev-parse", "HEAD"], directory) !== base || touched !== "M " + task.file) {
+    throw new Error(task.requirement + ": Kiro did not produce exactly one edit to " + task.file);
   }
-  await git(["diff", "--check"], checkout);
-  await git(["add", "--", repairFile], checkout);
-  await git(["-c", "commit.gpgsign=false", "commit", "-m", "Stop the active Showdown gallery reel"], checkout);
-  return git(["rev-parse", "HEAD"], checkout);
+  await git(["diff", "--check"], directory);
+  await git(["add", "--", task.file], directory);
+  await git(["-c", "commit.gpgsign=false", "commit", "-m", task.commit], directory);
+  return git(["rev-parse", "HEAD"], directory);
 }
 
-async function promote(revision, verified, repaired) {
+async function promote(revision, verified, repairedCases) {
   // Copy into a new directory first. The symlink swap is the only operation a player sees.
   const directory = path.join(preview, "builds", revision + "-" + verified.sha256.slice(0, 12));
   await mkdir(directory, {recursive: true});
-  const manifest = {revision, sha256: verified.sha256, browserChecks: verified.count, repaired};
+  const manifest = {revision, sha256: verified.sha256, browserChecks: verified.count,
+    repaired: repairedCases.length > 0, repairedCases};
   await copyFile(path.join(checkout, html), path.join(directory, "index.html"));
   if (hash(await readFile(path.join(directory, "index.html"))) !== manifest.sha256) {
     throw new Error("The preview copy did not match the verified build.");
@@ -129,42 +169,43 @@ async function promote(revision, verified, repaired) {
 
 await mkdir(preview, {recursive: true});
 await mkdir(lock);
-let added = false;
 try {
   await mkdir(run, {recursive: true});
   const published = await readCurrent();
   const head = await git(["rev-parse", "HEAD"]);
   const base = await sourceFor(head, published);
   await mkdir(path.dirname(checkout), {recursive: true});
-  await git(["worktree", "add", "--detach", checkout, base]);
-  added = true;
-  await mkdir(path.join(checkout, "node_modules"));
-  for (const dependency of ["esbuild", "three"]) {
-    await symlink(path.join(root, "node_modules", dependency), path.join(checkout, "node_modules", dependency), "dir");
-  }
+  await addCheckout(checkout, base, true);
+  const tasks = await repairsFrom(checkout);
   let revision = base;
-  let outcome = await verify(base, "baseline");
-  const repaired = !outcome.pass;
-  if (repaired) {
-    console.log("Detected in Chrome: " + outcome.check);
-    revision = await repair(base, outcome);
-    outcome = await verify(revision, "candidate");
-    if (!outcome.pass) throw new Error("The candidate still fails the original reproduction.");
+  let outcome = await verify(base, "baseline", tasks);
+  const repairedCases = [];
+  if (!outcome.pass) {
+    const failing = outcome.failures.map((failure) => ({failure, task: tasks.get(failure.name)}));
+    console.log("Routing " + failing.map(({task}) => task.requirement).join(", ") + " to Kiro.");
+    const repairs = await Promise.allSettled(failing.map(({task, failure}) => repair(base, task, failure)));
+    const errors = repairs.filter((result) => result.status === "rejected");
+    if (errors.length) throw new Error(errors.map(({reason}) => reason.message).join("\n"));
+    for (const [index, result] of repairs.entries()) {
+      await git(["-c", "commit.gpgsign=false", "cherry-pick", result.value], checkout);
+      repairedCases.push(failing[index].task.requirement);
+    }
+    revision = await git(["rev-parse", "HEAD"], checkout);
+    outcome = await verify(revision, "candidate", tasks);
+    if (!outcome.pass) throw new Error("The combined candidate still fails a declared check.");
   }
   if (published?.revision === revision && published.sha256 === outcome.sha256) {
     console.log(JSON.stringify({status: "current", ...published}));
   } else {
-    console.log(JSON.stringify({status: "updated", ...await promote(revision, outcome, repaired)}));
+    console.log(JSON.stringify({status: "updated", ...await promote(revision, outcome, repairedCases)}));
   }
-  try {
-    await git(["worktree", "remove", checkout]);
-    added = false;
-  } catch {
-    console.error("Preview is ready. Checkout retained at " + path.relative(root, checkout));
+  const cleanup = await Promise.allSettled(worktrees.map((directory) => git(["worktree", "remove", directory])));
+  for (const [index, result] of cleanup.entries()) {
+    if (result.status === "rejected") console.error("Checkout retained at " + path.relative(root, worktrees[index]));
   }
 } catch (error) {
   console.error(error.message);
-  if (added) console.error("Candidate retained at " + path.relative(root, checkout));
+  for (const directory of worktrees) console.error("Candidate retained at " + path.relative(root, directory));
   console.error("Run output: " + path.relative(root, run));
   process.exitCode = 1;
 } finally {

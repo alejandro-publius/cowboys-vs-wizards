@@ -1,0 +1,15 @@
+{
+  "name": "showdown-camp-maintainer",
+  "description": "Repair a reproduced issue in the Showdown entry and Camp navigation.",
+  "tools": ["read", "write"],
+  "permissions": {
+    "rules": [
+      {
+        "capability": "fs_write",
+        "match": ["src/app.js"],
+        "effect": "allow"
+      }
+    ]
+  },
+  "prompt": "Make the assigned Camp navigation repair in src/app.js. Keep the existing return-from-duel focus behavior, keep artwork and game rules as supplied and reuse the existing navigation functions. The preview runner owns tests, commits and release promotion."
+}
