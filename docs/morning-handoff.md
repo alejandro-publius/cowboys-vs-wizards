@@ -1,17 +1,40 @@
 # Cowboys vs. Wizards morning handoff
 
-[Play the public release](https://alejandro-publius.github.io/cowboys-vs-wizards/) or open the local build with `?seed=0`. [Build instructions](../README.md#play) · [Release verification](evidence/kiro-submission-preflight.md#live-release)
+[Play the public release](https://alejandro-publius.github.io/cowboys-vs-wizards/). The site root is **Showdown**: Play opens the Camp. [Build instructions](../README.md#play) · [Current status and gates](design/release-line.md#current-status-november-20-supersedes-the-november-19-1015-pm-handoff)
+
+## Showdown to film (current)
+
+Updated November 20, 2026 (America/Los_Angeles) by Kiro CLI worker `judges` from `main` at `ea183ee`. The [judge demo script](submission/judge-demo-script.md#sequence) has the full sequence, captions and the evidence matrix. Nothing has been uploaded.
+
+1. **Reuse the private cut for 0:00–1:21.** `judge-media/Showdown_Dragon_Decision.mp4` (85.367 s, SHA-256 `cd7353bf…7883`) already shows the title, Play, Camp, both Dragon deals and the Ledger opening. Do not recreate it.
+2. **Capture about 15 seconds on the public game.** Play → Camp → **Sheriff's Ledger** → hold on **Night Shift review** ("cowboy-sheriff health 3 → 4: rejected …"). Note the commit from `build.json`.
+3. **Capture about 25 seconds in Kiro.** Show the saved run `wf_0756c413da3e189f` with its three completed steps and the rejected verdict. If the run view is unavailable, show its [receipt](evidence/night-shift-native-showdown.md#native-run) and caption it as a receipt.
+4. **Close for about 15 seconds** on the caption in the script. The shares on screen (57.1% and 59.4%) are outside Fable's approved 45–55% band. [PR 170](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/170) waits for Alex's merge gate on or after Monday, November 23. Results for PR 181 are pending the score worker. Leave both out of the video.
+
+To confirm the game route on a local build before filming (rerun on `ea183ee`: 29/29 and 12/12):
+
+```sh
+npm run build
+node scripts/browser-showdown-turn-check.mjs dist/cowboys-vs-wizards-board-duel.html
+node scripts/browser-ledger-check.mjs dist/cowboys-vs-wizards-board-duel.html
+```
+
+Owner only: voice, the two captures, editing, the YouTube upload and the Devpost form.
+
+## Earlier lane duel, 3D build (historical)
+
+Everything below films the retired three-lane duel in the earlier illustrated build at [`/3d/`](https://alejandro-publius.github.io/cowboys-vs-wizards/3d/). It is kept for that build and its existing links. It is not the December 4 fight. Its local checks:
 
 ```sh
 node scripts/verify-duel.mjs
 node scripts/verify-duel.mjs --browser
 ```
 
-The first command checks game rules, the match UI and assets. The second also builds and replays the duel in Chrome. Open the saved `orb-duel-replay` Workflow in Kiro when you want the judge-facing run and transcript. The [Kiro write-up](kiro-brag-sheet.md) links each claim to working code or evidence.
+The first command checks game rules, the match UI and assets. The second also builds and replays the duel in Chrome. Open the saved `orb-duel-replay` Workflow in Kiro when you want the judge-facing run and transcript. The [Kiro write-up](kiro-brag-sheet.md) links each claim to working code or evidence. [Release verification](evidence/kiro-submission-preflight.md#live-release)
 
 ## The duel to film
 
-Capture the verified route from the project root.
+*Lane duel, `/3d/` build only.* Capture the verified route from the project root.
 
 ```sh
 npm run build:art
@@ -21,7 +44,7 @@ node scripts/browser-match-check.mjs --showcase --summary
 The Chrome run saves the mounted summon, center-lane faceoff and clash result
 with a build-hash receipt in `.artifacts/kiro/showcase/`.
 
-Open the built game with `?seed=60` appended. Lanes are numbered left to right. These inputs were replayed in Chrome.
+Open the built 3D game with `?seed=60` appended. Lanes are numbered left to right. These inputs were replayed in Chrome.
 
 | Round | Cowboy action |
 | --- | --- |
@@ -34,6 +57,8 @@ Open the built game with `?seed=60` appended. Lanes are numbered left to right. 
 Mounted Billy enters with five life orbs. In the center-lane clash he still attacks, taking the Dragon from five orbs to two, and is then removed. The standalone exchange is the second camera shot for the Wizard's cast.
 
 ## Direction for the next pass
+
+*Historical, lane-era direction, kept unchanged. Its Costume Contest, opening-holdout and "existing Devpost submission" notes predate the Showdown choice. The current owner fields are in the [Devpost packet](submission/devpost-packet.md#required-form-fields-and-owner-inputs-still-open).*
 
 Make the central lane clash the payoff of a short haunted-Western duel. Open on the illustrated hand and a legal summon. Follow the card onto the board. Show the blue attack cue, the orb loss and the defeated card going into the graveyard. Capture the two opponents at board scale and in one close-up. This gives the Costume Contest entry a visual story that also shows the rules.
 
