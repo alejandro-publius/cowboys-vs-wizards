@@ -122,7 +122,7 @@ export function createWizardPreview(storage) {
     const wizard = wizardDeck(played) ? {...played} : deck();
     if (id === OPEN_RANGE_ID) {
       return done() ? {id, kind: "wizard", seat: "wizard", preview: true, name: "Open range, Wizard seat", level: 2, reward: [],
-        lesson: "An even match with your whole posse of the dead against the full Cowboy deck. The Cowboys plan every turn. It pays nothing.",
+        lesson: "Play your earned Wizard deck against the full Cowboy deck. The Cowboys plan every turn. It pays nothing.",
         options: {decks: {wizard, cowboy: {...DECKS.cowboy}}}} : null;
     }
     const index = save.wins;
