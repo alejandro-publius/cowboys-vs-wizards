@@ -15,8 +15,8 @@
 .sd-pick { outline: 2px solid #fff; } .sd-can { border-color: #8fd18f; } .sd-chosen { outline: 2px solid var(--cowboy); }
 .sd-note { display: block; font-size: .82rem; color: var(--muted); margin-top: .2rem; }
 .sd-warn { color: #f0a08a; } .sd-good { color: #9fe09f; }
-.sd-type { display: block; font-size: .78rem; letter-spacing: .03em; color: var(--muted); }
-.sd-key { display: inline-block; font-size: .78rem; border: 1px solid var(--line); border-radius: 4px; padding: 0 .3rem; }
+.sd-type { display: block; font-size: .8rem; letter-spacing: .03em; color: var(--muted); }
+.sd-key { display: inline-block; font-size: .8rem; border: 1px solid var(--line); border-radius: 4px; padding: 0 .3rem; }
 .sd-result { font-size: 1.2rem; }
 .sd-backs { display: flex; gap: 2px; margin-top: .2rem; }
 .sd-backs .card-back { width: 14px; height: 20px; border: 1px solid var(--line); border-radius: 2px; }
@@ -28,7 +28,43 @@
 /* Gear and locations by their border, as in the reference screen. */
 #showdown [data-frame=gear] { border-style: dotted; border-width: 3px; }
 #showdown [data-frame=location] { border-width: 1px 1px 5px; }
-@media (max-width: 40rem) { .sd-side { grid-template-columns: 1fr 1fr; } }
+/* Boot Hill board pass (../board-design.md): each seat's zone rail (.sd-zone-rail, cells [data-zone=deck|hand-count|traps|
+   graveyard]) is one full-width row of equal 44 px cells, whether it sits inside its .sd-side or beside it in #sd-board.
+   No `order` anywhere: the DOM order the screen writes is the visual and Tab order. Empty troop slots stay compact. */
+#sd-board > #sd-location { padding: .45rem .6rem; border: 1px solid var(--line); border-width: 1px 1px 5px; border-radius: 4px; background: var(--panel); color: inherit; }
+.sd-base, .sd-slot { min-height: 6.5rem; }
+#sd-actions button, #showdown > header button { min-height: 44px; }
+.sd-slot:not([data-frame]) { display: grid; place-items: center; text-align: center; }
+.sd-zone-rail { grid-column: 1 / -1; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: .35rem; margin: 0; padding: 0; list-style: none; }
+.sd-zone-rail [data-zone] { min-width: 0; min-height: 44px; margin: 0; padding: .3rem .45rem; border: 1px solid var(--line); border-radius: 4px; font-size: .85rem; line-height: 1.25; text-align: left; overflow: hidden; overflow-wrap: anywhere; }
+.sd-zone-rail [data-zone] > * { min-width: 0; }
+.sd-zone-rail button[data-zone], .sd-zone-rail [data-zone] button { width: 100%; min-height: 44px; }
+.sd-zone-rail [data-zone] strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sd-zone-rail [data-zone=graveyard]:not(button) { border-style: dashed; color: var(--muted); }
+.sd-zone-rail .sd-backs { flex-wrap: wrap; }
+.sd-zone-rail[data-zone-side=wizard] strong { color: var(--wizard); } .sd-zone-rail[data-zone-side=cowboy] strong { color: var(--cowboy); }
+/* One-line move ticker above the hand; it keeps its height when empty so the hand does not jump. */
+#sd-zone-move { min-height: 1.4rem; margin: 0; font-size: .9rem; overflow-wrap: anywhere; }
+/* Boot Hill sheet: a native dialog docked to the bottom edge; long piles scroll inside it, never the page sideways. */
+#sd-graveyard-sheet { position: fixed; inset: auto 0 0; width: min(100%, 40rem); max-width: 100%; max-height: min(75vh, 36rem); margin: 0 auto; padding: .75rem; overflow: auto; color: inherit; background: var(--panel); border: 1px solid var(--line); border-bottom: 0; border-radius: 8px 8px 0 0; }
+#sd-graveyard-sheet::backdrop { background: rgba(0, 0, 0, .55); }
+#sd-graveyard-sheet ol, #sd-graveyard-sheet ul { display: grid; gap: .35rem; margin: .5rem 0 0; padding: 0; list-style: none; }
+#sd-graveyard-sheet [data-graveyard-card] { width: 100%; min-height: 44px; text-align: left; overflow-wrap: anywhere; }
+#sd-graveyard-sheet [data-graveyard-close] { min-width: 44px; min-height: 44px; }
+#sd-graveyard-sheet [data-raise-target] { border-color: var(--wizard); }
+@media (max-width: 40rem) {
+  /* Phones: the Base is one short full-width row, the three slots sit side by side beneath it, every board button
+     only as tall as its contents (44 px floor). Same column template for both seats, so the factions mirror. */
+  #showdown { padding: .75rem; }
+  .sd-side { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .35rem; }
+  .sd-base { grid-column: 1 / -1; }
+  .sd-base, .sd-slot { min-height: 44px; padding: .4rem; overflow-wrap: anywhere; }
+  .sd-slot { font-size: .9rem; }
+  .sd-zone-rail { gap: .25rem; }
+  .sd-zone-rail [data-zone] { padding: .25rem .3rem; font-size: .8rem; }
+  #sd-hand { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #sd-hand .sd-card { width: auto; min-width: 0; overflow-wrap: anywhere; }
+}
 /* Camp (issue 143 slice 2): the same graybox layout, with the Trail as a row of plain tiles. */
 #showdown-camp { max-width: 920px; margin: auto; padding: clamp(1rem, 3vw, 2rem); display: grid; gap: .5rem; }
 #showdown-camp h2 { font-size: 1rem; margin: .75rem 0 .25rem; }
