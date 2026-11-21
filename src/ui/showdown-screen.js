@@ -266,11 +266,16 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
 
   function render() {
     // The curtain: nothing of either seat's hand or traps stays in the page while the screen is passed.
+    // Focus moves only when the curtain goes up or down: onto "I'm ready" when it rises, and off the hidden curtain
+    // onto the table when it clears (a mouse click on "I'm ready" would otherwise leave focus on a hidden button).
+    const [rises, clears] = [curtain && $("sd-curtain").hidden, !curtain && !$("sd-curtain").hidden];
+    const lost = clears && (!document.activeElement || document.activeElement === document.body || $("sd-curtain").contains(document.activeElement));
     $("sd-curtain").hidden = !curtain;
     $("sd-table").hidden = curtain;
     if (curtain) {
       for (const id of ["sd-board", "sd-hand", "sd-result", "sd-prompt", "sd-feedback", "sd-status", "sd-location"]) $(id).innerHTML = "";
       $("sd-curtain-text").textContent = `Pass the screen to the ${FACTION[session.view().active]} player.`;
+      if (rises && !root.hidden) $("sd-ready").focus();
       return;
     }
     const view = session.view();
@@ -369,6 +374,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     $("sd-keywords").innerHTML = Object.entries(KEYWORDS).filter(([key]) => inPlay.has(key)).map(([, [word, rule]]) => `<li><strong>${word}.</strong> ${rule}</li>`).join("")
       || "<li>No keywords in this duel.</li>";
     cues.paint();
+    if (lost && !root.hidden) usable("#sd-hand button", "#sd-board [data-own]", "#sd-end", "#sd-result button")?.focus();
   }
 
   // Each render replaces the board and hand buttons, which drops keyboard focus. After a keyboard

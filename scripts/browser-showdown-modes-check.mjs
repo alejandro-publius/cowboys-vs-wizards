@@ -217,6 +217,21 @@ async function session(label) {
   const tileState = (name) => evaluate(`(()=>{const b=[...camp().querySelectorAll('button')].find(n=>txt(n).includes(${JSON.stringify(name)}));return b?{disabled:b.disabled,text:txt(b)}:null;})()`);
   const resultShown = () => evaluate(`Boolean(document.querySelector('#showdown .sd-result'))`);
   const curtainUp = () => evaluate(`vis(document.getElementById('sd-curtain'))`);
+  // Where DOM focus is: its id, and whether it is a visible, enabled control.
+  const focusAt = () => evaluate(`(()=>{const n=document.activeElement;return{id:n?.id||(n?.dataset?.card?'card '+n.dataset.card:n?.dataset?.slot?'slot '+n.dataset.slot:n?.tagName)||null,usable:Boolean(n&&n!==document.body&&vis(n)&&!n.disabled)};})()`);
+  const focusLog = [];
+  // The curtain is up: focus is on "I'm ready" itself, so a keyboard player passes it with one Enter.
+  const assertReadyFocused = async (when) => {
+    const f = await focusAt();
+    focusLog.push({when, ...f});
+    assert.deepEqual(f, {id: "sd-ready", usable: true}, `focus on I'm ready ${when}`);
+  };
+  // The curtain has cleared: focus is on a visible, usable control of the table, not the hidden curtain or the body.
+  const assertTableFocused = async (when) => {
+    const f = {...(await focusAt()), inTable: await evaluate(`document.getElementById('sd-table').contains(document.activeElement)`)};
+    focusLog.push({when, ...f});
+    assert.ok(f.usable && f.inTable, `focus after the curtain ${when}: ${JSON.stringify(f)}`);
+  };
 
   // Seat privacy for the seat on screen: every hand card is that seat's, the other seat's hand is
   // card backs and a count, and no card id of the other seat outside its public board and graveyard.
@@ -253,8 +268,10 @@ async function session(label) {
       if (two && (await curtainUp())) {
         const said = await assertCurtain();
         curtains += 1;
+        await assertReadyFocused(`(curtain ${curtains}, turn ${turns + 1})`);
         await click("#sd-ready");
         await wait(`vis(document.getElementById('sd-table'))`, "the table after I'm ready");
+        await assertTableFocused(`(mouse I'm ready, curtain ${curtains})`);
         const seat = await activeSeat();
         assert.equal(said, `Pass the screen to the ${seat === "cowboy" ? "Cowboy" : "Wizard"} player.`);
       }
@@ -330,7 +347,7 @@ async function session(label) {
     await send("Input.dispatchKeyEvent", {type: "keyDown", key: name, code: name, windowsVirtualKeyCode: code, ...(name === "Enter" ? {text: "\r"} : {})});
     await send("Input.dispatchKeyEvent", {type: "keyUp", key: name, code: name, windowsVirtualKeyCode: code});
   };
-  return {key, send, evaluate, wait, press, click, byText, text, shot, storage, progress, seedStorage, load, openCamp, tile, tileState, startFrom,
+  return {focusAt, focusLog, assertReadyFocused, assertTableFocused, key, send, evaluate, wait, press, click, byText, text, shot, storage, progress, seedStorage, load, openCamp, tile, tileState, startFrom,
     winSolo, playGame, takeOffer, toCamp, assertCurtain, curtainUp, check, run, dialogs: () => dialogs,
     close: async () => { cdp.close(); await chrome.close(); }};
 }
@@ -578,6 +595,7 @@ const RUNS = {
     const fresh = createShowdown(3, {decks: DECKS});
     await s.click("#sd-again");
     await s.wait(`vis(document.getElementById('sd-curtain'))`, "the curtain for the new match");
+    await s.assertReadyFocused("(Play again, new match)");
     await s.click("#sd-ready");
     await s.wait(`vis(document.getElementById('sd-table'))`, "the table");
     assert.deepEqual(await s.evaluate(`[...document.querySelectorAll('#sd-hand [data-card]')].map(n=>n.dataset.card).sort()`), [...fresh.sides[fresh.first].hand].sort());
@@ -605,21 +623,15 @@ const RUNS = {
     };
     const handOnScreen = () => s.evaluate(`[...document.querySelectorAll('#sd-hand [data-card]')].map(n=>n.dataset.card).sort()`);
     const sorted = (ids) => [...ids].sort();
-    const toReady = async () => {
-      // The screen does not move focus onto "I'm ready" when a two-player game opens (the same for the Camp's own
-      // two-player buttons), so the keyboard player tabs to it.
-      let n = 0;
-      while (!(await s.evaluate(`document.activeElement?.id==='sd-ready'`)) && n < 50) { await s.key("Tab"); n += 1; }
-      assert.ok(n < 50, "I'm ready is reached with Tab");
-      return n;
-    };
-    const passTo = async (seat) => {
+    // Each hand-over: the curtain with both hands out of the page and focus already on "I'm ready" (no Tab), then one
+    // Enter clears it and focus lands on a usable control of the table.
+    const passTo = async (seat, when) => {
       await s.wait(`vis(document.getElementById('sd-curtain'))`, `the curtain for the ${seat} player`);
       assert.equal(await s.assertCurtain(), `Pass the screen to the ${seat === "cowboy" ? "Cowboy" : "Wizard"} player.`);
-      const tabs = await toReady();
+      await s.assertReadyFocused(when);
       await s.key("Enter");
       await s.wait(`vis(document.getElementById('sd-table'))`, "the table");
-      return tabs;
+      await s.assertTableFocused(`(Enter on I'm ready, ${when})`);
     };
     const visibleText = () => s.evaluate(`txt(document.getElementById('showdown'))`);
 
@@ -639,10 +651,10 @@ const RUNS = {
     await s.load(`?seed=${SEED}`);
     await s.openCamp();
     await s.click("#camp-earned");
-    await passTo("wizard");
+    await passTo("wizard", "(mouse start, empty save)");
     assert.deepEqual(await handOnScreen(), sorted(starter.wizard), "Wizard hand, empty Cowboy save");
     await s.click("#sd-end");
-    await passTo("cowboy");
+    await passTo("cowboy", "(mouse End turn)");
     assert.deepEqual(await handOnScreen(), sorted(starter.cowboy), "Cowboy starter hand");
     s.check(`Earned decks with an empty Cowboy save: starter deck; both first hands equal the engine's ?seed=${SEED} deal, Wizards first`, starter);
 
@@ -660,14 +672,16 @@ const RUNS = {
     while (!(await s.evaluate(`document.activeElement?.id==='camp-earned'`)) && tabs < 300) { await s.key("Tab"); tabs += 1; }
     assert.ok(tabs < 300, "Earned decks is reached with Tab");
     await s.key("Enter");
-    const readyTabs = await passTo("wizard");
+    await passTo("wizard", "(keyboard start)");
     assert.match(await s.text("#sd-status"), /^Earned decks \(not an even match\) · turn 1 · the Wizards' turn$/);
     assert.match(await s.text("#sd-lesson"), /Not an even match\. Nothing is saved\./);
     assert.deepEqual(await handOnScreen(), sorted(earned.wizard), "Wizard hand is the engine's deal");
-    await s.click("#sd-end");
-    await passTo("cowboy");
+    // Keyboard End turn: End turn focused, then Enter.
+    assert.equal(await s.evaluate(`(document.getElementById('sd-end').focus(),document.activeElement.id)`), "sd-end");
+    await s.key("Enter");
+    await passTo("cowboy", "(keyboard End turn)");
     assert.deepEqual(await handOnScreen(), sorted(earned.cowboy), "Cowboy hand (Camp deck) is the engine's deal");
-    s.check(`Earned decks chosen with ${tabs} Tab presses and Enter; curtain first (I'm ready after ${readyTabs} Tab); Wizards open; both first hands equal the engine's ?seed=${SEED} deal`, earned);
+    s.check(`Earned decks chosen with ${tabs} Tab presses and Enter; curtain first, I'm ready focused; Wizards open; both first hands equal the engine's ?seed=${SEED} deal`, earned);
 
     const game = await s.playGame({two: true});
     assert.ok(game.won, "a winner is named");
@@ -679,7 +693,7 @@ const RUNS = {
     await s.shot("earned-result");
     assert.equal(await s.text("#sd-again"), "Rematch: earned decks, not an even match");
     await s.click("#sd-again");
-    await passTo("wizard");
+    await passTo("wizard", "(mouse Rematch)");
     assert.match(await s.text("#sd-status"), /^Earned decks \(not an even match\) · turn 1 · the Wizards' turn$/, "the rematch: Wizards open again");
     assert.deepEqual(await handOnScreen(), sorted(earned.wizard), "the rematch deals the earned decks again");
     assert.match(await visibleText(), /Not an even match/);
@@ -690,6 +704,7 @@ const RUNS = {
     for (const k of Object.keys(before)) assert.equal(after[k], before[k], `${k} byte-identical`);
     s.check(`Earned decks game to its result (${game.status}); open board, no hand; the rematch keeps the decks, the label and the Wizard opener; both careers and the log byte-identical`,
       {turns: game.turns, curtains: game.curtains, keys: Object.keys(after)});
+    s.check(`Focus: I'm ready focused at all ${s.focusLog.filter((f) => f.id === "sd-ready").length} curtains; a usable table control after every clear`, s.focusLog);
   },
 
   async saves(s) {
