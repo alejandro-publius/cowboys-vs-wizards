@@ -80,15 +80,15 @@ function field(b) {
   for (const side of SIDES) {
     const { tile: surface, line, dark, metal } = COLORS[side];
     for (let slot = 0; slot < BOARD_SIZE; slot++)
-      tile(b, zone(side, "troop", slot), surface, line, 3.14, 2.22);
+      tile(b, zone(side, "troop", slot), surface, line, 3.33, 2.35);
     for (let slot = 0; slot < TRAP_SLOTS; slot++)
-      tile(b, zone(side, "trap", slot), dark, surface, 1.61, 1.39);
-    tile(b, zone(side, "deck"), dark, surface, 1.76, 1.48);
-    tile(b, zone(side, "discard"), dark, surface, 1.76, 1.48);
+      tile(b, zone(side, "trap", slot), dark, surface, 1.72, 1.48);
+    tile(b, zone(side, "deck"), dark, surface, 1.87, 1.57);
+    tile(b, zone(side, "discard"), dark, surface, 1.87, 1.57);
     const [x, , z] = zone(side, "base");
-    b.piece("round", dark, x, 0.132, z, 3.13, 0.264, 2.72);
-    b.piece("round", metal, x, 0.33, z, 2.49, 0.2, 2.16);
-    b.piece("ring", line, x, 0.47, z, 2.14, 0.38, 1.88);
+    b.piece("round", dark, x, 0.132, z, 3.28, 0.264, 2.85);
+    b.piece("round", metal, x, 0.33, z, 2.61, 0.2, 2.27);
+    b.piece("ring", line, x, 0.47, z, 2.25, 0.38, 1.98);
     for (const [dx, dz] of [
       [-0.97, -0.44],
       [0.97, -0.44],
@@ -99,8 +99,8 @@ function field(b) {
     }
   }
   const [x, , z] = zone(null, "location");
-  b.piece("round", 0x594557, x, 0.081, z, 2.54, 0.157, 2.13);
-  b.piece("ring", 0xb7a0b0, x, 0.15, z, 2.11, 0.23, 1.78);
+  b.piece("round", 0x594557, x, 0.081, z, 2.73, 0.157, 2.29);
+  b.piece("ring", 0xb7a0b0, x, 0.15, z, 2.27, 0.23, 1.92);
 }
 
 function groundDetails(b) {

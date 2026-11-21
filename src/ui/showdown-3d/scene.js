@@ -61,8 +61,11 @@ function jack(group) {
 function pawn(side, id) {
   const group = new T.Group();
   const { tile, line, dark, orb } = COLORS[side];
-  mesh(group, "box", solid(dark), [0, 0.052, 0], [2.64, 0.105, 1.76]);
-  mesh(group, "box", solid(tile), [0, 0.112, 0], [2.46, 0.025, 1.6]);
+  mesh(group, "box", solid(dark), [0, 0.052, 0], [2.8, 0.105, 1.87]);
+  mesh(group, "box", solid(tile), [0, 0.112, 0], [2.61, 0.025, 1.7]);
+  const miniature = new T.Group();
+  miniature.scale.setScalar(1.12);
+  group.add(miniature);
   const name = cardOf(id).name;
   const isDragon = name === "Dragon" || name === "Captured Dragon";
   const figure = name === "Sheriff" ? makeSheriff() : isDragon ? makeDragon() : null;
@@ -70,23 +73,23 @@ function pawn(side, id) {
     figure.root.scale.setScalar(name === "Sheriff" ? 0.84 : 0.69);
     figure.root.position.set(0, 0.145, -0.07);
     figure.root.rotation.y = isDragon && side === "cowboy" ? Math.PI : 0;
-    group.add(figure.root);
+    miniature.add(figure.root);
   } else if (name === "Skeleton") {
-    skeleton(group);
+    skeleton(miniature);
   } else if (name === "Jack-o'-Lantern") {
-    jack(group);
+    jack(miniature);
   } else {
     // The actual card name and game values are displayed by the original control above this standee.
-    const badge = mesh(group, "badge", solid(tile), [0, 0.73, -0.06], [0.96, 0.15, 0.96]);
+    const badge = mesh(miniature, "badge", solid(tile), [0, 0.73, -0.06], [0.96, 0.15, 0.96]);
     badge.rotation.x = Math.PI / 2;
-    const face = mesh(group, "badge", flat(line), [0, 0.73, 0.035], [0.67, 0.042, 0.67]);
+    const face = mesh(miniature, "badge", flat(line), [0, 0.73, 0.035], [0.67, 0.042, 0.67]);
     face.rotation.x = Math.PI / 2;
-    const mark = mesh(group, "box", solid(dark), [0, 0.73, 0.074], [0.28, 0.3, 0.056]);
+    const mark = mesh(miniature, "box", solid(dark), [0, 0.73, 0.074], [0.28, 0.3, 0.056]);
     mark.rotation.z = Math.PI / 4;
-    mesh(group, "box", solid(dark), [0, 0.31, -0.055], [0.37, 0.38, 0.18]);
+    mesh(miniature, "box", solid(dark), [0, 0.31, -0.055], [0.37, 0.38, 0.18]);
   }
   const pips = new T.Group();
-  pips.position.set(0, 0.21, 0.72);
+  pips.position.set(0, 0.21, 0.76);
   group.add(pips);
   const pipsMaterial = flat(orb);
   const cover = mesh(group, "box", solid(line), [-1.03, 0.29, 0.16], [0.114, 0.44, 0.79]);
@@ -98,9 +101,9 @@ function pawn(side, id) {
     update(troop) {
       while (pips.children.length > troop.health) pips.remove(pips.children.at(-1));
       while (pips.children.length < troop.health)
-        mesh(pips, "gem", pipsMaterial, [0, 0, 0], [0.19, 0.19, 0.19]);
+        mesh(pips, "gem", pipsMaterial, [0, 0, 0], [0.21, 0.21, 0.21]);
       pips.children.forEach((pip, i) => {
-        pip.position.x = (i - (troop.health - 1) / 2) * 0.224;
+        pip.position.x = (i - (troop.health - 1) / 2) * 0.241;
       });
       cover.visible = troop.cover;
       if (figure)
@@ -169,9 +172,9 @@ function build(host, canvas) {
       group.position.y += 0.13;
       const { line, orb } = COLORS[side] ?? COLORS.wizard;
       if (at === "base") {
-        mesh(group, "gem", flat(orb), [0, 0.69, 0], [0.85, 1.22, 0.85]);
-        mesh(group, "gem", solid(line), [0, 0.49, 0], [0.64, 0.71, 0.64]);
-      } else cardPiece(group, line, at === "location" ? 1.24 : 0.81);
+        mesh(group, "gem", flat(orb), [0, 0.72, 0], [0.93, 1.29, 0.93]);
+        mesh(group, "gem", solid(line), [0, 0.49, 0], [0.7, 0.76, 0.7]);
+      } else cardPiece(group, line, at === "location" ? 1.33 : 0.88);
       sideMarks.set(key, group);
       moves.add(group);
     }
@@ -184,17 +187,28 @@ function build(host, canvas) {
     element.style.left = (projection.x * 0.5 + 0.5) * width + "px";
     element.style.top = (0.5 - projection.y * 0.5) * height + "px";
   }
+  function placeControl(selector, x, y, z) {
+    const button = host.querySelector(selector);
+    place(button, x, y, z);
+    if (!button?.matches("[data-base], [data-frame]")) return;
+    const notes = button.querySelectorAll(":scope > .sd-note");
+    if (!notes.length) return;
+    const detail = document.createElement("span");
+    detail.className = "sd-world-detail";
+    detail.append(...notes);
+    button.append(detail);
+  }
   function arrange() {
     if (!view || canvas.hidden) return;
     // Exactly the same native buttons continue to receive clicks, focus and screen-reader text.
     for (const side of SIDES) {
       const s = view.sides[side];
       const [bx, , bz] = zone(side, "base");
-      place(host.querySelector(`[data-base="${side}"]`), bx, 0.05, bz + 1.25);
+      placeControl(`[data-base="${side}"]`, bx, 0.05, bz + 1.25);
       pieceAt(side, "base").visible = s.base > 0;
       for (let slot = 0; slot < BOARD_SIZE; slot++) {
         const [x, , z] = zone(side, "troop", slot);
-        place(host.querySelector(`[data-slot="${side}-${slot}"]`), x, 0.22, z + 0.75);
+        placeControl(`[data-slot="${side}-${slot}"]`, x, 0.22, z + 0.75);
       }
       for (const [at, count, title] of [
         ["deck", s.deckCount, "Deck"],
@@ -232,7 +246,7 @@ function build(host, canvas) {
     height = nextHeight;
     if (!width || !height || canvas.hidden) return;
     const aspect = width / height;
-    const spread = Math.max(8.4, 19.55 / aspect);
+    const spread = Math.max(8.4, 19.01 / aspect);
     camera.left = -spread * aspect;
     camera.right = spread * aspect;
     camera.top = spread;

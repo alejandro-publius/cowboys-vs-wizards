@@ -1,6 +1,6 @@
 #showdown.sd-diorama {
-  max-width: 1600px;
-  padding: clamp(0.65rem, 2vw, 1.45rem);
+  max-width: 1660px;
+  padding: clamp(0.6rem, 1.2vw, 1.25rem);
 }
 .sd-diorama #sd-field {
   position: relative;
@@ -15,6 +15,13 @@
 }
 .sd-world-labels {
   display: none;
+}
+.sd-world-detail {
+  display: contents;
+}
+.sd-diorama #sd-hand .sd-card {
+  width: 9.5rem;
+  font-size: 1.03rem;
 }
 
 @media (min-width: 800px) {
@@ -36,7 +43,7 @@
     white-space: nowrap;
     color: #f6e9d3;
     font:
-      650 clamp(0.62rem, 0.9vw, 0.81rem) / 1.2 system-ui,
+      650 clamp(0.7rem, 1vw, 0.88rem) / 1.2 system-ui,
       sans-serif;
     text-shadow:
       -1px -1px 0 #131c2c,
@@ -53,12 +60,12 @@
     position: absolute;
     translate: -50% -50%;
     width: max-content;
-    min-width: 66px;
-    max-width: clamp(80px, 10vw, 139px);
-    min-height: 34px;
-    padding: 3px 7px;
+    min-width: 70px;
+    max-width: clamp(116px, 11vw, 151px);
+    min-height: 36px;
+    padding: 3px 8px;
     line-height: 1.12;
-    font-size: clamp(0.66rem, 0.93vw, 0.875rem);
+    font-size: clamp(0.73rem, 1.04vw, 0.95rem);
     text-align: center;
     pointer-events: auto;
     border-radius: 3px;
@@ -73,31 +80,36 @@
     border-color: #8c7aa9;
   }
   .sd-diorama #sd-board .sd-base {
-    min-width: 93px;
-    max-width: clamp(106px, 12vw, 160px);
+    min-width: 99px;
+    max-width: clamp(113px, 12vw, 170px);
   }
   .sd-diorama #sd-board .sd-base > .sd-backs {
     display: none;
   }
-  .sd-diorama #sd-board :is(.sd-base, .sd-slot[data-frame]) .sd-note:not(.sd-good) {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
+  .sd-diorama #sd-board .sd-orbs {
+    white-space: nowrap;
+    letter-spacing: 0.07em;
   }
-  .sd-diorama
-    #sd-board
-    :is(.sd-base, .sd-slot[data-frame]):is(:hover, :focus-visible, .sd-pick, .sd-chosen)
-    > .sd-note {
-    position: static;
-    width: auto;
-    height: auto;
-    clip-path: none;
-    overflow: visible;
+  .sd-diorama #sd-board .sd-world-detail {
+    display: block;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 50%;
+    translate: -50% 0;
+    width: max-content;
+    max-width: min(13rem, 35vw);
+    padding: 3px 7px;
+    background: #23232f;
+    border: 1px solid #918487;
+    border-radius: 3px;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .sd-diorama #sd-board button:is(:hover, :focus-visible) > .sd-world-detail {
+    opacity: 1;
   }
   .sd-diorama #sd-board .sd-base .sd-note {
-    font-size: 0.68rem;
+    font-size: 0.74rem;
     margin-top: 0.15rem;
   }
   .sd-diorama #sd-board [data-slot]:not([data-frame]) {
@@ -118,7 +130,7 @@
     clip-path: inset(50%);
   }
   .sd-diorama #sd-board .sd-slot .sd-note {
-    font-size: 0.65rem;
+    font-size: 0.71rem;
     margin-top: 2px;
   }
   .sd-diorama #sd-board .sd-slot .sd-note:not(.sd-good) {
