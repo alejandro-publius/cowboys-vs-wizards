@@ -4,6 +4,8 @@
 // Camp's last section after Boot Hill and opens on its own at ?wizard=1. Slice 3 retired the lane duel from this
 // page, so no URL opens it here; an old lane address (?mode=lanes, match, ride-out, practice-*,
 // fire-arc) loads this same Showdown menu. The old 3D page has been removed. esbuild inlines the dynamic imports, so the page stays one offline file.
+import {mountReplayRoom} from "../apps/replay-room/src/room.mjs";
+import replayLessons from "../apps/replay-room/src/lessons.json";
 const node = (id) => document.getElementById(id);
 
 Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"), import("./ui/showdown-builder.js"), import("./match/showdown-campaign.js"),
@@ -28,12 +30,14 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   const wizard = !["turn", "outrider", "practice"].some((key) => query.has(key)) && wizardFromQuery(location.search);
   // K-096: a direct practice or Wizard preview visit writes no Cowboy key until the player chooses the Camp
   // (campaign.enter() in toCamp).
-  const campaign = createCampaign(storage, {deferImport: practice !== null || wizard});
+  const directRoom = query.get("room") === "replay" && !["turn", "outrider", "practice", "wizard"].some((key) => query.has(key));
+  const campaign = createCampaign(storage, {deferImport: practice !== null || wizard || directRoom});
   // The Wizard preview's own save (cvw-showdown-wizard-preview-v1); creating it only reads that key.
   const preview = createWizardPreview(storage);
   // One line per finished solo game for the Camp's playtest report, under the prototype's key.
   const playtest = createPlaytestLog(storage);
-  const showOnly = (shown) => { for (const el of [title, screen, campRoot, builderRoot]) el.hidden = el !== shown; window.scrollTo(0, 0); };
+  const room = node("replay-room");
+  const showOnly = (shown) => { for (const el of [title, screen, campRoot, builderRoot, room]) el.hidden = el !== shown; window.scrollTo(0, 0); };
   let last = null; // the Camp control that started the duel just left, so focus returns to it
   // Back from a duel: the Camp, or for a Wizard preview duel the place it was opened from. Reset after each use.
   let back = null;
@@ -91,7 +95,8 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   campRoot.insertAdjacentHTML("beforeend", `<section id="camp-experiment" aria-labelledby="camp-experiment-title"><h2 id="camp-experiment-title">Experiment</h2>
     <p class="sd-note">For review, not a bounty. Nothing here is saved.</p>
     <div class="sd-row"><button type="button" id="camp-turn-dragon" data-turn="dragon-c5">Try one Dragon turn</button>
-    <button type="button" id="camp-turn-dragon-70" data-turn="dragon-c5-70">Try another Dragon turn</button></div></section>`);
+    <button type="button" id="camp-turn-dragon-70" data-turn="dragon-c5-70">Try another Dragon turn</button>
+    <button type="button" id="camp-replay-room">Replay Room</button></div></section>`);
   const openTurn = (id) => {
     const turn = turnDuel(id);
     if (!turn) return false;
@@ -101,6 +106,23 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     return true;
   };
   campRoot.addEventListener("click", (event) => { const b = event.target.closest("button[data-turn]"); if (b) openTurn(b.dataset.turn); });
+  let unmountRoom;
+  const roomBack = node("replay-room-back");
+  const showRoom = () => { showOnly(room); roomBack.focus(); };
+  const openRoom = () => {
+    unmountRoom?.();
+    unmountRoom = mountReplayRoom(node("replay-room-body"), replayLessons, {onPlayTurn(id) {
+      if (openTurn(id)) last = "#camp-replay-room";
+    }});
+    showRoom();
+  };
+  roomBack.addEventListener("click", () => {
+    unmountRoom?.();
+    unmountRoom = null;
+    last = "#camp-replay-room";
+    toCamp();
+  });
+  node("camp-replay-room").addEventListener("click", openRoom);
   // K-011: Outrider turns, only the ids scripts/outrider-gate.mjs verified at build time: one Camp control, the Ledger's
   // two position links (both inside the Camp root) and ?outrider=<id>.
   node("camp-experiment").insertAdjacentHTML("beforeend", outriderControls());
@@ -173,4 +195,5 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   if (outrider !== null && turn === null) openOutrider(outrider);
   if (practice !== null) openPractice(practice);
   if (wizard) toWizard();
+  if (directRoom) openRoom();
   });

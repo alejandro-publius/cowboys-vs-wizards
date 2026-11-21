@@ -2,6 +2,8 @@
 
 > Draft for Alex's review. Revised November 20, 2026 (America/Los_Angeles) by a Kiro CLI worker, against `main` at [`96adf60`](https://github.com/alejandro-publius/cowboys-vs-wizards/commit/96adf6031b6159ab34fd7751180ced507f677104), the merge of PR #166. The public site's [build manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) named that commit when this was written. Fields marked **OWNER** need facts or decisions that only Alex or the team can supply. The earlier lane-duel packet (November 16–17) is kept as history at [`96adf60`](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/96adf6031b6159ab34fd7751180ced507f677104/docs/submission/devpost-packet.md).
 
+[Start with the judge write-up and blind decision](showdown-kiro-writeup.md). The historical results below reveal both outcomes.
+
 ## Pitch
 
 **Cowboys vs. Wizards: Showdown** is a haunted-Western card duel you play in a browser. You pick every attack, your troops shield your Base, and turns alternate.
@@ -46,7 +48,7 @@ Three visible things differ: the supporting troop, the trap and the Wizard Base.
 
 ## Project
 
-Cowboys vs. Wizards. The entry is **Showdown**, served at the [site root](https://alejandro-publius.github.io/cowboys-vs-wizards/). Play opens the Camp, which holds the Trail of duels, rivals, Wanted hunts, packs, the deck builder, best of three, two players on one screen and the Sheriff's Ledger. Wins, rewards and card choices are saved in the browser. The Showdown build is a graybox: a flat board, text cards, life orbs and a log. The illustrated 3D models and motion belong to the [earlier build](https://alejandro-publius.github.io/cowboys-vs-wizards/3d/), which keeps the retired lane rules.
+Cowboys vs. Wizards. The entry is **Showdown**, served at the [site root](https://alejandro-publius.github.io/cowboys-vs-wizards/). Play opens the Camp, which holds the Trail of duels, rivals, Wanted hunts, packs, the deck builder, best of three, two players on one screen and the Sheriff's Ledger. Wins, rewards and card choices are saved in the browser. The Showdown build is a graybox: a flat board, text cards, life orbs and a log. The earlier illustrated lane game was retired in [PR 184](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/184).
 
 **Who it is for:** people who play strategy and card games in a browser and want decisions that matter more than reflexes.
 
@@ -89,7 +91,7 @@ The Showdown rules are plain JavaScript in `src/game/showdown/`, with no DOM, re
 
 ## Category and bonuses
 
-- **Category: OWNER.** The lane-era draft proposed Costume Contest on the strength of the illustrated arena. The Showdown entry is a graybox, and the illustrated art lives in the `/3d/` build. Alex should choose the category with that in mind.
+- **Category: OWNER.** The lane-era draft proposed Costume Contest on the strength of the illustrated arena. The Showdown entry is a graybox, and the earlier illustrated lane build has been retired. Alex should choose the category with that in mind.
 - **Crew bonus:** the Night Watch app has [its own repository](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch). Its form write-up is not drafted.
 - **Blog bonus:** requires a public third-party post that mentions Kiroween 2026. See the draft [build story](build-story.md), which still tells the lane-era story.
 - **Social bonus:** optional. A person must write it; no agent should. Nothing has been posted.
@@ -101,7 +103,6 @@ Official rules: https://kiroween.devpost.com/rules. Deadlines: credit requests b
 
 - Game: https://alejandro-publius.github.io/cowboys-vs-wizards/
 - Dragon positions: [seed 3](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5) · [seed 70](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5-70)
-- Earlier illustrated 3D build (lane rules): https://alejandro-publius.github.io/cowboys-vs-wizards/3d/
 - Source: https://github.com/alejandro-publius/cowboys-vs-wizards
 - Kiro write-up: https://github.com/alejandro-publius/cowboys-vs-wizards/blob/main/docs/submission/kiro-brag-sheet.md
 - Crew app: https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch

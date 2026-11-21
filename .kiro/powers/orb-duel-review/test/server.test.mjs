@@ -76,9 +76,9 @@ test("bound server from copied plugin", {timeout: 5000}, async (t) => {
   const s = start({PLUGIN_DATA: data});
   t.after(s.stop);
   const init = await s.call("initialize", {protocolVersion: "2024-11-05"});
-  assert.equal(init.result.serverInfo.version, "1.5.0");
-  assert.equal(JSON.parse((await import("node:fs")).readFileSync(join(plugin, "plugin.json"), "utf8")).version, "1.5.0");
-  assert.deepEqual((await s.call("tools/list")).result.tools.map((t) => t.name), ["inspect_duel_replay", "inspect_character_asset", "start_showdown_duel", "observe_showdown", "act_showdown", "inspect_showdown_receipt", "inspect_ride_decision"]);
+  assert.equal(init.result.serverInfo.version, "1.6.0");
+  assert.equal(JSON.parse((await import("node:fs")).readFileSync(join(plugin, "plugin.json"), "utf8")).version, "1.6.0");
+  assert.deepEqual((await s.call("tools/list")).result.tools.map((t) => t.name), ["inspect_duel_replay", "inspect_character_asset", "start_showdown_duel", "observe_showdown", "act_showdown", "inspect_showdown_receipt", "inspect_ride_decision", "showdown_replay_lesson"]);
 
   const lane = (await s.tool("inspect_duel_replay", {})).json;
   assert.equal(lane.verdict, "pass");

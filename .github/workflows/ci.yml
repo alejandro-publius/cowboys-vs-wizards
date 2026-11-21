@@ -34,7 +34,12 @@ jobs:
           node scripts/check-pages-tree.mjs --commit "$GITHUB_SHA"
 
       - name: Kiro review server tests
-        run: node --test .kiro/powers/orb-duel-review/test/server.test.mjs
+        run: node --test .kiro/powers/orb-duel-review/test/*.test.mjs
+
+      - name: Replay Room lessons and Crew bundle
+        run: |
+          node --test apps/replay-room/test/*.test.mjs
+          node apps/replay-room/build.mjs --check
 
       - name: Night Watch unit tests
         working-directory: apps/night-watch/backend

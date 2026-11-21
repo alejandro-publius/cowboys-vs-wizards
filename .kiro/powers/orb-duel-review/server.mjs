@@ -2,7 +2,8 @@
 // receipt and the board character GLBs (earlier lane build and its 3D assets), for playing
 // one seat of a Showdown Trail duel in memory (showdown.mjs), and for replaying a recorded
 // Showdown proof against the current Showdown engine fingerprint, and for checking a recorded
-// Outrider ride decision (ride.mjs) before any ride advice is given. It reads only fixed files under
+// Outrider ride decision (ride.mjs) before any ride advice is given, and for the Replay Room's two-stage
+// coaching lesson (lesson.mjs) over the bound project's apps/replay-room/src/lessons.json. It reads only fixed files under
 // this repo: no arbitrary paths, writes, network, shell or database.
 import {createHash} from "node:crypto";
 import {readFileSync, realpathSync} from "node:fs";
@@ -12,8 +13,9 @@ import {fileURLToPath} from "node:url";
 import {parseGlb} from "./glb.mjs";
 import {createTable, engineFingerprint, inspectShowdownReceipt, loadEngine} from "./showdown.mjs";
 import {RIDE_CASES, inspectRideDecision} from "./ride.mjs";
+import {LESSON_TOOL, lessonArgsError, replayLesson} from "./lesson.mjs";
 
-const VERSION = "1.5.0";
+const VERSION = "1.6.0";
 
 // Project binding: with PLUGIN_DATA set, only PLUGIN_DATA/project.json (written by setup.mjs)
 // names the project. Never inferred. Without PLUGIN_DATA (workspace MCP), the source checkout.
@@ -246,7 +248,7 @@ function handle(msg) {
     case "ping":
       return reply(msg.id, {});
     case "tools/list":
-      return reply(msg.id, {tools: [TOOL, CHARACTER_TOOL, ...SHOWDOWN_TOOLS, RECEIPT_TOOL, RIDE_TOOL]});
+      return reply(msg.id, {tools: [TOOL, CHARACTER_TOOL, ...SHOWDOWN_TOOLS, RECEIPT_TOOL, RIDE_TOOL, LESSON_TOOL]});
     case "tools/call": {
       const params = msg.params;
       if (Object.hasOwn(SHOWDOWN_KEYS, params?.name ?? "")) {
@@ -260,6 +262,17 @@ function handle(msg) {
         return showdownCall(params.name, args).then(
           (body) => reply(msg.id, {content: [{type: "text", text: JSON.stringify(body)}], ...(body.error && {isError: true})}),
           (error) => reply(msg.id, {content: [{type: "text", text: JSON.stringify({error: error.message})}], isError: true}));
+      }
+      if (params?.name === LESSON_TOOL.name) {
+        const args = params.arguments ?? {};
+        const problem = lessonArgsError(args);
+        if (problem) return fail(msg.id, -32602, problem);
+        try {
+          const {isError, body} = replayLesson(root, unavailable, args);
+          return reply(msg.id, {content: [{type: "text", text: JSON.stringify(body, null, 2)}], ...(isError && {isError})});
+        } catch (error) {
+          return reply(msg.id, {content: [{type: "text", text: JSON.stringify({error: error.message})}], isError: true});
+        }
       }
       if (params?.name === RIDE_TOOL.name) {
         const args = params.arguments ?? {};

@@ -1,0 +1,557 @@
+{
+ "method": "Native Kiro CLI ACP v3, 5 fresh sessions per prompt per table. Synthetic client approved only installed replay calls once per request. The refusal check used a separate session. Interrupted sessions retried. No human participants.",
+ "counts": {
+  "hints": 60,
+  "early_calls": 0,
+  "outcome_before_commit": 0,
+  "reviews": 20,
+  "matching_results": 20,
+  "caveats": 20,
+  "incorrect_numbers": [],
+  "grading_terms": [],
+  "reason_evidence_matched": 12,
+  "reason_total": 12
+ },
+ "trials": [
+  {
+   "id": "hint-A-0-0",
+   "session": "sess_14c48320-06e9-4192-ab99-f22d02f3f06c",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-0-1",
+   "session": "sess_9f589310-570d-4daf-a4cd-cb8edaf09e45",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-0-2",
+   "session": "sess_cf120729-4390-4a70-b0d5-8855ee8fd35a",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-0-3",
+   "session": "sess_d583d1ec-1427-4d94-b3dc-925f959f6cb3",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-0-4",
+   "session": "sess_eaed146b-9289-4ca2-8f1f-840829846846",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-1-0",
+   "session": "sess_529fbb46-f2bd-43ee-bc4c-ed4738e5f1bc",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-1-1",
+   "session": "sess_5f47806a-9452-4685-991b-f3008a8d1faa",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-1-2",
+   "session": "sess_f6852f35-aa43-4a70-a501-3b0f06cc1fcc",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-1-3",
+   "session": "sess_a9934c6a-70e5-40c1-bff3-ac8aa6dc93eb",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-1-4",
+   "session": "sess_70707459-7a77-45b5-89cd-d237dc12cb73",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-2-0",
+   "session": "sess_f115f8f3-d70e-467a-b0fb-c8e162b6e904",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-2-1",
+   "session": "sess_86b463ff-cc3d-4f8e-80d2-9d48b7b41f12",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-2-2",
+   "session": "sess_7a2e55ad-4cb0-4fe4-9e6d-e92fe42a9f2b",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-2-3",
+   "session": "sess_20637df7-c8c4-4c42-9a3d-0a5f5a950d7d",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-2-4",
+   "session": "sess_812087eb-2815-4211-932e-8fffd94cec77",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-3-0",
+   "session": "sess_e92e57d7-3883-40ee-8ea9-ecb947e6eb83",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-3-1",
+   "session": "sess_0bf97a98-5f15-4b7c-ab25-9b6be6648b73",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-3-2",
+   "session": "sess_6c7aa330-ce1c-42b2-b37a-0edc04738c90",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-3-3",
+   "session": "sess_692c5fd2-f859-40e6-bdf2-c63877f9d065",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-3-4",
+   "session": "sess_b9581312-6428-4498-b6a4-4b9681fd8210",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-4-0",
+   "session": "sess_30025ce3-ac00-411f-9e97-6aba2994a524",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-4-1",
+   "session": "sess_dd2e2553-3e3e-4872-9f4b-396c28c67f90",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-4-2",
+   "session": "sess_5a3dbe8f-dc51-47f7-ba79-a2aeeb693407",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-4-3",
+   "session": "sess_932bf722-a1ee-4317-b706-0c391f02dd85",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-4-4",
+   "session": "sess_ad3666b4-e517-4272-8b87-28e210275cde",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-5-0",
+   "session": "sess_fe49c72e-551d-436a-b974-9d2cb3cf05c9",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-5-1",
+   "session": "sess_65f67387-5896-4d94-88eb-40c03daeaec7",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-5-2",
+   "session": "sess_ed8d715b-37b8-420e-a395-5924169bd9e7",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-5-3",
+   "session": "sess_59b380cd-90b8-4b60-a262-8c9116079177",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-A-5-4",
+   "session": "sess_2ce940a1-c379-4b57-84af-0b58c5bc12d2",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-0-0",
+   "session": "sess_72861b48-685d-4f12-8c52-3ac1de6c3f86",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-0-1",
+   "session": "sess_b658deee-8695-4747-97ce-c63d2e54370e",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-0-2",
+   "session": "sess_79d9fa36-b0fe-4539-9db0-cebaaa6b2bfb",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-0-3",
+   "session": "sess_58bf4ed4-2c3d-4be9-bf40-383bd0b7601d",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-0-4",
+   "session": "sess_04488c4a-3d1e-4065-8577-816cfd148578",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-1-0",
+   "session": "sess_b7786772-658d-4dc3-9cf4-34b1f9c15f0a",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-1-1",
+   "session": "sess_534ab38c-12a8-43e6-9654-edf0099c857f",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-1-2",
+   "session": "sess_3a0d2bda-f909-4b4b-9f5f-5eb3c09ceec2",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-1-3",
+   "session": "sess_8021ae44-9219-4ffe-9e52-7a883034b3a1",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-1-4",
+   "session": "sess_b3674259-b0e8-4599-a03d-b231def11d98",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-2-0",
+   "session": "sess_204d93df-c816-4a2c-94a5-72d250b8e30e",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-2-1",
+   "session": "sess_6662d44d-4b17-4730-bdfc-802dc1b8119d",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-2-2",
+   "session": "sess_f5c87824-aea4-453b-9a02-894a5a3fb981",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-2-3",
+   "session": "sess_00aa3d82-fd5a-4198-888f-927320162940",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-2-4",
+   "session": "sess_467daec7-611a-4443-b600-4946f50c826d",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-3-0",
+   "session": "sess_49e52f36-2d02-460c-a602-a04b7f01a143",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-3-1",
+   "session": "sess_6c0bef64-2414-40e1-8e47-9b5610127751",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-3-2",
+   "session": "sess_56a8a6e6-ce9a-4499-9ef6-960135bd984b",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-3-3",
+   "session": "sess_0d383c69-b69d-433e-ba39-a7affadc90a7",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-3-4",
+   "session": "sess_8e57d740-886e-4e81-8f5a-f02f0f0422f9",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-4-0",
+   "session": "sess_60a0c2af-d353-43b9-83b6-afa1ec382e32",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-4-1",
+   "session": "sess_c17f8487-e64c-4b4a-9777-7fa0dd54cce2",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-4-2",
+   "session": "sess_fbdf15ac-8208-40a0-8777-3d76de12c01c",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-4-3",
+   "session": "sess_dba86208-dd11-4d31-8b68-1b303a6643a5",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-4-4",
+   "session": "sess_6a88cd05-f9d2-41d8-9672-99b0824ec816",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-5-0",
+   "session": "sess_957291b1-41d5-4f2e-ab4e-bcd4321feb4b",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-5-1",
+   "session": "sess_12e711e1-b352-469b-b3ee-bcbd97ca2b3b",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-5-2",
+   "session": "sess_ef9f288d-722c-4c19-8bfe-fd3952d8c488",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-5-3",
+   "session": "sess_0b275f45-f493-4a73-8645-cc5bc78a6739",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "hint-B-5-4",
+   "session": "sess_27923d03-f164-4465-a62b-b0fb4a132d9b",
+   "stage": "position",
+   "outcome_shown": false
+  },
+  {
+   "id": "review-A-0-0",
+   "session": "sess_10b58b0a-a6af-452c-93b4-6f9ac1d72806",
+   "stage": "review",
+   "target": "dragon",
+   "ordered_outcomes_match": true,
+   "fixed_policy_limit_stated": true,
+   "outcome_shown_before_pick": false
+  },
+  {
+   "id": "review-A-0-1",
+   "session": "sess_fa906e29-4393-4ded-ae45-00fdf199c9c9",
+   "stage": "review",
+   "target": "dragon",
+   "ordered_outcomes_match": true,
+   "fixed_policy_limit_stated": true,
+   "outcome_shown_before_pick": false
+  },
+  {
+   "id": "review-A-0-2",
+   "session": "sess_660df15b-e998-4932-8c63-b740d922efaa",
+   "stage": "review",
+   "target": "dragon",
+   "ordered_outcomes_match": true,
+   "fixed_policy_limit_stated": true,
+   "outcome_shown_before_pick": false
+  },
+  {
+   "id": "review-A-0-3",
+   "session": "sess_597392b0-a6d7-4921-a4cc-5360e77ca8bf",
+   "stage": "review",
+   "target": "dragon",
+   "ordered_outcomes_match": true,
+   "fixed_policy_limit_stated": true,
+   "outcome_shown_before_pick": false
+  },
+  {
+   "id": "review-A-0-4",
+   "session": "sess_16d5c2f8-2b3d-468b-9a25-6a9846d28609",
+   "stage": "review",
+   "target": "dragon",
+   "ordered_outcomes_match": true,
+   "fixed_policy_limit_stated": true,
+   "outcome_shown_before_pick": false
+  },
+  {
+   "id": "review-A-1-0",
+   "session": "sess_0d902a98-44d0-42e4-9e94-fa5a45224ec8",
+   "stage": "review",
+   "target": "jack",
+   "ordered_outcomes_match": true,
+   "fixed_policy_limit_stated": true,
+   "outcome_shown_before_pick": false
+  },
+  {
+   "id": "review-A-1-1",
+   "session": "sess_46b70d22-9675-4e41-a94a-ce56a655afcc",
+   "stage": "review",
+   "target": "jack",
+   "ordered_outcomes_match": true,
+   "fixed_policy_limit_stated": true,
+   "outcome_shown_before_pick": false
+  },
+  {
+   "id": "review-A-1-2",
+   "session": "sess_a2d6b60b-c18a-42b2-939b-a9a88dae88d7",
+   "stage": "review",
+   "target": "jack",
+   "ordered_outcomes_match": true,
+   "fixed_policy_limit_stated": true,
+   "outcome_shown_before_pick": false
+  },
+  {
+   "id": "review-A-1-3",
+   "session": "sess_e7f1825c-b47c-47f5-acca-ee5c1d93b111",
+   "stage": "review",
+   "target": "jack",
+   "ordered_outcomes_match": true,
+   "fixed_policy_limit_stated": true,
+   "outcome_shown_before_pick": false
+  },
+  {
+   "id": "review-A-1-4",
+   "session": "sess_d399da51-3dee-474f-bf0e-51a3fc64e3c8",
+   "stage": "review",
+   "target": "jack",
+   "ordered_outcomes_match": true,
+   "fixed_policy_limit_stated": true,
+   "outcome_shown_before_pick": false
+  },
+  {
+   "id": "review-B-0-0",
+   "session": "sess_1ff67324-9a89-4831-9573-5d78ce594dfc",
+   "stage": "review",
+   "target": "dragon",
+   "ordered_outcomes_match": true,
+   "fixed_policy_limit_stated": true,
+   "outcome_shown_before_pick": false
+  },
+  {
+   "id": "review-B-0-1",
+   "session": "sess_70e171ee-a3c0-467c-aa28-310e9e446127",
+   "stage": "review",
+   "target": "dragon",
+   "ordered_outcomes_match": true,
+   "fixed_policy_limit_stated": true,
+   "outcome_shown_before_pick": false
+  },
+  {
+   "id": "review-B-0-2",
+   "session": "sess_9e03706a-7515-4a50-a8dc-a739770ee4ee",
+   "stage": "review",
+   "target": "dragon",
+   "ordered_outcomes_match": true,
+   "fixed_policy_limit_stated": true,
+   "outcome_shown_before_pick": false
+  },
+  {
+   "id": "review-B-0-3",
+   "session": "sess_4eefce05-3fef-4c23-95cb-44823b270a32",
+   "stage": "review",
+   "target": "dragon",
+   "ordered_outcomes_match": true,
+   "fixed_policy_limit_stated": true,
+   "outcome_shown_before_pick": false
+  },
+  {
+   "id": "review-B-0-4",
+   "session": "sess_f5e54752-0cef-40af-8015-4519f96552bb",
+   "stage": "review",
+   "target": "dragon",
+   "ordered_outcomes_match": true,
+   "fixed_policy_limit_stated": true,
+   "outcome_shown_before_pick": false
+  },
+  {
+   "id": "review-B-1-0",
+   "session": "sess_8f4c94fb-6aa6-498e-9d00-645605703f62",
+   "stage": "review",
+   "target": "jack",
+   "ordered_outcomes_match": true,
+   "fixed_policy_limit_stated": true,
+   "outcome_shown_before_pick": false
+  },
+  {
+   "id": "review-B-1-1",
+   "session": "sess_545eff3e-4895-4d12-8cc8-5ab129f669a7",
+   "stage": "review",
+   "target": "jack",
+   "ordered_outcomes_match": true,
+   "fixed_policy_limit_stated": true,
+   "outcome_shown_before_pick": false
+  },
+  {
+   "id": "review-B-1-2",
+   "session": "sess_6acac0fe-2b49-4317-b1ef-51d31733598f",
+   "stage": "review",
+   "target": "jack",
+   "ordered_outcomes_match": true,
+   "fixed_policy_limit_stated": true,
+   "outcome_shown_before_pick": false
+  },
+  {
+   "id": "review-B-1-3",
+   "session": "sess_d8af57fd-c2bd-4913-bbc7-d878f023a812",
+   "stage": "review",
+   "target": "jack",
+   "ordered_outcomes_match": true,
+   "fixed_policy_limit_stated": true,
+   "outcome_shown_before_pick": false
+  },
+  {
+   "id": "review-B-1-4",
+   "session": "sess_7032d3a7-1179-4c1b-a7e8-fcb7c12118ce",
+   "stage": "review",
+   "target": "jack",
+   "ordered_outcomes_match": true,
+   "fixed_policy_limit_stated": true,
+   "outcome_shown_before_pick": false
+  }
+ ]
+}
