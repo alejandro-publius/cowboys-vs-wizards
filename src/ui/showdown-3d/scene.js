@@ -8,12 +8,14 @@ import { presentationBeats } from "./event-positions.js";
 import { createCombatEffects } from "./combat-effects.js";
 import { makeBases } from "./bases.js";
 import { makeCardModel, makeLiveCardModel } from "./card-models.js";
-import { portrait } from "./gallery.js";
+import { bindTableUI } from "./table-ui.js";
+import { tableCamera } from "./table-camera.js";
+import { createTableTransfers } from "./table-transfers.js";
+import { dressTable } from "./table-dressing.js";
 export { mountGallery } from "./gallery.js";
 import { COLORS, SIDES, zone } from "./layout.js";
 
 const FACEDOWN = 0x2a213b;
-const BROAD = window.matchMedia("(min-width: 800px)");
 const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)");
 const solid = (color) => new T.MeshStandardMaterial({ color, roughness: 0.88, flatShading: true });
 const flat = (color) => new T.MeshBasicMaterial({ color });
@@ -52,10 +54,18 @@ function pawn(side, id) {
     "wizard-headless-horseman",
   ].includes(typeOf(id));
   const { model: miniature, rig } = makeLiveCardModel(id, {
-    width: wide ? 3.23 : 2.65,
-    height: wide ? 2.25 : 1.91,
-    depth: 1.87,
+    width: wide ? 3.67 : 2.94,
+    height: wide ? 2.72 : 2.41,
+    depth: 2.17,
   });
+  const border = new T.Group();
+  const rim = flat(0xe5c786);
+  group.add(border);
+  for (const side of [-1, 1]) {
+    mesh(border, "box", rim, [0, 0.126, side * 0.934], [2.79, 0.035, 0.042]);
+    mesh(border, "box", rim, [side * 1.398, 0.127, 0], [0.041, 0.034, 1.875]);
+  }
+  border.visible = false;
   const restScale = miniature.scale.x;
   miniature.position.set(0, 0.146, -0.07);
   group.add(miniature);
@@ -94,6 +104,10 @@ function pawn(side, id) {
     id,
     side,
     restY: 0.146,
+    highlight(mode) {
+      border.visible = mode !== 0;
+      rim.color.setHex(mode === 2 ? 0xffebac : 0xd6b675);
+    },
     update(troop) {
       this.restY = troop.cover ? 0.066 : 0.146;
       miniature.position.set(0, this.restY, -0.07);
@@ -102,6 +116,11 @@ function pawn(side, id) {
       if (rider) {
         rider.visible = true;
         rider.rotation.z = 0;
+      }
+      const skull = miniature.getObjectByName("skull");
+      if (skull) {
+        skull.position.set(0, 0, 0);
+        skull.rotation.set(0, 0, 0);
       }
       miniature.scale.set(restScale, restScale * (troop.stunned ? 0.92 : troop.cover ? 0.9 : 1), restScale);
       if (rig) rig.pose({});
@@ -149,6 +168,7 @@ function build(host, canvas) {
   scene.add(hemi, sun, moon);
   makeBoard(scene, addLandmarks);
   const bases = makeBases(scene);
+  const dressing = dressTable(scene);
   pipeline.configure({ pixelSize: 2, outlines: true, dither: true, exposure: 1.035 });
   const moves = new T.Group();
   scene.add(moves);
@@ -158,7 +178,7 @@ function build(host, canvas) {
   moves.add(locationGroup);
   const worldLabels = new Map();
   const sideMarks = new Map();
-  const viewTarget = new T.Vector3(0, 0.64, -0.13);
+
   const projection = new T.Vector3();
   let view,
     display,
@@ -168,6 +188,34 @@ function build(host, canvas) {
     locationId = null;
   const pawnAt = (mark) => (mark?.slot === undefined || mark.at ? null : held.get(mark.side + mark.slot));
   const fx = createCombatEffects(moves, pawnAt, bases);
+  const cameraControl = tableCamera(canvas, camera, (angle) => {
+    bases.cowboy.aim(angle, cameraControl.view().zoom);
+    arrange();
+    draw();
+  });
+  const transfers = createTableTransfers(
+    moves,
+    camera,
+    () => view?.viewer,
+    (id) => {
+      host
+        .closest("#showdown")
+        .querySelectorAll("#sd-hand [data-card]")
+        .forEach((button) => {
+          button.classList.toggle("table-card-flying", button.dataset.card === id);
+        });
+    },
+  );
+  document.addEventListener("keydown", (event) => {
+    if (
+      view &&
+      !host.closest("#showdown").hidden &&
+      !document.querySelector("dialog[open]") &&
+      !event.target.matches?.("input,textarea,select")
+    ) {
+      cameraControl.key(event);
+    }
+  });
 
   function label(key, [x, y, z], word, active = true) {
     if (!worldLabels.has(key)) {
@@ -201,30 +249,16 @@ function build(host, canvas) {
     element.style.left = (projection.x * 0.5 + 0.5) * width + "px";
     element.style.top = (0.5 - projection.y * 0.5) * height + "px";
   }
-  function placeControl(selector, x, y, z) {
+  function placeControl(selector, x, y, z, span = 2.37) {
     const button = host.querySelector(selector);
+    if (!button) return null;
     place(button, x, y, z);
-    if (!button?.matches("[data-base], [data-frame]")) return;
-    const notes = button.querySelectorAll(":scope > .sd-note");
-    if (!notes.length) return;
-    const detail = document.createElement("span");
-    detail.className = "sd-world-detail";
-    detail.append(...notes);
-    button.append(detail);
-  }
-  function paintOrbs(button, hp, maximum) {
-    const attr = button?.querySelector(".sd-orbs");
-    if (!attr) return;
-    const label = hp + " of " + Math.max(hp, maximum) + " orbs";
-    if (attr.dataset.visualCount === label) return;
-    attr.dataset.visualCount = label;
-    // The native accessible label already names the resolved result. Stage only the drawn pips.
-    attr.firstChild?.remove();
-    attr.replaceChildren(document.createTextNode("●".repeat(hp)));
-    const lost = document.createElement("span");
-    lost.className = "sd-lost";
-    lost.textContent = "○".repeat(Math.max(0, maximum - hp));
-    attr.append(lost);
+    button.style.setProperty("--hit-width", (width / 38) * span + "px");
+    button.style.setProperty(
+      "--hit-height",
+      Math.min(width < 650 ? 28 : 80, (width / 38) * span * 0.91) + "px",
+    );
+    return button;
   }
   function arrange() {
     if (!display || canvas.hidden) return;
@@ -232,23 +266,29 @@ function build(host, canvas) {
     for (const side of SIDES) {
       const s = display.sides[side];
       const [bx, , bz] = zone(side, "base");
-      placeControl(`[data-base="${side}"]`, bx, 0.05, bz + 1.25);
+      placeControl(`[data-base="${side}"]`, bx, 0.76, bz + 0.61, 3.04);
       bases[side].update(s.base, s.baseMax);
-      paintOrbs(host.querySelector(`[data-base="${side}"]`), s.base, s.baseMax);
+      label(side + "base", [bx, 0.37, bz + 1.63], s.base === 0 ? "Base fallen" : s.base + " ●");
       for (let slot = 0; slot < BOARD_SIZE; slot++) {
         const [x, , z] = zone(side, "troop", slot);
         const selector = `[data-slot="${side}-${slot}"]`;
         const troop = s.board[slot];
         const actual = view.sides[side].board[slot];
-        // The tag sits beside the miniature so a rear slot never hides the next figure.
-        const shift = width < 1010 ? 1.38 : 1.59;
-        placeControl(selector, x + (troop ? shift : 0), 0.22, z + 0.73);
-        const btn = host.querySelector(selector);
+        const btn = placeControl(selector, x, 0.28, z + 0.45);
         const temporary = troop?.cardId !== actual?.cardId;
         if (btn) btn.dataset.previewSwap = temporary ? "1" : "";
-        const word = temporary && troop ? cardOf(troop.cardId).name + " " + "●".repeat(troop.health) : "";
-        label(side + "snapshot" + slot, [x + shift, 0.18, z + 0.71], word);
-        if (troop && !temporary) paintOrbs(btn, troop.health, cardOf(troop.cardId).health);
+        const word = troop ? cardOf(troop.cardId).name : "";
+        label(side + "snapshot" + slot, [x, 0.08, z + 1.3], word);
+        const text = worldLabels.get(side + "snapshot" + slot);
+        text.dataset.pieceLabel = "1";
+        text.dataset.runeLabel = side === "wizard" ? "1" : "";
+        pawnAt({ side, slot })?.highlight(
+          btn?.classList.contains("sd-pick") || btn?.classList.contains("sd-chosen")
+            ? 2
+            : btn?.classList.contains("sd-can")
+              ? 1
+              : 0,
+        );
       }
       for (const [at, count, title] of [
         ["deck", s.deckCount, "Deck"],
@@ -301,16 +341,7 @@ function build(host, canvas) {
     width = nextWidth;
     height = nextHeight;
     if (!width || !height || canvas.hidden) return;
-    const aspect = width / height;
-    const spread = Math.max(8.4, 19.01 / aspect);
-    camera.left = -spread * aspect;
-    camera.right = spread * aspect;
-    camera.top = spread;
-    camera.bottom = -spread;
-    camera.position.copy(viewTarget).add(new T.Vector3(13, 34, 45));
-    camera.lookAt(viewTarget);
-    camera.updateProjectionMatrix();
-    camera.updateMatrixWorld(true);
+    cameraControl.resize(width, height);
     renderer.setSize(width, height, false);
     pipeline.setSize(width, height);
     arrange();
@@ -351,20 +382,16 @@ function build(host, canvas) {
   function stop() {
     epoch++;
     fx.clear();
+    transfers.clear();
+    dressing.reset();
+    bases.cowboy.swing(0);
     delete canvas.dataset.motion;
   }
   function paint(next, start) {
     stop();
     view = next;
     canvas.hidden = false;
-    for (const button of host.closest("#showdown").querySelectorAll("#sd-hand [data-card]")) {
-      if (button.querySelector(".sd-card-art")) continue;
-      const id = typeOf(button.dataset.card),
-        art = portrait(id);
-      if (art) button.prepend(art);
-      button.classList.toggle("sd-captured-art", id.startsWith("cowboy-captured-"));
-    }
-    synchronize(start && BROAD.matches && !REDUCED.matches ? start : next);
+    synchronize(start && !REDUCED.matches ? start : next);
   }
   function clear() {
     stop();
@@ -376,7 +403,7 @@ function build(host, canvas) {
   function animate(trace) {
     stop();
     if (!view) return;
-    const beats = BROAD.matches && !REDUCED.matches ? presentationBeats(trace) : [];
+    const beats = !REDUCED.matches ? presentationBeats(trace) : [];
     if (!beats.length) return synchronize(view);
     const run = epoch;
     const initial = performance.now();
@@ -403,9 +430,19 @@ function build(host, canvas) {
         const newBeat = !phase.startsWith(index + ":");
         phase = index + ":" + (hit ? "hit" : "pre");
         synchronize(hit ? beat.hit : beat.pre);
-        if (newBeat) fx.begin(beat, makePawn, (token) => disposePawn(token.group));
+        if (newBeat) {
+          fx.begin(beat, makePawn, (token) => disposePawn(token.group));
+          transfers.begin(beat);
+        }
       }
       canvas.dataset.motion = beat.kind;
+      dressing.frame(beat, local);
+      bases.cowboy.swing(
+        beat.kind === "summon" && beat.from.side === "cowboy"
+          ? 0.84 * Math.sin((Math.PI * local) / beat.duration)
+          : 0,
+      );
+      transfers.frame(local);
       fx.frame(local);
       draw();
       requestAnimationFrame(frame);
@@ -438,9 +475,14 @@ function disposePawn(group) {
 
 export function mountDiorama(root) {
   const field = root.querySelector("#sd-field");
+  const table = bindTableUI(root);
   const canvas = document.createElement("canvas");
   canvas.className = "sd-world";
-  canvas.setAttribute("aria-hidden", "true");
+  canvas.setAttribute(
+    "aria-label",
+    "Three-dimensional board. Drag to rotate, scroll to zoom, zero to reset the view.",
+  );
+  canvas.tabIndex = 0;
   canvas.hidden = true;
   const labels = document.createElement("div");
   labels.className = "sd-world-labels";
@@ -452,6 +494,7 @@ export function mountDiorama(root) {
     game?.clear();
     canvas.hidden = true;
     root.classList.remove("sd-diorama");
+    table.restore();
     failed = true;
   }
   canvas.addEventListener("webglcontextlost", fallback);
@@ -468,10 +511,12 @@ export function mountDiorama(root) {
         }
       }
       root.classList.add("sd-diorama");
+      table.paint(view);
       game.paint(view, start);
     },
     clear() {
       game?.clear();
+      table.restore();
       root.classList.remove("sd-diorama");
     },
     animate(trace) {

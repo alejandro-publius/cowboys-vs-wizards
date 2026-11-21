@@ -27,6 +27,9 @@ const timings = {
   location: [410, 200],
   tribute: [340, 220],
   burn: [285, 160],
+  draw: [640, 500],
+  play: [570, 455],
+  burial: [740, 622],
 };
 
 function attackKind(id, to, standing) {
@@ -42,6 +45,7 @@ export function presentationBeats(trace) {
   for (const { before, after, events } of trace) {
     const table = structuredClone(before);
     const fallen = new Map();
+    const departures = [];
     const find = (side, id) => {
       const slot = table.sides[side].board.findIndex((t) => t?.cardId === id);
       return slot < 0 ? (fallen.get(id)?.mark ?? source(side, "row")) : { side, slot };
@@ -51,10 +55,11 @@ export function presentationBeats(trace) {
       const t = get(mark);
       if (t) t.health = hp;
     };
-    const clear = (mark) => {
+    const clear = (mark, transfer = true) => {
       const t = get(mark);
       if (t) {
         fallen.set(t.cardId, { mark, troop: structuredClone(t) });
+        if (transfer) departures.push({ from: mark, side: mark.side, cardId: t.cardId });
         table.sides[mark.side].board[mark.slot] = null;
       }
     };
@@ -95,8 +100,14 @@ export function presentationBeats(trace) {
           });
           break;
         case "draw":
-          table.sides[s].deckCount = Math.max(0, table.sides[s].deckCount - 1);
-          table.sides[s].handCount++;
+          {
+            const drawn = after.sides[s].hand?.find((id) => !table.sides[s].hand?.includes(id));
+            add("draw", source(s, "deck"), [source(s, "hand")], { ...e, cardId: drawn }, () => {
+              table.sides[s].deckCount = Math.max(0, table.sides[s].deckCount - 1);
+              table.sides[s].handCount++;
+              if (drawn) table.sides[s].hand?.push(drawn);
+            });
+          }
           break;
         case "burn":
           add("burn", source(s, "deck"), [source(s, "discard")], e, () => {
@@ -111,13 +122,19 @@ export function presentationBeats(trace) {
           break;
         case "set": {
           const at = zone(s, "trap", Math.min(table.sides[s].trapCount, TRAP_SLOTS - 1));
-          add("set", base, [at], e, () => {
+          add("set", source(s, "hand"), [at], e, () => {
             table.sides[s].trapCount = after.sides[s].trapCount;
           });
           break;
         }
         case "location":
-          add("location", base, [source(null, "location")], e, () => {
+          if (table.location)
+            departures.push({
+              from: source(null, "location"),
+              side: table.location.side,
+              cardId: table.location.cardId,
+            });
+          add("location", source(s, "hand"), [source(null, "location")], e, () => {
             table.location = after.location;
           });
           break;
@@ -125,7 +142,7 @@ export function presentationBeats(trace) {
         case "raise": {
           const slot = table.sides[s].board.indexOf(null);
           const at = slot < 0 ? own(e.cardId) : { side: s, slot };
-          add(e.type, e.type === "raise" ? source(s, "discard") : base, [at], e, () =>
+          add(e.type, e.type === "raise" ? source(s, "discard") : source(s, "hand"), [at], e, () =>
             spawn(s, e.cardId, at, e.type === "raise"),
           );
           break;
@@ -133,7 +150,7 @@ export function presentationBeats(trace) {
         case "tribute": {
           const at = own(e.cardId);
           add("tribute", at, [source(s, "discard")], e, () => {
-            clear(at);
+            clear(at, false);
             table.sides[s].discard.push(e.cardId);
           });
           break;
@@ -148,7 +165,7 @@ export function presentationBeats(trace) {
         }
         case "gear": {
           const at = own(e.target);
-          add("gear", base, [at], e, () => {
+          add("gear", source(s, "hand"), [at], e, () => {
             const t = get(at);
             const actual = after.sides[s].board[at.slot];
             if (t && actual) {
@@ -162,9 +179,9 @@ export function presentationBeats(trace) {
           const at = foe(e.target);
           add("trap", zone(s, "trap", 0), [at], e, () => {
             table.sides[s].trapCount = Math.max(0, table.sides[s].trapCount - 1);
-            table.sides[s].discard.push(e.cardId);
             hurt(at, e.left);
           });
+          departures.push({ from: zone(s, "trap", 0), side: s, cardId: e.cardId });
           break;
         }
         case "spell": {
@@ -175,6 +192,7 @@ export function presentationBeats(trace) {
           while (kind === "hellfire" && events[i + 1]?.type === "spell" && events[i + 1].cardId === e.cardId)
             hits.push(events[++i]);
           const targets = hits.map((h) => foe(h.target));
+          add("play", source(s, "hand"), [source(s, "row")], e);
           add(kind, kind === "lasso" ? base : source(s, "row"), targets, e, () => {
             hits.forEach((h, j) => {
               hurt(targets[j], h.left);
@@ -182,6 +200,7 @@ export function presentationBeats(trace) {
               if (t && h.stunned) t.stunned = true;
             });
           });
+          departures.push({ from: source(s, "row"), side: s, cardId: e.cardId });
           break;
         }
         case "attack": {
@@ -237,6 +256,11 @@ export function presentationBeats(trace) {
           break;
         }
       }
+    }
+    for (const { from, side, cardId } of departures) {
+      add("burial", from, [source(side, "discard")], { side, cardId }, () => {
+        table.sides[side].discard.push(cardId);
+      });
     }
   }
   return beats;

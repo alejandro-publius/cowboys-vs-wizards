@@ -124,7 +124,12 @@ export function createCombatEffects(parent, pawnAt, bases) {
       impact = pulse(t, 0, 0.07, 0.37),
       falling = defeated ? smooth(t, 0.032, 0.31) : 0;
     switch (klass) {
-      case "bone":
+      case "bone": {
+        const skull = token.model.getObjectByName("skull");
+        if (skull) {
+          skull.position.set(dir * (0.12 * impact + 0.37 * falling), -0.65 * falling, 0.31 * falling);
+          skull.rotation.z = dir * 0.79 * falling;
+        }
         movePawn(
           token,
           dir * 0.13 * impact,
@@ -134,6 +139,7 @@ export function createCombatEffects(parent, pawnAt, bases) {
         );
         if (point) flecks(point, t, palette.bone, 5);
         break;
+      }
       case "horse":
         {
           const rider = token.model.getObjectByName("rider");

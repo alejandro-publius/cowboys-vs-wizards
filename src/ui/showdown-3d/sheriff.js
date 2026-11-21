@@ -23,6 +23,9 @@ const PAL = {
   iron: 0x4f555c,
   wood: 0x7b4a2a,
   eye: 0x1c1410,
+  thread: 0xd3a26d,
+  feltEdge: 0xe9bd78,
+  moustacheGrey: 0x9a7353,
 };
 
 function mat(color, o = {}) {
@@ -57,6 +60,9 @@ const M = {
   iron: mat(PAL.iron, { r: 0.4, m: 0.75 }),
   wood: mat(PAL.wood, { r: 0.6 }),
   eye: mat(PAL.eye, { r: 0.3 }),
+  thread: mat(PAL.thread, { r: 0.88 }),
+  feltEdge: mat(PAL.feltEdge, { r: 0.84 }),
+  moustacheGrey: mat(PAL.moustacheGrey),
 };
 
 function add(parent, geo, material, p = [0, 0, 0], r = [0, 0, 0], s = [1, 1, 1]) {
@@ -245,6 +251,22 @@ export function makeSheriff() {
   add(hips, sphere(1, 20, 14), M.pants, [0, -0.02, 0], [0, 0, 0], [0.2, 0.13, 0.25]);
   add(hips, cyl(0.26, 0.255, 0.075, 22), M.belt, [0, 0.03, 0], [0, 0, 0], [0.86, 1, 1]);
   add(hips, new T.BoxGeometry(0.03, 0.065, 0.1), M.brass, [0.225, 0.03, 0]);
+  add(
+    hips,
+    new T.TorusGeometry(0.035, 0.008, 6, 16),
+    M.thread,
+    [0.249, 0.03, 0],
+    [0, Math.PI / 2, 0],
+    [1.31, 1, 1],
+  );
+  for (let i = 0; i < 5; i++) {
+    const a = 0.42 + i * 0.18;
+    add(hips, new T.CylinderGeometry(0.013, 0.015, 0.084, 8), M.brass, [
+      Math.cos(a) * 0.229,
+      0.018,
+      Math.sin(a) * 0.249,
+    ]);
+  }
   add(hips, new T.BoxGeometry(0.12, 0.13, 0.07), M.belt, [0.04, -0.07, 0.27], [0, 0, 0.12]); // holster
   const gap = 0.42,
     split = 0.12;
@@ -309,6 +331,30 @@ export function makeSheriff() {
       [0.28 * s, 0.25 * s, 0.05],
     );
     add(chest, sphere(0.018, 10, 8), M.brass, [0.235, 0.15 + (s > 0 ? 0 : 0.1), 0.07 * s]);
+    for (let j = 0; j < 7; j++) {
+      const y = 0.152 + j * 0.043;
+      add(
+        chest,
+        new T.BoxGeometry(0.014, 0.024, 0.009),
+        M.thread,
+        [0.192 + Math.sin(j * 0.27) * 0.027, y, s * (0.141 + 0.008 * j)],
+        [0, 0.24 * s, -0.1],
+      );
+    }
+    add(
+      chest,
+      new T.BoxGeometry(0.053, 0.131, 0.127),
+      M.coatDark,
+      [0.135, 0.23, s * 0.227],
+      [0, 0.44 * s, -0.14],
+    );
+    add(
+      chest,
+      new T.BoxGeometry(0.057, 0.022, 0.143),
+      M.thread,
+      [0.141, 0.303, s * 0.231],
+      [0, 0.44 * s, -0.14],
+    );
   }
   add(chest, starGeometry(), M.brass, [0.23, 0.4, 0.14], [0, Math.PI / 2 - 0.35, 0.05]);
   add(chest, sphere(0.014, 8, 6), M.brass, [0.255, 0.4, 0.15]);
@@ -327,6 +373,14 @@ export function makeSheriff() {
   add(chest, sphere(0.06, 12, 10), M.scarf, [0.15, 0.62, 0.02]);
   add(chest, new T.ConeGeometry(0.06, 0.17, 4), M.scarfDark, [0.17, 0.52, 0.05], [0, 0.3, Math.PI + 0.15]);
   add(chest, new T.ConeGeometry(0.05, 0.14, 4), M.scarf, [0.165, 0.53, -0.04], [0, -0.3, Math.PI - 0.2]);
+  for (const [px, py, pz] of [
+    [0.185, 0.652, 0.088],
+    [0.16, 0.627, 0.118],
+    [0.169, 0.612, -0.106],
+    [0.179, 0.65, -0.081],
+  ]) {
+    add(chest, sphere(0.012, 8, 6), M.thread, [px, py, pz], [0, 0, 0], [0.73, 1.13, 1]);
+  }
 
   const arms = [buildArm(chest, 1, burn), buildArm(chest, -1, burn)];
   const { muzzle } = buildRevolver(arms[0].wrist);
@@ -345,6 +399,8 @@ export function makeSheriff() {
     add(head, sphere(0.035, 10, 8), M.ruddy, [0.165, 0.15, 0.12 * s], [0, 0, 0], [0.5, 0.7, 1]); // cheeks
     add(head, capsule(0.03, 0.09, 8), M.stache, [0.205, 0.105, 0.065 * s], [0.95 * s, 0, 0]);
     add(head, sphere(0.032, 10, 8), M.stache, [0.19, 0.07, 0.13 * s]);
+    add(head, capsule(0.019, 0.071, 7), M.moustacheGrey, [0.222, 0.103, s * 0.091], [0.91 * s, 0, -0.04]);
+    add(head, new T.BoxGeometry(0.008, 0.012, 0.051), M.ruddy, [0.178, 0.194, s * 0.109], [s * 0.27, 0, 0]);
   }
   // ---- Hat ----
   const hat = group(head, [0, 0.3, 0], "hat");
@@ -353,6 +409,10 @@ export function makeSheriff() {
   add(hat, crownGeometry(), M.hat, [0, 0.01, 0]);
   add(hat, cyl(0.226, 0.236, 0.05, 28), M.band, [0, 0.045, 0], [0, 0, 0], [0.93, 1, 1]);
   add(hat, cyl(0.022, 0.022, 0.012, 12), M.brass, [0.012, 0.045, 0.232], [Math.PI / 2, 0, 0]);
+  for (let i = 0; i < 12; i++) {
+    const angle = 0.21 + i * 0.43;
+    add(hat, sphere(0.0105, 8, 5), M.feltEdge, [0.252 * Math.cos(angle), 0.053, 0.238 * Math.sin(angle)]);
+  }
 
   // ---- Pose ----
   const near = arms[0],

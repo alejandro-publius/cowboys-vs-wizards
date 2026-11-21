@@ -48,10 +48,12 @@ test("covered Last Stand, Ride, and lethal Sweep retain distinct contact outcome
   const guard = present(block, { type: "attack", slot: 0, target: 0 });
   assert.deepEqual(
     guard.map((s) => s.kind),
-    ["gun", "laststand"],
+    ["gun", "laststand", "burial"],
   );
   assert.equal(guard[0].blocked, 1);
   assert.equal(guard[1].hit.sides.cowboy.board[0].health, 3);
+  assert.deepEqual(guard[2].from, { side: "wizard", slot: 0 });
+  assert.equal(guard[2].hit.sides.wizard.discard.at(-1), guard[2].cardId);
   const ride = fixture([actor("cowboy-mounted-billy", 4)], [actor("wizard-skeleton", 3)]);
   const [bypass] = present(ride, { type: "attack", slot: 0, target: "base" });
   assert.equal(bypass.kind, "ride");
@@ -73,7 +75,7 @@ test("Hex stops an attack, Lasso shows a stun, and Hellfire groups public target
   const stopped = present(trap, { type: "attack", slot: 0, target: 0 });
   assert.deepEqual(
     stopped.map((s) => s.kind),
-    ["trap"],
+    ["trap", "burial"],
   );
   assert.equal(stopped[0].stopped, true);
   assert.equal(stopped[0].hit.sides.cowboy.board[0].health, 3);
@@ -84,13 +86,31 @@ test("Hex stops an attack, Lasso shows a stun, and Hellfire groups public target
   );
   spell.sides.wizard.hand = ["wizard-hellfire-1"];
   const flame = present(spell, { type: "spell", cardId: "wizard-hellfire-1" });
-  assert.equal(flame.length, 1);
-  assert.equal(flame[0].kind, "hellfire");
-  assert.equal(flame[0].targets.length, 2);
+  assert.deepEqual(
+    flame.map((step) => step.kind),
+    ["play", "hellfire", "burial"],
+  );
+  assert.equal(flame[1].targets.length, 2);
   const rope = fixture([actor("cowboy-billy", 4)], [actor("wizard-skeleton", 2)]);
   rope.sides.cowboy.hand = ["cowboy-lasso-1"];
-  const [tie] = present(rope, { type: "spell", cardId: "cowboy-lasso-1", target: 0 });
+  const [, tie] = present(rope, { type: "spell", cardId: "cowboy-lasso-1", target: 0 });
   assert.equal(tie.kind, "lasso");
   assert.equal(tie.hit.sides.wizard.board[0].stunned, true);
   assert.equal(tie.hit.sides.wizard.board[0].health, 2);
+});
+
+test("the visible draw comes from the deck without revealing the opposing hand", () => {
+  const before = fixture([], []);
+  const { state: after, events } = applyAction(before, { type: "end" });
+  const drawFor = (seat) =>
+    presentationBeats([{ before: viewFor(before, seat), after: viewFor(after, seat), events }]).find(
+      (step) => step.kind === "draw",
+    );
+  const hidden = drawFor("cowboy");
+  const visible = drawFor("wizard");
+  assert.equal(hidden.from.at, "deck");
+  assert.equal(hidden.targets[0].at, "hand");
+  assert.equal(hidden.cardId, undefined);
+  assert.equal(visible.cardId, after.sides.wizard.hand.at(-1));
+  assert.equal(visible.hit.sides.wizard.deckCount, visible.pre.sides.wizard.deckCount - 1);
 });

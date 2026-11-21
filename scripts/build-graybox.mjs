@@ -28,15 +28,20 @@ const atlas = diorama ? await readFile(file("assets/cards/showdown-diorama.webp"
   if (error.code === "ENOENT") return "";
   throw error;
 }) : "";
+const paintings = diorama ? Object.fromEntries(await Promise.all(Object.entries({
+  "cowboy-sheriff": "sheriff", "cowboy-billy": "billy", "cowboy-mounted-billy": "mounted-billy",
+  "cowboy-deadeye": "deadeye", "wizard-skeleton": "skeleton", "wizard-wizard": "wizard",
+  "wizard-dragon": "dragon", "wizard-singularity": "singularity",
+}).map(async ([id,name]) => [id, "data:image/webp;base64," + await readFile(file(`assets/cards/${name}-card.webp`),"base64")]))) : {};
 const options = {absWorkingDir: fileURLToPath(root), bundle: true, write: false, platform: "browser", target: "es2022", minify: true,
   define: {__CVW_GRAYBOX_BUILD__: JSON.stringify(label), __CVW_OUTRIDER__: JSON.stringify({cases: outrider.cases, camp: outrider.camp}),
     __CVW_OUTRIDER_LEDGER__: JSON.stringify(outrider.ledger), __CVW_DIORAMA__: JSON.stringify(diorama),
-    __CVW_DIORAMA_ATLAS__: JSON.stringify(atlas)}};
+    __CVW_DIORAMA_ATLAS__: JSON.stringify(atlas), __CVW_TABLE_ILLUSTRATIONS__: JSON.stringify(paintings)}};
 const [template, style, showdownStyle, boardStyle, boardLicense, bundle] = await Promise.all([
   read("src/ui/graybox.html"),
   read("src/ui/graybox.css"),
   read("src/ui/showdown.css"),
-  diorama ? read("src/ui/showdown-3d/board.css") : "",
+  diorama ? Promise.all([read("src/ui/showdown-3d/board.css"),read("src/ui/showdown-3d/table.css")]).then(parts=>parts.join("\n")) : "",
   diorama ? read("src/ui/showdown-3d/graphics/THREE-LICENSE") : "",
   build({...options, entryPoints: ["src/app.js"]}),
 ]);
