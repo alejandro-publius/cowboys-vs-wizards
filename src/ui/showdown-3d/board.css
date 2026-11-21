@@ -158,7 +158,7 @@
   width: 100%;
   aspect-ratio: 1.32;
   margin-bottom: 0.36rem;
-  background-size: 600% 500%;
+  background-size: 600% 600%;
   background-image: var(--sd-card-atlas);
   background-repeat: no-repeat;
   border-radius: 2px;

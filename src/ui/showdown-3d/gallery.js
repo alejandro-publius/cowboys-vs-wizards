@@ -16,7 +16,7 @@ export function portrait(id) {
   image.className = "sd-card-art";
   image.setAttribute("aria-hidden", "true");
   const i = order.get(id);
-  image.style.backgroundPosition = `${(i % 6) * 20}% ${Math.floor(i / 6) * 25}%`;
+  image.style.backgroundPosition = `${(i % 6) * 20}% ${Math.floor(i / 6) * 20}%`;
   return image;
 }
 
