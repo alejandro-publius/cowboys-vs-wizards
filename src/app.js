@@ -99,7 +99,9 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
       showdown.start(duel, seedFor(), {players, best});
     }});
   diorama?.mountGallery(title, screen);
-  play.addEventListener("click", toCamp);
+  // Play from the title is a fresh entry: forget the control of the last duel so toCamp opens on the Trail instead of
+  // restoring that duel's room. Only a return from a duel (home, Back to camp) keeps `last`.
+  play.addEventListener("click", () => { last = null; outpost?.close(); toCamp(); });
   // Experiment for review (K-095, K-008): two recorded Dragon turns, opened from these optional Camp controls or
   // ?turn=dragon-c5 and ?turn=dragon-c5-70. Only ids allowlisted in showdown-turn.js open; it saves nothing.
   const TURN_CONTROLS = {"dragon-c5": "camp-turn-dragon", "dragon-c5-70": "camp-turn-dragon-70"};
