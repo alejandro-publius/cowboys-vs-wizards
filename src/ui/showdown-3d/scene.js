@@ -13,11 +13,13 @@ import { tableCamera } from "./table-camera.js";
 import { createTableTransfers } from "./table-transfers.js";
 import { dressTable } from "./table-dressing.js";
 import { makeEmbers, makeFaeries } from "./embers.js";
+import { loadStoryActors, storyActor } from "./story-actors.js";
 import { mountGallery as mountCardGallery } from "./gallery.js";
 export { paintCardFaces } from "./table-ui.js";
 import { COLORS, SIDES, zone } from "./layout.js";
 
 const FACEDOWN = 0x2a213b;
+const HAS_PANORAMA = typeof __CVW_HAS_PANORAMA__ !== "undefined" && __CVW_HAS_PANORAMA__;
 const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)");
 const solid = (color) => new T.MeshStandardMaterial({ color, roughness: 0.88, flatShading: true });
 const flat = (color) => new T.MeshBasicMaterial({ color });
@@ -41,7 +43,7 @@ function cardPiece(parent, color, scale = 1) {
   mark.rotation.y = Math.PI / 4;
 }
 
-function pawn(side, id) {
+function pawn(side, id, camera) {
   const group = new T.Group();
   const { tile, line, dark, orb } = COLORS[side];
   mesh(group, "box", solid(dark), [0, 0.052, 0], [2.8, 0.105, 1.87]);
@@ -71,6 +73,7 @@ function pawn(side, id) {
   const restScale = miniature.scale.x;
   miniature.position.set(0, 0.146, -0.07);
   group.add(miniature);
+  const skin = storyActor(id, group, miniature, camera);
   const gear = new T.Group();
   group.add(gear);
   const embers = makeEmbers(group, side, id);
@@ -104,6 +107,7 @@ function pawn(side, id) {
     group,
     model: miniature,
     rig,
+    skin,
     embers,
     restScale,
     id,
@@ -130,6 +134,7 @@ function pawn(side, id) {
       miniature.getObjectByName("dagger-arm")?.rotation.set(0, 0, 0);
       miniature.scale.set(restScale, restScale * (troop.stunned ? 0.92 : troop.cover ? 0.9 : 1), restScale);
       if (rig) rig.pose({});
+      skin?.pose("idle");
       stun.visible = Boolean(troop.stunned);
       while (pips.children.length > troop.health) pips.remove(pips.children.at(-1));
       while (pips.children.length < troop.health)
@@ -152,14 +157,16 @@ function pawn(side, id) {
 }
 
 function build(host, canvas, screen, closeup = false) {
-  const renderer = new T.WebGLRenderer({ canvas, antialias: false });
+  void loadStoryActors().then(() => draw());
+  const renderer = new T.WebGLRenderer({ canvas, antialias: false, alpha: HAS_PANORAMA });
+  if (HAS_PANORAMA) renderer.setClearColor(0x000000, 0);
   renderer.setPixelRatio(1);
   renderer.outputColorSpace = T.LinearSRGBColorSpace;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = T.PCFShadowMap;
   const pipeline = new PixelRenderer(renderer);
   const scene = new T.Scene();
-  scene.background = new T.Color(0x17243a);
+  if (!HAS_PANORAMA) scene.background = new T.Color(0x17243a);
   const camera = new T.OrthographicCamera(-20, 20, 10, -10, 0.1, 120);
   const hemi = new T.HemisphereLight(0xffefd6, 0x796b8e, 2.28);
   const sun = new T.DirectionalLight(0xffd2a4, 2.34);
@@ -176,7 +183,7 @@ function build(host, canvas, screen, closeup = false) {
   const bases = makeBases(scene);
   const dressing = dressTable(scene);
   const faeries = makeFaeries(scene);
-  pipeline.configure({ pixelSize: 2, outlines: true, dither: true, exposure: 1.035 });
+  pipeline.configure({ pixelSize: 2, outlines: !HAS_PANORAMA, dither: !HAS_PANORAMA, exposure: 1.035 });
   const moves = new T.Group();
   scene.add(moves);
   const held = new Map();
@@ -204,6 +211,7 @@ function build(host, canvas, screen, closeup = false) {
       draw();
     },
     closeup ? 1.63 : 1,
+    closeup ? [0, 1.05, -1.74] : undefined,
   );
   const transfers = createTableTransfers(
     moves,
@@ -341,7 +349,10 @@ function build(host, canvas, screen, closeup = false) {
       bases.wizard.ambient(now);
       const frame = Math.floor(now / 78);
       faeries(frame);
-      for (const [key, pawn] of held) pawn.embers?.(frame, flare?.key === key ? flare.strength : 0);
+      for (const [key, pawn] of held) {
+        pawn.skin?.sync();
+        pawn.embers?.(frame, flare?.key === key ? flare.strength : 0);
+      }
       pipeline.render(scene, camera);
     }
   }
@@ -364,7 +375,7 @@ function build(host, canvas, screen, closeup = false) {
   }
 
   function makePawn(mark, troop) {
-    const token = pawn(mark.side, troop.cardId);
+    const token = pawn(mark.side, troop.cardId, camera);
     token.group.position.set(...zone(mark.side, "troop", mark.slot));
     token.group.position.y = 0.14;
     token.update(troop);
@@ -495,6 +506,7 @@ function build(host, canvas, screen, closeup = false) {
 }
 
 export function mountGallery(title, duel) {
+  void loadStoryActors();
   mountCardGallery(title, duel, (host, canvas, dialog) => build(host, canvas, dialog, true));
 }
 
@@ -502,6 +514,10 @@ function disposePawn(group) {
   const materials = new Set(),
     geometries = new Set();
   group.traverse((node) => {
+    if (node.isSprite) {
+      node.material.dispose();
+      return;
+    }
     if (!node.isMesh) return;
     if (node.isInstancedMesh) node.dispose();
     for (const material of [node.material].flat())

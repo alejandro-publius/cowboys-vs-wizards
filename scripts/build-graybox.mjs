@@ -7,6 +7,14 @@ import {verifiedForBuild} from "./outrider-gate.mjs";
 const root = new URL("../", import.meta.url);
 const file = (name) => new URL(name, root);
 const read = (name) => readFile(file(name), "utf8");
+const artwork = async (name) => {
+  try {
+    return "data:image/webp;base64," + await readFile(file(name), "base64");
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+    return "";
+  }
+};
 // --hosted: the Pages copy at the site root (dist/web/index.html; scripts/stage-pages.mjs adds the
 // /graybox/ alias). It is the same single offline file as the other builds: the graybox game is
 // Showdown only (issue 143 slice 3), so no lane chunk exists and none is fetched.
@@ -32,15 +40,28 @@ const paintings = diorama ? Object.fromEntries(await Promise.all(Object.entries(
   "cowboy-sheriff": "sheriff", "cowboy-billy": "billy", "cowboy-mounted-billy": "mounted-billy",
   "cowboy-deadeye": "deadeye", "wizard-skeleton": "skeleton", "wizard-wizard": "wizard",
   "wizard-dragon": "dragon", "wizard-singularity": "singularity",
-}).map(async ([id,name]) => [id, "data:image/webp;base64," + await readFile(file(`assets/cards/${name}-card.webp`),"base64")]))) : {};
+}).map(async ([id,name]) => {
+  const revised = await artwork(`assets/cards/${name}-storybook.webp`);
+  return [id, revised || await artwork(`assets/cards/${name}-card.webp`)];
+}))) : {};
+if (diorama) {
+  const gatling = await artwork("assets/cards/gatling-storybook.webp");
+  if (gatling) paintings["cowboy-gatling-crew"] = gatling;
+}
+const panorama = diorama ? await artwork("assets/scenes/showdown-storybook.webp") : "";
+const poses = diorama ? await artwork("assets/scenes/showdown-poses.webp") : "";
+const billyPoses = diorama ? await artwork("assets/scenes/billy-poses.webp") : "";
 const frontier = diorama ? await Promise.all(["title", "camp"].map(async (view) => {
   const image = await readFile(file(`assets/scenes/showdown-${view}.webp`), "base64");
   return `--frontier-${view}:url("data:image/webp;base64,${image}");`;
 })) : [];
+if (panorama) frontier.push(`--frontier-panorama:url("${panorama}");`);
 const options = {absWorkingDir: fileURLToPath(root), bundle: true, write: false, platform: "browser", target: "es2022", minify: true,
   define: {__CVW_GRAYBOX_BUILD__: JSON.stringify(label), __CVW_OUTRIDER__: JSON.stringify({cases: outrider.cases, camp: outrider.camp}),
     __CVW_OUTRIDER_LEDGER__: JSON.stringify(outrider.ledger), __CVW_DIORAMA__: JSON.stringify(diorama),
-    __CVW_DIORAMA_ATLAS__: JSON.stringify(atlas), __CVW_TABLE_ILLUSTRATIONS__: JSON.stringify(paintings)}};
+    __CVW_DIORAMA_ATLAS__: JSON.stringify(atlas), __CVW_TABLE_ILLUSTRATIONS__: JSON.stringify(paintings),
+    __CVW_HAS_PANORAMA__: JSON.stringify(Boolean(panorama)), __CVW_DUEL_POSES__: JSON.stringify(poses),
+    __CVW_BILLY_POSES__: JSON.stringify(billyPoses)}};
 const [template, style, showdownStyle, boardStyle, boardLicense, bundle] = await Promise.all([
   read("src/ui/graybox.html"),
   read("src/ui/graybox.css"),

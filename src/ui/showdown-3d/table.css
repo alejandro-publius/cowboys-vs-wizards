@@ -12,12 +12,16 @@
 }
 .sd-diorama #sd-field {
   position: relative;
+  background:
+    linear-gradient(0deg, #101b30 3%, #10203830 55%, #12203322),
+    var(--frontier-panorama, none) 50% 23% / cover no-repeat;
   margin: 0;
 }
 .sd-diorama .sd-world {
   height: clamp(622px, 97dvh, 880px);
   width: 100%;
   aspect-ratio: auto;
+  background: transparent;
   cursor: grab;
   touch-action: none;
 }

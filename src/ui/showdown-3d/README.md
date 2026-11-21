@@ -12,6 +12,13 @@ WebGL. Camp's native Trail buttons are positioned over the map. Its Play
 button opens the same available duel, and Camp's rewards reuse the board's
 illustrated card faces.
 
+Boot Hill's storybook art comes from the approved ImageGen reference.
+The embedded sunset-and-moonrise panorama frames the 3D table. Cropped
+poses for the Sheriff, Billy and Skeleton are anchored to their board
+tiles, and their strikes use the same contact events as the 3D models.
+The opening hand, Gatling Crew and Dragon use matching card paintings.
+The rest of the roster uses the existing miniatures in the attack reel.
+
 The Cowboy and Wizard districts frame three troop spaces, two face-down trap
 spaces, a Base, a deck and a graveyard per side, and one shared Location. The
 native Showdown buttons handle all moves. The 3D scene reads the current

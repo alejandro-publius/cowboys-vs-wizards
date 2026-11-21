@@ -35,8 +35,10 @@ float distanceAt(vec2 uv){return cameraNear+texture2D(depthTexture,uv).r*(camera
 void main(){
   vec2 cell=floor(vUv*resolution);
   vec2 uv=(cell+0.5)/resolution;
-  vec3 rgb=encode(filmic(texture2D(colourTexture,uv).rgb*exposure));
-  if(!pixelMode){gl_FragColor=vec4(rgb,1.0);return;}
+  vec4 paint=texture2D(colourTexture,uv);
+  if(paint.a<.003){gl_FragColor=vec4(0.0);return;}
+  vec3 rgb=encode(filmic(paint.rgb*exposure));
+  if(!pixelMode){gl_FragColor=vec4(rgb,paint.a);return;}
   vec3 lab=toLab(rgb);
   if(dither && texture2D(depthTexture,uv).r<0.99999)lab.x+=bayer(cell)*0.045;
   float best=1.0e5;vec3 chosen=palette[0];
@@ -49,7 +51,7 @@ void main(){
     float bend=max(abs(l+r-2.0*z),abs(u+d-2.0*z));
     if(bend>max(pixelWorld*3.5,z*0.0025))chosen=palette[0];
   }
-  gl_FragColor=vec4(chosen,1.0);
+  gl_FragColor=vec4(chosen,paint.a);
 }`;
 
 /** Orthographic, demand-rendered pixel pipeline. Does not own the scene or renderer. */

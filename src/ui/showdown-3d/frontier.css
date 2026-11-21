@@ -36,10 +36,10 @@
   position: absolute;
   z-index: -1;
   inset: 0 0 23%;
-  background-image: var(--frontier-title);
+  background-image: var(--frontier-panorama, var(--frontier-title));
   background-repeat: no-repeat;
-  background-position: center bottom;
-  background-size: min(100%, 1750px) auto;
+  background-position: center top;
+  background-size: cover;
 }
 
 .title-scene {
@@ -155,6 +155,12 @@
   max-width: 1490px;
   padding: clamp(18px, 3vw, 46px);
   gap: 0;
+}
+
+#showdown-camp.camp-diorama {
+  background:
+    linear-gradient(#122135b3, #132031 365px),
+    var(--frontier-panorama, none) center top / 100% auto no-repeat;
 }
 
 #showdown-camp > header h1 {

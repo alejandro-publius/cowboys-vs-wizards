@@ -1,8 +1,8 @@
 import * as T from "three";
 
-export function tableCamera(canvas, camera, changed, initialZoom = 1) {
+export function tableCamera(canvas, camera, changed, initialZoom = 1, initialFocus = [0, 0.62, 1.3]) {
   const turn = new T.Vector3();
-  const focus = new T.Vector3(0, 0.62, 1.3);
+  const focus = new T.Vector3(...initialFocus);
   const ray = new T.Raycaster();
   const floor = new T.Plane(new T.Vector3(0, 1, 0));
   const touches = new Map();
@@ -113,7 +113,7 @@ export function tableCamera(canvas, camera, changed, initialZoom = 1) {
   canvas.addEventListener("pointerup", end);
   canvas.addEventListener("pointercancel", end);
   function reset() {
-    focus.set(0, 0.62, 1.3);
+    focus.set(...initialFocus);
     azimuth = 0.34;
     pitch = 0.61;
     zoom = initialZoom;

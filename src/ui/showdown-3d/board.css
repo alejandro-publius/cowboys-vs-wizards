@@ -321,14 +321,14 @@
   position: relative;
   display: block;
   overflow: hidden;
-  background: #17243a;
+  background: #17243a var(--frontier-panorama, none) center 26% / cover no-repeat;
 }
 .sd-gallery-attack canvas {
   display: block;
   width: 100%;
   height: auto;
   aspect-ratio: 2.08;
-  background: #17243a;
+  background: transparent;
   cursor: grab;
   touch-action: none;
 }
