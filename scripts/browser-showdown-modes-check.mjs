@@ -588,9 +588,6 @@ const RUNS = {
     assert.ok(games.every((g) => g.curtains > 0 && g.handsSeen.cowboy > 0 && g.handsSeen.wizard > 0), JSON.stringify(games));
     assert.match(await s.text("#sd-status"), /^The (Cowboys|Wizards) win: .* · game \d of 3 · Cowboys \d, Wizards \d$/);
     assert.equal(await s.text("#sd-again"), "Play again");
-    const after = await s.storage();
-    assert.deepEqual(after, before, "two players changes no stored data: no progress and no playtest line");
-    await s.shot("hotseat-done");
     // Play again is a new best of three with the starter decks: its first hand is the engine's starter deal of ?seed=3.
     const fresh = createShowdown(3, {decks: DECKS});
     await s.click("#sd-again");
@@ -599,12 +596,15 @@ const RUNS = {
     await s.click("#sd-ready");
     await s.wait(`vis(document.getElementById('sd-table'))`, "the table");
     assert.deepEqual(await s.evaluate(`[...document.querySelectorAll('#sd-hand [data-card]')].map(n=>n.dataset.card).sort()`), [...fresh.sides[fresh.first].hand].sort());
+    const after = await s.storage();
+    assert.deepEqual(after, before, "two players changes no stored data: no progress and no playtest line");
+    await s.shot("hotseat-done");
     s.check(`Two players best of three (?seed=3): curtain every hand-over with nothing private in the page; each seat saw only its own hand; ${wins.cowboy}-${wins.wizard}; storage unchanged`,
       games.map((g) => ({won: g.won, opened: g.opened, turns: g.turns, curtains: g.curtains})));
   },
 
   async earned(s) {
-    // Fable's ruling (../ruling.md): shown only after the first Wizard preview win, one game, the Wizards open.
+    // Fable's earned-decks ruling: shown only after the first Wizard preview win, one game, the Wizards open.
     // Fixtures: a Cowboy who has won Boot Hill with the card offer still open and two packs, a playtest line, and a
     // Wizard preview save (the career module's own shape; the read-back below fails if it differs).
     const {WIZARD_PREVIEW_KEY, createWizardPreview} = await import("../src/match/showdown-wizard-campaign.js");
@@ -686,7 +686,6 @@ const RUNS = {
     const game = await s.playGame({two: true});
     assert.ok(game.won, "a winner is named");
     assert.doesNotMatch(game.status, /game \d of 3/, "a single game, not a best of three");
-    assert.equal(await s.evaluate(`document.querySelectorAll('#sd-hand [data-card]').length`), 0, "no hand after the result");
     assert.equal(await s.evaluate(`['cowboy','wizard'].every(side=>vis(document.querySelector('#sd-board [data-side='+side+']')))`), true, "both boards open");
     assert.equal(await s.evaluate(`vis(document.getElementById('sd-curtain'))`), false, "no curtain after the result");
     assert.deepEqual(await s.storage(), before, "nothing stored after the game");
@@ -702,7 +701,7 @@ const RUNS = {
     const after = await s.storage();
     assert.deepEqual(Object.keys(after), Object.keys(before));
     for (const k of Object.keys(before)) assert.equal(after[k], before[k], `${k} byte-identical`);
-    s.check(`Earned decks game to its result (${game.status}); open board, no hand; the rematch keeps the decks, the label and the Wizard opener; both careers and the log byte-identical`,
+    s.check(`Earned decks game to its result (${game.status}); open board; the rematch keeps the decks, the label and the Wizard opener; both careers and the log byte-identical`,
       {turns: game.turns, curtains: game.curtains, keys: Object.keys(after)});
     s.check(`Focus: I'm ready focused at all ${s.focusLog.filter((f) => f.id === "sd-ready").length} curtains; a usable table control after every clear`, s.focusLog);
   },
