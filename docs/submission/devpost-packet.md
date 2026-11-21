@@ -1,6 +1,6 @@
 # Kiroween submission packet: Showdown
 
-> Draft for Alex's review. Revised November 20, 2026 (America/Los_Angeles) by a Kiro CLI worker, against `main` at [`96adf60`](https://github.com/alejandro-publius/cowboys-vs-wizards/commit/96adf6031b6159ab34fd7751180ced507f677104), the merge of PR #166. The public site's [build manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) named that commit when this was written. Fields marked **OWNER** need facts or decisions that only Alex or the team can supply. The earlier lane-duel packet (November 16–17) is kept as history at [`96adf60`](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/96adf6031b6159ab34fd7751180ced507f677104/docs/submission/devpost-packet.md).
+> Draft for Alex's review. Demo, closing-loop and URL notes refreshed November 20, 2026 by Kiro CLI worker `judges` (K-099, K-101, K-102) from `main` at [`ea183ee`](https://github.com/alejandro-publius/cowboys-vs-wizards/commit/ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df); nothing was submitted. The rest was revised November 20, 2026 (America/Los_Angeles) by a Kiro CLI worker, against `main` at [`96adf60`](https://github.com/alejandro-publius/cowboys-vs-wizards/commit/96adf6031b6159ab34fd7751180ced507f677104), the merge of PR #166. The public site's [build manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) named that commit when this was written. Fields marked **OWNER** need facts or decisions that only Alex or the team can supply. The earlier lane-duel packet (November 16–17) is kept as history at [`96adf60`](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/96adf6031b6159ab34fd7751180ced507f677104/docs/submission/devpost-packet.md).
 
 ## Pitch
 
@@ -12,6 +12,8 @@ Here is one decision to try. Cowboy turn 5 of the Graveyard Dragon hunt: your Ra
 - [Seed 70 position](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5-70): the Ranger's supporting troop is a **Covered Wagon** (1/4).
 
 Both also open from Camp (Play, then the Experiment controls), and neither touches your saved career. If you are testing a player, let them choose before you show this section.
+
+**How the decision connects to Kiro.** The same Camp holds the Sheriff's Ledger. It shows Night Watch's 2,000-game bot run on the ruleset and the Night Shift review of one draft card change, Sheriff health 3 → 4, which a separate reviewer **rejected** on both tuning and holdout seeds. Kiro ran that draft, review and re-verify as the native Workflow `wf_0756c413da3e189f` ([native Sheriff review](../evidence/night-shift-native-showdown.md)). No card changed. Fable and Alex decide card changes, and Night Shift drafts and balance previews are not live rules.
 
 ## The two positions
 
@@ -42,11 +44,11 @@ Three visible things differ: the supporting troop, the trap and the Wizard Base.
 | Bot | Night Watch's scheduled Crew run on November 20 played 2,000 bot games: the first player won 57.1% and the Cowboys 59.4%. | [Scheduled run receipt](../evidence/night-shift/crew-scheduled-2026-11-20.json) |
 | Native Kiro | See [How Kiro was used](#how-kiro-was-used-on-showdown). | |
 
-**Planned, not done:** a public demo release, meaning the narrated video under three minutes and its public URL. A separate worker owns the [demo script and capture](judge-demo-script.md), which still describes the lane duel at this commit.
+**Planned, not done:** a public demo release, meaning the narrated video under three minutes and its public URL. The [demo script](judge-demo-script.md) now describes Showdown. Its current rehearsal (November 20, from `ea183ee`) runs about 136 seconds: the existing private 85-second Dragon cut, then two short captures for Alex of the Sheriff's Ledger review and the native Night Shift Workflow run. [Sequence and evidence matrix](judge-demo-script.md#current-one-closing-loop-decision-to-reviewed-candidate-owner-rehearsal-about-216).
 
 ## Project
 
-Cowboys vs. Wizards. The entry is **Showdown**, served at the [site root](https://alejandro-publius.github.io/cowboys-vs-wizards/). Play opens the Camp, which holds the Trail of duels, rivals, Wanted hunts, packs, the deck builder, best of three, two players on one screen and the Sheriff's Ledger. Wins, rewards and card choices are saved in the browser. The Showdown build is a graybox: a flat board, text cards, life orbs and a log. The illustrated 3D models and motion belong to the [earlier build](https://alejandro-publius.github.io/cowboys-vs-wizards/3d/), which keeps the retired lane rules.
+Cowboys vs. Wizards. The entry is **Showdown**, served at the [site root](https://alejandro-publius.github.io/cowboys-vs-wizards/). Play opens the Camp, which holds the Trail of duels, rivals, Wanted hunts, packs, the deck builder, best of three, two players on one screen and the Sheriff's Ledger. Wins, rewards and card choices are saved in the browser. Since PRs 179 and 180, Camp also opens a four-duel Wizard preview with its own save, and a local two-player game with both saved decks once a Wizard wins Dry Gulch ([release line](../design/release-line.md#current-status-november-20-supersedes-the-november-19-1015-pm-handoff)). The Showdown build is a graybox: a flat board, text cards, life orbs and a log. The illustrated 3D models and motion belong to the [earlier build](https://alejandro-publius.github.io/cowboys-vs-wizards/3d/), which keeps the retired lane rules.
 
 **Who it is for:** people who play strategy and card games in a browser and want decisions that matter more than reflexes.
 
@@ -105,12 +107,12 @@ Official rules: https://kiroween.devpost.com/rules. Deadlines: credit requests b
 - Source: https://github.com/alejandro-publius/cowboys-vs-wizards
 - Kiro write-up: https://github.com/alejandro-publius/cowboys-vs-wizards/blob/main/docs/submission/kiro-brag-sheet.md
 - Crew app: https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch
-- Demo video (public YouTube, under three minutes): **OWNER, PENDING.** A private scripted [85-second Showdown demo script](judge-demo-script.md) is available for review. Alex owns public publication. The rules forbid third-party trademarks in the video ([rules check](rules-check.md#risks-to-settle-before-submitting)).
+- Demo video (public YouTube, under three minutes): **OWNER, PENDING.** A private scripted 85-second Showdown cut exists, and the [136-second rehearsal script](judge-demo-script.md#sequence) reuses it. Nothing is uploaded. Alex owns public publication. The rules forbid third-party trademarks in the video ([rules check](rules-check.md#risks-to-settle-before-submitting)).
 - Third-party blog: **OWNER, PENDING.**
 
 ## Required form fields and owner inputs still open
 
-- Demo video: narration, Kiro UI footage and the public YouTube URL
+- Demo video: narration, the two owner captures (Ledger review and the Kiro Workflow run `wf_0756c413da3e189f`) and the public YouTube URL
 - Category selection; Crew, blog and social bonuses if entering them
 - Personal reflection on using Kiro, and the spec-versus-direct comparison in the builder's words (none should be generated)
 - Pre-existing work disclosure: when the board demo and the Tripo exports were made

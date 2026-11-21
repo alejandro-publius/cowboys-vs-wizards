@@ -1,6 +1,72 @@
 # Judge demo script
 
-## Current: Showdown, the turn-five Dragon decision (private cut)
+## Current: one closing loop, decision to reviewed candidate (owner rehearsal, about 2:16)
+
+Written November 20, 2026 (America/Los_Angeles) by a Kiro CLI worker (`judges`, jobs K-099, K-101 and K-102) from `main` at [`ea183ee`](https://github.com/alejandro-publius/cowboys-vs-wizards/commit/ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df). This is a **private rehearsal script** for Alex. Nothing here is recorded beyond segment A, and nothing has been uploaded or submitted. Fable owns the game design, rules, balance and the wording of every in-game label ([issue 143](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143)).
+
+**The loop the video shows.** One game decision, the Kiro-native evidence behind it, and one candidate change that a separate reviewer decided:
+
+1. **Game decision.** Showdown starts at the title screen. Play opens the Camp, and the Experiment control opens Cowboy turn 5 against the Graveyard Dragon. The same Ranger target choice reverses the bot-played result between two deals.
+2. **Kiro-native evidence.** The Camp's Sheriff's Ledger shows Night Watch's run on the ruleset: 2,000 bot games, the first player won 1,142 and the Cowboys 1,188. Kiro Crew ran the same counts on its own schedule ([scheduled Crew receipt](../evidence/night-shift/crew-scheduled-2026-11-20.json), trigger `scheduled`).
+3. **Reviewed candidate.** The same Ledger shows the Night Shift review of one draft, Sheriff health 3 → 4: **rejected**, because the Cowboy skew grew on both the tuning and holdout seeds. The saved `night-shift-review` Workflow ran that draft, a separate reviewer and a re-verify step natively as `wf_0756c413da3e189f` ([native Sheriff review](../evidence/night-shift-native-showdown.md)).
+
+**Why this route.** It reuses the existing private cut for the whole game segment and adds about 50 seconds that Alex can capture himself. It ends on a candidate that was reviewed and refused, so no live rule change is implied. The Wizard preview, local earned decks, Outrider ride-or-fight and Boot Hill practice are left out of the video to keep one story. They stay in the [evidence matrix](#evidence-matrix-for-the-five-criteria) and the [judge write-up](kiro-brag-sheet.md).
+
+### Sequence
+
+| # | Time | Picture | Source | Caption (plain text) |
+| --- | --- | --- | --- | --- |
+| A | 0:00–1:21 | The existing cut from its first frame through the Ledger opening: title, **Play**, Camp, both Dragon deals, both choices, the fixed-policy caption and **Sheriff's Ledger**. | Private cut, [shot list below](#segment-a-source-the-private-dragon-cut-k-102). It ends before the cut's own closing caption at 1:21. | Keep the cut's own captions. They name the build `96adf60` and say the play is scripted. |
+| B | 1:21–1:36 | In the open Ledger, scroll down to the heading **Night Shift review** and hold on its line: "cowboy-sheriff health 3 → 4: rejected. tune: faction skew 9.40 -> 13.60 pp did not improve; holdout: faction skew 11.05 -> 15.30 pp did not improve." | **OWNER capture**, the public game. Read the commit from [build.json](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) before recording. | "Recorded by Alex on build `<commit>`. Night Watch: 2,000 bot games, seeds 0–999. One draft candidate, reviewed and rejected. No card changed." |
+| C | 1:36–2:01 | Kiro showing the saved run `wf_0756c413da3e189f`: steps `draft-candidate`, `independent-review` and `verify-proof`, all completed, with the reviewer's verdict **rejected**. | **OWNER capture** of the Kiro workflow view. If the run is not viewable, show the run table in the [native Sheriff review receipt](../evidence/night-shift-native-showdown.md#native-run) and change the caption to "saved receipt". | "Kiro Workflow, separate reviewer agent. Tuning seeds 0–999 and holdout 1000–1999: the Cowboy skew grew on both, so the draft was rejected. Fable and Alex decide card changes." |
+| D | 2:01–2:16 | Hold on the Camp or the Ledger. | Same capture as B. | "Bot results, not human playtests. Alex completed the playtests; individual first-time responses are not documented. Play it: alejandro-publius.github.io/cowboys-vs-wizards" |
+
+Running time is 136 seconds, inside the 100–165 second target and the three-minute limit. Segment A is the only recorded footage. B and C are new captures that only Alex should make, because they show his browser and his Kiro.
+
+**Before recording B and C.**
+
+- **Same review on screen.** The Ledger's review line cites the direct CLI bundle `docs/evidence/night-shift/guard-sheriff-health-3-to-4/bundle.json`. The native run `wf_0756c413da3e189f` reproduced the same four shares and the same verdict ([native Sheriff review](../evidence/night-shift-native-showdown.md#native-run)). Say "the same draft, rerun as a Kiro Workflow", not "the Workflow produced this line".
+- **One log line differs from the cut.** The cut was captured on `96adf60`. Since then the graybox log reads "defeated before it struck" for a fatal Bear Trap, where the cut showed "its attack was cancelled" ([Bear Trap fix](../evidence/showdown-bear-trap.md)). The engine events and both outcomes are unchanged, so the cut stays usable. Re-recording segment A on the current build would show the new line.
+- **Bands and pending gates.** Fable approved 45–55% for the first-player and Cowboy shares ([PR 168](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/168)). The run on screen reads 57.1% and 59.4%, so do not describe it as balanced. The even-match package in [PR 170](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/170) waits for Alex's merge gate on or after Monday, November 23. It is not in this video. Balance previews and Night Shift drafts are not live rules.
+- **Pending results.** Results reported for [PR 181](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/181) are a candidate until the score worker's check is integrated. Do not caption them.
+
+### Draft narration (optional, for the owner; not recorded)
+
+About 200 words for 136 seconds, roughly 90 words a minute, which leaves room for the held captions. No synthesized voice is used.
+
+> This is Showdown, the Cowboys versus Wizards card duel. You pick every attack, and your troops shield your Base. Play opens the Camp. The Experiment opens turn five of the Dragon hunt. Your Ranger can hit the resting Dragon or the Jack-o'-Lantern in cover, and each target previews what happens. On this deal, hitting the Dragon lets your Bear Trap finish it. Hit the Jack, and the Dragon clears your board. On the second deal there is no trap, and the better choice flips. Fixed bots played both lines to the end. That flip is the reason to replay. Kiro checks the whole ruleset behind decisions like this. The Sheriff's Ledger shows the last Night Watch run: two thousand bot games, and the Cowboys win more than Fable's target. Kiro's Night Shift tried one fix, Sheriff health from three to four. A separate reviewer agent replayed it on a thousand deals, then on a thousand held-out deals. The Cowboy lead grew on both, so it rejected the change. Nothing reached the cards. Fable and Alex decide what does. Kiro writes the evidence. These are bot results. The human playtests are Alex's to report. Play it in your browser.
+
+### Proof labels allowed on screen
+
+Every number in the captions and narration comes from a receipt committed at `ea183ee`. Use no other figure without a newer integrated receipt.
+
+| Label | Receipt at `ea183ee` |
+| --- | --- |
+| Both Dragon outcomes (c15 / w10 on deal 1, w14 / c17 on deal 2) | [`rival-cases.json`](../../experiments/showdown-dragon-strategy/rival-cases.json) |
+| 2,000 games, 1,142 first-player and 1,188 Cowboy wins, scheduled trigger | [scheduled Crew receipt](../evidence/night-shift/crew-scheduled-2026-11-20.json) |
+| Sheriff 3 → 4 rejected; skew 9.40 → 13.60 and 11.05 → 15.30 points | [native Sheriff review](../evidence/night-shift-native-showdown.md) and its [bundle](../evidence/night-shift-native-showdown/bundle.json) |
+| Two Trail wins by Alex, 13 and 11 turns | [release line](../design/release-line.md) |
+| Private cut, 85.367 s, SHA-256 `cd7353bf…7883` | Receipt outside git, beside the file (see [segment A](#segment-a-source-the-private-dragon-cut-k-102)) |
+
+### Evidence matrix for the five criteria
+
+The five criteria are equally weighted ([rules check](rules-check.md#judging-criteria-what-the-entry-has-for-each), quoting the [official rules](https://kiroween.devpost.com/rules); [contest page](https://kiroween.devpost.com/)). Counts have absolute denominators. "Rerun" means the K-101 worker repeated the check on `ea183ee` ([reproduction note](../evidence/devpost-lift-judges.md)). Everything else is a committed receipt.
+
+| Criterion | Measured evidence | Kiro provenance | Gap (stated, not hidden) |
+| --- | --- | --- | --- |
+| Potential Impact | The Dragon search tested 64 held-out seeds (64–127). 60 of 64 offered both targets, and on 20 of those 60 the two targets gave different winners (rerun, byte-identical to the receipt). Alex won Boot Hill in 13 turns and Raven Roost in 11. | Kiro CLI search script and fixtures ([rival README](../../experiments/showdown-dragon-strategy/rival-README.md)) | Alex is the maintainer, not a first-time player. First-time participant count and responses are undocumented. Accessibility results in PR 181 are pending the score worker. |
+| Technological Implementation | Native `night-shift-review` Workflow `wf_0756c413da3e189f`: 3 of 3 steps completed. Its reviewer compared 2,000 tuning games (seeds 0–999) and 2,000 holdout games (seeds 1000–1999) for both the current Sheriff and the draft. The draft changed the winner of 150 of 2,000 tuning games (117 toward the Cowboys) and 153 of 2,000 holdout games (119 toward the Cowboys). Property tests passed 21 of 21 on both versions. Crew's scheduled Night Watch run: 2,000 of 2,000 games decisive, 361 rule tests passed. The MCP seat tools won Boot Hill in 28 legal actions. | Kiro Workflow with separate reviewer agent; Kiro Crew scheduler `62736a74`; Showdown MCP ([MCP receipt](../evidence/kiro-showdown-mcp.md)) | The native Workflow has not yet run an **accepted** verdict. Each step calls the same local `scripts/night-review.mjs`. Power skill auto-activation is pending. Kiro Web is unused. |
+| Design | Dragon turn browser check: 29 of 29 (rerun, `file://` build `ea183ee`), with mouse, keyboard and 375 px touch, and a byte-identical saved career. Sheriff's Ledger: 12 of 12 (rerun), including the rejected review on screen. Wizard preview: careful-bot wins 300/300, 300/300, 276/300 and 193/300 over its four duels ([ramp check](../evidence/showdown-wizard-ramp.md)). | Kiro CLI browser checks; Fable designed the duels | The graybox has no art. Alex's visual review of the cues, physical-device and screen-reader use are open. The Wizard ramp counts are bot games. |
+| Innovation/Idea | The game shows its own balance review: the in-game Ledger shows the reviewer's verdict on a one-card, one-number draft, decided on paired tuning seeds and unseen holdout seeds. Outrider ride-or-fight: 23 decisions in 300 Bone Fence seeds, removed automatically if the rules change ([release verification](../evidence/outrider-release-verify.md)). | Night Watch (Crew app) → Night Shift reviewer → Ledger build check | Card duels are not new. The Outrider cue failed its holdout, so it is an example, not advice. |
+| Presentation | Private scripted cut: 85.367 s, 1280×720 plus caption strip, hash matched in two local copies on November 20. This sequence: 136 s. | Kiro CLI captured the cut with real mouse input in headless Chrome | No voice, no B or C footage, and no public YouTube link. Do not put a placeholder in the form. |
+
+### Owner-only gates (unchanged)
+
+Voice and editing, the B and C captures, the YouTube upload, the Devpost form and its submission, the category, credits and pre-existing-work disclosure stay with Alex. Card changes stay with Fable and Alex. The [Devpost packet](devpost-packet.md#required-form-fields-and-owner-inputs-still-open) lists the open form fields.
+
+---
+
+## Segment A source: the private Dragon cut (K-102)
 
 Written November 20, 2026 by Kiro (Kiro CLI worker, job K-102 with K-087/K-095). It describes a scripted screen capture that exists. It makes no design, rules, wording or balance decision; those stay with Fable ([issue 143](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143)).
 
@@ -30,7 +96,7 @@ Times are from the receipt. Each state was read from the page during capture.
 
 A persistent top caption line says the capture is scripted, names the build and says it is not a human playtest. A 0.7-second yellow outline marks each scripted click. These are the only additions to the recorded frames. The video is played at recorded speed; held stretches are real page state between clicks.
 
-### Draft narration (optional, for the owner; not recorded)
+### Draft narration for the cut alone (optional, for the owner; not recorded)
 
 About 150 words for 85 seconds. The video is complete without it.
 
@@ -104,6 +170,8 @@ Words per segment (Codex word-boundary count, hyphenated words counted as one): 
 4. **Keep the pass and the stale result real.** If K2 cannot be captured, cut segment 6 and end segment 5 on the Workflow report. The video then runs about 2:28 with 303 words.
 5. **Decide on Night Watch.** Optional segment 6b adds about 10 seconds, for 2:50 and 344 words, still under the 3:00 limit. Use it only with real footage N. Its line claims a report, not an unattended nightly run: the 2 a.m. job is registered, and no clock-time run has been observed.
 6. **Upload last.** No public YouTube link exists. Do not put a placeholder in the Devpost form.
+
+<a id="part-2-first-time-human-playtest-protocol"></a>
 
 ### Part 2: First-time human playtest protocol (lane duel)
 

@@ -4,6 +4,8 @@
 
 [Open the experiment on turn five](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5). Select the Ranger, then the resting Dragon. Restart the duel and target Jack-o’-Lantern instead. Open the [second Dragon position](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5-70) and compare the Cowboy support troop before choosing a target. Both decisions open from Camp. The experiment leaves your saved career alone.
 
+Then open **Sheriff's Ledger** at the end of the same Camp. It shows Night Watch's 2,000 bot games on the ruleset and the Night Shift review of one draft card change, Sheriff health 3 → 4, which a separate reviewer rejected on tuning and holdout seeds. Kiro ran that draft and review as the native Workflow `wf_0756c413da3e189f`. No card changed. [Native Sheriff review](../evidence/night-shift-native-showdown.md)
+
 | Kiro use | What we verified |
 | --- | --- |
 | Crew bot, memory and timed return (K-074, K-075, K-078) | The native Overnight Rival bot stored the seed-3 claim and recalled it in a later turn after its conversation context was cleared. The first return was manual. A one-shot Crew job then fired on schedule and recalled both lines and three visible board differences. The Goals-page reminder itself returned 409. [scheduled Crew receipt](../evidence/showdown-rival-checkin.md). [Crew receipt](../../experiments/showdown-dragon-strategy/rival-crew-receipt.json) |
@@ -47,6 +49,8 @@ This page is the one judge-facing description. The [Devpost packet](devpost-pack
 The two-position release passed 606 repository tests and 29 HTTP browser checks. A separate Chrome run selected both targets on both seeds and compared the saved career after each. [Paired decisions in PR 165](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/165).
 
 The combined release candidate for [#163](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/163) passed **601 repository tests**. Chrome exercised the Dragon turn over HTTP (18 checks), the Camp Ledger (12), and reward focus by keyboard (7). The merged build was verified at the public game entry. [Browser checks](../evidence/overnight-check-repair.md) · [Deployed build identity](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json).
+
+<a id="proof-on-the-current-build"></a>
 
 ## Reproducible checks by revision
 
@@ -119,7 +123,7 @@ The [rules](https://kiroween.devpost.com/rules) weight five criteria equally (20
 | Technological Implementation | Kiro CLI implemented the Camp and Trail. The installed Power played Boot Hill and rejected a stale engine receipt. Crew ran the scheduled balance check. [Boot Hill replay](../evidence/kiro-showdown-mcp.md) · [Scheduled run receipt](../evidence/night-shift/crew-scheduled-2026-11-20.json) | Automatic activation of the Power skill on Showdown |
 | Design | Camp → Trail → reward loop with saves, ten cues, a readable log | Art in the Showdown build; a rendered or human review of the cues |
 | Innovation/Idea | A Crew bot recalled a strategic claim. Kiro CLI found a legal position that reverses the preferred attack, and the player can retry both positions in Camp. [Strategy evidence](../../experiments/showdown-dragon-strategy/rival-README.md) | First-time players’ explanations of what changed their choice |
-| Presentation | This page, two playable decisions and a private scripted [85-second Showdown demo script](judge-demo-script.md) | The required public video under three minutes |
+| Presentation | This page, two playable decisions, a private scripted 85-second cut and a [136-second rehearsal script](judge-demo-script.md#sequence) that follows one decision to its reviewed candidate. [Criteria matrix](judge-demo-script.md#evidence-matrix-for-the-five-criteria) | The two owner captures, narration and the required public video under three minutes |
 
 ## Eight Devpost answers
 
