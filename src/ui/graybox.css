@@ -16,8 +16,11 @@
 body { margin: 0; }
 [hidden] { display: none !important; }
 button, input { font: inherit; }
+/* Touch targets: 44 px tall at least (WCAG 2.5.5, platform guidance). The disclosure rows were 22 px. */
+summary { padding: .75rem 0; cursor: pointer; }
 button {
-  min-height: 40px;
+  min-height: 44px;
+  min-width: 44px;
   padding: .45rem .8rem;
   color: inherit;
   background: var(--panel);
@@ -39,6 +42,6 @@ header { display: flex; align-items: center; justify-content: space-between; gap
 [data-frame=spell] { border-style: double; border-width: 4px; }
 [data-frame=trap] { border-style: dashed; border-width: 2px; }
 [data-frame=wanted], [data-frame=captured] { border-style: solid; border-width: 3px; }
-[data-frame=wanted]::before, [data-frame=captured]::before { display: block; font-size: .68rem; font-weight: 700; letter-spacing: .14em; border-bottom: 1px solid currentColor; margin-bottom: .15rem; }
+[data-frame=wanted]::before, [data-frame=captured]::before { display: block; font-size: .8rem; font-weight: 700; letter-spacing: .14em; border-bottom: 1px solid currentColor; margin-bottom: .15rem; }
 [data-frame=wanted]::before { content: "WANTED"; }
 [data-frame=captured]::before { content: "CAPTURED"; }

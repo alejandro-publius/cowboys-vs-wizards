@@ -4,7 +4,7 @@
 
 ## Experience the game
 
-The game is **Showdown**, served at the [site root](https://alejandro-publius.github.io/cowboys-vs-wizards/). The first click is **Play**, which opens the Camp. In the Camp, click **Boot Hill**, the first Trail duel. Current paths and the remaining human gate are in the [release line](design/release-line.md). Commands that replay the current build are in the [judge write-up](submission/kiro-brag-sheet.md#proof-on-the-current-build).
+The game is **Showdown**, served at the [site root](https://alejandro-publius.github.io/cowboys-vs-wizards/). The first click is **Play**, which opens the Camp. In the Camp, click **Boot Hill**, the first Trail duel. Current paths and the remaining human gate are in the [release line](design/release-line.md). Commands that replay the current build are in the [judge write-up](submission/kiro-brag-sheet.md#reproducible-checks-by-revision).
 
 - **The Night Shift loop.** At the end of the Camp, open **Sheriff's Ledger**. It lists all 29 cards and the latest Night Watch check of the ruleset: commit, seeds 0–999, 2,000 bot games, first-player and Cowboy shares. It also shows the Night Shift review of one draft one-card, one-number candidate for that run, with its verdict. Night Watch (the [Crew app in this repository](../apps/night-watch/README.md)) measures. The [reviewer](evidence/night-shift-review.md) checks a candidate on paired and holdout seeds. Nothing is applied to the cards; Fable and Alex decide. [Receipts and what has and has not run](evidence/night-shift.md) (pull request [#163](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/163), open).
 
