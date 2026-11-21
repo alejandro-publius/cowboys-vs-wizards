@@ -22,45 +22,41 @@ Outside references, as given in the board-system brief and not re-read by this w
 
 ## Run preconditions
 
-1. The candidate is one commit that already contains the board UI, CSS and
-   `scripts/browser-showdown-board-zones.mjs`. The recipe is launched only after that combined commit exists.
-2. `git checkout --detach <sha>` in a clean worktree. `node_modules` is the shared symlink. Do not
-   install. Chrome is at `CHROME_PATH` or the default macOS path.
-3. The QA script documents its usage in its header comment, takes the built HTML path and an output
-   folder, and exits non-zero on any failed assertion. If its header shows another interface, the
-   recipe follows the header and records the exact command. If the script is missing, BZ-01 to BZ-08,
-   BZ-10 and BZ-11 are `pending` and the verdict is `fail`.
-4. `npm run build` prints `build <first 12 hex of sha>`. That label must appear in the HTML.
+1. The candidate is one commit that contains the board UI, the CSS and
+   `scripts/browser-showdown-board-zones.mjs` as committed in board-replay `490f005`. The coordinator
+   launches the recipe only on that combined commit.
+2. Detached, clean checkout of the candidate. The shared checkout must resolve `playwright-core`
+   (`node -e "require.resolve('playwright-core')"`); the recipe calls the script with plain `node`, never
+   `npx` or an install. If it does not resolve, the gate refuses with `missing dependency: playwright-core`.
+   Chrome is at `CHROME_PATH` or the default macOS path.
+3. `node scripts/build-graybox.mjs --hosted` writes `dist/web/index.html` and prints the candidate's
+   12-hex build label.
+4. QA script exit codes (its usage text): 0 every route passed, 1 a route failed or `--require-zones`
+   found no zones markup, 2 bad arguments. Its last line reports the layout, witness, revision (12 hex)
+   and the page SHA-256 (16 hex).
 
-## Tracks (same HEAD, same HTML)
+## Tracks (same HEAD, same page)
 
-The gate step builds once and copies the page to `<out>/candidate.html`. It also writes two witness
-copies, each made by inserting one `<script>` before the single `</body>`:
+`Q` = `node scripts/browser-showdown-board-zones.mjs --page dist/web/index.html --require-zones`.
+The witnesses are the script's own `--witness` faults; this spec does not reimplement them.
 
-- `witness-zone-break.html`: a MutationObserver removes every `data-zone` and `data-zone-side` attribute.
-- `witness-curtain-leak.html`: a MutationObserver copies every card id ever shown in `#sd-hand` into a
-  hidden `<i data-bz-leak>` inside `#showdown`, so earlier hands stay in the DOM after a pass.
-
-The snippets are `witness/zone-break.snippet` and `witness/curtain-leak.snippet` in this spec folder.
-The gate step inserts each with one `python3 -c` line that asserts a single `</body>`.
-
-| Step | Command (relative to the checkout) | Expected | IDs |
+| Step | Command | Expected exit | IDs |
 | --- | --- | --- | --- |
+| gate | SHA, detached, clean, base exists, script present, playwright-core resolves | else refuse | RV-01 |
 | gate | `git diff --name-only <base> <sha> -- src/game/` | empty | BZ-12 |
-| rules-flow | `npm test` | exit 0 | BZ-07, BZ-12 |
-| rules-flow | `node scripts/browser-showdown-check.mjs <out>/candidate.html <out>/rules-flow/camp` | exit 0 | BZ-09, BZ-12 |
-| rules-flow | `node scripts/browser-showdown-board-zones.mjs <out>/candidate.html <out>/rules-flow/zones` | exit 0 | BZ-01 to BZ-08, BZ-10, BZ-11, as the script reports |
-| rules-flow | the same on `witness-zone-break.html` | exit non-zero | RV-03, BZ-01 |
-| privacy | `MODES=hotseat node scripts/browser-showdown-modes-check.mjs <out>/candidate.html <out>/privacy/hotseat` | exit 0 | BZ-09, BZ-12 |
-| privacy | the same on `witness-curtain-leak.html` | exit non-zero, "card ids behind the curtain" | RV-03, BZ-09 |
-| privacy | board-zones script on `witness-curtain-leak.html` | exit non-zero | RV-03, BZ-09 |
-| join | reads the step reports only | | RV-01 to RV-05 |
+| gate | build `--hosted`, `shasum -a 256 dist/web/index.html` | label = sha | RV-02 |
+| rules-flow P | `Q --only raise,raise-narrow` | 0 | BZ-01, BZ-02 (360px), BZ-04, BZ-06, BZ-07, BZ-08 |
+| rules-flow W | `Q --only raise,raise-narrow --witness break-pile` | 1 | RV-03 |
+| rules-flow N | `npm test` | 0 | BZ-07, BZ-12 |
+| privacy P | `Q --only trap` | 0 | BZ-01, BZ-03, BZ-08, BZ-09, BZ-10, BZ-12 (saves) |
+| privacy W | `Q --only trap --witness leak-name` | 1 | RV-03, BZ-09 |
+| join | reads the three step reports | | RV-01 to RV-05 |
 
-Not covered by any listed check: BZ-02 on a real phone, the "public gate" (its path set is
-Fable's or the coordinator's to name), clarity and fun (human playtest), appearance (rendered review).
+`break-move` is an equivalent rules-flow witness if `break-pile` is retired.
+Not covered: BZ-05 and BZ-11 (no command asserts them), BZ-02 at 390px on a real phone, the "public
+gate" path set, appearance, clarity and fun.
 
-## Measured on main `ea183ee` (before the board commit)
+## Measured
 
-The curtain-leak witness was tested against the existing hotseat check. See
-`docs/evidence/devpost-lift-board-system.md`. The zone-break witness cannot be tested until
-`data-zone` markup and the QA script exist.
+See `docs/evidence/devpost-lift-board-system.md`. The positive and witness runs against zones markup
+are pending until the combined candidate exists.

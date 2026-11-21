@@ -7,7 +7,7 @@ the rules, wording, layout intent and every open decision below. This file resta
 items. It adds no mechanic.
 
 **How this spec was made:** written by hand in the Kiro requirements layout. It was not produced or
-executed by a native Kiro spec run, and no spec execution receipt (K-003) exists for it.
+executed by a native Kiro spec run. K-003 (native spec execution receipt) is unverified for it: this is a file-only spec.
 
 Status: CONTRACT ONLY. The UI (board-ui), CSS (board-layout) and browser QA (board-replay) are other
 workers' commits. The review recipe is `.kiro/workflows/showdown-board-review.workflow.json`.
@@ -47,10 +47,10 @@ workers' commits. The review recipe is `.kiro/workflows/showdown-board-review.wo
 
 - **RV-01 Candidate identity.** A review names one 40-hex candidate SHA. It refuses, before any test
   runs, when the SHA is malformed, HEAD differs, HEAD is not detached, or the tree is not clean.
-- **RV-02 One build, two tracks.** One build is made at the candidate. Both evidence tracks run against
-  the same copied HTML, confirmed by SHA-256 and by the 12-character build label in the page.
-- **RV-03 Negative controls.** Each track also runs one deliberately broken witness copy of that HTML.
-  The check must fail on it. A check that passes a broken witness fails the review.
+- **RV-02 One build, two tracks.** One hosted build (`dist/web/index.html`) is made at the candidate.
+  Both tracks run on it, confirmed by its SHA-256 and the 12-hex revision the QA script prints.
+- **RV-03 Negative controls.** Each track runs the QA script's own `--witness` fault once and requires
+  exit 1. Exit 0 (fault not caught) or any other code (usage or harness fault) fails the review.
 - **RV-04 Traceability.** Every command result names the BZ/RV IDs it supports and the step that ran it.
   An ID without a command result is `pending`, never `met`.
 - **RV-05 Local and read-only.** No source edit, install, deploy, push, PR post, merge, schedule or Web

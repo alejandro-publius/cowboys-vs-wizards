@@ -3,51 +3,50 @@
 Date: 2026-11-20, America/Los_Angeles. Branch `kiro/devpost-lift-board-system`, base main `ea183ee`.
 Agent: Kiro CLI worker board-system. No human played or reviewed anything for this note.
 
-## What was added
+## What is here
 
-- `.kiro/specs/showdown-board-zones/requirements.md`: Fable's Boot Hill board pass restated as
-  checkable IDs BZ-01 to BZ-12, plus review rules RV-01 to RV-05 and Fable's open decisions.
-- `.kiro/specs/showdown-board-zones/design.md`: each ID mapped to an existing repo check, run
-  preconditions, and the outside references (X-047 InteractionKit, X-049 SpookBnB, video 55) as given
-  in the brief. This worker did not re-read them; no Web was used.
-- `.kiro/specs/showdown-board-zones/witness/*.snippet`: two broken-witness scripts.
-- `.kiro/workflows/showdown-board-review.workflow.json`: native recipe with inputs `expected_sha` and
-  `base_sha`. It has a gate, a `parallel` step running two tracks (`rules-flow`, `privacy`, `joinPolicy: all`)
-  and a join. The structure copies `independent-release-review` and `showdown-ride-search`.
+- `.kiro/specs/showdown-board-zones/requirements.md`: Fable's Boot Hill board pass as IDs BZ-01 to
+  BZ-12, review rules RV-01 to RV-05, Fable's open decisions. File-only spec: **K-003 unverified**.
+- `.kiro/specs/showdown-board-zones/design.md`: ID-to-command map and run preconditions.
+- `.kiro/workflows/showdown-board-review.workflow.json`: inputs `expected_sha`, `base_sha`. Steps:
+  `gate` → parallel `rules-flow` + `privacy` (`joinPolicy: all`) → `join`. Pattern from
+  `independent-release-review` and `showdown-ride-search`.
 
-No game source, CSS, QA runner or package file changed.
+No game source, CSS, QA script or package file changed. The QA script is board-replay's
+`scripts/browser-showdown-board-zones.mjs` at `490f005`, as recorded in `../board-qa-command.txt`.
 
-## Status
+## Recipe commands (`Q` = `node scripts/browser-showdown-board-zones.mjs --page dist/web/index.html --require-zones`)
 
-The recipe has **not** been launched. No native workflow run, spec execution or K-003 receipt exists
-for it. Launch it only on the combined board commit (UI + CSS + `scripts/browser-showdown-board-zones.mjs`),
-from a detached clean checkout of that commit:
-
-    run_workflow workflowPath=<repo>/.kiro/workflows/showdown-board-review.workflow.json
-      inputs: expected_sha=<40-hex combined commit>, base_sha=ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df
-
-## Measured on main `ea183ee` (manual commands, not a workflow run)
-
-Setup: macOS, default Chrome path, shared `node_modules` symlink, outputs under ignored `.artifacts/`.
-
-| Command | Exit | Observed |
+| Step | Command | Must exit |
 | --- | --- | --- |
-| `npm run build` | 0 | `build ea183ee29dbd`; HTML SHA-256 `d570e411…1cbc3c` |
-| `grep -c "$(git rev-parse --short=12 HEAD)" candidate.html` | 0 | 1 match (build label) |
-| `MODES=hotseat node scripts/browser-showdown-modes-check.mjs candidate.html …` | 0 | 1 check passed, 8.6 s |
-| same on `witness-curtain-leak.html` (SHA-256 `50d42102…8c8350`) | 1 | `not ok - [hotseat] card ids behind the curtain: cowboy-bear-trap-1,cowboy-deadeye-1,cowboy-ranger-1,cowboy-covered-wagon-2` |
-| same on `witness-zone-break.html` (SHA-256 `5fddf7a6…26c8fa`) | 0 | expected: the witness touches only `data-zone` markup, which main lacks |
+| gate | SHA format, HEAD = candidate, detached, clean, base exists, script present, `node -e "require.resolve('playwright-core')"` | else `refused` |
+| gate | `git diff --name-only <base> <sha> -- src/game/`; `node scripts/build-graybox.mjs --hosted`; `shasum -a 256 dist/web/index.html` | empty, label = sha |
+| rules-flow | `Q --only raise,raise-narrow`; `Q --only raise,raise-narrow --witness break-pile`; `npm test` | 0, 1, 0 |
+| privacy | `Q --only trap`; `Q --only trap --witness leak-name` | 0, 1 |
 
-So the existing hotseat check detects the curtain witness, and the zone witness does not break
-unrelated flows. The witness insertion command in the gate prompt was run literally and gave the
-same leak witness bytes as the measured one.
+Each track rechecks HEAD and the page SHA-256 before and after, and compares the script's printed
+revision and SHA-256 prefix with the gate's. Witness exit 0 (not caught) or 2 (usage) is a mismatch,
+and the join's verdict is then `fail`. Commands run once in the foreground, with no retry.
 
-## Limits and pending
+## Measured on this branch at `1cd83b0` (main content, before zones UI; manual, not a workflow run)
 
-- `scripts/browser-showdown-board-zones.mjs` is not on main. Its interface is assumed to be
-  `<html> <outDir>`, exiting non-zero on failure. The recipe tells the steps to follow the script's
-  header if it differs. Whether it detects either witness is unmeasured.
-- The zone-break witness is untested against real `data-zone` markup.
-- The "public gate" in BZ-12 has no path set in the design, so it is pending in every review.
-- These checks run headless Chrome on one Mac. They cover flow, DOM content and hidden information
-  only. Appearance, clarity, fun and real phones are not covered.
+The script was copied from `490f005` into the worktree for these runs and then removed.
+`node -e "require.resolve('playwright-core')"` resolved v1.62.1 from the shared runtime without npx.
+
+| Command | Exit | Last line |
+| --- | --- | --- |
+| `node scripts/build-graybox.mjs --hosted` | 0 | `build 1cd83b0ebeb5`; `dist/web/index.html` SHA-256 `5db47bef…9304eb3` |
+| `node scripts/browser-showdown-board-zones.mjs --page dist/web/index.html --only trap` | 0 | `board zones: PASS · layout baseline · revision 1cd83b0ebeb5 · html sha256 5db47befe02e8e52` |
+| same `--require-zones --only trap` | 1 | `board zones: FAIL · --require-zones but dist/web/index.html has the baseline layout` |
+| same `--witness leak-name --only trap` (no `--require-zones`) | 2 | usage text |
+
+So on a page without zones the recipe's positive tracks fail closed (exit 1), and the printed revision
+and SHA-256 match the build. The witness exit 2 on a baseline page is outside the recipe, which
+always passes `--require-zones` and treats 2 as a mismatch.
+
+## Pending
+
+- Positive and witness runs on the combined candidate (zones markup): coordinator's native launch.
+- BZ-05 and BZ-11 have no asserting command; the "public gate" has no path set.
+- Headless Chrome on one Mac: flow, DOM and hidden information only. No appearance, clarity, fun or
+  real-phone claim.
