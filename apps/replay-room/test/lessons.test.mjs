@@ -4,7 +4,7 @@
 // is never written.
 import test from "node:test";
 import assert from "node:assert/strict";
-import {execFileSync, spawnSync} from "node:child_process";
+import {spawnSync} from "node:child_process";
 import {readFileSync} from "node:fs";
 import {fileURLToPath} from "node:url";
 import {FIXTURE, OUT, check, fromFixtureText, project, render, rerunText, validate} from "../generate-lessons.mjs";
@@ -14,7 +14,6 @@ const outText = readFileSync(OUT, "utf8");
 const lessons = JSON.parse(outText);
 const fixture = JSON.parse(fixtureText);
 const GENERATOR = fileURLToPath(new URL("../generate-lessons.mjs", import.meta.url));
-const REPO = fileURLToPath(new URL("../../../", import.meta.url));
 const HIDDEN = /^(hand|deck|traps|handCount|deckCount|trapCount|stateHash|cowboyViewHash|atChoiceHash|sharedPrefix|action|lines|visible|reason|dragonOnBoard)$/;
 
 const keysOf = (value, path = "$", out = []) => {
@@ -86,6 +85,6 @@ test("CLI --check exits 0 and leaves the tracked fixture unchanged", () => {
   const run = spawnSync(process.execPath, [GENERATOR, "--check"], {encoding: "utf8"});
   assert.equal(run.status, 0, run.stderr);
   assert.match(run.stdout, /^ok:/);
-  const dirty = execFileSync("git", ["status", "--porcelain", "--", "experiments/showdown-dragon-strategy", "src"], {cwd: REPO, encoding: "utf8"});
-  assert.equal(dirty, "");
+  assert.equal(readFileSync(FIXTURE, "utf8"), fixtureText);
+  assert.equal(readFileSync(OUT, "utf8"), outText);
 });

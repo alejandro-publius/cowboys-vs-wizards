@@ -26,10 +26,11 @@ const outrider = await verifiedForBuild(fixture ? {dir: `${fixture}/decision`, r
 const options = {absWorkingDir: fileURLToPath(root), bundle: true, write: false, platform: "browser", target: "es2022", minify: true,
   define: {__CVW_GRAYBOX_BUILD__: JSON.stringify(label), __CVW_OUTRIDER__: JSON.stringify({cases: outrider.cases, camp: outrider.camp}),
     __CVW_OUTRIDER_LEDGER__: JSON.stringify(outrider.ledger)}};
-const [template, style, showdownStyle, bundle] = await Promise.all([
+const [template, style, showdownStyle, replayStyle, bundle] = await Promise.all([
   read("src/ui/graybox.html"),
   read("src/ui/graybox.css"),
   read("src/ui/showdown.css"),
+  read("apps/replay-room/src/room.css"),
   build({...options, entryPoints: ["src/app.js"]}),
 ]);
 const script = bundle.outputFiles[0].text.replace(/<\/script/gi, "<\\/script");
@@ -41,5 +42,5 @@ await mkdir(new URL("./", file(output)), {recursive: true});
 await mkdir(file(".artifacts/outrider-ledger/"), {recursive: true});
 await writeFile(file(`.artifacts/outrider-ledger/${output.replace(/[/.]/g, "_")}.json`), `${JSON.stringify({build: label, gate: outrider.note, camp: outrider.camp,
   output, linked: outrider.cases.map((c) => c.id), ledger: outrider.ledger}, null, 2)}\n`);
-await writeFile(file(output), template.replace("@@STYLE@@", () => `${style}\n${showdownStyle}`).replace("@@SCRIPT@@", () => script));
+await writeFile(file(output), template.replace("@@STYLE@@", () => `${style}\n${showdownStyle}\n${replayStyle}`).replace("@@SCRIPT@@", () => script));
 console.log(`Built ${output} (graybox, build ${label ?? "not identified"}); Outrider gate: ${outrider.note}`);

@@ -1,5 +1,7 @@
 # How Kiro changed Cowboys vs. Wizards
 
+Read the [judge write-up](showdown-kiro-writeup.md) for the playable trial and the eight Kiro questions.
+
 ## Try the Dragon decision
 
 [Open the experiment on turn five](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5). Select the Ranger, then the resting Dragon. Restart the duel and target Jack-o’-Lantern instead. Open the [second Dragon position](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5-70) and compare the Cowboy support troop before choosing a target. Both decisions open from Camp. The experiment leaves your saved career alone.
@@ -26,7 +28,7 @@ Camp now labels each newly finished duel with the build that recorded it. A copi
 
 Cowboys vs. Wizards is a haunted-Western card duel that runs in a browser. The fight in the December 4 entry is **Showdown**: you choose every attack, your troops shield your Base, and turns alternate. Alex chose it on November 19 after playing it. Fable 5.2 wrote its rules ([rulebook](../../prototypes/showdown/RULEBOOK.md), PR [#142](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/142)). Kiro CLI moved it into the game with its Trail, Camp and saves, put all 29 cards in one catalog, added ten readable combat cues, made the Scout bot fair, added generated property tests, kept keyboard focus across redraws, stopped the hosted page from downloading the lane duel, pointed Night Watch at Showdown and added a Showdown agent profile.
 
-The site root opens the Showdown menu. Camp contains the Trail, rivals, Wanted hunts, packs, deck builder, best of three, two-player mode and the Sheriff’s Ledger. The [earlier illustrated build](https://alejandro-publius.github.io/cowboys-vs-wizards/3d/) retains the lane rules. [Cutover PR](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/161) · [Night Shift receipts](../evidence/night-shift.md).
+The site root opens the Showdown menu. Camp contains the Trail, rivals, Wanted hunts, packs, deck builder, best of three, two-player mode and the Sheriff’s Ledger. The illustrated lane build was retired in [PR 184](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/184). [Cutover PR](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/161) · [Night Shift receipts](../evidence/night-shift.md).
 
 This page is the one judge-facing description. The [Devpost packet](devpost-packet.md), [build story](build-story.md) and [historical evidence map](../kiro-brag-sheet.md) give more detail and older history.
 
@@ -72,7 +74,7 @@ The runs above are automated. Alex separately confirmed the playtests were compl
 | **Public graybox** (the entry) | [graybox/](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) | The rules-first game: flat board, text cards, life orbs, a log. **Play** opens the Camp; the Trail starts at Boot Hill, and wins, rewards and card choices are saved. | Live at the [site root](https://alejandro-publius.github.io/cowboys-vs-wizards/). |
 | **Full Showdown reference** | [showdown/](https://alejandro-publius.github.io/cowboys-vs-wizards/showdown/) · [contents](../../prototypes/showdown/README.md) | Fable's standalone page with the whole design: the Trail of six duels, rivals, bounties, packs, deck builder with side deck, best of three and two players on one screen. | Live reference. The public graybox also includes these Camp modes following [#161](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/161). |
 
-The public front page and the graybox alias open Showdown. The [earlier illustrated build](https://alejandro-publius.github.io/cowboys-vs-wizards/3d/) retains its original rules.
+The public front page and the graybox alias open Showdown. Old illustrated-build links now return players to Showdown.
 
 ## Try one action (about a minute)
 

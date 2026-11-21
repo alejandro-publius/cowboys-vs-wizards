@@ -11,6 +11,7 @@ const BRANCHES = {
 };
 const SIDE_NAME = {cowboy: "Cowboys", wizard: "Wizards"};
 const DECISION_TURN = 5;
+const TABLES = ["Table A", "Table B"];
 
 const isInt = (value) => Number.isInteger(value);
 const isText = (value) => typeof value === "string";
@@ -65,11 +66,11 @@ function alignTraces(dragon, jack) {
 }
 
 function stepLabel(step) {
-  if (step.turn === DECISION_TURN && step.side === "cowboy") return `Turn ${step.turn}: after your Ranger's action`;
+  if (step.turn === DECISION_TURN && step.side === "cowboy") return "End of Cowboy turn 5, after the Ranger attacks";
   return `Turn ${step.turn}: after the ${step.side === "cowboy" ? "Cowboy" : "Wizard"} turn`;
 }
 
-export function mountReplayRoom(root, lessons, {gameUrl} = {}) {
+export function mountReplayRoom(root, lessons, {gameUrl, onPlayTurn} = {}) {
   if (!root || typeof root.appendChild !== "function") throw new TypeError("mountReplayRoom: root must be an element");
   const deals = checkLessons(lessons);
   const doc = root.ownerDocument;
@@ -97,12 +98,12 @@ export function mountReplayRoom(root, lessons, {gameUrl} = {}) {
   const header = h("header", {className: "rr-head"},
     h("p", {className: "rr-kicker", text: "Showdown Replay Room"}),
     h("h2", {id: `${uid}-title`, className: "rr-title", text: "The Graveyard Dragon, your turn 5"}),
-    h("p", {className: "rr-lede", text: "Read the table, then choose what your Ranger attacks. The outcome stays hidden until you choose."}));
+    h("p", {className: "rr-lede", text: "Pick the Ranger’s target. Then follow both fights and see what changes. A troop’s numbers are attack / remaining life."}));
 
   const dealGroup = h("div", {className: "rr-deals", role: "group", "aria-label": "Recorded deal"});
-  const dealButtons = deals.map((lesson, index) => {
+  const dealButtons = deals.map((_, index) => {
     const button = h("button", {type: "button", className: "rr-deal", "data-deal": index,
-      text: `Deal ${index + 1} · seed ${lesson.seed}`});
+      text: TABLES[index]});
     on(button, "click", () => selectDeal(index, button));
     dealGroup.append(button);
     return button;
@@ -123,8 +124,7 @@ export function mountReplayRoom(root, lessons, {gameUrl} = {}) {
 
   const revealHeading = h("h3", {id: `${uid}-reveal`, className: "rr-sub", tabindex: "-1", text: "Recorded lines"});
   const revealBody = h("div", {className: "rr-reveal-body"});
-  const caveat = h("p", {className: "rr-caveat", text: "Each line is the recorded continuation of the same fixed bots after "
-    + "that action, kept for comparison. It is not a forced win and does not predict how a person would play on."});
+  const caveat = h("p", {className: "rr-caveat", text: "Both replays use the same draws and bot strategy after your choice. Playing the rest of the duel yourself can change the result."});
   const stepHeading = h("h4", {className: "rr-step-title", id: `${uid}-step`, text: "Step through both lines"});
   const stepStatus = h("p", {className: "rr-step-status", "aria-live": "polite", id: `${uid}-status`});
   const prev = h("button", {type: "button", className: "rr-btn", text: "Previous step"});
@@ -134,12 +134,18 @@ export function mountReplayRoom(root, lessons, {gameUrl} = {}) {
     "aria-describedby": `${uid}-status`}, stepHeading, h("div", {className: "rr-step-nav"}, prev, stepStatus, next), stepGrid);
   const resetButton = h("button", {type: "button", className: "rr-btn", text: "Hide outcome and choose again"});
   const otherDeal = h("button", {type: "button", className: "rr-btn", text: "Try the other deal"});
-  const playLink = h("a", {className: "rr-btn rr-play"});
+  const playLink = onPlayTurn ? h("button", {type: "button", className: "rr-btn rr-play"}) : h("a", {className: "rr-btn rr-play"});
+  if (onPlayTurn) on(playLink, "click", () => onPlayTurn(lesson().id));
   const actions = h("div", {className: "rr-actions"}, resetButton, otherDeal, playLink);
   const reveal = h("section", {className: "rr-panel rr-reveal", "aria-labelledby": `${uid}-reveal`, hidden: true},
     revealHeading, revealBody, caveat, stepper, actions);
 
-  shell.append(header, dealGroup, tablePanel, choiceSet, reveal);
+  const glossary = h("details", {className: "rr-glossary"},
+    h("summary", {text: "What do cover, resting and Bear Trap mean?"}),
+    h("p", {text: "Cover stops a troop from hitting back. Damage beyond its remaining life does not reach its Base."}),
+    h("p", {text: "A resting troop cannot attack yet. It can take cover."}),
+    h("p", {text: "Bear Trap takes 2 life from the next enemy attacker before it hits. If that defeats it, its attack ends."}));
+  shell.append(header, dealGroup, tablePanel, glossary, choiceSet, reveal);
   root.append(shell);
 
   const lesson = () => deals[state.deal];
@@ -216,12 +222,10 @@ export function mountReplayRoom(root, lessons, {gameUrl} = {}) {
     const other = state.choice === "dragon" ? "jack" : "dragon";
     revealBody.append(h("ul", {className: "rr-outcomes"}, outcomeLine(state.choice, true), outcomeLine(other, false)));
     const href = turnLink(gameUrl, lesson().id, doc.baseURI);
-    playLink.hidden = !href;
-    if (href) {
-      playLink.href = href;
-      playLink.textContent = `Play this turn in the game (deal ${state.deal + 1})`;
-    }
-    otherDeal.textContent = `Try deal ${2 - state.deal}`;
+    playLink.hidden = !onPlayTurn && !href;
+    if (!onPlayTurn && href) playLink.href = href;
+    playLink.textContent = "Play this turn yourself";
+    otherDeal.textContent = `Try ${TABLES[1 - state.deal]}`;
     renderStep();
   }
 
