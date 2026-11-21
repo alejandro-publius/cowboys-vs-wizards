@@ -28,7 +28,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const sha256 = (data) => createHash("sha256").update(data).digest("hex");
 const git = (...args) => { try { return execFileSync("git", ["-C", root, ...args], {encoding: "utf8", stdio: ["ignore", "pipe", "ignore"]}).trim(); } catch { return null; } };
 
-const [htmlArg, outArg] = process.argv.slice(2);
+const [htmlArg, outArg, reelCheck] = process.argv.slice(2);
 if (!htmlArg || !outArg) {
   console.error("usage: node scripts/browser-showdown-singularity.mjs <built diorama HTML> <out directory>");
   process.exit(2);
@@ -314,6 +314,26 @@ try {
   check("reduced motion: graveyard 1, Skeleton absent, Dragon 4",
     rgClicked.at(-1)?.wizardGrave === 1 && !rgClicked.at(-1)?.wizardNames.includes(skeleton) && JSON.stringify(rgClicked.at(-1)?.wizardOrbs) === "[4]",
     rgClicked.at(-1));
+  if (reelCheck === "--check-reel-stop") {
+    await send("Emulation.setEmulatedMedia", {features: [{name: "prefers-reduced-motion", value: "no-preference"}]});
+    await wait('!matchMedia("(prefers-reduced-motion: reduce)").matches');
+    await click(".sd-gallery-reel");
+    await wait('document.querySelector(".sd-attack-world").dataset.motion && document.querySelector(".sd-gallery-reel").textContent === "Stop reel"');
+    await click(".sd-gallery-reel");
+    const stopped = await evaluate(`(() => {
+      const host = document.querySelector(".sd-gallery-attack");
+      return {attackVisible: !host.hidden, phase: host.querySelector("canvas").dataset.motion ?? null,
+        modelVisible: !document.querySelector(".sd-gallery-model").hidden,
+        label: document.querySelector(".sd-gallery-reel").textContent};
+    })()`);
+    check("stopping the troop reel clears the active replay", !stopped.attackVisible &&
+      !stopped.phase && stopped.modelVisible && stopped.label === "Watch all troops", stopped);
+    if (!stopped.phase) {
+      await click('.sd-gallery-menu [data-art="wizard-singularity"]');
+      await wait('document.querySelectorAll(".sd-gallery-moves [data-attack-mode]").length === 2');
+      check("the gallery stays usable after stopping the reel", true);
+    }
+  }
 } catch (e) {
   fatal = e.message.split("\n")[0];
 } finally {

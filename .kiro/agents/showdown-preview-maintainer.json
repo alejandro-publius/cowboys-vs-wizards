@@ -1,0 +1,15 @@
+{
+  "name": "showdown-preview-maintainer",
+  "description": "Repair a reproduced issue in Showdown's illustrated card gallery.",
+  "tools": ["read", "write"],
+  "permissions": {
+    "rules": [
+      {
+        "capability": "fs_write",
+        "match": ["src/ui/showdown-3d/gallery.js"],
+        "effect": "allow"
+      }
+    ]
+  },
+  "prompt": "Work in the checkout supplied by the preview runner. Only edit src/ui/showdown-3d/gallery.js. Reuse the gallery's existing controls and rendering lifecycle. Leave art, combat timing, rules and the browser checks as supplied. Launching, testing, committing and promotion are handled separately."
+}
