@@ -1,24 +1,18 @@
-# Wizard preview ramp: first-attempt bot win counts
+# Wizard preview difficulty check
 
-Kiro CLI, 2026-11-20 (America/Los_Angeles), branch `kiro/showdown-wizard-trials`, base `d480aa6`.
-Bots on both seats. Nothing here measures a person. These are estimates under the stated conditions only.
+Fable 5.2 designed four duels to teach tribute and Raise. Kiro CLI ran the shipped engine with a Wizard bot playing each duel from its opening hand. The first two duels introduce the Wizard and the Raven Familiar. Trapline Pass introduces a Cowboy Bear Trap. High Noon introduces the full Cowboy deck.
 
-Rerun: `node scripts/showdown-wizard-ramp.mjs [--from 0] [--count 300] [--out rows.jsonl]`, about 12 s.
-The script reads the runtime duels from `createWizardPreview(...).trailDuel()` in `src/match/showdown-wizard-campaign.js`. That module is not in this branch: app integration supplies it. Each duel uses its own deck, Bases, opener (`first: "wizard"`) and Cowboy bot level. Every attempt is a first attempt, so the Wizard Base is 5 with no grit. The Wizard seat is careless (`playTurn` level 0, the same bot as `prototypes/showdown/trail-sim.mjs`) or careful (level 2).
+Wizard wins out of 300 first attempts, seeds 0–299. Each column uses the same deals. *Careless* calls the existing level-0 policy; *careful* uses the level-2 policy. The AI Cowboy uses each duel’s specified policy. These are bot games and each simulation starts without grit.
 
-## Measurements, Wizard wins of 300 (seeds 0 to 299)
+| Duel | Original careless | Final careless | Final careful |
+| --- | ---: | ---: | ---: |
+| Dry Gulch | 298 | 298 | 300 |
+| Wagon Ring | 122 | 268 | 300 |
+| Trapline Pass | 115 | 125 | 276 |
+| High Noon | 51 | 51 | 193 |
 
-| Duel | Original run (d480aa6, brief's table rebuilt in the script) | Runtime module (career worker's file, unchanged from the brief) |
-| --- | --- | --- |
-| 1. Dry Gulch | 298 / 300 | 298 / 300 |
-| 2. Wagon Ring | **122** / 289 (red) | **122** / 289 (red) |
-| 3. Trapline Pass | **115** / 262 (red) | **115** / 262 (red) |
-| 4. High Noon | 51 / 193 | 51 / 193 |
+The original Wagon Ring opponent came from Cowboy Trail duel two. Lowering its Base to 3 gave the careless bot 149 wins. Also raising the Wizard Base to 6 gave it 143. Fable then tried fourteen Sheriffs and two Covered Wagons, with Cowboy Base 4. That deck cleared the predeclared adoption thresholds of more than 149 careless wins and at least 285 careful wins. It finished two short of the original teaching target of 270. The Wagon still requires the player to address Guard.
 
-Each cell is careless / careful. All 2,400 per-seed results (winner, reason, turns) were compared and match between the two runs. Codex measured the same four starting pools independently and got matching results. The original run had no draws and no turn-cap endings.
+Fable kept Trapline Pass at Cowboy Base 3. Its careless count missed the 150 target. The 151-win gap between careful and careless policies makes this the duel to observe with a person. Players can retry with grit, and the preview records its progress separately from their Cowboy career.
 
-- **Dry Gulch** meets the brief's target of at least 295 careless wins.
-- **Wagon Ring** and **Trapline Pass** are misses as measured. Neither duel was changed here, and no target pass is claimed for them. `../ruling.md` (Fable) adjudicates them: it gives a new Wagon Ring deck one evaluation, and ships Trapline Pass at Cowboy Base 3 with the careless miss accepted. Neither ruling change is in the measured module. Both need a rerun after integration.
-- **High Noon** is unchanged by the ruling.
-
-The original run's extra analyses are kept outside Git as private receipts: simple-bot counts, Cowboys-open and grit baselines, reward ablations, and the fixture's tribute and full-board controls. They are not part of the shipped script.
+To reproduce, run `node scripts/showdown-wizard-ramp.mjs` at the repository root. It reads the runtime duel table, the earned decks and the shipped rules. Use `--out results.jsonl` for each deal’s outcome. Codex independently reproduced all eight final counts. No card stats or Cowboy campaign rules changed.
