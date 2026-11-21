@@ -1,4 +1,4 @@
-import { EFFECTS, TYPES, typeOf, tributes } from "../../game/showdown/cards.js";
+import { EFFECTS, KEYWORDS, TYPES, typeOf, tributes } from "../../game/showdown/cards.js";
 import { portrait } from "./gallery.js";
 
 const illustrations = typeof __CVW_TABLE_ILLUSTRATIONS__ === "undefined" ? {} : __CVW_TABLE_ILLUSTRATIONS__;
@@ -10,16 +10,20 @@ const el = (tag, cls, word) => {
   if (word) node.textContent = word;
   return node;
 };
+export function cardArtwork(type) {
+  if (!illustrations[type]) return portrait(type);
+  const artwork = el("img", "table-card-painting");
+  artwork.src = illustrations[type];
+  artwork.alt = "";
+  return artwork;
+}
+
 function paintedFace(type) {
   const card = TYPES[type];
   const face = el("span", "table-card-face");
   face.setAttribute("aria-hidden", "true");
   const title = el("span", "table-card-title", card.name);
-  const artwork = illustrations[type] ? el("img", "table-card-painting") : portrait(type);
-  if (illustrations[type]) {
-    artwork.src = illustrations[type];
-    artwork.alt = "";
-  }
+  const artwork = cardArtwork(type);
   const notes = el("span", "table-card-copy");
   const kind = card.kind[0].toUpperCase() + card.kind.slice(1);
   const category = el("span", "table-card-kind", icons[card.kind] + " " + kind);
@@ -33,7 +37,7 @@ function paintedFace(type) {
         el(
           "span",
           "table-card-rule",
-          [...(card.keys ?? []), ...(cost ? [cost + " tribute"] : [])].join(" · "),
+          [...(card.keys ?? []).map((key) => KEYWORDS[key][0]), ...(cost ? [cost + " tribute"] : [])].join(" · "),
         ),
       );
   } else {
@@ -48,7 +52,7 @@ function paintedFace(type) {
 export function paintCardFaces(root, selector) {
   for (const card of root.querySelectorAll(selector)) {
     if (card.querySelector(".table-card-face")) continue;
-    const type = card.dataset.choose ?? card.dataset.opened ?? typeOf(card.dataset.card);
+    const type = card.dataset.face ?? card.dataset.choose ?? card.dataset.opened ?? typeOf(card.dataset.card);
     const original = el("span", "table-card-original");
     original.append(...card.childNodes);
     card.append(original, paintedFace(type));

@@ -1,0 +1,427 @@
+/* Scenes are cropped from the same painted frontier as the Trail and duel. */
+.camp-outpost,
+.builder-inspect {
+  width: min(920px, calc(100% - 2rem));
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  border: 0;
+  color: var(--frontier-light);
+  background-color: #17243a;
+  box-shadow: 0 0 0 3px #101523, 0 0 0 5px #987353, 0 14px 0 #101523;
+}
+.camp-outpost::backdrop,
+.builder-inspect::backdrop {
+  background: #080e1ac9;
+}
+body:has(.camp-outpost[open], .builder-inspect[open]) {
+  overflow: hidden;
+}
+#showdown-camp .camp-outpost h2 {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  margin: 0;
+}
+.camp-outpost > header,
+.builder-inspect > header {
+  padding: 0.55rem clamp(1rem, 4vw, 2.25rem);
+  background: #17243a;
+}
+.camp-outpost > header button,
+.builder-inspect > header button,
+.builder-footer #builder-cancel {
+  min-height: 48px;
+  border: 0;
+  color: inherit;
+  background: none;
+  font: 700 1.08rem var(--frontier-display);
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+}
+:is(.camp-outpost, .builder-inspect, .builder-footer) > header button:hover {
+  color: var(--frontier-brass);
+}
+.outpost-room {
+  min-height: 246px;
+  padding: clamp(1rem, 4vw, 2.25rem);
+  background:
+    linear-gradient(#201a1dec 0%, #231a20b8 75%, #29201fc9),
+    var(--frontier-panorama) left 84% / 145% auto no-repeat;
+}
+.outpost-stone .outpost-room {
+  background:
+    linear-gradient(#14243a55, #14243a6e),
+    var(--frontier-panorama) right bottom / 167% auto no-repeat,
+    #2b3852;
+}
+.outpost-trail-lock {
+  width: fit-content;
+  margin: 0 0 1.2rem;
+  padding: 0.52rem 0.8rem;
+  background: #17243a;
+  box-shadow: 0 3px #0e1829;
+  font-weight: 600;
+}
+#showdown-camp .camp-outpost .camp-stop-list h2,
+#showdown-camp .camp-outpost #camp-experiment-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+#showdown-camp .outpost-stone .camp-stop-list ol {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(0.6rem, 2vw, 1.25rem);
+}
+#showdown-camp .outpost-wanted .camp-stop-list ol {
+  grid-template-columns: repeat(2, minmax(0, 220px));
+  justify-content: center;
+}
+#showdown-camp .outpost-stone .sd-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  gap: 0.55rem;
+  padding: 1.03rem 0.65rem 0.75rem;
+  text-align: center;
+  color: #37251d;
+  background: #e2bc85;
+  box-shadow: inset 0 -5px #b88656, 3px 4px #1e1c2a;
+}
+#showdown-camp .outpost-rivals .sd-tile {
+  background: #c7c5d5;
+  box-shadow: inset 0 -5px #9490a8, 3px 4px #1e1c2a;
+  color: #27273d;
+}
+#showdown-camp .outpost-stone .sd-tile::before {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: calc(50% - 3px);
+  width: 6px;
+  height: 6px;
+  background: #5d4438;
+  box-shadow: 1px 1px #916a4d;
+}
+#showdown-camp .outpost-stone .sd-tile:not(:disabled):hover {
+  color: #29180d;
+  background: #ffe0a4;
+}
+#showdown-camp .outpost-stone .sd-tile:disabled {
+  opacity: 1;
+}
+#showdown-camp .outpost-stone strong {
+  align-self: center;
+  font-size: clamp(1rem, 2vw, 1.4rem);
+}
+#showdown-camp .outpost-stone .sd-note {
+  margin: 0;
+  align-self: center;
+  color: inherit;
+  line-height: 1.3;
+}
+.outpost-stone .outpost-portrait {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1.18;
+  margin: 0;
+  border: 2px solid #51404a;
+  object-fit: cover;
+  object-position: 50% 38%;
+  image-rendering: pixelated;
+}
+.outpost-lock-note {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+#showdown-camp .camp-outpost :is(#camp-practice, #camp-save) {
+  margin-top: 0;
+}
+#showdown-camp .outpost-wood :is(.sd-note, #camp-code-note) {
+  font-size: 0.98rem;
+  color: var(--frontier-light);
+}
+.camp-outpost .sd-row {
+  margin-block: 0.65rem;
+}
+#showdown-camp .outpost-range :is(#camp-open, #camp-earned-row) {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+#showdown-camp .outpost-range button:not(header button),
+#showdown-camp .outpost-practice a[data-practice],
+#showdown-camp .outpost-save button:not(header button),
+.builder-footer #builder-save {
+  display: inline-grid;
+  place-items: center;
+  min-height: 48px;
+  padding: 0.6em 1em;
+  border: 0;
+  border-radius: 1px;
+  color: #472a19;
+  background: #e9c18e;
+  box-shadow: inset 0 -3px #b18154, 0 3px #101420;
+  font: 700 1.08rem/1.15 var(--frontier-display);
+  text-align: center;
+  text-decoration: none;
+}
+#showdown-camp .outpost-range button:not(header button):not(:disabled):hover,
+#showdown-camp .outpost-practice a[data-practice]:hover,
+#showdown-camp .outpost-save button:not(header button):not(:disabled):hover,
+.builder-footer #builder-save:not(:disabled):hover {
+  background: #f8dba2;
+}
+#showdown-camp .outpost-range button:disabled {
+  background: #6a5b5b;
+  box-shadow: inset 0 -3px #4d4044, 0 3px #101420;
+  color: #f0dfc4;
+  opacity: 0.91;
+}
+#showdown-camp .outpost-save textarea {
+  margin-top: 0.6rem;
+  padding: 0.65rem;
+  overflow-wrap: anywhere;
+}
+#showdown-camp .outpost-ledger #camp-collection {
+  line-height: 1.6;
+}
+#showdown-camp .outpost-ledger .sd-ledger > summary small {
+  display: block;
+}
+
+/* Bring the full-size duel card treatment onto a saloon table. */
+#showdown-builder.builder-diorama {
+  max-width: none;
+  min-height: 100svh;
+  grid-template-rows: auto auto 1fr auto;
+  align-items: start;
+  gap: 0.5rem;
+  padding: clamp(1rem, 3.5vw, 3rem) clamp(0.7rem, 5vw, 5rem) 0;
+  background:
+    linear-gradient(#1b1723ad, #261d2480 280px, #23191f 850px),
+    var(--frontier-panorama) left top / max(125%, 930px) auto no-repeat,
+    #23191f;
+}
+.builder-diorama h1 {
+  font-size: clamp(2.2rem, 5vw, 4.2rem);
+  line-height: 1.05;
+  text-shadow: 0 3px #17131b;
+}
+.builder-diorama #builder-note {
+  color: var(--frontier-light);
+  font-size: 1rem;
+  text-shadow: 0 2px #17131b;
+}
+.builder-diorama > :is(header, #builder-note, #builder-rows) {
+  width: min(100%, 1130px);
+  justify-self: center;
+}
+.builder-diorama #builder-rows {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(215px, 46%), 1fr));
+  gap: clamp(0.65rem, 2vw, 1.85rem);
+  padding-block: clamp(0.55rem, 2vw, 1.5rem) 1.5rem;
+}
+.builder-diorama .sd-build-row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.38rem;
+  margin: 0;
+  min-width: 0;
+  padding: 0.55rem;
+  background:
+    repeating-linear-gradient(2deg, #a2785a17 0 1px, transparent 1px 9px),
+    #392722;
+  box-shadow: inset 0 -4px #291d1c, 0 4px #18141d;
+}
+.builder-diorama .sd-card.table-card-painted {
+  --ink: #332230;
+  --foil: #c99960;
+  --contrast: #9e734c;
+  --paper: #f2dfc2;
+  position: relative;
+  width: 100%;
+  min-height: 0;
+  padding: 4px;
+  aspect-ratio: 5 / 7;
+  color: var(--paper);
+  background: var(--foil);
+  border: 2px solid var(--foil);
+  border-radius: 4px;
+  box-shadow: 0 3px #20161a;
+}
+.builder-diorama .sd-card[data-frame="spell"] {
+  --foil: #c2b7cf;
+  --contrast: #a289b9;
+  border: 4px double var(--ink);
+}
+.builder-diorama .sd-card[data-frame="trap"] {
+  --foil: #b4acb8;
+  border-style: dashed;
+  border-color: var(--ink);
+}
+.builder-diorama .sd-card[data-frame="gear"] {
+  --foil: #b98954;
+  border-style: dotted;
+  border-color: var(--ink);
+}
+.builder-diorama .sd-card[data-frame="location"] {
+  --foil: #bdae96;
+  border-bottom-width: 7px;
+}
+.builder-diorama button.sd-card:hover {
+  outline: 2px solid #ffe2a3;
+  outline-offset: 2px;
+}
+.builder-diorama .table-card-face {
+  gap: 3px;
+  padding: 4px;
+}
+.builder-diorama .table-card-title {
+  font-size: clamp(1.05rem, 1.9vw, 1.42rem);
+  padding: 0.1em 0.05em;
+}
+.builder-diorama .table-card-copy {
+  font-size: clamp(0.7rem, 1.1vw, 0.93rem);
+  line-height: 1.2;
+}
+.builder-diorama .table-card-stats {
+  padding: 0 0.3em;
+}
+.builder-diorama .table-card-painting {
+  image-rendering: pixelated;
+}
+.builder-diorama .builder-pile {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.2rem;
+}
+.builder-diorama .builder-pile .sd-note {
+  font: 700 clamp(0.9rem, 1.2vw, 1.05rem) var(--frontier-display);
+  color: var(--frontier-light);
+}
+.builder-diorama .builder-stepper {
+  display: grid;
+  grid-template-columns: 38px minmax(1ch, auto) 38px;
+  gap: 0.18rem;
+  align-items: center;
+  text-align: center;
+}
+.builder-diorama #builder-rows button {
+  scroll-margin-bottom: 6rem;
+}
+.builder-diorama .builder-stepper button {
+  border: 0;
+  padding: 0;
+  min-height: 40px;
+  border-radius: 2px;
+  color: #472c20;
+  background: #d6ae78;
+  box-shadow: inset 0 -3px #9d704f, 0 2px #1f171b;
+  font-weight: 750;
+  font-size: 1.2rem;
+}
+.builder-diorama .builder-stepper button:not(:disabled):hover {
+  background: #f7d69e;
+}
+.builder-diorama .builder-stepper button:disabled {
+  opacity: 0.52;
+}
+.builder-diorama .builder-limit {
+  margin: 0.12rem 0 0.15rem;
+  text-align: center;
+  color: #e7ccb0;
+}
+.builder-diorama .builder-footer {
+  position: sticky;
+  z-index: 1;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  flex-wrap: wrap;
+  margin-inline: calc(-1 * clamp(0.7rem, 5vw, 5rem));
+  padding: 0.6rem clamp(0.8rem, 5vw, 5rem) max(0.8rem, env(safe-area-inset-bottom));
+  background: #211b26;
+  box-shadow: 0 -3px #8a5d49;
+}
+.builder-diorama #builder-problems {
+  flex: 1 1 210px;
+  font-weight: 650;
+}
+.builder-diorama #builder-problems .sd-warn {
+  font-weight: 400;
+  margin-left: 0.25rem;
+}
+.builder-diorama #builder-save:disabled {
+  color: #31221b;
+  background: #b79983;
+}
+.builder-inspect {
+  width: min(560px, calc(100% - 2rem));
+}
+#builder-inspect-card {
+  display: grid;
+  grid-template-columns: minmax(0, 195px) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+  padding: 1rem;
+  background: #392722;
+}
+.builder-inspect-rules > strong {
+  display: none;
+}
+.builder-inspect-rules .sd-note {
+  font-size: 0.94rem;
+}
+.builder-inspect-rules .sd-type {
+  margin-bottom: 0.45rem;
+}
+@media (max-width: 690px) {
+  #showdown-camp .outpost-stone .camp-stop-list ol {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .outpost-stone .outpost-room {
+    background-size: auto, cover;
+  }
+  .outpost-room {
+    background-size: auto, cover;
+  }
+}
+@media (max-width: 460px) {
+  .builder-diorama .sd-build-row {
+    padding: 0.35rem;
+  }
+  .builder-diorama .builder-pile {
+    flex-wrap: wrap;
+    gap: 0;
+  }
+  .builder-diorama .builder-pile .sd-note {
+    width: 100%;
+    margin: 0;
+  }
+  .builder-diorama .builder-stepper {
+    width: 100%;
+    grid-template-columns: 44px minmax(1ch, 1fr) 44px;
+  }
+  .builder-diorama .builder-stepper button {
+    min-height: 44px;
+  }
+  #builder-inspect-card {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  #showdown-camp .outpost-range :is(#camp-open, #camp-earned-row) {
+    grid-template-columns: 1fr;
+  }
+}

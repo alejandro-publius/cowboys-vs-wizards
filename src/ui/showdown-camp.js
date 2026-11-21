@@ -20,7 +20,7 @@ const TEMPLATE = `
   <section class="camp-stop-list" aria-labelledby="camp-rivals-title"><h2 id="camp-rivals-title">Rivals</h2><ol id="camp-rivals" class="sd-row"></ol></section>
   <section class="camp-stop-list" aria-labelledby="camp-bounties-title"><h2 id="camp-bounties-title">Wanted</h2><ol id="camp-bounties" class="sd-row"></ol></section>
   <section class="camp-stop-list" aria-labelledby="camp-open-title"><h2 id="camp-open-title">Open range</h2><div id="camp-open" class="sd-row"></div></section>
-  <section class="camp-stop-list" aria-label="Your cards"><h2>Your cards</h2><p id="camp-collection" class="sd-note"></p>
+  <section class="camp-stop-list" id="camp-collection-room" aria-label="Your cards"><h2>Your cards</h2><p id="camp-collection" class="sd-note"></p>
     <div class="sd-row"><button type="button" id="camp-build">Build deck</button></div></section>
   <details id="camp-save"><summary>Save code</summary>
     <p class="sd-note">Progress is saved in this browser. Copy this code to move it, or paste one and press Load.</p>
@@ -50,7 +50,7 @@ const TEMPLATE = `
 // onDuel(id, {players, best}): start a Camp duel ("trail", "rival:<id>", "hunt:<id>", "open", or "two" for two players).
 // onBuild(): open the deck builder. playtest (optional): text(progress), saved(), clear().
 // confirm: asks before Start over (window.confirm in the page).
-export function mountCamp(root, {campaign, playtest, paintCardFaces, onDuel, onHome, onBuild, confirm = (text) => window.confirm(text)}) {
+export function mountCamp(root, {campaign, playtest, paintCardFaces, openDestination, dressNotices, onDuel, onHome, onBuild, confirm = (text) => window.confirm(text)}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
   if (paintCardFaces) {
@@ -117,6 +117,7 @@ export function mountCamp(root, {campaign, playtest, paintCardFaces, onDuel, onH
       return tile(duel, duel.state === "won" ? `Captured: ${TYPES[bounty.reward].name}` : duel.state === "locked" ? "After the Trail"
         : `${duel.cleared} of ${HUNTS} hunts won. Five capture ${TYPES[bounty.reward].name}.`);
     }).join("");
+    dressNotices?.(trailDone(progress));
     const open = trailDone(progress) && !progress.offer;
     $("camp-open").innerHTML = `<button type="button" data-duel="open" ${open ? "" : "disabled"}>The even match${open ? "" : " (after the Trail)"}</button>
       <button type="button" data-match="open" ${open ? "" : "disabled"}>Best of three, with your side deck</button>
@@ -205,6 +206,7 @@ export function mountCamp(root, {campaign, playtest, paintCardFaces, onDuel, onH
       ($("camp-claim").querySelector("button") ?? root.querySelector("[data-duel]:not(:disabled)"))?.focus();
     } else if (b.id === "camp-start-trail") $("camp-trail").querySelector("[data-duel=trail]")?.click();
     else if (d.campDestination) {
+      if (openDestination?.(d.campDestination, b)) return;
       const destination = $(d.campDestination);
       if (!destination) return;
       if (destination instanceof HTMLDetailsElement) {

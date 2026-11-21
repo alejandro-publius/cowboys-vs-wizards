@@ -34,7 +34,12 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   const preview = createWizardPreview(storage);
   // One line per finished solo game for the Camp's playtest report, under the prototype's key.
   const playtest = createPlaytestLog(storage);
-  const showOnly = (shown) => { for (const el of [title, screen, campRoot, builderRoot]) el.hidden = el !== shown; window.scrollTo(0, 0); };
+  let outpost;
+  const showOnly = (shown) => {
+    if (shown !== campRoot) outpost?.close();
+    for (const el of [title, screen, campRoot, builderRoot]) el.hidden = el !== shown;
+    window.scrollTo(0, 0);
+  };
   let last = null; // the Camp control that started the duel just left, so focus returns to it
   // Back from a duel: the Camp, or for a Wizard preview duel the place it was opened from. Reset after each use.
   let back = null;
@@ -44,6 +49,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   const showCowboyParts = () => { for (const el of hiddenForWizard) el.hidden = false; hiddenForWizard = []; };
   const toCamp = () => {
     showCowboyParts();
+    outpost?.wizardInCamp();
     campRoot.removeAttribute("aria-labelledby"); // the landmark is "Camp" again (its aria-label)
     showOnly(campRoot);
     campaign.enter();
@@ -53,10 +59,14 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     // When that control is now disabled (a win's card offer is open), the Camp's own order: the claim
     // (offer or pack), then the first open duel. Selectors are tried in turn, not in document order.
     const usable = (selector) => campRoot.querySelector(`${selector}:not(:disabled)`);
-    ((last && usable(last)) ?? usable("#camp-claim button") ?? usable("[data-duel]") ?? usable("button"))?.focus();
+    const returning = last && usable(last);
+    if (returning && outpost?.restoreFocus(returning)) return;
+    (returning || usable("#camp-claim button") || (outpost && usable("#camp-start-trail:not([hidden])")) ||
+      (outpost ? usable("#camp-build") : usable("[data-duel]")) || usable("button"))?.focus();
   };
   // The direct Wizard preview: the Camp page with only the preview section shown. Nothing Cowboy is entered or written.
   const toWizard = () => {
+    outpost?.wizardOnItsOwn();
     showOnly(campRoot);
     hiddenForWizard = [...hiddenForWizard, ...[...campRoot.children].filter((el) => el.id !== "camp-wizard" && !el.hidden)];
     for (const el of hiddenForWizard) el.hidden = true;
@@ -65,7 +75,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     wizardCamp.show("direct");
     wizardCamp.focus(null); // the open tile; Back from a duel then moves focus to the tile that started it
   };
-  const builder = mountBuilder(builderRoot, {campaign});
+  const builder = mountBuilder(builderRoot, {campaign, paintCardFaces: diorama?.paintCardFaces});
   const showdown = mountShowdown(screen, {onHome: home, campaign, playtest, nextSeed: seedFor, mountBoard: diorama?.mountDiorama,
     // Between the games of a best of three with a side deck: the swap, then the next game.
     onSwap: (pool, deck, side, done) => {
@@ -73,6 +83,8 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
       builder.openSwap({pool, deck, side, done: (nextDeck, nextSide) => { showOnly(screen); done(nextDeck, nextSide); }});
     }});
   const camp = mountCamp(campRoot, {campaign, playtest, paintCardFaces: diorama?.paintCardFaces,
+    openDestination: (id, control) => outpost?.open(id, control),
+    dressNotices: (trailComplete) => outpost?.dressNotices(trailComplete),
     onHome: () => { showOnly(title); play.focus(); },
     onBuild: () => {
       showOnly(builderRoot);
@@ -147,7 +159,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     const direct = campRoot.querySelector("#camp-wizard").dataset.mode === "direct";
     back = () => {
       if (direct) toWizard();
-      else { last = null; toCamp(); }
+      else { last = outpost ? "#camp-wizard summary" : null; toCamp(); }
       wizardCamp.focus(id);
     };
     showOnly(screen);
@@ -172,6 +184,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     showOnly(screen);
     showdown.start(duel, seedFor(), {players: 2});
   });
+  outpost = diorama?.mountCampOutpost(campRoot);
   if (turn !== null) openTurn(turn);
   if (outrider !== null && turn === null) openOutrider(outrider);
   if (practice !== null) openPractice(practice);
