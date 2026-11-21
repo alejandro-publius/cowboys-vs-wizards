@@ -106,7 +106,7 @@ test("server lists inspect_ride_decision and refuses paths and extra inputs", {t
   assert.equal((await call("tools/call", {name: "inspect_ride_decision", arguments: {case: "../../x"}})).error.code, -32602);
   assert.equal((await call("tools/call", {name: "inspect_ride_decision", arguments: {path: "/etc"}})).error.code, -32602);
   const ok = JSON.parse((await call("tools/call", {name: "inspect_ride_decision", arguments: {case: "outrider-ride-search"}})).result.content[0].text);
-  assert.equal(ok.power.version, "1.5.0");
+  assert.equal(ok.power.version, "1.6.0");
   assert.equal(ok.verdict, "pass");
   assert.equal(ok.advice.allowed, false);
   const camp = JSON.parse((await call("tools/call", {name: "inspect_ride_decision", arguments: {}})).result.content[0].text);
