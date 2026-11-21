@@ -3,9 +3,11 @@ import { LOOK } from "../../../prototypes/showdown/art.js";
 import { EFFECTS, TYPES } from "../../game/showdown/cards.js";
 import { makeCardModel } from "./card-models.js";
 import { PixelRenderer } from "./graphics/pixel-renderer.js";
+import { attackExample, attackPreviews } from "./attack-preview.js";
 
 export const ROSTER = Object.keys(TYPES);
 const order = new Map(ROSTER.map((id, i) => [id, i]));
+const troopRoster = ROSTER.filter((id) => TYPES[id].kind === "troop");
 const sideName = { cowboy: "Cowboys", wizard: "Wizards" };
 const kinds = { troop: "Troop", spell: "Spell", trap: "Trap", gear: "Gear", location: "Location" };
 const atlas = typeof __CVW_DIORAMA_ATLAS__ === "undefined" ? "" : __CVW_DIORAMA_ATLAS__;
@@ -81,7 +83,7 @@ function stage(canvas) {
   };
 }
 
-export function mountGallery(title, duel) {
+export function mountGallery(title, duel, makeAttackStage) {
   if (atlas)
     document.documentElement.style.setProperty("--sd-card-atlas", `url("data:image/webp;base64,${atlas}")`);
   const dialog = document.createElement("dialog");
@@ -96,6 +98,15 @@ export function mountGallery(title, duel) {
         <canvas class="sd-gallery-model" aria-hidden="true"></canvas>
         <div class="sd-gallery-still" hidden></div>
         <label class="sd-gallery-angle">Rotate <input type="range" min="-180" max="180" value="20" aria-label="Rotate the card model"></label>
+        <div class="sd-gallery-actions">
+          <div class="sd-gallery-moves"></div>
+          <button type="button" class="sd-gallery-reel">Watch all troops</button>
+        </div>
+        <div class="sd-gallery-attack" hidden>
+          <canvas class="sd-attack-world" aria-label="Attack replay. Drag to orbit and scroll to zoom." tabindex="0" hidden></canvas>
+          <div class="sd-world-labels" aria-hidden="true"></div>
+        </div>
+        <p class="sd-attack-result" role="status" hidden></p>
         <p class="sd-gallery-rule"></p>
         <p class="sd-gallery-subject"></p>
         <p class="sd-gallery-story"></p>
@@ -106,6 +117,11 @@ export function mountGallery(title, duel) {
   const menu = dialog.querySelector(".sd-gallery-menu");
   const canvas = dialog.querySelector("canvas");
   const still = dialog.querySelector(".sd-gallery-still");
+  const attackHost = dialog.querySelector(".sd-gallery-attack");
+  const attackCanvas = attackHost.querySelector("canvas");
+  const attackResult = dialog.querySelector(".sd-attack-result");
+  const attackMoves = dialog.querySelector(".sd-gallery-moves");
+  const reel = dialog.querySelector(".sd-gallery-reel");
   const choices = new Map();
   for (const [side, heading] of Object.entries(sideName)) {
     const group = document.createElement("section");
@@ -124,8 +140,52 @@ export function mountGallery(title, duel) {
     menu.append(group);
   }
   let preview,
+    battle,
+    reelTimer,
+    playingAll = false,
+    hasModel = true,
     active = ROSTER[0];
-  function select(id) {
+  function stopReel() {
+    window.clearTimeout(reelTimer);
+    playingAll = false;
+    reel.textContent = "Watch all troops";
+  }
+  function restoreModel() {
+    battle?.clear();
+    attackHost.hidden = attackResult.hidden = true;
+    angle.closest("label").hidden = canvas.hidden = !hasModel;
+  }
+  function watch(id, mode, finished) {
+    const example = attackExample(id, mode);
+    if (!example) return;
+    attackResult.hidden = false;
+    attackResult.textContent = example.summary;
+    try {
+      battle ??= makeAttackStage(attackHost, attackCanvas, dialog);
+    } catch {
+      stopReel();
+      return;
+    }
+    canvas.hidden = still.hidden = angle.closest("label").hidden = true;
+    attackHost.hidden = false;
+    attackCanvas.dataset.cardArt = id;
+    attackCanvas.dataset.previewMode = mode;
+    battle.frame(mode === "ride" ? 1.17 : 1.63);
+    battle.paint(example.end, example.before);
+    battle.animate(example.trace, finished);
+  }
+  function playReel(index) {
+    if (!playingAll || !dialog.open) return;
+    if (index === troopRoster.length) return stopReel();
+    const id = troopRoster[index];
+    select(id, true);
+    watch(id, attackPreviews(id)[0][0], () => {
+      if (playingAll) reelTimer = window.setTimeout(() => playReel(index + 1), 460);
+    });
+  }
+  function select(id, fromReel = false) {
+    if (!fromReel) stopReel();
+    restoreModel();
     const card = TYPES[id];
     choices.get(active).setAttribute("aria-pressed", "false");
     active = id;
@@ -138,8 +198,21 @@ export function mountGallery(title, duel) {
     dialog.querySelector(".sd-gallery-subject").textContent = LOOK[id].subject;
     dialog.querySelector(".sd-gallery-story").textContent = LOOK[id].scene;
     dialog.querySelector(".sd-gallery-cue").textContent = LOOK[id].cue;
+    attackMoves.replaceChildren(
+      ...attackPreviews(id).map(([mode, label]) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.dataset.attackMode = mode;
+        button.textContent = label;
+        button.onclick = () => {
+          stopReel();
+          watch(id, mode);
+        };
+        return button;
+      }),
+    );
     preview?.select(id);
-    if (canvas.hidden) {
+    if (!hasModel) {
       const art = portrait(id);
       still.hidden = !art;
       if (art) still.replaceChildren(art);
@@ -151,14 +224,23 @@ export function mountGallery(title, duel) {
     button.onclick = () =>
       select(ROSTER[(order.get(active) + Number(button.dataset.step) + ROSTER.length) % ROSTER.length]);
   dialog.querySelector(".sd-gallery-close").onclick = () => dialog.close();
+  reel.onclick = () => {
+    if (playingAll) return stopReel();
+    playingAll = true;
+    reel.textContent = "Stop reel";
+    playReel(0);
+  };
+  dialog.addEventListener("close", () => {
+    stopReel();
+    restoreModel();
+  });
   function open() {
     dialog.showModal();
     if (!preview) {
       try {
         preview = stage(canvas);
       } catch {
-        canvas.hidden = true;
-        angle.closest("label").hidden = true;
+        hasModel = false;
       }
     }
     select(active);

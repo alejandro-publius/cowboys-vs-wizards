@@ -287,6 +287,79 @@
   align-items: center;
   color: #dacabc;
 }
+.sd-gallery:has(.sd-gallery-attack:not([hidden])) {
+  width: min(1200px, calc(100% - 1.1rem));
+}
+.sd-gallery:has(.sd-gallery-attack:not([hidden])) .sd-gallery-grid {
+  grid-template-columns: minmax(136px, 11rem) minmax(0, 1fr);
+}
+.sd-gallery:has(.sd-gallery-attack:not([hidden]))
+  :is(.sd-gallery-rule, .sd-gallery-subject, .sd-gallery-story, .sd-gallery-cue) {
+  display: none;
+}
+.sd-gallery-actions,
+.sd-gallery-moves {
+  display: flex;
+  gap: 0.35rem 0.7rem;
+  flex-wrap: wrap;
+}
+.sd-gallery-actions {
+  justify-content: space-between;
+  font-family: Georgia, serif;
+}
+.sd-gallery-actions button {
+  min-height: 42px;
+  color: #f4dec0;
+  background: #292b3c;
+  border-color: #867568;
+}
+.sd-gallery-moves button:first-child {
+  color: #31232c;
+  background: #e4bd87;
+}
+.sd-gallery-attack {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: #17243a;
+}
+.sd-gallery-attack canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2.08;
+  background: #17243a;
+  cursor: grab;
+  touch-action: none;
+}
+.sd-gallery-attack canvas.table-drag {
+  cursor: grabbing;
+}
+.sd-gallery-attack .sd-world-labels {
+  display: block;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.sd-gallery-attack .sd-world-labels span {
+  position: absolute;
+  translate: -50% 0;
+  font:
+    650 clamp(9px, 1.03vw, 14px) / 1.1 Georgia,
+    serif;
+  white-space: nowrap;
+  color: #fff0d8;
+  text-shadow:
+    1px 1px #202231,
+    -1px 0 #202231,
+    0 2px 3px #1c1a28;
+}
+.sd-attack-result {
+  color: #f1debf;
+  font-size: 0.91rem;
+  line-height: 1.42;
+}
 .sd-gallery-angle input {
   accent-color: #b68a59;
 }

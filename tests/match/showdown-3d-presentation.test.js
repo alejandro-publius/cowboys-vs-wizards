@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { TYPES } from "../../src/game/showdown/cards.js";
+import { attackExample, attackPreviews } from "../../src/ui/showdown-3d/attack-preview.js";
 import { viewFor } from "../../src/game/showdown/contract.js";
 import { applyAction, createShowdown, legalActions } from "../../src/game/showdown/rules.js";
 import { createShowdownSession } from "../../src/match/showdown-session.js";
@@ -12,6 +14,27 @@ function fixture(cowboy, wizard, side = "cowboy") {
   return state;
 }
 const actor = (type, health) => ({ type, health });
+
+test("every troop opens a real rules-engine preview, including no-attack Guard, Ride, and Last Stand", () => {
+  for (const [id, card] of Object.entries(TYPES)) {
+    const previews = attackPreviews(id);
+    assert.equal(previews.length > 0, card.kind === "troop");
+    for (const [mode] of previews) {
+      const example = attackExample(id, mode);
+      const events = example.trace[0].events;
+      const beats = presentationBeats(example.trace);
+      assert.ok(example.summary && beats.length > 0, id);
+      if (mode === "attack") assert.equal(events[0].cardId, id + "-0");
+      if (mode === "guard") assert.equal(events[0].target, id + "-0");
+      if (mode === "ride") assert.ok(beats.some((beat) => beat.kind === "ride"));
+      if (mode === "laststand")
+        assert.ok(beats.some((beat) => beat.kind === "laststand" && beat.cardId === id + "-0"));
+      if (mode === "attack" && card.keys.includes("sweep"))
+        assert.ok(beats.some((beat) => beat.kind === "sweep"));
+    }
+  }
+  assert.equal(attackExample("wizard-bone-wall", "attack"), null);
+});
 function present(before, action) {
   assert.ok(legalActions(before).some((a) => JSON.stringify(a) === JSON.stringify(action)));
   const { state: after, events } = applyAction(before, action);

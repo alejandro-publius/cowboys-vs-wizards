@@ -22,13 +22,17 @@ const materials = new Map();
 class Miniature {
   root = new T.Group();
   parent = this.root;
-  group(name, draw) {
+  group(name, draw, pivot) {
     const former = this.parent;
     const sub = new T.Group();
     sub.name = name;
     former.add(sub);
     this.parent = sub;
     draw();
+    if (pivot) {
+      sub.position.set(...pivot);
+      for (const child of sub.children) child.position.sub(sub.position);
+    }
     this.parent = former;
   }
   piece(kind, color, x, y, z, w, h, d, rx = 0, ry = 0, rz = 0) {

@@ -103,8 +103,8 @@ function groundDetails(b) {
   for (let i = 0; i < 540; i++) {
     const x = random() * 34 - 17;
     const z = random() * 16 - 8;
-    if ((Math.abs(x) > 13.5 && Math.abs(z) > 6.4) || Math.abs(x) < 3.5) continue;
-    const colors = x < 0 ? [0xc1a37d, 0xa78767, 0xc7a479] : [0x5e547b, 0x736282, 0x676f86];
+    if (x > -3.5 || (x < -13.5 && Math.abs(z) > 6.4)) continue;
+    const colors = [0xb89570, 0x9e7860, 0xbfa17e];
     b.box(colors[i % 3], x, 0.003, z, 0.09 + random() * 0.36, 0.01, 0.12 + random() * 0.24, 0, 2 * random());
   }
   for (let i = 0; i < 37; i++) {
@@ -115,29 +115,39 @@ function groundDetails(b) {
     b.box(0x6b5a58, -8.24, 0.085, z, 14.11, 0.059, 0.072);
     b.box(0xb29f84, -8.24, 0.117, z, 14.11, 0.015, 0.031);
   }
-  for (let row = 0; row < 5; row++) {
-    for (let col = 0; col < 23; col++) {
-      const x = 1.3 + col * 0.602;
-      const z = 6.02 + row * 0.41 + 0.31 * Math.cos(col * 0.13);
-      b.box(
-        [0x6f6685, 0x60617f, 0x786e8b][(col + row) % 3],
-        x + (row % 2) * 0.075,
-        0.019,
-        z,
-        0.551,
-        0.035,
-        0.357,
-        0,
-        0.035 * (row - 2),
-      );
-    }
-  }
   for (const side of [-1, 1]) {
     const colors = side < 0 ? [0x865a46, 0x68463e] : [0x62516f, 0x443852];
     for (let i = 0; i < 22; i++) {
       const x = side * (0.5 + i * 0.68);
       const z = (Math.abs(x) > 9.8 ? 8.12 : 8.7) - random() * 0.24;
       b.piece("rock", colors[i % 2], x, -0.59, z, 0.49 + random() * 1.24, 0.48, 0.58, 0, i);
+    }
+  }
+}
+function courtPaving(b) {
+  const stones = [0x70818a, 0x85939a, 0x96a4a8, 0x66747d, 0x939b9d, 0x798589, 0x748c8a];
+  const moss = [0x4d6c58, 0x708769, 0x59775a];
+  for (let row = 0; row < 26; row++) {
+    for (let col = 0; col < 23; col++) {
+      const x = 0.55 + (col + (row % 2 ? 0.47 : 0)) * 0.69;
+      const z = -7.76 + row * 0.61;
+      if ((Math.abs(z) > 6.05 && x > 13.3) || (Math.abs(z) > 7.2 && x > 9.4)) continue;
+      const j = (row * 67 + col * 41 + col * row * 3) % 997;
+      if (col < 2 && j % 4 === 0) continue;
+      const wobble = Math.sin(j * 0.46);
+      b.box(
+        stones[j % stones.length],
+        x + wobble * 0.038,
+        0.019 + (j % 3) * 0.004,
+        z + Math.sin(j) * 0.048,
+        0.6 + wobble * 0.055,
+        0.044,
+        0.525 - 0.055 * wobble,
+        0,
+        wobble * 0.08,
+      );
+      if (j % 11 < 2 && (x > 10 || Math.abs(z) > 3.4))
+        b.box(moss[j % 3], x - 0.29, 0.032, z - 0.27, 0.13 + (j % 3) * 0.04, 0.022, 0.18);
     }
   }
 }
@@ -155,15 +165,16 @@ export function makeBoard(scene, addLandmarks) {
   terrain(island, westernProfile, [
     [0xa57955, 0x533a33, -0.54, 0.83, 0.966],
     [0xa57955, 0x84533c, -0.25, 0.3, 0.99],
-    [0xb79771, 0xa77751, 0, 0.25, 1],
+    [0xa8886f, 0x9c6353, 0, 0.25, 1],
   ]);
   terrain(island, arcaneProfile, [
-    [0x584c6e, 0x322c46, -0.54, 0.83, 0.966],
-    [0x584c6e, 0x493f60, -0.25, 0.3, 0.99],
-    [0x615c79, 0x625275, 0, 0.25, 1],
+    [0x4b555d, 0x283747, -0.54, 0.83, 0.966],
+    [0x586b68, 0x48545e, -0.25, 0.3, 0.99],
+    [0x4d5e5e, 0x526471, 0, 0.25, 1],
   ]);
   const b = new SetBuilder(island);
   groundDetails(b);
+  courtPaving(b);
   field(b);
   addLandmarks(b);
   westernDetail(b);

@@ -1,7 +1,7 @@
 export const SIDES = ["cowboy", "wizard"];
 export const COLORS = {
   cowboy: { metal: 0x985d43, tile: 0xa27855, line: 0xe9b775, dark: 0x624334, orb: 0xffb85e },
-  wizard: { metal: 0x555c82, tile: 0x72688c, line: 0xcebbef, dark: 0x403858, orb: 0x8be3da },
+  wizard: { metal: 0x55657a, tile: 0x516879, line: 0xb5c9ca, dark: 0x374b5d, orb: 0x8be3da },
 };
 const ZONES = {
   base: [12.6, 0, -0.4],

@@ -12,7 +12,8 @@ import { bindTableUI } from "./table-ui.js";
 import { tableCamera } from "./table-camera.js";
 import { createTableTransfers } from "./table-transfers.js";
 import { dressTable } from "./table-dressing.js";
-export { mountGallery } from "./gallery.js";
+import { makeEmbers, makeFaeries } from "./embers.js";
+import { mountGallery as mountCardGallery } from "./gallery.js";
 export { paintCardFaces } from "./table-ui.js";
 import { COLORS, SIDES, zone } from "./layout.js";
 
@@ -72,6 +73,8 @@ function pawn(side, id) {
   group.add(miniature);
   const gear = new T.Group();
   group.add(gear);
+  const embers = makeEmbers(group, side, id);
+  embers?.(0);
   let equipped = "";
   const pips = new T.Group();
   pips.position.set(0, 0.21, 0.76);
@@ -95,12 +98,13 @@ function pawn(side, id) {
   stun.rotation.x = 0.85;
   stun.rotation.y = 0.12;
   group.traverse((node) => {
-    if (node.isMesh) node.castShadow = node.receiveShadow = true;
+    if (node.isMesh && !node.isInstancedMesh) node.castShadow = node.receiveShadow = true;
   });
   return {
     group,
     model: miniature,
     rig,
+    embers,
     restScale,
     id,
     side,
@@ -123,6 +127,7 @@ function pawn(side, id) {
         skull.position.set(0, 0, 0);
         skull.rotation.set(0, 0, 0);
       }
+      miniature.getObjectByName("dagger-arm")?.rotation.set(0, 0, 0);
       miniature.scale.set(restScale, restScale * (troop.stunned ? 0.92 : troop.cover ? 0.9 : 1), restScale);
       if (rig) rig.pose({});
       stun.visible = Boolean(troop.stunned);
@@ -146,7 +151,7 @@ function pawn(side, id) {
   };
 }
 
-function build(host, canvas) {
+function build(host, canvas, screen, closeup = false) {
   const renderer = new T.WebGLRenderer({ canvas, antialias: false });
   renderer.setPixelRatio(1);
   renderer.outputColorSpace = T.LinearSRGBColorSpace;
@@ -170,6 +175,7 @@ function build(host, canvas) {
   makeBoard(scene, addLandmarks);
   const bases = makeBases(scene);
   const dressing = dressTable(scene);
+  const faeries = makeFaeries(scene);
   pipeline.configure({ pixelSize: 2, outlines: true, dither: true, exposure: 1.035 });
   const moves = new T.Group();
   scene.add(moves);
@@ -189,29 +195,33 @@ function build(host, canvas) {
     locationId = null;
   const pawnAt = (mark) => (mark?.slot === undefined || mark.at ? null : held.get(mark.side + mark.slot));
   const fx = createCombatEffects(moves, pawnAt, bases);
-  const cameraControl = tableCamera(canvas, camera, (angle) => {
-    bases.cowboy.aim(angle, cameraControl.view().zoom);
-    arrange();
-    draw();
-  });
+  const cameraControl = tableCamera(
+    canvas,
+    camera,
+    (angle) => {
+      bases.cowboy.aim(angle, cameraControl.view().zoom);
+      arrange();
+      draw();
+    },
+    closeup ? 1.63 : 1,
+  );
   const transfers = createTableTransfers(
     moves,
     camera,
     () => view?.viewer,
     (id) => {
-      host
-        .closest("#showdown")
-        .querySelectorAll("#sd-hand [data-card]")
-        .forEach((button) => {
-          button.classList.toggle("table-card-flying", button.dataset.card === id);
-        });
+      screen.querySelectorAll("#sd-hand [data-card]").forEach((button) => {
+        button.classList.toggle("table-card-flying", button.dataset.card === id);
+      });
     },
   );
   document.addEventListener("keydown", (event) => {
+    const dialog = document.querySelector("dialog[open]");
     if (
       view &&
-      !host.closest("#showdown").hidden &&
-      !document.querySelector("dialog[open]") &&
+      !screen.hidden &&
+      (!dialog || (closeup && dialog === screen)) &&
+      (!closeup || screen.open) &&
       !event.target.matches?.("input,textarea,select")
     ) {
       cameraControl.key(event);
@@ -325,9 +335,13 @@ function build(host, canvas) {
     label("location", [0, 0.08, 1.5], location ? cardOf(location).name : "Location", Boolean(location));
   }
 
-  function draw() {
+  function draw(flare) {
     if (width && height && view && !canvas.hidden) {
-      bases.wizard.ambient(performance.now());
+      const now = REDUCED.matches ? 0 : performance.now();
+      bases.wizard.ambient(now);
+      const frame = Math.floor(now / 78);
+      faeries(frame);
+      for (const [key, pawn] of held) pawn.embers?.(frame, flare?.key === key ? flare.strength : 0);
       pipeline.render(scene, camera);
     }
   }
@@ -401,11 +415,15 @@ function build(host, canvas) {
     labelLayer.replaceChildren();
     worldLabels.clear();
   }
-  function animate(trace) {
+  function animate(trace, finished) {
     stop();
     if (!view) return;
     const beats = !REDUCED.matches ? presentationBeats(trace) : [];
-    if (!beats.length) return synchronize(view);
+    if (!beats.length) {
+      synchronize(view);
+      finished?.();
+      return;
+    }
     const run = epoch;
     const initial = performance.now();
     let index = 0,
@@ -414,7 +432,14 @@ function build(host, canvas) {
     function frame(now) {
       if (run !== epoch) return;
       const elapsed = now - initial;
-      while (index < beats.length && elapsed >= edge + beats[index].duration) {
+      const intro = closeup ? 550 : 0;
+      if (elapsed < intro) {
+        draw();
+        requestAnimationFrame(frame);
+        return;
+      }
+      const playTime = elapsed - intro;
+      while (index < beats.length && playTime >= edge + beats[index].duration) {
         edge += beats[index].duration;
         index++;
       }
@@ -422,9 +447,10 @@ function build(host, canvas) {
       if (!beat) {
         stop();
         synchronize(view);
+        finished?.();
         return;
       }
-      const local = elapsed - edge,
+      const local = playTime - edge,
         hit = local >= beat.contact;
       const next = index + ":" + (hit ? "hit" : "pre");
       if (next !== phase) {
@@ -445,7 +471,15 @@ function build(host, canvas) {
       );
       transfers.frame(local);
       fx.frame(local);
-      draw();
+      const summon = beat.kind === "summon" && hit ? beat.targets[0] : null;
+      draw(
+        summon
+          ? {
+              key: summon.side + summon.slot,
+              strength: 1 - Math.min(1, (local - beat.contact) / 210),
+            }
+          : null,
+      );
       requestAnimationFrame(frame);
     }
     canvas.dataset.motion = beats[0].kind;
@@ -453,11 +487,15 @@ function build(host, canvas) {
   }
 
   new ResizeObserver(size).observe(canvas);
-  const screen = host.closest("#showdown");
   window.setInterval(() => {
-    if (view && !screen.hidden && !canvas.hidden && !canvas.dataset.motion && !REDUCED.matches) draw();
+    const visible = closeup ? screen.open : !screen.hidden && !document.querySelector("dialog[open]");
+    if (view && visible && !canvas.hidden && !canvas.dataset.motion && !REDUCED.matches) draw();
   }, 145);
-  return { paint, clear, animate, size };
+  return { paint, clear, animate, size, frame: cameraControl.frame };
+}
+
+export function mountGallery(title, duel) {
+  mountCardGallery(title, duel, (host, canvas, dialog) => build(host, canvas, dialog, true));
 }
 
 function disposePawn(group) {
@@ -465,6 +503,7 @@ function disposePawn(group) {
     geometries = new Set();
   group.traverse((node) => {
     if (!node.isMesh) return;
+    if (node.isInstancedMesh) node.dispose();
     for (const material of [node.material].flat())
       if (!material.userData.showdownShared) materials.add(material);
     if (!node.geometry.userData.showdownShared && !Object.values(meshes).includes(node.geometry))
@@ -504,7 +543,7 @@ export function mountDiorama(root) {
       if (failed) return;
       if (!game) {
         try {
-          game = build(field, canvas);
+          game = build(field, canvas, root);
         } catch (error) {
           console.warn("Showdown 3D unavailable.", error);
           fallback();

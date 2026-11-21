@@ -137,24 +137,31 @@ export const ART = {
       0,
       0.07,
     );
-    chain(
-      b,
-      "box",
-      C.bone,
-      [
-        [0.28, 1.12],
-        [0.38, 0.95],
-        [0.46, 0.82],
-      ],
-      0.04,
-      0.07,
+    // Keep the notched dagger in the hand throughout the shoulder's swing.
+    b.group(
+      "dagger-arm",
+      () => {
+        chain(
+          b,
+          "box",
+          C.bone,
+          [
+            [0.28, 1.12],
+            [0.38, 0.95],
+            [0.46, 0.82],
+          ],
+          0.04,
+          0.07,
+        );
+        b.box(C.dark, 0.47, 0.8, 0.1, 0.06, 0.14, 0.06);
+        b.box(C.iron, 0.47, 0.88, 0.1, 0.2, 0.04, 0.06);
+        b.box(C.steel, 0.47, 1.06, 0.1, 0.08, 0.32, 0.02);
+        b.piece("cone", C.steel, 0.47, 1.25, 0.1, 0.08, 0.08, 0.02);
+        for (const y of [1.0, 1.1]) b.box(C.dark, 0.505, y, 0.1, 0.035, 0.04, 0.03, 0, 0, 0.6);
+        b.group("dagger-tip", () => {}, [0.47, 1.29, 0.1]);
+      },
+      [0.28, 1.12, 0.04],
     );
-    // notched dagger held upright in right hand
-    b.box(C.dark, 0.47, 0.8, 0.1, 0.06, 0.14, 0.06);
-    b.box(C.iron, 0.47, 0.88, 0.1, 0.2, 0.04, 0.06);
-    b.box(C.steel, 0.47, 1.06, 0.1, 0.08, 0.32, 0.02);
-    b.piece("cone", C.steel, 0.47, 1.25, 0.1, 0.08, 0.08, 0.02);
-    for (const y of [1.0, 1.1]) b.box(C.dark, 0.505, y, 0.1, 0.035, 0.04, 0.03, 0, 0, 0.6);
   },
 
   "wizard-wizard"(b) {
@@ -188,6 +195,7 @@ export const ART = {
     b.piece("round", C.wood, 0.46, 0.86, 0.06, 0.06, 1.72, 0.06);
     for (const s of [-1, 1]) limb(b, "box", C.wood, 0.46, 1.66, 0.46 + s * 0.08, 1.8, 0.06, 0.03);
     glow(b, "gem", C.cyan, 0.46, 1.8, 0.06, 0.16, 0.24, 0.16);
+    b.group("staff-tip", () => {}, [0.46, 1.8, 0.06]);
     // off-hand magic
     glow(b, "orb", C.pink, -0.46, 1.06, 0.18, 0.2, 0.2, 0.2);
     [

@@ -31,6 +31,15 @@ revealed traps, spells, gear, and the active Location. The hand atlas is a
 six-column WebP of gallery renders in `TYPES` catalog order. Traps stay face
 down on the game board until Showdown reveals them.
 
+In **Card gallery**, select a troop to watch its attack, or select
+**Watch all troops** to play the roster in order. Ride and Last Stand have
+separate examples. Bone Wall demonstrates Guard. These use isolated
+Showdown fixtures and the same playback as a match. The reduced-motion
+setting shows the resolved board and event text.
+
+Troops that cost one tribute have small faction-colored embers. Troops
+that cost two tributes have a fuller, taller ring of pixel flames.
+
 The board uses the Saloon and Rune Gateway for the Bases. Their porch
 lanterns and runes follow the actual orb count. The rail siding, Boot Hill
 plots, corral, telegraph, crypts and flagstones follow Fable's expanded

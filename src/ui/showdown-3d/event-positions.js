@@ -32,10 +32,22 @@ const timings = {
   burial: [740, 622],
 };
 
+const attackTimings = {
+  "cowboy-sheriff": [1030, 474],
+  "cowboy-dynamiter": [990, 625],
+  "cowboy-covered-wagon": [950, 520],
+  "wizard-skeleton": [1140, 598],
+  "wizard-wizard": [1080, 620],
+  "wizard-raven-familiar": [860, 470],
+  "wizard-lantern-wraith": [1010, 550],
+  "cowboy-captured-wraith": [1010, 550],
+};
+
 function attackKind(id, to, standing) {
   const type = id ? typeOf(id) : "";
   if (id && to.at === "base" && standing && has(id, "ride")) return "ride";
   if (type.endsWith("-dragon")) return "breath";
+  if (type === "cowboy-covered-wagon") return "blade";
   if (type.startsWith("cowboy-") && !type.endsWith("-wraith")) return "gun";
   return "blade";
 }
@@ -72,7 +84,9 @@ export function presentationBeats(trace) {
           : { cardId: id, health: raised ? 1 : cardOf(id).health, gear: [], cover: false, stunned: false };
     };
     const add = (kind, from, targets, details, apply) => {
-      const [duration, contact] = timings[kind];
+      const [duration, contact] =
+        ((kind === "gun" || kind === "blade") && details.cardId && attackTimings[typeOf(details.cardId)]) ||
+        timings[kind];
       const pre = structuredClone(table);
       const receiver = targets.map((mark) => ({ mark, hp: get(mark)?.health ?? null }));
       const fromTroop = get(from) ?? (details.cardId ? fallen.get(details.cardId)?.troop : null);
