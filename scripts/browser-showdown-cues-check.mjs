@@ -239,8 +239,10 @@ try {
       for (const m of rec.marks) if (m.slot && m.name && ["cover", "gear", "raise"].includes(kind)) assert.ok(text.includes(m.name), `${kind} slot ${m.slot} holds ${m.name}: ${text}`);
       if (kind === "trap") {
         const v = rec.labels[0].variant;
-        // A trap that defeats the attacker also stops it, and presenter.js words a stopped attack first: both subcases read "cancelled".
-        assert.match(text, v === "through" ? /attacked anyway/ : /attack was cancelled/, `trap ${v}`);
+        // presenter.js words each subcase (variantOf in showdown-cues.js): since the Bear Trap fix (a4472f3) a trap that
+        // defeats the attacker reads "defeated before it struck", one that only stops it "its attack was cancelled".
+        const TRAP_TEXT = {defeated: /defeated before it struck/, cancelled: /attack was cancelled/, through: /attacked anyway/};
+        assert.match(text, TRAP_TEXT[v], `trap ${v}`);
         assert.notEqual(rec.marks.find((m) => m.base).base, sideOf(rec.marks.find((m) => m.slot)), "the trap's owner is not the attacker");
       }
       if (kind === "laststand") assert.equal(/, defeating it\.$/.test(text), rec.labels[0].variant === "defeated", `last stand ${text}`);

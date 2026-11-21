@@ -1,11 +1,12 @@
 // Offline link check: every relative link and image in the tracked Markdown
-// files must point at a file or folder that exists. No network, no
-// dependency; web addresses and same-page anchors are skipped, and a
-// #fragment is not checked against headings. Usage, from the project root:
+// files must point at a file or folder that exists, and a #fragment on a link
+// to a Markdown page (or a same-page #fragment) must name one of that page's
+// headings or explicit anchors, as GitHub renders them. No network, no
+// dependency; web addresses are skipped. Usage, from the project root:
 //   node scripts/check-links.mjs
 // Prints each broken link as file:line -> target and exits 1 if there is one.
 import {execFileSync} from "node:child_process";
-import {existsSync, readFileSync} from "node:fs";
+import {existsSync, readFileSync, statSync} from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 
@@ -108,24 +109,108 @@ export function targetPath(file, target) {
   return clean.startsWith("/") ? clean.slice(1) : path.posix.join(path.posix.dirname(file), clean);
 }
 
+// The anchors GitHub gives a Markdown page: one per heading (the rendered text in
+// lower case, punctuation removed while letters, digits, marks, "_", "-" and
+// spaces stay, each space made a hyphen; a repeated heading gets -1, -2 and so
+// on), plus explicit id="…" or name="…" anchors in HTML. Fenced code is skipped.
+export function anchorsIn(markdown) {
+  const anchors = new Set(), seen = new Map();
+  const add = (heading) => {
+    const slug = heading
+      .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
+      .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+      .replace(/\[([^\]]*)\]\[[^\]]*\]/g, "$1")
+      .replace(/<[^>]*>/g, "")
+      .replace(/(^|[^\p{L}\p{N}])_+([^_]+?)_+(?=[^\p{L}\p{N}]|$)/gu, "$1$2")
+      .toLowerCase()
+      .replace(/[^\p{L}\p{M}\p{N}_\- ]/gu, "")
+      .replace(/ /g, "-");
+    const count = seen.get(slug) ?? 0;
+    seen.set(slug, count + 1);
+    anchors.add(count ? `${slug}-${count}` : slug);
+  };
+  let fence = null, previous = "";
+  for (const text of markdown.split("\n")) {
+    const mark = /^ {0,3}(`{3,}|~{3,})(.*)$/.exec(text);
+    if (fence !== null) {
+      if (mark && mark[1][0] === fence[0] && mark[1].length >= fence.length && /^\s*$/.test(mark[2])) fence = null;
+      previous = "";
+      continue;
+    }
+    if (mark && (mark[1][0] !== "`" || !mark[2].includes("`"))) {
+      fence = mark[1];
+      previous = "";
+      continue;
+    }
+    for (const match of withoutCodeSpans(text).matchAll(/<[a-z][a-z0-9]*\s[^>]*?\b(?:id|name)\s*=\s*["']([^"']+)["']/gi)) anchors.add(match[1]);
+    const atx = /^ {0,3}#{1,6}(?:[ \t]+(.*?))?(?:[ \t]+#+)?[ \t]*$/.exec(text);
+    if (atx) add((atx[1] ?? "").trim());
+    // A setext heading: a paragraph line underlined with = or -.
+    else if (/^ {0,3}(=+|-+)[ \t]*$/.test(text) && previous.trim() && !/^ {0,3}(#|[-+*][ \t]|\d+[.)][ \t]|>|\|)/.test(previous)) add(previous.trim());
+    previous = atx ? "" : text;
+  }
+  return anchors;
+}
+
+// The #fragment a link asks for, or null when it has none or names source lines (#L12, #L3-L9).
+export function fragmentOf(target) {
+  const at = target.indexOf("#");
+  if (at < 0 || at === target.length - 1) return null;
+  let fragment = target.slice(at + 1);
+  try {
+    fragment = decodeURIComponent(fragment);
+  } catch {
+    // keep the text as written
+  }
+  return /^L\d+(C\d+)?(-L\d+(C\d+)?)?$/.test(fragment) ? null : fragment;
+}
+
+// The Markdown page whose anchors a link's fragment is checked against: the target itself, a folder's
+// README.md (what GitHub shows for a folder), or null for any other file.
+function pageFor(to) {
+  const full = path.join(root, to);
+  if (statSync(full).isDirectory()) {
+    const readme = path.posix.join(to, "README.md");
+    return existsSync(path.join(root, readme)) ? readme : null;
+  }
+  return /\.md$/i.test(to) ? to : null;
+}
+
 export function checkLinks() {
   const files = execFileSync("git", ["ls-files", "-z", "--", "*.md"], {cwd: root, encoding: "utf8"}).split("\0").filter(Boolean).sort();
-  let links = 0;
+  const pages = new Map();
+  const anchorsOf = (page) => {
+    if (!pages.has(page)) pages.set(page, anchorsIn(readFileSync(path.join(root, page), "utf8")));
+    return pages.get(page);
+  };
+  let links = 0, anchors = 0;
   const broken = [];
   for (const file of files) {
     for (const {line, target} of linksIn(readFileSync(path.join(root, file), "utf8"))) {
-      const to = targetPath(file, target);
+      const samePage = target.startsWith("#");
+      const to = samePage ? file : targetPath(file, target);
       if (to === null) continue;
-      links += 1;
-      if (!existsSync(path.join(root, to))) broken.push({file, line, target});
+      if (!samePage) {
+        links += 1;
+        if (!existsSync(path.join(root, to))) {
+          broken.push({file, line, target});
+          continue;
+        }
+      }
+      const fragment = fragmentOf(target);
+      const page = fragment === null ? null : pageFor(to);
+      if (page === null) continue;
+      anchors += 1;
+      const known = anchorsOf(page);
+      if (!known.has(fragment) && !known.has(fragment.toLowerCase())) broken.push({file, line, target});
     }
   }
-  return {files: files.length, links, broken};
+  return {files: files.length, links, anchors, broken};
 }
 
 if (import.meta.main) {
-  const {files, links, broken} = checkLinks();
+  const {files, links, anchors, broken} = checkLinks();
   for (const {file, line, target} of broken) console.log(`${file}:${line} -> ${target}`);
-  console.log(`${files} Markdown files, ${links} relative links and images, ${broken.length} broken`);
+  console.log(`${files} Markdown files, ${links} relative links and images, ${anchors} section anchors, ${broken.length} broken`);
   process.exit(broken.length ? 1 : 0);
 }

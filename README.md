@@ -54,6 +54,7 @@ Start with the normal Showdown Play path. Build once with `npm run build`; each 
 | Trail duels paid and kept after reload; lane keepsakes shown, not carried | `node scripts/browser-showdown-trail-check.mjs dist/cowboys-vs-wizards-board-duel.html` |
 | Keyboard-only and mouse play | `node scripts/browser-showdown-keyboard-check.mjs dist/cowboys-vs-wizards-board-duel.html` |
 | Combat cues | `node scripts/browser-showdown-cues-check.mjs dist/cowboys-vs-wizards-board-duel.html` |
+| Accessibility, touch targets, text size and search and link-preview tags on every graybox screen, at desktop and phone sizes ([results](docs/evidence/claude-measurable-scores.md)) | `node prototypes/showdown/build.mjs`, then `npx -y -p playwright-core@1.64.1 node scripts/browser-page-audit.mjs dist/cowboys-vs-wizards-board-duel.html dist/showdown.html` |
 | Game, presenter and asset tests, as run on every pull request | `npm test` (the same as `node scripts/verify-duel.mjs`) |
 | The staged Pages site, as CI checks it (add `--browser` for Chrome, including `/3d/` model loading) | `node scripts/stage-pages.mjs --commit <sha>`, then `node scripts/check-pages-tree.mjs --commit <sha>` |
 | Which commit the live site is (after a Pages deploy) | `curl https://alejandro-publius.github.io/cowboys-vs-wizards/build.json`; CI compares it and the live `index.html` digest, also at `/graybox/`, with the built release ([evidence](docs/evidence/kiro-build-identity.md)) |
