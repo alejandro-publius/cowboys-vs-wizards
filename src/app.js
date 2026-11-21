@@ -1,6 +1,7 @@
 // Graybox page entry (issue 143). The graybox game is Showdown only: Play opens the Camp, which
 // starts the Trail and, after it, the rivals, Wanted hunts, packs, deck builder, best of three and
-// Open range, plus two players at any time. Slice 3 retired the lane duel from this
+// Open range, plus two players at any time. The Wizard preview (four Wizard-seat duels with their own save) is the
+// Camp's last section after Boot Hill and opens on its own at ?wizard=1. Slice 3 retired the lane duel from this
 // page, so no URL opens it here; an old lane address (?mode=lanes, match, ride-out, practice-*,
 // fire-arc) loads this same Showdown menu. The lane rules stay only where the 3D page (src/main.js)
 // imports them. esbuild inlines the dynamic imports, so the page stays one offline file.
@@ -8,9 +9,11 @@ const node = (id) => document.getElementById(id);
 
 Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"), import("./ui/showdown-builder.js"), import("./match/showdown-campaign.js"),
   import("./match/showdown-playtest.js"), import("./match/showdown-session.js"), import("./match/showdown-turn.js"),
-  import("./match/showdown-outrider.js"), import("./ui/outrider-camp.js"), import("./match/showdown-practice.js")])
+  import("./match/showdown-outrider.js"), import("./ui/outrider-camp.js"), import("./match/showdown-practice.js"),
+  import("./match/showdown-wizard-campaign.js"), import("./ui/showdown-wizard-camp.js")])
   .then(([{mountShowdown, freshSeed}, {mountCamp}, {mountBuilder}, {createCampaign}, {createPlaytestLog, PAGE_BUILD}, {twoPlayers}, {turnDuel},
-    {outriderTurn}, {VERIFIED, outriderControls}, {PRACTICE_SEEDS, practiceDuel, practiceFromQuery}]) => {
+    {outriderTurn}, {VERIFIED, outriderControls}, {PRACTICE_SEEDS, practiceDuel, practiceFromQuery},
+    {createWizardPreview, wizardFromQuery, previewUnlocked, WIZARD_TRACK}, {mountWizardCamp}]) => {
   const title = node("title-screen"), screen = node("showdown"), campRoot = node("showdown-camp"), builderRoot = node("showdown-builder"), play = node("menu-play");
   const seed = new URLSearchParams(location.search).get("seed");
   // ?seed fixes every deal started from the Camp and every later game of a match, so a scripted check replays the same duels.
@@ -18,27 +21,47 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   // The browser's storage is read through the canonical store; a blocked storage leaves progress in memory only.
   let storage = null;
   try { storage = window.localStorage; } catch { /* storage is blocked */ }
-  // Precedence of the opening queries: ?turn, then ?outrider, then ?practice.
+  // Precedence of the opening queries: ?turn, then ?outrider, then ?practice, then ?wizard=1 (Fable: last). Any of the
+  // first three in the query, valid or not, keeps its existing behaviour and the Wizard preview does not open.
   const query = new URLSearchParams(location.search);
   const [turn, outrider] = [query.get("turn"), query.get("outrider")];
   const practice = turn === null && outrider === null ? practiceFromQuery(location.search) : null;
-  // K-096: a direct practice visit writes no key until the player chooses the Camp (campaign.enter() in toCamp).
-  const campaign = createCampaign(storage, {deferImport: practice !== null});
+  const wizard = !["turn", "outrider", "practice"].some((key) => query.has(key)) && wizardFromQuery(location.search);
+  // K-096: a direct practice or Wizard preview visit writes no Cowboy key until the player chooses the Camp
+  // (campaign.enter() in toCamp).
+  const campaign = createCampaign(storage, {deferImport: practice !== null || wizard});
+  // The Wizard preview's own save (cvw-showdown-wizard-preview-v1); creating it only reads that key.
+  const preview = createWizardPreview(storage);
   // One line per finished solo game for the Camp's playtest report, under the prototype's key.
   const playtest = createPlaytestLog(storage);
   const showOnly = (shown) => { for (const el of [title, screen, campRoot, builderRoot]) el.hidden = el !== shown; window.scrollTo(0, 0); };
   let last = null; // the Camp control that started the duel just left, so focus returns to it
+  // Back from a duel: the Camp, or for a Wizard preview duel the place it was opened from. Reset after each use.
+  let back = null;
+  const home = () => { const go = back ?? toCamp; back = null; go(); };
+  // The direct Wizard preview hides the Cowboy parts of the Camp page; these are the ones it hid.
+  let hiddenForWizard = [];
+  const showCowboyParts = () => { for (const el of hiddenForWizard) el.hidden = false; hiddenForWizard = []; };
   const toCamp = () => {
+    showCowboyParts();
     showOnly(campRoot);
     campaign.enter();
     camp.show();
+    wizardCamp.show("camp", {unlocked: previewUnlocked(campaign.progress())});
     // When that control is now disabled (a win's card offer is open), the Camp's own order: the claim
     // (offer or pack), then the first open duel. Selectors are tried in turn, not in document order.
     const usable = (selector) => campRoot.querySelector(`${selector}:not(:disabled)`);
     ((last && usable(last)) ?? usable("#camp-claim button") ?? usable("[data-duel]") ?? usable("button"))?.focus();
   };
+  // The direct Wizard preview: the Camp page with only the preview section shown. Nothing Cowboy is entered or written.
+  const toWizard = () => {
+    showOnly(campRoot);
+    hiddenForWizard = [...hiddenForWizard, ...[...campRoot.children].filter((el) => el.id !== "camp-wizard" && !el.hidden)];
+    for (const el of hiddenForWizard) el.hidden = true;
+    wizardCamp.show("direct");
+  };
   const builder = mountBuilder(builderRoot, {campaign});
-  const showdown = mountShowdown(screen, {onHome: toCamp, campaign, playtest, nextSeed: seedFor,
+  const showdown = mountShowdown(screen, {onHome: home, campaign, playtest, nextSeed: seedFor,
     // Between the games of a best of three with a side deck: the swap, then the next game.
     onSwap: (pool, deck, side, done) => {
       showOnly(builderRoot);
@@ -108,7 +131,24 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     event.preventDefault();
     openPractice(Number(a.dataset.practice));
   });
+  // Wizard preview (Fable's ruling): the last section of the Camp, shown once Boot Hill is won, and ?wizard=1 on its own.
+  // Its duels play the Wizard seat and settle only through the preview, so no Cowboy key or playtest line is written.
+  campRoot.insertAdjacentHTML("beforeend", `<details id="camp-wizard" hidden></details>`);
+  const openWizard = (id) => {
+    const duel = preview.duel(id);
+    if (!duel) return;
+    const direct = campRoot.querySelector("#camp-wizard").dataset.mode === "direct";
+    back = () => {
+      if (direct) toWizard();
+      else { last = null; toCamp(); }
+      wizardCamp.focus(id);
+    };
+    showOnly(screen);
+    showdown.start(duel, seedFor(), {seat: duel.seat, campaign: preview});
+  };
+  const wizardCamp = mountWizardCamp(node("camp-wizard"), {preview, track: WIZARD_TRACK, onDuel: openWizard, onCowboyCamp: toCamp});
   if (turn !== null) openTurn(turn);
   if (outrider !== null && turn === null) openOutrider(outrider);
   if (practice !== null) openPractice(practice);
+  if (wizard) toWizard();
   });
