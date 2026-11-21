@@ -2,6 +2,10 @@
 
 Fable 5.2, November 20, 2026. Companion to my [remaining-design handoff](showdown-remaining-handoff.md). Read from `c3dcab6`; nothing was run. **All of it is proposed and nothing is live.** It opens no brief, and no build starts before Release 1 locks ([release line](release-line.md)).
 
+## November 20 preview ruling
+
+Fable subsequently authorized an opt-in [Wizard preview](https://alejandro-publius.github.io/cowboys-vs-wizards/?wizard=1) with four fixed reward swaps and a separate save. Its Camp entry opens after Boot Hill; its direct link works from a fresh browser. Winning High Noon adds a Dragon and opens Wizard Open Range. The [difficulty check](../evidence/showdown-wizard-ramp.md) records the final encounters and both missed teaching targets. The full collection, offers, packs, deck builder and default side switch remain later decisions. The original proposal follows.
+
 ## Wizard campaign (Release 2)
 
 **First decision.** A Cowboy first chooses which enemy to hit. A Wizard first chooses **what to pay with, and what comes back.** The Wizard card costs one tribute and raises the last Undead in the graveyard with 1 orb ([rules.js](../../src/game/showdown/rules.js), line 253). Pay with an Undead and it returns. Pay with anything else and an earlier casualty returns. With three slots full, nothing returns.
