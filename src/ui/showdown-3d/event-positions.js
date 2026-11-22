@@ -15,7 +15,7 @@ const timings = {
   trap: [690, 395],
   lasso: [680, 465],
   shell: [630, 380],
-  hellfire: [710, 410],
+  hellfire: [1430, 870],
   vortex: [1790, 1150],
   "area-vortex": [2370, 1625],
   summon: [480, 215],

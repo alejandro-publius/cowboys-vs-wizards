@@ -18,8 +18,8 @@ const actor = (type, health) => ({ type, health });
 test("every troop opens a real rules-engine preview, including no-attack Guard, Ride, and Last Stand", () => {
   for (const [id, card] of Object.entries(TYPES)) {
     const previews = attackPreviews(id);
-    // Singularity is a spell with its own area gallery, checked by the generated properties below.
-    assert.equal(previews.length > 0, card.kind === "troop" || id === "wizard-singularity", id);
+    const hasSpellPreview = id === "wizard-singularity" || id === "wizard-hellfire";
+    assert.equal(previews.length > 0, card.kind === "troop" || hasSpellPreview, id);
     if (card.kind !== "troop") continue;
     for (const [mode] of previews) {
       const example = attackExample(id, mode);
@@ -36,6 +36,16 @@ test("every troop opens a real rules-engine preview, including no-attack Guard, 
     }
   }
   assert.equal(attackExample("wizard-bone-wall", "attack"), null);
+});
+
+test("the Hellfire gallery casts one real spell and strikes all three troops together", () => {
+  const example = attackExample("wizard-hellfire", "cast");
+  const beats = presentationBeats(example.trace);
+  assert.deepEqual(beats.map((beat) => beat.kind), ["play", "hellfire", "burial"]);
+  assert.equal(beats[1].targets.length, 3);
+  const start = example.before.sides.cowboy.board;
+  const end = example.end.sides.cowboy.board;
+  assert.deepEqual(end.map((troop) => troop.health), start.map((troop) => troop.health - 1));
 });
 function present(before, action) {
   assert.ok(legalActions(before).some((a) => JSON.stringify(a) === JSON.stringify(action)));

@@ -494,9 +494,10 @@ function build(host, canvas, screen, closeup = false) {
       }
       canvas.dataset.motion = beat.kind;
       const vortex = beat.kind === "area-vortex" || beat.kind === "vortex";
-      if (vortex || host.style.getPropertyValue("--spell-darkness")) {
-        const darkness = vortex
-          ? 0.77 * T.MathUtils.smoothstep(local, 120, beat.contact * 0.60) * (1 - T.MathUtils.smoothstep(local, beat.contact + 45, beat.duration))
+      const shade = vortex ? 0.77 : beat.kind === "hellfire" ? 0.49 : 0;
+      if (shade || host.style.getPropertyValue("--spell-darkness")) {
+        const darkness = shade
+          ? shade * T.MathUtils.smoothstep(local, 120, beat.contact * 0.60) * (1 - T.MathUtils.smoothstep(local, beat.contact + 45, beat.duration))
           : 0;
         spellDarkness(darkness);
       }

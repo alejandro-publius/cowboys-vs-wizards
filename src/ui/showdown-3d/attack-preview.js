@@ -4,6 +4,7 @@ import { viewFor } from "../../game/showdown/contract.js";
 import { presentEvent } from "../../game/showdown/presenter.js";
 
 export function attackPreviews(id) {
+  if (id === "wizard-hellfire") return [["cast", "Watch Hellfire"]];
   if (id === "wizard-singularity") {
     return [["sheriffs", "Against three Sheriffs"], ["graveyard", "Against Skeleton and Dragon"]];
   }
@@ -18,6 +19,7 @@ export function attackPreviews(id) {
 
 export function attackExample(id, mode) {
   if (!attackPreviews(id).some(([key]) => key === mode)) return null;
+  if (id === "wizard-hellfire") return hellfireExample();
   if (id === "wizard-singularity") return singularityExample(mode);
   const card = TYPES[id];
   const side = card.side;
@@ -44,6 +46,23 @@ export function attackExample(id, mode) {
     (mode === "guard" ? "Guard makes enemies attack Bone Wall first. " : "") +
     events.map((event) => presentEvent(event)).join(" ");
   return { before, end, trace: [{ before, after: end, events }], summary };
+}
+
+function hellfireExample() {
+  const state = createShowdown(7, {
+    first: "wizard",
+    opening: {
+      wizard: [{ type: "wizard-wizard" }],
+      cowboy: [{ type: "cowboy-sheriff" }, { type: "cowboy-mounted-billy" }, { type: "cowboy-gatling-crew" }],
+    },
+  });
+  state.turn = 5;
+  const cardId = "wizard-hellfire-71";
+  state.sides.wizard.hand[0] = cardId;
+  const action = legalActions(state).find((each) => each.type === "spell" && each.cardId === cardId);
+  const { state: after, events } = applyAction(state, action);
+  const before = viewFor(state, "wizard"), end = viewFor(after, "wizard");
+  return { before, end, trace: [{ before, after: end, events }], summary: events.map((event) => presentEvent(event)).join(" ") };
 }
 
 // Use the existing lawful area attack to drive the proposed spell's gallery replay.

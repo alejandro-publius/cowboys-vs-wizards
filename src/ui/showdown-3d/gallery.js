@@ -193,11 +193,12 @@ export function mountGallery(title, duel, makeAttackStage) {
     attackCanvas.dataset.previewMode = mode;
     const zoom = id === "wizard-singularity" ? 1.34 : mode === "ride" ? 1.17 : 1.63;
     battle.frame(zoom);
-    attackHost.dataset.spell = id === "wizard-singularity" ? "singularity" : "";
+    attackHost.dataset.spell = id === "wizard-singularity" ? "singularity" : id === "wizard-hellfire" ? "hellfire" : "";
     if (id === "wizard-singularity") {
       const side = mode === "sheriffs" ? "cowboy" : "wizard";
       battle.lookAt(side === "cowboy" ? [-1.65, 0.98, 0.8] : [2.1, 1.02, 0.65], side === "cowboy" ? 0.61 : -0.33, 0.68);
     }
+    if (id === "wizard-hellfire") battle.lookAt([-2.2, 2.0, 0.5], 0.66, 0.51);
     battle.paint(example.end, example.before);
     battle.animate(example.trace, finished);
   }

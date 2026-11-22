@@ -2,6 +2,7 @@ import * as T from "three";
 import { typeOf } from "../../game/showdown/cards.js";
 import { makeCardModel } from "./card-models.js";
 import { zone } from "./layout.js";
+import { createHellfireColumns } from "./hellfire-columns.js";
 
 const mounted = new Set(["cowboy-mounted-billy", "cowboy-outrider", "wizard-headless-horseman"]);
 const heavy = new Set(["cowboy-covered-wagon", "wizard-bone-wall", "cowboy-gatling-crew"]);
@@ -32,6 +33,7 @@ function body(cardId = "") {
 export function createCombatEffects(parent, pawnAt, bases, camera) {
   const effect = new T.Group();
   parent.add(effect);
+  const hellfire = createHellfireColumns(effect, camera);
   const shapes = {
     shard: new T.OctahedronGeometry(0.5),
     flame: new T.ConeGeometry(0.5, 1, 5),
@@ -416,6 +418,7 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
     spare = null;
     active = null;
     lens.visible = false;
+    hellfire.clear();
     for (const n of pool) n.visible = false;
   }
   return {
@@ -703,12 +706,24 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
           break;
         }
         case "hellfire":
+          hellfire.clear();
           targets.forEach((mark, i) => {
-            const chest = at(mark, "hit", 1.01);
-            const sky = chest.clone().add(new T.Vector3(0, 2.14, 0));
-            const c = i % 2 ? palette.green : palette.violet;
-            trail(sky, chest, (t - (edge - 0.19)) / 0.19, c, 14, 0.22);
-            explode(chest, age, c, 0.93);
+            hellfire.draw(mark, i, age);
+            if (age < 0 || age > 0.52) return;
+            const impact = ground(mark);
+            impact.y = 0.19;
+            const bloom = 1 - smooth(age, 0.10, 0.50);
+            for (let spark = 0; spark < 13; spark++) {
+              const angle = spark * 2.399 + i * 0.86;
+              const reach = 0.30 + age * (2.1 + spark % 4 * 0.57);
+              const rim = impact.clone().add(new T.Vector3(Math.cos(angle) * reach,
+                0.05 + 0.10 * Math.sin(spark), Math.sin(angle) * reach));
+              bar(impact.clone().lerp(rim, 0.20 + age), rim, spark % 3 ? 0xbd59e9 : 0xead4ff, 0.16 * bloom);
+              const chip = rim.clone();
+              chip.y += Math.max(0, age * (2.9 + spark % 4 * 1.1) - age * age * 8.2);
+              const size = (0.12 + spark % 4 * 0.061) * bloom;
+              dot("chip", spark % 3 ? 0x50426b : 0xbd7ded, chip, size, size * 1.3, size, t * 4, spark, t * 6);
+            }
           });
           break;
         case "area-vortex":

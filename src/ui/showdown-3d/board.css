@@ -323,7 +323,7 @@
   overflow: hidden;
   background: #17243a var(--frontier-panorama, none) center 26% / cover no-repeat;
 }
-.sd-gallery-attack[data-spell="singularity"] {
+.sd-gallery-attack:is([data-spell="singularity"], [data-spell="hellfire"]) {
   background-image: linear-gradient(rgb(8 9 21 / var(--spell-darkness, 0)), rgb(8 9 21 / var(--spell-darkness, 0))),
     var(--frontier-panorama, none);
 }
