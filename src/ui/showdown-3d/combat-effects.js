@@ -2,7 +2,6 @@ import * as T from "three";
 import { typeOf } from "../../game/showdown/cards.js";
 import { makeCardModel } from "./card-models.js";
 import { zone } from "./layout.js";
-import { createPaintedBreath } from "./painted-breath.js";
 
 const mounted = new Set(["cowboy-mounted-billy", "cowboy-outrider", "wizard-headless-horseman"]);
 const heavy = new Set(["cowboy-covered-wagon", "wizard-bone-wall", "cowboy-gatling-crew"]);
@@ -33,7 +32,6 @@ function body(cardId = "") {
 export function createCombatEffects(parent, pawnAt, bases, camera) {
   const effect = new T.Group();
   parent.add(effect);
-  const dragonBreath = createPaintedBreath(effect, camera);
   const shapes = {
     shard: new T.OctahedronGeometry(0.5),
     flame: new T.ConeGeometry(0.5, 1, 5),
@@ -43,7 +41,6 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
   const palette = {
     gold: [0xffd27c, 0xffe3af, 0xcb7448],
     green: [0x91e48a, 0xc8f7a8, 0x9b7bb9],
-    dragon: [0x51e5ce, 0xd8ffdf, 0x168aa6],
     violet: [0xb38dd3, 0xe1b1e2, 0x795e9f],
     bone: [0xdccfb6, 0xf6e6ca, 0x9d9089],
   };
@@ -366,48 +363,40 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
       const dead = step.hit.sides[mark.side].board[mark.slot]?.health === 0;
       const shattered = dead && body(token.id) === "bone";
       const recoil = pulse(age, 0.01, 0.10, 0.47);
-      const liftStart = edge * 0.14 + mark.slot * 0.045;
-      const release = 1 - smooth(age, 0.08, 0.60);
-      const rise = smooth(t, liftStart, edge * 0.52) * release;
-      // The hips leave the ground first. Most of the inward travel happens as the pull tightens.
-      const reel = T.MathUtils.clamp((t - edge * 0.36) / (edge * 0.64), 0, 1);
-      const drawIn = reel * reel * release;
-      const reach = isDragon ? 0.14 : 0.84;
-      const contactX = (center.x - fromX) * reach;
-      const contactZ = (center.z - fromZ) * reach * (targets.length === 1 ? 1 : 0.24);
-      const height = isDragon ? 0.14 : 1.26 + 0.13 * mark.slot;
+      const rise = smooth(t, 0.23 + mark.slot * 0.04, edge * 0.81) *
+        (1 - smooth(age, 0.10, 0.54));
+      const drawIn = smooth(t, edge * 0.34, edge - 0.035) * (1 - smooth(age, 0.06, 0.56));
+      const follow = (isDragon ? 0.13 : 0.56) * drawIn;
       const drop = shattered ? 0.43 * smooth(age, 0, 0.15) : 0;
-      const shifted = contactX * drawIn - direction * 0.32 * recoil;
-      const depth = contactZ * drawIn;
-      const lift = height * rise + (isDragon ? 0 : 0.28 * drawIn);
-      const lean = direction * ((isDragon ? 0.15 : 0.44) * rise - 0.21 * recoil);
+      const shifted = (center.x - fromX) * follow - direction * 0.32 * recoil;
+      const lift = isDragon ? 0.14 * rise : (1.21 + 0.13 * mark.slot) * rise;
+      const lean = direction * ((isDragon ? 0.15 : 0.61) * rise - 0.21 * recoil);
       token.rig?.pose({brace: isDragon ? pull : 0, charge: isDragon ? 0.55 * pull : 0, recoil, time: 0});
-      movePawn(token, shifted, lift - drop, depth, lean);
+      movePawn(token, shifted, lift - drop, (center.z - fromZ) * follow * 0.67, lean);
       token.skin?.suspend(rise * (isDragon ? 0.19 : 1), direction);
       const broken = shattered && age > 0.105;
       token.skin?.effect(1 - 0.29 * pull, broken);
       if (!token.skin) token.model.visible = !broken;
-      const hips = token.skin?.anchor("hips", new T.Vector3()) ??
-        new T.Vector3(fromX + shifted, 1 + lift - drop, fromZ + depth);
+      const hips = at(mark, "hips", 1.0).add(new T.Vector3(token.skin ? 0 : shifted, token.skin ? 0 : lift, 0));
       for (let j = 0; j < 4 && age < 0; j++) {
         const f = (t * 1.95 + j / 4 + mark.slot * 0.13) % 1;
         if (gather > 0.08) bar(hips.clone().lerp(center, f), hips.clone().lerp(center, Math.min(1, f + 0.12)),
           j % 2 ? 0x9b72bd : 0xd1a8d5, 0.047 * gather);
       }
       if (age >= 0.035 && age < 0.47) {
-        const orbHeight = isDragon ? 2.66 : 3.06;
-        const orb = new T.Vector3(fromX + shifted, orbHeight + lift - drop, fromZ + depth - 0.08);
+        const height = isDragon ? 2.66 : 3.06;
+        const orb = new T.Vector3(fromX, height, fromZ - 0.08);
         flecks(orb, age - 0.035, side === "cowboy" ? palette.gold : [0xa0e7d6, 0xd6fff5, 0x5fa7b0], 5);
       }
       if (shattered && age >= 0.05 && age < 0.73) {
         for (let j = 0; j < 18; j++) {
           const f = age - 0.05;
           const angle = (j + 1) * 2.39996;
-          const spread = f * (1.32 + (j % 5) * 0.45);
+          const reach = f * (1.32 + (j % 5) * 0.45);
           const shard = new T.Vector3(
-            fromX + contactX + Math.cos(angle) * spread + direction * f * 0.63,
-            Math.max(0.39, 1.18 + height + (j % 5) * 0.24 + f * (1.2 + (j % 4) * 0.46) - f * f * 8.0),
-            fromZ + contactZ + Math.sin(angle) * spread,
+            fromX + (center.x - fromX) * 0.56 + Math.cos(angle) * reach + direction * f * 0.63,
+            Math.max(0.39, 1.47 + (j % 5) * 0.24 + f * (1.2 + (j % 4) * 0.46) - f * f * 8.0),
+            fromZ + (center.z - fromZ) * 0.375 + Math.sin(angle) * reach,
           );
           const size = (0.13 + (j % 4) * 0.04) * (1 - smooth(f, 0.48, 0.68));
           dot("chip", j % 7 === 0 ? 0x7f465c : palette.bone[j % 3], shard, size, size * 1.7, size * 0.62, angle + f * 5, f * 4, angle - f);
@@ -427,7 +416,6 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
     spare = null;
     active = null;
     lens.visible = false;
-    dragonBreath?.clear();
     for (const n of pool) n.visible = false;
   }
   return {
@@ -441,7 +429,7 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
         effect.add(spare.group);
       }
     },
-    frame(ms, { animateTargets = true } = {}) {
+    frame(ms) {
       if (!active) return;
       const step = active,
         { kind, from, targets, contact } = step;
@@ -455,7 +443,6 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
       const id = typeOf(step.cardId ?? "");
       const colors = step.cardId?.startsWith("cowboy-") ? palette.gold : palette.green;
       index = 0;
-      dragonBreath?.clear();
       for (const piece of pool) piece.visible = false;
       if (prop) prop.visible = false;
       const a = at(from, kind === "breath" || kind === "sweep" ? "mouth" : "muzzle");
@@ -684,16 +671,13 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
             time: 0,
           });
           const mouth = at(from, "mouth", 1.31);
-          const breathColors = id === "wizard-dragon" ? palette.dragon : colors;
           targets.forEach((mark, i) => {
             const chest = at(mark, "hit", 1.09);
             const time = (t - start - (kind === "sweep" ? i * 0.046 : 0)) / 0.22;
-            if (id !== "wizard-dragon" || !dragonBreath)
-              trail(mouth, chest, time, breathColors, kind === "sweep" ? 13 : 15, kind === "sweep" ? 0.55 : 0.31);
-            else dragonBreath.draw(i, mouth, chest, time);
-            coals(chest, age, breathColors, kind === "sweep" ? 0.83 : 1.16);
-            impactSparks(chest, age, breathColors, kind === "sweep" ? 0.93 : 1.28);
-            if (age > 0.105 && age < 0.39) flecks(chest, age - 0.08, breathColors, 4);
+            trail(mouth, chest, time, colors, kind === "sweep" ? 13 : 15, kind === "sweep" ? 0.55 : 0.31);
+            coals(chest, age, colors, kind === "sweep" ? 0.83 : 1.16);
+            impactSparks(chest, age, colors, kind === "sweep" ? 0.93 : 1.28);
+            if (age > 0.105 && age < 0.39) flecks(chest, age - 0.08, colors, 4);
           });
           break;
         }
@@ -787,7 +771,6 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
           flecks(b, age, from.side === "wizard" ? palette.violet : palette.gold, 5);
       }
       if (
-        animateTargets &&
         !["area-vortex", "vortex", "lasso", "summon", "raise", "cover", "set", "gear", "location", "tribute", "burn"].includes(kind) &&
         !(kind === "trap" && typeOf(step.cardId) === "wizard-hex")
       ) {

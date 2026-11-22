@@ -37,10 +37,11 @@ revealed traps, spells, gear, and the active Location. The hand atlas is a
 six-column WebP of gallery renders in `TYPES` catalog order. Traps stay face
 down on the game board until Showdown reveals them.
 
-In **Card gallery**, select a troop to see the result of its attack. Ride,
-Last Stand, and Guard have separate examples. The Sheriff's shot is the
-only animated action, both in the gallery and in matches. The reduced-motion
-setting shows its resolved board and event text immediately.
+In **Card gallery**, select a troop to watch its attack, or select
+**Watch all troops** to play the roster in order. Ride and Last Stand have
+separate examples. Bone Wall demonstrates Guard. These use isolated
+Showdown fixtures and the same playback as a match. The reduced-motion
+setting shows the resolved board and event text.
 
 Troops that cost one tribute have small faction-colored embers. Troops
 that cost two tributes have a fuller, taller ring of pixel flames.
@@ -82,5 +83,8 @@ The Gatling Crew and Graveyard Dragon use the original colors from the
 opening portraits. Their cutouts keep both gunners, the brass gun carriage,
 and the dragon's open jaw, claws and capstones.
 
-The ordinary Singularity spell targets one troop. The gallery can show
-the resolved board for a separate area example.
+Singularity pulls regular troops by the hips, with a visible lift before
+the inward slide. Dragons brace and move a shorter distance. The combat
+timeline still applies orb loss at contact and moves defeated cards to
+the graveyard. The ordinary match spell targets one troop. The gallery
+also stages an area replay.

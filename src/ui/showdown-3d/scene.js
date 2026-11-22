@@ -10,6 +10,7 @@ import { makeBases } from "./bases.js";
 import { makeCardModel, makeLiveCardModel } from "./card-models.js";
 import { bindTableUI } from "./table-ui.js";
 import { tableCamera } from "./table-camera.js";
+import { createTableTransfers } from "./table-transfers.js";
 import { dressTable } from "./table-dressing.js";
 import { makeEmbers, makeFaeries } from "./embers.js";
 import { loadStoryActors, storyActor } from "./story-actors.js";
@@ -185,9 +186,8 @@ function build(host, canvas, screen, closeup = false) {
   scene.add(hemi, sun, moon);
   makeBoard(scene, addLandmarks);
   const bases = makeBases(scene);
-  dressTable(scene);
-  makeFaeries(scene)(0);
-  bases.wizard.ambient(0);
+  const dressing = dressTable(scene);
+  const faeries = makeFaeries(scene);
   pipeline.configure({ pixelSize: 2, outlines: !HAS_PANORAMA, dither: !HAS_PANORAMA, exposure: 1.035 });
   const moves = new T.Group();
   scene.add(moves);
@@ -217,6 +217,16 @@ function build(host, canvas, screen, closeup = false) {
     },
     closeup ? 1.63 : 1,
     closeup ? [0, 1.05, -1.74] : undefined,
+  );
+  const transfers = createTableTransfers(
+    moves,
+    camera,
+    () => view?.viewer,
+    (id) => {
+      screen.querySelectorAll("#sd-hand [data-card]").forEach((button) => {
+        button.classList.toggle("table-card-flying", button.dataset.card === id);
+      });
+    },
   );
   document.addEventListener("keydown", (event) => {
     const dialog = document.querySelector("dialog[open]");
@@ -346,9 +356,16 @@ function build(host, canvas, screen, closeup = false) {
     label("location", [0, 0.08, 1.5], location ? cardOf(location).name : "Location", Boolean(location));
   }
 
-  function draw() {
+  function draw(flare) {
     if (width && height && view && !canvas.hidden) {
-      for (const pawn of held.values()) pawn.skin?.sync();
+      const now = REDUCED.matches ? 0 : performance.now();
+      bases.wizard.ambient(now);
+      const frame = Math.floor(now / 78);
+      faeries(frame);
+      for (const [key, pawn] of held) {
+        pawn.skin?.sync();
+        pawn.embers?.(frame, flare?.key === key ? flare.strength : 0);
+      }
       pipeline.render(scene, camera);
     }
   }
@@ -401,9 +418,19 @@ function build(host, canvas, screen, closeup = false) {
     size();
   }
 
+  function spellDarkness(alpha) {
+    hemi.intensity = dusk.ambient * (1 - alpha * 0.80);
+    sun.intensity = dusk.sun * (1 - alpha * 0.89);
+    moon.intensity = dusk.moon + alpha * 0.2;
+    host.style.setProperty("--spell-darkness", alpha.toFixed(3));
+  }
   function stop() {
     epoch++;
     fx.clear();
+    if (host.dataset.spell || host.style.getPropertyValue("--spell-darkness")) spellDarkness(0);
+    transfers.clear();
+    dressing.reset();
+    bases.cowboy.swing(0);
     delete canvas.dataset.motion;
   }
   function paint(next, start) {
@@ -422,9 +449,7 @@ function build(host, canvas, screen, closeup = false) {
   function animate(trace, finished) {
     stop();
     if (!view) return;
-    const beats = REDUCED.matches ? [] : presentationBeats(trace).filter(
-      (beat) => beat.kind === "gun" && typeOf(beat.cardId ?? "") === "cowboy-sheriff",
-    );
+    const beats = !REDUCED.matches ? presentationBeats(trace) : [];
     if (!beats.length) {
       synchronize(view);
       finished?.();
@@ -465,11 +490,34 @@ function build(host, canvas, screen, closeup = false) {
         synchronize(hit ? beat.hit : beat.pre);
         if (newBeat) {
           fx.begin(beat, makePawn, (token) => disposePawn(token.group));
+          transfers.begin(beat);
         }
       }
       canvas.dataset.motion = beat.kind;
-      fx.frame(local, { animateTargets: false });
-      draw();
+      const vortex = beat.kind === "area-vortex" || beat.kind === "vortex";
+      if (vortex || host.style.getPropertyValue("--spell-darkness")) {
+        const darkness = vortex
+          ? 0.77 * T.MathUtils.smoothstep(local, 120, beat.contact * 0.60) * (1 - T.MathUtils.smoothstep(local, beat.contact + 45, beat.duration))
+          : 0;
+        spellDarkness(darkness);
+      }
+      dressing.frame(beat, local);
+      bases.cowboy.swing(
+        beat.kind === "summon" && beat.from.side === "cowboy"
+          ? 0.84 * Math.sin((Math.PI * local) / beat.duration)
+          : 0,
+      );
+      transfers.frame(local);
+      fx.frame(local);
+      const summon = beat.kind === "summon" && hit ? beat.targets[0] : null;
+      draw(
+        summon
+          ? {
+              key: summon.side + summon.slot,
+              strength: 1 - Math.min(1, (local - beat.contact) / 210),
+            }
+          : null,
+      );
       requestAnimationFrame(frame);
     }
     canvas.dataset.motion = beats[0].kind;
@@ -477,6 +525,10 @@ function build(host, canvas, screen, closeup = false) {
   }
 
   new ResizeObserver(size).observe(canvas);
+  window.setInterval(() => {
+    const visible = closeup ? screen.open : !screen.hidden && !document.querySelector("dialog[open]");
+    if (view && visible && !canvas.hidden && !canvas.dataset.motion && !REDUCED.matches) draw();
+  }, 145);
   return { paint, clear, animate, size, frame: cameraControl.frame, lookAt: cameraControl.lookAt };
 }
 

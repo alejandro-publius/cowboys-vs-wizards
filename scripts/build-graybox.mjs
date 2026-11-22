@@ -46,7 +46,6 @@ const actors = diorama ? Object.fromEntries(await Promise.all(Object.entries(TYP
 const panorama = diorama ? await artwork("assets/scenes/showdown-storybook.webp") : "";
 const poses = diorama ? await artwork("assets/scenes/showdown-poses.webp") : "";
 const billyPoses = diorama ? await artwork("assets/scenes/billy-poses.webp") : "";
-const dragonBreath = diorama ? await artwork("assets/scenes/wizard-dragon-breath.webp") : "";
 const frontier = diorama ? await Promise.all(["title", "camp"].map(async (view) => {
   const image = await readFile(file(`assets/scenes/showdown-${view}.webp`), "base64");
   return `--frontier-${view}:url("data:image/webp;base64,${image}");`;
@@ -57,7 +56,7 @@ const options = {absWorkingDir: fileURLToPath(root), bundle: true, write: false,
     __CVW_OUTRIDER_LEDGER__: JSON.stringify(outrider.ledger), __CVW_DIORAMA__: JSON.stringify(diorama),
     __CVW_DIORAMA_ATLAS__: JSON.stringify(atlas), __CVW_TABLE_ILLUSTRATIONS__: JSON.stringify(paintings),
     __CVW_ACTOR_ART__: JSON.stringify(actors), __CVW_HAS_PANORAMA__: JSON.stringify(Boolean(panorama)), __CVW_DUEL_POSES__: JSON.stringify(poses),
-    __CVW_BILLY_POSES__: JSON.stringify(billyPoses), __CVW_DRAGON_BREATH__: JSON.stringify(dragonBreath)}};
+    __CVW_BILLY_POSES__: JSON.stringify(billyPoses)}};
 const [template, style, showdownStyle, boardStyle, boardLicense, bundle] = await Promise.all([
   read("src/ui/graybox.html"),
   read("src/ui/graybox.css"),

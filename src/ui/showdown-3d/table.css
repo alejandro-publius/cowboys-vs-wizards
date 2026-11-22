@@ -213,6 +213,9 @@
 .sd-diorama #sd-hand .sd-card {
   transform: translateY(var(--lift, 0px)) rotate(var(--fan, 0deg));
   transform-origin: 50% 94%;
+  transition:
+    transform 140ms ease-out,
+    filter 140ms ease-out;
 }
 .sd-diorama #sd-hand .sd-card:disabled {
   opacity: 1;
@@ -426,5 +429,3 @@
     transition: none;
   }
 }
-
-#showdown.sd-diorama .sd-cue { animation: none; }
