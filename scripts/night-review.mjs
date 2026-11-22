@@ -6,7 +6,7 @@
 //
 //   node scripts/night-review.mjs draft  --finding <reports.json> [--report <id>] [--base <ref>=HEAD] --card <type> --field attack|health|stars --to <n> [--out <dir>]
 //   node scripts/night-review.mjs review --bundle <dir> [--holdout <from>:<deals>]
-//   node scripts/night-review.mjs verify --bundle <dir> [--rerun] [--finding <reconstructed-report.json>]
+//   node scripts/night-review.mjs verify --bundle <dir> [--rerun [--finding <reconstructed-report.json>]]
 //   node scripts/night-review.mjs run    (draft options) [--holdout <from>:<deals>]   draft + review + verify
 //   node scripts/night-review.mjs check  --finding <reports.json> [--report <id>]   re-run the finding's counts only
 //     (no candidate, no bundle; Night Watch calls this before an opt-in scheduled issue and prints one JSON line)
@@ -347,6 +347,7 @@ async function review(opts) {
 }
 
 async function verify(opts) {
+  if (opts.finding && !opts.rerun) throw new InputError("--finding requires --rerun to verify the reconstructed report");
   const out = resolve(opts.bundle);
   const problems = [];
   const bundle = readJson(join(out, "bundle.json"));
@@ -366,7 +367,7 @@ async function verify(opts) {
         reconstructed.count !== original.count || canonical(reconstructed.candidate.counts) !== canonical(original.counts))
       problems.push("reconstructed finding differs from the sealed proposal's commit, seeds or counts");
   } else if (!existsSync(findingFile) || sha256(readFileSync(findingFile)) !== bundle.finding.sha256) {
-    problems.push("finding file missing or changed; supply --finding only for a documented reconstruction");
+    problems.push("finding file missing or changed; supply --finding with --rerun only for a documented reconstruction");
   }
   for (const [file, hash] of Object.entries(bundle.results)) {
     if (!existsSync(join(out, file)) || sha256(readFileSync(join(out, file))) !== hash)
