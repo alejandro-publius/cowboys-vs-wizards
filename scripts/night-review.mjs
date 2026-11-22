@@ -6,7 +6,7 @@
 //
 //   node scripts/night-review.mjs draft  --finding <reports.json> [--report <id>] [--base <ref>=HEAD] --card <type> --field attack|health|stars --to <n> [--out <dir>]
 //   node scripts/night-review.mjs review --bundle <dir> [--holdout <from>:<deals>]
-//   node scripts/night-review.mjs verify --bundle <dir> [--rerun]
+//   node scripts/night-review.mjs verify --bundle <dir> [--rerun] [--finding <reconstructed-report.json>]
 //   node scripts/night-review.mjs run    (draft options) [--holdout <from>:<deals>]   draft + review + verify
 //   node scripts/night-review.mjs check  --finding <reports.json> [--report <id>]   re-run the finding's counts only
 //     (no candidate, no bundle; Night Watch calls this before an opt-in scheduled issue and prints one JSON line)
@@ -357,8 +357,25 @@ async function verify(opts) {
   if (sha256(readFileSync(join(out, "candidate.patch"))) !== proposal.patchSha256) problems.push("candidate.patch changed");
   if (!commitExists(bundle.source.commit) || git("rev-parse", `${bundle.source.commit}^{tree}`).trim() !== bundle.source.tree) problems.push("source commit or tree does not match");
   const findingFile = join(ROOT, bundle.finding.file);
-  if (!existsSync(findingFile) || sha256(readFileSync(findingFile)) !== bundle.finding.sha256) problems.push("finding file missing or changed");
-  for (const [file, hash] of Object.entries(bundle.results)) if (!existsSync(join(out, file)) || sha256(readFileSync(join(out, file))) !== hash) problems.push(`${file} missing or changed`);
+  let reconstructed;
+  if (opts.finding) {
+    reconstructed = loadFinding(opts.finding, bundle.finding.reportId).report;
+    const original = proposal.finding;
+    if (bundle.finding.reportId !== original.reportId || bundle.finding.sha256 !== original.sha256 ||
+        reconstructed.candidate.commit !== original.commit || reconstructed.firstSeed !== original.firstSeed ||
+        reconstructed.count !== original.count || canonical(reconstructed.candidate.counts) !== canonical(original.counts))
+      problems.push("reconstructed finding differs from the sealed proposal's commit, seeds or counts");
+  } else if (!existsSync(findingFile) || sha256(readFileSync(findingFile)) !== bundle.finding.sha256) {
+    problems.push("finding file missing or changed; supply --finding only for a documented reconstruction");
+  }
+  for (const [file, hash] of Object.entries(bundle.results)) {
+    if (!existsSync(join(out, file)) || sha256(readFileSync(join(out, file))) !== hash)
+      problems.push(`${file} missing or changed`);
+  }
+  if (problems.length) {
+    for (const problem of problems) console.error(`verify: ${problem}`);
+    return false;
+  }
   const sets = {};
   for (const name of Object.keys(bundle.sets)) {
     const b = readJson(join(out, `games-${name}-baseline.json`));
@@ -372,6 +389,15 @@ async function verify(opts) {
   try {
     const base = {...await sourceHashes(baseDir), card: fileHash(baseDir, proposal.cardPath)};
     if (canonical(base) !== canonical(bundle.source.baseline)) problems.push("baseline source/build hashes differ");
+    if (reconstructed && opts.rerun) {
+      // The recorded finding normally comes from the same source as the candidate's baseline.
+      const findingDir = reconstructed.candidate.commit === bundle.source.commit ? baseDir : snapshot(reconstructed.candidate.commit);
+      try {
+        if (!reproduce(findingDir, reconstructed).reproduced) problems.push("the reconstructed finding did not reproduce");
+      } finally {
+        if (findingDir !== baseDir) rmSync(findingDir, {recursive: true, force: true});
+      }
+    }
     if (bundle.source.candidate) {
       const prepared = prepareCandidate(candDir, proposal);
       const cand = prepared.ok ? {...await sourceHashes(candDir), card: fileHash(candDir, proposal.cardPath)} : null;
@@ -389,6 +415,7 @@ async function verify(opts) {
   }
   const toolCurrent = bundle.tool.script === sha256(readFileSync(fileURLToPath(import.meta.url)));
   console.log(`verify ${bundle.id}: ${problems.length ? "FAILED" : "ok"}${opts.rerun ? " (games replayed)" : ""}; recorded verdict ${bundle.decision.verdict}; tool script ${toolCurrent ? "matches" : "differs from"} the current file`);
+  if (reconstructed) console.log("Finding: reconstructed report checked against the sealed proposal.");
   for (const p of problems) console.log(`  - ${p}`);
   return problems.length === 0;
 }
