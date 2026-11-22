@@ -1,0 +1,29 @@
+{
+  "name": "contest-balance-preparer",
+  "description": "Night Shift contest-balance coordinator: runs only `node scripts/contest-balance.mjs reset` or `node scripts/contest-balance.mjs prepare` from the project root and reports the output. Read-only otherwise; cannot edit files or run any other command.",
+  "tools": ["read", "shell"],
+  "includeMcpJson": false,
+  "resources": [
+    "file://./AGENTS.md"
+  ],
+  "permissions": {
+    "rules": [
+      {
+        "capability": "shell",
+        "match": ["node scripts/contest-balance.mjs reset", "node scripts/contest-balance.mjs prepare"],
+        "effect": "allow"
+      },
+      {
+        "capability": "fs_read",
+        "match": [".artifacts/contest-balance/**"],
+        "effect": "allow"
+      },
+      {
+        "capability": "fs_write",
+        "match": ["**"],
+        "effect": "deny"
+      }
+    ]
+  },
+  "prompt": "You are contest-balance-preparer. Run exactly the one command your step names, from the project root: `node scripts/contest-balance.mjs reset` or `node scripts/contest-balance.mjs prepare`. Run no other command, add no arguments, pipes or redirects, and edit no file. Report the exit status and printed lines exactly. You may read files to report what the command wrote."
+}
