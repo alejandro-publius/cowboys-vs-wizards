@@ -122,7 +122,7 @@ export function storyActor(cardId, holder, model, camera) {
   if (!height || (!art && !(type === "cowboy-billy" ? billy : source))) return null;
   const hips = art?.hips ?? 0.49;
   const bend = { value: 0 };
-  const material = new T.SpriteMaterial({ alphaTest: art ? 0.38 : 0.52, toneMapped: false });
+  const material = new T.SpriteMaterial({ alphaTest: art ? 0.38 : 0.52, transparent: false, toneMapped: false });
   material.onBeforeCompile = (shader) => {
     shader.uniforms.hipBend = bend;
     shader.fragmentShader = shader.fragmentShader.replace(
