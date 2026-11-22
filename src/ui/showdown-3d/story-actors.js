@@ -12,10 +12,10 @@ const illustrated = {
   "cowboy-outrider": { height: 2.39, width: 3.44, hips: 0.49, muzzle: [0.78, 0.62] },
   "cowboy-ranger": { height: 2.55, muzzle: [0.91, 0.76] },
   "cowboy-dynamiter": { height: 2.38, muzzle: [0.86, 0.88] },
-  "cowboy-gatling-crew": { height: 2.19, width: 3.25, hips: 0.41, muzzle: [0.94, 0.56] },
+  "cowboy-gatling-crew": { height: 2.45, width: 3.47, hips: 0.41, muzzle: [0.95, 0.52], exactPaint: true },
   "cowboy-captured-wraith": { height: 2.66, hips: 0.53 },
   "cowboy-captured-dragon": { height: 2.93, width: 3.53, hips: 0.39, mouth: [0.91, 0.74] },
-  "wizard-dragon": { height: 2.98, width: 3.60, hips: 0.42, mouth: [0.38, 0.57] },
+  "wizard-dragon": { height: 3.16, width: 4.23, hips: 0.42, mouth: [0.456, 0.60], exactPaint: true },
   "wizard-wizard": { height: 2.79, "staff-tip": [0.12, 0.93] },
   "wizard-lantern-wraith": { height: 2.60, width: 2.83, hips: 0.53 },
   "wizard-raven-familiar": { height: 1.58, width: 2.23, hips: 0.46 },
@@ -123,13 +123,15 @@ export function storyActor(cardId, holder, model, camera) {
   if (!height || (!art && !(type === "cowboy-billy" ? billy : source))) return null;
   const hips = art?.hips ?? 0.49;
   const bend = { value: 0 };
-  const shadow = { value: art ? 0.30 : 0 };
+  const painted = { value: Boolean(art) };
+  const shadow = { value: art && !art.exactPaint ? 0.30 : 0 };
   const material = new T.SpriteMaterial({ alphaTest: art ? 0.38 : 0.52, transparent: false, toneMapped: false });
   material.onBeforeCompile = (shader) => {
     shader.uniforms.hipBend = bend;
+    shader.uniforms.actorPainted = painted;
     shader.uniforms.actorShadow = shadow;
     // The illustrated cutouts arrive with brighter midtones than the painted pose sheets.
-    shader.fragmentShader = "uniform float actorShadow;\n" + shader.fragmentShader
+    shader.fragmentShader = "uniform bool actorPainted;\nuniform float actorShadow;\n" + shader.fragmentShader
       .replace(
         "#include <map_fragment>",
         `#include <map_fragment>
@@ -139,7 +141,7 @@ export function storyActor(cardId, holder, model, camera) {
       .replace(
         "#include <opaque_fragment>",
         `#include <opaque_fragment>
-        if (actorShadow > 0.0) gl_FragColor.a = ${PAINTED_SPRITE_ALPHA};`,
+        if (actorPainted) gl_FragColor.a = ${PAINTED_SPRITE_ALPHA};`,
       );
     shader.vertexShader = "uniform float hipBend;\n" + shader.vertexShader.replace(
       "vec2 rotatedPosition;",

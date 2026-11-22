@@ -2,6 +2,7 @@ import * as T from "three";
 import { typeOf } from "../../game/showdown/cards.js";
 import { makeCardModel } from "./card-models.js";
 import { zone } from "./layout.js";
+import { createPaintedBreath } from "./painted-breath.js";
 
 const mounted = new Set(["cowboy-mounted-billy", "cowboy-outrider", "wizard-headless-horseman"]);
 const heavy = new Set(["cowboy-covered-wagon", "wizard-bone-wall", "cowboy-gatling-crew"]);
@@ -32,6 +33,7 @@ function body(cardId = "") {
 export function createCombatEffects(parent, pawnAt, bases, camera) {
   const effect = new T.Group();
   parent.add(effect);
+  const dragonBreath = createPaintedBreath(effect, camera);
   const shapes = {
     shard: new T.OctahedronGeometry(0.5),
     flame: new T.ConeGeometry(0.5, 1, 5),
@@ -41,6 +43,7 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
   const palette = {
     gold: [0xffd27c, 0xffe3af, 0xcb7448],
     green: [0x91e48a, 0xc8f7a8, 0x9b7bb9],
+    dragon: [0x51e5ce, 0xd8ffdf, 0x168aa6],
     violet: [0xb38dd3, 0xe1b1e2, 0x795e9f],
     bone: [0xdccfb6, 0xf6e6ca, 0x9d9089],
   };
@@ -424,6 +427,7 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
     spare = null;
     active = null;
     lens.visible = false;
+    dragonBreath?.clear();
     for (const n of pool) n.visible = false;
   }
   return {
@@ -451,6 +455,7 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
       const id = typeOf(step.cardId ?? "");
       const colors = step.cardId?.startsWith("cowboy-") ? palette.gold : palette.green;
       index = 0;
+      dragonBreath?.clear();
       for (const piece of pool) piece.visible = false;
       if (prop) prop.visible = false;
       const a = at(from, kind === "breath" || kind === "sweep" ? "mouth" : "muzzle");
@@ -679,13 +684,16 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
             time: 0,
           });
           const mouth = at(from, "mouth", 1.31);
+          const breathColors = id === "wizard-dragon" ? palette.dragon : colors;
           targets.forEach((mark, i) => {
             const chest = at(mark, "hit", 1.09);
             const time = (t - start - (kind === "sweep" ? i * 0.046 : 0)) / 0.22;
-            trail(mouth, chest, time, colors, kind === "sweep" ? 13 : 15, kind === "sweep" ? 0.55 : 0.31);
-            coals(chest, age, colors, kind === "sweep" ? 0.83 : 1.16);
-            impactSparks(chest, age, colors, kind === "sweep" ? 0.93 : 1.28);
-            if (age > 0.105 && age < 0.39) flecks(chest, age - 0.08, colors, 4);
+            if (id !== "wizard-dragon" || !dragonBreath)
+              trail(mouth, chest, time, breathColors, kind === "sweep" ? 13 : 15, kind === "sweep" ? 0.55 : 0.31);
+            else dragonBreath.draw(i, mouth, chest, time);
+            coals(chest, age, breathColors, kind === "sweep" ? 0.83 : 1.16);
+            impactSparks(chest, age, breathColors, kind === "sweep" ? 0.93 : 1.28);
+            if (age > 0.105 && age < 0.39) flecks(chest, age - 0.08, breathColors, 4);
           });
           break;
         }

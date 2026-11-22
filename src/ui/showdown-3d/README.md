@@ -79,6 +79,11 @@ ChatGPT-generated sheets. The transparent actors in `assets/scenes/actors/`
 use those same paintings. Sheriff, Skeleton and Billy use their existing
 illustrated idle and strike frames. All actors are cutouts on the 3D board.
 
+The Gatling Crew and Graveyard Dragon use the original colors from the
+opening portraits. Their cutouts keep both gunners, the brass gun carriage,
+and the dragon's open jaw, claws and capstones. The dragon's cyan breath is
+clipped from that same painting and aimed from its mouth at the event target.
+
 Singularity lifts regular troops by the hips before reeling them in faster as
 they approach the vortex. Dragons brace and move a shorter distance. The combat
 timeline still applies orb loss at contact and moves defeated cards to
