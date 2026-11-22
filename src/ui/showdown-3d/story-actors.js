@@ -1,6 +1,5 @@
 import * as T from "three";
 import { typeOf } from "../../game/showdown/cards.js";
-import { ILLUSTRATED_ALPHA } from "./graphics/pixel-renderer.js";
 
 const source = typeof __CVW_DUEL_POSES__ === "undefined" ? "" : __CVW_DUEL_POSES__;
 const billy = typeof __CVW_BILLY_POSES__ === "undefined" ? "" : __CVW_BILLY_POSES__;
@@ -125,10 +124,6 @@ export function storyActor(cardId, holder, model, camera) {
   const material = new T.SpriteMaterial({ alphaTest: art ? 0.38 : 0.52, transparent: false, toneMapped: false });
   material.onBeforeCompile = (shader) => {
     shader.uniforms.hipBend = bend;
-    shader.fragmentShader = shader.fragmentShader.replace(
-      "#include <opaque_fragment>",
-      `#include <opaque_fragment>\ngl_FragColor.a = ${ILLUSTRATED_ALPHA};`,
-    );
     shader.vertexShader = "uniform float hipBend;\n" + shader.vertexShader.replace(
       "vec2 rotatedPosition;",
       "alignedPosition.x -= hipBend * abs(position.y + 0.5 - center.y); vec2 rotatedPosition;",
