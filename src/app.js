@@ -3,7 +3,8 @@
 // Open range, plus two players at any time. The Wizard preview (four Wizard-seat duels with their own save) is the
 // Camp's last section after Boot Hill and opens on its own at ?wizard=1. Slice 3 retired the lane duel from this
 // page, so no URL opens it here; an old lane address (?mode=lanes, match, ride-out, practice-*,
-// fire-arc) loads this same Showdown menu. The old 3D page has been removed. esbuild inlines the dynamic imports, so the page stays one offline file.
+// fire-arc) loads this same Showdown menu. The illustrated contest build offers a verified Outrider turn on its title.
+// esbuild inlines the dynamic imports, so the page stays one offline file.
 const node = (id) => document.getElementById(id);
 
 Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"), import("./ui/showdown-builder.js"), import("./match/showdown-campaign.js"),
@@ -15,6 +16,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     {outriderTurn}, {VERIFIED, outriderControls}, {PRACTICE_SEEDS, practiceDuel, practiceFromQuery},
     {createWizardPreview, wizardFromQuery, previewUnlocked, WIZARD_TRACK}, {mountWizardCamp}, {earnedControl, earnedDuel}, diorama]) => {
   const title = node("title-screen"), screen = node("showdown"), campRoot = node("showdown-camp"), builderRoot = node("showdown-builder"), play = node("menu-play");
+  const contest = typeof __CVW_CONTEST__ !== "undefined" && __CVW_CONTEST__;
   const seed = new URLSearchParams(location.search).get("seed");
   // ?seed fixes every deal started from the Camp and every later game of a match, so a scripted check replays the same duels.
   const seedFor = () => (seed === null ? freshSeed() : Number(seed));
@@ -37,6 +39,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   let outpost;
   const showOnly = (shown) => {
     if (shown !== campRoot) outpost?.close();
+    if (shown !== screen) delete screen.dataset.contestChallenge;
     for (const el of [title, screen, campRoot, builderRoot]) el.hidden = el !== shown;
     window.scrollTo(0, 0);
   };
@@ -127,10 +130,23 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     // Focus returns to the control that opened it: the Camp entry or the Ledger link.
     last = from?.closest("#ledger-outrider") ? `#ledger-outrider [data-outrider="${id}"]` : "#camp-outrider-turn";
     showOnly(screen);
-    showdown.start(turn.duel, turn.seed);
+    if (contest) screen.dataset.contestChallenge = "";
+    const duel = contest ? {...turn.duel, name: "Ride or Fight?", lesson: "Choose the Outrider. Attack a troop, or ride past it to the Wizard Base."} : turn.duel;
+    showdown.start(duel, turn.seed);
     return true;
   };
   campRoot.addEventListener("click", (event) => { const b = event.target.closest("button[data-outrider]"); if (b) openOutrider(b.dataset.outrider, b); });
+  if (contest && VERIFIED.some((entry) => entry.id === "case-e")) {
+    const challenge = document.createElement("button");
+    challenge.id = "menu-challenge";
+    challenge.type = "button";
+    challenge.className = "frontier-plaque";
+    challenge.textContent = "Ride or Fight?";
+    challenge.addEventListener("click", () => openOutrider("case-e"));
+    play.before(challenge);
+    play.textContent = "Camp";
+    play.classList.add("menu-camp");
+  }
   // K-096: Boot Hill practice, collapsed at the end of the Camp. Each deal is a native link (?practice=<seed>) that can
   // be copied or opened in a new tab; a plain click or Enter opens the same duel here through openPractice.
   // Only the seeds in showdown-practice.js open; nothing is saved (see that file).

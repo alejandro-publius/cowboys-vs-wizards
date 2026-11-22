@@ -2,13 +2,13 @@
 
 **A haunted-Western card duel: cowboys against wizards, where you choose every attack and your troops shield your Base.** It takes what long-running card games already proved (tribute summons, spells that answer a board, a graveyard, a deck you build) and keeps a duel short and easy to read.
 
-## Status on November 20, 2026
+## Play Showdown
 
-The game is **Showdown**, and it is the only supported game in this repository. The rules are being built first, in a plain "graybox" page: a flat board, text cards and a duel log. [Play it in the browser](https://alejandro-publius.github.io/cowboys-vs-wizards/): **Play** opens the Camp, which starts the Trail of duels and, after it, the rivals, Wanted bounties, packs, the deck builder with a side deck, best of three and two players. The same page is at [/graybox/](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) for older links. The [full Showdown reference page](https://alejandro-publius.github.io/cowboys-vs-wizards/showdown/) is kept, and [what is in it](prototypes/showdown/README.md) is listed there.
+[Open illustrated Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/). Choose **Ride or Fight?** to jump into a verified Outrider turn at The Bone Fence. You can attack a troop or ride past it to hit the Wizard Base. **Camp** opens the Trail, deck builder, Wanted bounties, and other modes. [Graybox](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) runs the same rules with a lighter board, and the [reference page](https://alejandro-publius.github.io/cowboys-vs-wizards/showdown/) documents the full game.
 
-The earlier three-lane duel and its illustrated 3D build are retired. Old `/3d/` links lead to Showdown, and an old `?mode=` address opens the Showdown menu. The last playable lane and 3D source is preserved in Git history at `main` commit `ea183ee29dbd` (`git checkout ea183ee29dbd`). Saved lane progress does not carry into Showdown: a lane capture shows in the Camp as a keepsake only ([keepsake ruling](docs/design/release-line.md#current-status-november-20-supersedes-the-november-19-1015-pm-handoff)). The 3D layer will be rebuilt on top of Showdown once the rules are locked, because motion is expensive to change.
+Showdown is the supported game. The earlier three-lane duel is archived at `ea183ee29dbd`. The `/3d/` route serves illustrated Showdown and accepts the same direct duel links as the home page.
 
-No first-time human player has tested the current rules yet. Every balance figure in this repository comes from bot play. The [release line and scoreboard](docs/design/release-line.md) says what is in the game, what is waiting on a playtest, and what was cut. Fable's game decisions are posted on [issue 143](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143).
+In Camp, open **Sheriff’s Ledger** to see the two verified Outrider positions and the balance review that rejected giving the Sheriff a fourth orb. The balance numbers come from bot play. [Outrider gate](docs/evidence/outrider-gate.md) · [Reproduce the Sheriff verdict](docs/evidence/night-shift/guard-sheriff-health-3-to-4/README.md)
 
 ## Card art library
 
@@ -22,7 +22,7 @@ node prototypes/showdown/export-art.mjs
 
 The [Showdown card spreadsheet](prototypes/showdown/cards.csv) uses the same visual direction. Regenerate it with `node prototypes/showdown/export-cards.mjs`.
 
-## Play
+## Local build
 
 Use Node.js 22.18 or later.
 
@@ -35,7 +35,7 @@ Open `dist/cowboys-vs-wizards-board-duel.html` in a desktop browser. **Play** op
 
 `npm run build -- --web` writes the same single file to `dist/web/index.html`, and `npm run build -- --hosted` writes the Pages copy there. `node prototypes/showdown/build.mjs` writes the full Showdown page to `dist/showdown.html`.
 
-`node scripts/stage-pages.mjs` stages the whole site in `dist/web/` exactly as the Pages workflow does: Showdown at `/` and `/graybox/`, the Showdown reference page at `/showdown/`, and old `/3d/` links leading to Showdown. `node scripts/check-pages-tree.mjs --browser` serves that tree under `/cowboys-vs-wizards/` and checks it.
+Run `node scripts/stage-pages.mjs --commit "$(git rev-parse HEAD)"` to stage the site in `dist/web/`. The same illustrated build serves `/` and `/3d/`. The other routes are `/graybox/` and `/showdown/`. Run `node scripts/check-pages-tree.mjs --browser` to check the tree and play the challenge over local HTTP.
 
 Every Showdown card is in the [Showdown card spreadsheet](prototypes/showdown/cards.csv), and the rules are in the [rulebook](prototypes/showdown/RULEBOOK.md). `docs/cards.csv` and `docs/rules.csv` describe the retired lane duel and are kept as history.
 

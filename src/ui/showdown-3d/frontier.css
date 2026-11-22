@@ -68,6 +68,20 @@
 #menu-play {
   width: 100%;
 }
+#menu-challenge {
+  width: 100%;
+}
+#menu-play.menu-camp {
+  margin-top: 0.5rem;
+  min-height: 44px;
+  color: var(--frontier-light);
+  background: transparent;
+  box-shadow: none;
+  text-shadow: 0 2px #0c1524;
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+  font-size: 1.1rem;
+}
 
 .title-versus {
   color: var(--frontier-brass);

@@ -26,8 +26,7 @@ jobs:
 
       - run: npm test
 
-      # The Pages tree as pages.yml stages it: Showdown at / and /graybox/, the reference page at
-      # /showdown/, a script-free redirect at /3d/, and nothing from the retired 3D lane build.
+      # Stage the illustrated challenge, lightweight fallback and reference page.
       - name: Stage and check the Pages tree
         run: |
           node scripts/stage-pages.mjs --commit "$GITHUB_SHA"

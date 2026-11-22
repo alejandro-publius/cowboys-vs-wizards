@@ -15,11 +15,11 @@ const artwork = async (name) => {
     return "";
   }
 };
-// --hosted: the Pages copy at the site root (dist/web/index.html; scripts/stage-pages.mjs adds the
-// /graybox/ alias). It is the same single offline file as the other builds: the graybox game is
-// Showdown only (issue 143 slice 3), so no lane chunk exists and none is fetched.
+// --hosted stages the graybox fallback. --diorama --contest builds the illustrated contest entry.
+// Both are single-file builds of the same Showdown rules and Camp.
 const hosted = process.argv.includes("--hosted");
 const diorama = process.argv.includes("--diorama") && !hosted;
+const contest = diorama && process.argv.includes("--contest");
 const output = diorama ? "dist/cowboys-vs-wizards-showdown-3d.html" : process.argv.includes("--outrider-fixture") ? ".artifacts/outrider-fixture/graybox.html"
   : hosted || process.argv.includes("--web") ? "dist/web/index.html" : "dist/cowboys-vs-wizards-board-duel.html";
 // K-087: the page's public build label (commit, "+local" if uncommitted), so the Camp's playtest report can say
@@ -44,7 +44,7 @@ const frontier = diorama ? await Promise.all(["title", "camp"].map(async (view) 
 if (panorama) frontier.push(`--frontier-panorama:url("${panorama}");`);
 const options = {absWorkingDir: fileURLToPath(root), bundle: true, write: false, platform: "browser", target: "es2022", minify: true,
   define: {__CVW_GRAYBOX_BUILD__: JSON.stringify(label), __CVW_OUTRIDER__: JSON.stringify({cases: outrider.cases, camp: outrider.camp}),
-    __CVW_OUTRIDER_LEDGER__: JSON.stringify(outrider.ledger), __CVW_DIORAMA__: JSON.stringify(diorama),
+    __CVW_OUTRIDER_LEDGER__: JSON.stringify(outrider.ledger), __CVW_DIORAMA__: JSON.stringify(diorama), __CVW_CONTEST__: JSON.stringify(contest),
     __CVW_DIORAMA_ATLAS__: JSON.stringify(atlas), __CVW_HAS_PANORAMA__: JSON.stringify(Boolean(panorama))}};
 const [template, style, showdownStyle, boardStyle, boardLicense, bundle] = await Promise.all([
   read("src/ui/graybox.html"),

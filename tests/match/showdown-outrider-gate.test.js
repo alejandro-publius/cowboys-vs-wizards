@@ -149,7 +149,8 @@ test("the imported search cases are fresh and ship setup only", async (t) => {
   // The curated pair is one of each kind, as observed.json records them.
   assert.deepEqual(["case-e", "case-a"].map((id) => decision.results[id].kind), ["fight-only", "ride-only"]);
   assert.doesNotMatch(JSON.stringify(built.ledger.positions), /winner|results|"turn":(1\d|2\d)/);
-  assert.equal(built.ledger.nightWatch.engine.same, true, "the receipt's engine files match this tree byte for byte");
+  assert.equal(built.ledger.nightWatch.engine.same, false, "the historical receipt predates the presentation callback in playTurn");
+  assert.deepEqual(built.ledger.nightWatch.engine.differ, ["src/game/showdown/rules.js"]);
   assert.equal(built.ledger.nightWatch.rulesBlobMatch, true);
   assert.deepEqual([built.ledger.research.holdout.correct, built.ledger.research.holdout.alwaysRide, built.ledger.research.holdout.flips], [3, 5, 7]);
   assert.doesNotMatch(JSON.stringify(built.cases), /winner|"arms"|"choices"|"target":"base"|ride-only|fight-only/);
@@ -166,7 +167,7 @@ test("Ledger section: neutral before the reveal, results only when fresh, links 
   assert.match(comparisonLines(built.ledger).join("\n"), /Position 1: ride to the Base, Wizards won on turn 10; fight the troop, Cowboys won on turn 23/);
   assert.match(researchLine(built.ledger), /right in 3 of 7 fresh reversals .* against 5 of 7 for always riding: unsupported\. No general rule is proven/);
   assert.match(researchLine(built.ledger), /depends on every later move/);
-  assert.match(nightWatchLine(built.ledger), /November 19, 2026, 11:46 PM PST .* whole ruleset, not this move\. The 4 engine files it ran are byte-identical/);
+  assert.match(nightWatchLine(built.ledger), /November 19, 2026, 11:46 PM PST .* whole ruleset, not this move\. Its engine differs from this build in src\/game\/showdown\/rules\.js/);
   const stale = {...built.ledger, status: "stale", statusText: "withheld", positions: []};
   const staleHtml = outriderLedgerHtml(stale, built.cases);
   assert.doesNotMatch(staleHtml, /data-outrider|ledger-outrider-reveal|won/);
@@ -189,7 +190,7 @@ test("Night Watch engine identity without history: snapshot compares, mismatched
     assert.deepEqual([bare.checked, bare.from, bare.files, bare.same], [true, ENGINE_SNAPSHOT, 4, full.same]);
     assert.deepEqual(bare.notMeasured, full.notMeasured);
     writeFileSync(path.join(dir, "src/game/showdown/cards.js"), `${readFileSync(path.join(dir, "src/game/showdown/cards.js"), "utf8")}\n// changed\n`);
-    assert.deepEqual(engineIdentity(receipt.commit, dir, receipt.rulesBlob).differ, ["src/game/showdown/cards.js"]);
+    assert.deepEqual(engineIdentity(receipt.commit, dir, receipt.rulesBlob).differ, [...bare.differ, "src/game/showdown/cards.js"].sort());
     assert.match(engineIdentity(receipt.commit, dir, "0".repeat(40)).reason, /does not equal the receipt's rulesBlob/);
     assert.match(engineIdentity("f".repeat(40), dir, receipt.rulesBlob).reason, /not in this checkout and no engine snapshot names it/);
     rmSync(path.join(dir, ENGINE_SNAPSHOT));
