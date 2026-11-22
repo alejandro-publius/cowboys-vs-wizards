@@ -2,6 +2,7 @@ import {build} from "esbuild";
 import {mkdir, readFile, rm, writeFile} from "node:fs/promises";
 import {fileURLToPath} from "node:url";
 import {grayboxBuildLabel} from "./graybox-build-label.mjs";
+import {TYPES} from "../src/game/showdown/cards.js";
 import {verifiedForBuild} from "./outrider-gate.mjs";
 
 const root = new URL("../", import.meta.url);
@@ -36,18 +37,12 @@ const atlas = diorama ? await readFile(file("assets/cards/showdown-diorama.webp"
   if (error.code === "ENOENT") return "";
   throw error;
 }) : "";
-const paintings = diorama ? Object.fromEntries(await Promise.all(Object.entries({
-  "cowboy-sheriff": "sheriff", "cowboy-billy": "billy", "cowboy-mounted-billy": "mounted-billy",
-  "cowboy-deadeye": "deadeye", "wizard-skeleton": "skeleton", "wizard-wizard": "wizard",
-  "wizard-dragon": "dragon", "wizard-singularity": "singularity",
-}).map(async ([id,name]) => {
-  const revised = await artwork(`assets/cards/${name}-storybook.webp`);
-  return [id, revised || await artwork(`assets/cards/${name}-card.webp`)];
-}))) : {};
-if (diorama) {
-  const gatling = await artwork("assets/cards/gatling-storybook.webp");
-  if (gatling) paintings["cowboy-gatling-crew"] = gatling;
-}
+const paintings = diorama ? Object.fromEntries(await Promise.all(Object.keys(TYPES).map(async (id) => [
+  id, await artwork(`assets/cards/illustrated/${id}.webp`),
+]))) : {};
+const actors = diorama ? Object.fromEntries(await Promise.all(Object.entries(TYPES)
+  .filter(([, card]) => card.kind === "troop")
+  .map(async ([id]) => [id, await artwork(`assets/scenes/actors/${id}.webp`)]))) : {};
 const panorama = diorama ? await artwork("assets/scenes/showdown-storybook.webp") : "";
 const poses = diorama ? await artwork("assets/scenes/showdown-poses.webp") : "";
 const billyPoses = diorama ? await artwork("assets/scenes/billy-poses.webp") : "";
@@ -60,7 +55,7 @@ const options = {absWorkingDir: fileURLToPath(root), bundle: true, write: false,
   define: {__CVW_GRAYBOX_BUILD__: JSON.stringify(label), __CVW_OUTRIDER__: JSON.stringify({cases: outrider.cases, camp: outrider.camp}),
     __CVW_OUTRIDER_LEDGER__: JSON.stringify(outrider.ledger), __CVW_DIORAMA__: JSON.stringify(diorama),
     __CVW_DIORAMA_ATLAS__: JSON.stringify(atlas), __CVW_TABLE_ILLUSTRATIONS__: JSON.stringify(paintings),
-    __CVW_HAS_PANORAMA__: JSON.stringify(Boolean(panorama)), __CVW_DUEL_POSES__: JSON.stringify(poses),
+    __CVW_ACTOR_ART__: JSON.stringify(actors), __CVW_HAS_PANORAMA__: JSON.stringify(Boolean(panorama)), __CVW_DUEL_POSES__: JSON.stringify(poses),
     __CVW_BILLY_POSES__: JSON.stringify(billyPoses)}};
 const [template, style, showdownStyle, boardStyle, boardLicense, bundle] = await Promise.all([
   read("src/ui/graybox.html"),

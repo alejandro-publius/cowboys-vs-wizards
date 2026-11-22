@@ -2,6 +2,7 @@ import * as T from "three";
 import { LOOK } from "../../../prototypes/showdown/art.js";
 import { EFFECTS, TYPES } from "../../game/showdown/cards.js";
 import { makeCardModel } from "./card-models.js";
+import { loadStoryActors, storyActor } from "./story-actors.js";
 import { PixelRenderer } from "./graphics/pixel-renderer.js";
 import { attackExample, attackPreviews } from "./attack-preview.js";
 
@@ -10,9 +11,17 @@ const order = new Map(ROSTER.map((id, i) => [id, i]));
 const troopRoster = ROSTER.filter((id) => TYPES[id].kind === "troop");
 const sideName = { cowboy: "Cowboys", wizard: "Wizards" };
 const kinds = { troop: "Troop", spell: "Spell", trap: "Trap", gear: "Gear", location: "Location" };
+const illustrations = typeof __CVW_TABLE_ILLUSTRATIONS__ === "undefined" ? {} : __CVW_TABLE_ILLUSTRATIONS__;
 const atlas = typeof __CVW_DIORAMA_ATLAS__ === "undefined" ? "" : __CVW_DIORAMA_ATLAS__;
 
 export function portrait(id) {
+  if (illustrations[id]) {
+    const art = new Image();
+    art.src = illustrations[id];
+    art.alt = "";
+    art.className = "sd-card-art sd-illustration";
+    return art;
+  }
   if (!atlas) return null;
   const image = document.createElement("span");
   image.className = "sd-card-art";
@@ -43,6 +52,7 @@ function stage(canvas) {
   const camera = new T.OrthographicCamera(-3, 3, 2, -2, 0.08, 40);
   const focal = new T.Vector3(0, 1.06, 0);
   let model,
+    actor,
     current,
     angle = 0.36;
   function draw() {
@@ -60,15 +70,25 @@ function stage(canvas) {
     camera.lookAt(focal);
     camera.updateProjectionMatrix();
     camera.updateMatrixWorld(true);
+    actor?.sync();
     pipeline.render(scene, camera);
   }
+  void loadStoryActors().then(draw);
   new ResizeObserver(draw).observe(canvas);
   return {
     select(id) {
       current = id;
-      if (model) scene.remove(model);
-      model = makeCardModel(id, { width: 2.76, height: 2.47, depth: 2.64 });
+      if (model) {
+        scene.remove(model);
+        model.traverse((part) => {
+          if (part.isSprite) part.material.dispose();
+        });
+      }
+      model = new T.Group();
+      const miniature = makeCardModel(id, { width: 2.76, height: 2.47, depth: 2.64 });
+      model.add(miniature);
       scene.add(model);
+      actor = storyActor(id, model, miniature, camera);
       const bounds = new T.Box3().setFromObject(model);
       focal.y = Math.min(1.17, (bounds.max.y + bounds.min.y) * 0.48 + 0.08);
       const western = TYPES[id].side === "cowboy";
@@ -153,7 +173,8 @@ export function mountGallery(title, duel, makeAttackStage) {
   function restoreModel() {
     battle?.clear();
     attackHost.hidden = attackResult.hidden = true;
-    angle.closest("label").hidden = canvas.hidden = !hasModel;
+    angle.closest("label").hidden = canvas.hidden = !hasModel || TYPES[active].kind !== "troop";
+    still.hidden = !still.firstChild;
   }
   function watch(id, mode, finished) {
     const example = attackExample(id, mode);
@@ -217,12 +238,12 @@ export function mountGallery(title, duel, makeAttackStage) {
         return button;
       }),
     );
-    preview?.select(id);
-    if (!hasModel) {
-      const art = portrait(id);
-      still.hidden = !art;
-      if (art) still.replaceChildren(art);
-    }
+    const usePortrait = !hasModel || card.kind !== "troop";
+    angle.closest("label").hidden = canvas.hidden = usePortrait;
+    const art = usePortrait ? portrait(id) : null;
+    still.hidden = !art;
+    still.replaceChildren(...(art ? [art] : []));
+    if (!usePortrait) preview?.select(id);
   }
   const angle = dialog.querySelector("input");
   angle.oninput = () => preview?.rotate(T.MathUtils.degToRad(Number(angle.value)));

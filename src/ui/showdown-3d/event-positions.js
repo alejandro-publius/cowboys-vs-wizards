@@ -16,7 +16,7 @@ const timings = {
   lasso: [680, 465],
   shell: [630, 380],
   hellfire: [710, 410],
-  vortex: [670, 420],
+  vortex: [1790, 1150],
   "area-vortex": [2370, 1625],
   summon: [480, 215],
   raise: [490, 235],
@@ -209,7 +209,8 @@ export function presentationBeats(trace) {
             hits.push(events[++i]);
           const targets = hits.map((h) => foe(h.target));
           add("play", source(s, "hand"), [source(s, "row")], e);
-          add(kind, e.caster ? own(e.caster) : kind === "lasso" ? base : source(s, "row"), targets, e, () => {
+          const wizard = kind === "vortex" && table.sides[s].board.find((troop) => typeOf(troop?.cardId ?? "") === "wizard-wizard");
+          add(kind, e.caster ? own(e.caster) : wizard ? own(wizard.cardId) : kind === "lasso" ? base : source(s, "row"), targets, e, () => {
             hits.forEach((h, j) => {
               hurt(targets[j], h.left);
               const t = get(targets[j]);

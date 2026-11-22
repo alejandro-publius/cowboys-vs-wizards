@@ -13,6 +13,7 @@
 .sd-diorama #sd-field {
   position: relative;
   background:
+    linear-gradient(rgb(9 7 20 / var(--spell-darkness, 0)), rgb(9 7 20 / var(--spell-darkness, 0))),
     linear-gradient(0deg, #101b30 3%, #10203830 55%, #12203322),
     var(--frontier-panorama, none) 50% 23% / cover no-repeat;
   margin: 0;

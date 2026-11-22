@@ -67,3 +67,21 @@ against Fable's briefs.
 
 The preview is opt-in at build time. The standard and hosted builds keep
 the graybox presentation.
+
+## Approved roster art
+
+Use the illustrated pixel card set as the visual reference for the roster.
+Cowboy scenes use amber sunset and timber. Wizard scenes use moonlit
+cobblestone, ivy and mint witch-fire. The Sheriff is the benchmark for
+silhouette and detail at board scale.
+
+The paintings in `assets/cards/illustrated/` are crops of the approved
+ChatGPT-generated sheets. The transparent actors in `assets/scenes/actors/`
+use those same paintings. Sheriff, Skeleton and Billy use their existing
+illustrated idle and strike frames. All actors are cutouts on the 3D board.
+
+Singularity pulls regular troops by the hips, with a visible lift before
+the inward slide. Dragons brace and move a shorter distance. The combat
+timeline still applies orb loss at contact and moves defeated cards to
+the graveyard. The ordinary match spell targets one troop. The gallery
+also stages an area replay.

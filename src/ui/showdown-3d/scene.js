@@ -136,6 +136,7 @@ function pawn(side, id, camera) {
       miniature.scale.set(restScale, restScale * (troop.stunned ? 0.92 : troop.cover ? 0.9 : 1), restScale);
       if (rig) rig.pose({});
       if (!skin) miniature.visible = true;
+      skin?.suspend(0, 0);
       skin?.effect(1);
       skin?.pose("idle");
       stun.visible = Boolean(troop.stunned);
@@ -425,7 +426,7 @@ function build(host, canvas, screen, closeup = false) {
   function stop() {
     epoch++;
     fx.clear();
-    if (host.dataset.spell) spellDarkness(0);
+    if (host.dataset.spell || host.style.getPropertyValue("--spell-darkness")) spellDarkness(0);
     transfers.clear();
     dressing.reset();
     bases.cowboy.swing(0);
@@ -492,9 +493,10 @@ function build(host, canvas, screen, closeup = false) {
         }
       }
       canvas.dataset.motion = beat.kind;
-      if (host.dataset.spell) {
-        const darkness = beat.kind === "area-vortex"
-          ? 0.86 * T.MathUtils.smoothstep(local, 120, 910) * (1 - T.MathUtils.smoothstep(local, beat.contact + 45, beat.duration))
+      const vortex = beat.kind === "area-vortex" || beat.kind === "vortex";
+      if (vortex || host.style.getPropertyValue("--spell-darkness")) {
+        const darkness = vortex
+          ? 0.77 * T.MathUtils.smoothstep(local, 120, beat.contact * 0.60) * (1 - T.MathUtils.smoothstep(local, beat.contact + 45, beat.duration))
           : 0;
         spellDarkness(darkness);
       }

@@ -300,15 +300,16 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
         );
     }
   }
-  function areaVortex(step, t, edge) {
+  function singularity(step, t, edge) {
     const {from, targets} = step;
     const age = t - edge;
     const gather = smooth(t, 0.13, edge - 0.15);
     const collapse = 1 - smooth(age, 0.02, 0.31);
-    const pull = gather * (1 - smooth(age, 0.05, 0.48));
-    const side = targets[0].side;
+    const pull = gather * (1 - smooth(age, 0.06, 0.52));
+    const side = targets[0]?.side;
+    if (!side) return;
     const direction = side === "cowboy" ? 1 : -1;
-    const center = new T.Vector3(-direction * 2.65, 1.42, -0.18);
+    const center = new T.Vector3(-direction * 1.94, 1.90, -0.18);
     const wizard = pawnAt(from);
     if (wizard) movePawn(wizard, -direction * 0.11 * gather, 0, 0, -direction * 0.22 * pull);
 
@@ -362,19 +363,24 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
       const dead = step.hit.sides[mark.side].board[mark.slot]?.health === 0;
       const shattered = dead && body(token.id) === "bone";
       const recoil = pulse(age, 0.01, 0.10, 0.47);
-      const follow = (isDragon ? 0.052 : 0.116) * pull;
+      const rise = smooth(t, 0.23 + mark.slot * 0.04, edge * 0.81) *
+        (1 - smooth(age, 0.10, 0.54));
+      const drawIn = smooth(t, edge * 0.34, edge - 0.035) * (1 - smooth(age, 0.06, 0.56));
+      const follow = (isDragon ? 0.13 : 0.56) * drawIn;
       const drop = shattered ? 0.43 * smooth(age, 0, 0.15) : 0;
-      const shifted = (center.x - fromX) * follow - direction * 0.26 * recoil;
+      const shifted = (center.x - fromX) * follow - direction * 0.32 * recoil;
+      const lift = isDragon ? 0.14 * rise : (1.21 + 0.13 * mark.slot) * rise;
+      const lean = direction * ((isDragon ? 0.15 : 0.61) * rise - 0.21 * recoil);
       token.rig?.pose({brace: isDragon ? pull : 0, charge: isDragon ? 0.55 * pull : 0, recoil, time: 0});
-      movePawn(token, shifted, -(isDragon ? 0.20 : 0.07) * pull - drop,
-        (center.z - fromZ) * follow, -direction * (pull * (isDragon ? 0.14 : 0.32) - 0.18 * recoil));
+      movePawn(token, shifted, lift - drop, (center.z - fromZ) * follow * 0.67, lean);
+      token.skin?.suspend(rise * (isDragon ? 0.19 : 1), direction);
       const broken = shattered && age > 0.105;
-      token.skin?.effect(1 - 0.53 * pull, broken);
+      token.skin?.effect(1 - 0.29 * pull, broken);
       if (!token.skin) token.model.visible = !broken;
-      const chest = at(mark, "hit");
+      const hips = at(mark, "hips", 1.0).add(new T.Vector3(token.skin ? 0 : shifted, token.skin ? 0 : lift, 0));
       for (let j = 0; j < 4 && age < 0; j++) {
         const f = (t * 1.95 + j / 4 + mark.slot * 0.13) % 1;
-        if (gather > 0.08) bar(chest.clone().lerp(center, f), chest.clone().lerp(center, Math.min(1, f + 0.12)),
+        if (gather > 0.08) bar(hips.clone().lerp(center, f), hips.clone().lerp(center, Math.min(1, f + 0.12)),
           j % 2 ? 0x9b72bd : 0xd1a8d5, 0.047 * gather);
       }
       if (age >= 0.035 && age < 0.47) {
@@ -388,9 +394,9 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
           const angle = (j + 1) * 2.39996;
           const reach = f * (1.32 + (j % 5) * 0.45);
           const shard = new T.Vector3(
-            fromX + Math.cos(angle) * reach + direction * (0.25 + f * 0.63),
-            Math.max(0.39, 0.64 + (j % 5) * 0.24 + f * (1.2 + (j % 4) * 0.46) - f * f * 6.0),
-            fromZ + Math.sin(angle) * reach,
+            fromX + (center.x - fromX) * 0.56 + Math.cos(angle) * reach + direction * f * 0.63,
+            Math.max(0.39, 1.47 + (j % 5) * 0.24 + f * (1.2 + (j % 4) * 0.46) - f * f * 8.0),
+            fromZ + (center.z - fromZ) * 0.375 + Math.sin(angle) * reach,
           );
           const size = (0.13 + (j % 4) * 0.04) * (1 - smooth(f, 0.48, 0.68));
           dot("chip", j % 7 === 0 ? 0x7f465c : palette.bone[j % 3], shard, size, size * 1.7, size * 0.62, angle + f * 5, f * 4, angle - f);
@@ -641,18 +647,24 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
         case "sweep": {
           if (id === "cowboy-gatling-crew") {
             const start = edge - 0.23;
+            const kick = pulse(t, start - 0.10, start + 0.10, edge + 0.20);
+            movePawn(actor, -dir * 0.15 * kick, 0.04 * kick, 0, dir * 0.085 * kick);
+            const muzzle = at(from, "muzzle", 0.98);
             targets.forEach((mark, i) => {
               const chest = at(mark, "hit", 1.09);
               for (let j = 0; j < 3; j++) {
                 const lead = 0.055 * j + 0.043 * i;
-                tracer(a, chest, (t - start - lead) / 0.14, 0.16, 0xffaf6c, 0.18);
-                gunFlash(a, chest, t - start - lead, 0.58);
+                tracer(muzzle, chest, (t - start - lead) / 0.14, 0.16, 0xffaf6c, 0.18);
+                gunFlash(muzzle, chest, t - start - lead, 0.58);
               }
               impactSparks(chest, age, palette.gold, 0.9);
             });
             break;
           }
           const start = edge - 0.22;
+          const coil = smooth(t, 0.06, start) * (1 - smooth(t, start, edge + 0.22));
+          const flame = pulse(t, start, edge, edge + 0.29);
+          movePawn(actor, dir * (0.20 * flame - 0.18 * coil), 0.14 * coil, 0, dir * (0.10 * coil - 0.08 * flame));
           actor?.rig?.pose({
             charge: smooth(t, 0, start) * (1 - smooth(t, edge, edge + 0.19)),
             breath: pulse(t, start, edge, edge + 0.31),
@@ -700,15 +712,9 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
           });
           break;
         case "area-vortex":
-          areaVortex(step, t, edge);
+        case "vortex":
+          singularity(step, t, edge);
           break;
-        case "vortex": {
-          const drift = fly(a, b, smooth(t, 0.04, edge), 0.18);
-          showProp(step.cardId, drift, drift, 1, 0, { width: 1.37, height: 1.11, depth: 0.89 });
-          prop.rotation.y = t * 3.7;
-          explode(b, age, palette.violet, 0.71);
-          break;
-        }
         case "laststand": {
           const spin = fly(a, b, smooth(t, 0.12, edge), 0.86);
           const pumpkin = step.cardId.startsWith("wizard-");
@@ -765,7 +771,7 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
           flecks(b, age, from.side === "wizard" ? palette.violet : palette.gold, 5);
       }
       if (
-        !["area-vortex", "lasso", "summon", "raise", "cover", "set", "gear", "location", "tribute", "burn"].includes(kind) &&
+        !["area-vortex", "vortex", "lasso", "summon", "raise", "cover", "set", "gear", "location", "tribute", "burn"].includes(kind) &&
         !(kind === "trap" && typeOf(step.cardId) === "wizard-hex")
       ) {
         for (const mark of targets) {

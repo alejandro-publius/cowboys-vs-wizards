@@ -1,6 +1,9 @@
 import * as THREE from "three";
 import { PALETTE, PALETTE_LAB } from "./palette.js";
 
+// A cutout has already been pixelated by its illustrator. Mark opaque painted
+// pixels in the intermediate target so only geometry gets palette remapping.
+export const ILLUSTRATED_ALPHA = 0.125;
 const vertexShader = `varying vec2 vUv;
 void main(){vUv=uv;gl_Position=vec4(position.xy,0.0,1.0);}`;
 const fragmentShader = `
@@ -37,6 +40,10 @@ void main(){
   vec2 uv=(cell+0.5)/resolution;
   vec4 paint=texture2D(colourTexture,uv);
   if(paint.a<.003){gl_FragColor=vec4(0.0);return;}
+  if(abs(paint.a-${ILLUSTRATED_ALPHA})<.003){
+    gl_FragColor=vec4(encode(clamp(paint.rgb,0.0,1.0)),1.0);
+    return;
+  }
   vec3 rgb=encode(filmic(paint.rgb*exposure));
   if(!pixelMode){gl_FragColor=vec4(rgb,paint.a);return;}
   vec3 lab=toLab(rgb);
