@@ -17,7 +17,6 @@ The embedded sunset-and-moonrise panorama frames the 3D table. Cropped
 poses for the Sheriff, Billy and Skeleton are anchored to their board
 tiles, and their strikes use the same contact events as the 3D models.
 The opening hand, Gatling Crew and Dragon use matching card paintings.
-The rest of the roster uses the existing miniatures in the attack reel.
 
 The Cowboy and Wizard districts frame three troop spaces, two face-down trap
 spaces, a Base, a deck and a graveyard per side, and one shared Location. The
@@ -80,8 +79,8 @@ ChatGPT-generated sheets. The transparent actors in `assets/scenes/actors/`
 use those same paintings. Sheriff, Skeleton and Billy use their existing
 illustrated idle and strike frames. All actors are cutouts on the 3D board.
 
-Singularity pulls regular troops by the hips, with a visible lift before
-the inward slide. Dragons brace and move a shorter distance. The combat
+Singularity lifts regular troops by the hips before reeling them in faster as
+they approach the vortex. Dragons brace and move a shorter distance. The combat
 timeline still applies orb loss at contact and moves defeated cards to
 the graveyard. The ordinary match spell targets one troop. The gallery
 also stages an area replay.

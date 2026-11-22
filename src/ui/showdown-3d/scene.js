@@ -508,6 +508,17 @@ function build(host, canvas, screen, closeup = false) {
       );
       transfers.frame(local);
       fx.frame(local);
+      if (closeup && vortex) {
+        for (const mark of beat.targets) {
+          const token = pawnAt(mark);
+          const orbs = worldLabels.get(mark.side + "orbs" + mark.slot);
+          if (!token || !orbs || orbs.hidden) continue;
+          const [x, , z] = zone(mark.side, "troop", mark.slot);
+          const height = typeOf(token.id).endsWith("-dragon") ? 2.66 : 3.06;
+          const offset = token.model.position;
+          place(orbs, x + offset.x, height + offset.y - token.restY, z + offset.z - 0.01);
+        }
+      }
       const summon = beat.kind === "summon" && hit ? beat.targets[0] : null;
       draw(
         summon
