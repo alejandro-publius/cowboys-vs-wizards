@@ -8,7 +8,6 @@ import { attackExample, attackPreviews } from "./attack-preview.js";
 
 export const ROSTER = Object.keys(TYPES);
 const order = new Map(ROSTER.map((id, i) => [id, i]));
-const troopRoster = ROSTER.filter((id) => TYPES[id].kind === "troop");
 const sideName = { cowboy: "Cowboys", wizard: "Wizards" };
 const kinds = { troop: "Troop", spell: "Spell", trap: "Trap", gear: "Gear", location: "Location" };
 const illustrations = typeof __CVW_TABLE_ILLUSTRATIONS__ === "undefined" ? {} : __CVW_TABLE_ILLUSTRATIONS__;
@@ -120,7 +119,6 @@ export function mountGallery(title, duel, makeAttackStage) {
         <label class="sd-gallery-angle">Rotate <input type="range" min="-180" max="180" value="20" aria-label="Rotate the card model"></label>
         <div class="sd-gallery-actions">
           <div class="sd-gallery-moves"></div>
-          <button type="button" class="sd-gallery-reel">Watch all troops</button>
         </div>
         <div class="sd-gallery-attack" hidden>
           <canvas class="sd-attack-world" aria-label="Attack replay. Drag to orbit and scroll to zoom." tabindex="0" hidden></canvas>
@@ -141,7 +139,6 @@ export function mountGallery(title, duel, makeAttackStage) {
   const attackCanvas = attackHost.querySelector("canvas");
   const attackResult = dialog.querySelector(".sd-attack-result");
   const attackMoves = dialog.querySelector(".sd-gallery-moves");
-  const reel = dialog.querySelector(".sd-gallery-reel");
   const choices = new Map();
   for (const [side, heading] of Object.entries(sideName)) {
     const group = document.createElement("section");
@@ -161,22 +158,15 @@ export function mountGallery(title, duel, makeAttackStage) {
   }
   let preview,
     battle,
-    reelTimer,
-    playingAll = false,
     hasModel = true,
     active = ROSTER[0];
-  function stopReel() {
-    window.clearTimeout(reelTimer);
-    playingAll = false;
-    reel.textContent = "Watch all troops";
-  }
   function restoreModel() {
     battle?.clear();
     attackHost.hidden = attackResult.hidden = true;
     angle.closest("label").hidden = canvas.hidden = !hasModel || TYPES[active].kind !== "troop";
     still.hidden = !still.firstChild;
   }
-  function watch(id, mode, finished) {
+  function watch(id, mode) {
     const example = attackExample(id, mode);
     if (!example) return;
     attackResult.hidden = false;
@@ -184,7 +174,6 @@ export function mountGallery(title, duel, makeAttackStage) {
     try {
       battle ??= makeAttackStage(attackHost, attackCanvas, dialog);
     } catch {
-      stopReel();
       return;
     }
     canvas.hidden = still.hidden = angle.closest("label").hidden = true;
@@ -199,19 +188,9 @@ export function mountGallery(title, duel, makeAttackStage) {
       battle.lookAt(side === "cowboy" ? [-1.65, 0.98, 0.8] : [2.1, 1.02, 0.65], side === "cowboy" ? 0.61 : -0.33, 0.68);
     }
     battle.paint(example.end, example.before);
-    battle.animate(example.trace, finished);
+    battle.animate(example.trace);
   }
-  function playReel(index) {
-    if (!playingAll || !dialog.open) return;
-    if (index === troopRoster.length) return stopReel();
-    const id = troopRoster[index];
-    select(id, true);
-    watch(id, attackPreviews(id)[0][0], () => {
-      if (playingAll) reelTimer = window.setTimeout(() => playReel(index + 1), 460);
-    });
-  }
-  function select(id, fromReel = false) {
-    if (!fromReel) stopReel();
+  function select(id) {
     restoreModel();
     const card = TYPES[id];
     choices.get(active).setAttribute("aria-pressed", "false");
@@ -230,11 +209,8 @@ export function mountGallery(title, duel, makeAttackStage) {
         const button = document.createElement("button");
         button.type = "button";
         button.dataset.attackMode = mode;
-        button.textContent = label;
-        button.onclick = () => {
-          stopReel();
-          watch(id, mode);
-        };
+        button.textContent = id === "cowboy-sheriff" ? label : label.replace(/^Watch /, "Show ");
+        button.onclick = () => watch(id, mode);
         return button;
       }),
     );
@@ -251,20 +227,7 @@ export function mountGallery(title, duel, makeAttackStage) {
     button.onclick = () =>
       select(ROSTER[(order.get(active) + Number(button.dataset.step) + ROSTER.length) % ROSTER.length]);
   dialog.querySelector(".sd-gallery-close").onclick = () => dialog.close();
-  reel.onclick = () => {
-    if (playingAll) {
-      stopReel();
-      restoreModel();
-      return;
-    }
-    playingAll = true;
-    reel.textContent = "Stop reel";
-    playReel(0);
-  };
-  dialog.addEventListener("close", () => {
-    stopReel();
-    restoreModel();
-  });
+  dialog.addEventListener("close", restoreModel);
   function open() {
     dialog.showModal();
     if (!preview) {

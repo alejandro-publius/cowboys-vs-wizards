@@ -441,7 +441,7 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
         effect.add(spare.group);
       }
     },
-    frame(ms) {
+    frame(ms, { animateTargets = true } = {}) {
       if (!active) return;
       const step = active,
         { kind, from, targets, contact } = step;
@@ -787,6 +787,7 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
           flecks(b, age, from.side === "wizard" ? palette.violet : palette.gold, 5);
       }
       if (
+        animateTargets &&
         !["area-vortex", "vortex", "lasso", "summon", "raise", "cover", "set", "gear", "location", "tribute", "burn"].includes(kind) &&
         !(kind === "trap" && typeOf(step.cardId) === "wizard-hex")
       ) {
