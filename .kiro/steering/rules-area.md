@@ -10,8 +10,10 @@ fileMatchPattern: ["src/game/**", "scripts/verify-duel.mjs", "scripts/simulate-m
   `prototypes/showdown/RULEBOOK.md`. Check them with
   `node --test prototypes/showdown/rules.test.js prototypes/showdown/contract.test.js tests/game/showdown-presenter.test.js`.
 - The lane duel is retired and no current build plays it
-  (`docs/design/release-line.md`, issue 143); `/3d/` redirects to `/`. Its
-  last rules and 3D source are at commit
+  (`docs/design/release-line.md`, issue 143); old `?mode=` URLs land on
+  Showdown. `/3d/` no longer means the lane build: with PR 186 it is
+  a byte-identical copy of the illustrated Showdown at `/`. The lane's last
+  rules and lane 3D source are at commit
   `ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df`, and its known contradictions are
   recorded in `docs/kiro-task-01.md` as history. Do not assign lane rules work
   unless the user reopens it.

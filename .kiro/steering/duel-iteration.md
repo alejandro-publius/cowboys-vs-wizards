@@ -9,10 +9,14 @@ Use for quick changes to match presentation, card art or the browser route.
 README.md has the build command and check table. For Showdown screens and
 their checks, use the Showdown rows in `docs/AGENT-ROUTER.md`; the current
 release state is in `docs/design/release-line.md` ("Current status") and issue
-143. The lane duel and its standalone 3D build are retired: `/3d/` and old
-`?mode=` URLs redirect to Showdown at `/`, and the last lane and 3D source is
-at commit `ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df`. Do not work on lane or
-3D paths unless the user reopens them.
+143. With PR 186, `/` starts the illustrated
+Showdown (`src/ui/showdown-3d`) with Ride or Fight? first and Camp secondary,
+`/3d/` is a byte-identical copy of it, `/graybox/` stages the same game in the
+lightweight graybox with direct Camp entry, and `/showdown/` is the reference.
+The lane duel and its standalone lane-based 3D build are retired: old
+`?mode=` URLs land on Showdown, and the last lane and lane 3D source is at
+commit `ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df`. Do not work on lane paths
+or the lane 3D build unless the user reopens them.
 
 ## Contracts to keep
 
