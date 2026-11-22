@@ -120,8 +120,9 @@ export function tableCamera(canvas, camera, changed, initialZoom = 1, initialFoc
     refresh();
   }
   return {
-    frame(nextZoom) {
+    frame(nextZoom, nextFocus = initialFocus) {
       initialZoom = nextZoom;
+      initialFocus = nextFocus;
       reset();
     },
     lookAt(position, yaw, tilt) {

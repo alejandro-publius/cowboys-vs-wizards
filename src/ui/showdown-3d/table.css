@@ -15,8 +15,39 @@
   background:
     linear-gradient(rgb(9 7 20 / var(--spell-darkness, 0)), rgb(9 7 20 / var(--spell-darkness, 0))),
     linear-gradient(0deg, #101b30 3%, #10203830 55%, #12203322),
-    var(--frontier-panorama, none) 50% 23% / cover no-repeat;
+    var(--field-sky, var(--frontier-panorama, none)) 50% 23% / cover no-repeat;
   margin: 0;
+}
+.sd-diorama #sd-field[data-battlefield="raven-roost"] {
+  --field-sky: radial-gradient(circle at 76% 11%, #d9ece2 0 2.8%, #b5d9d9 2.95%, #8bbcb336 3.15%, transparent 9%),
+    linear-gradient(180deg, #112339 1%, #263e55 29%, #4f7483 53%, #213342 81%, #152330 100%);
+  --distant-ridge: #34536a;
+}
+.sd-diorama #sd-field[data-battlefield="bone-fence"] {
+  --field-sky: radial-gradient(circle at 25% 17%, #f0ccbc 0 3.45%, #d9aca8 3.6%, #c78eae30 3.75%, transparent 12%),
+    linear-gradient(180deg, #201d3a 3%, #423655 27%, #96697e 51%, #5a4358 68%, #261f36 100%);
+  --distant-ridge: #624c65;
+}
+.sd-diorama #sd-field:is([data-battlefield="raven-roost"], [data-battlefield="bone-fence"]) {
+  isolation: isolate;
+}
+.sd-diorama #sd-field:is([data-battlefield="raven-roost"], [data-battlefield="bone-fence"])::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 13% 0 25%;
+  pointer-events: none;
+  background: linear-gradient(var(--distant-ridge), transparent 66%);
+}
+.sd-diorama #sd-field[data-battlefield="raven-roost"]::before {
+  clip-path: polygon(0 9%, 4% 10%, 8% 16%, 12% 16%, 16% 23%, 20% 22%, 24% 29%, 27% 31%, 31% 38%,
+    36% 41%, 41% 49%, 47% 54%, 52% 48%, 57% 35%, 63% 31%, 70% 18%, 75% 18%, 81% 9%, 86% 12%,
+    91% 8%, 95% 8%, 100% 4%, 100% 100%, 0 100%);
+}
+.sd-diorama #sd-field[data-battlefield="bone-fence"]::before {
+  clip-path: polygon(0 28%, 6% 22%, 10% 22%, 10% 15%, 15% 15%, 16% 24%, 20% 26%, 21% 32%, 26% 34%,
+    31% 40%, 38% 36%, 43% 36%, 48% 32%, 52% 32%, 56% 25%, 60% 25%, 62% 17%, 67% 17%, 69% 26%,
+    73% 29%, 75% 37%, 80% 34%, 85% 27%, 88% 27%, 90% 20%, 96% 20%, 100% 24%, 100% 100%, 0 100%);
 }
 .sd-diorama .sd-world {
   height: clamp(622px, 97dvh, 880px);

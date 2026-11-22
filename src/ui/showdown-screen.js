@@ -129,6 +129,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     started = Date.now();
     cues.clear();
     boardPresentation?.clear();
+    boardPresentation?.setBattlefield?.(current.battlefield);
     const batch = record(session.opening, null);
     finish();
     render();

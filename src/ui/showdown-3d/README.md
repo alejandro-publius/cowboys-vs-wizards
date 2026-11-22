@@ -26,6 +26,10 @@ unavailable, the normal board controls continue to work.
 
 The terrain and geometry carry forward the Boot Hill split-board work in
 `9ac122f`. Our Castle's renderer and palette are carried over byte for byte.
+The second and third Trail duels switch to Raven Roost's pine ravine and The
+Bone Fence's graveyard. Both extend the scenery beyond the original table
+footprint and share the same playable coordinates, inputs and combat timeline.
+Camp rematches and the Outrider replay use the recorded duel's location.
 From the title or a match, open **Card gallery** to rotate each of Showdown's
 29 card subjects. The gallery also opens directly at `?gallery=1` and shows
 the matching subject, scene, and visual cue from

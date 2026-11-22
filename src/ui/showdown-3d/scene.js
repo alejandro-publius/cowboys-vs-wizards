@@ -2,8 +2,8 @@ import * as T from "three";
 import { BOARD_SIZE, TRAP_SLOTS } from "../../game/showdown/rules.js";
 import { cardOf, typeOf } from "../../game/showdown/cards.js";
 import { PixelRenderer } from "./graphics/pixel-renderer.js";
-import { makeBoard } from "./board.js";
-import { addLandmarks } from "./landmarks.js";
+import { disposeBoard, makeBoard } from "./board.js";
+import { battlefield } from "./battlefields.js";
 import { presentationBeats } from "./event-positions.js";
 import { createCombatEffects } from "./combat-effects.js";
 import { makeBases } from "./bases.js";
@@ -19,6 +19,9 @@ export { paintCardFaces } from "./table-ui.js";
 import { COLORS, SIDES, zone } from "./layout.js";
 
 const FACEDOWN = 0x2a213b;
+const BOOT_HILL_LIGHT = { hemi: [0xffefd6, 0x796b8e, 2.28], sun: [0xffd2a4, 2.34], moon: [0x9397de, 0.83] };
+const BOOT_HILL_FOCUS = [0, 0.62, 1.3];
+const GALLERY_FOCUS = [0, 1.05, -1.74];
 const HAS_PANORAMA = typeof __CVW_HAS_PANORAMA__ !== "undefined" && __CVW_HAS_PANORAMA__;
 const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)");
 const solid = (color) => new T.MeshStandardMaterial({ color, roughness: 0.88, flatShading: true });
@@ -169,10 +172,10 @@ function build(host, canvas, screen, closeup = false) {
   const scene = new T.Scene();
   if (!HAS_PANORAMA) scene.background = new T.Color(0x17243a);
   const camera = new T.OrthographicCamera(-20, 20, 10, -10, 0.1, 120);
-  const hemi = new T.HemisphereLight(0xffefd6, 0x796b8e, 2.28);
-  const sun = new T.DirectionalLight(0xffd2a4, 2.34);
+  const hemi = new T.HemisphereLight(...BOOT_HILL_LIGHT.hemi);
+  const sun = new T.DirectionalLight(...BOOT_HILL_LIGHT.sun);
   sun.position.set(-19, 20, 13);
-  const moon = new T.DirectionalLight(0x9397de, 0.83);
+  const moon = new T.DirectionalLight(...BOOT_HILL_LIGHT.moon);
   moon.position.set(24, 17, -14);
   sun.castShadow = true;
   sun.shadow.mapSize.set(1024, 1024);
@@ -180,7 +183,8 @@ function build(host, canvas, screen, closeup = false) {
   sun.shadow.normalBias = 0.045;
   sun.shadow.bias = -0.00025;
   scene.add(hemi, sun, moon);
-  makeBoard(scene, addLandmarks);
+  let board;
+  let lighting = BOOT_HILL_LIGHT;
   const bases = makeBases(scene);
   const dressing = dressTable(scene);
   const faeries = makeFaeries(scene);
@@ -212,7 +216,7 @@ function build(host, canvas, screen, closeup = false) {
       draw();
     },
     closeup ? 1.63 : 1,
-    closeup ? [0, 1.05, -1.74] : undefined,
+    closeup ? GALLERY_FOCUS : BOOT_HILL_FOCUS,
   );
   const transfers = createTableTransfers(
     moves,
@@ -414,10 +418,27 @@ function build(host, canvas, screen, closeup = false) {
   }
 
   function spellDarkness(alpha) {
-    hemi.intensity = 2.28 * (1 - alpha * 0.80);
-    sun.intensity = 2.34 * (1 - alpha * 0.89);
-    moon.intensity = 0.83 + alpha * 0.2;
-    host.style.setProperty("--spell-darkness", alpha.toFixed(3));
+    hemi.intensity = lighting.hemi[2] * (1 - alpha * 0.80);
+    sun.intensity = lighting.sun[1] * (1 - alpha * 0.89);
+    moon.intensity = lighting.moon[1] + alpha * 0.2;
+    if (alpha > 0) host.style.setProperty("--spell-darkness", alpha.toFixed(3));
+    else host.style.removeProperty("--spell-darkness");
+  }
+  function setBattlefield(id) {
+    const venue = battlefield(id);
+    const name = venue ? id : "boot-hill";
+    if (board && host.dataset.battlefield === name) return;
+    if (board) disposeBoard(board);
+    board = makeBoard(scene, venue);
+    host.dataset.battlefield = name;
+    lighting = venue?.lighting ?? BOOT_HILL_LIGHT;
+    const [sky, earth] = lighting.hemi;
+    hemi.color.setHex(sky);
+    hemi.groundColor.setHex(earth);
+    sun.color.setHex(lighting.sun[0]);
+    moon.color.setHex(lighting.moon[0]);
+    spellDarkness(0);
+    cameraControl.frame(closeup ? 1.63 : venue ? 0.93 : 1, closeup ? GALLERY_FOCUS : venue?.focus ?? BOOT_HILL_FOCUS);
   }
   function stop() {
     epoch++;
@@ -520,12 +541,13 @@ function build(host, canvas, screen, closeup = false) {
     requestAnimationFrame(frame);
   }
 
+  if (closeup) setBattlefield("boot-hill");
   new ResizeObserver(size).observe(canvas);
   window.setInterval(() => {
     const visible = closeup ? screen.open : !screen.hidden && !document.querySelector("dialog[open]");
     if (view && visible && !canvas.hidden && !canvas.dataset.motion && !REDUCED.matches) draw();
   }, 145);
-  return { paint, clear, animate, size, frame: cameraControl.frame, lookAt: cameraControl.lookAt };
+  return { paint, clear, animate, size, setBattlefield, frame: cameraControl.frame, lookAt: cameraControl.lookAt };
 }
 
 export function mountGallery(title, duel) {
@@ -567,6 +589,7 @@ export function mountDiorama(root) {
   labels.setAttribute("aria-hidden", "true");
   field.prepend(canvas, labels);
   let game,
+    venue,
     failed = false;
   function fallback() {
     game?.clear();
@@ -577,16 +600,18 @@ export function mountDiorama(root) {
   }
   canvas.addEventListener("webglcontextlost", fallback);
   return {
+    setBattlefield(id) {
+      venue = id;
+    },
     paint(view, start) {
       if (failed) return;
-      if (!game) {
-        try {
-          game = build(field, canvas, root);
-        } catch (error) {
-          console.warn("Showdown 3D unavailable.", error);
-          fallback();
-          return;
-        }
+      try {
+        game ??= build(field, canvas, root);
+        game.setBattlefield(venue);
+      } catch (error) {
+        console.warn("Showdown 3D unavailable.", error);
+        fallback();
+        return;
       }
       root.classList.add("sd-diorama");
       table.paint(view);

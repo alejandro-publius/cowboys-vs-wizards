@@ -1,7 +1,7 @@
 const clay = [0xa27559, 0x8f614c, 0xb18464];
 const crag = [0x4f4c70, 0x5c577e, 0x777294];
 
-function formations(b, strata, columns) {
+export function formations(b, strata, columns) {
   for (const [x, z, width, height, depth, spin] of columns) {
     for (let layer = 0; layer < 3; layer++) {
       const scale = 1 - layer * 0.13;
@@ -48,7 +48,7 @@ function crystal(b, x, z, size) {
   );
 }
 
-function bluePine(b, x, z, h) {
+export function bluePine(b, x, z, h) {
   b.piece("round", 0x51435e, x, 0.34 * h, z, 0.14 * h, 0.68 * h, 0.16 * h);
   for (let layer = 0; layer < 3; layer++) {
     const color = [0x3d5a6a, 0x516f83, 0x527b86][layer];

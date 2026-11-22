@@ -90,7 +90,8 @@ export function bindTableUI(root) {
       const added = [...result.querySelectorAll(".sd-good")].find((line) =>
         line.textContent.startsWith("Added "),
       );
-      turn.textContent = "Turn " + view.turn;
+      const location = field.dataset.battlefield !== "boot-hill" ? status.textContent.split(" · ")[0] : "";
+      turn.textContent = location ? `${location} · Turn ${view.turn}` : `Turn ${view.turn}`;
       turn.hidden = ended;
       headline.textContent = result.querySelector("[data-choose]")
         ? "Choose a card"

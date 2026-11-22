@@ -4,6 +4,7 @@ import { addArcane } from "./arcane.js";
 import { BOARD_SIZE, TRAP_SLOTS } from "../../game/showdown/rules.js";
 import { COLORS, SIDES, zone } from "./layout.js";
 import { westernDetail, wizardDetail, duskDetail } from "./presentation-set.js";
+import { addLandmarks } from "./landmarks.js";
 
 // Flat-shaded miniatures use one palette and a small library of shared geometry.
 class SetBuilder {
@@ -21,12 +22,18 @@ class SetBuilder {
     };
   }
   piece(kind, color, x, y, z, w, h, d, rx = 0, ry = 0, rz = 0) {
-    const key = kind + ":" + color;
-    if (!this.parts.has(key)) this.parts.set(key, { kind, color, transforms: [] });
-    this.parts.get(key).transforms.push([x, y, z, w, h, d, rx, ry, rz]);
+    this.batch(kind, color, false, [x, y, z, w, h, d, rx, ry, rz]);
   }
   box(color, x, y, z, w, h, d, rx = 0, ry = 0, rz = 0) {
     this.piece("box", color, x, y, z, w, h, d, rx, ry, rz);
+  }
+  glow(kind, color, x, y, z, w, h, d, rx = 0, ry = 0, rz = 0) {
+    this.batch(kind, color, true, [x, y, z, w, h, d, rx, ry, rz]);
+  }
+  batch(kind, color, lit, transform) {
+    const key = kind + ":" + color + ":" + lit;
+    if (!this.parts.has(key)) this.parts.set(key, { kind, color, lit, transforms: [] });
+    this.parts.get(key).transforms.push(transform);
   }
   sign(text, x, y, z, width, height, faceColor, inkColor) {
     const canvas = document.createElement("canvas");
@@ -51,8 +58,8 @@ class SetBuilder {
     this.parent.add(panel);
   }
   finish() {
-    for (const { kind, color, transforms } of this.parts.values()) {
-      const mat = new T.MeshStandardMaterial({ color, roughness: 0.92, flatShading: true });
+    for (const { kind, color, lit, transforms } of this.parts.values()) {
+      const mat = lit ? new T.MeshBasicMaterial({ color }) : new T.MeshStandardMaterial({ color, roughness: 0.92, flatShading: true });
       const mesh = new T.InstancedMesh(this.shapes[kind], mat, transforms.length);
       const stamp = new T.Object3D();
       transforms.forEach(([x, y, z, w, h, d, rx, ry, rz], index) => {
@@ -63,7 +70,7 @@ class SetBuilder {
         mesh.setMatrixAt(index, stamp.matrix);
       });
       mesh.computeBoundingSphere();
-      mesh.castShadow = mesh.receiveShadow = true;
+      mesh.castShadow = mesh.receiveShadow = !lit;
       this.parent.add(mesh);
     }
   }
@@ -159,9 +166,29 @@ function scenery(group, decorate, x, z) {
   b.finish();
   group.add(district);
 }
-export function makeBoard(scene, addLandmarks) {
+function fieldDetails(b, colors, hasCreek) {
+  for (let i = 0; i < 460; i++) {
+    const x = ((i * 607 + 33) % 997) / 26.1 - 19.1;
+    const z = ((i * 277 + 39) % 991) / 46.6 - 10.65;
+    if ((hasCreek && Math.abs(x) < 2.65) || (Math.abs(x) > 16.5 && Math.abs(z) > 5.1)) continue;
+    const alongPath = Math.abs(z - 0.35) < 1.3 || (!hasCreek && Math.abs(x - 1.1) < 1.9);
+    const w = 0.13 + (i % 7) * 0.077;
+    b.box(colors[i % colors.length], x, 0.012, z, w * (alongPath ? 1.65 : 1), 0.024, 0.14 + (i % 4) * 0.11, 0, i * 0.41);
+  }
+}
+
+export function makeBoard(scene, venue) {
   const island = new T.Group();
   scene.add(island);
+  if (venue) {
+    for (const [profile, layers] of venue.terrain) terrain(island, profile, layers);
+    const b = new SetBuilder(island);
+    fieldDetails(b, venue.ground, venue.creek);
+    field(b);
+    venue.decorate(b);
+    b.finish();
+    return island;
+  }
   terrain(island, westernProfile, [
     [0xa57955, 0x533a33, -0.54, 0.83, 0.966],
     [0xa57955, 0x84533c, -0.25, 0.3, 0.99],
@@ -183,6 +210,24 @@ export function makeBoard(scene, addLandmarks) {
   b.finish();
   scenery(island, addWestern, -6.25, -3.65);
   scenery(island, addArcane, 7.85, -4.02);
+  return island;
+}
+
+export function disposeBoard(island) {
+  island.removeFromParent();
+  const geometries = new Set(),
+    materials = new Set();
+  island.traverse((part) => {
+    if (!part.isMesh) return;
+    if (part.isInstancedMesh) part.dispose();
+    geometries.add(part.geometry);
+    for (const material of [part.material].flat()) materials.add(material);
+  });
+  for (const geometry of geometries) geometry.dispose();
+  for (const material of materials) {
+    material.map?.dispose();
+    material.dispose();
+  }
 }
 
 const westernProfile = [
@@ -218,14 +263,13 @@ const arcaneProfile = [
 ];
 
 function terrain(group, profile, layers) {
-  layers.forEach(([topColor, edgeColor, top, depth, scale]) => {
+  layers.forEach(([topColor, edgeColor, top, depth, scale, emissive = 0]) => {
     const shape = new T.Shape(profile.map(([x, z]) => new T.Vector2(x * scale * 2.24, -z * scale * 1.85)));
     const geometry = new T.ExtrudeGeometry(shape, { depth, bevelEnabled: false, steps: 1 });
     geometry.rotateX(-Math.PI / 2);
     geometry.translate(0, top - depth, 0);
-    const materials = [topColor, edgeColor].map(
-      (color) => new T.MeshStandardMaterial({ color, roughness: 1 }),
-    );
+    const materials = [new T.MeshStandardMaterial({ color: topColor, roughness: 1, emissive }),
+      new T.MeshStandardMaterial({ color: edgeColor, roughness: 1 })];
     const mesh = new T.Mesh(geometry, materials);
     mesh.receiveShadow = true;
     group.add(mesh);
