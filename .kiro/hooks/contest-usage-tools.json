@@ -1,0 +1,13 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "contest-usage-tool-category",
+      "trigger": "PostToolUse",
+      "action": {
+        "type": "command",
+        "command": "node scripts/contest-usage.mjs"
+      }
+    }
+  ]
+}

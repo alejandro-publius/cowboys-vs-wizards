@@ -1,0 +1,32 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Refuse a new [x] in a spec tasks.md without a fresh passing stamp (fs_write)",
+      "trigger": "PreToolUse",
+      "matcher": "fs_write",
+      "action": {
+        "type": "command",
+        "command": "node scripts/contest-release-gate.mjs tasks-edit"
+      }
+    },
+    {
+      "name": "Refuse a new [x] in a spec tasks.md without a fresh passing stamp (str_replace)",
+      "trigger": "PreToolUse",
+      "matcher": "str_replace",
+      "action": {
+        "type": "command",
+        "command": "node scripts/contest-release-gate.mjs tasks-edit"
+      }
+    },
+    {
+      "name": "Refuse a new [x] in a spec tasks.md without a fresh passing stamp (fs_append)",
+      "trigger": "PreToolUse",
+      "matcher": "fs_append",
+      "action": {
+        "type": "command",
+        "command": "node scripts/contest-release-gate.mjs tasks-edit"
+      }
+    }
+  ]
+}
