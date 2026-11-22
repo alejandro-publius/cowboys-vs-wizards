@@ -4,10 +4,7 @@
     {
       "name": "Showdown fast-check properties on a rules or card-data save",
       "trigger": "PostFileSave",
-      "patterns": [
-        "src/game/showdown/**",
-        ".kiro/specs/duel-card-pipeline/cards/**"
-      ],
+      "matcher": "(^|/)(src/game/showdown/|\\.kiro/specs/duel-card-pipeline/cards/)",
       "action": {
         "type": "command",
         "command": "node scripts/contest-release-gate.mjs fast"
