@@ -13,7 +13,7 @@ const timings = {
   sweep: [850, 535],
   laststand: [720, 470],
   trap: [690, 395],
-  lasso: [680, 465],
+  lasso: [1060, 550],
   shell: [630, 380],
   hellfire: [1430, 870],
   vortex: [1790, 1150],
@@ -35,7 +35,8 @@ const timings = {
 
 const attackTimings = {
   "cowboy-sheriff": [1030, 474],
-  "cowboy-dynamiter": [990, 625],
+  "cowboy-dynamiter": [1430, 835],
+  "cowboy-gatling-crew": [900, 460],
   "cowboy-covered-wagon": [950, 520],
   "wizard-skeleton": [1140, 598],
   "wizard-wizard": [1080, 620],
@@ -209,8 +210,9 @@ export function presentationBeats(trace) {
             hits.push(events[++i]);
           const targets = hits.map((h) => foe(h.target));
           add("play", source(s, "hand"), [source(s, "row")], e);
-          const wizard = kind === "vortex" && table.sides[s].board.find((troop) => typeOf(troop?.cardId ?? "") === "wizard-wizard");
-          add(kind, e.caster ? own(e.caster) : wizard ? own(wizard.cardId) : kind === "lasso" ? base : source(s, "row"), targets, e, () => {
+          const casterType = kind === "vortex" ? "wizard-wizard" : kind === "lasso" ? "cowboy-sheriff" : null;
+          const caster = casterType && table.sides[s].board.find((troop) => typeOf(troop?.cardId ?? "") === casterType);
+          add(kind, e.caster ? own(e.caster) : caster ? own(caster.cardId) : source(s, "row"), targets, e, () => {
             hits.forEach((h, j) => {
               hurt(targets[j], h.left);
               const t = get(targets[j]);

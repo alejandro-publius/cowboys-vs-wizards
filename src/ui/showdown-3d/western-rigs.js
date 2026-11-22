@@ -136,24 +136,18 @@ export const ART = {
     b.box(brown, 0, 0.42, 0, 1.51, 0.233, 0.867);
     for (const z of [-0.491, 0.49]) wheel(b, -0.276, 0.323, z, 0.657);
     b.box(iron, -0.128, 0.651, 0, 0.285, 0.424, 0.36);
-    for (let i = 0; i < 6; i++) {
-      const a = (i * Math.PI) / 3;
-      b.piece(
-        "round",
-        i % 2 ? brass : 0xb08853,
-        0.35,
-        0.82 + 0.105 * Math.cos(a),
-        0.108 * Math.sin(a),
-        0.098,
-        0.9,
-        0.098,
-        0,
-        0,
-        Math.PI / 2,
-      );
-    }
-    for (const x of [-0.023, 0.675])
-      b.piece("round", iron, x, 0.824, 0, 0.359, 0.091, 0.358, 0, 0, Math.PI / 2);
+    b.group("gatling-pivot", () => {
+      b.group("gatling-barrels", () => {
+        for (let i = 0; i < 6; i++) {
+          const a = (i * Math.PI) / 3;
+          b.piece("round", i % 2 ? brass : 0xb08853, 0.35, 0.82 + 0.105 * Math.cos(a),
+            0.108 * Math.sin(a), 0.098, 0.9, 0.098, 0, 0, Math.PI / 2);
+        }
+        for (const x of [-0.023, 0.675])
+          b.piece("round", iron, x, 0.824, 0, 0.359, 0.091, 0.358, 0, 0, Math.PI / 2);
+      }, [0, 0.824, 0]);
+      b.anchor("muzzle", 0.8, 0.824, 0);
+    }, [-0.128, 0.824, 0]);
     b.box(brass, -0.108, 1.049, -0.025, 0.182, 0.436, 0.211, 0, 0, -0.19);
     person(b, -0.647, 0.009, 0.191, 0.81, false, true);
     person(b, 0.43, 0.017, -0.565, 0.81, true, true);

@@ -130,6 +130,10 @@ function pawn(side, id) {
         skull.rotation.set(0, 0, 0);
       }
       miniature.getObjectByName("dagger-arm")?.rotation.set(0, 0, 0);
+      const dynamite = miniature.getObjectByName("held-dynamite");
+      if (dynamite) dynamite.visible = true;
+      miniature.getObjectByName("gatling-pivot")?.rotation.set(0, 0, 0);
+      miniature.getObjectByName("gatling-barrels")?.rotation.set(0, 0, 0);
       miniature.scale.set(restScale, restScale * (troop.stunned ? 0.92 : troop.cover ? 0.9 : 1), restScale);
       if (rig) rig.pose({});
       miniature.visible = true;

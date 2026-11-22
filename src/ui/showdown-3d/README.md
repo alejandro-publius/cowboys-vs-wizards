@@ -66,6 +66,17 @@ against Fable's briefs.
 The preview is opt-in at build time. The standard and hosted builds keep
 the graybox presentation.
 
+## Cowboy attack replays
+
+The Dynamiter lights a fuse and throws an arcing charge that bursts at ground
+level. The Gatling Crew cranks and sweeps its fire across the other occupied
+enemy slots. The Lasso opens in flight, cinches and briefly pulls the target
+toward the Cowboys before the target settles back on its pad, stunned.
+
+Future attack ideas from Alex's references: give the Lasso a braided golden
+loop and curls of violet dust, and try a slight camera push for a close-up of
+a round in slow motion with muzzle smoke curling behind it.
+
 ## Spell replays
 
 Hellfire drops mint-green columns from above, with violet impacts on the

@@ -233,6 +233,106 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
     token.model.rotation.z = tilt;
     token.model.rotation.y = yaw;
   }
+  function dynamiteAttack(actor, from, target, t, edge, dir) {
+    const release = edge - 0.50;
+    const age = t - edge;
+    const windup = pulse(t, 0.03, release - 0.10, release);
+    const throwPose = pulse(t, release - 0.10, release, release + 0.28);
+    movePawn(actor, dir * (0.30 * throwPose - 0.26 * windup), 0, 0.08 * windup, dir * (0.30 * windup - 0.22 * throwPose));
+    const held = actor?.model?.getObjectByName("held-dynamite");
+    if (held) held.visible = t < release || age > 0.54;
+    const fuse = at(from, "fuse", 1.8);
+    if (t < release) {
+      const glow = 0.21 + 0.07 * Math.sin(t * 62);
+      dot("shard", 0xffedbb, fuse, glow, glow * 1.25, glow);
+      flecks(fuse, t % 0.32, palette.gold, 7);
+      return;
+    }
+
+    const impact = ground(target);
+    impact.y = target.at === "base" ? 0.47 : 0.30;
+    impact.x -= 0.78 * dir;
+    if (age < 0) {
+      const start = at(from, "throw", 1.53);
+      const progress = (t - release) / (edge - release);
+      const stick = fly(start, impact, progress, 2.22);
+      const angle = -Math.PI * (0.17 + progress * 2.8);
+      const tip = stick.clone().add(new T.Vector3(-0.36 * Math.sin(angle), 0.36 * Math.cos(angle), 0));
+      dot("chip", 0xa63b33, stick, 0.24, 0.61, 0.24, 0, 0, angle);
+      dot("chip", 0xe7a050, stick, 0.255, 0.16, 0.255, 0, 0, angle);
+      bar(stick.clone().lerp(tip, 0.7), tip, 0xffba60, 0.09);
+      dot("shard", 0xffedbb, tip, 0.22);
+      for (let i = 1; i <= 6 && i * 0.041 < progress; i++) {
+        const ember = fly(start, impact, progress - i * 0.041, 2.22);
+        ember.z += 0.12 * Math.sin(t * 20 + i);
+        dot("chip", i < 3 ? 0xffbe65 : powder[i % 3], ember, 0.19 - i * 0.016);
+      }
+      return;
+    }
+    const flash = 1 - smooth(age, 0.06, 0.26);
+    if (flash > 0.015) {
+      const burst = 0.52 + smooth(age, 0, 0.11) * 0.63;
+      for (let i = 0; i < 9; i++) {
+        const angle = i * 2.399;
+        const pos = impact.clone().add(new T.Vector3(Math.cos(angle) * burst, 0.42 + i % 3 * 0.33, Math.sin(angle) * burst));
+        const color = [0xb84731, 0xf58c43, 0xffd886][i % 3];
+        dot("chip", color, pos, 0.56 * flash, (0.84 + i % 3 * 0.19) * flash, 0.57 * flash, 0.16, angle, i * 0.53);
+      }
+      dot("shard", 0xfff2bd, impact.clone().add(new T.Vector3(0, 0.77, 0)), 0.95 * flash, 1.55 * flash, 0.93 * flash);
+    }
+    const spread = 0.61 + age * 5.7;
+    const fade = 1 - smooth(age, 0.20, 0.55);
+    if (fade <= 0) return;
+    for (let i = 0; i < 19; i++) {
+      const angle = i * 2.399;
+      const reach = spread * (0.43 + i % 5 * 0.16);
+      const chip = impact.clone().add(new T.Vector3(Math.cos(angle) * reach,
+        Math.max(0, age * (3.4 + i % 4) - age * age * 8.6), Math.sin(angle) * reach));
+      const size = (0.16 + i % 4 * 0.09) * fade;
+      dot("chip", i % 4 === 0 ? 0xffb960 : powder[i % 3], chip, size, size * 0.85, size, age * 7, angle, age * 5);
+    }
+    const shock = 1 - smooth(age, 0.12, 0.34);
+    if (shock > 0) {
+      dot("ring", 0xf1b66b, impact, spread * 2.16, spread * 2.16, shock, Math.PI / 2);
+      impactSparks(impact, age, palette.gold, 1.85);
+    }
+  }
+  function crankGatling(actor, from, target, t, start, edge) {
+    const pivot = actor?.model?.getObjectByName("gatling-pivot");
+    const barrels = actor?.model?.getObjectByName("gatling-barrels");
+    const ready = smooth(t, 0.04, start) * (1 - smooth(t, edge + 0.09, edge + 0.37));
+    if (pivot) {
+      const offset = target.clone().sub(pivot.getWorldPosition(new T.Vector3()));
+      pivot.rotation.y = -Math.atan2(offset.z, offset.x) * ready;
+    }
+    if (barrels) barrels.rotation.x = 1.7 * smooth(t, 0.02, start) + 7.5 * smooth(t, start, edge + 0.20);
+    return actor?.model?.getObjectByName("muzzle")?.getWorldPosition(new T.Vector3()) ?? at(from, "muzzle", 1.08);
+  }
+  function lassoAttack(actor, victim, from, ending, target, t, edge, duration) {
+    const cast = smooth(t, 0.06, edge);
+    const tug = pulse(t, edge, edge + 0.15, duration - 0.04);
+    actor?.rig?.pose({ brace: 0.50 * tug, time: 0 });
+    const source = at(from, "rope-grip", 1.18);
+    const pull = source.clone().sub(ending).setY(0).normalize().multiplyScalar(0.71 * tug);
+    movePawn(victim, pull.x, 0.09 * tug, pull.z, 0.24 * tug);
+    const center = fly(source, target, cast, 1.27).add(pull);
+    const close = smooth(t, edge - 0.06, edge + 0.14);
+    const fade = 1 - smooth(t, duration - 0.18, duration - 0.025);
+    const loop = (0.74 + 1.32 * Math.sin(cast * Math.PI / 2) - 1.05 * close) * fade;
+    const tilt = 0.62 + close * 0.94;
+    if (loop <= 0.01) return;
+    dot("ring", 0x774633, center, loop, loop, 1.85, tilt, -0.28, t * 3);
+    dot("ring", 0xe5b36f, center.clone().add(new T.Vector3(0, 0.042, 0.026)), loop, loop, 1.3, tilt, -0.28, t * 3);
+    const knot = center.clone().add(new T.Vector3(-loop / 2, -0.08, 0));
+    dot("chip", 0xe5b36f, knot, 0.16 * fade, 0.19 * fade, 0.19 * fade, 0.4, 0, t);
+    const slack = 0.38 * (1 - close) * Math.sin(cast * Math.PI);
+    for (let i = 0; i < 14; i++) {
+      const start = fly(source, knot, i / 14, -slack);
+      const end = fly(source, knot, (i + 1) / 14, -slack);
+      bar(start, end, i % 2 ? 0xc18a54 : 0xf0c080, 0.098 * fade);
+    }
+    flecks(ending.clone().add(new T.Vector3(0, 0.30, 0)), t - edge - 0.06, palette.bone, 5);
+  }
   function react(token, t, defeated, dir, point) {
     if (!token || t < 0) return;
     const klass = body(token.id),
@@ -455,17 +555,7 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
         case "shell":
         case "overflow": {
           if (kind === "gun" && id === "cowboy-dynamiter") {
-            const windup = pulse(t, 0.07, 0.24, 0.51);
-            movePawn(actor, -dir * 0.31 * windup, 0, 0.08 * windup, dir * 0.38 * windup);
-            const release = edge - 0.32;
-            if (t >= release && age < 0) {
-              const stick = fly(a, b, (t - release) / 0.32, 1.88);
-              dot("chip", 0xbd4934, stick, 0.28, 0.53, 0.27, t * 9, 0, t * 7);
-              coals(stick, (t * 2) % 0.27, palette.gold, 0.36);
-            } else if (age >= 0) {
-              impactSparks(b, age, palette.gold, 1.22);
-              coals(b, age, palette.gold, 0.85);
-            }
+            dynamiteAttack(actor, from, target, t, edge, dir);
             break;
           }
           const trigger = edge - 0.18;
@@ -487,7 +577,9 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
                 dir * 0.12 * pulse(t, 0.08, 0.19, 0.51),
               );
           }
-          const muzzle = at(from, "muzzle", 0.98);
+          const muzzle = kind === "gun" && id === "cowboy-gatling-crew"
+            ? crankGatling(actor, from, b, t, trigger - 0.12, edge)
+            : at(from, "muzzle", 0.98);
           for (let i = 0; i < n; i++) {
             const offset = (i - n + 1) * 0.054;
             const f = (t - trigger - offset) / 0.18;
@@ -641,19 +733,26 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
         case "breath":
         case "sweep": {
           if (id === "cowboy-gatling-crew") {
-            const start = edge - 0.23;
-            const kick = pulse(t, start - 0.10, start + 0.10, edge + 0.20);
-            movePawn(actor, -dir * 0.15 * kick, 0.04 * kick, 0, dir * 0.085 * kick);
-            const muzzle = at(from, "muzzle", 0.98);
-            targets.forEach((mark, i) => {
+            const start = edge - 0.40;
+            const span = 0.26;
+            const firing = pulse(t, start - 0.06, start + 0.13, edge + 0.23);
+            movePawn(actor, -dir * (0.15 + 0.046 * Math.sin(t * 146)) * firing, 0.035 * firing, 0, dir * 0.09 * firing);
+            const first = at(targets[0], "hit", 1.09);
+            const last = at(targets.at(-1), "hit", 1.09);
+            const aim = first.clone().lerp(last, T.MathUtils.clamp((t - start) / span, 0, 1));
+            const muzzle = crankGatling(actor, from, aim, t, start, edge);
+            for (let shot = 0; shot < 8; shot++) {
+              const fraction = shot / 7;
+              const shotAge = t - start - span * fraction;
+              const landing = first.clone().lerp(last, fraction);
+              tracer(muzzle, landing, shotAge / 0.15, 0.15, 0xfca956, 0.28);
+              if (shotAge < 0.09) gunFlash(muzzle, landing, shotAge, 0.62);
+            }
+            for (const mark of targets) {
               const chest = at(mark, "hit", 1.09);
-              for (let j = 0; j < 3; j++) {
-                const lead = 0.055 * j + 0.043 * i;
-                tracer(muzzle, chest, (t - start - lead) / 0.14, 0.16, 0xffaf6c, 0.18);
-                gunFlash(muzzle, chest, t - start - lead, 0.58);
-              }
-              impactSparks(chest, age, palette.gold, 0.9);
-            });
+              impactSparks(chest, age, palette.gold, 1.11);
+              coals(chest, age - 0.04, powder, 0.66);
+            }
             break;
           }
           const start = edge - 0.22;
@@ -692,9 +791,7 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
           break;
         }
         case "lasso": {
-          const ring = fly(a, b, smooth(t, 0.18, edge), 1.05);
-          const torus = 1.42 - 0.41 * smooth(t, edge - 0.06, edge + 0.12);
-          dot("ring", palette.gold[0], ring, torus, torus, 0.72, 1.1 + easeHit * 0.47, 0.1, t * 3.8);
+          lassoAttack(actor, victim, from, ending, b, t, edge, step.duration / 1000);
           break;
         }
         case "hellfire":

@@ -384,6 +384,7 @@ export function makeSheriff() {
 
   const arms = [buildArm(chest, 1, burn), buildArm(chest, -1, burn)];
   const { muzzle } = buildRevolver(arms[0].wrist);
+  const ropeGrip = anchor(arms[1].wrist, [0.03, -0.056, 0], "rope-grip");
 
   // ---- Head ----
   const head = group(chest, [0, 0.68, 0], "head");
@@ -493,7 +494,7 @@ export function makeSheriff() {
   pose({ aim: 0, recoil: 0, brace: 0, fall: 0, time: 0 });
   root.userData.muzzle = muzzle;
   root.userData.burn = burn;
-  return { root, pose, muzzle, burn };
+  return { root, pose, muzzle, ropeGrip, burn };
 }
 
 export default makeSheriff;

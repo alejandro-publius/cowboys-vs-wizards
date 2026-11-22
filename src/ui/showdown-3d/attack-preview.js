@@ -5,13 +5,18 @@ import { presentEvent } from "../../game/showdown/presenter.js";
 
 export function attackPreviews(id) {
   if (id === "wizard-hellfire") return [["cast", "Watch Hellfire"]];
+  if (id === "cowboy-lasso") return [["cast", "Watch Lasso"]];
   if (id === "wizard-singularity") {
     return [["sheriffs", "Against three Sheriffs"], ["graveyard", "Against Skeleton and Dragon"]];
   }
   const card = TYPES[id];
   if (card?.kind !== "troop") return [];
   if (card.attack === 0) return [["guard", "Watch Guard"]];
-  const options = [["attack", "Watch attack"]];
+  const label = {
+    "cowboy-dynamiter": "Watch Dynamite",
+    "cowboy-gatling-crew": "Watch Sweep",
+  }[id] ?? "Watch attack";
+  const options = [["attack", label]];
   if (card.keys.includes("ride")) options.push(["ride", "Watch Ride"]);
   if (card.keys.includes("laststand")) options.push(["laststand", "Watch Last Stand"]);
   return options;
@@ -20,18 +25,20 @@ export function attackPreviews(id) {
 export function attackExample(id, mode) {
   if (!attackPreviews(id).some(([key]) => key === mode)) return null;
   if (id === "wizard-hellfire") return hellfireExample();
+  if (id === "cowboy-lasso")
+    return spellExample(id, { cowboy: [{ type: "cowboy-sheriff" }], wizard: [{ type: "wizard-wizard" }] });
   if (id === "wizard-singularity") return singularityExample(mode);
   const card = TYPES[id];
   const side = card.side;
   const enemy = opponent(side);
   const defender = side === "cowboy" ? "wizard-skeleton" : "cowboy-sheriff";
   const returning = mode === "guard" || mode === "laststand";
-  const other = [{ type: defender }];
+  const other = [{ type: id === "cowboy-gatling-crew" ? "wizard-wizard" : defender }];
   if (mode === "guard") other.push({ type: "cowboy-billy" });
   if (mode === "attack" && card.keys.includes("sweep"))
     other.push(
-      { type: side === "cowboy" ? "wizard-raven-familiar" : "cowboy-billy" },
-      { type: side === "cowboy" ? "wizard-skeleton" : "cowboy-dynamiter" },
+      { type: side === "cowboy" ? "wizard-skeleton" : "cowboy-billy" },
+      { type: side === "cowboy" ? "wizard-headless-horseman" : "cowboy-dynamiter" },
     );
   const first = returning ? enemy : side;
   const state = createShowdown(7, { first, opening: { [side]: [{ type: id }], [enemy]: other } });
@@ -49,19 +56,21 @@ export function attackExample(id, mode) {
 }
 
 function hellfireExample() {
-  const state = createShowdown(7, {
-    first: "wizard",
-    opening: {
-      wizard: [{ type: "wizard-wizard" }],
-      cowboy: [{ type: "cowboy-sheriff" }, { type: "cowboy-mounted-billy" }, { type: "cowboy-gatling-crew" }],
-    },
+  return spellExample("wizard-hellfire", {
+    wizard: [{ type: "wizard-wizard" }],
+    cowboy: [{ type: "cowboy-sheriff" }, { type: "cowboy-mounted-billy" }, { type: "cowboy-gatling-crew" }],
   });
+}
+
+function spellExample(id, opening) {
+  const { side } = TYPES[id];
+  const state = createShowdown(7, { first: side, opening });
   state.turn = 5;
-  const cardId = "wizard-hellfire-71";
-  state.sides.wizard.hand[0] = cardId;
+  const cardId = id + "-71";
+  state.sides[side].hand[0] = cardId;
   const action = legalActions(state).find((each) => each.type === "spell" && each.cardId === cardId);
   const { state: after, events } = applyAction(state, action);
-  const before = viewFor(state, "wizard"), end = viewFor(after, "wizard");
+  const before = viewFor(state, side), end = viewFor(after, side);
   return { before, end, trace: [{ before, after: end, events }], summary: events.map((event) => presentEvent(event)).join(" ") };
 }
 

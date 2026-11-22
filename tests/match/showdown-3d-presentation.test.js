@@ -18,7 +18,7 @@ const actor = (type, health) => ({ type, health });
 test("every troop opens a real rules-engine preview, including no-attack Guard, Ride, and Last Stand", () => {
   for (const [id, card] of Object.entries(TYPES)) {
     const previews = attackPreviews(id);
-    const hasSpellPreview = id === "wizard-singularity" || id === "wizard-hellfire";
+    const hasSpellPreview = ["wizard-singularity", "wizard-hellfire", "cowboy-lasso"].includes(id);
     assert.equal(previews.length > 0, card.kind === "troop" || hasSpellPreview, id);
     if (card.kind !== "troop") continue;
     for (const [mode] of previews) {
@@ -46,6 +46,28 @@ test("the Hellfire gallery casts one real spell and strikes all three troops tog
   const start = example.before.sides.cowboy.board;
   const end = example.end.sides.cowboy.board;
   assert.deepEqual(end.map((troop) => troop.health), start.map((troop) => troop.health - 1));
+});
+
+test("the Cowboy replays use actual attack targets and preserve the Lasso's orbs", () => {
+  const dynamite = attackExample("cowboy-dynamiter", "attack");
+  const [throwBeat] = presentationBeats(dynamite.trace);
+  assert.equal(throwBeat.cardId, "cowboy-dynamiter-0");
+  assert.ok(throwBeat.contact > 500 && throwBeat.duration - throwBeat.contact >= 550);
+  const gatling = attackExample("cowboy-gatling-crew", "attack");
+  const sweep = presentationBeats(gatling.trace).find((beat) => beat.kind === "sweep");
+  assert.deepEqual(sweep.targets.map((target) => target.slot), [1, 2]);
+  for (const { slot } of sweep.targets) {
+    assert.equal(sweep.hit.sides.wizard.board[slot].health, sweep.pre.sides.wizard.board[slot].health - 1);
+  }
+  const lasso = attackExample("cowboy-lasso", "cast");
+  const beats = presentationBeats(lasso.trace);
+  assert.deepEqual(beats.map((beat) => beat.kind), ["play", "lasso", "burial"]);
+  assert.deepEqual(beats[1].from, { side: "cowboy", slot: 0 });
+  const start = lasso.before.sides.wizard.board[0];
+  const end = lasso.end.sides.wizard.board[0];
+  assert.equal(start.stunned, false);
+  assert.equal(end.stunned, true);
+  assert.equal(end.health, start.health);
 });
 function present(before, action) {
   assert.ok(legalActions(before).some((a) => JSON.stringify(a) === JSON.stringify(action)));
@@ -126,10 +148,11 @@ test("Hex stops an attack, Lasso shows a stun, and Hellfire groups public target
     ["play", "hellfire", "burial"],
   );
   assert.equal(flame[1].targets.length, 2);
-  const rope = fixture([actor("cowboy-billy", 4)], [actor("wizard-skeleton", 2)]);
+  const rope = fixture([], [actor("wizard-skeleton", 2)]);
   rope.sides.cowboy.hand = ["cowboy-lasso-1"];
   const [, tie] = present(rope, { type: "spell", cardId: "cowboy-lasso-1", target: 0 });
   assert.equal(tie.kind, "lasso");
+  assert.equal(tie.from.at, "row");
   assert.equal(tie.hit.sides.wizard.board[0].stunned, true);
   assert.equal(tie.hit.sides.wizard.board[0].health, 2);
 });

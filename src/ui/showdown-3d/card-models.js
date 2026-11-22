@@ -35,6 +35,12 @@ class Miniature {
     }
     this.parent = former;
   }
+  anchor(name, x, y, z) {
+    const marker = new T.Object3D();
+    marker.name = name;
+    marker.position.set(x, y, z);
+    this.parent.add(marker);
+  }
   piece(kind, color, x, y, z, w, h, d, rx = 0, ry = 0, rz = 0) {
     this.add(false, kind, color, x, y, z, w, h, d, rx, ry, rz);
   }
