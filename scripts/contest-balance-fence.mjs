@@ -9,7 +9,11 @@
 //     inside the open scratch snapshot of the current attempt:
 //       .artifacts/contest-balance/attempt-<1..6>/scratch/.kiro/specs/duel-card-pipeline/cards/<card>.json
 //     where the scratch holds the coordinator's marker, the attempt has no review receipt yet,
-//     the card is listed in the marker's troop whitelist, and no path component is a symlink.
+//     the card is listed in the marker's troop whitelist, and no path component is a symlink;
+//   - the workflow step's mandatory report: send_message with tool_input.sessionId exactly
+//     "parent", a non-empty string message of at most 4000 characters, an optional severity of
+//     info, success, warning or error, and no other field except a null/absent sessionIds.
+//     Every other destination (explicit session ids, sessionIds lists) and shape is blocked.
 // Blocked: shell, code, every MCP tool (none are approved), unknown tools, unknown input shapes,
 // path traversal, absolute paths outside the workspace, the real card directory, every other file.
 //
@@ -26,6 +30,26 @@ export const WRITE_TOOLS = Object.freeze(["write", "fs_write"]);
 export const WRITE_COMMANDS = Object.freeze(["create", "str_replace"]);
 // Write-capable or unreviewed MCP tools are never approved for the balancer.
 export const APPROVED_MCP = Object.freeze([]);
+export const MESSAGE_TOOL = "send_message";
+export const MESSAGE_SEVERITIES = Object.freeze(["info", "success", "warning", "error"]);
+export const MESSAGE_MAX = 4000;
+const MESSAGE_FIELDS = Object.freeze(["sessionId", "message", "severity", "sessionIds"]);
+
+// The step's report to its parent session, and nothing else.
+function messageDecision(input) {
+  if (!input || typeof input !== "object" || Array.isArray(input)) return deny("send_message input is not an object");
+  for (const key of Object.keys(input)) {
+    if (!MESSAGE_FIELDS.includes(key)) return deny(`send_message field ${key} is not allowed`);
+  }
+  if (input.sessionIds !== undefined && input.sessionIds !== null) return deny("send_message may not list sessionIds");
+  if (input.sessionId !== "parent") return deny(`send_message destination ${JSON.stringify(input.sessionId)} is not allowed; only "parent"`);
+  if (typeof input.message !== "string" || !input.message.trim()) return deny("send_message message must be non-empty text");
+  if (input.message.length > MESSAGE_MAX) return deny(`send_message message exceeds ${MESSAGE_MAX} characters`);
+  if (input.severity !== undefined && input.severity !== null && !MESSAGE_SEVERITIES.includes(input.severity)) {
+    return deny(`send_message severity ${JSON.stringify(input.severity)} is not allowed`);
+  }
+  return allow("send_message to the parent session");
+}
 const CARD_PATH = /^\.artifacts\/contest-balance\/attempt-([1-9][0-9]*)\/scratch\/\.kiro\/specs\/duel-card-pipeline\/cards\/([a-z][a-z0-9-]{0,31})\.json$/;
 
 const allow = (reason) => ({allow: true, reason});
@@ -50,6 +74,7 @@ export function fenceDecision(event, {cwd: fallbackCwd = process.cwd()} = {}) {
   const tool = event.tool_name ?? event.toolName;
   if (typeof tool !== "string" || !tool) return deny("tool name missing");
   if (READ_TOOLS.includes(tool)) return allow(`${tool} is read-only`);
+  if (tool === MESSAGE_TOOL) return messageDecision(event.tool_input ?? event.toolInput);
   if (tool.startsWith("@") || tool.includes("/") || tool.startsWith("mcp")) {
     return APPROVED_MCP.includes(tool) ? allow(`${tool} is an approved MCP tool`) : deny(`MCP tool ${tool} is not approved for the balancer`);
   }

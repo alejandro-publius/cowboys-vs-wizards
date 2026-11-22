@@ -93,6 +93,32 @@ test("fails closed on malformed events and unsupported write shapes", () => {
   assert.equal(write(root, scratchCard(), {file_path: `${CARDS}/cowboy-sheriff.json`}).allow, false);
 });
 
+test("allows only a bounded send_message to the parent session", () => {
+  const root = workspace();
+  const send = (tool_input) => fenceDecision({hook_event_name: "preToolUse", cwd: root, tool_name: "send_message", tool_input});
+  // The draft step's mandatory report after its guarded fs_write, as the native runtime sent it.
+  const observed = {sessionId: "parent", message: `Edited ${scratchCard()}: attack 1 -> 2.`, severity: "success"};
+  assert.equal(send(observed).allow, true, "observed step report");
+  assert.equal(send({...observed, sessionIds: null}).allow, true, "nullable sessionIds left empty");
+  assert.equal(send({sessionId: "parent", message: "progress"}).allow, true, "default severity");
+  for (const [label, input] of [
+    ["other session", {...observed, sessionId: "sess_5ccb7d79-f78c-4117-9cdf-136521d90cdf"}],
+    ["missing destination", {message: observed.message, severity: "success"}],
+    ["null destination", {...observed, sessionId: null}],
+    ["sessionIds list", {...observed, sessionIds: ["parent"]}],
+    ["sessionIds only", {message: observed.message, sessionIds: ["sess_other"]}],
+    ["parent with odd case", {...observed, sessionId: "Parent"}],
+    ["unknown severity", {...observed, severity: "critical"}],
+    ["empty message", {...observed, message: "  "}],
+    ["non-text message", {...observed, message: {text: "x"}}],
+    ["oversized message", {...observed, message: "x".repeat(4001)}],
+    ["extra field", {...observed, path: `${CARDS}/cowboy-sheriff.json`}],
+    ["array input", [observed]],
+    ["no input", undefined],
+  ]) assert.equal(send(input).allow, false, label);
+  assert.equal(write(root, `${CARDS}/cowboy-sheriff.json`).allow, false, "file writes stay guarded");
+});
+
 test("hook entry point exits 0 to allow and 2 to block", () => {
   const root = workspace();
   const script = new URL("../../scripts/contest-balance-fence.mjs", import.meta.url).pathname;
@@ -101,6 +127,8 @@ test("hook entry point exits 0 to allow and 2 to block", () => {
   const blocked = run({hook_event_name: "preToolUse", cwd: root, tool_name: "shell", tool_input: {command: "rm -rf ."}});
   assert.equal(blocked.status, 2);
   assert.match(blocked.stderr, /blocked/);
+  assert.equal(run({hook_event_name: "preToolUse", cwd: root, tool_name: "send_message", tool_input: {sessionId: "parent", message: "done", severity: "success"}}).status, 0);
+  assert.equal(run({hook_event_name: "preToolUse", cwd: root, tool_name: "send_message", tool_input: {sessionId: "sess_other", message: "done"}}).status, 2);
   assert.equal(spawnSync(process.execPath, [script], {cwd: root, input: "", encoding: "utf8"}).status, 2);
 });
 
