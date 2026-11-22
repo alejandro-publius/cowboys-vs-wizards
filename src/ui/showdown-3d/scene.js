@@ -13,7 +13,6 @@ import { tableCamera } from "./table-camera.js";
 import { createTableTransfers } from "./table-transfers.js";
 import { dressTable } from "./table-dressing.js";
 import { makeEmbers, makeFaeries } from "./embers.js";
-import { loadStoryActors, storyActor } from "./story-actors.js";
 import { mountGallery as mountCardGallery } from "./gallery.js";
 export { mountCampOutpost } from "./camp-outpost.js";
 export { paintCardFaces } from "./table-ui.js";
@@ -44,7 +43,7 @@ function cardPiece(parent, color, scale = 1) {
   mark.rotation.y = Math.PI / 4;
 }
 
-function pawn(side, id, camera) {
+function pawn(side, id) {
   const group = new T.Group();
   const { tile, line, dark, orb } = COLORS[side];
   mesh(group, "box", solid(dark), [0, 0.052, 0], [2.8, 0.105, 1.87]);
@@ -74,7 +73,6 @@ function pawn(side, id, camera) {
   const restScale = miniature.scale.x;
   miniature.position.set(0, 0.146, -0.07);
   group.add(miniature);
-  const skin = storyActor(id, group, miniature, camera);
   const gear = new T.Group();
   group.add(gear);
   const embers = makeEmbers(group, side, id);
@@ -108,7 +106,6 @@ function pawn(side, id, camera) {
     group,
     model: miniature,
     rig,
-    skin,
     embers,
     restScale,
     id,
@@ -135,10 +132,7 @@ function pawn(side, id, camera) {
       miniature.getObjectByName("dagger-arm")?.rotation.set(0, 0, 0);
       miniature.scale.set(restScale, restScale * (troop.stunned ? 0.92 : troop.cover ? 0.9 : 1), restScale);
       if (rig) rig.pose({});
-      if (!skin) miniature.visible = true;
-      skin?.suspend(0, 0);
-      skin?.effect(1);
-      skin?.pose("idle");
+      miniature.visible = true;
       stun.visible = Boolean(troop.stunned);
       while (pips.children.length > troop.health) pips.remove(pips.children.at(-1));
       while (pips.children.length < troop.health)
@@ -161,7 +155,6 @@ function pawn(side, id, camera) {
 }
 
 function build(host, canvas, screen, closeup = false) {
-  void loadStoryActors().then(() => draw());
   const renderer = new T.WebGLRenderer({ canvas, antialias: false, alpha: HAS_PANORAMA });
   if (HAS_PANORAMA) renderer.setClearColor(0x000000, 0);
   renderer.setPixelRatio(1);
@@ -362,7 +355,6 @@ function build(host, canvas, screen, closeup = false) {
       const frame = Math.floor(now / 78);
       faeries(frame);
       for (const [key, pawn] of held) {
-        pawn.skin?.sync();
         pawn.embers?.(frame, flare?.key === key ? flare.strength : 0);
       }
       pipeline.render(scene, camera);
@@ -387,7 +379,7 @@ function build(host, canvas, screen, closeup = false) {
   }
 
   function makePawn(mark, troop) {
-    const token = pawn(mark.side, troop.cardId, camera);
+    const token = pawn(mark.side, troop.cardId);
     token.group.position.set(...zone(mark.side, "troop", mark.slot));
     token.group.position.y = 0.14;
     token.update(troop);
@@ -533,7 +525,6 @@ function build(host, canvas, screen, closeup = false) {
 }
 
 export function mountGallery(title, duel) {
-  void loadStoryActors();
   mountCardGallery(title, duel, (host, canvas, dialog) => build(host, canvas, dialog, true));
 }
 

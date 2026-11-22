@@ -2,7 +2,6 @@ import * as T from "three";
 import { TYPES, typeOf } from "../../game/showdown/cards.js";
 import { zone } from "./layout.js";
 
-const sourceArt = typeof __CVW_TABLE_ILLUSTRATIONS__ === "undefined" ? {} : __CVW_TABLE_ILLUSTRATIONS__;
 const atlas = typeof __CVW_DIORAMA_ATLAS__ === "undefined" ? "" : __CVW_DIORAMA_ATLAS__;
 const ids = Object.keys(TYPES);
 const textures = new Map();
@@ -62,24 +61,9 @@ function faceTexture(key) {
     ctx.fillStyle = cowboy ? "#75543d" : "#5d4a68";
     ctx.fillRect(10, 43, 160, 152);
     if (art?.complete && art.naturalWidth) {
-      const nameArt = Boolean(sourceArt[id]);
-      if (nameArt) {
-        const span = Math.min(art.naturalHeight, art.naturalWidth * 0.95);
-        ctx.drawImage(
-          art,
-          0,
-          Math.max(0, (art.naturalHeight - span) * 0.28),
-          art.naturalWidth,
-          span,
-          10,
-          43,
-          160,
-          152,
-        );
-      } else {
-        const index = ids.indexOf(id);
-        ctx.drawImage(art, (index % 6) * 132, Math.floor(index / 6) * 100, 132, 100, 10, 43, 160, 152);
-      }
+      const index = ids.indexOf(id);
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(art, (index % 6) * 132, Math.floor(index / 6) * 100, 132, 100, 10, 43, 160, 152);
     }
     ctx.strokeStyle = cowboy ? "#d9ad75" : "#c7afd9";
     ctx.lineWidth = 2;
@@ -95,11 +79,10 @@ function faceTexture(key) {
     texture.needsUpdate = true;
   }
   draw();
-  const href = sourceArt[id] || (atlas ? "data:image/webp;base64," + atlas : "");
-  if (href) {
+  if (atlas) {
     const art = new Image();
     art.onload = () => draw(art);
-    art.src = href;
+    art.src = "data:image/webp;base64," + atlas;
   }
   textures.set(id, texture);
   return texture;

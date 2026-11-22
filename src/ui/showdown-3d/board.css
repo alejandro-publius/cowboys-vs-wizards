@@ -408,13 +408,3 @@
     font-size: 0.9rem;
   }
 }
-
-.sd-gallery-still .sd-illustration {
-  width: auto;
-  max-width: 100%;
-  height: min(43dvh, 380px);
-  aspect-ratio: auto;
-  object-fit: contain;
-  margin-inline: auto;
-  background: none;
-}

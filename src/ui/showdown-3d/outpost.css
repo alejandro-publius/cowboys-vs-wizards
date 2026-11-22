@@ -296,9 +296,6 @@ body:has(.camp-outpost[open], .builder-inspect[open]) {
 .builder-diorama .table-card-stats {
   padding: 0 0.3em;
 }
-.builder-diorama .table-card-painting {
-  image-rendering: pixelated;
-}
 .builder-diorama .builder-pile {
   min-width: 0;
   display: flex;

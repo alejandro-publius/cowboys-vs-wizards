@@ -1,7 +1,8 @@
 import { EFFECTS, KEYWORDS, TYPES, typeOf, tributes } from "../../game/showdown/cards.js";
-import { portrait } from "./gallery.js";
+import { portrait as cardArtwork } from "./gallery.js";
 
-const illustrations = typeof __CVW_TABLE_ILLUSTRATIONS__ === "undefined" ? {} : __CVW_TABLE_ILLUSTRATIONS__;
+export { cardArtwork };
+
 const icons = { troop: "◆", spell: "✦", trap: "△", gear: "◇", location: "▰" };
 
 const el = (tag, cls, word) => {
@@ -10,14 +11,6 @@ const el = (tag, cls, word) => {
   if (word) node.textContent = word;
   return node;
 };
-export function cardArtwork(type) {
-  if (!illustrations[type]) return portrait(type);
-  const artwork = el("img", "table-card-painting");
-  artwork.src = illustrations[type];
-  artwork.alt = "";
-  return artwork;
-}
-
 function paintedFace(type) {
   const card = TYPES[type];
   const face = el("span", "table-card-face");

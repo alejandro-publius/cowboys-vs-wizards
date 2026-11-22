@@ -10,14 +10,12 @@ landmarks and models as the duel. The embedded WebP stills in
 `assets/scenes/` keep both screens playable offline and on browsers without
 WebGL. Camp's native Trail buttons are positioned over the map. Its Play
 button opens the same available duel, and Camp's rewards reuse the board's
-illustrated card faces.
+rendered miniature card faces.
 
-Boot Hill's storybook art comes from the approved ImageGen reference.
-The embedded sunset-and-moonrise panorama frames the 3D table. Cropped
-poses for the Sheriff, Billy and Skeleton are anchored to their board
-tiles, and their strikes use the same contact events as the 3D models.
-The opening hand, Gatling Crew and Dragon use matching card paintings.
-The rest of the roster uses the existing miniatures in the attack reel.
+Boot Hill's sunset-and-moonrise panorama frames the board. Every troop is a
+3D miniature drawn through the board's pixel renderer, including the Sheriff.
+Card faces use thumbnails rendered from the same models. The animated moves
+use the same contact events as the rules engine.
 
 The Cowboy and Wizard districts frame three troop spaces, two face-down trap
 spaces, a Base, a deck and a graveyard per side, and one shared Location. The
@@ -68,17 +66,11 @@ against Fable's briefs.
 The preview is opt-in at build time. The standard and hosted builds keep
 the graybox presentation.
 
-## Approved roster art
+## Spell replays
 
-Use the illustrated pixel card set as the visual reference for the roster.
-Cowboy scenes use amber sunset and timber. Wizard scenes use moonlit
-cobblestone, ivy and mint witch-fire. The Sheriff is the benchmark for
-silhouette and detail at board scale.
-
-The paintings in `assets/cards/illustrated/` are crops of the approved
-ChatGPT-generated sheets. The transparent actors in `assets/scenes/actors/`
-use those same paintings. Sheriff, Skeleton and Billy use their existing
-illustrated idle and strike frames. All actors are cutouts on the 3D board.
+Hellfire drops mint-green columns from above, with violet impacts on the
+affected tiles. The gallery preview casts one legal Hellfire against three
+troops.
 
 Singularity pulls regular troops by the hips, with a visible lift before
 the inward slide. Dragons brace and move a shorter distance. The combat

@@ -72,8 +72,6 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
     v.y = y;
     if (mark.at === "base") return bases[mark.side].anchor(v);
     const actor = pawnAt(mark);
-    const drawn = actor?.skin?.anchor(key, v);
-    if (drawn) return drawn;
     const node = actor?.rig?.[key] ?? actor?.model?.getObjectByName(key);
     if (node?.getWorldPosition) return node.getWorldPosition(v);
     if (key === "muzzle") v.x += mark.side === "cowboy" ? 0.39 : -0.39;
@@ -234,7 +232,6 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
     token.model.position.set(0.0 + x, token.restY + y, -0.07 + z);
     token.model.rotation.z = tilt;
     token.model.rotation.y = yaw;
-    token.skin?.sync();
   }
   function react(token, t, defeated, dir, point) {
     if (!token || t < 0) return;
@@ -375,11 +372,8 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
       const lean = direction * ((isDragon ? 0.15 : 0.61) * rise - 0.21 * recoil);
       token.rig?.pose({brace: isDragon ? pull : 0, charge: isDragon ? 0.55 * pull : 0, recoil, time: 0});
       movePawn(token, shifted, lift - drop, (center.z - fromZ) * follow * 0.67, lean);
-      token.skin?.suspend(rise * (isDragon ? 0.19 : 1), direction);
-      const broken = shattered && age > 0.105;
-      token.skin?.effect(1 - 0.29 * pull, broken);
-      if (!token.skin) token.model.visible = !broken;
-      const hips = at(mark, "hips", 1.0).add(new T.Vector3(token.skin ? 0 : shifted, token.skin ? 0 : lift, 0));
+      token.model.visible = !(shattered && age > 0.105);
+      const hips = token.model.localToWorld(new T.Vector3(0, 1 / token.restScale, 0));
       for (let j = 0; j < 4 && age < 0; j++) {
         const f = (t * 1.95 + j / 4 + mark.slot * 0.13) % 1;
         if (gather > 0.08) bar(hips.clone().lerp(center, f), hips.clone().lerp(center, Math.min(1, f + 0.12)),
@@ -478,7 +472,6 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
           const profile = gunShapes[id] ?? { width: 0.12, burst: 0.65, shots: 1, glow: 0xfcc37b };
           const n = kind === "gun" ? profile.shots : 1;
           if (kind === "gun") {
-            actor?.skin?.pose(t >= trigger - 0.045 && age < 0.24 ? "strike" : "idle");
             actor?.rig?.pose({
               aim: smooth(t, 0.03, Math.max(0.13, trigger - 0.035)) * recover,
               brace: 0.4 * pulse(t, 0, 0.14, trigger + 0.12),
@@ -545,7 +538,6 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
               -0.46 * crossing,
               ready * 1.2 - crossing * 1.55,
             );
-            actor?.skin?.pose(t >= edge - 0.12 && age < 0.24 ? "strike" : "idle");
             const tip = at(from, "dagger-tip", 1.23);
             if (ready > 0.67) bar(tip, tip.clone().add(new T.Vector3(-0.14, 0.13, 0.09)), 0xf6e6ca, 0.1);
             cut(b, dir, age, palette.bone, 1.36);
