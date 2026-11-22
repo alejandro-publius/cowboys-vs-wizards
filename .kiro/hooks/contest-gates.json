@@ -1,0 +1,50 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Showdown fast-check properties on a rules or card-data save",
+      "trigger": "PostFileSave",
+      "patterns": [
+        "src/game/showdown/**",
+        ".kiro/specs/duel-card-pipeline/cards/**"
+      ],
+      "action": {
+        "type": "command",
+        "command": "node scripts/contest-release-gate.mjs fast"
+      }
+    },
+    {
+      "name": "Record the Showdown gate fingerprint at task start",
+      "trigger": "PreTaskExecution",
+      "action": {
+        "type": "command",
+        "command": "node scripts/contest-release-gate.mjs pre-task"
+      }
+    },
+    {
+      "name": "Run the Showdown release checks after a task and write the validation stamp",
+      "trigger": "PostTaskExecution",
+      "action": {
+        "type": "command",
+        "command": "node scripts/contest-release-gate.mjs post-task"
+      }
+    },
+    {
+      "name": "Report Showdown release-check failures at Stop (bounded retries)",
+      "trigger": "Stop",
+      "action": {
+        "type": "command",
+        "command": "node scripts/contest-release-gate.mjs stop"
+      }
+    },
+    {
+      "name": "Refuse a success completion message without a current passing stamp",
+      "trigger": "PreToolUse",
+      "matcher": "send_message",
+      "action": {
+        "type": "command",
+        "command": "node scripts/contest-release-gate.mjs completion"
+      }
+    }
+  ]
+}
