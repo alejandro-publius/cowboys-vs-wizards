@@ -46,6 +46,10 @@ export function mountCampOutpost(root) {
 
   const ledger = rooms.get("camp-collection-room").content;
   ledger.append(byId("camp-report"), byId("camp-ledger"));
+  for (const slot of ledger.querySelectorAll("[data-ledger-portrait]")) {
+    const art = cardArtwork(slot.dataset.ledgerPortrait);
+    if (art) slot.append(art);
+  }
   root.querySelector(".camp-rail-utility").insertAdjacentHTML("beforeend",
     '<button type="button" data-camp-destination="camp-collection-room">Camp ledger</button>');
 

@@ -3,9 +3,11 @@
 // scripts/build-sheriffs-ledger.mjs; nothing here calls Crew or the network.
 // Ruleset-wide numbers are labelled as such. A card shows its own result only when the payload holds per-card
 // counts matched to the same run; otherwise it reads "Not observed" (or "Pending" when no run is recorded).
+// The open Ledger starts with the Billy replay (src/ui/billy-replay.js), a recorded duel the visitor steps through.
 import {LEDGER} from "./sheriffs-ledger.data.js";
 import {VERIFIED} from "./outrider-camp.js";
 import {OUTRIDER_LEDGER, outriderLedgerHtml, wireReveal} from "./outrider-ledger.js";
+import {billyReplayHtml, wireBillyReplay} from "./billy-replay.js";
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"})[c]);
 const pct = (n, d) => `${((100 * n) / d).toFixed(1)}%`;
@@ -51,7 +53,8 @@ export function ledgerHtml(ledger = LEDGER) {
   const rows = ledgerRows(ledger);
   const observed = rows.filter((row) => ledger.cards.find((c) => c.type === row.type).latest).length;
   const r = ledger.run;
-  return `<summary>Sheriff's Ledger <span class="sd-note">${ledger.catalog.count} cards · ${r ? `last check ${esc(r.state)} at ${short(r.revision)}` : "no check yet"}</span></summary>
+  return `<summary>Sheriff's Ledger <span class="sd-note">Billy vs Bone Wall replay · ${ledger.catalog.count} cards · ${r ? `last check ${esc(r.state)} at ${short(r.revision)}` : "no check yet"}</span></summary>
+  <section id="ledger-billy" class="sd-billy" aria-labelledby="ledger-billy-title">${billyReplayHtml()}</section>
   <h3 id="ledger-ruleset">Whole ruleset (not per card)</h3>
   <p id="ledger-run" class="sd-note">${esc(rulesetSummary(ledger))}</p>
   ${r ? `<p class="sd-note">Estimates for ${esc(r.bot)} on these seeds only. Commits after ${short(r.revision)} are not measured here. Method: <code>${esc(r.method)}</code>; records: <code>${esc(r.source)}</code>.</p>` : ""}
@@ -73,5 +76,6 @@ export function mountLedger(details, ledger = LEDGER) {
   if (!details) return;
   details.innerHTML = ledgerHtml(ledger);
   wireReveal(details);
+  wireBillyReplay(details);
   details.open = false;
 }
