@@ -1,5 +1,6 @@
 import * as T from "three";
 import { typeOf } from "../../game/showdown/cards.js";
+import { PAINTED_SPRITE_ALPHA } from "./graphics/pixel-renderer.js";
 
 const source = typeof __CVW_DUEL_POSES__ === "undefined" ? "" : __CVW_DUEL_POSES__;
 const billy = typeof __CVW_BILLY_POSES__ === "undefined" ? "" : __CVW_BILLY_POSES__;
@@ -99,8 +100,9 @@ export function loadStoryActors() {
     }
     const map = new T.Texture(image);
     map.colorSpace = T.SRGBColorSpace;
-    map.minFilter = T.LinearMipmapLinearFilter;
+    map.minFilter = T.NearestFilter;
     map.magFilter = T.NearestFilter;
+    map.generateMipmaps = false;
     map.needsUpdate = true;
     const pose = { map, aspect: image.naturalWidth / image.naturalHeight };
     frames.set(id, { idle: pose, strike: pose });
@@ -121,9 +123,24 @@ export function storyActor(cardId, holder, model, camera) {
   if (!height || (!art && !(type === "cowboy-billy" ? billy : source))) return null;
   const hips = art?.hips ?? 0.49;
   const bend = { value: 0 };
+  const shadow = { value: art ? 0.30 : 0 };
   const material = new T.SpriteMaterial({ alphaTest: art ? 0.38 : 0.52, transparent: false, toneMapped: false });
   material.onBeforeCompile = (shader) => {
     shader.uniforms.hipBend = bend;
+    shader.uniforms.actorShadow = shadow;
+    // The illustrated cutouts arrive with brighter midtones than the painted pose sheets.
+    shader.fragmentShader = "uniform float actorShadow;\n" + shader.fragmentShader
+      .replace(
+        "#include <map_fragment>",
+        `#include <map_fragment>
+        float luma = dot(diffuseColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+        diffuseColor.rgb *= mix(1.0 - actorShadow, 1.0, smoothstep(0.025, 0.48, luma));`,
+      )
+      .replace(
+        "#include <opaque_fragment>",
+        `#include <opaque_fragment>
+        if (actorShadow > 0.0) gl_FragColor.a = ${PAINTED_SPRITE_ALPHA};`,
+      );
     shader.vertexShader = "uniform float hipBend;\n" + shader.vertexShader.replace(
       "vec2 rotatedPosition;",
       "alignedPosition.x -= hipBend * abs(position.y + 0.5 - center.y); vec2 rotatedPosition;",
