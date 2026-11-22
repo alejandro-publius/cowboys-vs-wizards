@@ -12,10 +12,10 @@ const illustrated = {
   "cowboy-outrider": { height: 2.39, width: 3.44, hips: 0.49, muzzle: [0.78, 0.62] },
   "cowboy-ranger": { height: 2.55, muzzle: [0.91, 0.76] },
   "cowboy-dynamiter": { height: 2.38, muzzle: [0.86, 0.88] },
-  "cowboy-gatling-crew": { height: 2.45, width: 3.47, hips: 0.41, muzzle: [0.95, 0.52], exactPaint: true },
+  "cowboy-gatling-crew": { height: 2.69, width: 3.10, hips: 0.41, muzzle: [0.95, 0.52], exactPaint: true },
   "cowboy-captured-wraith": { height: 2.66, hips: 0.53 },
   "cowboy-captured-dragon": { height: 2.93, width: 3.53, hips: 0.39, mouth: [0.91, 0.74] },
-  "wizard-dragon": { height: 3.16, width: 4.23, hips: 0.42, mouth: [0.456, 0.60], exactPaint: true },
+  "wizard-dragon": { height: 2.84, width: 3.76, hips: 0.42, mouth: [0.456, 0.60], exactPaint: true },
   "wizard-wizard": { height: 2.79, "staff-tip": [0.12, 0.93] },
   "wizard-lantern-wraith": { height: 2.60, width: 2.83, hips: 0.53 },
   "wizard-raven-familiar": { height: 1.58, width: 2.23, hips: 0.46 },
@@ -68,7 +68,7 @@ function readPose(image, col, row, split, rows, mirror) {
   map.minFilter = T.NearestFilter;
   map.magFilter = T.NearestFilter;
   map.generateMipmaps = false;
-  return { map, aspect: imagePose.width / imagePose.height };
+  return { map, aspect: imagePose.width / imagePose.height, height: imagePose.height };
 }
 
 export function loadStoryActors() {
@@ -123,7 +123,8 @@ export function storyActor(cardId, holder, model, camera) {
   if (!height || (!art && !(type === "cowboy-billy" ? billy : source))) return null;
   const hips = art?.hips ?? 0.49;
   const bend = { value: 0 };
-  const painted = { value: Boolean(art) };
+  const sheriff = type === "cowboy-sheriff";
+  const painted = { value: Boolean(art) || sheriff };
   const shadow = { value: art && !art.exactPaint ? 0.30 : 0 };
   const material = new T.SpriteMaterial({ alphaTest: art ? 0.38 : 0.52, transparent: false, toneMapped: false });
   material.onBeforeCompile = (shader) => {
@@ -156,7 +157,8 @@ export function storyActor(cardId, holder, model, camera) {
   const world = new T.Vector3(), right = new T.Vector3(), up = new T.Vector3();
   let position = "idle", fallingApart = false, float = 0;
   function sync() {
-    const pose = frames.get(type)?.[position];
+    const poses = frames.get(type);
+    const pose = poses?.[position];
     if (!pose) return;
     sprite.visible = !fallingApart;
     model.visible = false;
@@ -164,7 +166,8 @@ export function storyActor(cardId, holder, model, camera) {
       if (!material.map) material.needsUpdate = true;
       material.map = pose.map;
     }
-    const h = Math.min(height, (art?.width ?? Infinity) / pose.aspect);
+    const poseHeight = sheriff ? height * pose.height / poses.idle.height : height;
+    const h = Math.min(poseHeight, (art?.width ?? Infinity) / pose.aspect);
     sprite.scale.set(pose.aspect * h, h, 1);
     sprite.center.x = position === "strike" && type === "wizard-skeleton" ? 0.61 : 0.5;
     sprite.center.y = float > 0 ? hips : 0.005;
