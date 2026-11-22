@@ -2,24 +2,22 @@
 // project path, /cowboys-vs-wizards/, and checks it the way the deployed site is used.
 //   node scripts/check-pages-tree.mjs [--dir dist/web] [--commit <40 hex>] [--browser] [--out-dir PATH]
 // Without --browser (Node only, no Chrome):
-//   - build.json, /index.html and the /graybox/ alias pass scripts/verify-build-identity.mjs, which
+//   - build.json, /index.html and the /3d/ alias pass scripts/verify-build-identity.mjs, which
 //     hashes the served bytes; with --commit the manifest must name that commit
 //   - the tree holds exactly index.html, build.json, graybox/index.html, showdown/index.html and
 //     3d/index.html: no script file, model, image, video or wasm from the retired 3D lane build
-//   - / and /graybox/ hold no lane chunk or lane board (issue 143 slice 3), and no page carries the
-//     retired build's markers or Three.js/Rapier code
-//   - /3d/ is a static redirect to ../ with no script and no asset reference
+//   - the root and /3d/ carry illustrated Showdown; /graybox/ remains lightweight
+//   - no page carries the retired lane game
 //   - /showdown/ is served
 // --browser, native headless Chrome with a fresh profile, mouse events only:
-//   - / and /graybox/: Play on a clean profile opens the Camp
+//   - the title challenge and its deep link open the same playable Bone Fence board
+//   - Camp on / opens the Trail; Play on /graybox/ opens the Camp
 //   - /showdown/: the reference page loads without errors
-//   - /3d/?mode=demo: lands on the game at /, fetches no script, model or other file from /3d/, and
-//     Play there opens the Camp
 //   No page error, failed request or HTTP error is allowed anywhere.
 import assert from "node:assert/strict";
 import {spawn} from "node:child_process";
 import {createHash} from "node:crypto";
-import {mkdir, mkdtemp, readFile, readdir, rm, stat, writeFile} from "node:fs/promises";
+import {mkdir, mkdtemp, readFile, readdir, rm, writeFile} from "node:fs/promises";
 import {createServer} from "node:http";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -65,45 +63,34 @@ const get = async (rel, redirect = "follow") => { const r = await fetch(site + r
 let failed = null;
 
 try {
-  // 1. Release identity of the root, and the /graybox/ alias is the same bytes.
+  // Release identity of the illustrated root and its alias.
   const rootHtml = await get("");
   assert.equal(rootHtml.status, 200, "root index.html");
   const digest = createHash("sha256").update(rootHtml.bytes).digest("hex");
   const manifest = JSON.parse((await get("build.json")).bytes);
   if (commit) assert.equal(manifest.commit, commit, "build.json commit");
-  await verifyLive({url: site, commit: manifest.commit, htmlSha256: digest, aliases: ["graybox/"], attempts: 1, log() {}});
-  check("build.json names the served root index.html; /graybox/ serves the same bytes", {commit: manifest.commit, indexHtmlSha256: digest});
-  assert.match(rootHtml.bytes.toString("utf8"), /id="menu-play"/, "root is the graybox page with Play");
+  await verifyLive({url: site, commit: manifest.commit, htmlSha256: digest, aliases: ["3d/"], attempts: 1, log() {}});
+  check("build.json names the illustrated root; /3d/ serves the same bytes", {commit: manifest.commit, indexHtmlSha256: digest});
   assert.equal((await get("graybox", "manual")).location, `${BASE_PATH}graybox/`, "/graybox redirects to /graybox/");
-  // Issue 143 slice 3: the graybox page is one file with no lane chunk, so neither path can load lane play.
   const rootText = rootHtml.bytes.toString("utf8");
-  assert.doesNotMatch(rootText, /chunks\/lanes-|import\(["']\.\/graybox\.js|id="arena"|id="menu-lanes"/, "root carries no lane duel");
-  await assert.rejects(stat(path.join(dir, "chunks")), {code: "ENOENT"}, "no chunks/ at the root");
-  await assert.rejects(stat(path.join(dir, "graybox", "chunks")), {code: "ENOENT"}, "no chunks/ under /graybox/");
-  check("/ and /graybox/ carry no lane chunk or lane board");
+  assert.match(rootText, /WebGLRenderer/, "root embeds Showdown's diorama");
+  assert.match(rootText, /menu-challenge/, "root offers the contest challenge");
+  const graybox = await get("graybox/");
+  assert.equal(graybox.status, 200);
+  const grayboxText = graybox.bytes.toString("utf8");
+  assert.match(grayboxText, /id="menu-play"/);
+  assert.doesNotMatch(grayboxText, /WebGLRenderer/);
+  check("/ and /3d/ use the diorama; /graybox/ gives a lightweight Camp entry");
 
-  // 2. Nothing from the retired 3D lane build is staged: the tree is exactly these files.
   const entries = await readdir(dir, {recursive: true, withFileTypes: true});
   const files = entries.filter((e) => e.isFile()).map((e) => path.relative(dir, path.join(e.parentPath, e.name)).split(path.sep).join("/")).sort();
   assert.deepEqual(files, ["3d/index.html", "build.json", "graybox/index.html", "index.html", "showdown/index.html"], "staged files");
-  const pages = {"": rootText, "graybox/": (await get("graybox/")).bytes.toString("utf8"), "showdown/": (await get("showdown/")).bytes.toString("utf8")};
-  for (const [rel, text] of Object.entries(pages))
-    assert.doesNotMatch(text, /id="earlier-build"|<script id="models"|WebGLRenderer|GLTFLoader|rapier_wasm|rapier3d/, `${BASE_PATH}${rel} carries no 3D build code`);
-  check("the tree holds only the four pages and build.json; no page carries the 3D build's markers or Three.js/Rapier code", {files});
-
-  // 3. /3d/ is a static redirect to the game, for old links.
-  const page3d = await get("3d/");
-  assert.equal(page3d.status, 200, "/3d/ index.html");
-  const html3d = page3d.bytes.toString("utf8");
-  assert.match(html3d, /<meta http-equiv="refresh" content="0; url=\.\.\/">/, "/3d/ refreshes to ../");
-  assert.match(html3d, /<a href="\.\.\/">/, "/3d/ links to ../");
-  assert.doesNotMatch(html3d, /<script|\ssrc=|assets\/|\.js\b|\.glb\b/i, "/3d/ loads no script or asset");
   assert.equal((await get("3d", "manual")).location, `${BASE_PATH}3d/`, "/3d redirects to /3d/");
-  assert.equal((await get("3d/assets/")).status, 404, "no /3d/assets/");
-  check("/3d/ is a script-free redirect to ../ and serves no assets", {bytes: page3d.bytes.length});
   const showdown = await get("showdown/");
   assert.equal(showdown.status, 200);
-  check("/showdown/ is served", {bytes: showdown.bytes.length});
+  for (const [route, html] of [["/", rootText], ["/graybox/", grayboxText], ["/showdown/", showdown.bytes.toString("utf8")]])
+    assert.doesNotMatch(html, /chunks\/lanes-|id="arena"|id="menu-lanes"|id="earlier-build"|<script id="models"|rapier_wasm|rapier3d/, `${route} has no retired lane engine`);
+  check("the four single-file pages include no retired lane game or separate assets", {files});
 
   if (browser) await browserChecks();
 } catch (error) {
@@ -179,6 +166,7 @@ async function browserChecks() {
     for (const rel of ["", "graybox/"]) {
       await send("Storage.clearDataForOrigin", {origin: new URL(site).origin, storageTypes: "all"});
       await open(rel);
+      if (rel === "graybox/") assert.equal(await evaluate(`Boolean(document.getElementById('menu-challenge'))`), false);
       await playOpensCamp();
       clean();
       check(`${BASE_PATH}${rel}: Play on a clean profile opens the Camp (first Trail duel Boot Hill)`);
@@ -189,23 +177,32 @@ async function browserChecks() {
     clean();
     check(`${BASE_PATH}showdown/: the Showdown reference page loads without errors`);
 
-    // An old /3d/ link: the redirect page navigates to ../, so the context is replaced while polling.
-    await send("Storage.clearDataForOrigin", {origin: new URL(site).origin, storageTypes: "all"});
-    responses.length = 0;
-    await send("Page.navigate", {url: site + "3d/?mode=demo"});
-    const stop = Date.now() + 20000;
-    for (let landed = false; !landed; await sleep(100)) {
-      if (Date.now() > stop) throw Error(`Timed out: /3d/?mode=demo did not land on ${site}`);
-      landed = await evaluate(`document.readyState==='complete'&&location.href===${JSON.stringify(site)}&&!!document.getElementById('menu-play')`).catch(() => false);
-    }
-    const from3d = responses.filter((r) => new URL(r.url).pathname.startsWith(`${BASE_PATH}3d/`));
-    assert.deepEqual(from3d.map((r) => [new URL(r.url).pathname, r.type, r.status]), [[`${BASE_PATH}3d/`, "Document", 200]], "only the /3d/ redirect page itself");
-    const retired = responses.filter((r) => r.type === "Script" || /\.(?:js|mjs|glb|gltf|wasm|mp4)$/.test(new URL(r.url).pathname));
-    assert.deepEqual(retired, [], "no script file, model or wasm fetched");
-    await playOpensCamp();
-    clean();
-    check(`${BASE_PATH}3d/?mode=demo: lands on the game at ${BASE_PATH}, fetches nothing else from /3d/, and Play opens the Camp`,
-      {requests: responses.map((r) => `${r.type} ${new URL(r.url).pathname} ${r.status}`)});
+    const challengeOpens = async () => {
+      await wait(`${shown("showdown")} && document.querySelector('#sd-field[data-battlefield="bone-fence"] canvas.sd-world')?.width > 0`);
+      assert.match(await evaluate(`document.getElementById('sd-status').textContent`), /^Ride or Fight\?/);
+      const slots = '[data-slot^="cowboy-"]';
+      const rider = await evaluate(`[...document.querySelectorAll(${JSON.stringify(slots)})].find(x => x.textContent.includes('Outrider'))?.dataset.slot`);
+      assert.ok(rider, "the Outrider is on the board");
+      await click(`[data-slot="${rider}"]`);
+      await wait(`document.querySelector('[data-base="wizard"]')?.dataset.enemy === 'base' && !!document.querySelector('[data-slot^="wizard-"][data-enemy]')`);
+      clean();
+    };
+    await open("");
+    await wait(`document.getElementById('menu-challenge')?.textContent === 'Ride or Fight?'`);
+    await click("#menu-challenge");
+    await challengeOpens();
+    await click('[data-base="wizard"]');
+    await wait(`/Outrider struck the Wizards' Base for 1/.test(document.getElementById('sd-log').textContent)`);
+    await click("#sd-home");
+    await wait(shown("showdown-camp"));
+    check("the illustrated title opens the playable Ride or Fight? challenge and Camp is reachable");
+
+    await open("3d/?outrider=case-a");
+    await challengeOpens();
+    const enemy = await evaluate(`document.querySelector('[data-slot^="wizard-"][data-enemy]').dataset.slot`);
+    await click(`[data-slot="${enemy}"]`);
+    await wait(`document.getElementById('sd-log').textContent.includes('Outrider attacked')`);
+    check("the /3d/ deep link opens the second case and accepts an attack on a troop");
     cdp.close();
   } finally {
     if (child.exitCode === null) {

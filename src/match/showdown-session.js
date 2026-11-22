@@ -21,10 +21,10 @@ export function createShowdownSession({seed, duel, seat = "cowboy", players = 1,
   // The seat whose view is shown and whose actions are offered.
   const viewer = () => (solo ? seat : state.active);
   // Solo: the bot plays every one of its turns before control comes back.
-  const opponentTurns = () => {
+  const opponentTurns = (observe) => {
     const events = [];
     while (solo && !state.result && state.active !== seat) {
-      const played = playTurn(state, duel.level);
+      const played = playTurn(state, duel.level, observe);
       state = played.state;
       events.push(...played.events);
     }
@@ -52,11 +52,16 @@ export function createShowdownSession({seed, duel, seat = "cowboy", players = 1,
     view: () => viewFor(state, viewer()),
     legal,
     // Applies one of the active seat's legal actions once, then (solo) the bot's reply. Returns every event in order.
-    act(action) {
+    act(action, onPresentation) {
       if (state.result || state.active !== viewer()) throw new Error("not this seat's turn");
+      const perspective = viewer();
+      const observe = onPresentation && ((before, applied) => onPresentation({
+        before: viewFor(before, perspective), after: viewFor(applied.state, perspective), events: applied.events,
+      }));
       const applied = applyAction(state, action);
+      observe?.(state, applied);
       state = applied.state;
-      return [...applied.events, ...opponentTurns()];
+      return [...applied.events, ...opponentTurns(observe)];
     },
   };
 }

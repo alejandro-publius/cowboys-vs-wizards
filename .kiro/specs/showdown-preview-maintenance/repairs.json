@@ -1,0 +1,18 @@
+[
+  {
+    "id": "stop-reel",
+    "requirement": "PM1",
+    "check": "stopping the troop reel clears the active replay",
+    "agent": "showdown-preview-maintainer",
+    "file": "src/ui/showdown-3d/gallery.js",
+    "commit": "Stop the active Showdown gallery reel"
+  },
+  {
+    "id": "camp-entry",
+    "requirement": "PM2",
+    "check": "opening Camp from the title clears the previous duel room",
+    "agent": "showdown-camp-maintainer",
+    "file": "src/app.js",
+    "commit": "Open Camp at the Trail after returning to the title"
+  }
+]

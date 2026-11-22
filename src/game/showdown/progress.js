@@ -101,7 +101,7 @@ export function duelFor(save, id, deck = save.deck) {
   const grit = Math.min(save.losses[id] ?? 0, GRIT_CAP);
   if (kind === "trail") {
     const duel = TRAIL[save.wins];
-    return duel ? {id, kind, name: duel.name, lesson: duel.lesson, level: duel.level,
+    return duel ? {id, kind, battlefield: duel.id, name: duel.name, lesson: duel.lesson, level: duel.level,
       options: {decks: {cowboy: deck, wizard: duel.deck}, baseOrbs: {cowboy: 5 + grit, wizard: duel.base}, first: duel.first}} : null;
   }
   if (!trailDone(save)) return null;

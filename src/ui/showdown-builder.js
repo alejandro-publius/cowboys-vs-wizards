@@ -14,16 +14,26 @@ const TEMPLATE = `
   <header><h1 id="builder-title">Build deck</h1></header>
   <p id="builder-note" class="sd-note"></p>
   <div id="builder-rows"></div>
-  <p id="builder-problems" role="status"></p>
-  <div class="sd-row">
-    <button type="button" id="builder-save">Save deck</button>
-    <button type="button" id="builder-cancel">Cancel</button>
-  </div>`;
+  <footer class="builder-footer">
+    <p id="builder-problems" role="status"></p>
+    <div class="sd-row">
+      <button type="button" id="builder-save">Save deck</button>
+      <button type="button" id="builder-cancel">Cancel</button>
+    </div>
+  </footer>`;
 
 // campaign: progress(), owned(type), deckProblems(deck, side), withDeck(deck, side).
-export function mountBuilder(root, {campaign}) {
+export function mountBuilder(root, {campaign, paintCardFaces}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
+  if (paintCardFaces) {
+    root.classList.add("builder-diorama");
+    root.insertAdjacentHTML("beforeend", `<dialog class="builder-inspect" aria-labelledby="builder-inspect-title">
+      <header><h2 id="builder-inspect-title"></h2><button type="button" autofocus data-close-card>Close</button></header>
+      <div id="builder-inspect-card"></div>
+    </dialog>`);
+  }
+  const inspect = root.querySelector(".builder-inspect");
   let draft = null; // {pool, deck, side, done, cancel}
 
   const limit = (type) => (draft.pool ? draft.pool[type] : Math.min(campaign.owned(type), RARITY[TYPES[type].rarity][1]));
@@ -39,11 +49,24 @@ export function mountBuilder(root, {campaign}) {
       const room = deck + side < limit(type);
       const step = (zone, by, on, text) => `<button type="button" data-zone="${zone}" data-type="${type}" data-by="${by}" ${on ? "" : "disabled"} aria-label="${text} ${TYPES[type].name}">${by > 0 ? "+" : "−"}</button>`;
       // Between games a card moves from one pile to the other, so "+" on the deck takes it from the side deck.
-      return `<div class="sd-build-row" data-row="${type}"><div class="sd-card cowboy ${TYPES[type].rarity}" data-frame="${TYPES[type].kind}">${face(type)}</div>
-        <div><span class="sd-note">Deck</span>${step("deck", -1, deck > 0, "One fewer in the deck:")} <strong data-count="deck">${deck}</strong> ${step("deck", 1, draft.pool ? side > 0 : room, "One more in the deck:")}</div>
-        <div><span class="sd-note">Side deck</span>${step("side", -1, side > 0, "One fewer in the side deck:")} <strong data-count="side">${side}</strong> ${step("side", 1, draft.pool ? deck > 0 : room, "One more in the side deck:")}</div>
-        <span class="sd-note">${Number.isFinite(limit(type)) ? `Limit: ${limit(type)} in deck and side deck together` : "Limit: none"}</span></div>`;
+      const frame = `class="sd-card cowboy ${TYPES[type].rarity}" data-frame="${TYPES[type].kind}" data-face="${type}"`;
+      const card = paintCardFaces
+        ? `<button type="button" ${frame} data-inspect="${type}" aria-label="Inspect ${TYPES[type].name}">${face(type)}</button>`
+        : `<div ${frame}>${face(type)}</div>`;
+      const pile = (zone, label, number, canAdd) => `<div class="builder-pile">
+        <span class="sd-note">${label}</span>
+        <span class="builder-stepper">${step(zone, -1, number > 0, `One fewer in the ${label.toLowerCase()}:`)}
+          <strong data-count="${zone}">${number}</strong>
+          ${step(zone, 1, canAdd, `One more in the ${label.toLowerCase()}:`)}</span></div>`;
+      const cap = limit(type);
+      const limitNote = paintCardFaces ? (Number.isFinite(cap) ? `Up to ${cap} copies` : "Unlimited copies")
+        : (Number.isFinite(cap) ? `Limit: ${cap} in deck and side deck together` : "Limit: none");
+      return `<div class="sd-build-row" data-row="${type}">${card}
+        ${pile("deck", "Deck", deck, draft.pool ? side > 0 : room)}
+        ${pile("side", "Side deck", side, draft.pool ? deck > 0 : room)}
+        <span class="sd-note builder-limit">${limitNote}</span></div>`;
     }).join("");
+    paintCardFaces?.($("builder-rows"), "[data-face]");
     const listed = problems();
     $("builder-problems").innerHTML = `Deck ${sum(draft.deck)} of ${DECK_SIZE} · side deck ${sum(draft.side)} of ${SIDE_SIZE}.${listed.length ? ` <span class="sd-warn">${listed.join(" ")}</span>` : ""}`;
     $("builder-save").disabled = listed.length > 0;
@@ -65,7 +88,16 @@ export function mountBuilder(root, {campaign}) {
   root.addEventListener("click", (event) => {
     const b = event.target.closest("button");
     if (!b || b.disabled || !draft) return;
-    if (b.dataset.zone) step(b.dataset.zone, b.dataset.type, Number(b.dataset.by));
+    if (b.dataset.inspect) {
+      const type = b.dataset.inspect;
+      const card = TYPES[type];
+      $("builder-inspect-title").textContent = card.name;
+      $("builder-inspect-card").innerHTML = `<div class="sd-card cowboy ${card.rarity}" data-frame="${card.kind}" data-face="${type}" aria-hidden="true">${face(type)}</div>
+        <div class="builder-inspect-rules">${face(type)}</div>`;
+      paintCardFaces($("builder-inspect-card"), "[data-face]");
+      inspect.showModal();
+    } else if (b.hasAttribute("data-close-card")) inspect.close();
+    else if (b.dataset.zone) step(b.dataset.zone, b.dataset.type, Number(b.dataset.by));
     else if (b.id === "builder-save" && !problems().length) {
       const {deck, side, done} = draft;
       draft = null;

@@ -16,11 +16,11 @@ const TEMPLATE = `
   <header><h1>Camp</h1><button id="camp-home" type="button">Main menu</button></header>
   <p id="camp-storage" class="sd-note" role="status" hidden>This browser did not save your progress, so a reload will lose it. To keep it, open Save code in the Camp and copy the code.</p>
   <div id="camp-claim" aria-live="polite"></div>
-  <section aria-labelledby="camp-trail-title"><h2 id="camp-trail-title">The Trail</h2><ol id="camp-trail" class="sd-row"></ol></section>
-  <section aria-labelledby="camp-rivals-title"><h2 id="camp-rivals-title">Rivals</h2><ol id="camp-rivals" class="sd-row"></ol></section>
-  <section aria-labelledby="camp-bounties-title"><h2 id="camp-bounties-title">Wanted</h2><ol id="camp-bounties" class="sd-row"></ol></section>
-  <section aria-labelledby="camp-open-title"><h2 id="camp-open-title">Open range</h2><div id="camp-open" class="sd-row"></div></section>
-  <section aria-label="Your cards"><h2>Your cards</h2><p id="camp-collection" class="sd-note"></p>
+  <section class="camp-map" aria-labelledby="camp-trail-title"><h2 id="camp-trail-title">The Trail</h2><ol id="camp-trail" class="sd-row"></ol></section>
+  <section class="camp-stop-list" aria-labelledby="camp-rivals-title"><h2 id="camp-rivals-title">Rivals</h2><ol id="camp-rivals" class="sd-row"></ol></section>
+  <section class="camp-stop-list" aria-labelledby="camp-bounties-title"><h2 id="camp-bounties-title">Wanted</h2><ol id="camp-bounties" class="sd-row"></ol></section>
+  <section class="camp-stop-list" aria-labelledby="camp-open-title"><h2 id="camp-open-title">Open range</h2><div id="camp-open" class="sd-row"></div></section>
+  <section class="camp-stop-list" id="camp-collection-room" aria-label="Your cards"><h2>Your cards</h2><p id="camp-collection" class="sd-note"></p>
     <div class="sd-row"><button type="button" id="camp-build">Build deck</button></div></section>
   <details id="camp-save"><summary>Save code</summary>
     <p class="sd-note">Progress is saved in this browser. Copy this code to move it, or paste one and press Load.</p>
@@ -50,9 +50,26 @@ const TEMPLATE = `
 // onDuel(id, {players, best}): start a Camp duel ("trail", "rival:<id>", "hunt:<id>", "open", or "two" for two players).
 // onBuild(): open the deck builder. playtest (optional): text(progress), saved(), clear().
 // confirm: asks before Start over (window.confirm in the page).
-export function mountCamp(root, {campaign, playtest, onDuel, onHome, onBuild, confirm = (text) => window.confirm(text)}) {
+export function mountCamp(root, {campaign, playtest, paintCardFaces, openDestination, dressNotices, onDuel, onHome, onBuild, confirm = (text) => window.confirm(text)}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
+  if (paintCardFaces) {
+    $("camp-trail").insertAdjacentHTML("afterend", `<aside class="camp-trail-rail" aria-label="Trail actions">
+      <h3 id="camp-current-stop"></h3><p id="camp-current-reward" aria-live="polite"></p>
+      <button type="button" class="frontier-plaque" id="camp-start-trail">Play</button>
+      <nav class="camp-rail-tools" aria-label="Camp destinations">
+        <button type="button" data-camp-destination="camp-rivals-title">Rivals</button>
+        <button type="button" data-camp-destination="camp-bounties-title">Wanted</button>
+        <button type="button" data-camp-destination="camp-open-title">Open range</button>
+      </nav>
+      <nav class="camp-rail-utility" aria-label="Camp utilities">
+        <button type="button" data-camp-destination="camp-practice">Practice</button>
+        <button type="button" data-camp-destination="camp-save">Save code</button>
+      </nav>
+    </aside>`);
+    root.querySelector(".camp-rail-tools").prepend($("camp-build"));
+    root.classList.add("camp-diorama");
+  }
   mountLedger($("camp-ledger")); // The Night Shift: Sheriff's Ledger, static and collapsed (src/ui/sheriffs-ledger.js).
   let picked = null;
   let opened = null; // the pack just opened, shown once
@@ -70,12 +87,25 @@ export function mountCamp(root, {campaign, playtest, onDuel, onHome, onBuild, co
       : progress.packs ? `${hint}<h2>${plural(progress.packs, "pack")} to open</h2><div class="sd-row"><button type="button" id="camp-pack">Open a pack: three cards</button></div>`
       : `${hint}${next ? `<p id="camp-next">${progress.wins === 0 ? "Start here" : "Next"}: click <strong>${next.name}</strong> to play ${progress.wins === 0 ? "your first duel" : "it"}.</p>` : "<p>You have won the whole Trail.</p>"}`;
 
+    paintCardFaces?.($("camp-claim"), "[data-choose], [data-opened]");
+
     const tile = (duel, note, off = duel.state !== "open") => `<li><button type="button" class="sd-tile ${duel.state}" ${duel.kind === "trail" ? `data-trail="${duel.index}" ` : ""}${off || progress.offer ? "disabled" : `data-duel="${duel.id}"`}>
       <strong>${duel.state === "won" ? "✓ " : ""}${duel.name}</strong><span class="sd-note">${note}</span></button></li>`;
     $("camp-trail").innerHTML = list.filter((duel) => duel.kind === "trail").map((duel) => {
       const reward = pays(TRAIL[duel.index].reward.map(([type, , copies]) => [type, copies]));
       return tile(duel, duel.state === "won" ? `Earned ${reward}` : duel.state === "locked" ? `Locked · win to earn ${reward}` : `Win to earn ${reward}`);
     }).join("");
+    if (paintCardFaces) {
+      const choice = $("camp-trail").querySelector(".open");
+      const start = $("camp-start-trail");
+      $("camp-current-stop").textContent = next?.name ?? "Trail complete";
+      $("camp-current-reward").textContent = progress.offer
+        ? "Choose your reward to continue."
+        : choice?.querySelector(".sd-note").textContent ?? "Rivals and Wanted hunts are open.";
+      start.hidden = !next;
+      start.disabled = !choice || choice.disabled;
+      start.textContent = next ? `Play ${next.name}` : "Play";
+    }
     $("camp-rivals").innerHTML = list.filter((duel) => duel.kind === "rival").map((duel, i) => {
       const rival = RIVALS[i];
       const reward = [pays(rival.reward.map((type) => [type, 1])), plural(rival.packs, "pack")].filter(Boolean).join(" and ");
@@ -87,6 +117,7 @@ export function mountCamp(root, {campaign, playtest, onDuel, onHome, onBuild, co
       return tile(duel, duel.state === "won" ? `Captured: ${TYPES[bounty.reward].name}` : duel.state === "locked" ? "After the Trail"
         : `${duel.cleared} of ${HUNTS} hunts won. Five capture ${TYPES[bounty.reward].name}.`);
     }).join("");
+    dressNotices?.(trailDone(progress));
     const open = trailDone(progress) && !progress.offer;
     $("camp-open").innerHTML = `<button type="button" data-duel="open" ${open ? "" : "disabled"}>The even match${open ? "" : " (after the Trail)"}</button>
       <button type="button" data-match="open" ${open ? "" : "disabled"}>Best of three, with your side deck</button>
@@ -173,6 +204,19 @@ export function mountCamp(root, {campaign, playtest, onDuel, onHome, onBuild, co
       picked = d.choose;
       render();
       ($("camp-claim").querySelector("button") ?? root.querySelector("[data-duel]:not(:disabled)"))?.focus();
+    } else if (b.id === "camp-start-trail") $("camp-trail").querySelector("[data-duel=trail]")?.click();
+    else if (d.campDestination) {
+      if (openDestination?.(d.campDestination, b)) return;
+      const destination = $(d.campDestination);
+      if (!destination) return;
+      if (destination instanceof HTMLDetailsElement) {
+        destination.open = true;
+        destination.querySelector("summary")?.focus();
+      } else {
+        destination.tabIndex = -1;
+        destination.focus();
+      }
+      destination.scrollIntoView({block: "start"});
     } else if (d.duel && !campaign.progress().offer) onDuel(d.duel, {});
     else if (d.match && !campaign.progress().offer) onDuel(d.match, {best: 3});
     else if (d.two) onDuel("two", {players: 2, best: Number(d.two)});

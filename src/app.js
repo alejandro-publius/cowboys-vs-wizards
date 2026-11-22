@@ -3,17 +3,20 @@
 // Open range, plus two players at any time. The Wizard preview (four Wizard-seat duels with their own save) is the
 // Camp's last section after Boot Hill and opens on its own at ?wizard=1. Slice 3 retired the lane duel from this
 // page, so no URL opens it here; an old lane address (?mode=lanes, match, ride-out, practice-*,
-// fire-arc) loads this same Showdown menu. The old 3D page has been removed. esbuild inlines the dynamic imports, so the page stays one offline file.
+// fire-arc) loads this same Showdown menu. The illustrated contest build offers a verified Outrider turn on its title.
+// esbuild inlines the dynamic imports, so the page stays one offline file.
 const node = (id) => document.getElementById(id);
 
 Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"), import("./ui/showdown-builder.js"), import("./match/showdown-campaign.js"),
   import("./match/showdown-playtest.js"), import("./match/showdown-session.js"), import("./match/showdown-turn.js"),
   import("./match/showdown-outrider.js"), import("./ui/outrider-camp.js"), import("./match/showdown-practice.js"),
-  import("./match/showdown-wizard-campaign.js"), import("./ui/showdown-wizard-camp.js"), import("./match/showdown-earned.js")])
+  import("./match/showdown-wizard-campaign.js"), import("./ui/showdown-wizard-camp.js"), import("./match/showdown-earned.js"),
+  typeof __CVW_DIORAMA__ !== "undefined" && __CVW_DIORAMA__ ? import("./ui/showdown-3d/scene.js") : null])
   .then(([{mountShowdown, freshSeed}, {mountCamp}, {mountBuilder}, {createCampaign}, {createPlaytestLog, PAGE_BUILD}, {twoPlayers}, {turnDuel},
     {outriderTurn}, {VERIFIED, outriderControls}, {PRACTICE_SEEDS, practiceDuel, practiceFromQuery},
-    {createWizardPreview, wizardFromQuery, previewUnlocked, WIZARD_TRACK}, {mountWizardCamp}, {earnedControl, earnedDuel}]) => {
+    {createWizardPreview, wizardFromQuery, previewUnlocked, WIZARD_TRACK}, {mountWizardCamp}, {earnedControl, earnedDuel}, diorama]) => {
   const title = node("title-screen"), screen = node("showdown"), campRoot = node("showdown-camp"), builderRoot = node("showdown-builder"), play = node("menu-play");
+  const contest = typeof __CVW_CONTEST__ !== "undefined" && __CVW_CONTEST__;
   const seed = new URLSearchParams(location.search).get("seed");
   // ?seed fixes every deal started from the Camp and every later game of a match, so a scripted check replays the same duels.
   const seedFor = () => (seed === null ? freshSeed() : Number(seed));
@@ -33,7 +36,13 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   const preview = createWizardPreview(storage);
   // One line per finished solo game for the Camp's playtest report, under the prototype's key.
   const playtest = createPlaytestLog(storage);
-  const showOnly = (shown) => { for (const el of [title, screen, campRoot, builderRoot]) el.hidden = el !== shown; window.scrollTo(0, 0); };
+  let outpost;
+  const showOnly = (shown) => {
+    if (shown !== campRoot) outpost?.close();
+    if (shown !== screen) delete screen.dataset.contestChallenge;
+    for (const el of [title, screen, campRoot, builderRoot]) el.hidden = el !== shown;
+    window.scrollTo(0, 0);
+  };
   let last = null; // the Camp control that started the duel just left, so focus returns to it
   // Back from a duel: the Camp, or for a Wizard preview duel the place it was opened from. Reset after each use.
   let back = null;
@@ -43,6 +52,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   const showCowboyParts = () => { for (const el of hiddenForWizard) el.hidden = false; hiddenForWizard = []; };
   const toCamp = () => {
     showCowboyParts();
+    outpost?.wizardInCamp();
     campRoot.removeAttribute("aria-labelledby"); // the landmark is "Camp" again (its aria-label)
     showOnly(campRoot);
     campaign.enter();
@@ -52,10 +62,14 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     // When that control is now disabled (a win's card offer is open), the Camp's own order: the claim
     // (offer or pack), then the first open duel. Selectors are tried in turn, not in document order.
     const usable = (selector) => campRoot.querySelector(`${selector}:not(:disabled)`);
-    ((last && usable(last)) ?? usable("#camp-claim button") ?? usable("[data-duel]") ?? usable("button"))?.focus();
+    const returning = last && usable(last);
+    if (returning && outpost?.restoreFocus(returning)) return;
+    (returning || usable("#camp-claim button") || (outpost && usable("#camp-start-trail:not([hidden])")) ||
+      (outpost ? usable("#camp-build") : usable("[data-duel]")) || usable("button"))?.focus();
   };
   // The direct Wizard preview: the Camp page with only the preview section shown. Nothing Cowboy is entered or written.
   const toWizard = () => {
+    outpost?.wizardOnItsOwn();
     showOnly(campRoot);
     hiddenForWizard = [...hiddenForWizard, ...[...campRoot.children].filter((el) => el.id !== "camp-wizard" && !el.hidden)];
     for (const el of hiddenForWizard) el.hidden = true;
@@ -64,14 +78,17 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     wizardCamp.show("direct");
     wizardCamp.focus(null); // the open tile; Back from a duel then moves focus to the tile that started it
   };
-  const builder = mountBuilder(builderRoot, {campaign});
-  const showdown = mountShowdown(screen, {onHome: home, campaign, playtest, nextSeed: seedFor,
+  const builder = mountBuilder(builderRoot, {campaign, paintCardFaces: diorama?.paintCardFaces});
+  const showdown = mountShowdown(screen, {onHome: home, campaign, playtest, nextSeed: seedFor, mountBoard: diorama?.mountDiorama,
     // Between the games of a best of three with a side deck: the swap, then the next game.
     onSwap: (pool, deck, side, done) => {
       showOnly(builderRoot);
       builder.openSwap({pool, deck, side, done: (nextDeck, nextSide) => { showOnly(screen); done(nextDeck, nextSide); }});
     }});
-  const camp = mountCamp(campRoot, {campaign, playtest, onHome: () => { showOnly(title); play.focus(); },
+  const camp = mountCamp(campRoot, {campaign, playtest, paintCardFaces: diorama?.paintCardFaces,
+    openDestination: (id, control) => outpost?.open(id, control),
+    dressNotices: (trailComplete) => outpost?.dressNotices(trailComplete),
+    onHome: () => { showOnly(title); play.focus(); },
     onBuild: () => {
       showOnly(builderRoot);
       last = "#camp-build";
@@ -84,7 +101,10 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
       showOnly(screen);
       showdown.start(duel, seedFor(), {players, best});
     }});
-  play.addEventListener("click", toCamp);
+  diorama?.mountGallery(title, screen);
+  // Play from the title is a fresh entry: forget the control of the last duel so toCamp opens on the Trail instead of
+  // restoring that duel's room. Only a return from a duel (home, Back to camp) keeps `last`.
+  play.addEventListener("click", () => { last = null; outpost?.close(); toCamp(); });
   // Experiment for review (K-095, K-008): two recorded Dragon turns, opened from these optional Camp controls or
   // ?turn=dragon-c5 and ?turn=dragon-c5-70. Only ids allowlisted in showdown-turn.js open; it saves nothing.
   const TURN_CONTROLS = {"dragon-c5": "camp-turn-dragon", "dragon-c5-70": "camp-turn-dragon-70"};
@@ -110,10 +130,23 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     // Focus returns to the control that opened it: the Camp entry or the Ledger link.
     last = from?.closest("#ledger-outrider") ? `#ledger-outrider [data-outrider="${id}"]` : "#camp-outrider-turn";
     showOnly(screen);
-    showdown.start(turn.duel, turn.seed);
+    if (contest) screen.dataset.contestChallenge = "";
+    const duel = contest ? {...turn.duel, name: "Ride or Fight?", lesson: "Choose the Outrider. Attack a troop, or ride past it to the Wizard Base."} : turn.duel;
+    showdown.start(duel, turn.seed);
     return true;
   };
   campRoot.addEventListener("click", (event) => { const b = event.target.closest("button[data-outrider]"); if (b) openOutrider(b.dataset.outrider, b); });
+  if (contest && VERIFIED.some((entry) => entry.id === "case-e")) {
+    const challenge = document.createElement("button");
+    challenge.id = "menu-challenge";
+    challenge.type = "button";
+    challenge.className = "frontier-plaque";
+    challenge.textContent = "Ride or Fight?";
+    challenge.addEventListener("click", () => openOutrider("case-e"));
+    play.before(challenge);
+    play.textContent = "Camp";
+    play.classList.add("menu-camp");
+  }
   // K-096: Boot Hill practice, collapsed at the end of the Camp. Each deal is a native link (?practice=<seed>) that can
   // be copied or opened in a new tab; a plain click or Enter opens the same duel here through openPractice.
   // Only the seeds in showdown-practice.js open; nothing is saved (see that file).
@@ -144,7 +177,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     const direct = campRoot.querySelector("#camp-wizard").dataset.mode === "direct";
     back = () => {
       if (direct) toWizard();
-      else { last = null; toCamp(); }
+      else { last = outpost ? "#camp-wizard summary" : null; toCamp(); }
       wizardCamp.focus(id);
     };
     showOnly(screen);
@@ -169,6 +202,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     showOnly(screen);
     showdown.start(duel, seedFor(), {players: 2});
   });
+  outpost = diorama?.mountCampOutpost(campRoot);
   if (turn !== null) openTurn(turn);
   if (outrider !== null && turn === null) openOutrider(outrider);
   if (practice !== null) openPractice(practice);

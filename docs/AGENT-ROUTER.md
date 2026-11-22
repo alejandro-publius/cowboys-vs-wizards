@@ -11,7 +11,7 @@
 
 ## The game: Showdown
 
-Showdown is the one supported game. The current state, site paths and remaining human gate are in the [release line](design/release-line.md) ("Current status"); Fable's decisions are the latest Fable comments on [issue 143](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143). The graybox (`src/app.js`, served at `/` and `/graybox/`) is Showdown. Old `/3d/` links and `?mode=` URLs lead to Showdown.
+Showdown is the one supported game. The [release line](design/release-line.md) has the current state, site paths and remaining human gate. Fable's decisions are on [issue 143](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143). The illustrated build is staged at `/` and `/3d/`, and the lightweight build opens Camp at `/graybox/`. Both use `src/app.js`. Old `?mode=` URLs load Showdown.
 
 **First check for any graybox change: the normal Play path.** `npm run build`, then `node scripts/browser-showdown-check.mjs dist/cowboys-vs-wizards-board-duel.html` (Play opens the Camp, Boot Hill won with clicks, seat privacy, every retired lane URL opens Showdown).
 

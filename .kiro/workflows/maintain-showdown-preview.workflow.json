@@ -1,0 +1,12 @@
+{
+  "name": "maintain-showdown-preview",
+  "description": "Run one guarded maintenance cycle for the illustrated game and advance its local playable preview.",
+  "steps": [
+    {
+      "type": "step",
+      "id": "maintain-preview",
+      "agent": "wf-coder",
+      "prompt": "From the repository root run exactly: node scripts/maintain-showdown-preview.mjs. Let the program own the detached checkout, browser checks and preview promotion. It dispatches declared browser failures to their assigned Kiro agents and verifies the combined candidate. Report the exit status, whether the playable preview moved, and its revision if reported. Do not edit, fetch, push or open a PR."
+    }
+  ]
+}

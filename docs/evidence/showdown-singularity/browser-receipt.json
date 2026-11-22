@@ -1,0 +1,698 @@
+{
+  "schema": "showdown-singularity-receipt/1",
+  "revision": "172890d0cd812b6665804e0b92313f7c698c33fe",
+  "page": {
+    "file": "dist/cowboys-vs-wizards-showdown-3d.html",
+    "bytes": 6092013,
+    "sha256": "b5e2a89d1da014920a363a1a5a467a7334fd29d55108689b89420f5d502c6ab1",
+    "buildLabelInHtml": true
+  },
+  "chrome": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "viewport": [
+    1440,
+    900
+  ],
+  "engine": {
+    "sheriffs": {
+      "before": [
+        3,
+        3,
+        3
+      ],
+      "after": [
+        2,
+        2,
+        2
+      ],
+      "summary": "Each Sheriff loses one orb."
+    },
+    "graveyard": {
+      "before": {
+        "health": [
+          1,
+          5,
+          null
+        ],
+        "names": [
+          "Skeleton",
+          "Dragon",
+          null
+        ],
+        "graveyard": 0
+      },
+      "after": {
+        "health": [
+          null,
+          4,
+          null
+        ],
+        "names": [
+          null,
+          "Dragon",
+          null
+        ],
+        "graveyard": 1
+      },
+      "summary": "Skeleton is defeated. The Graveyard Dragon loses one orb and holds its ground."
+    }
+  },
+  "runs": {
+    "sheriffsMotion": {
+      "frames": 260,
+      "framesAfterClick": 259,
+      "sawMotion": true,
+      "timedOut": false,
+      "motionPhases": [
+        "play",
+        "area-vortex",
+        "burial"
+      ],
+      "framesAt333": 153,
+      "framesAt333InAreaVortex": 84,
+      "framesAt222": 106,
+      "partialFrames": 0,
+      "partialSamples": [],
+      "transition": {
+        "last333": {
+          "motion": "area-vortex",
+          "mode": "sheriffs",
+          "darkness": 0.86,
+          "cowboyOrbs": [
+            3,
+            3,
+            3
+          ],
+          "wizardOrbs": [
+            4
+          ],
+          "cowboyGrave": 0,
+          "wizardGrave": 0,
+          "cowboyNames": [
+            "Sheriff",
+            "Sheriff",
+            "Sheriff"
+          ],
+          "wizardNames": [
+            "Wizard"
+          ],
+          "result": "Each Sheriff loses one orb.",
+          "t": 2925,
+          "afterClick": true
+        },
+        "first222": {
+          "motion": "area-vortex",
+          "mode": "sheriffs",
+          "darkness": 0.86,
+          "cowboyOrbs": [
+            2,
+            2,
+            2
+          ],
+          "wizardOrbs": [
+            4
+          ],
+          "cowboyGrave": 0,
+          "wizardGrave": 0,
+          "cowboyNames": [
+            "Sheriff",
+            "Sheriff",
+            "Sheriff"
+          ],
+          "wizardNames": [
+            "Wizard"
+          ],
+          "result": "Each Sheriff loses one orb.",
+          "t": 2941,
+          "afterClick": true
+        }
+      },
+      "final": {
+        "motion": null,
+        "mode": "sheriffs",
+        "darkness": 0,
+        "cowboyOrbs": [
+          2,
+          2,
+          2
+        ],
+        "wizardOrbs": [
+          4
+        ],
+        "cowboyGrave": 0,
+        "wizardGrave": 1,
+        "cowboyNames": [
+          "Sheriff",
+          "Sheriff",
+          "Sheriff"
+        ],
+        "wizardNames": [
+          "Wizard"
+        ],
+        "result": "Each Sheriff loses one orb.",
+        "t": 4908,
+        "afterClick": true
+      },
+      "result": "Each Sheriff loses one orb."
+    },
+    "sheriffsShots": {
+      "preImpact": {
+        "file": "singularity-sheriffs-pre-impact.png",
+        "consistent": true
+      },
+      "postImpact": {
+        "file": "singularity-sheriffs-post-impact.png",
+        "consistent": true
+      }
+    },
+    "graveyardMotion": {
+      "frames": 306,
+      "framesAfterClick": 305,
+      "sawMotion": true,
+      "timedOut": false,
+      "motionPhases": [
+        "play",
+        "area-vortex",
+        "burial"
+      ],
+      "wizardGraveyardValues": [
+        0,
+        1
+      ],
+      "firstGraveyard1": {
+        "motion": "burial",
+        "mode": "graveyard",
+        "darkness": 0,
+        "cowboyOrbs": [
+          4
+        ],
+        "wizardOrbs": [
+          4
+        ],
+        "cowboyGrave": 0,
+        "wizardGrave": 1,
+        "cowboyNames": [
+          "Wizard"
+        ],
+        "wizardNames": [
+          "Dragon"
+        ],
+        "result": "Skeleton is defeated. The Graveyard Dragon loses one orb and holds its ground.",
+        "t": 4208,
+        "afterClick": true
+      },
+      "first": {
+        "motion": "play",
+        "mode": "graveyard",
+        "darkness": 0,
+        "cowboyOrbs": [
+          4
+        ],
+        "wizardOrbs": [
+          1,
+          5
+        ],
+        "cowboyGrave": 0,
+        "wizardGrave": 0,
+        "cowboyNames": [
+          "Wizard"
+        ],
+        "wizardNames": [
+          "Skeleton",
+          "Dragon"
+        ],
+        "result": "Skeleton is defeated. The Graveyard Dragon loses one orb and holds its ground.",
+        "t": 25,
+        "afterClick": true
+      },
+      "final": {
+        "motion": null,
+        "mode": "graveyard",
+        "darkness": 0,
+        "cowboyOrbs": [
+          4
+        ],
+        "wizardOrbs": [
+          4
+        ],
+        "cowboyGrave": 1,
+        "wizardGrave": 1,
+        "cowboyNames": [
+          "Wizard"
+        ],
+        "wizardNames": [
+          "Dragon"
+        ],
+        "result": "Skeleton is defeated. The Graveyard Dragon loses one orb and holds its ground.",
+        "t": 5558,
+        "afterClick": true
+      },
+      "result": "Skeleton is defeated. The Graveyard Dragon loses one orb and holds its ground."
+    },
+    "graveyardShot": {
+      "file": "singularity-graveyard-post-burial.png",
+      "consistent": true
+    },
+    "reduced": {
+      "sheriffs": {
+        "framesAfterClick": 45,
+        "motionPhases": [],
+        "maxDarkness": 0,
+        "final": {
+          "motion": null,
+          "mode": "sheriffs",
+          "darkness": 0,
+          "cowboyOrbs": [
+            2,
+            2,
+            2
+          ],
+          "wizardOrbs": [
+            4
+          ],
+          "cowboyGrave": 0,
+          "wizardGrave": 1,
+          "cowboyNames": [
+            "Sheriff",
+            "Sheriff",
+            "Sheriff"
+          ],
+          "wizardNames": [
+            "Wizard"
+          ],
+          "result": "Each Sheriff loses one orb.",
+          "t": 773,
+          "afterClick": true
+        }
+      },
+      "graveyard": {
+        "framesAfterClick": 45,
+        "motionPhases": [],
+        "maxDarkness": 0,
+        "final": {
+          "motion": null,
+          "mode": "graveyard",
+          "darkness": 0,
+          "cowboyOrbs": [
+            4
+          ],
+          "wizardOrbs": [
+            4
+          ],
+          "cowboyGrave": 1,
+          "wizardGrave": 1,
+          "cowboyNames": [
+            "Wizard"
+          ],
+          "wizardNames": [
+            "Dragon"
+          ],
+          "result": "Skeleton is defeated. The Graveyard Dragon loses one orb and holds its ground.",
+          "t": 764,
+          "afterClick": true
+        }
+      }
+    }
+  },
+  "screenshots": [
+    {
+      "file": "singularity-sheriffs-pre-impact.png",
+      "readBefore": {
+        "motion": "area-vortex",
+        "mode": "sheriffs",
+        "darkness": 0.693,
+        "cowboyOrbs": [
+          3,
+          3,
+          3
+        ],
+        "wizardOrbs": [
+          4
+        ],
+        "cowboyGrave": 0,
+        "wizardGrave": 0,
+        "cowboyNames": [
+          "Sheriff",
+          "Sheriff",
+          "Sheriff"
+        ],
+        "wizardNames": [
+          "Wizard"
+        ],
+        "result": "Each Sheriff loses one orb."
+      },
+      "readAfter": {
+        "motion": "area-vortex",
+        "mode": "sheriffs",
+        "darkness": 0.847,
+        "cowboyOrbs": [
+          3,
+          3,
+          3
+        ],
+        "wizardOrbs": [
+          4
+        ],
+        "cowboyGrave": 0,
+        "wizardGrave": 0,
+        "cowboyNames": [
+          "Sheriff",
+          "Sheriff",
+          "Sheriff"
+        ],
+        "wizardNames": [
+          "Wizard"
+        ],
+        "result": "Each Sheriff loses one orb."
+      }
+    },
+    {
+      "file": "singularity-sheriffs-post-impact.png",
+      "readBefore": {
+        "motion": "area-vortex",
+        "mode": "sheriffs",
+        "darkness": 0.86,
+        "cowboyOrbs": [
+          2,
+          2,
+          2
+        ],
+        "wizardOrbs": [
+          4
+        ],
+        "cowboyGrave": 0,
+        "wizardGrave": 0,
+        "cowboyNames": [
+          "Sheriff",
+          "Sheriff",
+          "Sheriff"
+        ],
+        "wizardNames": [
+          "Wizard"
+        ],
+        "result": "Each Sheriff loses one orb."
+      },
+      "readAfter": {
+        "motion": "area-vortex",
+        "mode": "sheriffs",
+        "darkness": 0.838,
+        "cowboyOrbs": [
+          2,
+          2,
+          2
+        ],
+        "wizardOrbs": [
+          4
+        ],
+        "cowboyGrave": 0,
+        "wizardGrave": 0,
+        "cowboyNames": [
+          "Sheriff",
+          "Sheriff",
+          "Sheriff"
+        ],
+        "wizardNames": [
+          "Wizard"
+        ],
+        "result": "Each Sheriff loses one orb."
+      }
+    },
+    {
+      "file": "singularity-graveyard-post-burial.png",
+      "readBefore": {
+        "motion": null,
+        "mode": "graveyard",
+        "darkness": 0,
+        "cowboyOrbs": [
+          4
+        ],
+        "wizardOrbs": [
+          4
+        ],
+        "cowboyGrave": 1,
+        "wizardGrave": 1,
+        "cowboyNames": [
+          "Wizard"
+        ],
+        "wizardNames": [
+          "Dragon"
+        ],
+        "result": "Skeleton is defeated. The Graveyard Dragon loses one orb and holds its ground."
+      },
+      "readAfter": {
+        "motion": null,
+        "mode": "graveyard",
+        "darkness": 0,
+        "cowboyOrbs": [
+          4
+        ],
+        "wizardOrbs": [
+          4
+        ],
+        "cowboyGrave": 1,
+        "wizardGrave": 1,
+        "cowboyNames": [
+          "Wizard"
+        ],
+        "wizardNames": [
+          "Dragon"
+        ],
+        "result": "Skeleton is defeated. The Graveyard Dragon loses one orb and holds its ground."
+      }
+    },
+    {
+      "file": "singularity-graveyard-reduced-motion.png",
+      "readBefore": {
+        "motion": null,
+        "mode": "graveyard",
+        "darkness": 0,
+        "cowboyOrbs": [
+          4
+        ],
+        "wizardOrbs": [
+          4
+        ],
+        "cowboyGrave": 1,
+        "wizardGrave": 1,
+        "cowboyNames": [
+          "Wizard"
+        ],
+        "wizardNames": [
+          "Dragon"
+        ],
+        "result": "Skeleton is defeated. The Graveyard Dragon loses one orb and holds its ground."
+      },
+      "readAfter": {
+        "motion": null,
+        "mode": "graveyard",
+        "darkness": 0,
+        "cowboyOrbs": [
+          4
+        ],
+        "wizardOrbs": [
+          4
+        ],
+        "cowboyGrave": 1,
+        "wizardGrave": 1,
+        "cowboyNames": [
+          "Wizard"
+        ],
+        "wizardNames": [
+          "Dragon"
+        ],
+        "result": "Skeleton is defeated. The Graveyard Dragon loses one orb and holds its ground."
+      }
+    }
+  ],
+  "exceptions": [],
+  "consoleErrors": [],
+  "checks": [
+    {
+      "name": "gallery opened from its Card gallery button and Singularity offers both previews",
+      "pass": true,
+      "detail": [
+        [
+          "sheriffs",
+          "Against three Sheriffs"
+        ],
+        [
+          "graveyard",
+          "Against Skeleton and Dragon"
+        ]
+      ]
+    },
+    {
+      "name": "Sheriffs (motion): area-vortex phase ran",
+      "pass": true,
+      "detail": [
+        "play",
+        "area-vortex",
+        "burial"
+      ]
+    },
+    {
+      "name": "Sheriffs (motion): orbs read 3/3/3 during the area vortex before contact",
+      "pass": true,
+      "detail": 84
+    },
+    {
+      "name": "Sheriffs (motion): 3/3/3 then 2/2/2 in one sample, no partial sample",
+      "pass": true,
+      "detail": {
+        "firstAfterIndex": 153,
+        "partialFrames": 0,
+        "regressions": 0
+      }
+    },
+    {
+      "name": "Sheriffs (motion): change lands inside the area-vortex phase",
+      "pass": true,
+      "detail": "area-vortex"
+    },
+    {
+      "name": "Sheriffs (motion): final 2/2/2 equals the engine example",
+      "pass": true,
+      "detail": {
+        "browser": [
+          2,
+          2,
+          2
+        ],
+        "engine": {
+          "before": [
+            3,
+            3,
+            3
+          ],
+          "after": [
+            2,
+            2,
+            2
+          ],
+          "summary": "Each Sheriff loses one orb."
+        }
+      }
+    },
+    {
+      "name": "Skeleton vs Dragon (motion): replay starts with Skeleton on the Wizard board and graveyard 0",
+      "pass": true,
+      "detail": {
+        "names": [
+          "Skeleton",
+          "Dragon"
+        ],
+        "graveyard": 0
+      }
+    },
+    {
+      "name": "Skeleton vs Dragon (motion): opposing graveyard reaches 1 and stays",
+      "pass": true,
+      "detail": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "Skeleton vs Dragon (motion): Skeleton absent, Dragon present with 4 orbs at the end",
+      "pass": true,
+      "detail": {
+        "names": [
+          "Dragon"
+        ],
+        "orbs": [
+          4
+        ]
+      }
+    },
+    {
+      "name": "Skeleton vs Dragon (motion): final equals the engine example",
+      "pass": true,
+      "detail": {
+        "engine": {
+          "health": [
+            null,
+            4,
+            null
+          ],
+          "names": [
+            null,
+            "Dragon",
+            null
+          ],
+          "graveyard": 1
+        },
+        "browser": {
+          "graveyard": 1,
+          "orbs": [
+            4
+          ]
+        }
+      }
+    },
+    {
+      "name": "reduced motion is emulated in the page",
+      "pass": true
+    },
+    {
+      "name": "reduced motion: no area-vortex (or any motion) phase on either preview",
+      "pass": true,
+      "detail": {
+        "sheriffs": [],
+        "graveyard": []
+      }
+    },
+    {
+      "name": "reduced motion: Sheriffs show 2/2/2 in every sample after the click",
+      "pass": true,
+      "detail": [
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "name": "reduced motion: graveyard 1, Skeleton absent, Dragon 4",
+      "pass": true,
+      "detail": {
+        "motion": null,
+        "mode": "graveyard",
+        "darkness": 0,
+        "cowboyOrbs": [
+          4
+        ],
+        "wizardOrbs": [
+          4
+        ],
+        "cowboyGrave": 1,
+        "wizardGrave": 1,
+        "cowboyNames": [
+          "Wizard"
+        ],
+        "wizardNames": [
+          "Dragon"
+        ],
+        "result": "Skeleton is defeated. The Graveyard Dragon loses one orb and holds its ground.",
+        "t": 764,
+        "afterClick": true
+      }
+    },
+    {
+      "name": "no page exceptions",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "name": "no console errors",
+      "pass": true,
+      "detail": []
+    }
+  ],
+  "limitations": [
+    "Headless Chrome on this machine, real requestAnimationFrame timing (no virtual clock); frame counts vary between runs.",
+    "Screenshots are polled captures with a label read immediately before and after each; the pass verdict rests on the per-frame samples, not on the PNGs.",
+    "A scripted run supports displayed values and sequence only; appearance needs rendered review and clarity needs a human playtest."
+  ],
+  "pass": true,
+  "chromeVersion": "Chrome/158.0.8127.37",
+  "reducedMotionAtStart": false,
+  "reducedMotionEmulated": true
+}

@@ -43,6 +43,7 @@ function route() {
 
     const result = play(save, SEEDS[i]);
     assert.equal(result.duel.name, step.name, where);
+    assert.equal(result.duel.battlefield, step.id, `${where}: battlefield follows the Trail stage`);
     assert.deepEqual(result.duel.options.decks.cowboy, deckAfter(i), `${where}: played with the deck the Trail has built`);
     assert.equal(result.winner, "cowboy", `${where}: lost on seed ${SEEDS[i]} after ${result.actions} actions`);
 

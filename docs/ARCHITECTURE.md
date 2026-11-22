@@ -19,7 +19,7 @@ flowchart TD
 - **Session and screen.** `src/match/showdown-session.js` applies actions. `src/ui/showdown-screen.js` draws the resulting board and `src/ui/showdown-cues.js` presents combat cues from the event stream.
 - **Progress.** Campaign progress goes through `src/game/showdown/campaign-store.js`. The legacy profile reader supports keepsakes in the Camp.
 - **Art.** `assets/` contains source models and illustrations for future presentation work. The [art catalog](../prototypes/showdown/ART-DIRECTION.md) covers all current cards.
-- **Release.** `scripts/build-graybox.mjs` builds the offline page. `scripts/stage-pages.mjs` stages the supported site, including the redirect from `/3d/`, for GitHub Pages.
+- **Release.** `scripts/build-graybox.mjs` builds the offline page. `scripts/stage-pages.mjs` stages illustrated Showdown at `/` and `/3d/` and the lightweight Camp at `/graybox/` for GitHub Pages.
 
 ## Smallest useful checks
 

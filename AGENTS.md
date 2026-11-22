@@ -35,17 +35,22 @@ possible. Use human playtests to judge clarity and fun.
 - Showdown is the one supported game. Current state, paths and the remaining
   human gate: docs/design/release-line.md ("Current status"); Fable's
   decisions: the latest Fable comment on issue 143. Its engine is
-  src/game/showdown/ and Play on the graybox page (src/app.js, served at the
-  site root) opens its Camp. Its rules are prototypes/showdown/RULEBOOK.md;
-  the full reference page is prototypes/showdown/. Start Showdown work from
-  docs/AGENT-ROUTER.md.
-- The earlier lane duel and its illustrated 3D build (src/main.js, /3d/) are
-  retired. Old /3d/ links and ?mode= URLs lead to Showdown. The last playable
-  lane and 3D source is in Git history at main ea183ee29dbd; lane evidence
-  stays as history. Do not assign work to lane or 3D paths, or run their
-  harnesses, unless the user reopens them. Lane progress does not carry into
-  Showdown (keepsakes only; see release-line.md). Do not invent mechanics to
-  fill asset gaps.
+  src/game/showdown/. Its rules are prototypes/showdown/RULEBOOK.md; the full
+  reference page is prototypes/showdown/ (/showdown/). Start Showdown work
+  from docs/AGENT-ROUTER.md.
+- Showdown routes, as this checkout stages them (introduced by PR 186): the
+  site root / starts the illustrated Showdown (src/ui/showdown-3d) with the
+  Ride or Fight? challenge, Camp secondary; /3d/ is a byte-identical
+  compatibility copy of that build; /graybox/ stages the same game in the
+  lightweight graybox (src/app.js) with direct Camp entry.
+- The earlier lane duel and its lane-based 3D build (src/main.js, src/render/)
+  are retired; this is separate from Showdown's illustrated src/ui/showdown-3d.
+  Old ?mode= URLs lead to Showdown. The last playable lane and lane 3D source
+  is in Git history at main ea183ee29dbd; lane evidence stays as history. Do
+  not assign work to lane paths or the lane 3D build, or run their harnesses,
+  unless the user reopens them. Lane progress does not carry into Showdown
+  (keepsakes only; see release-line.md). Do not invent mechanics to fill
+  asset gaps.
 - Keep plain JavaScript, Three.js, Rapier and esbuild. Rules in src/game/ must
   have no DOM, rendering, filesystem, network or model dependencies.
 - Prefer direct functions and explicit data. Split modules by purpose. Avoid

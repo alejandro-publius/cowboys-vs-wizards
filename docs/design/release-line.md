@@ -43,7 +43,18 @@ Added by Kiro (Kiro CLI, coordinator job `graywave-assemble`) from GitHub `main`
 | Overnight strategy replay | [PR 162](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/162) contains the Ranger’s decision, Crew memory receipt, held-out reversal and reward-focus regression. |
 | Pending, human | Tester-level outcomes are undocumented (see below). Fable's approval of first-draft wording: the Camp and mode labels, the `/3d/` label and the Sheriff's Ledger text. Fable/Alex retain approval for card changes. The approved 45–55% band and issue-filing decision are in [Fable’s approved snapshot brief](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/168). |
 
-**Site layout after slice 3** (built by `node scripts/stage-pages.mjs`, checked by `node scripts/check-pages-tree.mjs`):
+**Illustrated Showdown routes (PR 186).** Alex asked for the illustrated Showdown as the public game. [Pull request 186](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/186) introduces these routes, and this checkout stages them (`node scripts/stage-pages.mjs`, checked by `node scripts/check-pages-tree.mjs`):
+
+| Path | What |
+| --- | --- |
+| `/` | The illustrated Showdown (`src/ui/showdown-3d`). It starts with the Ride or Fight? challenge; Camp is secondary. |
+| `/3d/` | A byte-identical compatibility copy of the `/` build |
+| `/graybox/` | The same game in the lightweight graybox, with direct Camp entry |
+| `/showdown/` | The Showdown reference page |
+
+The retired lane-based 3D build stays retired at `ea183ee29dbd`, and old `?mode=` addresses still land on Showdown.
+
+**Site layout from slice 3, replaced by PR 186** (history):
 
 | Path | What |
 | --- | --- |

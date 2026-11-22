@@ -31,15 +31,11 @@ jobs:
 
       - run: node scripts/verify-duel.mjs
 
-      # One script stages the whole tree, as it does locally: the graybox game at / (Play opens
-      # Showdown's Camp), the same index.html at /graybox/ for existing links, the Showdown reference
-      # page at /showdown/, a script-free redirect to the game at /3d/ for old links, and build.json.
-      # Nothing from the retired 3D lane build is built or staged.
+      # Stage the illustrated challenge at / and /3d/, plus the graybox and reference routes.
       - name: Stage the Pages tree
         run: node scripts/stage-pages.mjs --commit "$GITHUB_SHA"
 
-      # Node only: serves dist/web/ under /cowboys-vs-wizards/ on localhost and checks build.json, the
-      # /graybox/ alias bytes, the exact staged file list and the /3d/ redirect. The Chrome half
+      # Node only: checks build.json, the /3d/ alias bytes and the exact staged file list. The Chrome half
       # (--browser) runs locally.
       - name: Check the staged tree before upload
         run: node scripts/check-pages-tree.mjs --commit "$GITHUB_SHA"
@@ -88,11 +84,11 @@ jobs:
         with:
           node-version: 22
 
-      - name: Check the live site serves this commit and this index.html, also at /graybox/
+      - name: Check the live site serves this commit and this index.html, also at /3d/
         env:
           PAGE_URL: ${{ needs.deploy.outputs.page_url }}
           EXPECTED_HTML_SHA256: ${{ needs.build.outputs.html_sha256 }}
         run: >
           node scripts/verify-build-identity.mjs
-          --url "$PAGE_URL" --commit "$GITHUB_SHA" --html-sha256 "$EXPECTED_HTML_SHA256" --alias graybox/
+          --url "$PAGE_URL" --commit "$GITHUB_SHA" --html-sha256 "$EXPECTED_HTML_SHA256" --alias 3d/
           --attempts 8 --delay-ms 5000 --timeout-ms 10000

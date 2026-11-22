@@ -428,3 +428,9 @@ Kiro added the Bone Fence Outrider study and the Guard targeting check. Source p
 - **Verification**: deck check 6/6. Capture: seed 3, Sheriff 3, Billy 5, Deadeye 3, Covered Wagon 2, Outrider 3. The opening hand on screen equals Node's deal, and both the capture and the hand differ from the default and off-by-one decks. The `DECK_CHECK_EXPECT=default` and `offByOne` runs exit 1 as intended. The keyboard regression passed 7/7, and the build is `7fdc234a59ba`. [Evidence note](evidence/showdown-deck-to-combat.md).
 - **Review**: Kiro native Workflow child `wf-code-reviewer` (workflow `wf_7842c6f41bde684c`, child 2 of 2) re-ran the build, the check, both wrong-deck controls and the keyboard regression, reproduced the decks and seed-3 hands in its own Node run, and approved with no blockers. [Review report](evidence/showdown-deck-to-combat-review.md).
 - **Remaining**: the check covers one seed and one edit. The Trail wins used the mouse. Alex confirmed the playtests separately.
+
+### 2026-11-22 — Illustrated Showdown and portable Sheriff proof
+
+- Codex staged the illustrated Showdown at `/` and `/3d/` with the Ride or Fight? challenge. Camp remains one click away and `/graybox/` opens the lightweight game.
+- A separate Kiro CLI Opus 5.5 session reviewed the release. It verified the path, escaping and asset layout by inspection, and requested updated steering and recorded check output. Kiro wrote the route updates, and Codex attached the test and replay output and required `--rerun` for a reconstructed Sheriff finding.
+- The browser check passed eight cases at `3c5bb34`. A fresh checkout replayed the 8,000 historical games and reproduced the Sheriff rejection. [Recorded checks](evidence/illustrated-contest-release.md) · [Release PR](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/186)
