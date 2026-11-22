@@ -172,11 +172,10 @@ function build(host, canvas, screen, closeup = false) {
   const scene = new T.Scene();
   if (!HAS_PANORAMA) scene.background = new T.Color(0x17243a);
   const camera = new T.OrthographicCamera(-20, 20, 10, -10, 0.1, 120);
-  const dusk = { ambient: 1.34, sun: 1.96, moon: 0.96 };
-  const hemi = new T.HemisphereLight(0xd9d5ed, 0x6a577a, dusk.ambient);
-  const sun = new T.DirectionalLight(0xffc294, dusk.sun);
+  const hemi = new T.HemisphereLight(0xffefd6, 0x796b8e, 2.28);
+  const sun = new T.DirectionalLight(0xffd2a4, 2.34);
   sun.position.set(-19, 20, 13);
-  const moon = new T.DirectionalLight(0x8c9ff3, dusk.moon);
+  const moon = new T.DirectionalLight(0x9397de, 0.83);
   moon.position.set(24, 17, -14);
   sun.castShadow = true;
   sun.shadow.mapSize.set(1024, 1024);
@@ -419,9 +418,9 @@ function build(host, canvas, screen, closeup = false) {
   }
 
   function spellDarkness(alpha) {
-    hemi.intensity = dusk.ambient * (1 - alpha * 0.80);
-    sun.intensity = dusk.sun * (1 - alpha * 0.89);
-    moon.intensity = dusk.moon + alpha * 0.2;
+    hemi.intensity = 2.28 * (1 - alpha * 0.80);
+    sun.intensity = 2.34 * (1 - alpha * 0.89);
+    moon.intensity = 0.83 + alpha * 0.2;
     host.style.setProperty("--spell-darkness", alpha.toFixed(3));
   }
   function stop() {

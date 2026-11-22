@@ -1,6 +1,5 @@
 import * as T from "three";
 import { typeOf } from "../../game/showdown/cards.js";
-import { PAINTED_SPRITE_ALPHA } from "./graphics/pixel-renderer.js";
 
 const source = typeof __CVW_DUEL_POSES__ === "undefined" ? "" : __CVW_DUEL_POSES__;
 const billy = typeof __CVW_BILLY_POSES__ === "undefined" ? "" : __CVW_BILLY_POSES__;
@@ -12,10 +11,10 @@ const illustrated = {
   "cowboy-outrider": { height: 2.39, width: 3.44, hips: 0.49, muzzle: [0.78, 0.62] },
   "cowboy-ranger": { height: 2.55, muzzle: [0.91, 0.76] },
   "cowboy-dynamiter": { height: 2.38, muzzle: [0.86, 0.88] },
-  "cowboy-gatling-crew": { height: 2.69, width: 3.10, hips: 0.41, muzzle: [0.95, 0.52], exactPaint: true },
+  "cowboy-gatling-crew": { height: 2.19, width: 3.25, hips: 0.41, muzzle: [0.94, 0.56] },
   "cowboy-captured-wraith": { height: 2.66, hips: 0.53 },
   "cowboy-captured-dragon": { height: 2.93, width: 3.53, hips: 0.39, mouth: [0.91, 0.74] },
-  "wizard-dragon": { height: 2.84, width: 3.76, hips: 0.42, mouth: [0.456, 0.60], exactPaint: true },
+  "wizard-dragon": { height: 2.98, width: 3.60, hips: 0.42, mouth: [0.38, 0.57] },
   "wizard-wizard": { height: 2.79, "staff-tip": [0.12, 0.93] },
   "wizard-lantern-wraith": { height: 2.60, width: 2.83, hips: 0.53 },
   "wizard-raven-familiar": { height: 1.58, width: 2.23, hips: 0.46 },
@@ -68,7 +67,7 @@ function readPose(image, col, row, split, rows, mirror) {
   map.minFilter = T.NearestFilter;
   map.magFilter = T.NearestFilter;
   map.generateMipmaps = false;
-  return { map, aspect: imagePose.width / imagePose.height, height: imagePose.height };
+  return { map, aspect: imagePose.width / imagePose.height };
 }
 
 export function loadStoryActors() {
@@ -100,9 +99,8 @@ export function loadStoryActors() {
     }
     const map = new T.Texture(image);
     map.colorSpace = T.SRGBColorSpace;
-    map.minFilter = T.NearestFilter;
+    map.minFilter = T.LinearMipmapLinearFilter;
     map.magFilter = T.NearestFilter;
-    map.generateMipmaps = false;
     map.needsUpdate = true;
     const pose = { map, aspect: image.naturalWidth / image.naturalHeight };
     frames.set(id, { idle: pose, strike: pose });
@@ -123,27 +121,9 @@ export function storyActor(cardId, holder, model, camera) {
   if (!height || (!art && !(type === "cowboy-billy" ? billy : source))) return null;
   const hips = art?.hips ?? 0.49;
   const bend = { value: 0 };
-  const sheriff = type === "cowboy-sheriff";
-  const painted = { value: Boolean(art) || sheriff };
-  const shadow = { value: art && !art.exactPaint ? 0.30 : 0 };
   const material = new T.SpriteMaterial({ alphaTest: art ? 0.38 : 0.52, transparent: false, toneMapped: false });
   material.onBeforeCompile = (shader) => {
     shader.uniforms.hipBend = bend;
-    shader.uniforms.actorPainted = painted;
-    shader.uniforms.actorShadow = shadow;
-    // The illustrated cutouts arrive with brighter midtones than the painted pose sheets.
-    shader.fragmentShader = "uniform bool actorPainted;\nuniform float actorShadow;\n" + shader.fragmentShader
-      .replace(
-        "#include <map_fragment>",
-        `#include <map_fragment>
-        float luma = dot(diffuseColor.rgb, vec3(0.2126, 0.7152, 0.0722));
-        diffuseColor.rgb *= mix(1.0 - actorShadow, 1.0, smoothstep(0.025, 0.48, luma));`,
-      )
-      .replace(
-        "#include <opaque_fragment>",
-        `#include <opaque_fragment>
-        if (actorPainted) gl_FragColor.a = ${PAINTED_SPRITE_ALPHA};`,
-      );
     shader.vertexShader = "uniform float hipBend;\n" + shader.vertexShader.replace(
       "vec2 rotatedPosition;",
       "alignedPosition.x -= hipBend * abs(position.y + 0.5 - center.y); vec2 rotatedPosition;",
@@ -157,8 +137,7 @@ export function storyActor(cardId, holder, model, camera) {
   const world = new T.Vector3(), right = new T.Vector3(), up = new T.Vector3();
   let position = "idle", fallingApart = false, float = 0;
   function sync() {
-    const poses = frames.get(type);
-    const pose = poses?.[position];
+    const pose = frames.get(type)?.[position];
     if (!pose) return;
     sprite.visible = !fallingApart;
     model.visible = false;
@@ -166,8 +145,7 @@ export function storyActor(cardId, holder, model, camera) {
       if (!material.map) material.needsUpdate = true;
       material.map = pose.map;
     }
-    const poseHeight = sheriff ? height * pose.height / poses.idle.height : height;
-    const h = Math.min(poseHeight, (art?.width ?? Infinity) / pose.aspect);
+    const h = Math.min(height, (art?.width ?? Infinity) / pose.aspect);
     sprite.scale.set(pose.aspect * h, h, 1);
     sprite.center.x = position === "strike" && type === "wizard-skeleton" ? 0.61 : 0.5;
     sprite.center.y = float > 0 ? hips : 0.005;
