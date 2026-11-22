@@ -98,11 +98,12 @@ const TASKS = ".kiro/specs/demo/tasks.md";
 const BEFORE = "# Tasks\n\n- [ ] 1. Wire the gate\n- [-] 2. Write tests\n  - note\n- [x] 3. Old work\n";
 const guard = (event, { fresh = false, file = BEFORE, raw } = {}) => {
   let asked = 0;
+  let reads = 0;
   const verdict = guardFileEdit({
-    raw: raw ?? JSON.stringify(event), event, read: () => file, cwd: "/repo",
+    raw: raw ?? JSON.stringify(event), event, read: () => { reads++; return file; }, cwd: "/repo",
     fresh: () => { asked++; return fresh; },
   });
-  return { ...verdict, asked };
+  return { ...verdict, asked, reads };
 };
 const payload = (tool_name, tool_input) => ({ hook_event_name: "PreToolUse", cwd: "/repo", tool_name, tool_input });
 
@@ -148,6 +149,60 @@ test("GATE allows status, progress and note edits to tasks.md, and every other f
     assert.equal(verdict.allow, true, `${event.tool_name} ${JSON.stringify(event.tool_input)}: ${verdict.reason}`);
     assert.equal(verdict.asked, 0, "the stamp is only fingerprinted for a covered completion");
   }
+  // Paths outside .kiro/specs/**/tasks.md are decided before any file is read.
+  for (const event of allowed.slice(4)) assert.equal(guard(event).reads, 0, JSON.stringify(event.tool_input));
+});
+
+test("GATE judges partial str_replace, append and insert on the whole resulting tasks.md", () => {
+  const refused = [
+    // "[ ]" -> "[x]" alone completes "- [ ] 1. Wire the gate" (the only "[ ]" in BEFORE).
+    payload("str_replace", { path: TASKS, oldStr: "[ ]", newStr: "[x]" }),
+    payload("fs_write", { command: "str_replace", path: TASKS, old_str: "[ ]", new_str: "[x]" }),
+    // Fragment with trailing text, no list marker in either string.
+    payload("str_replace", { path: TASKS, oldStr: "[ ] 1. Wire", newStr: "[x] 1. Wire" }),
+    payload("str_replace", { path: TASKS, oldStr: "[-] 2. Write tests", newStr: "[x] 2. Write tests (done)" }),
+    // Insert a done item after line 2.
+    payload("fs_write", { command: "insert", path: TASKS, insert_line: 2, new_str: "- [x] 8. Inserted" }),
+  ];
+  for (const event of refused) {
+    const verdict = guard(event);
+    assert.equal(verdict.allow, false, JSON.stringify(event.tool_input));
+    assert.match(verdict.reason, /would mark a task \[x\]/);
+    assert.equal(guard(event, { fresh: true }).allow, true, "a fresh passing stamp lets it through");
+  }
+  // Appending onto an unfinished last line: the joined result "- [x] 1. Wire hooks" is a completion.
+  const unfinished = "# Tasks\n\n- [";
+  const append = payload("fs_write", { command: "append", path: TASKS, new_str: "x] 1. Wire hooks\n" });
+  assert.equal(guard(append, { file: unfinished }).allow, false);
+  assert.equal(guard(payload("fs_append", { path: TASKS, text: "x] 1. Wire hooks\n" }), { file: unfinished }).allow, false);
+  assert.equal(guard(append, { file: unfinished, fresh: true }).allow, true);
+  // The same partial replacements that leave items open stay allowed without the stamp.
+  for (const event of [
+    payload("str_replace", { path: TASKS, oldStr: "[ ]", newStr: "[-]" }),
+    payload("str_replace", { path: TASKS, oldStr: "1. Wire the gate", newStr: "1. Wire the gate (blocked)" }),
+    payload("str_replace", { path: TASKS, oldStr: "Old work", newStr: "Old work $& $1" }),
+    payload("fs_write", { command: "insert", path: TASKS, insert_line: 4, new_str: "  - note: waiting" }),
+    payload("fs_write", { command: "append", path: TASKS, new_str: "Progress: 1 of 3.\n" }),
+  ]) {
+    const verdict = guard(event);
+    assert.equal(verdict.allow, true, `${JSON.stringify(event.tool_input)}: ${verdict.reason}`);
+    assert.equal(verdict.asked, 0);
+  }
+});
+
+test("GATE fails closed on ambiguous or unresolvable partial edits to a covered tasks.md", () => {
+  const twoOpen = "- [ ] 1. Wire hooks\n- [ ] 2. Write tests\n";
+  const ambiguous = payload("str_replace", { path: TASKS, oldStr: "[ ]", newStr: "[x]" });
+  const verdict = guard(ambiguous, { file: twoOpen });
+  assert.equal(verdict.allow, false);
+  assert.match(verdict.reason, /occurs 2 times, not exactly once \(fail closed\)/);
+  assert.equal(guard(ambiguous, { file: twoOpen, fresh: true }).allow, true);
+  assert.equal(guard(payload("str_replace", { path: TASKS, oldStr: "absent", newStr: "[x]" })).allow, false, "zero matches");
+  assert.equal(guard(payload("str_replace", { path: TASKS, oldStr: "", newStr: "- [x] 1." })).allow, false, "empty old text");
+  assert.equal(guard(payload("str_replace", { path: TASKS, oldStr: "[ ]", newStr: "[x]" }), { file: null }).allow, false, "unreadable file");
+  assert.equal(guard(payload("fs_append", { path: TASKS, text: "- [x] 9.\n" }), { file: null }).allow, false, "unreadable append target");
+  assert.equal(guard(payload("fs_write", { command: "insert", path: TASKS, new_str: "- [ ] 9." })).allow, false, "insert without insert_line");
+  assert.equal(guard(payload("fs_write", { command: "insert", path: TASKS, insert_line: 99, new_str: "- [ ] 9." })).allow, false, "insert past the end");
 });
 
 test("GATE fails closed on an unparseable or unrecognised edit to a covered tasks.md", () => {

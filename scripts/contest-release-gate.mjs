@@ -199,24 +199,64 @@ export function introducesCompletion(before, after) {
 }
 
 const text = (value) => (typeof value === "string" ? value : undefined);
+const pathOf = (input) => text(input?.path ?? input?.file_path ?? input?.filePath);
 
-// The edit a file-writing tool call would make: {path, before, after}, or {path, error}, or null when
-// the input names no path. Shapes: this session's fs_write {path, text} and str_replace {path, oldStr,
-// newStr}; Kiro CLI fs_write {command: create|str_replace|append|insert, path, file_text|old_str|new_str};
-// IDE-style fsWrite/fsAppend/strReplace {path, text|content|oldStr|newStr}.
+// Every index where `needle` occurs in `haystack`, overlapping matches included.
+function occurrences(haystack, needle) {
+  const found = [];
+  for (let at = haystack.indexOf(needle); at !== -1; at = haystack.indexOf(needle, at + 1)) found.push(at);
+  return found;
+}
+
+// The edit a file-writing tool call would make on the whole file: {path, before, after} or
+// {path, before, afters} (every plausible result, when the tool's exact join is not known), or
+// {path, error}, or null when the input names no path. `read(path)` returns the current file text or
+// null and is called only after the caller has decided the path is covered. Shapes: this session's
+// fs_write {path, text} and str_replace {path, oldStr, newStr}; Kiro CLI fs_write {command:
+// create|str_replace|append|insert, path, file_text|old_str|new_str|insert_line}; IDE-style
+// fsWrite/fsAppend/strReplace {path, text|content|oldStr|newStr}.
 export function editOf(tool, input, read) {
-  const path = text(input?.path ?? input?.file_path ?? input?.filePath);
+  const path = pathOf(input);
   if (!path) return null;
   const command = text(input.command);
   const name = String(tool ?? "");
   if (command === "str_replace" || /^(str_replace|strReplace)$/.test(name)) {
-    const before = text(input.old_str ?? input.oldStr);
-    const after = text(input.new_str ?? input.newStr);
-    return before === undefined || after === undefined ? { path, error: "str_replace without old and new text" } : { path, before, after };
+    const oldText = text(input.old_str ?? input.oldStr);
+    const newText = text(input.new_str ?? input.newStr);
+    if (oldText === undefined || newText === undefined) return { path, error: "str_replace without old and new text" };
+    if (oldText === "") return { path, error: "str_replace with empty old text" };
+    const before = read(path);
+    if (before === null || before === undefined) return { path, error: "str_replace on an unreadable file" };
+    const at = occurrences(before, oldText);
+    if (at.length !== 1) return { path, error: `str_replace old text occurs ${at.length} times, not exactly once` };
+    // Literal splice (String.replace would interpret $ patterns in newText).
+    return { path, before, after: before.slice(0, at[0]) + newText + before.slice(at[0] + oldText.length) };
   }
-  if (command === "append" || command === "insert" || /^(fs_append|fsAppend|append)$/.test(name)) {
-    const after = text(input.new_str ?? input.text ?? input.content);
-    return after === undefined ? { path, error: "append without text" } : { path, before: "", after };
+  if (command === "insert") {
+    const added = text(input.new_str ?? input.text ?? input.content);
+    const line = input.insert_line ?? input.insertLine;
+    if (added === undefined) return { path, error: "insert without text" };
+    if (!Number.isInteger(line) || line < 0) return { path, error: "insert without a valid insert_line" };
+    const before = read(path);
+    if (before === null || before === undefined) return { path, error: "insert into an unreadable file" };
+    const lines = before.split("\n");
+    if (line > lines.length) return { path, error: `insert_line ${line} is past the end of the file` };
+    // Inserted after line `line`. Whether the tool adds a newline after the text is not pinned
+    // down here, so both joins are checked and either one introducing a [x] counts.
+    const head = lines.slice(0, line).join("\n");
+    const tail = lines.slice(line).join("\n");
+    const lead = line > 0 ? `${head}\n` : "";
+    return { path, before, afters: [`${lead}${added}\n${tail}`, `${lead}${added}${tail}`] };
+  }
+  if (command === "append" || /^(fs_append|fsAppend|append)$/.test(name)) {
+    const added = text(input.new_str ?? input.text ?? input.content);
+    if (added === undefined) return { path, error: "append without text" };
+    const before = read(path);
+    if (before === null || before === undefined) return { path, error: "append to an unreadable file" };
+    // Appending to a file whose last line is unfinished could join onto that line, depending on
+    // whether the tool inserts a newline first; check both results.
+    if (before === "" || before.endsWith("\n")) return { path, before, after: before + added };
+    return { path, before, afters: [`${before}\n${added}`, before + added] };
   }
   if (command === "create" || (command === undefined && /^(fs_write|fsWrite|write)$/.test(name))) {
     const after = text(input.file_text ?? input.text ?? input.content);
@@ -235,12 +275,15 @@ export function guardFileEdit({ raw = "", event, fresh, read = () => null, cwd =
   const tool = event.tool_name ?? event.toolName ?? event.tool;
   const input = event.tool_input ?? event.toolInput ?? event.input ?? {};
   const base = event.cwd ?? cwd;
-  const edit = editOf(tool, input, (path) => read(resolve(base, path)));
-  if (!edit) return mentionsTasks && !fresh() ? refuse("edit payload naming tasks.md without a readable path (fail closed)") : { allow: true, reason: "no path" };
-  const rel = relative(base, resolve(base, edit.path)).split(sep).join("/");
+  const path = pathOf(input);
+  if (!path) return mentionsTasks && !fresh() ? refuse("edit payload naming tasks.md without a readable path (fail closed)") : { allow: true, reason: "no path" };
+  // Scope first, so an ordinary write never reads any file.
+  const rel = relative(base, resolve(base, path)).split(sep).join("/");
   if (!TASKS_FILE.test(rel)) return { allow: true, reason: `${rel} is not a spec tasks.md` };
+  const edit = editOf(tool, input, (file) => read(resolve(base, file)));
   if (edit.error) return fresh() ? { allow: true, reason: "stamp fresh" } : refuse(`${rel}: ${edit.error} (fail closed)`);
-  if (!introducesCompletion(edit.before, edit.after)) return { allow: true, reason: "no new [x]" };
+  const afters = edit.afters ?? [edit.after];
+  if (!afters.some((after) => introducesCompletion(edit.before, after))) return { allow: true, reason: "no new [x]" };
   if (fresh()) return { allow: true, reason: "completion with a fresh passing stamp" };
   return refuse(`${rel} would mark a task [x] but ${stampProblem(readJson(STAMP)).split("\n")[0]}. Status markers ([-], [~]) and notes stay editable`);
 }
