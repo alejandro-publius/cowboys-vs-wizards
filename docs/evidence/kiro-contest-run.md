@@ -8,6 +8,8 @@ GitHub Pages served `d0bbd142eb2d3ff64c491b892f12587a016d01e8` at the site root 
 
 Kiro CLI 3.5.0 with Claude Opus 5.5 wrote the Stop, task and save checks and the four fast-check properties. The release stamp passed 60 cases per property at seed `23820`, ran `verify-duel.mjs` and ran the requested bounded `deck-balance.mjs` sample. The sample uses the historical lane harness. The fast-check properties exercise Showdown.
 
+A native `PostFileSave` event on a tracked rules path ran all four properties with 15 cases each at seed `23820` and exited 0. The disposable checker recorded the hook event and the actual test output.
+
 The native `fs_write` tool refused the unchecked-to-completed edit in `.kiro/specs/contest-gate-probe/tasks.md` when the stamp was stale. The tool reported that `PreToolUse` intercepted it and that the write did not execute. With a current passing stamp, the same edit succeeded in a fresh run. The fixture is temporary. This establishes the file-edit guard for Kiro's task checklist. Native tracker state outside those file tools is unverified.
 
 Kiro's Stop logger recorded real read and write tool categories from `PostToolUse` and rendered two actual Stop receipts into the usage page. The offline entry checker passed its automated checks, including the tracked MIT license and tracked `.kiro/` directory. [Kiro usage](../KIRO_USAGE.md) · [Gate design and rerun commands](kiro-contest-gates.md)

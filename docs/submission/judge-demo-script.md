@@ -1,6 +1,16 @@
 # Judge demo script
 
-## Current: Showdown, the turn-five Dragon decision (private cut)
+## November 22 illustrated Showdown demo
+
+The 78-second scripted cut opens on Hellfire, shows the two Outrider choices from the same Bone Fence position, then shows the Kiro gate, the Sheriff rejection and the Night Shift balance results. The captured game is the public Pages revision `d0bbd142eb2d3ff64c491b892f12587a016d01e8`. [Play the release](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Build identity and Kiro evidence](../evidence/kiro-contest-run.md)
+
+### Three first-time players
+
+Verify `build.json` names the filmed revision before the session. Start each player at the illustrated title in a fresh browser profile. Say, “Open Ride or Fight? and make your first move.” Once they act, ask, “What did your move do, and why did it work?” Give the explanation and show the alternate replay only after recording their answer. Record the action, their answer in their own words, any hint, and whether they correctly explained how their chosen target was available or affected the board. Ask for consent before recording a participant.
+
+Report the count of independent explanations out of three. Observations for this release are pending.
+
+## November 20 Showdown turn-five Dragon decision (private cut)
 
 Written November 20, 2026 by Kiro (Kiro CLI worker, job K-102 with K-087/K-095). It describes a scripted screen capture that exists. It makes no design, rules, wording or balance decision; those stay with Fable ([issue 143](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/143)).
 

@@ -81,6 +81,9 @@ is empty and no session has been recorded by this hook.
 | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
 | `54ae079e0189cf24` | `sess_a87f7bbc-b6ed-4368-877e-a80802e87c81` | 2026-11-22T22:08:05Z | 1 | read 1 | cwd, hook_event_name, session_id | cwd yes; env match | recorded-stop |  |
 | `359f03da4b632e9c` | `sess_e67fa73c-6487-457f-a52a-718cb028c44e` | 2026-11-22T22:09:18Z | 1 | write 5 | cwd, hook_event_name, session_id | cwd yes; env match | recorded-stop |  |
+| `9ac406b1e5657d12` | `sess_b4e530c4-fd3c-4af4-962a-2e44508727e9` | 2026-11-22T22:21:17Z | 1 | read 1, write 1 | cwd, hook_event_name, session_id | cwd yes; env match | recorded-stop |  |
+| `d9ac8b7e520bb72e` | `sess_6857deb4-60f4-42bc-8c2e-e7e918002f77` | 2026-11-22T22:23:23Z | 1 | read 1, write 1 | cwd, hook_event_name, session_id | cwd yes; env match | recorded-stop |  |
+| `56c53b48705f69f7` | `sess_7b37f7ba-6a71-4357-8449-648c3b4c5666` | 2026-11-22T22:26:43Z | 1 | read 9, shell 1 | cwd, hook_event_name, session_id | cwd yes; env match | recorded-stop |  |
 <!-- contest-usage:end -->
 
 ## Submission check
