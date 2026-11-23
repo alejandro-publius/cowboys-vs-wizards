@@ -86,3 +86,11 @@
 .sd-billy-scores dd { font-size: 1.35rem; font-weight: bold; }
 .sd-billy-evidence { font-size: .85rem; }
 .sd-billy-evidence p { margin-top: .45rem; }
+/* Seat audit detail: a compact table that stays inside 390px; numbers line up by column. */
+.sd-billy-seat summary { cursor: pointer; }
+.sd-billy-seat .sd-ledger-wrap { margin-top: .45rem; }
+.sd-billy-seat-table { max-width: 32rem; }
+.sd-billy-seat-table caption { text-align: left; color: var(--muted); font-size: .82rem; padding-bottom: .2rem; }
+.sd-billy-seat-table :is(td, th[scope=col]:not(:first-child)) { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sd-billy-seat-finding { font-weight: 600; }
+.sd-billy-seat-verify code { overflow-wrap: anywhere; }
