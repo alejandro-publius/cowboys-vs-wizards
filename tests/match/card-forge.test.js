@@ -181,19 +181,83 @@ test("both guards: send_message reaches only the parent session", (t) => {
 
 test("reviewer guard: exact command allowlist, read-only forge folder", (t) => {
   const root = fixture(t);
-  assert.equal(reviewer(root, "shell", {command: COMMANDS.prepare}).allow, true);
-  assert.equal(reviewer(root, "execute_bash", {command: COMMANDS.verify, summary: "verify the draft"}).allow, true);
+  const project = realpathSync(ROOT);
+  const shell = (input) => reviewer(project, "shell", input);
+  assert.equal(shell({command: COMMANDS.prepare}).allow, true);
+  assert.equal(reviewer(project, "execute_bash", {command: COMMANDS.verify, summary: "verify the draft"}).allow, true);
   for (const command of [
     `${COMMANDS.prepare} my-request.txt`, `${COMMANDS.verify} `, ` ${COMMANDS.verify}`, `${COMMANDS.verify} && rm -rf .`,
     `${COMMANDS.verify}; curl example.com`, `${COMMANDS.verify} > /tmp/out`, "node scripts/card-forge.mjs guard author",
     "node scripts/contest-release-gate.mjs release", "git push", "npm install", "",
-  ]) assert.equal(reviewer(root, "shell", {command}).allow, false, JSON.stringify(command));
-  assert.equal(reviewer(root, "shell", {command: COMMANDS.verify, cwd: "/tmp"}).allow, false);
-  assert.equal(reviewer(root, "shell", "node scripts/card-forge.mjs verify").allow, false);
+  ]) assert.equal(shell({command}).allow, false, JSON.stringify(command));
+  assert.equal(shell({command: COMMANDS.verify, cwd: "/tmp"}).allow, false);
+  assert.equal(reviewer(project, "shell", "node scripts/card-forge.mjs verify").allow, false);
   assert.equal(reviewer(root, "read_file", {path: REQUEST}).allow, true);
   assert.equal(reviewer(root, "fs_read", {operations: [{mode: "Directory", path: ".artifacts/card-forge"}]}).allow, true);
   assert.equal(reviewer(root, "read_file", {path: "src/game/showdown/cards.js"}).allow, false);
   for (const tool of ["fs_write", "write", "fs_append", "str_replace"]) assert.equal(reviewer(root, tool, {path: VERDICT, text: "{}"}).allow, false, tool);
+});
+
+// The envelope native Kiro v3 actually sends for the reviewer's prepare step.
+const nativeShell = (command, cwd, extra = {}) => ({command, description: "Prepare the card forge request", cwd, run_in_background: false, timeout: null, ...extra});
+
+test("reviewer guard: native Kiro shell envelope from the project root", (t) => {
+  const project = realpathSync(ROOT);
+  const shell = (input, at = project) => reviewer(at, "shell", input);
+  for (const command of [COMMANDS.prepare, COMMANDS.verify]) {
+    assert.equal(shell(nativeShell(command, project)).allow, true, command);
+    assert.equal(shell(nativeShell(command, ".")).allow, true, `${command} in .`);
+    assert.equal(shell(nativeShell(command, project, {timeout: 600000})).allow, true, `${command} timeout`);
+    assert.equal(shell((({run_in_background, timeout, ...rest}) => rest)(nativeShell(command, project))).allow, true, `${command} omitted`);
+  }
+  const other = fixture(t);
+  const blocked = [
+    [nativeShell(COMMANDS.prepare, other), /not the project root/],
+    [nativeShell(COMMANDS.prepare, `${project}/`), /not the project root/],
+    [nativeShell(COMMANDS.prepare, `${project}/scripts`), /not the project root/],
+    [nativeShell(COMMANDS.prepare, `${project}/scripts/..`), /not the project root/],
+    [nativeShell(COMMANDS.prepare, "./"), /not the project root/],
+    [nativeShell(COMMANDS.prepare, ""), /not the project root/],
+    [nativeShell(COMMANDS.prepare, "scripts"), /not the project root/],
+    [nativeShell(COMMANDS.prepare, null), /cwd must be text/],
+    [nativeShell(COMMANDS.prepare, [project]), /cwd must be text/],
+    [nativeShell(COMMANDS.prepare, project, {run_in_background: true}), /run_in_background/],
+    [nativeShell(COMMANDS.prepare, project, {run_in_background: null}), /run_in_background/],
+    [nativeShell(COMMANDS.prepare, project, {run_in_background: "false"}), /run_in_background/],
+    [nativeShell(COMMANDS.prepare, project, {timeout: "600"}), /timeout/],
+    [nativeShell(COMMANDS.prepare, project, {timeout: -1}), /timeout/],
+    [nativeShell(COMMANDS.prepare, project, {timeout: Number.POSITIVE_INFINITY}), /timeout/],
+    [nativeShell(COMMANDS.prepare, project, {description: {text: "x"}}), /description must be text/],
+    [nativeShell(COMMANDS.prepare, project, {env: {PATH: "/tmp"}}), /field env/],
+    [nativeShell(`${COMMANDS.prepare} /etc/passwd`, project), /allowlist/],
+    [nativeShell(`${COMMANDS.prepare} ../outside.txt`, project), /allowlist/],
+    [nativeShell("node scripts/card-forge.mjs guard reviewer", project), /allowlist/],
+    [nativeShell("cat .artifacts/card-forge/request.txt", project), /allowlist/],
+  ];
+  for (const [input, reason] of blocked) {
+    const decision = shell(input);
+    assert.equal(decision.allow, false, JSON.stringify(input));
+    assert.match(decision.reason, reason, JSON.stringify(input));
+  }
+  // The hook firing in another workspace is refused even when the shell cwd matches it.
+  for (const cwd of [other, "."]) {
+    const decision = shell(nativeShell(COMMANDS.prepare, cwd), other);
+    assert.equal(decision.allow, false, cwd);
+    assert.match(decision.reason, /not the card forge project root/, cwd);
+  }
+});
+
+test("guard decisions leave every file unchanged", (t) => {
+  const root = fixture(t);
+  writeFileSync(join(root, DRAFT), text(GOOD));
+  const files = [REQUEST, BRIEF, PREPARE, DRAFT, "src/game/showdown/cards.js"];
+  const before = files.map((rel) => readFileSync(join(root, rel)));
+  author(root, "fs_write", {command: "create", path: DRAFT, file_text: text({...GOOD, attack: 2})});
+  author(root, "fs_write", {command: "create", path: "src/game/showdown/cards.js", file_text: "x"});
+  author(root, "read_file", {path: REQUEST});
+  reviewer(root, "shell", nativeShell(COMMANDS.prepare, root));
+  reviewer(root, "fs_write", {path: VERDICT, text: "{}"});
+  assert.deepEqual(files.map((rel) => readFileSync(join(root, rel))), before);
 });
 
 test("guard fails closed on unknown roles, events and shapes", (t) => {
@@ -213,8 +277,14 @@ test("guard CLI exits 0 to allow and 2 to block", (t) => {
   const blocked = run("author", text(event(root, "execute_bash", {command: "ls"})));
   assert.equal(blocked.status, 2);
   assert.match(blocked.stderr, /card-forge guard blocked this tool call/);
-  assert.equal(run("reviewer", text(event(root, "shell", {command: COMMANDS.verify}))).status, 0);
-  assert.equal(run("reviewer", text(event(root, "shell", {command: `${COMMANDS.verify} --deals 1`}))).status, 2);
+  const project = realpathSync(ROOT);
+  assert.equal(run("reviewer", text(event(project, "shell", nativeShell(COMMANDS.prepare, project)))).status, 0);
+  assert.equal(run("reviewer", text(event(project, "shell", {command: COMMANDS.verify}))).status, 0);
+  assert.equal(run("reviewer", text(event(project, "shell", nativeShell(COMMANDS.prepare, root)))).status, 2);
+  assert.equal(run("reviewer", text(event(root, "shell", nativeShell(COMMANDS.prepare, root)))).status, 2);
+  assert.equal(run("reviewer", text(event(project, "shell", nativeShell(COMMANDS.prepare, project, {run_in_background: true})))).status, 2);
+  assert.equal(run("reviewer", text(event(project, "shell", nativeShell(`${COMMANDS.prepare} /etc/passwd`, project)))).status, 2);
+  assert.equal(run("reviewer", text(event(project, "shell", {command: `${COMMANDS.verify} --deals 1`}))).status, 2);
   assert.equal(run("author", "not json").status, 2);
   assert.equal(run("nobody", text(event(root, "read_file", {path: REQUEST}))).status, 2);
   assert.equal(spawnSync(process.execPath, [SCRIPT, "guard"], {input: "{}", encoding: "utf8"}).status, 2);

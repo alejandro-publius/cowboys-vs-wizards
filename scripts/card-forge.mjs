@@ -213,7 +213,8 @@ export function pairedFlips(baseline, variant) {
 //
 // author:   read only request.txt, brief.json and draft.json; write only draft.json, as one whole
 //           file whose text passes the draft schema, while a prepared request awaits verification.
-// reviewer: read only inside .artifacts/card-forge; run only the two exact commands in COMMANDS.
+// reviewer: read only inside .artifacts/card-forge; run only the two exact commands in COMMANDS,
+//           in the foreground, from this project's root.
 // Both:     send_message to the parent session only. Everything else is blocked: other tools,
 //           MCP tools, other paths, traversal, symbolic links, extra input fields. Errors block.
 export const ROLES = Object.freeze(["author", "reviewer"]);
@@ -223,7 +224,9 @@ export const SHELL_TOOLS = Object.freeze(["shell", "execute_bash", "executeBash"
 export const AUTHOR_READS = Object.freeze([REQUEST, BRIEF, DRAFT]);
 export const REVIEWER_COMMANDS = Object.freeze([COMMANDS.prepare, COMMANDS.verify]);
 const WRITE_FIELDS = ["path", "command", "file_text", "text", "content", "summary", "explanation"];
-const SHELL_FIELDS = ["command", "summary", "description", "explanation", "timeout", "timeout_ms", "timeoutMs"];
+const SHELL_TEXT_FIELDS = ["summary", "description", "explanation"];
+const SHELL_TIMEOUT_FIELDS = ["timeout", "timeout_ms", "timeoutMs"];
+const SHELL_FIELDS = ["command", "cwd", "run_in_background", ...SHELL_TEXT_FIELDS, ...SHELL_TIMEOUT_FIELDS];
 const MESSAGE_FIELDS = ["sessionId", "message", "severity", "sessionIds"];
 const MESSAGE_SEVERITIES = ["info", "success", "warning", "error"];
 const MESSAGE_MAX = 4000;
@@ -333,10 +336,26 @@ function writeDecision(input, cwdRaw, root) {
   return allow(`${DRAFT} passes the draft schema`);
 }
 
-function shellDecision(input) {
+// Native Kiro sends {command, description, cwd, run_in_background, timeout}. The commands are
+// relative, so they may run only in this script's own project: the hook must fire there, and the
+// shell cwd, when given, must be "." or that root spelled exactly as the hook cwd or its real path.
+function shellDecision(input, cwdRaw, root) {
   if (!plainObject(input)) return deny("shell input is not an object");
   for (const key of Object.keys(input)) if (!SHELL_FIELDS.includes(key)) return deny(`shell input field ${key} is not allowed`);
   if (!REVIEWER_COMMANDS.includes(input.command)) return deny(`command ${JSON.stringify(input.command)} is not on the reviewer allowlist (${REVIEWER_COMMANDS.join(" | ")})`);
+  for (const key of SHELL_TEXT_FIELDS) if (input[key] !== undefined && typeof input[key] !== "string") return deny(`shell ${key} must be text`);
+  for (const key of SHELL_TIMEOUT_FIELDS) {
+    const value = input[key];
+    if (value !== undefined && value !== null && !(typeof value === "number" && Number.isFinite(value) && value >= 0)) return deny(`shell ${key} ${JSON.stringify(value)} is not null or a number`);
+  }
+  if (input.run_in_background !== undefined && input.run_in_background !== false) return deny(`shell run_in_background ${JSON.stringify(input.run_in_background)} is not allowed; commands run in the foreground`);
+  const project = realpathSync(ROOT);
+  if (root !== project) return deny(`hook cwd ${cwdRaw} is not the card forge project root`);
+  if (input.cwd !== undefined) {
+    if (typeof input.cwd !== "string") return deny("shell cwd must be text");
+    if (input.cwd !== "." && input.cwd !== cwdRaw && input.cwd !== project) return deny(`shell cwd ${JSON.stringify(input.cwd)} is not the project root`);
+    if (realpathSync(resolve(root, input.cwd)) !== project) return deny(`shell cwd ${JSON.stringify(input.cwd)} does not resolve to the project root`);
+  }
   return allow(`${input.command} is allowlisted`);
 }
 
@@ -354,7 +373,7 @@ export function guardDecision(role, event, {cwd: fallbackCwd = process.cwd()} = 
   const root = realpathSync(cwdRaw);
   if (READ_TOOLS.includes(tool)) return readDecision(role, input, cwdRaw, root);
   if (role === "author" && WRITE_TOOLS.includes(tool)) return writeDecision(input, cwdRaw, root);
-  if (role === "reviewer" && SHELL_TOOLS.includes(tool)) return shellDecision(input);
+  if (role === "reviewer" && SHELL_TOOLS.includes(tool)) return shellDecision(input, cwdRaw, root);
   return deny(`tool ${tool} is not allowed for the card-forge ${role}`);
 }
 
