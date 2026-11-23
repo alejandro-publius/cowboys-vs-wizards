@@ -138,3 +138,43 @@ including every `CARD-*` ID in the 29 imported card specs. It reported 0 duplica
 - The 87 card spec files (no approval, no tests)
 - `docs/kiro-build-log.md` was not updated. The coordinator owns that log.
 - The `--browser` Pages check
+
+## Closeout run, 2026-11-22 (America/Los_Angeles), Kiro
+
+Supersedes the Ledger and canary lines under "Release blockers". Result: **local candidate not confirmed.**
+
+| Step | Command | Result |
+| --- | --- | --- |
+| Import | `python3 .artifacts/kiro-swarm/closeout.py` | 2 Ledger files and the 1000-duel canary imported; 12 focused Ledger browser assertions passed in the Ledger worktree (reported by the script, not rerun here) |
+| Canary | `node scripts/balance-evidence.mjs verify` | ok, `reports/balance/showdown-e1e2d325958b-s0-499.json`: seeds 0-499, 1000 unique games, engine d364db0819c2, specs 88491a02c0ca, playTurn level 2, even-match decks; cowboy 599, wizard 401, draw 0 (Wilson 95% 56.8-62.9% Cowboy); first seat 567, second 433; no card-band verdict |
+| Tests | `npm test` (working tree) | 962/962 pass; GLB structural 2/2 |
+| Candidate | `python3 .artifacts/kiro-swarm/validate-local-release.py` | Commit `79e6517` on `kiro/swarm-closeout`; build and staging OK; `check-pages-tree --browser` 7 checks ok, then failed after `/showdown/`: HTTP 404 for host-root `/favicon.ico`. Ledger browser check did not run. `release-candidate.json` stage stays `candidate` |
+| Scorecard | `npm run scorecard -- --offline` at `79e6517` | 3 of 14 pass (hooks, submission-licence, submission-kiro) |
+
+Defects found in the candidate:
+
+- `79e6517` omits the `tests/game/field-trial-repair.test.js` fix (it is not in `closeout-paths.json`). At the
+  commit, in a clean temporary worktree, that test fails with `ERR_MODULE_NOT_FOUND` for
+  `packages/frontier-kit/index.js`. The 962/962 run covered the working tree, not the commit.
+- The commit message cites no requirement ID, which goal.md requires.
+- Every staged page declares `<link rel="icon" href="data:,">`; the cause of the host-root favicon request is not yet identified.
+
+### Release repair, Kiro
+
+- **Fixture:** the existing `tests/game/field-trial-repair.test.js` change (the witness sandbox also copies `packages/`)
+  is staged explicitly in the follow-up commit, unchanged.
+- **Favicon diagnosis:** rerunning `node scripts/check-pages-tree.mjs --commit 79e6517… --browser` against the staged
+  `79e6517` tree reproduced the failure at the first `clean()` after the Camp saloon opens `poker/`. The four branded
+  pages (`/`, `/3d/`, `/graybox/`, `/showdown/`) declare `<link rel="icon" href="data:,">`; the experimental
+  `poker/index.html` declares no icon, so Chrome makes its default probe for origin-root `/favicon.ico` (CDP type
+  `Other`). The simulated Pages server returns 404 for every path outside `/cowboys-vs-wizards/`, as GitHub Pages
+  serves that path from the owner's root site. Cause: Chromium default behaviour on a shipped page without an icon,
+  outside the project path; no app asset failed. The earlier note that "every staged page" declares an icon was wrong
+  for `poker/`.
+- **Repair:** `scripts/check-pages-tree.mjs` exempts only a response whose URL is exactly `<origin>/favicon.ico` with
+  CDP type `Other`, and records each exempt probe in `allowedFaviconProbes` in the report. Every other HTTP error
+  (in or out of the project path), `loadingFailed` request, console error and exception still fails `clean()`.
+  Server path isolation is unchanged. With the exemption the rerun against `79e6517`'s staged tree passed 11 checks
+  with one recorded probe (`.artifacts/kiro/swarm-pages-repro/pages-tree.json`). Adding an icon to `poker/` would be
+  an experiment-page change outside this repair's paths.
+- Committed-candidate verification results follow in `.artifacts/kiro-swarm/release-candidate.json`.

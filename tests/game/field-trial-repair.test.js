@@ -290,7 +290,8 @@ function freshRecord({inputs, change}, protocol, protocolText) {
 // and a Git repository that reads this checkout's objects through alternates (no fetch, no ref needed).
 function witnessSandbox() {
   const box = mkdtempSync(join(scratch, "witness-"));
-  for (const rel of ["scripts", "src"]) cpSync(join(ROOT, rel), join(box, rel), {recursive: true});
+  // packages/ holds the frontier kit that src/review/paired-duel-kit.js re-exports.
+  for (const rel of ["scripts", "src", "packages"]) cpSync(join(ROOT, rel), join(box, rel), {recursive: true});
   if (existsSync(join(ROOT, "package.json"))) cpSync(join(ROOT, "package.json"), join(box, "package.json"));
   if (existsSync(join(ROOT, "node_modules"))) symlinkSync(join(ROOT, "node_modules"), join(box, "node_modules"), "dir");
   mkdirSync(dirname(join(box, PROTOCOL_PATH)), {recursive: true});

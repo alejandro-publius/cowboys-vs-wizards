@@ -201,8 +201,15 @@ async function browserChecks() {
       await wait(`document.readyState==='complete'&&location.href===${JSON.stringify(site + rel)}`);
     };
     const shown = (id) => `!!document.getElementById('${id}')&&!document.getElementById('${id}').hidden`;
+    // Chromium's default favicon probe: a page without <link rel="icon"> (the experimental poker/ page) makes
+    // Chrome request the origin-root /favicon.ico. On GitHub Pages that path belongs to the owner's root site,
+    // outside BASE_PATH, so it is not a project asset. Only that exact URL with CDP type "Other" is exempt and
+    // each exempt probe is kept in the report; every in-project error still fails.
+    const faviconProbe = new URL("/favicon.ico", site).href;
+    const isFaviconProbe = (r) => r.url === faviconProbe && r.type === "Other";
     const clean = () => {
-      const bad = responses.filter((r) => r.status >= 400);
+      report.allowedFaviconProbes = responses.filter((r) => r.status >= 400 && isFaviconProbe(r));
+      const bad = responses.filter((r) => r.status >= 400 && !isFaviconProbe(r));
       assert.deepEqual(bad, [], "no HTTP errors");
       assert.deepEqual(report.errors, [], "no page errors or failed requests");
     };
