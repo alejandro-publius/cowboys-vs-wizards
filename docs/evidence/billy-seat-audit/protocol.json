@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "sourceCommit": "eedab9385931e093e156fdb7885c470eb2ec64eb",
+  "card": "cowboy-billy",
+  "field": "attack",
+  "baseline": 2,
+  "candidate": 1,
+  "firstSeed": 901010000,
+  "deals": 25000,
+  "blockDeals": 5000,
+  "seats": [
+    "cowboy",
+    "wizard"
+  ],
+  "botLevel": 2
+}
