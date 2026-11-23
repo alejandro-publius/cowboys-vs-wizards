@@ -19,6 +19,8 @@
 //
 // Hook input fields accepted (Kiro CLI hook event): hook_event_name, cwd, tool_name, tool_input;
 // camelCase spellings (hookEventName, toolName, toolInput) are accepted as the same fields.
+// After deciding, the CLI awaits scripts/saloon-hooks.mjs observeFence (Night Shift saloon
+// journal); that call is silent, swallows every error and never alters the decision.
 import {existsSync, lstatSync, readFileSync, realpathSync} from "node:fs";
 import {isAbsolute, join, relative, resolve, sep} from "node:path";
 import {fileURLToPath} from "node:url";
@@ -50,7 +52,7 @@ function messageDecision(input) {
   }
   return allow("send_message to the parent session");
 }
-const CARD_PATH = /^\.artifacts\/contest-balance\/attempt-([1-9][0-9]*)\/scratch\/\.kiro\/specs\/duel-card-pipeline\/cards\/([a-z][a-z0-9-]{0,31})\.json$/;
+export const CARD_PATH = /^\.artifacts\/contest-balance\/attempt-([1-9][0-9]*)\/scratch\/\.kiro\/specs\/duel-card-pipeline\/cards\/([a-z][a-z0-9-]{0,31})\.json$/;
 
 const allow = (reason) => ({allow: true, reason});
 const deny = (reason) => ({allow: false, reason});
@@ -123,11 +125,26 @@ export function runHook(text, options) {
   return decision;
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+// CLI. Deliberately no top-level await: scripts/saloon-hooks.mjs statically imports this module, so
+// awaiting its import while this module is still evaluating would never settle (Node exit 13).
+// main() is called once this module has finished evaluating; the import then reuses it.
+async function main() {
   let text = "";
   try { text = readFileSync(0, "utf8"); } catch { text = ""; }
   const decision = runHook(text);
+  // Night Shift saloon observation (block on deny, card snapshot on an allowed scratch write).
+  // Best effort and silent: it cannot change this decision, its exit status or its stderr. Awaited so
+  // the journal write finishes before process.exit.
+  try { await (await import("./saloon-hooks.mjs")).observeFence(text, decision); } catch { /* observation only */ }
   if (decision.allow) process.exit(0);
   process.stderr.write(`contest-balance fence blocked this tool call: ${decision.reason}\n`);
   process.exit(2);
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch((error) => {
+    // Fail closed, as runHook does for any error.
+    process.stderr.write(`contest-balance fence blocked this tool call: fence error: ${error?.message ?? error}\n`);
+    process.exit(2);
+  });
 }

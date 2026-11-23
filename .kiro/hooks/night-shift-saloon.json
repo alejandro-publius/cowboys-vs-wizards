@@ -1,0 +1,23 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Night Shift saloon: snapshot a wanted/bounty spec's checkboxes before task_update",
+      "trigger": "PreToolUse",
+      "matcher": "task_update",
+      "action": {
+        "type": "command",
+        "command": "node scripts/saloon-hooks.mjs bounty-pre"
+      }
+    },
+    {
+      "name": "Night Shift saloon: record the drafted boss of a task that task_update completed",
+      "trigger": "PostToolUse",
+      "matcher": "task_update",
+      "action": {
+        "type": "command",
+        "command": "node scripts/saloon-hooks.mjs bounty-post"
+      }
+    }
+  ]
+}

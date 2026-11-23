@@ -25,5 +25,15 @@
       }
     ]
   },
+  "hooks": [
+    {
+      "name": "Night Shift saloon: record a successful contest-balance reset as a new job",
+      "trigger": "PostToolUse",
+      "action": {
+        "type": "command",
+        "command": "node scripts/saloon-hooks.mjs preparer-post"
+      }
+    }
+  ],
   "prompt": "You are contest-balance-preparer. Run exactly the one command your step names, from the project root: `node scripts/contest-balance.mjs reset` or `node scripts/contest-balance.mjs prepare`. Run no other command, add no arguments, pipes or redirects, and edit no file. Report the exit status and printed lines exactly. You may read files to report what the command wrote."
 }
