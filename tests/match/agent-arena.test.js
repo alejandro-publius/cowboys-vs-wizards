@@ -4,7 +4,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {playGame, playSeries, recordReplay, replayProblems} from "../../experiments/agent-arena/arena.mjs";
-import {SCHEMA, actionFacts, canonical, decide, parsePlaybook, policyDigest, seatView, validatePlaybook} from "../../experiments/agent-arena/playbook.js";
+import {GUIDE, SCHEMA, actionFacts, canonical, decide, parsePlaybook, policyDigest, seatView, validatePlaybook} from "../../experiments/agent-arena/playbook.js";
 import {applyAction, createShowdown, legalActions, opponent} from "../../src/game/showdown/rules.js";
 
 const SHERIFF = {
@@ -162,4 +162,27 @@ test("invalid playbooks and player programs are rejected", () => {
   const state = createShowdown(1, {first: "cowboy"});
   assert.throws(() => decide(seatView(state), legalActions(state), {...SHERIFF, order: ["end"], decide: () => ({type: "end"})}));
   assert.ok(Object.isFrozen(BOOKS.cowboy) && Object.isFrozen(BOOKS.cowboy.attack.prefer));
+});
+
+test("cover.when is one string, not a one-element list; list fields stay lists with one entry", () => {
+  const text = (change) => {
+    const value = structuredClone(SHERIFF);
+    change(value);
+    return JSON.stringify(value);
+  };
+  for (const when of GUIDE.enums["cover.when"]) {
+    assert.equal(parsePlaybook(text((p) => { p.cover.when = when; }), "cautious-sheriff").ok, true, when);
+    const listed = parsePlaybook(text((p) => { p.cover.when = [when]; }), "cautious-sheriff");
+    assert.equal(listed.ok, false, `[${when}]`);
+    assert.deepEqual(listed.errors, ["playbook.cover.when must be one string, not a list: one of threatened, always"]);
+  }
+  assert.equal(parsePlaybook(text((p) => { p.gear.prefer = ["ready"]; }), "cautious-sheriff").ok, true);
+  assert.deepEqual(parsePlaybook(text((p) => { p.gear.prefer = "ready"; }), "cautious-sheriff").errors, ["playbook.gear.prefer must be a list"]);
+  // The brief states each field's JSON type the way the validator checks it.
+  const {shape} = GUIDE;
+  for (const field of [shape.order, shape.attack.prefer, shape.attack.avoid, shape.summon.prefer, shape.spell.prefer, shape.gear.prefer]) assert.match(field, /^list of /);
+  for (const field of [shape.schema, shape.persona, shape.motto, shape.cover.when]) assert.match(field, /^one string/);
+  assert.match(shape.cover.when, /not a list/);
+  assert.match(shape.summon.maxTributes, /^number /);
+  assert.match(shape.spell.onlyToKill, /^boolean/);
 });

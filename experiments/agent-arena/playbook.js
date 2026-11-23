@@ -27,16 +27,27 @@ const MOTTO = /^[\x20-\x7e]{0,80}$/;
 export const GUIDE = Object.freeze({
   schema: SCHEMA,
   maxBytes: MAX_BYTES,
+  // Every key below is required and no other key is allowed. Each entry starts with its JSON type.
+  format: "A \"list\" is a JSON array of strings, written with [ ], even with one entry or none, each entry at most once. \"One string\" is a bare JSON string, never inside [ ]. A \"number\" is an unquoted JSON number and a \"boolean\" is unquoted true or false.",
   shape: {
-    schema: `the string "${SCHEMA}"`,
-    persona: "your persona id",
-    motto: "up to 80 printable ASCII characters, shown to spectators only, never read by the referee",
-    order: "action types in priority order, each at most once, must include \"end\"; types left out are never chosen",
-    attack: {prefer: "tie-break list over legal attacks, best first", avoid: "attacks to rule out unless they win now"},
-    summon: {prefer: "tie-break list over legal summons", maxTributes: "0, 1 or 2: summons that tribute more troops are ruled out"},
-    spell: {prefer: "tie-break list over legal spells", onlyToKill: "true or false: when true, only spells that defeat a troop"},
-    gear: {prefer: "tie-break list over own troops to equip"},
-    cover: {when: "which troops may take cover when cover is the chosen type"},
+    schema: `one string: exactly "${SCHEMA}"`,
+    persona: "one string: your persona id",
+    motto: "one string: up to 80 printable ASCII characters, shown to spectators only, never read by the referee",
+    order: "list of enums.order values, 1 or more entries, must include \"end\": action types in priority order; types left out are never chosen",
+    attack: {
+      prefer: "list of enums[\"attack.prefer\"] values, may be empty: tie-break list over legal attacks, best first",
+      avoid: "list of enums[\"attack.avoid\"] values, may be empty: attacks to rule out unless they win now",
+    },
+    summon: {
+      prefer: "list of enums[\"summon.prefer\"] values, may be empty: tie-break list over legal summons",
+      maxTributes: "number 0, 1 or 2: summons that tribute more troops are ruled out",
+    },
+    spell: {
+      prefer: "list of enums[\"spell.prefer\"] values, may be empty: tie-break list over legal spells",
+      onlyToKill: "boolean: when true, only spells that defeat a troop",
+    },
+    gear: {prefer: "list of enums[\"gear.prefer\"] values, may be empty: tie-break list over own troops to equip"},
+    cover: {when: "one string from enums[\"cover.when\"], not a list: which troops may take cover when cover is the chosen type"},
   },
   enums: {order: ACTION_TYPES, "attack.prefer": ATTACK_PREFER, "attack.avoid": ATTACK_AVOID, "summon.prefer": SUMMON_PREFER,
     "spell.prefer": SPELL_PREFER, "gear.prefer": GEAR_PREFER, "cover.when": COVER_WHEN},
@@ -114,7 +125,9 @@ export function validatePlaybook(value, persona) {
   }
   if (object(value.gear, "playbook.gear", ["prefer"])) list(value.gear.prefer, "playbook.gear.prefer", GEAR_PREFER);
   if (object(value.cover, "playbook.cover", ["when"]) && !COVER_WHEN.includes(value.cover.when)) {
-    errors.push(`playbook.cover.when must be one of ${COVER_WHEN.join(", ")}`);
+    errors.push(Array.isArray(value.cover.when)
+      ? `playbook.cover.when must be one string, not a list: one of ${COVER_WHEN.join(", ")}`
+      : `playbook.cover.when must be one of ${COVER_WHEN.join(", ")}`);
   }
   if (errors.length) return {ok: false, errors};
   const playbook = deepFreeze({

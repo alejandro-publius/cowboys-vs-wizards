@@ -19,13 +19,13 @@
       "type": "step",
       "id": "sheriff-playbook",
       "agent": "cautious-sheriff",
-      "prompt": "Follow your agent instructions: read .artifacts/agent-arena/brief.json and write your one playbook, once, to .artifacts/agent-arena/playbooks/cautious-sheriff.json. Write no other file and do not read the rival's playbook.\nStep completion: send_message to sessionId \"parent\" only, a short text naming the file you wrote and one sentence per playbook section. Severity \"success\" only if the write tool reported the file written; severity \"error\" if the write was refused or failed. Claim no result; the referee has not played."
+      "prompt": "Follow your agent instructions: read .artifacts/agent-arena/brief.json and write your one playbook, once, to .artifacts/agent-arena/playbooks/cautious-sheriff.json. Before the write, check each field's JSON type against the brief's playbook.format and playbook.shape: list fields are JSON arrays even with one entry or none, cover.when is one bare string and never an array, summon.maxTributes is an unquoted number and spell.onlyToKill an unquoted boolean. The values are your own choice. Write no other file and do not read the rival's playbook.\nStep completion: send_message to sessionId \"parent\" only, a short text naming the file you wrote and one sentence per playbook section. Severity \"success\" only if the write tool reported the file written; severity \"error\" if the write was refused or failed. Claim no result; the referee has not played."
     },
     {
       "type": "step",
       "id": "wizard-playbook",
       "agent": "reckless-wizard",
-      "prompt": "Follow your agent instructions: read .artifacts/agent-arena/brief.json and write your one playbook, once, to .artifacts/agent-arena/playbooks/reckless-wizard.json. Write no other file and do not read the rival's playbook.\nStep completion: send_message to sessionId \"parent\" only, a short text naming the file you wrote and one sentence per playbook section. Severity \"success\" only if the write tool reported the file written; severity \"error\" if the write was refused or failed. Claim no result; the referee has not played."
+      "prompt": "Follow your agent instructions: read .artifacts/agent-arena/brief.json and write your one playbook, once, to .artifacts/agent-arena/playbooks/reckless-wizard.json. Before the write, check each field's JSON type against the brief's playbook.format and playbook.shape: list fields are JSON arrays even with one entry or none, cover.when is one bare string and never an array, summon.maxTributes is an unquoted number and spell.onlyToKill an unquoted boolean. The values are your own choice. Write no other file and do not read the rival's playbook.\nStep completion: send_message to sessionId \"parent\" only, a short text naming the file you wrote and one sentence per playbook section. Severity \"success\" only if the write tool reported the file written; severity \"error\" if the write was refused or failed. Claim no result; the referee has not played."
     },
     {
       "type": "step",
