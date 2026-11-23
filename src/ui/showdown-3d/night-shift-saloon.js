@@ -21,6 +21,9 @@ export const FEED_LIMIT = 400;
 export const ACTIVITY_LIMIT = 40;
 export const STEP_MS = 1700;
 export const POLL_MS = 3000;
+// Faster poll for the opted-in live room on a visible loopback page only (measured in
+// docs/evidence/kiro-saloon-live-witness.md); a hidden page keeps POLL_MS. Recorded mode never polls.
+export const LIVE_POLL_MS = 1000;
 export const RETRY_MS = 8000;
 const BELL_MS = 1500;
 const STIR_MS = 700;
@@ -176,6 +179,12 @@ export function shiftMode(loc) {
 }
 
 export const clockTime = (at) => `${at.slice(11, 16)} UTC`;
+
+// Pure: the wait before the next feed poll. Only the live room on a visible page polls at
+// LIVE_POLL_MS; anything else (hidden page, unknown visibility, other modes) waits POLL_MS.
+export function pollDelay(mode, doc) {
+  return mode === "live" && doc?.visibilityState === "visible" ? LIVE_POLL_MS : POLL_MS;
+}
 
 export const COMMIT_BASE = "https://github.com/alejandro-publius/cowboys-vs-wizards/commit/";
 const FULL_SHA = /^[0-9a-f]{40}$/;
@@ -602,7 +611,7 @@ export function mountNightShiftSaloon({content, recording, portrait = () => null
   }
   async function poll(ticket) {
     controller = new AbortController();
-    let wait = POLL_MS;
+    let wait = null;
     try {
       const response = await fetchEvents(EVENTS_PATH, {signal: controller.signal, cache: "no-store", headers: {accept: "application/json"}});
       if (!response.ok) throw new Error(`status ${response.status}`);
@@ -641,7 +650,7 @@ export function mountNightShiftSaloon({content, recording, portrait = () => null
     } finally {
       if (ticket === generation) {
         controller = null;
-        pollTimer = later(() => poll(ticket), wait);
+        pollTimer = later(() => poll(ticket), wait ?? pollDelay(mode, globalThis.document));
       }
     }
   }
