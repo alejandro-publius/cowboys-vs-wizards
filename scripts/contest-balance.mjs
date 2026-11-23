@@ -12,13 +12,17 @@
 //   node scripts/contest-balance.mjs review [--tune 0:200] [--holdout 100000:200]
 //   node scripts/contest-balance.mjs verify [--attempt <n>]    seal, card hashes, recomputed decision
 // Exit status: 0 PASS (or verified), 1 FAIL (or verification failed), 2 unusable input.
+// The default policy's band and seat tolerance are read from the written requirements NSB-1 and NSB-2
+// (scripts/showdown-balance-contract.mjs). A malformed requirements file stops prepare and review with
+// exit 2; verify always recomputes with the policy recorded in the receipt.
 import {spawnSync} from "node:child_process";
 import {existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync} from "node:fs";
 import {tmpdir} from "node:os";
 import {dirname, join, relative, resolve} from "node:path";
 import {fileURLToPath, pathToFileURL} from "node:url";
 import {MARKER, MAX_ATTEMPTS} from "./contest-balance-fence.mjs";
-import {POLICY as NIGHT_POLICY, bundleSealIntact, canonical, changeField, paired, sealBundle, sha256, summarize} from "./night-review.mjs";
+import {bundleSealIntact, canonical, changeField, paired, sealBundle, sha256, summarize} from "./night-review.mjs";
+import {CONTRACT_PATH, contractProblems, evaluateBalanceRequirements, inBand, loadBalanceContract} from "./showdown-balance-contract.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 export const RUN = ".artifacts/contest-balance";
@@ -31,16 +35,27 @@ const PROPERTY_TESTS = ["tests/game/showdown-properties.test.js", "tests/game/sh
 export const FIELDS = Object.freeze(["attack", "health", "stars"]);
 const BOUNDS = Object.freeze({attack: [0, 9], health: [1, 12], stars: [1, 8]});
 const MAX_DEALS = 2000;
-// Decision thresholds, recorded in every receipt. The band is on measured match win shares over
-// all games of a range (both seats per deal, level-2 bot on both sides); it says nothing about any one card.
-export const POLICY = Object.freeze({
-  band: [45, 55],
+// Decision thresholds, recorded in every receipt. The band (NSB-1) and first-seat tolerance (NSB-2) come from
+// the written requirements in CONTRACT_PATH. The band is on measured match win shares over all games of a
+// range (both seats per deal, level-2 bot on both sides); it says nothing about any one card.
+export const balancePolicy = (contract) => Object.freeze({
+  band: Object.freeze([...contract.band]),
   bandApplies: "Cowboy share and Wizard share of all games (draws count for neither), each in the band, on tune and on holdout",
-  seatTolerancePp: NIGHT_POLICY.seatTolerancePp,
+  seatTolerancePp: contract.seatTolerancePp,
   sets: ["tune", "holdout"],
   sparseGames: 50,
   defaults: {tune: "0:200", holdout: "100000:200"},
+  requirements: {path: CONTRACT_PATH, ids: ["NSB-1", "NSB-2"]},
 });
+// A malformed contract leaves a policy that cannot pass and blocks prepare and review (exit 2).
+const loadPolicy = () => {
+  try { return balancePolicy(loadBalanceContract()); } catch (error) {
+    return Object.freeze({...balancePolicy({band: [null, null], seatTolerancePp: null}), contractError: error.message});
+  }
+};
+export const POLICY = loadPolicy();
+const requireContract = () => { if (POLICY.contractError) throw new InputError(POLICY.contractError); };
+const contractSha256 = () => sha256(readFileSync(join(ROOT, CONTRACT_PATH)));
 export const SURFACE = Object.freeze({kind: "local-cli", note: "Produced by the local CLI reviewer command, not by the balancer agent and not Kiro Web."});
 
 // ---- pure checks ----
@@ -83,7 +98,7 @@ export const shares = (games) => {
   const s = summarize(games);
   return {...s, wizardShare: share(s.wizard, s.games), drawShare: share(s.draw, s.games)};
 };
-const inBand = (value, [lo, hi]) => value >= lo && value <= hi;
+const fixed = (v) => (typeof v === "number" && Number.isFinite(v) ? v.toFixed(2) : "missing");
 
 // Per-card cohort estimate from one set of game records, without changing any mechanic.
 // Cohort: games of this range (each deal from both seats, level-2 bot both sides, even-match decks)
@@ -112,16 +127,32 @@ export function decideAttempt({violations, properties, sets, policy = POLICY}) {
       const s = sets?.[name];
       if (!s) { reasons.push(`no ${name} results`); continue; }
       if (s.flips.same === s.baseline.games) reasons.push(`${name}: the change altered no game result`);
-      for (const [label, key] of [["Cowboy", "cowboyShare"], ["Wizard", "wizardShare"]]) {
-        if (!inBand(s.candidate[key], policy.band)) reasons.push(`${name}: ${label} share ${s.candidate[key].toFixed(2)}% is outside ${policy.band[0]}-${policy.band[1]}%`);
+      const [band, seat] = evaluateBalanceRequirements(policy, {cowboyShare: s.candidate?.cowboyShare, wizardShare: s.candidate?.wizardShare,
+        seatSkew: s.candidate?.seatSkew, baselineSeatSkew: s.baseline?.seatSkew});
+      if (!band.pass) for (const [label, key] of [["Cowboy", "cowboyShare"], ["Wizard", "wizardShare"]]) {
+        if (!inBand(s.candidate?.[key], policy.band)) reasons.push(`${name}: ${label} share ${fixed(s.candidate?.[key])}% is outside ${policy.band?.[0]}-${policy.band?.[1]}%`);
       }
-      if (s.candidate.seatSkew > s.baseline.seatSkew + policy.seatTolerancePp) {
-        reasons.push(`${name}: first-seat skew grew ${s.baseline.seatSkew.toFixed(2)} -> ${s.candidate.seatSkew.toFixed(2)} pp (tolerance ${policy.seatTolerancePp})`);
+      if (!seat.pass) {
+        reasons.push(`${name}: first-seat skew grew ${fixed(s.baseline?.seatSkew)} -> ${fixed(s.candidate?.seatSkew)} pp (tolerance ${policy.seatTolerancePp})`);
       }
     }
   }
   return {verdict: reasons.length ? "FAIL" : "PASS", pass: reasons.length === 0, reasons,
     meaning: reasons.length ? "Do not forward this candidate." : "Measured match shares are in the band on tune and holdout. Ready for Fable/Alex review only; not applied to any card or release."};
+}
+
+// For the next brief: requirement rows a sealed receipt's candidate failed, judged by that receipt's own
+// policy, per set. Passed rows, unmeasured values, unsealed receipts and unusable policies yield nothing.
+export function failedRequirements(receipt) {
+  if (!receipt || !bundleSealIntact(receipt) || contractProblems(receipt.policy).length) return {};
+  const out = {};
+  for (const name of ["tune", "holdout"]) {
+    const s = receipt.sets?.[name];
+    if (!s?.baseline || !s?.candidate) continue;
+    out[name] = evaluateBalanceRequirements(receipt.policy, {cowboyShare: s.candidate.cowboyShare, wizardShare: s.candidate.wizardShare,
+      seatSkew: s.candidate.seatSkew, baselineSeatSkew: s.baseline.seatSkew}).filter((row) => row.measured && !row.pass).map(({measured, pass, ...row}) => row);
+  }
+  return out;
 }
 
 // ---- side effects: git snapshots, child processes, files ----
@@ -194,6 +225,7 @@ async function prepare() {
   if (n > MAX_ATTEMPTS) throw new InputError(`all ${MAX_ATTEMPTS} attempts are used; run reset to start a new run`);
   if (!existsSync(join(ROOT, STATUS))) throw new InputError("no status file; run reset first");
   if (readJson(join(ROOT, STATUS)).pass === true) throw new InputError("an earlier attempt already passed; the loop should have stopped");
+  requireContract();
   const base = n === 1 ? git("rev-parse", "HEAD") : readJson(join(attemptDir(1), "prepare.json")).base;
   const dir = attemptDir(n);
   const scratch = archive(base, join(dir, "scratch"));
@@ -205,19 +237,23 @@ async function prepare() {
   const history = done.map((k) => {
     const file = join(attemptDir(k), "receipt.json");
     if (!existsSync(file)) return {attempt: k, verdict: "unreviewed"};
-    const r = readJson(file);
-    return {attempt: k, change: r.change, verdict: r.decision.verdict, reasons: r.decision.reasons,
-      sets: Object.fromEntries(Object.entries(r.sets ?? {}).map(([name, s]) => [name, {seeds: s.seeds,
-        baseline: {cowboyShare: s.baseline.cowboyShare, wizardShare: s.baseline.wizardShare, firstShare: s.baseline.firstShare},
-        candidate: {cowboyShare: s.candidate.cowboyShare, wizardShare: s.candidate.wizardShare, firstShare: s.candidate.firstShare}}]))};
+    try {
+      const r = readJson(file);
+      return {attempt: k, change: r.change, verdict: r.decision.verdict, reasons: r.decision.reasons,
+        sets: Object.fromEntries(Object.entries(r.sets ?? {}).map(([name, s]) => [name, {seeds: s.seeds,
+          baseline: {cowboyShare: s.baseline.cowboyShare, wizardShare: s.baseline.wizardShare, firstShare: s.baseline.firstShare},
+          candidate: {cowboyShare: s.candidate.cowboyShare, wizardShare: s.candidate.wizardShare, firstShare: s.candidate.firstShare}}])),
+        failedRequirements: failedRequirements(r)};
+    } catch { return {attempt: k, verdict: "unusable receipt"}; }
   });
   const brief = {schema: "contest-balance/brief@1", attempt: n, maxAttempts: MAX_ATTEMPTS, base,
     editablePathPattern: `${RUN}/attempt-${n}/scratch/${CARD_DIR}/<card>.json`, cards: whitelist, fields: FIELDS, bounds: BOUNDS,
     policy: POLICY, history,
+    requirements: `${CONTRACT_PATH} is read-only. history[].failedRequirements lists, per earlier sealed receipt and separately for tune and holdout, only the requirement IDs its candidate failed with the measured values, judged by that receipt's own policy. Passed requirements and missing or unusable results are left out.`,
     rule: "Change exactly one whitelisted number on exactly one whitelisted troop card in this scratch snapshot. Do not repeat an earlier attempt's change."};
   writeJson(join(dir, "brief.json"), brief);
   writeJson(join(dir, "prepare.json"), {schema: "contest-balance/prepare@1", attempt: n, base, tree: git("rev-parse", `${base}^{tree}`),
-    markerSha256: sha256(markerText), cards: whitelist, cardHashes: Object.fromEntries(whitelist.map((c) => [c, sha256(readFileSync(join(scratch, CARD_DIR, `${c}.json`)))]))});
+    markerSha256: sha256(markerText), contractSha256: contractSha256(), cards: whitelist, cardHashes: Object.fromEntries(whitelist.map((c) => [c, sha256(readFileSync(join(scratch, CARD_DIR, `${c}.json`)))]))});
   console.log(`attempt ${n}/${MAX_ATTEMPTS} prepared at ${base.slice(0, 12)}\n  brief ${relative(ROOT, join(dir, "brief.json"))}\n  editable ${brief.editablePathPattern}`);
 }
 
@@ -266,6 +302,7 @@ async function review(opts) {
   const dir = attemptDir(n);
   if (existsSync(join(dir, "receipt.json"))) throw new InputError(`attempt ${n} is already reviewed`);
   const prep = readJson(join(dir, "prepare.json"));
+  requireContract();
   const tune = parseRange(opts.tune ?? POLICY.defaults.tune);
   const holdout = parseRange(opts.holdout ?? POLICY.defaults.holdout);
   if (!disjoint(tune, holdout)) throw new InputError("holdout seeds overlap the tune seeds");
@@ -274,6 +311,7 @@ async function review(opts) {
   const violations = [];
   const markerStat = lstatSync(join(scratch, MARKER), {throwIfNoEntry: false});
   if (!markerStat?.isFile() || sha256(readFileSync(join(scratch, MARKER))) !== prep.markerSha256) violations.push("scratch marker missing or changed");
+  if (prep.contractSha256 !== contractSha256()) violations.push(`${CONTRACT_PATH} changed after prepare or was not recorded`);
   const baseDir = archive(prep.base, temp());
   let candDir = null;
   try {
@@ -332,7 +370,8 @@ async function review(opts) {
     const receipt = sealBundle({
       schema: "contest-balance/receipt@1", attempt: n, maxAttempts: MAX_ATTEMPTS, createdAt: new Date().toISOString(), surface: SURFACE,
       tool: {commit: git("rev-parse", "HEAD"), script: sha256(readFileSync(fileURLToPath(import.meta.url))),
-        nightReview: sha256(readFileSync(join(ROOT, "scripts/night-review.mjs"))), fence: sha256(readFileSync(join(ROOT, "scripts/contest-balance-fence.mjs"))), node: process.version},
+        nightReview: sha256(readFileSync(join(ROOT, "scripts/night-review.mjs"))), fence: sha256(readFileSync(join(ROOT, "scripts/contest-balance-fence.mjs"))),
+        balanceContract: {script: sha256(readFileSync(join(ROOT, "scripts/showdown-balance-contract.mjs"))), requirements: prep.contractSha256 ?? null}, node: process.version},
       base: {commit: prep.base, tree: prep.tree},
       change: change && {card: change.card, cardPath: change.cardPath, field: change.field, from: change.from, to: change.to, cardSha256: change.cardSha256},
       violations, properties, sets, results: resultHashes, policy: POLICY, decision,
