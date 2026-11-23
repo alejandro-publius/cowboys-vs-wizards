@@ -60,11 +60,11 @@ async function fetchText(url) {
 
 // ---------------------------------------------------------------- SHALL lines
 // A requirement line is a numbered item carrying SHALL: a list number ("3." or "3.4") or identifier ("NSB-1:",
-// "R1.2") with its indented continuation lines, or an identifier table row ("| CL-1 | ... |"). It is
-// substantial with three or more words besides SHALL and NOT, and counted once per distinct normalized text
-// across .kiro/specs/*/requirements.md. The raw count of physical lines containing SHALL stays in the reason
-// for comparison with older receipts.
-const ID = String.raw`(?:\*\*)?(?:\d+(?:\.\d+)*[.)]?|[A-Z][A-Za-z]*-?\d+(?:\.\d+)*:?)(?:\*\*)?:?`;
+// "R1.2", or a multi-part ID such as "CARD-COWBOY-BILLY-01:" or "**CARD-WIZARD-HEX-01.**" as scripts/trace.mjs reads it) with its indented
+// continuation lines, or an identifier table row ("| CL-1 | ... |"). It is substantial with three or more words
+// besides SHALL and NOT, and counted once per distinct normalized text across .kiro/specs/*/requirements.md.
+// The raw count of physical lines containing SHALL stays in the reason for comparison with older receipts.
+const ID = String.raw`(?:\*\*)?(?:\d+(?:\.\d+)*[.)]?|[A-Z][A-Za-z]*(?:-[A-Z][A-Za-z0-9]*)*-?\d+(?:\.\d+)*[.:]?)(?:\*\*)?:?`;
 const LIST_LINE = new RegExp(String.raw`^\s*(?:[-*+]\s+)?${ID}\s+(.+)$`);
 const TABLE_LINE = new RegExp(String.raw`^\s*\|\s*${ID}\s*\|(.+)$`);
 
@@ -179,40 +179,63 @@ async function measurePrs(root, offline) {
 }
 
 // ---------------------------------------------------------------- written reviews
-// A review is .kiro/specs/<spec>/<name>-review.md with a "Status:" line naming a review outcome and a
-// Findings heading over at least one finding of five or more words. Reviews with the same findings count once.
-const OUTCOME = /^(approved|accepted|changes[ -]requested|rejected|blocked|open|resolved|fixed|pass(ed)?|fail(ed)?)$/i;
+// A review is .kiro/specs/<spec>/<name>-review.md with a "Status:" line naming a review outcome and at least one
+// finding of five or more words. A finding is a list item under a Findings heading, or an identified finding
+// heading ("## E1. Draws shrink the measured first-seat skew") as the expert panel writes them. A review that
+// claims an approving outcome while one of its identified findings still says "**Status:** open" is rejected,
+// so open findings are never counted as approved. Reviews with the same findings count once.
+const OUTCOME = /^(approved|accepted|answered|changes[ -]requested|rejected|blocked|open|resolved|fixed|pass(ed)?|fail(ed)?)$/i;
+const APPROVING = /^(approved|accepted|resolved|fixed|pass(ed)?)$/i;
+const FINDING_HEADING = /^#{2,6}\s+([A-Z]{1,3}\d+)[.:]\s+(.+?)\s*#*$/;
+const enough = (item) => item.split(/\s+/).length >= 5 && !/^(none|n\/a|tbd|todo|no findings)\b/i.test(item);
 function findingsOf(text) {
   const lines = text.split(/\r?\n/), start = lines.findIndex((line) => /^#{1,6}\s+findings\b/i.test(line));
-  if (start < 0) return [];
   const out = [];
-  for (const line of lines.slice(start + 1)) {
+  if (start >= 0) for (const line of lines.slice(start + 1)) {
     if (/^#{1,6}\s/.test(line)) break;
     const item = /^\s*(?:[-*+]|\d+[.)])\s+(.+)$/.exec(line)?.[1].trim();
-    if (item && item.split(/\s+/).length >= 5 && !/^(none|n\/a|tbd|todo|no findings)\b/i.test(item)) out.push(item);
+    if (item && enough(item)) out.push(item);
   }
   return out;
+}
+// Identified finding headings with the outcome each section records ("- **Status:** open. ..."), or null.
+function headedFindings(text) {
+  const out = [];
+  let fenced = false;
+  for (const line of text.split(/\r?\n/)) {
+    if (/^\s*(?:```|~~~)/.test(line)) { fenced = !fenced; continue; }
+    if (fenced) continue;
+    const heading = FINDING_HEADING.exec(line);
+    if (heading) { out.push({id: heading[1], text: `${heading[1]}. ${heading[2]}`, status: null}); continue; }
+    if (/^#{1,6}\s/.test(line)) { out.push(null); continue; }
+    const last = out.at(-1), status = /^\s*[-*+]?\s*\*\*status:\*\*\s*([a-z]+)/i.exec(line)?.[1];
+    if (last && status && last.status === null) last.status = status.toLowerCase();
+  }
+  return out.filter((f) => f && enough(f.text.slice(f.id.length + 2)));
 }
 
 export function measureReviews(root = ROOT) {
   const specs = join(root, ".kiro/specs");
   const files = existsSync(specs) ? readdirSync(specs, {withFileTypes: true}).filter((d) => d.isDirectory())
     .flatMap((d) => readdirSync(join(specs, d.name)).filter((f) => f.endsWith("-review.md")).map((f) => `.kiro/specs/${d.name}/${f}`)).sort() : [];
-  const seen = new Set(), rejected = [];
+  const seen = new Set(), rejected = [], counted = [];
   for (const file of files) {
     const text = readText(join(root, file));
     const status = /^[\s>*-]*\**status\**\s*:\s*\**\s*([a-z][a-z -]*?)\s*\**\s*$/im.exec(text)?.[1];
-    const findings = findingsOf(text);
+    const headed = headedFindings(text), findings = [...findingsOf(text), ...headed.map((f) => f.text)];
+    const open = headed.filter((f) => f.status === "open").map((f) => f.id);
     const problem = !status ? "no Status: line" : !OUTCOME.test(status) ? `status "${status}" is not a review outcome`
-      : !findings.length ? "no finding of five or more words under a Findings heading" : null;
+      : !findings.length ? "no finding of five or more words under a Findings heading or an identified finding heading"
+      : APPROVING.test(status) && open.length ? `status "${status}" claims approval while findings ${open.join(", ")} are open` : null;
     if (problem) { rejected.push({file, reason: problem}); continue; }
     const digest = createHash("sha256").update(findings.join("\n").toLowerCase()).digest("hex");
-    if (seen.has(digest)) rejected.push({file, reason: "same findings as an earlier review"});
-    else seen.add(digest);
+    if (seen.has(digest)) { rejected.push({file, reason: "same findings as an earlier review"}); continue; }
+    seen.add(digest);
+    counted.push({file, status: status.toLowerCase(), findings: findings.length, open});
   }
   return row("reviews", "Written spec reviews (.kiro/specs/*/*-review.md) with a status and findings", `>= ${TARGETS.reviews}`, {
     value: seen.size, pass: seen.size >= TARGETS.reviews,
-    reason: `${files.length} review files found; ${rejected.length} rejected`, details: {files: files.length, rejected},
+    reason: `${files.length} review files found; ${rejected.length} rejected`, details: {files: files.length, counted, rejected},
   });
 }
 

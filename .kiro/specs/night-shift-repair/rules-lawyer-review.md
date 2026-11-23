@@ -1,5 +1,12 @@
 # Rules lawyer review: Night Shift repair protocol
 
+Status: open
+
+Findings as recorded below: R1, R2 and R3 are open; R4 is answered.
+This line was added on 2026-11-22 (America/Los_Angeles) by the native Kiro
+proof-scorecard pass so the scorecard can read the outcome. The findings below
+are unchanged.
+
 Reviewer: one native Kiro CLI agent (model `claude-opus-5.5`) working in the
 `12-expert-reviews` worktree. The same agent wrote every review in this panel,
 each through a different lens.

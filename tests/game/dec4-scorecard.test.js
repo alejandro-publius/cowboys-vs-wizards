@@ -3,7 +3,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {spawnSync} from "node:child_process";
-import {mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync} from "node:fs";
+import {existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync} from "node:fs";
 import {tmpdir} from "node:os";
 import {dirname, join} from "node:path";
 import {fileURLToPath} from "node:url";
@@ -43,6 +43,43 @@ test("SHALL: numbered items (wrapped continuations, ID table rows) count once pe
   assert.equal(r.value, 3);
   assert.deepEqual(r.details, {files: 2, raw: 6, numbered: 5, short: 1, repeated: 1});
   assert.equal(r.pass, false);
+});
+
+test("SHALL: multi-part identifiers (CARD-...-01:, **CARD-...-01.**) count like trace.mjs reads them; repeats and short items still do not", (t) => {
+  const dir = fixture(t, {
+    ".kiro/specs/card-a/requirements.md": [
+      "# Card A", "",
+      "- CARD-COWBOY-BILLY-01: The Showdown card table SHALL define Billy as a Cowboy troop.",
+      "- **CARD-WIZARD-JACK-O-LANTERN-02.** WHEN the Lantern is played, THE engine SHALL light one slot.",
+      "- CARD-WIZARD-HEX-03: THE engine SHALL.",
+      "- FH-R3.2: THE first hour SHALL show the Camp screen once.",
+      "- Note-on-scope 4 words here SHALL not be an identifier because it is lowercase.", "",
+    ].join("\n"),
+    ".kiro/specs/card-b/requirements.md": "- CARD-COWBOY-BILLY-09: The Showdown card table SHALL define Billy as a Cowboy troop.\n",
+  });
+  const r = sc.measureShall(dir);
+  assert.equal(r.value, 3);
+  assert.deepEqual(r.details, {files: 2, raw: 6, numbered: 5, short: 1, repeated: 1});
+});
+
+test("SHALL: every list or table SHALL clause trace.mjs indexes in this checkout is also a scorecard requirement line", async () => {
+  const {parseSpec} = await import("../../scripts/trace.mjs");
+  const norm = (text) => text.replace(/[`*_]/g, "").replace(/\s+/g, " ").trim().toLowerCase();
+  const specs = join(ROOT, ".kiro/specs"), missing = [];
+  let checked = 0;
+  for (const dir of readdirSync(specs).sort()) {
+    const path = `.kiro/specs/${dir}/requirements.md`;
+    if (!existsSync(join(ROOT, path))) continue;
+    const text = readFileSync(join(ROOT, path), "utf8"), items = sc.requirementLines(text).map(norm);
+    for (const c of parseSpec(path, text).clauses) {
+      if (c.style === "heading" || !/\bSHALL\b/.test(c.text)) continue; // a heading-only clause (deck-builder R5) is a known gap
+      checked += 1;
+      const prefix = norm(c.text).slice(0, 60);
+      if (!items.some((item) => item.startsWith(prefix))) missing.push(`${path}:${c.line}`);
+    }
+  }
+  assert.ok(checked > 600, `only ${checked} clauses checked`);
+  assert.deepEqual(missing, []);
 });
 
 test("night-shift PRs: merged with a merge commit and citing their own sealed review; one seal backs one PR", () => {
@@ -88,6 +125,40 @@ test("reviews: a review outcome and a real finding are required; identical findi
   const r = sc.measureReviews(dir);
   assert.equal(r.value, 2);
   assert.deepEqual(r.details.rejected.map((x) => x.file), [".kiro/specs/b/rules-review.md", ".kiro/specs/c/ui-review.md", ".kiro/specs/d/ui-review.md"]);
+});
+
+test("reviews: identified finding headings count as findings; an approving status over an open finding is rejected", (t) => {
+  const panel = (status, findings) => `# Panel review\n\n${status === null ? "" : `Status: ${status}\n\n`}Reviewer: one agent.\n\n${findings}`;
+  const section = (id, title, status) => `## ${id}. ${title}\n\n- **Question:** Is it so?\n- **Status:** ${status}.\n\n`;
+  const e1 = section("E1", "Draws shrink the measured first-seat skew", "open"), e2 = section("E2", "NSB-2 caps growth only, so an edge passes", "answered");
+  const dir = fixture(t, {
+    ".kiro/specs/a/economist-review.md": panel("open", e1 + e2),
+    ".kiro/specs/b/security-review.md": panel("answered", section("S1", "Passed reading: the server is read-only", "answered")),
+    ".kiro/specs/c/economist-review.md": panel("approved", e1 + e2),
+    ".kiro/specs/d/economist-review.md": panel(null, e1),
+    ".kiro/specs/e/short-review.md": panel("open", section("X1", "Too short here", "open")),
+    ".kiro/specs/f/copy-review.md": panel("open", e1 + e2),
+    ".kiro/specs/g/fixed-review.md": panel("fixed", section("F1", "The Saloon bell rings after the stop", "fixed")),
+  });
+  const r = sc.measureReviews(dir);
+  assert.equal(r.value, 3);
+  assert.deepEqual(r.details.counted.map((x) => [x.file, x.status, x.findings, x.open]), [
+    [".kiro/specs/a/economist-review.md", "open", 2, ["E1"]],
+    [".kiro/specs/b/security-review.md", "answered", 1, []],
+    [".kiro/specs/g/fixed-review.md", "fixed", 1, []]]);
+  assert.deepEqual(r.details.rejected, [
+    {file: ".kiro/specs/c/economist-review.md", reason: 'status "approved" claims approval while findings E1 are open'},
+    {file: ".kiro/specs/d/economist-review.md", reason: "no Status: line"},
+    {file: ".kiro/specs/e/short-review.md", reason: "no finding of five or more words under a Findings heading or an identified finding heading"},
+    {file: ".kiro/specs/f/copy-review.md", reason: "same findings as an earlier review"}]);
+});
+
+test("reviews: each checked-in panel review states the outcome its findings record, and none claims approval", () => {
+  const r = sc.measureReviews(ROOT);
+  assert.deepEqual(r.details.rejected, []);
+  for (const review of r.details.counted) {
+    assert.equal(review.status, review.open.length ? "open" : "answered", review.file);
+  }
 });
 
 test("duels and card band: cumulative, duplicate and baseline-equals-candidate games count once; naked or unreal reports are rejected", (t) => {
