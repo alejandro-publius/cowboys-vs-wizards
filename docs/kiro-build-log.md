@@ -434,3 +434,11 @@ Kiro added the Bone Fence Outrider study and the Guard targeting check. Source p
 - Codex staged the illustrated Showdown at `/` and `/3d/` with the Ride or Fight? challenge. Camp remains one click away and `/graybox/` opens the lightweight game.
 - A separate Kiro CLI Opus 5.5 session reviewed the release. It verified the path, escaping and asset layout by inspection, and requested updated steering and recorded check output. Kiro wrote the route updates, and Codex attached the test and replay output and required `--rerun` for a reconstructed Sheriff finding.
 - The browser check passed eight cases at `3c5bb34`. A fresh checkout replayed the 8,000 historical games and reproduced the Sheriff rejection. [Recorded checks](evidence/illustrated-contest-release.md) · [Release PR](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/186)
+
+### 2026-11-22 — Native Kiro priority integration: live Saloon witness and scorecard ingestion (Kiro, 22:15 PST)
+
+- **State**: local candidate on `kiro/native-priority-integration` from `725f322`. Not pushed, deployed or merged.
+- **Performed in**: native Kiro CLI session (Claude Opus 5.5) as integrator. Workers: Kiro CLI lanes 21 (Saloon live witness) and 22 (proof scorecard). Lane 23 (shared game runtime) deferred for replay-freshness and packaging failures.
+- **Change**: cherry-picked `f7347c0` as `dd0dc28` (message reworded to cite night-shift-saloon 3.3 3.4) and `359a6c6` as `4908189`; authorship kept.
+- **Verification**: `npm test` 966/966; Pages tree at `4908189` 11/11 with `--browser`; Sheriff Ledger browser 12/12; Poker kit exit 0; offline scorecard 3 of 14 (evidence read). Saloon receipts: five observed events, max 827 ms, one machine. [Integration note](evidence/kiro-priority-integration.md).
+- **Remaining**: lane 23; Fable's Saloon presentation decisions; scorecard target alignment; human and new-player checks.
