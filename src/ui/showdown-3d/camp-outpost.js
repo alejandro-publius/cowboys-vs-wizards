@@ -2,7 +2,31 @@ import {BOUNTIES, RIVALS} from "../../game/showdown/progress.js";
 import {cardArtwork} from "./table-ui.js";
 import {ledgerSectionHtml, mountNightShiftSaloon} from "./night-shift-saloon.js";
 import {createSaloonStage} from "./saloon-stage.js";
+import {mountForgeShelf} from "../forge-shelf.js";
+import {mountRulesDesk} from "../rules-desk.js";
+import {mountArenaTable} from "../arena-table.js";
+import {mountScoutRuling} from "../scout-ruling.js";
 import RECORDING from "../night-shift-recording.json" with {type: "json"};
+
+// Pure: where the staged Boot Hill Poker page sits for a page served at `base`. This build is
+// staged at the site root and at its /3d/ copy; both reach the one poker/ next to the root.
+// Opened straight from disk, a directory has no index page, so the file is named.
+export function pokerHref(base) {
+  const url = new URL(base);
+  url.search = "";
+  url.hash = "";
+  url.pathname = url.pathname.replace(/[^/]*$/, "").replace(/3d\/$/, "") + "poker/" + (url.protocol === "file:" ? "index.html" : "");
+  return url.href;
+}
+
+// Drawers behind the bar for modules other workers own. Each mounts on its first opening;
+// a mount that throws leaves a plain note and the rest of the saloon working.
+const BAR_DRAWERS = [
+  ["ruling", "Balance ruling", mountScoutRuling],
+  ["forge", "Forge shelf", mountForgeShelf],
+  ["rules", "Rules desk", mountRulesDesk],
+  ["arena", "Agent arena", mountArenaTable],
+];
 
 const RIVAL_ART = {
   stargazer: "wizard-wizard",
@@ -73,6 +97,35 @@ export function mountCampOutpost(root) {
     ledger: byId("camp-ledger").querySelector(".ledger-night-shift"),
     createStage: createSaloonStage,
   });
+  // Under the saloon scene: the experimental second game and the bar's drawers.
+  const bar = document.createElement("footer");
+  bar.className = "outpost-saloon-bar";
+  bar.innerHTML = `<p class="outpost-side-game"><a class="outpost-poker-link"></a>
+      <span class="sd-note">Experimental second game. Opens its own page.</span></p>`;
+  const poker = bar.querySelector(".outpost-poker-link");
+  poker.textContent = "Boot Hill Poker";
+  poker.href = pokerHref(document.baseURI);
+  for (const [key, label, mount] of BAR_DRAWERS) {
+    const drawer = document.createElement("details");
+    drawer.className = `outpost-drawer outpost-drawer-${key}`;
+    const summary = document.createElement("summary");
+    summary.textContent = label;
+    const host = document.createElement("div");
+    host.className = "outpost-drawer-host";
+    drawer.append(summary, host);
+    let mounted = false;
+    drawer.addEventListener("toggle", () => {
+      if (!drawer.open || mounted) return;
+      mounted = true;
+      try {
+        mount(host);
+      } catch {
+        host.textContent = `The ${label.toLowerCase()} could not open.`;
+      }
+    });
+    bar.append(drawer);
+  }
+  saloonRoom.append(bar);
   saloonRoom.addEventListener("close", () => {
     saloon.closed();
     if (current === saloonRoom) current = null;

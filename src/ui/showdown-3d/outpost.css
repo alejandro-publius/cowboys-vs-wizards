@@ -725,16 +725,171 @@ body:has(.camp-outpost[open], .builder-inspect[open]) {
   padding-left: 1.4rem;
   line-height: 1.45;
 }
-.saloon-history summary {
+.saloon-history summary,
+.saloon-repair > summary {
   display: flex;
   align-items: center;
   min-height: 44px;
   cursor: pointer;
   font: 700 1.1rem var(--frontier-display);
 }
-.saloon-history summary:focus-visible {
+.saloon-history summary:focus-visible,
+.saloon-repair > summary:focus-visible {
   outline: 3px solid #ffe2a3;
   outline-offset: 2px;
+}
+/* Replay the repair: a recorded field trial on a notice board, stepped by hand. */
+.saloon-repair[hidden] {
+  display: none;
+}
+.saloon-repair-body {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.7rem 0.85rem;
+  color: #2c2018;
+  background:
+    repeating-linear-gradient(0deg, #00000012 0 1px, transparent 1px 12px),
+    #c49a6c;
+  box-shadow: inset 0 -5px #8f6745, 3px 4px #1e1c2a;
+}
+.saloon-repair-body > *,
+.saloon-repair-body p {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.saloon-repair-deal {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 0.7rem;
+  align-items: start;
+}
+.saloon-repair-portrait {
+  display: block;
+  aspect-ratio: 1.18;
+  border: 2px solid #51404a;
+  background: #c79a68;
+  overflow: hidden;
+}
+.saloon-repair-portrait > * {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+.saloon-repair-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: 0.3rem 0.9rem;
+  margin: 0;
+}
+.saloon-repair-facts dt {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.saloon-repair-facts dd {
+  margin: 0;
+  font-weight: 700;
+}
+.saloon-repair-stage:empty {
+  display: none;
+}
+/* A failed fresh check: its rule reasons and block reasons as a plain list. */
+.saloon-repair-reasons {
+  margin: 0;
+  padding-left: 1.3rem;
+  line-height: 1.45;
+}
+.saloon-repair-stage {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: #e8d2b0;
+  box-shadow: inset 0 0 0 2px #8f6745;
+}
+.saloon-repair-moves {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.saloon-repair-move {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: flex-start;
+  padding: 0.45rem;
+  border: 2px dashed #8f6745;
+}
+.saloon-repair-move > .saloon-repair-portrait {
+  flex: 0 0 56px;
+}
+.saloon-repair-move > span:last-child {
+  flex: 1 1 8rem;
+  min-width: 0;
+}
+/* The chosen version gets a solid frame and a mark, not colour alone. */
+.saloon-repair-move.is-chosen {
+  border-style: solid;
+  border-color: #1e1c2a;
+  background: #f3e3c6;
+}
+.saloon-repair-move.is-chosen strong::after {
+  content: " (your replay)";
+  font-weight: 400;
+}
+.saloon-repair-finish strong {
+  font: 700 1.15rem var(--frontier-display);
+}
+.saloon-repair-log summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 700;
+}
+.saloon-repair-log ol {
+  max-height: 12rem;
+  overflow: auto;
+  margin: 0;
+  padding-left: 1.4rem;
+  line-height: 1.45;
+}
+.saloon-repair-turn {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+.saloon-repair-now {
+  min-height: 1.3em;
+  font: 700 1.05rem/1.35 var(--frontier-display);
+}
+.saloon-repair-empty {
+  margin: 0;
+  padding: 0.5rem 0;
+}
+.saloon-buttons button[aria-pressed="true"] {
+  background: #ffe2a3;
+  box-shadow: inset 0 0 0 3px #472a19, 0 3px #101420;
+}
+.saloon-buttons button[aria-pressed="true"]::before {
+  content: "✓ ";
+}
+.saloon-buttons button[aria-disabled="true"] {
+  color: #f0dfc4;
+  background: #6a5b5b;
+  box-shadow: inset 0 -3px #4d4044, 0 3px #101420;
+  cursor: not-allowed;
+}
+.saloon-buttons button[aria-disabled="true"]:hover {
+  background: #6a5b5b;
+}
+.saloon-buttons[hidden] {
+  display: none;
 }
 /* The illustrated stage (saloon-stage.js): wide enough for all four miniatures, short enough
    that the caption and controls under it stay on a 1280x800 screen. */
@@ -904,10 +1059,22 @@ body:has(.camp-outpost[open], .builder-inspect[open]) {
     flex: 1 1 auto;
     min-width: min(6.5rem, 100%);
   }
+  .saloon-repair-moves {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 @media (max-width: 420px) {
   .saloon-target {
     grid-template-columns: 64px minmax(0, 1fr);
+  }
+  .saloon-repair-deal {
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+  .saloon-repair-moves {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .saloon-repair-moves {
+    grid-template-columns: minmax(0, 1fr);
   }
   .saloon-buttons button {
     flex: 1 1 40%;

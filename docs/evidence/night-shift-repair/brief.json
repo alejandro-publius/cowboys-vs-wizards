@@ -1,0 +1,70 @@
+{
+  "schema": "contest-balance/brief@1",
+  "attempt": 1,
+  "maxAttempts": 6,
+  "base": "8ec0fe7195414fb1cba94d20e6c8c8a362fea669",
+  "editablePathPattern": ".artifacts/contest-balance/attempt-1/scratch/.kiro/specs/duel-card-pipeline/cards/<card>.json",
+  "cards": [
+    "cowboy-sheriff",
+    "cowboy-outrider",
+    "cowboy-covered-wagon",
+    "cowboy-billy",
+    "cowboy-ranger",
+    "cowboy-dynamiter",
+    "cowboy-mounted-billy",
+    "wizard-skeleton",
+    "wizard-jack-o-lantern",
+    "wizard-raven-familiar",
+    "wizard-imp",
+    "wizard-bone-wall",
+    "wizard-wizard",
+    "wizard-headless-horseman",
+    "wizard-dragon"
+  ],
+  "fields": [
+    "attack",
+    "health",
+    "stars"
+  ],
+  "bounds": {
+    "attack": [
+      0,
+      9
+    ],
+    "health": [
+      1,
+      12
+    ],
+    "stars": [
+      1,
+      8
+    ]
+  },
+  "policy": {
+    "band": [
+      45,
+      55
+    ],
+    "bandApplies": "Cowboy share and Wizard share of all games (draws count for neither), each in the band, on tune and on holdout",
+    "seatTolerancePp": 1,
+    "sets": [
+      "tune",
+      "holdout"
+    ],
+    "sparseGames": 50,
+    "defaults": {
+      "tune": "0:200",
+      "holdout": "100000:200"
+    },
+    "requirements": {
+      "path": ".kiro/specs/night-shift-balance-contract/requirements.md",
+      "ids": [
+        "NSB-1",
+        "NSB-2"
+      ]
+    }
+  },
+  "history": [],
+  "requirements": ".kiro/specs/night-shift-balance-contract/requirements.md is read-only. history[].failedRequirements lists, per earlier sealed receipt and separately for tune and holdout, only the requirement IDs its candidate failed with the measured values, judged by that receipt's own policy. Passed requirements and missing or unusable results are left out.",
+  "rule": "Change exactly one whitelisted number on exactly one whitelisted troop card in this scratch snapshot. Do not repeat an earlier attempt's change."
+}

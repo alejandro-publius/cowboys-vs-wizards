@@ -153,6 +153,33 @@ export function decide(blocks) {
     : "The reviewed candidate did not confirm on fresh seeds. Do not forward it."};
 }
 
+// A passing reviewer receipt is necessary, but the selected edit must also pass both
+// registered scout ranges before the process opens a single held-out deal.
+export function scoutNominationProblems(scout, change, base, protocol, policy, contractHash) {
+  const result = scout?.result;
+  if (!result || scout.resultSha256 !== sha256(canonical(result))) return ["scout measurements failed their seal"];
+  if (result.base !== base || result.contract?.sha256 !== contractHash) return ["scout base or contract differs from the reviewed receipt"];
+  const ranges = result.scoutCohorts?.map(({first, deals}) => ({first, deals}));
+  if (canonical(ranges) !== canonical(protocol.scout)) return ["scout ranges differ from the registered protocol"];
+  const rows = result.candidates?.filter(row => row.status === "measured" &&
+    ["card", "field", "from", "to"].every(key => row[key] === change[key]));
+  if (rows?.length !== 1 || Math.abs(change.from - change.to) !== 1) return ["the nominated adjacent edit was not measured exactly once"];
+  const errors = [];
+  for (const {name, deals} of result.scoutCohorts) {
+    const original = result.baseline?.[name];
+    const edit = rows[0].cohorts?.[name];
+    const count = 2 * deals;
+    if (![original, edit].every(arm => arm?.games === count &&
+      [arm.cowboyWins, arm.wizardWins, arm.draws, arm.firstWins].every(n => Number.isInteger(n) && n >= 0 && n <= count) &&
+      arm.cowboyWins + arm.wizardWins + arm.draws === count)) return [`${name} has incomplete scout games`];
+    const skew = arm => Math.abs(100 * arm.firstWins / count - 50);
+    const verdict = evaluateBalanceRequirements(policy, {cowboyShare: 100 * edit.cowboyWins / count,
+      wizardShare: 100 * edit.wizardWins / count, seatSkew: skew(edit), baselineSeatSkew: skew(original)});
+    for (const rule of verdict) if (!rule.measured || !rule.pass) errors.push(`${name}: nominated edit fails ${rule.id}`);
+  }
+  return errors;
+}
+
 export const seal = (record) => ({...record, recordSha256: sha256(canonical({...record, recordSha256: undefined}))});
 export const sealIntact = (record) => record.recordSha256 === sha256(canonical({...record, recordSha256: undefined}));
 
@@ -346,6 +373,11 @@ async function live() {
       if (canonical({band: [...current.band], seatTolerancePp: current.seatTolerancePp}) !== canonical(policy)) problems.push("current contract numbers differ from the receipt policy");
     } catch (error) { problems.push(error.message); }
   }
+
+  const {value: scout} = readJsonFile(`.artifacts/contest-balance/attempt-${attempt}/scout.json`, "scout measurements");
+  if (scout.attempt !== attempt) problems.push("scout measurements name another attempt");
+  problems.push(...inputProblems(base, scout.result?.gameInputs));
+  problems.push(...scoutNominationProblems(scout, change, base, protocol, policy, contractSha256));
 
   // 4. Fresh cohorts separate from scout, tune and holdout.
   const separation = {scout: protocol.scout, tune: seedsOf(receipt.sets?.tune, "tune"), holdout: seedsOf(receipt.sets?.holdout, "holdout")};

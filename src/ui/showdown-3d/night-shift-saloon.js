@@ -10,6 +10,7 @@ import {cleanFeed} from "../night-shift-events.js";
 import {activityLabel} from "../night-shift-presence.js";
 import {TYPES} from "../../game/showdown/cards.js";
 import {BOUNTIES} from "../../game/showdown/progress.js";
+import {mountRepairReplay} from "../field-trial-replay.js";
 
 export const RECORDED_LABEL = "Recorded Kiro shift";
 export const LIVE_LABEL = "Live Kiro shift on this computer";
@@ -295,6 +296,7 @@ const ROOM_HTML = `
     </div>
     <p class="saloon-now" role="status" aria-live="polite"></p>
   </div>
+  <details class="saloon-repair"></details>
   <details class="saloon-history">
     <summary>Shift history</summary>
     <ol></ol>
@@ -333,11 +335,14 @@ function historyItem(event) {
 // throws or loses its graphics, the atlas portrait stage below is the whole room.
 export function mountNightShiftSaloon({content, recording, portrait = () => null, ledger = null,
   loc = globalThis.location, fetchEvents = globalThis.fetch?.bind(globalThis), clean = cleanFeed,
-  createStage = null}) {
+  createStage = null, fieldTrial = undefined}) {
   const mode = shiftMode(loc);
   content.classList.add("saloon-room");
   content.innerHTML = ROOM_HTML;
   const q = (selector) => content.querySelector(selector);
+  // "Replay the repair": a recorded field trial, separate from the shift feed and the stage.
+  // Hidden when no fresh check and witness are recorded; `fieldTrial` defaults to FIELD_TRIAL.
+  const repair = mountRepairReplay(q(".saloon-repair"), {trial: fieldTrial, portrait});
   const stage = q(".saloon-stage");
   const theater = q(".saloon-theater"), host = q(".saloon-theater-host"), controls = q(".saloon-controls");
   const play = q(".saloon-play"), step = q(".saloon-step"), replay = q(".saloon-replay");
@@ -673,7 +678,7 @@ export function mountNightShiftSaloon({content, recording, portrait = () => null
       render();
       toStage("close");
     },
-    state: () => ({mode, count, shown, feed, ambient, view: content.dataset.view}),
+    state: () => ({mode, count, shown, feed, ambient, view: content.dataset.view, repair: repair.state()}),
   };
 }
 

@@ -4,15 +4,23 @@
 // Without --browser (Node only, no Chrome):
 //   - build.json, /index.html and the /3d/ alias pass scripts/verify-build-identity.mjs, which
 //     hashes the served bytes; with --commit the manifest must name that commit
-//   - the tree holds exactly index.html, build.json, graybox/index.html, showdown/index.html and
-//     3d/index.html: no script file, model, image, video or wasm from the retired 3D lane build
+//   - the tree holds exactly index.html, build.json, graybox/index.html, showdown/index.html,
+//     3d/index.html and the five Boot Hill Poker browser files under poker/ (index.html with inline
+//     CSS, app.js, controls.js, render.js, engine.js): no other script file, model, image, video or
+//     wasm, nothing from the retired 3D lane build, and no poker CLI or tests
 //   - the root and /3d/ carry illustrated Showdown; /graybox/ remains lightweight
 //   - no page carries the retired lane game
 //   - /showdown/ is served
+//   - /poker/ (the experimental second game) is served under the project path, byte for byte from
+//     experiments/boot-hill-poker/, with no root-absolute links; every script, stylesheet and module
+//     import reachable from poker/index.html resolves inside poker/ and is served, and that import
+//     graph is exactly the five staged files; the root carries the saloon link
 // --browser, native headless Chrome with a fresh profile, mouse events only:
 //   - the title challenge and its deep link open the same playable Bone Fence board
 //   - Camp on / opens the Trail; Play on /graybox/ opens the Camp
 //   - /showdown/: the reference page loads without errors
+//   - the Camp saloon on / and /3d/ links to the one poker/ page; following it loads all five poker
+//     files, paints the BBS screen and raises no errors
 //   No page error, failed request or HTTP error is allowed anywhere.
 import assert from "node:assert/strict";
 import {spawn} from "node:child_process";
@@ -24,6 +32,7 @@ import {fileURLToPath} from "node:url";
 import {verifyLive} from "./verify-build-identity.mjs";
 
 const BASE_PATH = "/cowboys-vs-wizards/";
+const POKER_FILES = ["app.js", "controls.js", "engine.js", "index.html", "render.js"];
 const CHROME = process.env.CHROME ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const root = fileURLToPath(new URL("../", import.meta.url));
 const args = process.argv.slice(2);
@@ -84,13 +93,29 @@ try {
 
   const entries = await readdir(dir, {recursive: true, withFileTypes: true});
   const files = entries.filter((e) => e.isFile()).map((e) => path.relative(dir, path.join(e.parentPath, e.name)).split(path.sep).join("/")).sort();
-  assert.deepEqual(files, ["3d/index.html", "build.json", "graybox/index.html", "index.html", "showdown/index.html"], "staged files");
+  assert.deepEqual(files, ["3d/index.html", "build.json", "graybox/index.html", "index.html",
+    ...POKER_FILES.map((name) => `poker/${name}`), "showdown/index.html"], "staged files");
   assert.equal((await get("3d", "manual")).location, `${BASE_PATH}3d/`, "/3d redirects to /3d/");
   const showdown = await get("showdown/");
   assert.equal(showdown.status, 200);
   for (const [route, html] of [["/", rootText], ["/graybox/", grayboxText], ["/showdown/", showdown.bytes.toString("utf8")]])
     assert.doesNotMatch(html, /chunks\/lanes-|id="arena"|id="menu-lanes"|id="earlier-build"|<script id="models"|rapier_wasm|rapier3d/, `${route} has no retired lane engine`);
   check("the four single-file pages include no retired lane game or separate assets", {files});
+
+  // Boot Hill Poker, the experimental second game, staged as its own four files.
+  assert.equal((await get("poker", "manual")).location, `${BASE_PATH}poker/`, "/poker redirects to /poker/");
+  for (const name of POKER_FILES) {
+    const served = await get(`poker/${name}`);
+    assert.equal(served.status, 200, `poker/${name} is served under ${BASE_PATH}`);
+    assert.ok(served.bytes.equals(await readFile(path.join(root, "experiments/boot-hill-poker", name))), `poker/${name} matches its experiment source`);
+  }
+  const pokerText = (await get("poker/")).bytes.toString("utf8");
+  assert.doesNotMatch(pokerText, /\b(?:src|href)\s*=\s*["']\/(?!\/)/, "poker/ uses no root-absolute links, so it works under the project path");
+  assert.doesNotMatch(pokerText, /<link\b[^>]*\bstylesheet\b/i, "poker/ keeps its CSS inline");
+  const graph = await pokerImportGraph(pokerText);
+  assert.deepEqual(graph, POKER_FILES, "the poker/ runtime import graph is exactly the staged files");
+  assert.match(rootText, /outpost-poker-link/, "the illustrated root carries the saloon's poker link");
+  check("/poker/ serves the experimental Boot Hill Poker files under the project path; every runtime import resolves", {graph});
 
   if (browser) await browserChecks();
 } catch (error) {
@@ -103,6 +128,32 @@ await mkdir(outDir, {recursive: true});
 await writeFile(path.join(outDir, "pages-tree.json"), JSON.stringify(report, null, 2) + "\n");
 if (failed) { console.error(failed); process.exit(1); }
 console.log(`Pages tree checks passed (${report.checks.length}); report ${path.relative(root, path.join(outDir, "pages-tree.json"))}`);
+
+// Follows poker/index.html's <script src> and <link href> and every static or dynamic module
+// specifier in the served JavaScript, resolved the way the browser resolves them under BASE_PATH.
+// Each must be relative, stay inside poker/ and return 200. Returns the reached files, sorted.
+async function pokerImportGraph(html) {
+  const pokerBase = `${site}poker/`;
+  const reached = new Set(["index.html"]);
+  const queue = [];
+  const follow = (spec, from) => {
+    assert.match(spec, /^\.{1,2}\//, `${from} references ${spec} relatively, so it works in a nested project`);
+    const url = new URL(spec, pokerBase + from);
+    assert.ok(url.href.startsWith(pokerBase) && !url.search && !url.hash, `${from} -> ${spec} stays inside poker/`);
+    const rel = url.href.slice(pokerBase.length);
+    if (!reached.has(rel)) { reached.add(rel); queue.push(rel); }
+  };
+  for (const [, spec] of html.matchAll(/<(?:script|link)\b[^>]*\b(?:src|href)\s*=\s*["']([^"']+)["']/gi)) follow(spec, "index.html");
+  while (queue.length) {
+    const rel = queue.shift();
+    const served = await get(`poker/${rel}`);
+    assert.equal(served.status, 200, `poker/${rel} is served under ${BASE_PATH}`);
+    if (!rel.endsWith(".js")) continue;
+    const source = served.bytes.toString("utf8");
+    for (const [, spec] of source.matchAll(/(?:\bfrom\s*|\bimport\s*\(?\s*)["']([^"']+)["']/g)) follow(spec, rel);
+  }
+  return [...reached].sort();
+}
 
 async function browserChecks() {
   const profile = await mkdtemp("/tmp/kiro-pages-chrome-");
@@ -176,6 +227,25 @@ async function browserChecks() {
     await sleep(500);
     clean();
     check(`${BASE_PATH}showdown/: the Showdown reference page loads without errors`);
+
+    for (const rel of ["", "3d/"]) {
+      await send("Storage.clearDataForOrigin", {origin: new URL(site).origin, storageTypes: "all"});
+      await open(rel);
+      await playOpensCamp();
+      await click('[data-camp-destination="night-shift-saloon"]');
+      await wait(`document.getElementById('room-for-night-shift-saloon')?.open`);
+      const link = "#room-for-night-shift-saloon .outpost-poker-link";
+      assert.equal(await evaluate(`document.querySelector(${JSON.stringify(link)}).href`), `${site}poker/`, `${rel || "/"} links the one poker/ page`);
+      const mark = responses.length;
+      await click(link);
+      await wait(`document.readyState==='complete'&&location.href.startsWith(${JSON.stringify(`${site}poker/`)})`);
+      await wait(`!!document.getElementById('screen')&&!document.getElementById('screen').textContent.startsWith('Dialing Boot Hill')`);
+      await sleep(500);
+      clean();
+      const loaded = POKER_FILES.filter((name) => responses.slice(mark).some((r) => r.status === 200 && new URL(r.url).pathname === `${BASE_PATH}poker/${name === "index.html" ? "" : name}`));
+      assert.deepEqual(loaded, POKER_FILES, `${rel || "/"} -> poker/ loads all five browser files`);
+      check(`${BASE_PATH}${rel}: the Camp saloon opens Boot Hill Poker at ${BASE_PATH}poker/, loads its five files and paints the screen without errors`);
+    }
 
     const challengeOpens = async () => {
       await wait(`${shown("showdown")} && document.querySelector('#sd-field[data-battlefield="bone-fence"] canvas.sd-world')?.width > 0`);

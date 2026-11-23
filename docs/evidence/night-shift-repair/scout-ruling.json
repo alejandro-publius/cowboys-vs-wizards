@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "verdict": "withheld",
+  "nativeWorkflowId": "wf_80aa97dac058694f",
+  "sourceSha256": "154c623a8ca473b2a12886720d1cb3b1735bfcf33a6cae96ae6e31a55f91e7c4",
+  "base": "8ec0fe7195414fb1cba94d20e6c8c8a362fea669",
+  "inputs": {
+    "src/game": "dcc005548330b0c349ed0e60de58793b737a3285",
+    ".kiro/specs/duel-card-pipeline/cards": "d1b0144247a2a06a0fa37d9c7ca5c8389525062d",
+    "scripts/sync-card-specs.mjs": "84dce359f70ad64e634b2d3d2a0445bd476f7c3b",
+    "prototypes/showdown/rules.js": "66538aca2b7660c8bd7717a03dee364f8489c184"
+  },
+  "counts": {
+    "proposed": 82,
+    "measured": 76,
+    "compilerRejected": 6,
+    "eligible": 0,
+    "simulatedGames": 49280
+  },
+  "change": {
+    "card": "cowboy-sheriff",
+    "field": "health",
+    "from": 3,
+    "to": 2
+  },
+  "blocks": [
+    {
+      "id": "scout-1",
+      "games": 320,
+      "cowboyWins": 166,
+      "candidatePct": 51.875,
+      "baselinePct": 65,
+      "ceilingPct": 55,
+      "overByWins": 0,
+      "pass": true
+    },
+    {
+      "id": "scout-2",
+      "games": 320,
+      "cowboyWins": 177,
+      "candidatePct": 55.3125,
+      "baselinePct": 60,
+      "ceilingPct": 55,
+      "overByWins": 1,
+      "pass": false
+    }
+  ],
+  "example": {
+    "seed": 630100004,
+    "first": "cowboy",
+    "turn": 5,
+    "baseline": {
+      "winner": "wizard",
+      "move": {
+        "label": "Cowboy's Sheriff strikes the Wizard Base: the Wizard Base loses 1 orb (4→3). The attacker has 3 orbs left.",
+        "turn": 5,
+        "card": "cowboy-sheriff-2",
+        "target": "base"
+      }
+    },
+    "candidate": {
+      "winner": "cowboy",
+      "move": {
+        "label": "Cowboy's Sheriff strikes the Wizard Base: the Wizard Base loses 1 orb (4→3). The attacker has 2 orbs left.",
+        "turn": 5,
+        "card": "cowboy-sheriff-2",
+        "target": "base"
+      }
+    }
+  },
+  "freshRun": false,
+  "applied": false
+}

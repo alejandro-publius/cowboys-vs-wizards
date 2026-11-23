@@ -8,7 +8,7 @@
 //   node scripts/field-trial-witness.mjs           read .artifacts/contest-balance/field-trial/fresh.json,
 //                                                  write .artifacts/contest-balance/field-trial/witness.json
 //   node scripts/field-trial-witness.mjs --verify  recompute from docs/evidence/night-shift-repair/{fresh,witness}.json
-import {existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync} from "node:fs";
+import {existsSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync} from "node:fs";
 import {tmpdir} from "node:os";
 import {dirname, join, resolve} from "node:path";
 import {fileURLToPath} from "node:url";
@@ -182,6 +182,13 @@ function describe(event, tally) {
   }
 }
 
+// Import-safe wrapper for scripts/scout-ruling.mjs: one sentence per real event of one step as playTrial's
+// onStep(before, applied) sees it; orb counts carry across the step's events exactly as in trace().
+export const describeStep = (before, applied) => {
+  const tally = tallyOf(before);
+  return applied.events.map(event => describe(event, tally));
+};
+
 // What differs between the two versions' events at the first change, in words.
 function changedFields(a, b) {
   const keys = [...new Set([...Object.keys(a.event), ...Object.keys(b.event)])].sort()
@@ -310,15 +317,18 @@ async function verify() {
   return 0;
 }
 
-const args = process.argv.slice(2);
-if (args.length > 1 || (args.length === 1 && args[0] !== "--verify")) {
-  console.error("Usage: node scripts/field-trial-witness.mjs [--verify]");
-  process.exitCode = 2;
-} else {
-  try {
-    process.exitCode = await (args.length ? verify() : generate());
-  } catch (error) {
-    console.error(error instanceof Problem ? error.message : error.stack ?? String(error));
-    process.exitCode = 1;
+// The CLI runs only when this file is the entry script, so other scripts can import describeStep.
+if (process.argv[1] && existsSync(process.argv[1]) && realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url))) {
+  const args = process.argv.slice(2);
+  if (args.length > 1 || (args.length === 1 && args[0] !== "--verify")) {
+    console.error("Usage: node scripts/field-trial-witness.mjs [--verify]");
+    process.exitCode = 2;
+  } else {
+    try {
+      process.exitCode = await (args.length ? verify() : generate());
+    } catch (error) {
+      console.error(error instanceof Problem ? error.message : error.stack ?? String(error));
+      process.exitCode = 1;
+    }
   }
 }

@@ -1,0 +1,755 @@
+{
+  "nativeWorkflowId": "wf_a81a1969da647d72",
+  "request": "Call him Dusty Pete. He's the posse's old trail cook: slow with a pistol,\nbut tough as boot leather from forty winters on the range. He's cheap to send out,\nso he should cost nothing to play and soak up hits for the Cowboys.\n",
+  "draft": {
+    "name": "Dusty Pete",
+    "baseCard": "cowboy-covered-wagon",
+    "attack": 1,
+    "health": 5,
+    "stars": 2
+  },
+  "verified": true,
+  "games": 32,
+  "source": "Card Forge native workflow wf_a81a1969da647d72; verifier passed 2026-11-23T02:14:20.101Z at base b00a5e18b8ad",
+  "checks": [
+    "Request and brief unchanged since prepare",
+    "Draft fits the five-field schema and bounds",
+    "Base troop slot exists and the name is free",
+    "Unmodified snapshot compiled and its games ended legally",
+    "Variant compiled in a disposable snapshot",
+    "Engine reads the variant's name, numbers and deck copies",
+    "Every variant game ended legally from both seats",
+    "Seeded replays matched on both builds",
+    "Variant was summoned in 27 of 32 games",
+    "Live cards and engine files unchanged"
+  ],
+  "kind": "saloon-showcase/forge@1",
+  "preparedAt": "2026-11-23T02:13:49.396Z",
+  "verifiedAt": "2026-11-23T02:14:20.101Z",
+  "baseCommit": "b00a5e18b8ad07ec8759635a399cc8117c900fa0",
+  "requestSha256": "ac05ecf1289ba244ed878f3b6af67529a96ca56cbb1e29d9023639f2ff2294e4",
+  "briefSha256": "aec064152db56d5e102c9bb9a1b6248722857da5e0dd43274158786eae9c08c5",
+  "draftSha256": "09a5502b8588e6538b6cdd209cb710b4bae2613f70489b97b9105827c615875a",
+  "verdictSha256": "d3d8059af09f2754f215cc4ac464528e341d0cebc5a525b10293ab0c3c5b4599",
+  "verifierScriptSha256": "2506d80ec370fcb5286d76f89e91fe0b9b6c84eba92c4d21506226bb5f5e5700",
+  "node": "v26.0.0",
+  "slot": {
+    "baseCard": "cowboy-covered-wagon",
+    "side": "cowboy",
+    "copies": 2,
+    "before": {
+      "name": "Covered Wagon",
+      "side": "cowboy",
+      "kind": "troop",
+      "rarity": "common",
+      "tag": "Rig",
+      "keys": [
+        "guard"
+      ],
+      "attack": 1,
+      "health": 4,
+      "stars": 4
+    },
+    "after": {
+      "name": "Dusty Pete",
+      "side": "cowboy",
+      "kind": "troop",
+      "rarity": "common",
+      "tag": "Rig",
+      "keys": [
+        "guard"
+      ],
+      "attack": 1,
+      "health": 5,
+      "stars": 2
+    }
+  },
+  "seeds": {
+    "from": 0,
+    "to": 15,
+    "deals": 16
+  },
+  "seats": [
+    "cowboy",
+    "wizard"
+  ],
+  "baselineGames": {
+    "games": 32,
+    "cowboyWins": 19,
+    "wizardWins": 13,
+    "draws": 0,
+    "firstSeatWins": 17,
+    "slotSideWins": 19,
+    "gamesWithSlotSummoned": 27,
+    "slotSummons": 36,
+    "reasons": {
+      "base": 32
+    },
+    "averageTurns": 12.97
+  },
+  "candidateGames": {
+    "games": 32,
+    "cowboyWins": 26,
+    "wizardWins": 6,
+    "draws": 0,
+    "firstSeatWins": 18,
+    "slotSideWins": 26,
+    "gamesWithSlotSummoned": 27,
+    "slotSummons": 37,
+    "reasons": {
+      "base": 32
+    },
+    "averageTurns": 13.5
+  },
+  "paired": {
+    "same": 25,
+    "changed": 7,
+    "unpaired": 0
+  },
+  "gameRecords": {
+    "baseline": [
+      {
+        "seed": 0,
+        "first": "cowboy",
+        "winner": "wizard",
+        "reason": "base",
+        "turns": 8,
+        "actions": 24,
+        "slotSummons": 1,
+        "digest": "f64cb9e630b9b052c30d5ffcb637bed3036c10f553c416cb076806c776cd5eda"
+      },
+      {
+        "seed": 0,
+        "first": "wizard",
+        "winner": "wizard",
+        "reason": "base",
+        "turns": 9,
+        "actions": 27,
+        "slotSummons": 1,
+        "digest": "ae46c7a0bf146ebf9700277e8565cefebd61f4052adacc66f8a873b491b0a66d"
+      },
+      {
+        "seed": 1,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 15,
+        "actions": 48,
+        "slotSummons": 1,
+        "digest": "7f223aaabbf6ed81943c5407f4fdbd76235cc0cb1ed40177842d3b02088fb004"
+      },
+      {
+        "seed": 1,
+        "first": "wizard",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 10,
+        "actions": 33,
+        "slotSummons": 0,
+        "digest": "f439c6169a2752f3588f06729806ccc5217d913ad0463da7b6a3db99b8510801"
+      },
+      {
+        "seed": 2,
+        "first": "cowboy",
+        "winner": "wizard",
+        "reason": "base",
+        "turns": 10,
+        "actions": 29,
+        "slotSummons": 1,
+        "digest": "000a94fc83f90c5e1b5ba5adb77948eeac70718b5e6c9c488f46d76ecbf702e3"
+      },
+      {
+        "seed": 2,
+        "first": "wizard",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 20,
+        "actions": 63,
+        "slotSummons": 2,
+        "digest": "5895c8e6ae1d56244315a479dd87e6235d634f88e2c80a291af0cf64699a9431"
+      },
+      {
+        "seed": 3,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 13,
+        "actions": 44,
+        "slotSummons": 1,
+        "digest": "dd2f9f67cba05049157f179db2148d13f4200ecd2dc1769dae4eb739a2262658"
+      },
+      {
+        "seed": 3,
+        "first": "wizard",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 12,
+        "actions": 40,
+        "slotSummons": 1,
+        "digest": "7476672f6589fc53684e17b58b75fad12c9f7d979cebe267402432b2a49c543f"
+      },
+      {
+        "seed": 4,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 11,
+        "actions": 34,
+        "slotSummons": 2,
+        "digest": "c812cd5f60a4d384b976d11979bd3067ab6bc95ffb44b1afe42ac83c9c0c91b0"
+      },
+      {
+        "seed": 4,
+        "first": "wizard",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 14,
+        "actions": 44,
+        "slotSummons": 2,
+        "digest": "cf7f7c3453779363ddd03984b8b74af7994cefde94a13e7aa84acf67af1a092a"
+      },
+      {
+        "seed": 5,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 15,
+        "actions": 44,
+        "slotSummons": 1,
+        "digest": "0485c0688bcd4fcba435f0a43990df85fe71ec45103b817cbdafd00c8180f169"
+      },
+      {
+        "seed": 5,
+        "first": "wizard",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 14,
+        "actions": 41,
+        "slotSummons": 1,
+        "digest": "5197458c6e533f54ed750343823f874b746fe1cffa102f06842b749046cda9b6"
+      },
+      {
+        "seed": 6,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 13,
+        "actions": 44,
+        "slotSummons": 1,
+        "digest": "ad5e2166399f132602109c198a853821396c6a943d553643077fd08fd21f5e3a"
+      },
+      {
+        "seed": 6,
+        "first": "wizard",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 14,
+        "actions": 48,
+        "slotSummons": 1,
+        "digest": "cc097c1ab12c271364162933bd4b78614f5af6054ee0bfb67107ece2cf0c8022"
+      },
+      {
+        "seed": 7,
+        "first": "cowboy",
+        "winner": "wizard",
+        "reason": "base",
+        "turns": 12,
+        "actions": 39,
+        "slotSummons": 1,
+        "digest": "20e83f57f42a76fa59415d9efc0a3d626be604ade94185275fe89fb3d9f369a2"
+      },
+      {
+        "seed": 7,
+        "first": "wizard",
+        "winner": "wizard",
+        "reason": "base",
+        "turns": 7,
+        "actions": 22,
+        "slotSummons": 1,
+        "digest": "513f6deee3ce089f0d9a5d0b75933e47aca7f78459b3fbf3a63de695572469c0"
+      },
+      {
+        "seed": 8,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 13,
+        "actions": 42,
+        "slotSummons": 1,
+        "digest": "b0a6f5f2a8891b0223e7171aaac017652f9b55de3c9c41402bb617b9675e4c37"
+      },
+      {
+        "seed": 8,
+        "first": "wizard",
+        "winner": "wizard",
+        "reason": "base",
+        "turns": 21,
+        "actions": 65,
+        "slotSummons": 2,
+        "digest": "d510ec45b8c217aa5cfc9d5efca47d2c2afed0415405ee0d9a6ed43c4c7480b3"
+      },
+      {
+        "seed": 9,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 11,
+        "actions": 37,
+        "slotSummons": 1,
+        "digest": "13d3a5b6d7f41bae6953fcc3fc3d110a7ab6f321f3066d03099612611e35f6cf"
+      },
+      {
+        "seed": 9,
+        "first": "wizard",
+        "winner": "wizard",
+        "reason": "base",
+        "turns": 11,
+        "actions": 36,
+        "slotSummons": 1,
+        "digest": "7114332dbdfa3c023c4d20d686a706604f17e38fa89b01ff4087616889e6e786"
+      },
+      {
+        "seed": 10,
+        "first": "cowboy",
+        "winner": "wizard",
+        "reason": "base",
+        "turns": 16,
+        "actions": 56,
+        "slotSummons": 2,
+        "digest": "f848c3255099f3e08b8902c1922d2385e702b0541ae13b6018de5f7d3d3b8070"
+      },
+      {
+        "seed": 10,
+        "first": "wizard",
+        "winner": "wizard",
+        "reason": "base",
+        "turns": 23,
+        "actions": 74,
+        "slotSummons": 2,
+        "digest": "6eda57f416bb027913e319e4d2431ec3215fc01da085f4b7ed391e494fd840fb"
+      },
+      {
+        "seed": 11,
+        "first": "cowboy",
+        "winner": "wizard",
+        "reason": "base",
+        "turns": 18,
+        "actions": 57,
+        "slotSummons": 1,
+        "digest": "521dc07a3545244e49afceb727d3fc30129439885e4f7f677ccb38a7f80b6b1c"
+      },
+      {
+        "seed": 11,
+        "first": "wizard",
+        "winner": "wizard",
+        "reason": "base",
+        "turns": 9,
+        "actions": 27,
+        "slotSummons": 1,
+        "digest": "4f76a502fa3fc26d0052a0740dc131dd45b4f3d8af76176c3a3afc61e14a6fd7"
+      },
+      {
+        "seed": 12,
+        "first": "cowboy",
+        "winner": "wizard",
+        "reason": "base",
+        "turns": 6,
+        "actions": 18,
+        "slotSummons": 1,
+        "digest": "0cda09cd215c2ca57fa63f526eedb37ab96190d4f50d2559670db93623f5f2dc"
+      },
+      {
+        "seed": 12,
+        "first": "wizard",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 16,
+        "actions": 56,
+        "slotSummons": 2,
+        "digest": "4b37d0ac88a418730b4ead6855a1304f6756767347ef9dbf66b6c1d7cc2e6e4b"
+      },
+      {
+        "seed": 13,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 13,
+        "actions": 43,
+        "slotSummons": 2,
+        "digest": "539d5bbde886dc28c80c495d2c35eea6e8d2e225419fc66fef556eca86311be2"
+      },
+      {
+        "seed": 13,
+        "first": "wizard",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 12,
+        "actions": 39,
+        "slotSummons": 2,
+        "digest": "c080ac1b4842334d2c5656ecd646af58dde45f712aa854520a9e2f19eb53862f"
+      },
+      {
+        "seed": 14,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 13,
+        "actions": 44,
+        "slotSummons": 0,
+        "digest": "596623a1f35f44c8db5d8ee996ee1f16046a6af9ae48551dcbe3068d5b5f510e"
+      },
+      {
+        "seed": 14,
+        "first": "wizard",
+        "winner": "wizard",
+        "reason": "base",
+        "turns": 13,
+        "actions": 35,
+        "slotSummons": 0,
+        "digest": "70fca45821fa596692eeab798324425ffbb9e40675b2a4b3fcc3ceb0e3f97a0e"
+      },
+      {
+        "seed": 15,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 11,
+        "actions": 36,
+        "slotSummons": 0,
+        "digest": "a329e53ccc3165b237b17cfbb196893120dfc6b10b6debf4aacef00eddf35b44"
+      },
+      {
+        "seed": 15,
+        "first": "wizard",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 12,
+        "actions": 38,
+        "slotSummons": 0,
+        "digest": "f7a44c68ff2a0c43ac110892c23dc4c6c8d047c0809f1ae46d97d4bfd8ccc465"
+      }
+    ],
+    "candidate": [
+      {
+        "seed": 0,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 13,
+        "actions": 41,
+        "slotSummons": 1,
+        "digest": "4bfea7c5aa3d9b81a5979c35ef2fa5a300d20ee739c234cc384c881ec0ed2303"
+      },
+      {
+        "seed": 0,
+        "first": "wizard",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 16,
+        "actions": 51,
+        "slotSummons": 2,
+        "digest": "0eb55c7aab293342dd859b75e3a1a35387fbaf23cb66cf39fb661a6283bca347"
+      },
+      {
+        "seed": 1,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 15,
+        "actions": 48,
+        "slotSummons": 1,
+        "digest": "7f223aaabbf6ed81943c5407f4fdbd76235cc0cb1ed40177842d3b02088fb004"
+      },
+      {
+        "seed": 1,
+        "first": "wizard",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 10,
+        "actions": 33,
+        "slotSummons": 0,
+        "digest": "f439c6169a2752f3588f06729806ccc5217d913ad0463da7b6a3db99b8510801"
+      },
+      {
+        "seed": 2,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 15,
+        "actions": 54,
+        "slotSummons": 1,
+        "digest": "13cca7b0b27ec35aacba3fbef8fd9e1269f33952ac883640e57ae17fd40474d3"
+      },
+      {
+        "seed": 2,
+        "first": "wizard",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 12,
+        "actions": 44,
+        "slotSummons": 1,
+        "digest": "1bfe13e5e649528ab1d29a1b088e05628495345116ef3493fb52cc2200b33b2d"
+      },
+      {
+        "seed": 3,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 13,
+        "actions": 44,
+        "slotSummons": 1,
+        "digest": "ae31ae66173b1e5432851a428cbf30bd9bedb882d3dc16e851fcd3fe93f5eef3"
+      },
+      {
+        "seed": 3,
+        "first": "wizard",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 12,
+        "actions": 40,
+        "slotSummons": 1,
+        "digest": "6de9403a0c319f21f61be196f215ae2eab11cd4188475fc4f0fa9749e4b679c1"
+      },
+      {
+        "seed": 4,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 9,
+        "actions": 29,
+        "slotSummons": 2,
+        "digest": "857c53d7e8e918f2ebc00343ccda8bf11f7b5d73b5bda14a2756353b2db563ee"
+      },
+      {
+        "seed": 4,
+        "first": "wizard",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 14,
+        "actions": 41,
+        "slotSummons": 2,
+        "digest": "558ac4d993dbf13470219a6841a1f9a2c4c21f21f8a55c52186a3d27684a5107"
+      },
+      {
+        "seed": 5,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 15,
+        "actions": 44,
+        "slotSummons": 1,
+        "digest": "78c1b3697d3eb3b4eba461b9cabb1170717e3e2eb78c6b4567cda161af4f8ed6"
+      },
+      {
+        "seed": 5,
+        "first": "wizard",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 14,
+        "actions": 44,
+        "slotSummons": 1,
+        "digest": "2c89c7b243b7383d6afc2fb21a059cd762898cb2d789dc8f96134d092e85fbdc"
+      },
+      {
+        "seed": 6,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 13,
+        "actions": 44,
+        "slotSummons": 1,
+        "digest": "0743adf73ffeb47943a06088e2bcdff67b741aedf2c094cc14e4ef596e79ce5c"
+      },
+      {
+        "seed": 6,
+        "first": "wizard",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 10,
+        "actions": 34,
+        "slotSummons": 1,
+        "digest": "454f86d4e6509c33368e8d2facd9d53e9ff07c093e78ff1b3c788bbdbc84a931"
+      },
+      {
+        "seed": 7,
+        "first": "cowboy",
+        "winner": "wizard",
+        "reason": "base",
+        "turns": 20,
+        "actions": 65,
+        "slotSummons": 2,
+        "digest": "be26cecbaa475b714bd724f809e6aca58068168ac5f96005389575263990de2d"
+      },
+      {
+        "seed": 7,
+        "first": "wizard",
+        "winner": "wizard",
+        "reason": "base",
+        "turns": 7,
+        "actions": 24,
+        "slotSummons": 1,
+        "digest": "7fd6de7f61fb733d4d244b0374e9882d9c1cb93d181eec1be9d395f940910847"
+      },
+      {
+        "seed": 8,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 11,
+        "actions": 34,
+        "slotSummons": 1,
+        "digest": "0c4464972b20ad2f9c613d83562cf696d58d76fb3e35c06c3ca9bc33b2a7cc32"
+      },
+      {
+        "seed": 8,
+        "first": "wizard",
+        "winner": "wizard",
+        "reason": "base",
+        "turns": 21,
+        "actions": 65,
+        "slotSummons": 2,
+        "digest": "64bb974a46a00f6e42fd1bcc3f4ae313e204757b102e9955e8d500f181c7246c"
+      },
+      {
+        "seed": 9,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 11,
+        "actions": 37,
+        "slotSummons": 1,
+        "digest": "ebc6941c9ee94cff0026c3dbc8b6d79b5f829a9bdb9f91316d41190855c3cca9"
+      },
+      {
+        "seed": 9,
+        "first": "wizard",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 14,
+        "actions": 48,
+        "slotSummons": 1,
+        "digest": "a4a618861504c7445fbcc5f5df3b20cdbb71efad39964db01e35efba095cfade"
+      },
+      {
+        "seed": 10,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 17,
+        "actions": 59,
+        "slotSummons": 2,
+        "digest": "d30f40728ad3ae133849b49de08141b22caca3190c3170e99692169797b48cdf"
+      },
+      {
+        "seed": 10,
+        "first": "wizard",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 12,
+        "actions": 42,
+        "slotSummons": 2,
+        "digest": "26ba558fe73cc1c67e0f48231bbee5eb206d5500e8f551721b957255ebca77ad"
+      },
+      {
+        "seed": 11,
+        "first": "cowboy",
+        "winner": "wizard",
+        "reason": "base",
+        "turns": 18,
+        "actions": 58,
+        "slotSummons": 1,
+        "digest": "cd14f93aefdccbf2193652701743827adc2c191363f0a8f0118949e38aaf5bec"
+      },
+      {
+        "seed": 11,
+        "first": "wizard",
+        "winner": "wizard",
+        "reason": "base",
+        "turns": 15,
+        "actions": 48,
+        "slotSummons": 1,
+        "digest": "4a2460c33f364af88086aed0f0c198b5bd5b91b470dd6792e6925d9a2a8ba840"
+      },
+      {
+        "seed": 12,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 15,
+        "actions": 51,
+        "slotSummons": 1,
+        "digest": "4b9ccdf7a3f6a4184590dd6e6878c38f5f0a241c46c7450e15ac79c3c721369c"
+      },
+      {
+        "seed": 12,
+        "first": "wizard",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 16,
+        "actions": 56,
+        "slotSummons": 2,
+        "digest": "702f3e689d90a65f5ab4a5b095e90723c212196ca220d1a07682945818c65e54"
+      },
+      {
+        "seed": 13,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 13,
+        "actions": 46,
+        "slotSummons": 2,
+        "digest": "783869613637bc0b5e895fca2978f93fbbe0a6ec285e4bf67b7b636589e55b71"
+      },
+      {
+        "seed": 13,
+        "first": "wizard",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 12,
+        "actions": 38,
+        "slotSummons": 2,
+        "digest": "c08259e9609bd22ad1a48eab378046dfd1bcdb2e1f54a1e219db167ab46b4be2"
+      },
+      {
+        "seed": 14,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 13,
+        "actions": 44,
+        "slotSummons": 0,
+        "digest": "596623a1f35f44c8db5d8ee996ee1f16046a6af9ae48551dcbe3068d5b5f510e"
+      },
+      {
+        "seed": 14,
+        "first": "wizard",
+        "winner": "wizard",
+        "reason": "base",
+        "turns": 13,
+        "actions": 35,
+        "slotSummons": 0,
+        "digest": "70fca45821fa596692eeab798324425ffbb9e40675b2a4b3fcc3ceb0e3f97a0e"
+      },
+      {
+        "seed": 15,
+        "first": "cowboy",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 11,
+        "actions": 36,
+        "slotSummons": 0,
+        "digest": "a329e53ccc3165b237b17cfbb196893120dfc6b10b6debf4aacef00eddf35b44"
+      },
+      {
+        "seed": 15,
+        "first": "wizard",
+        "winner": "cowboy",
+        "reason": "base",
+        "turns": 12,
+        "actions": 38,
+        "slotSummons": 0,
+        "digest": "f7a44c68ff2a0c43ac110892c23dc4c6c8d047c0809f1ae46d97d4bfd8ccc465"
+      }
+    ]
+  }
+}

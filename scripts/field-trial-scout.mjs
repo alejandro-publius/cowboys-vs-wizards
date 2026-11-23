@@ -274,7 +274,9 @@ async function compute({base, inputs, contract, cohorts, cards, plan}) {
           cohorts: perCohort});
       } catch (error) {
         if (error instanceof InputError) throw error;
-        rejected.push({...edit, status: "engine-rejected", error: firstLine(error)});
+        const reason = firstLine(error);
+        if (!reason.startsWith(`candidate card compile failed: ${edit.card}.json: `)) throw error;
+        rejected.push({...edit, status: "engine-rejected", error: reason});
       }
       if ((i + 1) % 10 === 0 || i + 1 === plan.candidates.length) process.stderr.write(`scout: ${i + 1}/${plan.candidates.length} edits\n`);
     }
@@ -359,7 +361,11 @@ async function main(argv) {
   lines.push(`  ${k.measured}/${k.candidates} edits measured (${k.rejected} rejected by the engine, ${k.excluded} outside bounds); ${k.passingNsb1AndNsb2BothCohorts} meet NSB-1 and NSB-2 on both cohorts`);
   lines.push(`  wrote ${outPath}`);
   console.log(lines.join("\n"));
-  return k.rejected ? 1 : 0;
+  if (k.passingNsb1AndNsb2BothCohorts === 0) {
+    console.log("  No nomination. The held-out deals stayed sealed.");
+    return 3;
+  }
+  return 0;
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

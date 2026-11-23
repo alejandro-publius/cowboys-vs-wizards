@@ -19,8 +19,11 @@ earlier evidence.
   `scripts/sync-card-specs.mjs` and `prototypes/showdown/rules.js`. `change` is
   `{card, field, from, to}`; `null` opens the baseline.
 - It also exports `playTrial(rules, seed, first, onStep?)` returning
-  `{winner, endTurn}`. `onStep(before, applied, action)` is called once for
-  each real bot action.
+  `{winner, endTurn}`. `onStep(before, applied, action?)` is called on each
+  applied engine action. The historical `playTurn` in `rules.js` emits only
+  the before and after states and their events, so `action` may be absent; the
+  witness uses the authentic `applied.events` and never fabricates an action
+  payload.
 - `scripts/field-trial-scout.mjs`, `scripts/field-trial-confirm.mjs` and
   `scripts/field-trial-witness.mjs` are independent scripts. None imports
   another's results or state.

@@ -10,6 +10,8 @@ Showdown is the supported game. The earlier three-lane duel is archived at `ea18
 
 In Camp, open **Sheriff’s Ledger** to see the two verified Outrider positions and the balance review that rejected giving the Sheriff a fourth orb. The balance numbers come from bot play. [Outrider gate](docs/evidence/outrider-gate.md) · [Reproduce the Sheriff verdict](docs/evidence/night-shift/guard-sheriff-health-3-to-4/README.md)
 
+In Camp, open the **Night Shift** saloon and decide whether to give the Sheriff two health orbs. Its Card Forge shelf holds **Dusty Pete**, a Cowboy troop drafted into the Covered Wagon slot (1 attack, 5 health, 2 stars) and summoned in 27 of 32 sandbox games. Its Agent Arena shows the **Cautious Sheriff** playbook beating the **Reckless Wizard** 13–3 over 16 games, with a 54-decision replay. Both come from native Kiro workflows and bot play, and no live card changed. [Play the Saloon build](https://boot-hill-night-shift.alejandro-publius.chatgpt.site/) · [Watch the Saloon clip](https://boot-hill-night-shift.alejandro-publius.chatgpt.site/night-shift.mp4) · [Reproduce the findings](docs/evidence/night-shift-repair/README.md)
+
 ## Card art library
 
 The [Showdown art direction catalog](prototypes/showdown/ART-DIRECTION.md) has prompts for all 29 cards, a shared style guide, 18 environment and prop briefs, and 13 model sheets. The [Sheriff](assets/cards/sheriff-card.webp) and [Dragon](assets/cards/dragon-card.webp) paintings are the style references.
