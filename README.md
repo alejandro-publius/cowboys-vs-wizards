@@ -99,6 +99,9 @@ Kiro CLI with Claude Opus 5.5 proposed each one-number change. A separate simula
 
 [Recorded run and seeds](docs/evidence/kiro-contest-run.md) · [Native workflow screenshot](docs/evidence/kiro-night-shift-native.png) · [Observed Kiro usage](docs/KIRO_USAGE.md)
 
+Measured cross-check, 100,000 Node engine duels on 25,000 held-out seeds ([Billy seat audit proof](docs/evidence/billy-seat-audit/README.md)):<br>
+Billy attack 2: 59.792% Cowboy wins, gate RED (exit 2). Billy attack 1: 51.920%, gate PASS (exit 0).
+
 For ongoing balance review, the separate [Night Watch Kiro Crew app](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch) compares committed game revisions on matching CPU seeds, records changes and drafts issue reports. It is an optional local development tool, **not** part of the shipped browser game. [Crew run evidence](docs/evidence/kiro-night-watch.md).
 
 ## Code map

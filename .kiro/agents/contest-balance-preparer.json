@@ -1,6 +1,6 @@
 {
   "name": "contest-balance-preparer",
-  "description": "Night Shift contest-balance coordinator: runs only `node scripts/contest-balance.mjs reset` or `node scripts/contest-balance.mjs prepare` from the project root and reports the output. Read-only otherwise; cannot edit files or run any other command.",
+  "description": "Night Shift contest-balance coordinator: runs only `node scripts/contest-balance.mjs reset`, `node scripts/contest-balance.mjs prepare` or the release-gate preflight `node scripts/contest-release-gate.mjs release` from the project root and reports the output. Read-only otherwise; cannot edit files or run any other command.",
   "tools": ["read", "shell"],
   "includeMcpJson": false,
   "resources": [
@@ -10,7 +10,7 @@
     "rules": [
       {
         "capability": "shell",
-        "match": ["node scripts/contest-balance.mjs reset", "node scripts/contest-balance.mjs prepare"],
+        "match": ["node scripts/contest-balance.mjs reset", "node scripts/contest-balance.mjs prepare", "node scripts/contest-release-gate.mjs release"],
         "effect": "allow"
       },
       {
@@ -25,5 +25,5 @@
       }
     ]
   },
-  "prompt": "You are contest-balance-preparer. Run exactly the one command your step names, from the project root: `node scripts/contest-balance.mjs reset` or `node scripts/contest-balance.mjs prepare`. Run no other command, add no arguments, pipes or redirects, and edit no file. Report the exit status and printed lines exactly. You may read files to report what the command wrote."
+  "prompt": "You are contest-balance-preparer. Run exactly the one command your step names, from the project root: `node scripts/contest-balance.mjs reset`, `node scripts/contest-balance.mjs prepare` or `node scripts/contest-release-gate.mjs release`. Run no other command, add no arguments, pipes or redirects, and edit no file. Report the exit status and printed lines exactly. For `node scripts/contest-release-gate.mjs release`, give the shell tool a long timeout, wait for its real terminal exit status, report its short final output, and never claim it ran or passed unless the shell tool returned that exit status. You may read files to report what the command wrote."
 }

@@ -136,3 +136,48 @@ test("night-shift-review is a native repeat capped at 6 that stops only on pass 
   assert.ok(wf.steps.at(-1).prompt.includes("node scripts/contest-balance.mjs verify"));
   for (const step of [...wf.steps, ...loop.steps]) if (step.prompt) assert.doesNotMatch(step.prompt, /git (push|merge)|gh pr create/);
 });
+
+const GATE = "node scripts/contest-release-gate.mjs release";
+const readWorkflow = (name) => JSON.parse(readFileSync(new URL(`../../.kiro/workflows/${name}.workflow.json`, import.meta.url), "utf8"));
+
+test("both workflows run the same release-gate preflight as step 1, before their existing steps", () => {
+  const night = readWorkflow("night-shift-review"), billy = readWorkflow("billy-seat-audit");
+  for (const wf of [night, billy]) {
+    const [first] = wf.steps;
+    assert.deepEqual([first.type, first.id, first.agent], ["step", "release-preflight", "contest-balance-preparer"]);
+    assert.equal(first.prompt.split(GATE).length, 2, "the gate command appears exactly once");
+    assert.match(first.prompt, /long timeout/);
+    assert.match(first.prompt, /severity "success"[^]*severity "error"/);
+    assert.equal(wf.steps.filter((s) => s.id === "release-preflight").length, 1);
+  }
+  assert.deepEqual(night.steps[0], billy.steps[0]);
+  // Existing steps, repeat and termination follow unchanged.
+  assert.deepEqual(night.steps.map((s) => [s.type, s.id]), [["step", "release-preflight"], ["step", "reset-run"], ["repeat", "balance-attempts"], ["step", "verify-receipt"]]);
+  const loop = night.steps[2];
+  assert.deepEqual([loop.maxIterations, loop.onMaxIterations], [6, "abort"]);
+  assert.deepEqual(loop.stopCondition, {fileCheck: {path: STATUS, jsonPath: "$.pass", value: true}});
+  assert.deepEqual(billy.steps.map((s) => [s.id, s.agent]), [
+    ["release-preflight", "contest-balance-preparer"],
+    ["verify-billy-replay", "showdown-seat-auditor"],
+    ["verify-seat-audit", "showdown-seat-auditor"],
+    ["balance-gate", "showdown-seat-auditor"],
+  ]);
+});
+
+test("only contest-balance-preparer gains the exact gate command", () => {
+  const agent = JSON.parse(readFileSync(new URL("../../.kiro/agents/contest-balance-preparer.json", import.meta.url), "utf8"));
+  const shell = agent.permissions.rules.filter((r) => r.capability === "shell");
+  assert.equal(shell.length, 1);
+  assert.deepEqual(shell[0].match, ["node scripts/contest-balance.mjs reset", "node scripts/contest-balance.mjs prepare", GATE]);
+  assert.deepEqual(agent.permissions.rules.find((r) => r.capability === "fs_write"), {capability: "fs_write", match: ["**"], effect: "deny"});
+});
+
+test("the release stamp watches the balance policy, decider and Billy proof inputs, once each", async () => {
+  const {WATCHED_FILES} = await import("../../scripts/contest-release-gate.mjs");
+  assert.equal(new Set(WATCHED_FILES).size, WATCHED_FILES.length);
+  for (const path of [
+    "scripts/contest-balance.mjs", "scripts/showdown-balance-contract.mjs", ".kiro/specs/night-shift-balance-contract/requirements.md",
+    "scripts/billy-balance-gate.mjs", "scripts/billy-seat-audit.mjs", "scripts/billy-replay-engine.mjs", "scripts/verify-billy-replay.mjs",
+    "docs/evidence/billy-seat-audit/protocol.json", "docs/evidence/billy-seat-audit/result.json", "docs/evidence/billy-seat-audit/outcomes.csv.gz",
+  ]) assert.ok(WATCHED_FILES.includes(path), path);
+});

@@ -36,13 +36,19 @@ const BALANCE_ARGS = ["scripts/deck-balance.mjs", "--decks", "1", "--from", "0",
 const RERUN = "Run: node scripts/contest-release-gate.mjs release";
 
 // Inputs whose change invalidates the stamp: every source the verifier, its tests and the balance
-// sample load, the lockfile, the GLBs the preflight reads, the gate itself, and the Node version.
+// sample load, the lockfile, the GLBs the preflight reads, the gate itself, the Node version, and the
+// Night Shift policy/decider and Billy seat-audit proof inputs the workflows rely on.
 const WATCHED_DIRS = ["src", "tests", "prototypes/showdown", ".kiro/specs/duel-card-pipeline/cards"];
-const WATCHED_FILES = [
+export const WATCHED_FILES = [
   "package.json", "package-lock.json",
   "scripts/verify-duel.mjs", "scripts/check-sourced-animation.mjs", "scripts/deck-balance.mjs", "scripts/play-match.mjs",
   "scripts/contest-release-gate.mjs", "scripts/contest-gate-properties.mjs",
   "assets/models/dragon.glb", "assets/models/mounted-billy.glb",
+  "scripts/contest-balance.mjs", "scripts/showdown-balance-contract.mjs",
+  ".kiro/specs/night-shift-balance-contract/requirements.md",
+  "scripts/billy-balance-gate.mjs", "scripts/billy-seat-audit.mjs", "scripts/billy-replay-engine.mjs", "scripts/verify-billy-replay.mjs",
+  "docs/evidence/billy-seat-audit/protocol.json", "docs/evidence/billy-seat-audit/result.json",
+  "docs/evidence/billy-seat-audit/outcomes.csv.gz",
 ];
 // Saves that trigger the fast properties.
 const FAST_SCOPE = [/^src\/game\/showdown\//, /^\.kiro\/specs\/duel-card-pipeline\/cards\//, /^tests\/helpers\/boundary-properties\/showdown\//, /^scripts\/contest-gate-properties\.mjs$/];

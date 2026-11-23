@@ -5,6 +5,12 @@
   "steps": [
     {
       "type": "step",
+      "id": "release-preflight",
+      "agent": "contest-balance-preparer",
+      "prompt": "Release-gate preflight. Run exactly once from the project root, using the shell tool: node scripts/contest-release-gate.mjs release\nIt runs the fast-check properties at the fixed seed, node scripts/verify-duel.mjs and a small deck-balance sample, then writes the validation stamp; it can take over ten minutes. Give the shell tool a long timeout (at least 20 minutes) if it supports one. Do not say it ran or passed unless the shell tool returned its real terminal exit status; do not report partial, estimated or simulated results. Run it only once, add no arguments, pipes or redirects, run no other command and edit no file. Report the exit status and only the short final gate output (the closing summary or failure lines).\nStep completion: send_message to sessionId \"parent\" only. Only exit 0 with the printed line \"contest gate: release checks passed; stamp written\": severity \"success\". Any nonzero exit, a timeout, or a command that could not run or finish: severity \"error\", quoting the short failure output, so the run terminates."
+    },
+    {
+      "type": "step",
       "id": "verify-billy-replay",
       "agent": "showdown-seat-auditor",
       "prompt": "Run exactly once from the project root, using the shell tool: node scripts/verify-billy-replay.mjs\nDo not say it ran unless the shell tool returned its exit status. Report the exit status and printed lines exactly. Edit no file.\nStep completion: send_message to sessionId \"parent\" only. Exit 0: severity \"success\". Any nonzero exit or a command that could not run: severity \"error\", quoting the output, so the run stops."
