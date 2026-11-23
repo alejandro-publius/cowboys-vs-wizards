@@ -35,7 +35,8 @@ function validateInput(input) {
   const {firstSeed, deals, sides, playBaseline, playCandidate, onPair} = input;
   if (!isWhole(firstSeed) || firstSeed < 0) fail(`firstSeed must be a non-negative whole number, got ${describe(firstSeed)}`);
   if (!isWhole(deals) || deals < 1 || deals > MAX_DEALS) fail(`deals must be a whole number from 1 to ${MAX_DEALS}, got ${describe(deals)}`);
-  if (!isWhole(firstSeed + deals - 1)) fail("the seed range must stay within safe whole numbers");
+  // Last seed is firstSeed + deals - 1; compare without adding so the check cannot round past MAX_SAFE_INTEGER.
+  if (deals - 1 > Number.MAX_SAFE_INTEGER - firstSeed) fail("the seed range must stay within safe whole numbers");
   if (!Array.isArray(sides) || sides.length !== 2) fail(`sides must be an array of exactly two side names, got ${describe(sides)}`);
   for (const side of sides) {
     if (typeof side !== "string" || !SIDE.test(side)) fail(`each side must be a lowercase name such as "cowboy", got ${describe(side)}`);
@@ -73,7 +74,8 @@ export function measurePairedCohort(input) {
   const {firstSeed, deals, sides, playBaseline, playCandidate, onPair} = validateInput(input);
   const baselineArm = emptyArm(sides), candidateArm = emptyArm(sides);
   let gamesPerArm = 0, switchedWinners = 0;
-  for (let seed = firstSeed; seed < firstSeed + deals; seed++) {
+  for (let offset = 0; offset < deals; offset++) {
+    const seed = firstSeed + offset;
     for (const first of sides) {
       const where = `seed ${seed}, ${first} first`;
       const baseline = checkOutcome(playBaseline(seed, first), sides, `${where}, baseline`);
