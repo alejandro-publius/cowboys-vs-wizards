@@ -1,0 +1,20 @@
+{
+  "id": "showdown-history-heldout-v0",
+  "status": "unsealed: 0 verified cases; 1 candidate unsupported by the state schema, 12 commits excluded or not examined (see mining-report.md and triage.json)",
+  "scope": "standard Showdown single duels; no progression, Trail, rival, bounty or boss modifiers",
+  "referee": {
+    "path": null,
+    "sha256": null,
+    "note": "Pin the frozen Python referee's sha256 here when its owner freezes it. history.mjs run refuses an unpinned or changed referee."
+  },
+  "inputs": {
+    "path": "inputs.json",
+    "sha256": null,
+    "note": "Blind duels only: {seed, first, decks, actions, cardNames?}. The only file the referee reads."
+  },
+  "answers": {
+    "path": "answers.json",
+    "sha256": null,
+    "note": "Category, parent and fix commits, known fix paths, rule source, observable pointer and, for test-expectation cases, the old and new expected values. Opened only after the referee has produced every output."
+  }
+}

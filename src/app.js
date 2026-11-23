@@ -11,11 +11,20 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   import("./match/showdown-playtest.js"), import("./match/showdown-session.js"), import("./match/showdown-turn.js"),
   import("./match/showdown-outrider.js"), import("./ui/outrider-camp.js"), import("./match/showdown-practice.js"),
   import("./match/showdown-wizard-campaign.js"), import("./ui/showdown-wizard-camp.js"), import("./match/showdown-earned.js"),
-  typeof __CVW_DIORAMA__ !== "undefined" && __CVW_DIORAMA__ ? import("./ui/showdown-3d/scene.js") : null])
+  typeof __CVW_DIORAMA__ !== "undefined" && __CVW_DIORAMA__ ? import("./ui/showdown-3d/scene.js") : null,
+  import("./ui/wizard-lesson.js")])
   .then(([{mountShowdown, freshSeed}, {mountCamp}, {mountBuilder}, {createCampaign}, {createPlaytestLog, PAGE_BUILD}, {twoPlayers}, {turnDuel},
     {outriderTurn}, {VERIFIED, outriderControls}, {PRACTICE_SEEDS, practiceDuel, practiceFromQuery},
-    {createWizardPreview, wizardFromQuery, previewUnlocked, WIZARD_TRACK}, {mountWizardCamp}, {earnedControl, earnedDuel}, diorama]) => {
+    {createWizardPreview, wizardFromQuery, previewUnlocked, WIZARD_TRACK}, {mountWizardCamp}, {earnedControl, earnedDuel}, diorama,
+    {mountWizardLesson, createLessonSession, lessonDuel}]) => {
   const title = node("title-screen"), screen = node("showdown"), campRoot = node("showdown-camp"), builderRoot = node("showdown-builder"), play = node("menu-play");
+  // The Wizard lesson page (src/ui/wizard-lesson.js), a sibling of the duel screen.
+  const lessonRoot = document.createElement("section");
+  lessonRoot.id = "wizard-lesson";
+  lessonRoot.className = "wizard-lesson";
+  lessonRoot.setAttribute("aria-labelledby", "wl-title");
+  lessonRoot.hidden = true;
+  screen.after(lessonRoot);
   const contest = typeof __CVW_CONTEST__ !== "undefined" && __CVW_CONTEST__;
   const seed = new URLSearchParams(location.search).get("seed");
   // ?seed fixes every deal started from the Camp and every later game of a match, so a scripted check replays the same duels.
@@ -40,7 +49,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   const showOnly = (shown) => {
     if (shown !== campRoot) outpost?.close();
     if (shown !== screen) delete screen.dataset.contestChallenge;
-    for (const el of [title, screen, campRoot, builderRoot]) el.hidden = el !== shown;
+    for (const el of [title, screen, campRoot, builderRoot, lessonRoot]) el.hidden = el !== shown;
     window.scrollTo(0, 0);
   };
   let last = null; // the Camp control that started the duel just left, so focus returns to it
@@ -79,7 +88,18 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     wizardCamp.focus(null); // the open tile; Back from a duel then moves focus to the tile that started it
   };
   const builder = mountBuilder(builderRoot, {campaign, paintCardFaces: diorama?.paintCardFaces});
+  // Wizard lesson: review a finished duel or an episode file, rematch the identical deal. The rematch settles nothing
+  // (kind "lesson"); its Wizard uses a lesson only when the player opted in (policy null otherwise).
+  const showLesson = () => showOnly(lessonRoot);
+  const lessonPage = mountWizardLesson(lessonRoot, {storage,
+    onRematch: ({episode, policy}) => {
+      showOnly(screen);
+      showdown.start(lessonDuel(episode, Boolean(policy)), episode.seed, {lesson: {createSession: () => createLessonSession({episode, policy})}});
+    },
+    onClose: () => home()});
   const showdown = mountShowdown(screen, {onHome: home, campaign, playtest, nextSeed: seedFor, mountBoard: diorama?.mountDiorama,
+    onReview: (record) => { showLesson(); lessonPage.openFromDuel(record); },
+    onLessonBack: () => { showLesson(); lessonPage.reopen(); },
     // Between the games of a best of three with a side deck: the swap, then the next game.
     onSwap: (pool, deck, side, done) => {
       showOnly(builderRoot);
@@ -121,6 +141,15 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     return true;
   };
   campRoot.addEventListener("click", (event) => { const b = event.target.closest("button[data-turn]"); if (b) openTurn(b.dataset.turn); });
+  // Wizard lesson saved in this browser: reopened from this control or ?lesson=saved. A stale save is cleared there.
+  node("camp-experiment").insertAdjacentHTML("beforeend", `<div class="sd-row"><button type="button" id="camp-wizard-lesson">Open saved Wizard lesson</button></div>
+    <p class="sd-note">Unlike the rest of this section, a Wizard lesson keeps one marked episode in this browser.</p>`);
+  const openSavedLesson = (from = null) => {
+    last = from ? "#camp-wizard-lesson" : null;
+    showLesson();
+    lessonPage.openSaved();
+  };
+  node("camp-wizard-lesson").addEventListener("click", (event) => openSavedLesson(event.currentTarget));
   // K-011: Outrider turns, only the ids scripts/outrider-gate.mjs verified at build time: one Camp control, the Ledger's
   // two position links (both inside the Camp root) and ?outrider=<id>.
   node("camp-experiment").insertAdjacentHTML("beforeend", outriderControls());
@@ -207,4 +236,5 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   if (outrider !== null && turn === null) openOutrider(outrider);
   if (practice !== null) openPractice(practice);
   if (wizard) toWizard();
+  if (query.get("lesson") === "saved" && !["turn", "outrider", "practice", "wizard"].some((key) => query.has(key))) openSavedLesson();
   });

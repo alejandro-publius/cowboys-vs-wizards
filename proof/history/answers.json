@@ -1,0 +1,15 @@
+{
+  "schema": {
+    "category": "engine-defect (the parent engine broke a rule; the fix engine follows it) or test-expectation (a rule test expected a wrong value; the fix corrected the expectation)",
+    "parent": "full commit id of the fix's first parent",
+    "fix": "full commit id of the fix",
+    "knownFix": {"paths": ["files the fix changed"], "summary": "one sentence from git show"},
+    "rule": {"source": "RULEBOOK.md section or card spec path", "text": "the rule sentence that decides the case"},
+    "observable": {"pointer": "RFC 6901 pointer into the referee's normalized output", "parent": "value the parent engine gives", "fix": "value the fix engine gives"},
+    "test": {"path": "test file", "name": "test name", "assertion": "the assertion line"},
+    "parentExpected": "test-expectation only: the value the old test asserted",
+    "fixExpected": "test-expectation only: the value the corrected test asserts",
+    "prefix": "why the actions in the blind input are the minimal legal prefix"
+  },
+  "cases": {}
+}

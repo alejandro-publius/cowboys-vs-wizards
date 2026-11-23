@@ -1,0 +1,20 @@
+/* Wizard lesson page (src/ui/wizard-lesson.js). Plain panels over the illustrated page; no new artwork. */
+.wizard-lesson { max-width: 52rem; margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+.wizard-lesson h1 { margin: 0 0 .5rem; }
+.wizard-lesson h2 { font-size: 1.05rem; margin: 1rem 0 .35rem; }
+.wizard-lesson .wl-turns { list-style: none; padding: 0; margin: 0; }
+.wizard-lesson .wl-move { text-align: left; max-width: 100%; }
+.wizard-lesson .wl-move[aria-pressed="true"] { outline: 3px solid #e7b75a; outline-offset: 2px; }
+.wizard-lesson .wl-advice { margin: .25rem 0 0 1.25rem; }
+.wizard-lesson .wl-status { border: 2px solid currentColor; border-radius: 6px; padding: .5rem .75rem; margin-top: 1rem; }
+.wizard-lesson .wl-badge { font-weight: 700; margin: 0; }
+.wizard-lesson .wl-status[data-lesson-state="pending"] { border-style: dashed; color: #c9c2b4; }
+.wizard-lesson .wl-status[data-lesson-state="rejected"] { color: #f0a08a; }
+.wizard-lesson .wl-status[data-lesson-state="accepted"] { color: #9fd99a; }
+.wizard-lesson .wl-status[data-lesson-source="cached"]::before,
+.wizard-lesson .wl-status[data-lesson-source="imported-precomputed"]::before { content: "CACHED"; font-size: .7rem; letter-spacing: .08em; }
+.wizard-lesson .wl-status[data-lesson-source="imported"]::before { content: "TRAINED LOCALLY"; font-size: .7rem; letter-spacing: .08em; }
+.wizard-lesson .wl-reasons, .wizard-lesson .wl-runs { margin: .35rem 0 0 1.25rem; color: inherit; }
+.wizard-lesson .wl-hash { word-break: break-all; }
+.wizard-lesson .wl-import { display: inline-flex; gap: .5rem; align-items: center; }
+.wizard-lesson button:focus-visible, .wizard-lesson input:focus-visible { outline: 3px solid #e7b75a; outline-offset: 2px; }

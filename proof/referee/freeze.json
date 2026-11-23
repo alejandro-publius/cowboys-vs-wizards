@@ -1,0 +1,45 @@
+{
+  "schema": "referee-freeze/1",
+  "referee": {
+    "entry": "proof/referee/referee.py",
+    "treeSha256": "b37a1478c683a42b61b1fa51c83ee07cf4f7dd2486bb5b5d5d7fde64ea611f8d"
+  },
+  "corpus": {
+    "path": "scripts/referee/corpus.mjs",
+    "sha256": "81ece1a289649fca55e95040872892f357f3782692e953b810eb7e207bc9e0ff"
+  },
+  "rules": {
+    "path": "prototypes/showdown/RULEBOOK.md",
+    "sha256": "ce837fec8dfc8e4a9a9e8f630f831a2acc617758f101e5618569a3440f3f1a85"
+  },
+  "csv": {
+    "path": "prototypes/showdown/cards.csv",
+    "sha256": "7a8cc9c4c2e70feeca7b70728801394a6be584952af07e6c8d004762fe333102"
+  },
+  "adapter": {
+    "path": "scripts/referee/adapter.mjs",
+    "sha256": "79c9f0834cc8ea06264864f903968e11f9e54a943936a3c4d8065aba6483ab30"
+  },
+  "recipe": {
+    "name": "full",
+    "count": 2500,
+    "minMoves": 100000,
+    "seedStart": 1,
+    "fresh": 0,
+    "freshSeeds": [],
+    "probeRate": 0.2,
+    "policies": {
+      "sampler": 4,
+      "bot0": 1,
+      "bot1": 2,
+      "bot1.5": 1,
+      "bot2": 1
+    }
+  },
+  "inputs": {
+    "sha256": "fb37abc02f7425ad5cb232a51056d8bc4163de63cb7b764b1b5cf5075104fa11",
+    "duels": 2500,
+    "actions": 155868,
+    "deterministic": true
+  }
+}

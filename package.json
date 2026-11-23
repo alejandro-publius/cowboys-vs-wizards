@@ -6,7 +6,9 @@
   "scripts": {
     "build": "node scripts/build-graybox.mjs",
     "test": "node scripts/verify-duel.mjs",
-    "scorecard": "node scripts/scorecard.mjs"
+    "scorecard": "node scripts/scorecard.mjs",
+    "referee:prove": "node scripts/referee/prove.mjs",
+    "referee:quick": "node scripts/referee/prove.mjs --quick"
   },
   "devDependencies": {
     "esbuild": "0.28.2",

@@ -1,0 +1,129 @@
+{
+  "source": "real Git in this checkout (not shallow; objects via .git/objects/info/alternates): git log, git show, git diff, git rev-parse, git archive through scripts/referee/history.mjs",
+  "triagedBy": "Claude Code (claude-opus-5-5), 2026-11-23 America/Los_Angeles. Supersedes the 2026-11-22 Kiro read-only triage, whose commit ids were all confirmed with git log --no-walk.",
+  "statuses": {
+    "sealed": "blind input and sealed answer exist in proof/history and verify passes (none)",
+    "candidate-unsupported": "a real engine defect, but its observable is outside the referee's normalized state schema",
+    "replayed-no-state-difference": "the blind input was replayed on the frozen referee and both archived revisions; every judged state pointer agrees",
+    "excluded-rule-revision": "a deliberate rules change (new card, keyword or action), not a correction; the old expectation was right under the rules of its time",
+    "excluded-bot-policy": "changes only how the CPU chooses moves; applyAction results are unchanged",
+    "excluded-reporting-only": "changes only an emitted event field; state after every action is unchanged",
+    "excluded-boss-scope": "bounty, boss or arrival modifiers, outside standard single duels",
+    "excluded-not-a-fix": "feature, refactor, presentation or hook commit with no duel-rules defect in its diff",
+    "excluded-lane": "the retired lane duel engine, not Showdown",
+    "excluded-not-rules-test": "a test file the miner watches, but the changed tests are not about duel rules"
+  },
+  "verified": 0,
+  "replayedIndependently": 1,
+  "replayEvidence": ".artifacts/history-26/smoke/run-report.json (generated; manifest .artifacts/history-26/smoke/manifest.json, referee sha256 b22c2980b920fbf522a4820d9bb5645a5594b701e30ec0f6035113be78595606, tree b37a1478c683a42b61b1fa51c83ee07cf4f7dd2486bb5b5d5d7fde64ea611f8d)",
+  "commits": [
+    {
+      "commit": "0beb0d58eb85145248aeedcfbdf2d574befd8d35",
+      "parent": "c40a76716cf1a7d04c6e7eaa6b2e1f573f18fb86",
+      "subject": "Showdown: fix what an independent review found",
+      "publicHistory": "first reaches main in 735cb096aebc80a6bcd2afbc662a283de3ab25be, Merge pull request #142 from alejandro-publius/fable/showdown-prototype",
+      "paths": ["prototypes/showdown/rules.js", "prototypes/showdown/rules.test.js"],
+      "changes": [
+        {
+          "id": "hitback-reported-from-attacker-orbs",
+          "status": "candidate-unsupported",
+          "kind": "engine defect in a reporting event",
+          "parentCode": "hitBack: attacker.health - outcome.attackerLeft",
+          "fixCode": "hitBack: target !== base && targetLeft > 0 && !cover ? attackOf(defender) : 0",
+          "introducedBy": "cb6c40267a1d43d365c402a72e69025b0d8df769",
+          "test": {
+            "path": "prototypes/showdown/rules.test.js",
+            "name": "the hit back an attack reports is the defender's attack, and the bot leaves a finished game alone",
+            "assertion": "assert.equal(applied.events.find((event) => event.type === \"attack\").hitBack, 3)",
+            "origin": "newly added regression test; it does not correct an existing assertion"
+          },
+          "replay": {
+            "blindInput": ".artifacts/history-26/smoke/inputs.json cases s01-hitback-0beb0d5 (seed 4101) and s04-hitback-event-0beb0d5 (seed 4104): 12 legal actions from ordered decks; on step 11 a 1-orb Skeleton attacks Mounted Billy",
+            "adapter": "scripts/referee/history-adapter.mjs on git archive of each revision (engine path prototypes/showdown, no unsupported fields)",
+            "statePointer": {"pointer": "/steps/11/state/players/wizard/discard", "referee": ["wizard-skeleton-5", "wizard-skeleton-1"], "parent": ["wizard-skeleton-5", "wizard-skeleton-1"], "fix": ["wizard-skeleton-5", "wizard-skeleton-1"], "verdict": "no-difference"},
+            "eventPointer": {"pointer": "/steps/11/engineEvents/0/hitBack", "parent": 1, "fix": 3, "referee": "no value (state-only schema)", "verdict": "unsupported"}
+          },
+          "whyNotSealed": [
+            "The defect is reachable on a blind legal prefix (parent 1, fix 3), but only in the attack event. The frozen schema is state only, so the referee has no value to judge and a sealed case could never be reproduced.",
+            "Sealing it as a held-out defect would put a case the referee cannot see into the count."
+          ]
+        },
+        {"id": "opening-hand-replaced-by-arrivals", "status": "excluded-boss-scope", "summary": "createShowdown option openingHand replaced by arrivals: a boss that lands at the start of its side's turn"},
+        {"id": "bot-ignores-finished-game", "status": "excluded-bot-policy", "summary": "playTurn returns {state, events: []} when state.result is set; applyAction is unchanged"}
+      ]
+    },
+    {
+      "commit": "5a2166b89210718b356c2dc3501d3858fcef6518",
+      "parent": "4c47a394d95540da9233458aaaeb55303723a51e",
+      "subject": "Showdown: gear, locations, cover, rivals, bounties, packs, deck builder and two players",
+      "changes": [
+        {
+          "id": "after-an-attack-cover-is-also-allowed",
+          "status": "excluded-rule-revision",
+          "changedAssertion": {
+            "path": "prototypes/showdown/rules.test.js",
+            "parent": "assert.ok(legalActions(attacked).every((a) => a.type === \"attack\" || a.type === \"end\"))",
+            "fix": "assert.ok(legalActions(attacked).every((a) => [\"attack\", \"cover\", \"end\"].includes(a.type)))"
+          },
+          "why": "Cover is introduced by this commit; the parent has no RULEBOOK.md and no cover action, so its expectation was right for its rules. In the test's own position (one troop, which has attacked) both assertions pass, so no expected value flips.",
+          "replay": {"blindInput": ".artifacts/history-26/smoke/inputs.json case s02-cover-5a2166b (seed 4102)", "pointer": "/steps/6/accepted", "referee": true, "fix": true, "parent": "unsupported-historical-api:cover; steps 6 onward not run", "verdict": "unsupported"}
+        }
+      ]
+    },
+    {
+      "commit": "a7d64d3b8754482e7c17b6d71981c1d00f1ca22f",
+      "parent": "f3cae354786cea04177aa92065661156ba0e7c83",
+      "subject": "Give the Showdown fight keywords, types, traps and a graveyard",
+      "changes": [{"id": "test-fixture-swaps-mounted-billy-for-billy", "status": "excluded-rule-revision", "summary": "Mounted Billy gains Ride, so the guarded-Base test switches its attacker to Billy and the direct-hit Base value 2 -> 3 follows the card swap, not a corrected expectation. The parent engine reads src/game/cards.js and has no traps or discard, so it cannot fill the schema."}]
+    },
+    {
+      "commit": "3dd47f1fb668f1b42edd72b50c898a0b1e622d74",
+      "parent": "a9aa8280e574bd662405bfe60454db5a81466afd",
+      "subject": "Showdown level-2 bot: stop the plan at a Scout draw and replan from the revealed card",
+      "paths": ["src/game/showdown/rules.js", "tests/game/showdown-fair-bot.test.js"],
+      "changes": [{"id": "bot-reads-own-deck-through-scout", "status": "excluded-bot-policy", "summary": "planTurn and playTurn only; applyAction untouched; the test file is new."}]
+    },
+    {
+      "commit": "a2bbe19791e93b75750c77f853af3724b7e5a401",
+      "parent": "e0f1db29b92ec013a3c2f420789a50c0983cb950",
+      "subject": "Stage Showdown combat and dress both factions from Fable's brief",
+      "changes": [{"id": "play-turn-on-action-callback", "status": "excluded-not-a-fix", "summary": "adds an optional onAction callback to playTurn. Used only as the src/game/showdown archive smoke (case s03, seed 4103): no difference, as expected."}]
+    },
+    {
+      "commit": "cb6c40267a1d43d365c402a72e69025b0d8df769",
+      "parent": "b8528faa8cf23cb9f5d0dc5e6909469397b4eac0",
+      "subject": "Showdown: say what a newcomer could not work out from the screen",
+      "changes": [{"id": "hitback-field-added", "status": "excluded-reporting-only", "summary": "introduces the hitBack event field with the formula 0beb0d5 later corrects; it is the defect's origin, not a fix"}]
+    },
+    {
+      "commit": "44d31ee21adcdaa65b1b22a5876c591ce3e13be2",
+      "parent": "583652539bd0b5c1fd8319e21f1739ec7a12beb8",
+      "subject": "Card pipeline: all 29 Showdown cards in the catalog; remove OVERLAY and FRESH",
+      "changes": [{"status": "excluded-not-a-fix", "summary": "cards.js now builds TYPES from generated specs instead of OVERLAY and FRESH; rules.js untouched. Diff read only; equality of every card value across the pair was not executed."}]
+    },
+    {
+      "commit": "a4472f3350db82bbe53acaafb7048f18c6ab355b",
+      "parent": "c3dcab64da3788954ba73669a2a7fca765a9251a",
+      "subject": "Show 'defeated before it struck' for a fatal Bear Trap in the Showdown log",
+      "changes": [{"status": "excluded-not-a-fix", "summary": "presenter.js text and a new test file; no engine change"}]
+    },
+    {
+      "commit": "71591d1cec3b7ed7a2ea8356c84f2b38776f7728",
+      "parent": "433936158d56eafd87719ebe892cec2f4e720ec4",
+      "subject": "Gate partial Kiro task edits against the whole checklist",
+      "changes": [{"status": "excluded-not-rules-test", "summary": "the miner's only test-expectation candidate: adds Kiro tasks.md gate tests in tests/game/showdown-fast-check.test.js; no duel-rule assertion changes"}]
+    },
+    {
+      "commit": "6ca1f21503e06827a98caa5eeb4c4a30fc0c6f4e",
+      "parent": "91c7d7a0f6c656199dfdbc7003aa41e8fc5740c6",
+      "subject": "Implement Fable's Frontier card rules",
+      "changes": [{"status": "excluded-lane", "summary": "src/game/actions.js, legal.js, cards.js and card specs of the lane duel; no Showdown path"}]
+    },
+    {"commit": "5e9da0be9911a3c6b1578795ccc53072f2eee854", "parent": "79e651765eb65906203fdaa6088a37fb2c2dffe1", "subject": "Run Showdown and Boot Hill Poker on one Frontier kit seeded generator", "changes": [{"status": "excluded-not-a-fix", "summary": "on origin/kiro/native-shared-game-runtime only, not HEAD; changes the seeded generator, which ordered-deck inputs do not use"}]},
+    {"commit": "f44af67daea248ce0a5e8294b311eac63ebc4b6f", "parent": "6819557e16611414f87393545f7edb983113e358", "subject": "Showdown slice 1: move engine to src/game/showdown, add presentEvent with full EVENTS coverage (#143)", "changes": [{"status": "excluded-not-a-fix", "summary": "the engine path move that history-adapter.mjs spans"}]},
+    {"commit": "ed389054f0591202d4f7539d39f57673c5dcab36", "parent": "2846af536f07fd415e39d81c718bb74c37e0580b", "subject": "Showdown: 3D-day runbook, model sheets in build order, names approved", "changes": [{"status": "excluded-not-a-fix", "summary": "rules.test.js: one import line and art-direction assertions added"}]},
+    {"commit": "f3f9dc3c7d4d3323bb8c243b987ba1c2b819a6a1", "parent": "5a2166b89210718b356c2dc3501d3858fcef6518", "subject": "Showdown: one visual direction for every card, place and frame", "changes": [{"status": "excluded-not-a-fix", "summary": "rules.test.js: art-direction assertions added, none removed"}]},
+    {"commit": "4c47a394d95540da9233458aaaeb55303723a51e", "parent": "a7d64d3b8754482e7c17b6d71981c1d00f1ca22f", "subject": "Add the Trail: a cushioned first six duels with a card on every win", "changes": [{"status": "excluded-not-a-fix", "summary": "adds deck counts and per-side Base options to createShowdown, and bot levels; Trail tests added, none removed"}]},
+    {"commit": "f3cae354786cea04177aa92065661156ba0e7c83", "parent": "fa1780c4eb5bfb9e4a3dfa42785348b34697bad4", "subject": "Prototype Showdown rules: chosen attacks in place of lane clashes", "changes": [{"status": "excluded-not-a-fix", "summary": "the first Showdown engine"}]}
+  ]
+}
