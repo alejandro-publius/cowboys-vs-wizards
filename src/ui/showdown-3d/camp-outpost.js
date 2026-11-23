@@ -1,5 +1,8 @@
 import {BOUNTIES, RIVALS} from "../../game/showdown/progress.js";
 import {cardArtwork} from "./table-ui.js";
+import {ledgerSectionHtml, mountNightShiftSaloon} from "./night-shift-saloon.js";
+import {createSaloonStage} from "./saloon-stage.js";
+import RECORDING from "../night-shift-recording.json" with {type: "json"};
 
 const RIVAL_ART = {
   stargazer: "wizard-wizard",
@@ -53,6 +56,30 @@ export function mountCampOutpost(root) {
   root.querySelector(".camp-rail-utility").insertAdjacentHTML("beforeend",
     '<button type="button" data-camp-destination="camp-collection-room">Camp ledger</button>');
 
+  // The Night Shift saloon: same dialog, focus and back pattern as the other rooms.
+  const saloonRoom = document.createElement("dialog");
+  saloonRoom.className = "camp-outpost outpost-saloon outpost-wood";
+  saloonRoom.setAttribute("aria-labelledby", "outpost-saloon-title");
+  saloonRoom.innerHTML = `<header><h2 id="outpost-saloon-title">Night Shift saloon</h2><button type="button" autofocus>Back to map</button></header>
+      <div class="outpost-room"></div>`;
+  saloonRoom.querySelector("header button").addEventListener("click", () => saloonRoom.close());
+  root.append(saloonRoom);
+  rooms.set("night-shift-saloon", {room: saloonRoom, content: saloonRoom.querySelector(".outpost-room")});
+  byId("camp-ledger").insertAdjacentHTML("beforeend", ledgerSectionHtml());
+  const saloon = mountNightShiftSaloon({
+    content: rooms.get("night-shift-saloon").content,
+    recording: RECORDING,
+    portrait: cardArtwork,
+    ledger: byId("camp-ledger").querySelector(".ledger-night-shift"),
+    createStage: createSaloonStage,
+  });
+  saloonRoom.addEventListener("close", () => {
+    saloon.closed();
+    if (current === saloonRoom) current = null;
+  });
+  root.querySelector('[data-camp-destination="camp-collection-room"]').insertAdjacentHTML("afterend",
+    '<button type="button" data-camp-destination="night-shift-saloon">Night Shift saloon</button>');
+
   const practice = rooms.get("camp-practice").content;
   const replays = document.createElement("details");
   replays.innerHTML = "<summary>Challenge replays</summary>";
@@ -80,6 +107,7 @@ export function mountCampOutpost(root) {
     control.focus({preventScroll: true});
     room.showModal();
     current = room;
+    if (room === saloonRoom) saloon.opened();
   }
 
   function open(id, control = root.querySelector(`[data-camp-destination="${id}"]`)) {

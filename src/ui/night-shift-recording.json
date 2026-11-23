@@ -1,0 +1,213 @@
+{
+  "events": [
+    {
+      "id": "e-cce896fed7cb1ab872d53899",
+      "at": "2026-11-22T23:53:59.070Z",
+      "kind": "job"
+    },
+    {
+      "id": "e-6293822c8eba47e7872dfa10",
+      "at": "2026-11-23T00:01:59.638Z",
+      "kind": "block",
+      "rule": "balancer"
+    },
+    {
+      "id": "e-8c91fb24be815c3e6c1648c3",
+      "at": "2026-11-23T00:03:10.278Z",
+      "kind": "cast",
+      "card": "cowboy-billy",
+      "field": "attack",
+      "before": 2,
+      "after": 1
+    },
+    {
+      "id": "e-e9fac53158fade3580c2da7b",
+      "at": "2026-11-23T00:04:50.856Z",
+      "kind": "wanted",
+      "boss": "lantern-wraith"
+    },
+    {
+      "id": "e-321ff91a24ee33df3f08c54f",
+      "at": "2026-11-23T00:05:31.356Z",
+      "kind": "bell"
+    }
+  ],
+  "patches": [],
+  "activity": [
+    {
+      "id": "a-fb6ff0d97e9573133dc7759d",
+      "at": "2026-11-23T00:01:56.799Z",
+      "kind": "activity",
+      "actor": "singularity",
+      "phase": "SessionStart"
+    },
+    {
+      "id": "a-a9abb4ba10f7985b78896810",
+      "at": "2026-11-23T00:01:56.889Z",
+      "kind": "activity",
+      "actor": "singularity",
+      "phase": "UserPromptSubmit"
+    },
+    {
+      "id": "a-b1bed8782321184fa1a7b5ce",
+      "at": "2026-11-23T00:01:59.547Z",
+      "kind": "activity",
+      "actor": "singularity",
+      "phase": "PreToolUse"
+    },
+    {
+      "id": "a-94b2489538decac6f9a79c3c",
+      "at": "2026-11-23T00:02:30.356Z",
+      "kind": "activity",
+      "actor": "singularity",
+      "phase": "Stop"
+    },
+    {
+      "id": "a-e89417fc803db8c9baa2c470",
+      "at": "2026-11-23T00:02:52.161Z",
+      "kind": "activity",
+      "actor": "singularity",
+      "phase": "PostToolUse"
+    },
+    {
+      "id": "a-45e3265173a50e08052f42d3",
+      "at": "2026-11-23T00:02:55.742Z",
+      "kind": "activity",
+      "actor": "singularity",
+      "phase": "UserPromptSubmit"
+    },
+    {
+      "id": "a-bd4501236c6efd8396a74d75",
+      "at": "2026-11-23T00:03:00.414Z",
+      "kind": "activity",
+      "actor": "hunter",
+      "phase": "PreToolUse"
+    },
+    {
+      "id": "a-290d8665769bf9c884ff194b",
+      "at": "2026-11-23T00:03:00.422Z",
+      "kind": "activity",
+      "actor": "wizard",
+      "phase": "PreToolUse"
+    },
+    {
+      "id": "a-ecddb29c69e7805d621fd172",
+      "at": "2026-11-23T00:03:00.707Z",
+      "kind": "activity",
+      "actor": "hunter",
+      "phase": "PostToolUse"
+    },
+    {
+      "id": "a-15d817bceb83c783d8b80b9a",
+      "at": "2026-11-23T00:03:00.720Z",
+      "kind": "activity",
+      "actor": "wizard",
+      "phase": "PostToolUse"
+    },
+    {
+      "id": "a-abe64761b96c1b7d7fc5abbd",
+      "at": "2026-11-23T00:03:00.720Z",
+      "kind": "activity",
+      "actor": "singularity",
+      "phase": "PostToolUse"
+    },
+    {
+      "id": "a-94762a09c574f9ad42290a02",
+      "at": "2026-11-23T00:03:09.116Z",
+      "kind": "activity",
+      "actor": "singularity",
+      "phase": "PreToolUse"
+    },
+    {
+      "id": "a-122cd50cdde84fa53f74e3f2",
+      "at": "2026-11-23T00:03:09.594Z",
+      "kind": "activity",
+      "actor": "wizard",
+      "phase": "PostFileSave"
+    },
+    {
+      "id": "a-c71f7bb9e3b0dee0016c4b4e",
+      "at": "2026-11-23T00:03:13.018Z",
+      "kind": "activity",
+      "actor": "singularity",
+      "phase": "PreToolUse"
+    },
+    {
+      "id": "a-5ba26b7e74146cde7f44416d",
+      "at": "2026-11-23T00:03:13.200Z",
+      "kind": "activity",
+      "actor": "singularity",
+      "phase": "PostToolUse"
+    },
+    {
+      "id": "a-5d41129be40bfe01277a7d3c",
+      "at": "2026-11-23T00:03:17.033Z",
+      "kind": "activity",
+      "actor": "singularity",
+      "phase": "PreToolUse"
+    },
+    {
+      "id": "a-26354b3a7ca2c8a6feba5d80",
+      "at": "2026-11-23T00:03:17.256Z",
+      "kind": "activity",
+      "actor": "sheriff",
+      "phase": "PermissionRequest"
+    },
+    {
+      "id": "a-c6140c55f6ded6ce752596b7",
+      "at": "2026-11-23T00:03:19.374Z",
+      "kind": "activity",
+      "actor": "singularity",
+      "phase": "Stop"
+    },
+    {
+      "id": "a-d0d92ba487500ebe0e0a5c85",
+      "at": "2026-11-23T00:03:19.672Z",
+      "kind": "activity",
+      "actor": "singularity",
+      "phase": "SessionEnd"
+    },
+    {
+      "id": "a-b1aef21c4e248040183dd295",
+      "at": "2026-11-23T00:04:04.493Z",
+      "kind": "activity",
+      "actor": "singularity",
+      "phase": "PreToolUse"
+    },
+    {
+      "id": "a-3d35e352831dd7be33c8b78e",
+      "at": "2026-11-23T00:04:41.638Z",
+      "kind": "activity",
+      "actor": "singularity",
+      "phase": "PostFileSave"
+    },
+    {
+      "id": "a-8e72ab789a47b9e690fe5309",
+      "at": "2026-11-23T00:04:50.505Z",
+      "kind": "activity",
+      "actor": "hunter",
+      "phase": "PreToolUse"
+    },
+    {
+      "id": "a-68302ec0efc5f1417e97e140",
+      "at": "2026-11-23T00:04:55.272Z",
+      "kind": "activity",
+      "actor": "singularity",
+      "phase": "Stop"
+    },
+    {
+      "id": "a-cc165b727f9ad2db16bc0c19",
+      "at": "2026-11-23T00:05:27.766Z",
+      "kind": "activity",
+      "actor": "singularity",
+      "phase": "PreToolUse"
+    },
+    {
+      "id": "a-ab34f961949850950b09c381",
+      "at": "2026-11-23T00:05:28.038Z",
+      "kind": "activity",
+      "actor": "singularity",
+      "phase": "PostToolUse"
+    }
+  ]
+}
