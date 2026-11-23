@@ -1,0 +1,338 @@
+{
+  "version": 1,
+  "generator": "node scripts/build-rules-desk.mjs",
+  "sources": [
+    {
+      "path": "prototypes/showdown/RULEBOOK.md",
+      "title": "Showdown rulebook"
+    },
+    {
+      "path": ".kiro/specs/night-shift-balance-contract/requirements.md",
+      "title": "Night Shift balance contract"
+    }
+  ],
+  "clauses": [
+    {
+      "id": "win-base",
+      "label": "How to win",
+      "path": "prototypes/showdown/RULEBOOK.md",
+      "line": 7,
+      "quote": "Each side has a **Base** with 5 orbs. A Base with no orbs loses. You bring a deck of 16 cards.",
+      "keywords": [
+        "win",
+        "lose",
+        "victory",
+        "base",
+        "orb",
+        "deck",
+        "16",
+        "size"
+      ],
+      "answer": "Each side's Base starts with 5 orbs. A Base with no orbs loses. Each deck has 16 cards."
+    },
+    {
+      "id": "tribute",
+      "label": "Tributes and troop cost",
+      "path": "prototypes/showdown/RULEBOOK.md",
+      "line": 21,
+      "quote": "**Stars** set a troop's cost. 1 to 4 stars are free. 5 and 6 cost one **tribute**: one of your own troops, sent to the graveyard. 7 and up cost two.",
+      "keywords": [
+        "tribute",
+        "sacrifice",
+        "star",
+        "cost",
+        "free",
+        "price",
+        "pay"
+      ],
+      "answer": "Troops with 1 to 4 stars are free. 5 or 6 stars cost one tribute: one of your own troops, sent to the graveyard. 7 stars and up cost two tributes."
+    },
+    {
+      "id": "opening-hand",
+      "label": "Opening hand",
+      "path": "prototypes/showdown/RULEBOOK.md",
+      "line": 29,
+      "quote": "Shuffle both decks. Each side draws 4 cards.",
+      "keywords": [
+        "shuffle",
+        "start",
+        "hand",
+        "card",
+        "4",
+        "setup",
+        "deal"
+      ],
+      "answer": "Both decks are shuffled and each side draws 4 cards."
+    },
+    {
+      "id": "first-player",
+      "label": "Who goes first",
+      "path": "prototypes/showdown/RULEBOOK.md",
+      "line": 30,
+      "quote": "One side goes first. The side that goes second draws 1 more card.",
+      "keywords": [
+        "first",
+        "second",
+        "go",
+        "open",
+        "begin"
+      ],
+      "answer": "One side goes first, and the side that goes second draws 1 more card. This rule does not say how the first side is chosen."
+    },
+    {
+      "id": "draw-step",
+      "label": "Drawing each turn",
+      "path": "prototypes/showdown/RULEBOOK.md",
+      "line": 36,
+      "quote": "**Draw** one card. On turn 1 the first player does not draw.",
+      "keywords": [
+        "draw",
+        "step",
+        "skip"
+      ],
+      "answer": "You draw one card each turn, except that the first player does not draw on turn 1."
+    },
+    {
+      "id": "hand-limit",
+      "label": "Hand limit",
+      "path": "prototypes/showdown/RULEBOOK.md",
+      "line": 38,
+      "quote": "If you already hold 6 cards, the card you draw is discarded.",
+      "keywords": [
+        "hand",
+        "full",
+        "limit",
+        "6",
+        "discard",
+        "hold",
+        "maximum"
+      ],
+      "answer": "If you already hold 6 cards when you draw, the drawn card is discarded."
+    },
+    {
+      "id": "play-limit",
+      "label": "Playing cards",
+      "path": "prototypes/showdown/RULEBOOK.md",
+      "line": 39,
+      "quote": "**Play cards**, in any order, each at most once a turn:",
+      "keywords": [
+        "play",
+        "card",
+        "once",
+        "per",
+        "order"
+      ],
+      "answer": "You may play cards in any order, each of the listed plays at most once a turn."
+    },
+    {
+      "id": "other-card",
+      "label": "Spells, gear and locations",
+      "path": "prototypes/showdown/RULEBOOK.md",
+      "line": 41,
+      "quote": "one other card: a spell, a piece of gear or a location;",
+      "keywords": [
+        "spell",
+        "gear",
+        "location",
+        "other"
+      ],
+      "answer": "One of your plays each turn is one other card: a spell, a piece of gear or a location."
+    },
+    {
+      "id": "act",
+      "label": "Acting ends card play",
+      "path": "prototypes/showdown/RULEBOOK.md",
+      "line": 43,
+      "quote": "**Act** with each troop once: it attacks or it takes cover. Once any troop acts, you cannot play more cards this turn.",
+      "keywords": [
+        "act",
+        "acting",
+        "action",
+        "after",
+        "attack",
+        "play",
+        "card"
+      ],
+      "answer": "Each troop acts once a turn by attacking or taking cover. Once any troop acts, you cannot play more cards that turn."
+    },
+    {
+      "id": "turn-1",
+      "label": "No attacks on turn 1",
+      "path": "prototypes/showdown/RULEBOOK.md",
+      "line": 46,
+      "quote": "Nobody attacks on turn 1.",
+      "keywords": [
+        "nobody",
+        "1",
+        "turn",
+        "attack"
+      ],
+      "answer": "Nobody attacks on turn 1."
+    },
+    {
+      "id": "resting",
+      "label": "Resting troops",
+      "path": "prototypes/showdown/RULEBOOK.md",
+      "line": 52,
+      "quote": "**Resting.** A troop that was free cannot attack on the turn it arrives. A troop paid for with a tribute can.",
+      "keywords": [
+        "rest",
+        "arrive",
+        "free",
+        "tribute",
+        "attack",
+        "same"
+      ],
+      "answer": "A troop that was free cannot attack on the turn it arrives. A troop paid for with a tribute can."
+    },
+    {
+      "id": "guard",
+      "label": "Choosing a target and Guard",
+      "path": "prototypes/showdown/RULEBOOK.md",
+      "line": 53,
+      "quote": "**Target.** You choose any enemy troop. If the enemy has a troop with Guard, you must choose a Guard troop.",
+      "keywords": [
+        "guard",
+        "target",
+        "choose",
+        "enemy"
+      ],
+      "answer": "You may attack any enemy troop, but if the enemy has a Guard troop you must choose a Guard troop."
+    },
+    {
+      "id": "base-attack",
+      "label": "Attacking the Base",
+      "path": "prototypes/showdown/RULEBOOK.md",
+      "line": 54,
+      "quote": "**The Base.** You may attack the Base directly only when the enemy has no troops. A direct attack removes orbs equal to your troop's attack.",
+      "keywords": [
+        "base",
+        "direct",
+        "directly",
+        "attack",
+        "empty"
+      ],
+      "answer": "You may attack the Base directly only when the enemy has no troops. The Base then loses orbs equal to your troop's attack."
+    },
+    {
+      "id": "cover",
+      "label": "Taking cover",
+      "path": "prototypes/showdown/RULEBOOK.md",
+      "line": 60,
+      "quote": "Instead of attacking, a troop may take cover, even on the turn it arrives. Until your next turn:",
+      "keywords": [
+        "cover",
+        "hide",
+        "defend",
+        "defense"
+      ],
+      "answer": "A troop may take cover instead of attacking, even on the turn it arrives. Cover lasts until your next turn."
+    },
+    {
+      "id": "trap-spring",
+      "label": "When traps spring",
+      "path": "prototypes/showdown/RULEBOOK.md",
+      "line": 68,
+      "quote": "When an enemy troop attacks, your oldest face-down trap springs before the attack lands. One trap springs per attack.",
+      "keywords": [
+        "trap",
+        "spring",
+        "trigger",
+        "oldest",
+        "activate"
+      ],
+      "answer": "When an enemy troop attacks, your oldest face-down trap springs before the attack lands. Only one trap springs per attack."
+    },
+    {
+      "id": "full-hand-check",
+      "label": "When the hand limit is checked",
+      "path": "prototypes/showdown/RULEBOOK.md",
+      "line": 106,
+      "quote": "**A full hand.** The limit is checked only when you draw.",
+      "keywords": [
+        "hand",
+        "full",
+        "limit",
+        "check"
+      ],
+      "answer": "The hand limit is checked only when you draw."
+    },
+    {
+      "id": "turn-80",
+      "label": "Running out of turns",
+      "path": "prototypes/showdown/RULEBOOK.md",
+      "line": 107,
+      "quote": "**Running out of turns.** A game still going after turn 80 goes to the side whose Base has more orbs.",
+      "keywords": [
+        "80",
+        "end",
+        "after",
+        "run",
+        "out",
+        "timeout",
+        "long"
+      ],
+      "answer": "A game still going after turn 80 goes to the side whose Base has more orbs."
+    },
+    {
+      "id": "best-of-three",
+      "label": "Best of three",
+      "path": "prototypes/showdown/RULEBOOK.md",
+      "line": 112,
+      "quote": "**Best of three.** First to win two games. The loser of a game goes first in the next. Between games you may swap cards between your deck and your side deck, one for one.",
+      "keywords": [
+        "best",
+        "three",
+        "3",
+        "match",
+        "series",
+        "loser",
+        "next",
+        "first",
+        "swap",
+        "side"
+      ],
+      "answer": "Best of three is won by the first to win two games. The loser of a game goes first in the next, and between games you may swap cards with your side deck one for one."
+    },
+    {
+      "id": "nsb-1",
+      "label": "Balance requirement NSB-1: faction win share",
+      "path": ".kiro/specs/night-shift-balance-contract/requirements.md",
+      "line": 19,
+      "quote": "NSB-1: Each faction's win share SHALL be within 45% to 55%, inclusive.",
+      "keywords": [
+        "balance",
+        "requirement",
+        "faction",
+        "share",
+        "band",
+        "45",
+        "55",
+        "percent",
+        "threshold",
+        "nsb"
+      ],
+      "answer": "Balance requirement NSB-1: each faction's win share must be between 45% and 55%, inclusive."
+    },
+    {
+      "id": "nsb-2",
+      "label": "Balance requirement NSB-2: first-seat skew",
+      "path": ".kiro/specs/night-shift-balance-contract/requirements.md",
+      "line": 20,
+      "quote": "NSB-2: The opening player's absolute win-share distance from 50% SHALL grow by at most 1 percentage point versus the baseline.",
+      "keywords": [
+        "balance",
+        "requirement",
+        "seat",
+        "skew",
+        "tolerance",
+        "distance",
+        "baseline",
+        "50",
+        "threshold",
+        "nsb"
+      ],
+      "answer": "Balance requirement NSB-2: the opening player's distance from a 50% win share may grow by at most 1 percentage point versus the baseline."
+    }
+  ]
+}
