@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Append the Dec 4 Step 0 scorecard to docs/SCORECARD.md at Stop",
+      "description": "Runs node scripts/scorecard.mjs --log: one timestamped summary line per Stop, network bounded under 60 s. It always exits 0 and writes nothing when re-entered (SCORECARD_ACTIVE set or stop_hook_active in the event), so it never blocks or loops a Stop. The release gate's Stop hook in contest-gates.json is separate and unchanged.",
+      "trigger": "Stop",
+      "timeout": 90,
+      "action": {
+        "type": "command",
+        "command": "node scripts/scorecard.mjs --log"
+      }
+    }
+  ]
+}

@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build-graybox.mjs",
-    "test": "node scripts/verify-duel.mjs"
+    "test": "node scripts/verify-duel.mjs",
+    "scorecard": "node scripts/scorecard.mjs"
   },
   "devDependencies": {
     "esbuild": "0.28.2",

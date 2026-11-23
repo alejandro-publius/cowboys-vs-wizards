@@ -1,4 +1,5 @@
-// Boot Hill poker check of the shared paired duel kit (src/review/paired-duel-kit.js), the same kit Showdown uses.
+// Boot Hill poker check of the shared paired duel kit (packages/frontier-kit), the same kit Showdown's
+// field-trial verifier reaches through its compatibility path src/review/paired-duel-kit.js.
 // Plays a seeded cohort of experiments/boot-hill-poker/engine.js playPokerDuel(seed, first, "standard") as both
 // arms, so every pair must agree, then replays it and checks:
 //   - completeness: every seed opened once by each seat, in seed then cowboy, wizard order, with counts that add up;
@@ -14,7 +15,7 @@
 import assert from "node:assert/strict";
 import {resolve} from "node:path";
 import {fileURLToPath} from "node:url";
-import {DRAW, PairedCohortError, measurePairedCohort} from "../src/review/paired-duel-kit.js";
+import {DRAW, PairedCohortError, measurePairedCohort} from "../packages/frontier-kit/index.js";
 import {playPokerDuel} from "../experiments/boot-hill-poker/engine.js";
 import {evaluateBalanceRequirements, loadBalanceContract} from "./showdown-balance-contract.mjs";
 
@@ -136,7 +137,7 @@ async function main(args) {
   const contract = checkContract(cohort.result);
   const {result} = cohort;
   console.log(JSON.stringify({
-    check: "verify-poker-kit", engine: "experiments/boot-hill-poker/engine.js", strategy: STRATEGY,
+    check: "verify-poker-kit", engine: "experiments/boot-hill-poker/engine.js", kit: "packages/frontier-kit", strategy: STRATEGY,
     seeds: [firstSeed, firstSeed + deals - 1], gamesPerArm: result.gamesPerArm, baseline: result.baseline,
     switchedWinners: result.switchedWinners, replayed: true, fixturesRejected: rejected,
     contract: {band: contract.policy.band, seatTolerancePp: contract.policy.seatTolerancePp, measured: contract.measured, evaluation: contract.evaluation,
