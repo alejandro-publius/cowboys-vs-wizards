@@ -732,6 +732,7 @@ const RUNS = {
     await s.click("#camp-load");
     await s.wait(`vis(document.getElementById('camp-code-preview'))`, "the preview");
     await s.click("#camp-code-replace");
+    await s.wait(`!vis(document.getElementById('camp-code-preview'))`, "the save decision");
     assert.equal(await s.text("#camp-code-note"), "Loaded.");
     assert.deepEqual(await s.progress(), other);
     // A damaged code changes nothing.
@@ -740,6 +741,18 @@ const RUNS = {
     assert.match(await s.text("#camp-code-note"), /Nothing was changed\.$/);
     assert.deepEqual(await s.progress(), other);
     s.check("Save code: preview, Cancel and a damaged code change nothing; Replace loads the pasted progress", {loaded: other.wins});
+    // The preview was prepared before another writer advanced this career.
+    await paste(encodeSave(postTrail));
+    await s.click("#camp-load");
+    await s.wait(`vis(document.getElementById('camp-code-preview'))`, "the pending replacement");
+    const newer = settle(other, "trail", true).save;
+    await s.evaluate(`localStorage.setItem(${JSON.stringify(SAVE_KEY)},${JSON.stringify(JSON.stringify(newer))})`);
+    await s.click("#camp-code-replace");
+    await s.wait(`vis(document.getElementById('camp-changed'))`, "the changed Camp notice");
+    assert.deepEqual(await s.progress(), newer);
+    assert.match(await s.text("#camp-changed"), /another tab/);
+    assert.equal((await s.focusAt()).id, "camp-changed");
+    s.check("A pending import keeps the newer Trail win and its unclaimed offer, and focuses the conflict notice");
     // Start over.
     await s.load();
     await s.openCamp();
