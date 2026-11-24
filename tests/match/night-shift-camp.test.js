@@ -9,7 +9,7 @@ import RECORDING from "../../src/ui/night-shift-recording.json" with {type: "jso
 import {
   ACTORS, BLOCK_REASONS, FEED_LIMIT, RECORDED_LABEL, actorFor, ambientText, applyEvent, deed, describe,
   emptyShift, freshAmbient, guardStage, latestActivity, ledgerBlocks, ledgerSectionHtml, mergeFeed, normalizeFeed,
-  proposalText, recordedDates, replayTo, shiftMode, wantedPoster, patchNote,
+  proposalText, recordedDates, replayTo, reviewState, reviewStep, shiftMode, wantedPoster, patchNote,
 } from "../../src/ui/showdown-3d/night-shift-saloon.js";
 
 const at = (minute) => `2026-11-21T03:${String(minute).padStart(2, "0")}:00.000Z`;
@@ -191,6 +191,21 @@ test("live mode needs ?saloon=live on an http: loopback page", () => {
   assert.equal(mode("http://example.com/?saloon=live"), "recorded-only");
   assert.equal(mode("http://127.0.0.2/?saloon=live"), "recorded-only");
   assert.equal(shiftMode(undefined), "recorded");
+  assert.equal(mode("http://127.0.0.1:4179/?saloon=review"), "recorded", "?saloon=review never polls, even on loopback");
+  assert.equal(mode("http://localhost:4179/?saloon=live&saloon=review"), "live", "the first saloon value still decides");
+});
+
+test("the review state is a normal replay position on a fixture feed, so Step, Play and Replay continue from it", () => {
+  const fixture = normalizeFeed(feed);
+  const decide = (event) => event.card === "cowboy-sheriff"; // fixture stand-in for the audit check
+  assert.equal(reviewStep(fixture.events, decide), 3);
+  const review = reviewState(fixture, decide);
+  assert.deepEqual(review.shown, replayTo(fixture.events, 3));
+  assert.deepEqual(review.ambient, latestActivity(fixture.activity, at(3)));
+  assert.equal(review.shown.bells, 0, "nothing after the review step has happened yet");
+  assert.deepEqual(fixture.events.slice(review.count).reduce(applyEvent, review.shown), replayTo(fixture.events, fixture.events.length));
+  assert.equal(reviewState(fixture, () => null), null, "no decision, no review");
+  assert.equal(reviewStep(fixture.events), 0, "a fixture Sheriff proposal never borrows the archived Billy decision");
 });
 
 test("the Wizard's proposal states its direction in words, not colour alone", () => {

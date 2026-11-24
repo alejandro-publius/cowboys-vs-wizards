@@ -189,6 +189,12 @@ export function mountCampOutpost(root) {
 
   return {
     close, open, dressNotices,
+    // ?saloon=review: the normal Saloon entry, with the recorded room set to the archived decision first.
+    // Without a decision that checks out, the room opens at its usual start.
+    openSaloonReview() {
+      saloon.review();
+      return open("night-shift-saloon");
+    },
     restoreFocus(control) {
       const room = control.closest(".camp-outpost");
       if (!room) return false;

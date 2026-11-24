@@ -20,8 +20,8 @@ import {loadBalanceContract} from "../../scripts/showdown-balance-contract.mjs";
 import {TYPES} from "../../src/game/showdown/cards.js";
 import RECORDING from "../../src/ui/night-shift-recording.json" with {type: "json"};
 import {
-  BALANCE_RULE, DECISION_NOTES, DECISION_RECHECK, IDLE_CAPTION, decisionHtml, eventCaption, idleCaption, normalizeFeed,
-  proposalDecision, replayTo,
+  BALANCE_RULE, DECISION_NOTES, DECISION_RECHECK, IDLE_CAPTION, applyEvent, decisionHtml, emptyShift, eventCaption, idleCaption,
+  latestActivity, normalizeFeed, proposalDecision, replayTo, reviewState, reviewStep, shiftMode,
 } from "../../src/ui/showdown-3d/night-shift-saloon.js";
 import SEAT_AUDIT from "../../docs/evidence/billy-seat-audit/result.json" with {type: "json"};
 import SEAT_PROTOCOL from "../../docs/evidence/billy-seat-audit/protocol.json" with {type: "json"};
@@ -328,4 +328,45 @@ test("saloon decision: other changes, the six rejected edits, a changed card or 
   // The README's negative control: the same 51.920% under a 49–51 band is not shown as a pass.
   assert.equal(proposalDecision(BILLY, {rule: {...BALANCE_RULE, band: [49, 51]}}), null);
   assert.equal(proposalDecision(BILLY, {rule: {...BALANCE_RULE, seatTolerancePp: Number.NaN}}), null);
+});
+
+test("saloon review: ?saloon=review lands on the step the validated audit finds, built by the normal reducer", () => {
+  const feed = normalizeFeed(RECORDING);
+  const step = reviewStep(feed.events);
+  const cast = feed.events.findIndex((event) => event.kind === "cast" && proposalDecision(event));
+  assert.ok(cast >= 0);
+  assert.equal(step, cast + 1, "the step comes from the audit check, not a fixed number");
+  const review = reviewState(feed);
+  assert.equal(review.count, step);
+  assert.equal(review.event, feed.events[step - 1]);
+  assert.deepEqual(review.shown, replayTo(feed.events, step), "the same state Step reaches");
+  assert.deepEqual(review.ambient, latestActivity(feed.activity, review.event.at), "ambient notes follow the replay clock");
+  const {card, field, before, after: to} = review.shown.proposal;
+  assert.deepEqual({card, field, before, after: to}, BILLY);
+  assert.ok(proposalDecision(review.shown.proposal), "the notice board shows the decision at that step");
+  assert.equal(idleCaption(feed.events), `${IDLE_CAPTION} Step ${step} shows Kiro's card proposal and its decision.`);
+  // Play continues from the review and reaches the same end; Replay from start returns to the empty room.
+  assert.deepEqual(feed.events.slice(review.count).reduce(applyEvent, review.shown), replayTo(feed.events, feed.events.length));
+  assert.deepEqual(replayTo(feed.events, 0), emptyShift());
+});
+
+test("saloon review: absent or unverifiable evidence opens no review, and the query never selects live mode", () => {
+  const feed = normalizeFeed(RECORDING);
+  const uneven = structuredClone(SEAT_AUDIT);
+  uneven.byFirst.cowboy.candidate.cowboy += 1;
+  const changedBilly = {...TYPES, "cowboy-billy": {...TYPES["cowboy-billy"], attack: 1}};
+  for (const decide of [(event) => proposalDecision(event, {seat: uneven}), (event) => proposalDecision(event, {protocol: null}),
+    (event) => proposalDecision(event, {types: changedBilly})]) {
+    assert.equal(reviewStep(feed.events, decide), 0);
+    assert.equal(reviewState(feed, decide), null);
+  }
+  assert.equal(reviewState({...feed, events: feed.events.filter((event) => event.kind !== "cast")}), null, "no proposal");
+  assert.equal(reviewState(normalizeFeed(null)), null, "no recording");
+  assert.equal(reviewState(null), null);
+  assert.equal(reviewStep(undefined), 0);
+  for (const url of ["http://127.0.0.1:4179/?saloon=review", "https://example.com/?saloon=review",
+    "file:///game/index.html?saloon=review", "http://localhost:4179/?saloon=review&saloon=live"]) {
+    assert.equal(shiftMode(new URL(url)), "recorded", `${url} stays on the checked-in recording`);
+  }
+  assert.equal(shiftMode(new URL("http://example.com/?saloon=live")), "recorded-only", "the public fallback of ?saloon=live is unchanged");
 });

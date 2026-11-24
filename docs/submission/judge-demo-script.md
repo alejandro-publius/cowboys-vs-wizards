@@ -2,7 +2,7 @@
 
 ## November 23 recording script: title to one Kiro decision
 
-Drafted November 23, 2026 with Claude Code from Showdown revision `c8fa7f2`. Recording and narration are pending. The [78-second cut](#november-22-illustrated-showdown-demo) is available as an earlier reference.
+Drafted November 23, 2026 with Claude Code from Showdown revision `c8fa7f2`. The private captioned draft uses scripted Chrome footage of the two Outrider choices, the Billy replays, and the Saloon review from the local contest build at `35d7447`. This shot list guides the narrated cut. The [78-second cut](#november-22-illustrated-showdown-demo) is an earlier reference.
 
 The cut opens on the illustrated title and plays the Ride or Fight? turn. It then opens one Kiro decision in the Sheriff's Ledger, Billy's attack 2 → 1, and replays it both ways. The candidate passed the written gate and is awaiting design approval. The cut ends with the spec, steering, and a save hook that caught a stale build. The planned runtime is 2:35.
 
@@ -36,13 +36,13 @@ For an optional ten-second shot after beat 6, choose **Camp** from the title, op
 | --- | --- | --- | --- |
 | P | 78-second illustrated cut, Pages `d0bbd14` | This checkout records only its content and revision. [Kiro contest run](../evidence/kiro-contest-run.md) says Codex recorded it from the verified Pages bytes. Ask the coordinator for the file, receipt and timecodes. | EXISTS. Location, hash and in/out points unrecorded |
 | D | 85.4-second Dragon cut | `judge-media/Showdown_Dragon_Decision.mp4` and receipt, private, outside Git | EXISTS. Not used here |
-| G | Beats 1–5, gameplay and Ledger | Filmed build | NEEDED. P may stand in for beats 1–2 if captioned with its own revision |
+| G | Beats 1–5, gameplay and Ledger | Local contest build `35d7447` | Captured in the private draft |
 | T | Gate terminal (beat 5) | Rerun on camera. Needs no Git or installed dependencies (run here without either) | Text recorded below; capture NEEDED |
 | S, ST, H | Spec, steering, hook (beat 6) | Paths in beat 6 | Files EXIST; capture NEEDED |
 | R | Hook receipts, stale Ledger (beat 7) | `docs/evidence/outrider-gate/`: `hook-receipts.jsonl`, `ledger-stale.png`, `build-receipt-stale.json` | EXIST as text and graybox stills |
 | W | Native Workflow `wf_87723b3404bba1fc` | [`kiro-night-shift-native.png`](../evidence/kiro-night-shift-native.png) | EXISTS. Rendered from the Kiro CLI 3.5.0 JSONL stream, not a screen recording |
 | N | Three-attempt results card | [`kiro-night-shift-results.png`](../evidence/kiro-night-shift-results.png) | EXISTS. Designed summary card that names another AI product. Owner approval needed |
-| SL | Saloon (optional) | **Camp** → **Night Shift saloon** → **Step** ×3 | Chrome route verified. Capture pending |
+| SL | Saloon (optional) | **Camp** → **Night Shift saloon** → **Step** ×3 | Captured in the private draft |
 | V | Narration | — | NEEDED, owner's voice |
 
 ### Judging criteria: claims a judge can check
@@ -53,7 +53,7 @@ For an optional ten-second shot after beat 6, choose **Camp** from the title, op
 | Technological Implementation | A written spec sets the gate (NSB-1, NSB-2). A fenced agent proposes one number, and a separate reviewer decides. The gate re-derives 100,000 recorded duels before it reads the spec. | Gate commands below; [fence](../evidence/kiro-contest-run.md); [steering](../evidence/showdown-scoped-steering.md); [hook receipts](../evidence/outrider-gate/hook-receipts.jsonl) | Sheriff replay and Billy replay verifier need Git history (not rerun here) |
 | Design | One supported path: title → challenge → Camp map → Camp ledger. Replay buttons never move keyboard focus. | `wireBillyReplay` in `src/ui/billy-replay.js`; `src/ui/showdown-3d/camp-outpost.js` | Safari and real-phone checks pending |
 | Innovation | A position ships only while both of its choices replay exactly as measured, and the title plaque depends on that check. | [Outrider gate spec](../../.kiro/specs/outrider-gate/requirements.md) G1–G3; mutation and control in the [evidence](../evidence/outrider-gate.md) | Results assume a fixed greedy policy and the level-0 bot; the pre-registered cue was unsupported (3 of 7) |
-| Presentation | Every on-screen number traces to a file above. Scripted moves are labelled. About 2:35. | This script | Not recorded, narrated or uploaded |
+| Presentation | Every on-screen number traces to a file above. Scripted moves are labelled. About 2:35 with narration. | This script | Captioned draft exists. Narration and upload pending |
 
 ### Patterns from competing projects
 
@@ -91,7 +91,7 @@ NSB-2 PASS: first-seat distance from 50% 8.136 pp (baseline 9.412 pp); allowed a
 Overall PASS. Measured match shares meet NSB-1 and NSB-2. Ready for Fable/Alex review only; not applied to any card or release.
 ```
 
-Both match the [archived verdicts](../evidence/billy-seat-audit/README.md). Chrome confirmed both Outrider targets from the title challenge and both Billy replay endings from the Ledger on the local contest build. Recording and narration are pending.
+Both match the [archived verdicts](../evidence/billy-seat-audit/README.md). Chrome confirmed both Outrider targets from the title challenge and both Billy replay endings from the Ledger on the local contest build. The captioned draft captured both routes. Narration is pending.
 
 ## November 22 illustrated Showdown demo
 

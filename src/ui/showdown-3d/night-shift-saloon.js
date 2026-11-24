@@ -1,6 +1,7 @@
 // The Night Shift saloon: a Camp room that replays how the Kiro shift ran.
 // Public builds replay the checked-in recording only. The opt-in ?saloon=live mode polls
 // same-origin /night-shift/events, and only from an http: loopback page while the room is open.
+// ?saloon=review (opened by the Camp) is recorded mode at the archived decision's step; it never polls.
 // Every record passes the shared browser-safe cleanFeed before it reaches state or the DOM.
 // Nothing here changes cards, rules or stats: a cast is a scratch proposal, and only
 // patch records (merged on main) appear as patch notes.
@@ -317,10 +318,27 @@ export function eventCaption(event) {
   return decision ? `${describe(event)}. ${decision.announce}` : describe(event);
 }
 
+// Pure: the 1-based replay step of the first recorded proposal that has a validated archived decision, or 0
+// when there is none (no recording, no proposal, or audit files that do not check out).
+export function reviewStep(events, decide = proposalDecision) {
+  const index = (Array.isArray(events) ? events : []).findIndex((event) => event?.kind === "cast" && decide(event));
+  return index + 1;
+}
+
 // Pure: the recorded room's opening line. When a recorded proposal has an archived decision, it names that step.
 export function idleCaption(events) {
-  const index = (Array.isArray(events) ? events : []).findIndex((event) => event?.kind === "cast" && proposalDecision(event));
-  return index < 0 ? IDLE_CAPTION : `${IDLE_CAPTION} Step ${index + 1} shows Kiro's card proposal and its decision.`;
+  const step = reviewStep(events);
+  return step ? `${IDLE_CAPTION} Step ${step} shows Kiro's card proposal and its decision.` : IDLE_CAPTION;
+}
+
+// Pure: the recorded room as it stands right after the review step (?saloon=review), built with the same reducer
+// as stepping, or null when there is no validated decision to show.
+export function reviewState(feed, decide = proposalDecision) {
+  const events = Array.isArray(feed?.events) ? feed.events : [];
+  const count = reviewStep(events, decide);
+  if (!count) return null;
+  const event = events[count - 1];
+  return {count, event, shown: replayTo(events, count), ambient: latestActivity(Array.isArray(feed.activity) ? feed.activity : [], event.at)};
 }
 
 // Pure: ambient records that became an actor's latest between two latestActivity snapshots.
@@ -520,6 +538,9 @@ export function mountNightShiftSaloon({content, recording, portrait = () => null
     theaterStage = guardStage(createStage, host, dropStage);
     if (theaterStage) host.addEventListener("webglcontextlost", dropStage, true);
     else setView("portrait");
+    // Steps already on the board before the first visit (?saloon=review) reach the stage before it opens,
+    // so they show as finished, without motion.
+    for (const event of feed.events.slice(0, count)) toStage("play", event);
   }
   const toStage = (method, arg) => theaterStage?.call(method, arg);
   // Host stays visible until the first visit so the stage can measure it.
@@ -790,6 +811,18 @@ export function mountNightShiftSaloon({content, recording, portrait = () => null
       quiet();
       render();
       toStage("close");
+    },
+    // ?saloon=review: the recorded room at the step of the validated archived decision, as if stepped there,
+    // without the step's motion, bell, stir or stage effect. False (room left as it was) in live mode or
+    // when no recorded proposal has a decision that checks out. Play and Replay from start work as usual.
+    review() {
+      const at = mode === "live" ? null : reviewState(feed);
+      if (!at) return false;
+      restart();
+      ({count, shown, ambient} = at);
+      render();
+      now.textContent = count >= feed.events.length ? `${describe(at.event)}. End of the recording.` : eventCaption(at.event);
+      return true;
     },
     state: () => ({mode, count, shown, feed, ambient, view: content.dataset.view, repair: repair.state()}),
   };

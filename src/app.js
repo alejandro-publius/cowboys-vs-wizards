@@ -237,4 +237,10 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   if (practice !== null) openPractice(practice);
   if (wizard) toWizard();
   if (query.get("lesson") === "saved" && !["turn", "outrider", "practice", "wizard"].some((key) => query.has(key))) openSavedLesson();
+  // ?saloon=review (illustrated build only, after every query above): the Camp, then the Night Shift saloon through its
+  // normal entry, showing the recorded room at the archived Billy decision. Recorded mode only; Back to map leads to the Camp.
+  if (outpost && query.get("saloon") === "review" && !["turn", "outrider", "practice", "wizard", "lesson"].some((key) => query.has(key))) {
+    toCamp();
+    outpost.openSaloonReview();
+  }
   });

@@ -1,97 +1,96 @@
 # Kiroween submission packet: Showdown
 
-> Draft for Alex's review. Revised November 20, 2026 (America/Los_Angeles) by a Kiro CLI worker, against `main` at [`96adf60`](https://github.com/alejandro-publius/cowboys-vs-wizards/commit/96adf6031b6159ab34fd7751180ced507f677104), the merge of PR #166. The public site's [build manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) named that commit when this was written. Fields marked **OWNER** need facts or decisions that only Alex or the team can supply. The earlier lane-duel packet (November 16–17) is kept as history at [`96adf60`](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/96adf6031b6159ab34fd7751180ced507f677104/docs/submission/devpost-packet.md).
+> Draft for Alex's review. Checked against source revision `35d7447` on November 23, 2026 (America/Los_Angeles). The November 22 public release was `d0bbd14`. See the [current build manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) and the [November 22 release receipt](../evidence/kiro-contest-run.md#release). Fields marked **OWNER** need facts or decisions that only Alex or the team can supply. The November 20 Dragon-era draft is summarized under [History](#history).
 
 ## Pitch
 
 **Cowboys vs. Wizards: Showdown** is a haunted-Western card duel you play in a browser. You pick every attack, your troops shield your Base, and turns alternate.
 
-Here is one decision to try. Cowboy turn 5 of the Graveyard Dragon hunt: your Ranger (2 attack, 4 life) can hit the resting Dragon or the Jack-o'-Lantern in cover. With a recorded continuation (the same bot policy plays both sides after your choice), hitting the Dragon **wins on seed 3 and loses on seed 70**. Hitting the Jack does the reverse. Both positions are playable, and what you can see differs between them.
+The illustrated title opens **Ride or Fight?**, one real turn at the Bone Fence. Your Outrider can strike the Skeleton, or ride past it and hit the Wizard Base. **Restart this duel** puts the same turn back so you can try the other choice. A build includes this position only if both choices still replay exactly as measured ([Outrider gate](../evidence/outrider-gate.md)).
 
-- [Seed 3 position](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5): the Ranger's supporting troop is a **Dynamiter** (3/1).
-- [Seed 70 position](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5-70): the Ranger's supporting troop is a **Covered Wagon** (1/4).
+Camp's ledger holds one Kiro balance decision: lower Billy's attack from 2 to 1. The game replays one recorded deal both ways and shows the written rule the proposal passed. The card itself is unchanged and waits for design approval. The [judge walkthrough](../JUDGE-GUIDE.md#one-minute-walkthrough) covers all three steps in a minute.
 
-Both also open from Camp (Play, then the Experiment controls), and neither touches your saved career. If you are testing a player, let them choose before you show this section.
+## The Kiro balance decision
 
-## The two positions
-
-The Wizard board is the same in both: Dragon 3/4 resting and Jack-o'-Lantern 1/1 in cover. Outcomes come from the engine's recorded lines, `c15` meaning "Cowboys win on turn 15".
-
-| | Seed 3 | Seed 70 |
+| | Billy 2 attack (current card) | Billy 1 attack (proposal) |
 | --- | --- | --- |
-| Ranger's supporting troop | Dynamiter 3/1 | Covered Wagon 1/4 |
-| Cowboy trap set | Bear Trap | none |
-| Wizard Base | 3 | 4 |
-| Ranger → Dragon | Cowboys win, turn 15 | Wizards win, turn 14 |
-| Ranger → Jack (the policy's own choice) | Wizards win, turn 10 | Cowboys win, turn 17 |
+| Recorded deal: seed 726421019, Cowboys first, turn 7 | Clears the Bone Wall. Cowboys win on turn 13. | The Wall survives on 1 orb. Wizards win on turn 20. |
+| Cowboy share, 100,000 Node duels on held-out seeds | 59.792% | 51.920% |
+| First player's share, same duels | 59.412% | 58.136% |
+| NSB-1 / NSB-2 | RED / PASS | PASS / PASS |
+| Cowboy share, 10,000 games on fresh seeds | 61.04% | 52.92% |
 
-Three visible things differ: the supporting troop, the trap and the Wizard Base. The recorded positions cannot single out one of them as the cause. The search notes that the trap is the difference matching the original claim: on seed 3 the Bear Trap finishes the damaged Dragon. Each result is one deterministic bot line under fixed draws. None is a forced win, and none says anything about how humans play.
+The two versions share the first 29 events of the recorded deal. All of these results come from level-2 bots with fixed decks at `eedab93`. None of them predicts human play. An opening advantage remains under the proposal.
 
 **Where it comes from.**
-- Policy and search: the Cowboys run `planTurn` on a view rebuilt from `viewFor(state, "cowboy")`, so they see only public information. The Wizards run the unchanged level-2 bot. Kiro CLI searched held-out seeds 64–127 with the canonical engine. Sixty seeds offered both moves, and seed 70 was the counterexample closest to seed 3. [Search protocol and results](../../experiments/showdown-dragon-strategy/rival-README.md) · [Receipt with both fixtures](../../experiments/showdown-dragon-strategy/rival-cases.json) · [Search script](../../experiments/showdown-dragon-strategy/rival-search.mjs)
-- Playable positions: each link replays 7 recorded Cowboy actions from a fresh deal and checks each one against the legal actions. It refuses to open unless the engine state hash equals the fixture (`fa80caa710a1` for seed 3, `abbe27d20382` for seed 70). [Route and checks](../evidence/showdown-turn-k095.md) · [Allowlist](../../src/match/showdown-turn.js) · [Node test, 11/11](../../tests/match/showdown-turn.test.js) · PR [#165](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/165)
-- Kiro native integration, PR [#166](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/166): the installed Orb Duel Review Power 1.3.0 played Boot Hill through its own tools, then returned `pass`, `unbound` and `stale` for matching, unfingerprinted and altered engines ([installed Power run](../evidence/showdown-installed-power.md)). The saved `independent-release-review` Workflow ran natively: `wf_5fb9b905dc2ad28d` passed on its pinned revision and `wf_3f3cc7a5856eef24` refused a mismatched one ([native release review](../evidence/showdown-native-release-workflow.md)).
+- Proposal: Kiro CLI proposed three one-number changes in an isolated worktree. The reviewer passed only Billy, with Cowboy wins of 60.75% → 50.25% on tuning seeds and 59.00% → 51.00% on holdout seeds ([Kiro run](../evidence/kiro-contest-run.md#balance-run)).
+- Written gate: NSB-1 and NSB-2 in the [balance contract spec](../../.kiro/specs/night-shift-balance-contract/requirements.md). The balancing agent never edits that file. The economist review still has findings E1 and E3 open.
+- Review and replay: a separate reviewer step decides. The audit Workflow `wf_27f8bf0bb063c889` completed. A read-only Kiro CLI review checked the replay ([seat audit](../evidence/billy-seat-audit/README.md) · [Billy replay](../evidence/billy-replay.md)). The gate's output (baseline exit 2, candidate exit 0) was recorded at `c8fa7f2` in the [demo script](judge-demo-script.md#verification-for-this-edit-november-23) and was not rerun for this packet.
+- Control: in native Workflow `wf_3e26f2fcd93c25a1`, Kiro chose its own card six times and the reviewer rejected all six.
 
 ## What has been played, by whom
 
 | Kind | What happened | Evidence |
 | --- | --- | --- |
-| Human, maintainer | Alex played Showdown on November 19 and chose it as the entry. A Camp playtest report Alex pasted records two Trail wins (Boot Hill in 13 turns, Raven Roost in 11) and 87 active seconds. The report does not identify the build. Alex is not a first-time player, so this is not part of the first-time cohort. | The report is held by the coordinator and is not committed. [Release line](../design/release-line.md) |
-| Human, first-time | Alex confirmed the playtests were completed. First-time participant counts and individual feedback are undocumented. | [Playtest guide](../../prototypes/showdown/PLAYTEST.md) |
-| Scripted browser | Headless Chrome selected both targets on both seeds by mouse, keyboard and touch (375×740). It also checked retry and checked that the saved career stayed byte-identical: 29/29 over `file://` and over local HTTP. The browser's play-out step only presses End turn, so the policy outcomes in the table are checked in Node, not in the browser. | [Browser checks](../evidence/showdown-turn-k095.md#second-decision-seed-70-k-008-2026-11-20) · [Check script](../../scripts/browser-showdown-turn-check.mjs) |
-| Bot | Night Watch's scheduled Crew run on November 20 played 2,000 bot games: the first player won 57.1% and the Cowboys 59.4%. | [Scheduled run receipt](../evidence/night-shift/crew-scheduled-2026-11-20.json) |
+| Human, maintainer | Alex played Showdown on November 19 and chose it as the entry. His saved Camp report records two Trail wins: Boot Hill in 13 turns and Raven Roost in 11, 87 active seconds in total. The report does not identify the build. Alex is not a first-time player. | [Release line](../design/release-line.md) |
+| Human, first-time | Alex confirmed that the playtests were completed. First-time participant counts and individual feedback are not documented. | [Playtest guide](../../prototypes/showdown/PLAYTEST.md) |
+| Scripted browser | Pages-tree checks passed 8 of 8 on staged `3c5bb34`, including "the illustrated title opens the playable Ride or Fight? challenge and Camp is reachable". The demo script records local Chrome runs covering both Outrider choices, both Billy endings, and the Saloon route at 1440×900 and 390×844. | [Release checks](../evidence/illustrated-contest-release.md) · [Demo script](judge-demo-script.md#verification-for-this-edit-november-23) |
+| Bot | The balance results in the table above. Earlier, Night Watch's scheduled Crew run on November 20 played 2,000 bot games: the first player won 57.1% and the Cowboys 59.4%. | [Seat audit](../evidence/billy-seat-audit/README.md) · [Scheduled run receipt](../evidence/night-shift/crew-scheduled-2026-11-20.json) |
 | Native Kiro | See [How Kiro was used](#how-kiro-was-used-on-showdown). | |
 
-**Planned, not done:** a public demo release, meaning the narrated video under three minutes and its public URL. A separate worker owns the [demo script and capture](judge-demo-script.md), which still describes the lane duel at this commit.
+A private captioned draft follows the [November 23 script](judge-demo-script.md) through the title challenge, the Billy comparison and the recorded Saloon review. Narration and a public YouTube URL are pending.
 
 ## Project
 
-Cowboys vs. Wizards. The entry is **Showdown**, served at the [site root](https://alejandro-publius.github.io/cowboys-vs-wizards/). Play opens the Camp, which holds the Trail of duels, rivals, Wanted hunts, packs, the deck builder, best of three, two players on one screen and the Sheriff's Ledger. Wins, rewards and card choices are saved in the browser. The Showdown build is a graybox: a flat board, text cards, life orbs and a log. The illustrated 3D models and motion belong to the [earlier build](https://alejandro-publius.github.io/cowboys-vs-wizards/3d/), which keeps the retired lane rules.
+Cowboys vs. Wizards. The entry is **Showdown**. The [site root](https://alejandro-publius.github.io/cowboys-vs-wizards/) serves the illustrated Showdown, starting with Ride or Fight?, and `/3d/` is a byte-identical copy of it ([PR 186](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/186)). `/graybox/` serves the same game on a lightweight board. Camp holds the Trail of duels, rivals, Wanted hunts, packs, the deck builder, best of three, two players on one screen and the Sheriff's Ledger. The browser saves wins, rewards and card choices. At source revision `35d7447`, the Ledger includes the Billy replay and Camp includes the Night Shift saloon. Neither has been confirmed on the public site. The retired lane duel stays at `ea183ee29dbd`.
 
 **Who it is for:** people who play strategy and card games in a browser and want decisions that matter more than reflexes.
 
-**Player problem (a hypothesis).** We think a card-duel player cannot easily tell why one target was right on a given board. The two positions above let a player try the same target choice on two boards and see what changed. The available reports give no individual player’s explanation of the Dragon choice.
+**Player problem (a hypothesis).** We think card-duel players have a hard time seeing why one choice was right on a given board. Ride or Fight? lets them try both choices on the same turn. No individual player's explanation has been recorded.
 
 ## Who did what
 
-- **Fable 5.2** (Claude Code) designed Showdown: rules, cards, Trail, bots and art direction ([rulebook](../../prototypes/showdown/RULEBOOK.md), PR [#142](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/142)). Fable also wrote the lane engine, its CPU and the lane judge script and playtest protocol. Fable owns game design, wording rulings, balance and any promotion of the Dragon decision to an official bounty.
-- **Kiro** (CLI workers and Crew) moved Showdown into the game with its Trail, Camp and saves. It built the 29-card catalog (15 Cowboy, 14 Wizard), the ten combat cues, the fair Scout bot, the property tests, the keyboard focus fixes, the hosted page split, Night Watch's Showdown mode, the `showdown-presenter` profile, the MCP seat tools, both Dragon positions, Power 1.3.0 and the Showdown release Workflow. Kiro changed no rule, card number or wording. The Scout fix changed bot planning only, and Fable accepted it. Earlier, Kiro built the lane match presentation and its spec, and imported and rigged the characters ([character evidence](../evidence/kiro-character-assets.md)).
-- **Codex** coordinated the workers, wrote the always-on `build-evidence.md` steering file and independently checked frozen candidates. For example, it ran 610 repository tests and the HTTP browser checks on `4069bf9`, the head of PR #166.
-- **Rachel Selbrede** (`rachelselbrede`) has 13 commits under her account, all on November 16 during the lane era. They include the rules check (PR [#58](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/58), produced in a Claude Code session), running CI on every pull request (#31), the opt-in clash log, the WebKit smoke check, the docs link check, the `?cpu=` levels and the first eight-topic Kiro write-up. **OWNER:** confirm how Rachel wants to be credited, and whether she is a teammate on the form.
-- **Alex** chose Showdown after playing it, directs the visuals, supplied the Tripo exports, approved the illustrated title and Sheriff idle, and merges. The title illustration came from GPT Image in ChatGPT ([title provenance](../../assets/menu/README.md), [Sheriff idle](../evidence/kiro-approved-sheriff-idle.md)). **OWNER:** confirm any other artist credits and the source of the card illustrations.
+- **Fable 5.2** (Claude Code) designed Showdown: rules, cards, Trail, bots and art direction ([rulebook](../../prototypes/showdown/RULEBOOK.md), PR [#142](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/142)). Fable also wrote the lane engine, its CPU, and the lane judge script and playtest protocol. Fable owns game design, wording rulings, balance, and the approval of any card change.
+- **Kiro** (CLI workers, native Workflows and Crew) moved Showdown into the game with its Trail, Camp and saves. Kiro built the 29-card catalog, the combat cues, the fair Scout bot, the property tests, the `showdown-presenter` profile, the MCP seat tools and Power 1.3.0. For the contest it built the Outrider gate and its save hook, the contest task and save checks, and the Billy proposal run. It also ran the Saloon lifecycle and live-feed checks. Kiro changed no rule, card number or wording. Earlier, Kiro built the lane match presentation and its spec, and imported and rigged the characters ([character evidence](../evidence/kiro-character-assets.md)).
+- **Codex** coordinated workers, wrote the always-on `build-evidence.md` steering file and checked frozen candidates independently. It staged the illustrated release, recorded the 78-second cut, and measured the fresh-seed Billy sample.
+- **Claude Code** (Opus 5.5) drafted the Billy Ledger interaction, its focused tests and the first verifier ([Billy replay](../evidence/billy-replay.md)). On November 23 it ran the referee and Wizard-lesson sessions ([handoff](../evidence/claude-cli-followup-20261123.md)) and wrote the recording script.
+- **Rachel Selbrede** (`rachelselbrede`) has 13 commits under her account, all on November 16 during the lane era. They include the rules check (PR [#58](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/58), produced in a Claude Code session), CI on every pull request (#31), the opt-in clash log, the WebKit smoke check, the docs link check, the `?cpu=` levels and the first eight-topic Kiro write-up. **OWNER:** confirm how Rachel wants to be credited, and whether she is a teammate on the form.
+- **Alex** chose Showdown after playing it, asked for the illustrated Showdown as the public game, directs the visuals, supplied the Tripo exports, approved the illustrated title and Sheriff idle, and merges. The title illustration came from GPT Image in ChatGPT ([title provenance](../../assets/menu/README.md), [Sheriff idle](../evidence/kiro-approved-sheriff-idle.md)). **OWNER:** confirm any other artist credits and the source of the card illustrations.
 
 ## How Kiro was used on Showdown
 
-The authoritative answers are the [eight Devpost answers in the judge write-up](kiro-brag-sheet.md#eight-devpost-answers), and the [evidence map](../kiro-brag-sheet.md) holds older history. Below, each topic gives the Showdown use first and labels earlier lane-duel use as history.
+The evidence files linked below are authoritative. The [judge write-up](kiro-brag-sheet.md#eight-devpost-answers) was written before the November 22–23 contest evidence. The [evidence map](../kiro-brag-sheet.md) holds older history.
 
-1. **Kiro apps.** Kiro CLI workers built and checked Showdown in separate worktrees. Kiro Crew ran Night Watch on a schedule, and the Overnight Rival bot kept the seed-3 claim in memory across a context reset ([Crew receipt](../../experiments/showdown-dragon-strategy/rival-crew-receipt.json)). A first return was manual. A later scheduled one-shot completed and recalled both positions. The Goals-page reminder returned 409. [scheduled Crew receipt](../evidence/showdown-rival-checkin.md). On Showdown the Kiro IDE was not used; it ran the lane-era spec session. Kiro Web and cloud sessions were not used.
-2. **Custom agents.** The `showdown-presenter` profile (PR #153) auto-allows only Showdown tests and checks. In a test session, a lane test and a source write were held for approval ([profile](../../.kiro/agents/showdown-presenter.json)). History: `duel-presenter` for lane work.
-3. **Hooks.** In a fresh `showdown-presenter` session, the SessionStart hook ran 18 Showdown tests and all passed (PR [#153](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/153)). On the PR 169 branch, on a legal Bone Fence turn, the post-write hook skipped an unrelated file, caught a broken Guard cue and passed on restoration. [Guard accessibility check](../evidence/showdown-guard-access/README.md). The compaction hooks were run by hand only. History: the lane card-save and doc-link hooks.
-4. **Specs.** The `showdown-first-hour` spec (PR #149) maps each line of the brief to a numbered requirement and its tests ([requirements](../../.kiro/specs/showdown-first-hour/requirements.md), [requirements-to-tests map](../requirement-test-map.md)). It was **authored retroactively**, after the code, so it is not Requirements-First. The `showdown-camp-return-focus` bugfix spec was written by a Kiro CLI worker, and native bugfix-spec generation is unverified. History: the lane match was built Requirements-First in the Kiro IDE.
-5. **Steering.** The always-on `AGENTS.md` and `build-evidence.md` apply to every Showdown worker. The `rules-area.md` file is scoped to `src/game/**`, which contains the Showdown engine. Two isolated native CLI sessions exercised matching and nonmatching Showdown reads and the always-on baseline. [native steering controls](../evidence/showdown-scoped-steering.md). The activation experiment from November 17 ran on lane-era files ([experiment](../evidence/kiro-scoped-steering-hook.md#file-scoped-activation-verified-on-november-17-2026-pacific)).
-6. **MCP.** `start_showdown_duel`, `observe_showdown` and `act_showdown` play through the canonical engine with the Cowboy seat's view only. A Kiro CLI session won Boot Hill in 28 legal actions, and its revealed proof replays ([MCP receipt](../evidence/kiro-showdown-mcp.md)).
-7. **Property testing.** PR #154 added seven generated Showdown properties. Each caught its planted fault, and the reduced failing cases replay alone ([test](../../tests/game/showdown-properties.test.js)). The cue tests check 1,922 slot marks over 80 seeds of random legal play ([cues](../evidence/graywave-cues.md)). No product bug was found. Properties sample cases; they do not prove correctness.
-8. **Powers.** In an isolated Kiro profile, installed Orb Duel Review 1.3.0 played Boot Hill in 23 actions through its own tools. With the skill loaded explicitly, it returned `pass` for a matching engine, `unbound` for an older receipt and `stale` after one file of a copied engine changed ([installed Power run](../evidence/showdown-installed-power.md)). **Pending:** automatic activation of the skill. Kiro saw it but did not load it unprompted. Alex's own installed copy is still 1.1.0.
+1. **Kiro apps.** Kiro CLI workers built and checked Showdown in separate worktrees. Native Kiro CLI Workflows ran the balance loop and the audit. Kiro Crew ran Night Watch on a schedule, and the Overnight Rival recalled the Dragon claim after a context reset ([scheduled Crew receipt](../evidence/showdown-rival-checkin.md)). The Kiro IDE authored the Bear Trap bugfix spec ([evidence](../evidence/showdown-bear-trap.md)). Kiro Web and cloud sessions were not used.
+2. **Custom agents.** The `showdown-presenter` profile auto-allows only Showdown tests and checks ([profile](../../.kiro/agents/showdown-presenter.json)). The balance loop uses separate preparer and reviewer profiles ([preparer](../../.kiro/agents/contest-balance-preparer.json), [reviewer](../../.kiro/agents/contest-balance-reviewer.json)).
+3. **Hooks.** The `check-outrider-gate` `PostFileSave` hook failed a deliberate rules change ("0 fresh, 10 stale") and passed its revert. Each receipt carries the Kiro session ID and the hook event name ([receipts](../evidence/outrider-gate/hook-receipts.jsonl)). One double save missed the change; it was recorded and not counted. The native fence blocked a probe write under `src/game/` before it ran, and `PreToolUse` refused a task-checklist edit while the gate stamp was stale ([contest run](../evidence/kiro-contest-run.md)). Earlier, the Guard cue hook caught a removed cue ([Guard check](../evidence/showdown-guard-access/README.md)). IDE hook behaviour is not shown.
+4. **Specs.** The [balance contract](../../.kiro/specs/night-shift-balance-contract/requirements.md) writes the gate as NSB-1 and NSB-2 and has economist and rules-lawyer reviews. The [Outrider gate](../../.kiro/specs/outrider-gate/requirements.md) (G1–G7) and the [Night Shift saloon](../../.kiro/specs/night-shift-saloon/requirements.md) specs map requirements to checks. The `showdown-first-hour` spec was **written after the code**, so it is not Requirements-First. History: the lane match was built Requirements-First in the Kiro IDE.
+5. **Steering.** The always-on `AGENTS.md` and `build-evidence.md` apply to every worker. [`rules-area.md`](../../.kiro/steering/rules-area.md) is scoped to `src/game/**`. Two isolated native CLI sessions loaded it for an engine read and left it out for a UI read ([steering run](../evidence/showdown-scoped-steering.md)).
+6. **MCP.** `start_showdown_duel`, `observe_showdown` and `act_showdown` play through the canonical engine with the Cowboy seat's view only. A Kiro CLI session won Boot Hill in 28 legal actions ([MCP receipt](../evidence/kiro-showdown-mcp.md)).
+7. **Property testing.** Seven generated Showdown properties each caught their planted fault ([test](../../tests/game/showdown-properties.test.js)). The contest gates added four fast-check properties, run at 60 cases each, and the save hook runs them at 15 cases each ([gates](../evidence/kiro-contest-gates.md)). Properties sample cases; they do not prove correctness.
+8. **Powers.** The installed Orb Duel Review 1.3.0 played Boot Hill through its own tools. With the skill loaded explicitly, it returned `pass`, `unbound` and `stale` correctly ([installed Power run](../evidence/showdown-installed-power.md)). **Pending:** automatic activation. Alex's own installed copy is 1.1.0.
 
-**Workflows and Crew jobs.** The native `independent-release-review` runs are listed above. On its pinned revision the passing run recorded 167/167 Node tests and six Chrome checks. That revision predates the seed-70 position, so seed 70 was not in its sweep. A second independent run on the two-position build passed 172 tests and refused a deliberately wrong commit (PR #166). The native Night Shift Workflow also completed its staged Sheriff draft, rejection and replay. [native Sheriff review](../evidence/night-shift-native-showdown.md). Night Watch's scheduled run is the November 20 receipt above ([Night Shift evidence](../evidence/night-shift.md)).
+**Saloon: recorded vs. live.** Public builds replay only the checked-in recording. Live mode is opt-in: `?saloon=live` on a loopback HTTP page served by `scripts/night-shift-saloon.mjs`. In one native session, nine `fs_write` events reached the screen. At a 3,000 ms poll they took 154–2,818 ms, and at 1,000 ms they took 298–827 ms. The run used one machine, headless Chrome and an undeployed candidate. The 2-second target has no approved source ([live witness](../evidence/kiro-saloon-live-witness.md)).
+
+**Workflows.** `wf_87723b3404bba1fc` covered the balance run; its [still](../evidence/kiro-night-shift-native.png) was rendered from the CLI stream. `wf_3e26f2fcd93c25a1` ran the six-attempt control. `wf_27f8bf0bb063c889` ran the audit. Earlier, `independent-release-review` passed on its pinned revision and refused a mismatched one ([native release review](../evidence/showdown-native-release-workflow.md)).
 
 ## Implementation
 
-The Showdown rules are plain JavaScript in `src/game/showdown/`, with no DOM, rendering or network code. The graybox page (`src/app.js`) reads only the active seat's view. Three.js and Rapier power the earlier 3D build. Current counts on `96adf60`, run for this packet: `npm test` 610/610, and `tests/match/showdown-turn.test.js` 11/11.
+The Showdown rules are plain JavaScript in `src/game/showdown/`, with no DOM, rendering or network code. The illustrated page lives in `src/ui/showdown-3d/` and is built with Three.js. The last recorded full-suite counts were 966/966 at `4908189`, an undeployed integration candidate ([build log](../kiro-build-log.md)), and 1,086 on the November 23 starting candidate ([handoff](../evidence/claude-cli-followup-20261123.md)). No tests ran for this packet.
 
 ## Third-party tooling and attribution
 
-- **Libraries and build.** The installed versions identify Three.js 0.180.0 and esbuild 0.28.2 as MIT, and Rapier 0.12.0 as Apache-2.0. The repository uses MIT.
-- **Assets and motion (earlier 3D build).** The original Tripo exports are preserved. Blender Game Skills and Lucca Cerf's Character Factory served as references. The Sheriff idle uses Mixamo's `headShake` clip. Quaternius motion was used in a separate Billy preview. The title illustration came from GPT Image in ChatGPT. [Motion sources](../character-animation-plan.md) · [License risks](rules-check.md#risks-to-settle-before-submitting). The Showdown graybox adds no art.
-- **Other AI tools:** Fable (Claude Code) and Codex, as attributed above.
+- **Libraries and build.** The lockfile pins Three.js 0.185.1, esbuild 0.28.2 and fast-check 4.11.0, all MIT. The repository uses MIT.
+- **Assets and motion.** The original Tripo exports are preserved. Blender Game Skills and Lucca Cerf's Character Factory served as references. The Sheriff idle uses Mixamo's `headShake` clip. Quaternius motion was used in a separate Billy preview. The title illustration came from GPT Image in ChatGPT. [Motion sources](../character-animation-plan.md) · [License risks](rules-check.md#risks-to-settle-before-submitting). **OWNER:** confirm asset provenance for the illustrated Showdown build.
+- **Other AI tools:** Fable and Claude Code, and Codex, as attributed above.
 - **Testing and hosting:** headless Chrome over the DevTools protocol, GitHub Actions and GitHub Pages.
 - **Pre-existing work disclosure: OWNER.** The first commit (November 14, 2026) preserves an existing board demo. The rules require disclosing pre-existing work and confirming it was made after October 30. Only Alex knows when the demo and the Tripo exports were made.
 
 ## Category and bonuses
 
-- **Category: OWNER.** The lane-era draft proposed Costume Contest on the strength of the illustrated arena. The Showdown entry is a graybox, and the illustrated art lives in the `/3d/` build. Alex should choose the category with that in mind.
+- **Category: OWNER.** The lane-era draft proposed Costume Contest because of the illustrated arena. The public root is now the illustrated Showdown.
 - **Crew bonus:** the Night Watch app has [its own repository](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch). Its form write-up is not drafted.
-- **Blog bonus:** requires a public third-party post that mentions Kiroween 2026. See the draft [build story](build-story.md), which still tells the lane-era story.
+- **Blog bonus:** requires a public third-party post that mentions Kiroween 2026. The draft [build story](build-story.md) still tells the lane-era story.
 - **Social bonus:** optional. A person must write it; no agent should. Nothing has been posted.
 - **Student eligibility: OWNER.** Requires current enrollment and details for every teammate. School affiliation alone is insufficient.
 
@@ -100,12 +99,11 @@ Official rules: https://kiroween.devpost.com/rules. Deadlines: credit requests b
 ## URLs
 
 - Game: https://alejandro-publius.github.io/cowboys-vs-wizards/
-- Dragon positions: [seed 3](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5) · [seed 70](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5-70)
-- Earlier illustrated 3D build (lane rules): https://alejandro-publius.github.io/cowboys-vs-wizards/3d/
+- Build manifest: https://alejandro-publius.github.io/cowboys-vs-wizards/build.json
 - Source: https://github.com/alejandro-publius/cowboys-vs-wizards
-- Kiro write-up: https://github.com/alejandro-publius/cowboys-vs-wizards/blob/main/docs/submission/kiro-brag-sheet.md
+- Judge guide: https://github.com/alejandro-publius/cowboys-vs-wizards/blob/main/docs/JUDGE-GUIDE.md
 - Crew app: https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch
-- Demo video (public YouTube, under three minutes): **OWNER, PENDING.** A private scripted [85-second Showdown demo script](judge-demo-script.md) is available for review. Alex owns public publication. The rules forbid third-party trademarks in the video ([rules check](rules-check.md#risks-to-settle-before-submitting)).
+- Demo video (public YouTube, under three minutes) **OWNER, PENDING.** The captioned November 23 draft is ready for review. Narration and upload are pending. [Recording script](judge-demo-script.md) The rules forbid third-party trademarks in the video ([rules check](rules-check.md#risks-to-settle-before-submitting)).
 - Third-party blog: **OWNER, PENDING.**
 
 ## Required form fields and owner inputs still open
@@ -114,13 +112,14 @@ Official rules: https://kiroween.devpost.com/rules. Deadlines: credit requests b
 - Category selection; Crew, blog and social bonuses if entering them
 - Personal reflection on using Kiro, and the spec-versus-direct comparison in the builder's words (none should be generated)
 - Pre-existing work disclosure: when the board demo and the Tripo exports were made
-- Artist credits and the source of the card illustrations; missing Tripo and Mixamo license metadata
+- Artist credits, the source of the card illustrations, and asset provenance for the illustrated build; missing Tripo and Mixamo license metadata
 - Team: current enrollment if claiming student status, every teammate joined on Devpost, Rachel's credit, and credit requests by December 1
 - Individual playtest observations for any claim about clarity or fun
-- Fable's approval of the first-draft Camp, mode, `/3d/` and Ledger wording, and Fable's decision on the Dragon positions ([release line](../design/release-line.md))
-- Final check of the served build and these links on submission day
+- Design approval or rejection of Billy attack 2 → 1; Fable's approval of the Camp, Ledger and Saloon wording ([release line](../design/release-line.md))
+- A deploy of the submitted revision, and a final check of the served build and these links on submission day
 - Alex's approval of this packet, and confirmation that it was submitted
 
 ## History
 
-The lane-era packet described the three-lane duel: tribute summons, simultaneous clashes such as Mounted Billy taking the Dragon from five orbs to two on seed 60, and release receipts on `892cada`. It is preserved [at `96adf60`](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/96adf6031b6159ab34fd7751180ced507f677104/docs/submission/devpost-packet.md), and the judge write-up's [lane-duel section](kiro-brag-sheet.md#earlier-lane-duel-work-historical) summarizes it. None of it is Showdown testing.
+- **Dragon turn-five decision (November 20 draft).** Two playable positions, [seed 3](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5) and [seed 70](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5-70), where the bots' better target flips. It was recorded against `96adf60`, with 610/610 tests run for that draft. [Search and replay](../../experiments/showdown-dragon-strategy/rival-README.md) · [route and checks](../evidence/showdown-turn-k095.md). These are bot lines, not human results.
+- **Lane-era packet (November 16–17).** It covered the three-lane duel, seed 60 and the release receipts on `892cada`. It is preserved [at `96adf60`](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/96adf6031b6159ab34fd7751180ced507f677104/docs/submission/devpost-packet.md) and summarized in the [lane-duel section](kiro-brag-sheet.md#earlier-lane-duel-work-historical). None of it is Showdown testing.
