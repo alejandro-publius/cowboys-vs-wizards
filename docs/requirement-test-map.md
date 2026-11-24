@@ -268,9 +268,9 @@ tests. Before them no test title cited any `CARD-` ID. Spec text, card values an
 
 Each test builds a Showdown position with the public `createShowdown`, sets boards and hands, and drives
 only `legalActions`, `applyAction` and `presentEvent`. Expected values are written from the clause text.
-The properties run under fast-check seed `20261123`, 150 runs. At that commit `node --test tests/game/card-specs.test.js`
-passed 13 of 13. `node scripts/trace.mjs` was not run for this section (the shell refused it), so the "proven" status below is read
-from the titles, not from a trace report.
+The properties use fast-check seed `20261123` and 150 runs. The coordinator verified 64 focused tests
+across the card, trace, scorecard and hook suites. `node scripts/trace.mjs --json` counted 22 proven clauses
+across all specs, up from 2. The six parser findings and three unresolved references also occur in the baseline.
 
 | IDs in the title | Class | Precise observable |
 | --- | --- | --- |
@@ -282,7 +282,7 @@ from the titles, not from a trace report.
 
 Notes on what these rows do not claim:
 
-- `HELLFIRE-03` is the offer with a Cowboy troop present. Its sibling `CARD-WIZARD-HELLFIRE-04` (no Hellfire on an empty Cowboy board) is an open design decision and no test asserts it either way. `HELLFIRE-03`'s "holds a Hellfire" half is not tested as an absence.
+- `HELLFIRE-03` is the offer with a Cowboy troop present. The shared other-card allowance is asserted under `HELLFIRE-05`. Its sibling `CARD-WIZARD-HELLFIRE-04` (no Hellfire on an empty Cowboy board) is an open design decision and no test asserts it either way. `HELLFIRE-03`'s "holds a Hellfire" half is not tested as an absence.
 - `HELLFIRE-07`'s "in slot order" is asserted through the order of the `spell` events (and the graveyard order for defeats). The boards themselves cannot show an order.
 - `SINGULARITY-04` to `-06` and `-15` take Guard and Ghostly from the catalog's `keys` (Covered Wagon, Captured Wraith). They do not re-derive those keywords.
 

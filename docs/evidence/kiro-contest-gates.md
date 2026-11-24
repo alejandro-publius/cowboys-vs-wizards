@@ -12,7 +12,7 @@ A subsequent native spec-task attempt hit Kiro's monthly usage limit before invo
 
 | Path | Purpose |
 | --- | --- |
-| [`.kiro/hooks/contest-gates.json`](../../.kiro/hooks/contest-gates.json) | v1 hook array: PostFileSave, PreTaskExecution, PostTaskExecution, Stop, PreToolUse on `send_message` |
+| [`.kiro/hooks/contest-gates.json`](../../.kiro/hooks/contest-gates.json) | v1 hook array: PostFileSave, PreTaskExec, PostTaskExec, Stop, PreToolUse on `send_message` |
 | [`.kiro/hooks/contest-tasks-guard.json`](../../.kiro/hooks/contest-tasks-guard.json) | standalone v1 PreToolUse guard on `fs_write`, `str_replace`, `fs_append` for `.kiro/specs/**/tasks.md` |
 | [`scripts/contest-release-gate.mjs`](../../scripts/contest-release-gate.mjs) | Gate runner: modes `fast`, `release`, `pre-task`, `post-task`, `stop`, `completion`, `tasks-edit`, `status`. Exports pure helpers for the tests |
 | [`scripts/contest-gate-properties.mjs`](../../scripts/contest-gate-properties.mjs) | fast-check properties G1-G4, failure formatter, replay parameters |
@@ -53,7 +53,7 @@ Fail closed: an unparseable payload that mentions `tasks.md`, or a covered edit 
 
 Those need a native receipt (Pending 8).
 
-**Not intercepted:** a task's status in a native Kiro task or spec UI that changes without a tool call through `fs_write`, `str_replace` or `fs_append` passes the guard. Examples are the IDE "task completed" control, an editor save by the user, or a shell `sed`. I did not identify a native task-status tool or event to gate. PostTaskExecution can only report after the fact.
+**Not intercepted:** a task's status in a native Kiro task or spec UI that changes without a tool call through `fs_write`, `str_replace` or `fs_append` passes the guard. Examples are the IDE "task completed" control, an editor save by the user, or a shell `sed`. I did not identify a native task-status tool or event to gate. `PostTaskExec` reports after the task ends.
 
 ## Dependency needed (coordinator-owned package.json)
 
@@ -79,8 +79,8 @@ Harness checks (disposable wrappers in the test file, not production bugs): G1 a
 | Trigger | Command | Effect |
 | --- | --- | --- |
 | PostFileSave, patterns `src/game/showdown/**`, `.kiro/specs/duel-card-pipeline/cards/**` | `fast` | G1-G4, 15 runs each, at most 20 s per property. The script also skips when the hook payload names only out-of-scope paths. Failures go to stderr with exit 2. **Reports only.** A save cannot be undone |
-| PreTaskExecution | `pre-task` | records the tree fingerprint and reports whether the stamp is current. Runs no checks |
-| PostTaskExecution | `post-task` | release checks when the tree differs from a passing stamp, then writes the stamp. **Reports only.** A post hook cannot prevent the completion it follows |
+| PreTaskExec | `pre-task` | records the tree fingerprint and reports whether the stamp is current. Runs no checks |
+| PostTaskExec | `post-task` | release checks when the tree differs from a passing stamp, then writes the stamp. **Reports only.** A post hook cannot prevent the completion it follows |
 | Stop | `stop` | exits 0 at once if the stamp passes for the current tree. Otherwise it runs the release checks, or re-reports a failure already recorded for this exact tree, and exits 2. Loop guard: after 2 failing reports on an unchanged tree, or when the payload says `stop_hook_active`, it exits 1 without running anything. Whether Kiro holds the agent at Stop on exit 2 is **unverified**. Treat it as a report |
 | PreToolUse, matcher `send_message` | `completion` | when the tool input has `severity: "success"` (how a workflow step marks itself completed), it exits 2 unless the stamp passes for the current tree. Other severities and other tools pass. An unreadable payload is checked against the stamp (fail closed). This is the only hook intended to block, and only if Kiro honours exit 2 for PreToolUse on this tool |
 
