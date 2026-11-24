@@ -1,4 +1,5 @@
-/* The Saloon bar (camp-outpost.js): the Poker doorway and the forge, rules and arena drawers.
+/* The Saloon bar (camp-outpost.js): the Poker doorway and the forge, rules and arena drawers,
+   plus the archived decision under the Wizard's proposal on the notice board (end of file).
    Rules inside a drawer use :where() so they beat bare element defaults while each drawer
    module's own class rules still win. Colours: parchment #f2dfc2 on wood #392722 (11:1),
    brass text #ffe2a3 on #1e1418 (14:1), button ink #472a19 on #e9c18e (7.6:1). */
@@ -178,4 +179,61 @@
   background: #1e1418;
   box-shadow: inset 4px 0 #c99a3f;
   font: 700 1.1rem/1.35 var(--frontier-display);
+}
+
+/* Review of the Wizard's proposal (night-shift-saloon.js decisionHtml): a pinned receipt slip
+   inside the proposal notice, shown in the portrait and illustrated views alike. Ink #2c2018 on
+   parchment #f2dfc2 (12:1), labels #5b3a29 (8:1); outcomes are words, never colour alone. */
+.saloon-decision {
+  margin-top: 0.45rem;
+  padding: 0.4rem 0.55rem 0.45rem 0.75rem;
+  color: #2c2018;
+  background: #f2dfc2;
+  box-shadow: inset 4px 0 #8f6745, 0 2px #8f6745;
+  font-size: 0.86rem;
+  line-height: 1.32;
+  overflow-wrap: anywhere;
+}
+.saloon-decision[hidden] {
+  display: none;
+}
+.saloon-decision h5 {
+  margin: 0 0 0.3rem;
+  font: 700 1rem/1.15 var(--frontier-display);
+}
+.saloon-decision dl {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+}
+.saloon-decision dl > div {
+  display: grid;
+  grid-template-columns: 4.9rem minmax(0, 1fr);
+  gap: 0.45rem;
+}
+.saloon-decision dt {
+  color: #5b3a29;
+  font-weight: 700;
+}
+.saloon-decision dd {
+  margin: 0;
+}
+.saloon-board .saloon-decision ul {
+  margin: 0;
+  padding-left: 1rem;
+}
+.saloon-decision code {
+  padding: 0 0.2em;
+  background: #e2c9a3;
+}
+.saloon-board .saloon-decision-note {
+  margin: 0.3rem 0 0;
+  font-style: italic;
+}
+/* Narrow phones: each label sits above its text so nothing is squeezed. */
+@media (max-width: 420px) {
+  .saloon-decision dl > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
 }

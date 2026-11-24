@@ -6,11 +6,16 @@
 // patch records (merged on main) appear as patch notes.
 // Ambient activity records are high-frequency hook notes. They only stir the matching
 // character and never ring the bell, cast, refuse, or count as a replay step.
+// A proposal that is the archived Billy change also shows that change's decision, rule and receipt
+// on the notice board (proposalDecision below), derived from the checked-in seat audit files.
 import {cleanFeed} from "../night-shift-events.js";
 import {activityLabel} from "../night-shift-presence.js";
 import {TYPES} from "../../game/showdown/cards.js";
 import {BOUNTIES} from "../../game/showdown/progress.js";
 import {mountRepairReplay} from "../field-trial-replay.js";
+import {seatAuditOk} from "../billy-replay.js";
+import SEAT_AUDIT from "../../../docs/evidence/billy-seat-audit/result.json" with {type: "json"};
+import SEAT_PROTOCOL from "../../../docs/evidence/billy-seat-audit/protocol.json" with {type: "json"};
 
 export const RECORDED_LABEL = "Recorded Kiro shift";
 export const LIVE_LABEL = "Live Kiro shift on this computer";
@@ -230,6 +235,94 @@ export function proposalText(proposal) {
   return `${cardName(proposal.card)}: ${proposal.field} ${proposal.before} → ${proposal.after}, ${CHANGE_WORDS[proposal.change] ?? "changed"}`;
 }
 
+// --- The archived decision for one proposal (docs/evidence/billy-seat-audit) ---
+// Kiro CLI proposed Billy attack 2 → 1; the reviewer passed it, and the frozen 100,000-duel audit measures that
+// one change. It awaits design approval and is not applied. It is a separate run from Kiro's six free-choice
+// edits, which the reviewer rejected. The browser cannot read the written contract, so
+// tests/match/saloon-showcases.test.js checks BALANCE_RULE against the contract parser and the derived shares
+// against scripts/billy-balance-gate.mjs.
+export const BALANCE_RULE = Object.freeze({source: ".kiro/specs/night-shift-balance-contract/requirements.md",
+  band: Object.freeze([45, 55]), seatTolerancePp: 1});
+export const DECISION_NOTES = "docs/evidence/billy-seat-audit/README.md";
+export const DECISION_RECHECK = "node scripts/billy-balance-gate.mjs --arm candidate";
+export const DECISION_SEPARATE = "Archived result for this change. It is not one of Kiro's six free-choice edits, which the reviewer rejected.";
+const AUDIT_SEATS = ["cowboy", "wizard"];
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"})[c]);
+const pct3 = (n) => n.toFixed(3);
+const inBand = (value, [low, high]) => value >= low && value <= high;
+
+// Pure: faction shares and the opener's distance from 50% for one arm, in percent. Draws count for neither faction.
+function armShares(seat, arm) {
+  let games = 0, cowboy = 0, wizard = 0, first = 0;
+  for (const side of AUDIT_SEATS) {
+    const cell = seat.byFirst[side];
+    games += cell.gamesPerArm;
+    cowboy += cell[arm].cowboy;
+    wizard += cell[arm].wizard;
+    first += cell[arm][side];
+  }
+  return {games, cowboyShare: (100 * cowboy) / games, wizardShare: (100 * wizard) / games, seatSkew: Math.abs((100 * first) / games - 50)};
+}
+
+// Pure: the archived decision for a proposal {card, field, before, after}, or null. Shown only for the audited
+// change, while this build's card still starts from it, when the counts add up and name the protocol's source,
+// and when the candidate meets both written requirements. Every figure comes from the audit files.
+export function proposalDecision(proposal, {seat = SEAT_AUDIT, protocol = SEAT_PROTOCOL, types = TYPES, rule = BALANCE_RULE} = {}) {
+  if (!proposal || !protocol || typeof protocol !== "object") return null;
+  const {card, field, baseline: from, candidate: to} = protocol;
+  if (proposal.card !== card || proposal.field !== field || proposal.before !== from || proposal.after !== to) return null;
+  const live = types?.[card]?.[field];
+  if (!Number.isInteger(live) || live !== from || typeof types[card].name !== "string") return null;
+  if (!seatAuditOk(seat) || seat.deals !== protocol.deals || String(protocol.seats) !== String(AUDIT_SEATS)) return null;
+  if (!/^[0-9a-f]{40}$/.test(seat.sourceCommit ?? "") || seat.sourceCommit !== protocol.sourceCommit) return null;
+  if (!/^[0-9a-f]{64}$/.test(seat.protocolSha256 ?? "")) return null;
+  const band = rule?.band, tolerance = rule?.seatTolerancePp;
+  if (!Array.isArray(band) || band.length !== 2 || !band.every(Number.isFinite) || band[0] > band[1] || !Number.isFinite(tolerance)) return null;
+  const before = armShares(seat, "baseline"), after = armShares(seat, "candidate");
+  // The archive records a passing proposal. Counts that fail the written rule are never shown as one.
+  if (!inBand(after.cowboyShare, band) || !inBand(after.wizardShare, band) || after.seatSkew > before.seatSkew + tolerance) return null;
+  const name = types[card].name, at = (value) => `${field} ${value}`;
+  const where = (share) => (inBand(share, band) ? "inside" : "outside");
+  return {
+    change: `${name} ${field} ${from} → ${to}`,
+    status: `Passed the written balance rule and awaits design approval. ${name} has ${at(live)} in this build.`,
+    announce: "Decision on the notice board: passed the balance rule, awaiting design approval.",
+    rules: [
+      `NSB-1, each faction wins ${band[0]}–${band[1]}% of games: Cowboys won ${pct3(before.cowboyShare)}% at ${at(from)} (${where(before.cowboyShare)}) and ${pct3(after.cowboyShare)}% at ${at(to)} (inside).`,
+      `NSB-2, the opener's distance from 50% may grow by at most ${tolerance} point${tolerance === 1 ? "" : "s"}: ${pct3(before.seatSkew)} at ${at(from)}, ${pct3(after.seatSkew)} at ${at(to)} (within).`,
+    ],
+    duels: before.games + after.games,
+    sourceCommit: seat.sourceCommit,
+    protocolSha256: seat.protocolSha256,
+    observed: {baseline: before, candidate: after},
+  };
+}
+
+// Pure: the notice-board block for a decision, or "" for none. Words carry every outcome, never colour alone.
+export function decisionHtml(decision) {
+  if (!decision) return "";
+  const d = decision;
+  return `<h5>Review of Kiro's proposal: ${esc(d.change)}</h5>
+    <dl>
+      <div><dt>Decision</dt><dd>${esc(d.status)}</dd></div>
+      <div><dt>Rule</dt><dd><ul>${d.rules.map((line) => `<li>${esc(line)}</li>`).join("")}</ul></dd></div>
+      <div><dt>Receipt</dt><dd>Proposed by Kiro CLI; ${d.duels.toLocaleString("en-US")} recorded Node engine duels at source <code>${esc(shortCommit(d.sourceCommit))}</code>, protocol <code>${esc(d.protocolSha256.slice(0, 7))}</code>. Recheck: <code>${esc(DECISION_RECHECK)}</code>. Notes: <code>${esc(DECISION_NOTES)}</code>.</dd></div>
+    </dl>
+    <p class="saloon-decision-note">${esc(DECISION_SEPARATE)}</p>`;
+}
+
+// Pure: the status line for one shift event. A proposal with an archived decision says where to read it.
+export function eventCaption(event) {
+  const decision = event?.kind === "cast" ? proposalDecision(event) : null;
+  return decision ? `${describe(event)}. ${decision.announce}` : describe(event);
+}
+
+// Pure: the recorded room's opening line. When a recorded proposal has an archived decision, it names that step.
+export function idleCaption(events) {
+  const index = (Array.isArray(events) ? events : []).findIndex((event) => event?.kind === "cast" && proposalDecision(event));
+  return index < 0 ? IDLE_CAPTION : `${IDLE_CAPTION} Step ${index + 1} shows Kiro's card proposal and its decision.`;
+}
+
 // Pure: ambient records that became an actor's latest between two latestActivity snapshots.
 export function freshAmbient(before, after) {
   return ACTORS.filter(({id}) => after[id] && after[id].id !== before[id]?.id).map(({id}) => after[id]);
@@ -283,6 +376,7 @@ const ROOM_HTML = `
         <div class="saloon-proposal">
           <h4>Scratch proposal, not merged</h4>
           <div class="saloon-target" data-change="none"><div class="saloon-target-art"></div><p class="saloon-target-stat">No proposal yet</p></div>
+          <div class="saloon-decision" hidden></div>
         </div>
         <div class="saloon-patches">
           <h4>Merged on main</h4>
@@ -356,6 +450,7 @@ export function mountNightShiftSaloon({content, recording, portrait = () => null
   const theater = q(".saloon-theater"), host = q(".saloon-theater-host"), controls = q(".saloon-controls");
   const play = q(".saloon-play"), step = q(".saloon-step"), replay = q(".saloon-replay");
   const now = q(".saloon-now"), progress = q(".saloon-progress");
+  const decisionBox = q(".saloon-decision");
   const historyList = q(".saloon-history ol");
   const actorItems = new Map();
   for (const actor of ACTORS) {
@@ -385,6 +480,8 @@ export function mountNightShiftSaloon({content, recording, portrait = () => null
   const dateNote = q(".saloon-mode-date");
   dateNote.textContent = dates ? `· ${dates}` : "";
   dateNote.hidden = !dates;
+  // The recorded room's opening line names the step with Kiro's proposal and its decision.
+  const idle = mode === "live" ? IDLE_CAPTION : idleCaption(feed.events);
   let count = 0; // recorded events played so far
   let shown = emptyShift();
   let ambient = latestActivity([]);
@@ -503,6 +600,13 @@ export function mountNightShiftSaloon({content, recording, portrait = () => null
       targetArt.replaceChildren(...(proposal ? [art(portrait, proposal.card, "saloon-target-portrait")] : []));
     }
     q(".saloon-target-stat").textContent = proposalText(proposal);
+    // The archived decision is rebuilt only when the proposal changes, never on every render.
+    const decisionKey = proposal ? `${proposal.card}:${proposal.field}:${proposal.before}:${proposal.after}` : "";
+    if (decisionBox.dataset.key !== decisionKey) {
+      decisionBox.dataset.key = decisionKey;
+      decisionBox.innerHTML = decisionHtml(proposal ? proposalDecision(proposal) : null);
+      decisionBox.hidden = !decisionBox.innerHTML;
+    }
     renderHistory();
     if (mode === "live") {
       progress.textContent = offline ? "· offline" : caughtUp ? "· watching" : "· connecting";
@@ -545,7 +649,7 @@ export function mountNightShiftSaloon({content, recording, portrait = () => null
       cancel(bellTimer);
       bellTimer = later(() => post.classList.remove("is-ringing"), BELL_MS);
     }
-    now.textContent = describe(event);
+    now.textContent = eventCaption(event);
     toStage("play", event);
   }
 
@@ -590,7 +694,7 @@ export function mountNightShiftSaloon({content, recording, portrait = () => null
     quiet();
     render();
     toStage("reset");
-    now.textContent = IDLE_CAPTION;
+    now.textContent = idle;
   }
   play.addEventListener("click", () => {
     if (playing) { pause(); render(); now.textContent = "Paused."; return; }
@@ -659,7 +763,7 @@ export function mountNightShiftSaloon({content, recording, portrait = () => null
   renderLedger();
   render();
   now.textContent = mode === "live" ? "Connects when you enter the saloon."
-    : mode === "recorded-only" ? "The live shift only plays when the game runs on this computer. Showing the recording." : IDLE_CAPTION;
+    : mode === "recorded-only" ? "The live shift only plays when the game runs on this computer. Showing the recording." : idle;
 
   return {
     mode,

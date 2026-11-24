@@ -1,17 +1,31 @@
-// Tests for scripts/saloon-showcases.mjs. Run: node --test tests/match/saloon-showcases.test.js
-// Every input here is a tiny, labelled TEST FIXTURE built in a temporary folder. None of it is a
-// recorded workflow result. The arena cases play real games with the checkout's arena engine and are
+// Tests for scripts/saloon-showcases.mjs and for the Saloon notice board's archived decision.
+// Run: node --test tests/match/saloon-showcases.test.js
+// The forge and arena inputs are tiny, labelled TEST FIXTURES built in a temporary folder; none of them is
+// a recorded workflow result. The arena cases play real games with the checkout's arena engine and are
 // skipped when that engine (src/game/showdown, experiments/agent-arena) is not present.
+// The last section reads, and never writes, the checked-in Night Shift recording and the archived Billy
+// seat audit (docs/evidence/billy-seat-audit), so the decision the Saloon shows is checked against them.
 import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
 import {mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync} from "node:fs";
 import {tmpdir} from "node:os";
 import {join} from "node:path";
 import {after, test} from "node:test";
+import {runGate} from "../../scripts/billy-balance-gate.mjs";
 import {pairedFlips, summarizeGames} from "../../scripts/card-forge.mjs";
 import {
   ARENA_PERSONAS, Refusal, VIEW, buildArenaShowcase, checkArchive, forgeCheckIds, loadArenaEngine, packageArena, packageForge,
 } from "../../scripts/saloon-showcases.mjs";
+import {loadBalanceContract} from "../../scripts/showdown-balance-contract.mjs";
+import {TYPES} from "../../src/game/showdown/cards.js";
+import RECORDING from "../../src/ui/night-shift-recording.json" with {type: "json"};
+import {
+  BALANCE_RULE, DECISION_NOTES, DECISION_RECHECK, IDLE_CAPTION, decisionHtml, eventCaption, idleCaption, normalizeFeed,
+  proposalDecision, replayTo,
+} from "../../src/ui/showdown-3d/night-shift-saloon.js";
+import SEAT_AUDIT from "../../docs/evidence/billy-seat-audit/result.json" with {type: "json"};
+import SEAT_PROTOCOL from "../../docs/evidence/billy-seat-audit/protocol.json" with {type: "json"};
+import FREE_CHOICE_RUN from "../../docs/evidence/billy-seat-audit/kiro-run.json" with {type: "json"};
 
 const sha256 = (data) => createHash("sha256").update(data).digest("hex");
 const jsonText = (value) => JSON.stringify(value, null, 2) + "\n";
@@ -233,4 +247,85 @@ test("arena: tampered stored files and replays are refused", {skip: arenaSkip}, 
   const moved = JSON.parse(base["results.json"]);
   moved.engine.sha256 = "d".repeat(64);
   await refuses(build({...base, "results.json": jsonText(moved)}), /engine fingerprint/);
+});
+
+// ---- Saloon notice board: the recorded proposal's archived decision (read-only, real receipts) ----
+
+const recorded = normalizeFeed(RECORDING).events;
+const BILLY = Object.freeze({card: "cowboy-billy", field: "attack", before: 2, after: 1});
+const near = (actual, expected) => assert.ok(Math.abs(actual - expected) < 1e-9, `${actual} is not ${expected}`);
+
+test("saloon decision: the recorded Billy proposal shows its decision, rule and receipt from the archived audit", () => {
+  const {card, field, before, after: to} = replayTo(recorded, recorded.length).proposal;
+  assert.deepEqual({card, field, before, after: to}, BILLY, "the recording's only proposal is Billy attack 2 → 1");
+  assert.equal(TYPES["cowboy-billy"].attack, 2, "this build still has the current card, so the change is not applied");
+  const decision = proposalDecision(BILLY);
+  assert.ok(decision);
+  assert.equal(decision.change, "Billy attack 2 → 1");
+  assert.equal(decision.status, "Passed the written balance rule and awaits design approval. Billy has attack 2 in this build.");
+  assert.equal(decision.rules[0],
+    "NSB-1, each faction wins 45–55% of games: Cowboys won 59.792% at attack 2 (outside) and 51.920% at attack 1 (inside).");
+  assert.equal(decision.rules[1],
+    "NSB-2, the opener's distance from 50% may grow by at most 1 point: 9.412 at attack 2, 8.136 at attack 1 (within).");
+  assert.equal(decision.duels, 100000);
+  assert.equal(decision.sourceCommit, "eedab9385931e093e156fdb7885c470eb2ec64eb");
+
+  const html = decisionHtml(decision);
+  assert.match(html, /^<h5>Review of Kiro's proposal: Billy attack 2 → 1<\/h5>/);
+  assert.deepEqual([...html.matchAll(/<dt>([^<]+)<\/dt>/g)].map((m) => m[1]), ["Decision", "Rule", "Receipt"]);
+  assert.match(html, /Proposed by Kiro CLI; 100,000 recorded Node engine duels at source <code>eedab93<\/code>, protocol <code>1950574<\/code>\./);
+  assert.ok(html.includes(`Recheck: <code>${DECISION_RECHECK}</code>`) && html.includes(`Notes: <code>${DECISION_NOTES}</code>`));
+  assert.match(html, /It is not one of Kiro&#39;s six free-choice edits, which the reviewer rejected\./);
+  assert.doesNotMatch(html, /scratch|\.artifacts|fs_write/, "none of the live room's privacy canaries is printed");
+  assert.equal(decisionHtml(null), "");
+});
+
+test("saloon decision: the status line and the opening caption lead to the decision step", () => {
+  const cast = recorded.find((event) => event.kind === "cast");
+  assert.equal(recorded.indexOf(cast), 2);
+  assert.equal(eventCaption(cast),
+    "Wizard: Proposes Billy attack 2 → 1 (scratch, not merged). Decision on the notice board: passed the balance rule, awaiting design approval.");
+  assert.equal(eventCaption(recorded[0]), "Singularity: Hands out a job", "other events keep their plain line");
+  assert.equal(idleCaption(recorded), `${IDLE_CAPTION} Step 3 shows Kiro's card proposal and its decision.`);
+  assert.equal(idleCaption(recorded.filter((event) => event.kind !== "cast")), IDLE_CAPTION);
+  assert.equal(idleCaption(null), IDLE_CAPTION);
+});
+
+test("saloon decision: the shown figures match the Billy gate and the written balance contract", () => {
+  const contract = loadBalanceContract();
+  assert.deepEqual([...contract.band], [...BALANCE_RULE.band], "BALANCE_RULE copies NSB-1 from the contract file");
+  assert.equal(contract.seatTolerancePp, BALANCE_RULE.seatTolerancePp, "BALANCE_RULE copies NSB-2 from the contract file");
+  const decision = proposalDecision(BILLY);
+  for (const arm of ["baseline", "candidate"]) {
+    const gate = runGate({arm});
+    assert.equal(gate.pass, arm === "candidate", `${arm}: the gate's own verdict`);
+    for (const key of ["games", "cowboyShare", "wizardShare", "seatSkew"]) near(decision.observed[arm][key], gate.observed[key]);
+  }
+  assert.equal(decision.sourceCommit, SEAT_PROTOCOL.sourceCommit);
+});
+
+test("saloon decision: other changes, the six rejected edits, a changed card or bad counts show no decision", () => {
+  assert.equal(proposalDecision(null), null);
+  assert.equal(proposalDecision({...BILLY, after: 3}), null);
+  assert.equal(proposalDecision({...BILLY, field: "health"}), null);
+  const attempts = FREE_CHOICE_RUN.freeChoice.attempts;
+  assert.equal(attempts.length, 6);
+  for (const {attempt, change, decision} of attempts) {
+    assert.equal(decision, "FAIL", `attempt ${attempt} was rejected`);
+    assert.equal(proposalDecision({card: change.card, field: change.field, before: change.from, after: change.to}), null,
+      `free-choice attempt ${attempt} never borrows the Billy decision`);
+  }
+  // A build whose Billy no longer has attack 2 gets no stale "not applied" claim.
+  for (const attack of [1, 3]) {
+    assert.equal(proposalDecision(BILLY, {types: {...TYPES, "cowboy-billy": {...TYPES["cowboy-billy"], attack}}}), null);
+  }
+  const uneven = structuredClone(SEAT_AUDIT);
+  uneven.byFirst.cowboy.candidate.cowboy += 1;
+  assert.equal(proposalDecision(BILLY, {seat: uneven}), null, "counts that do not add up");
+  assert.equal(proposalDecision(BILLY, {seat: {...SEAT_AUDIT, sourceCommit: "a".repeat(40)}}), null, "another source commit");
+  assert.equal(proposalDecision(BILLY, {seat: {...SEAT_AUDIT, protocolSha256: "not-a-hash"}}), null);
+  assert.equal(proposalDecision(BILLY, {protocol: {...SEAT_PROTOCOL, candidate: 3}}), null, "another audited change");
+  // The README's negative control: the same 51.920% under a 49–51 band is not shown as a pass.
+  assert.equal(proposalDecision(BILLY, {rule: {...BALANCE_RULE, band: [49, 51]}}), null);
+  assert.equal(proposalDecision(BILLY, {rule: {...BALANCE_RULE, seatTolerancePp: Number.NaN}}), null);
 });

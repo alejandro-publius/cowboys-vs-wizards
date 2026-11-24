@@ -3,7 +3,7 @@
 import assert from "node:assert/strict";
 import {test} from "node:test";
 import {COHORT_SIZE, DEFAULT_OUT, checkOpening, decodeInstanceId, duelOf, parseArgs, parseTranscripts, pickOpen, planControls, refereeChecks,
-  refereeOf, refusalKind, selfChecks, stableView, validateCohort} from "../../scripts/referee/browser.mjs";
+  refereeOf, refusalKind, runDuel, selfChecks, stableView, validateCohort} from "../../scripts/referee/browser.mjs";
 import {parseBaseNote, parseCurtain, parseLocation, parseOrbs, parseStatus, parseTraps, parseWorldLabel} from "../../src/ui/showdown-3d/referee-observer.js";
 import {BROWSER_REPORT, browserVerdicts, dealKey, inspectBrowserEvidence} from "../../scripts/referee/browser.mjs";
 import {canonicalJson, evaluateBrowser, sha256} from "../../scripts/referee/prove.mjs";
@@ -374,4 +374,110 @@ test("gate: the gate only reads; it writes nothing under the root", async (t) =>
   const before = await readFile(path.join(root, BROWSER_REPORT), "utf8");
   await browserVerdicts(ctx);
   assert.equal(await readFile(path.join(root, BROWSER_REPORT), "utf8"), before);
+});
+
+// ---------- runDuel: interrupted observation against a referee mismatch ----------
+// A scripted stand-in for the Playwright calls runDuel makes. The page shows one referee state at a time, as the
+// observer reads it; #sd-end moves it to the next of `states` ([opening, after move 0, after move 1]).
+// stuck: after that move the canvas never stops moving (a machine that sleeps mid-animation).
+// clickError: at that move #sd-end's click times out. disabled: at that move #sd-end is disabled (a visible refusal).
+
+const seatOf = (hand, base = 5) => ({base, hand, deck: ["x-1", "x-2"], discard: [], troops: [null, null, null], traps: [null, null]});
+const tableState = (turn, active, winner = undefined) => ({turn, active, first: "cowboy", over: winner !== undefined, winner: winner ?? null,
+  reason: winner ? "base-destroyed" : null, location: null, players: {cowboy: seatOf(["cowboy-a-1", "cowboy-b-1"]), wizard: seatOf(["wizard-c-1", "wizard-d-1"])}});
+const OPENING = tableState(1, "cowboy"), AFTER_END = tableState(1, "wizard"), OVER = tableState(2, "cowboy", "cowboy");
+const shows = (state, motion) => {
+  const viewer = state.active;
+  const result = state.over ? {winner: state.winner, reason: "base-fell"} : null;
+  const row = (s) => ({base: {now: state.players[s].base, max: 5}, traps: {count: 0, names: []}, backs: s === viewer ? null : state.players[s].hand.length,
+    counts: {hand: state.players[s].hand.length, deck: state.players[s].deck.length, graveyard: 0}, slots: [0, 1, 2].map((slot) => ({side: s, slot, empty: true}))});
+  return {curtain: null, viewer, incomplete: [], status: {text: result ? "The Cowboys win" : `turn ${state.turn}`, turn: result ? null : state.turn,
+    active: result ? null : state.active, result}, sides: {cowboy: row("cowboy"), wizard: row("wizard")}, controls: {cancel: {shown: false}},
+    hand: result ? [] : state.players[viewer].hand.map((id) => ({id, enabled: true})), location: null, graveyards: {cowboy: [], wizard: []},
+    world: {present: true, labels: [{title: "Deck", count: 2}], pawns: null, motion}};
+};
+function scriptedPage({states = [OPENING, AFTER_END, OVER], stuck = null, clickError = null, disabled = null} = {}) {
+  let phase = "menu", shown = 0;
+  const clicks = [];
+  const present = (sel) => (phase === "menu" ? sel === "#menu-play" : phase === "camp" ? sel === '[data-two="1"]' : sel === "#sd-end");
+  const page = {
+    goto: async () => {},
+    locator: (sel) => ({first: () => ({count: async () => (present(sel) ? 1 : 0), isVisible: async () => present(sel),
+      isEnabled: async () => !(sel === "#sd-end" && disabled === shown),
+      click: async () => {
+        if (sel === "#sd-end" && clickError === shown) throw new Error("locator.click: Timeout 3000ms exceeded.\nCall log:\n  - waiting for locator('#sd-end')");
+        clicks.push(sel);
+        if (sel === "#menu-play") phase = "camp";
+        else if (sel === '[data-two="1"]') phase = "table";
+        else shown++;
+      }})}),
+    evaluate: async () => structuredClone(shows(states[shown], stuck !== null && shown === stuck + 1 ? "spell" : null)),
+    waitForTimeout: (ms) => new Promise((resolve) => setTimeout(resolve, Math.min(ms, 2))),
+    video: () => null,
+  };
+  const context = {addInitScript: async () => {}, newPage: async () => page, close: async () => {}};
+  return {browser: {newContext: async () => context}, ends: () => clicks.filter((c) => c === "#sd-end").length};
+}
+const refereeDuel = duelOf({seed: 7, first: "cowboy", actions: [{type: "end"}, {type: "end"}],
+  decks: {cowboy: ["cowboy-a-1", "cowboy-b-1", "cowboy-e-1"], wizard: ["wizard-c-1", "wizard-d-1", "wizard-f-1"]},
+  referee: {result: {seed: 7, initial: OPENING, steps: [{accepted: true, state: AFTER_END}, {accepted: true, state: OVER}], unsupported: []}}}).duel;
+const drive = (script) => runDuel(script.browser, "file:///staged/index.html", refereeDuel, {settleMs: 40, reducedMotion: false}, tmpdir());
+const fields = (record) => record.incomplete.map((x) => `${x.field}@${x.at}`);
+
+test("runDuel: a page that follows the referee completes with every assertion passing", async () => {
+  const page = scriptedPage();
+  const record = await drive(page);
+  assert.equal(record.status, "complete", JSON.stringify(record.failures));
+  assert.deepEqual([record.assertions.failed, record.assertions.incomplete, page.ends()], [0, 0, 2]);
+  assert.equal(record.observedResult.winner, "cowboy");
+});
+
+test("runDuel: a table not at rest in time is an interruption that fails as incomplete, never a mismatch, and nothing after it is clicked or judged", async () => {
+  const page = scriptedPage({stuck: 0});
+  const record = await drive(page);
+  assert.equal(record.status, "incomplete");
+  assert.equal(record.assertions.failed, 0, JSON.stringify(record.failures));
+  assert.deepEqual(fields(record), ["interrupted.settle@0"]);
+  assert.match(record.incomplete[0].reason, /not at rest .*within 40 ms.*"spell"/);
+  assert.equal(page.ends(), 1, "the next move is never sent to a page that was not observed at rest");
+  assert.equal(record.moves.length, 1);
+});
+
+test("runDuel: a click that times out on a move the referee accepted is an interruption, not a page refusal", async () => {
+  const page = scriptedPage({clickError: 1});
+  const record = await drive(page);
+  assert.equal(record.status, "incomplete");
+  assert.equal(record.assertions.failed, 0, JSON.stringify(record.failures));
+  assert.deepEqual(fields(record), ["interrupted.click@1"]);
+  assert.match(record.incomplete[0].reason, /End turn button \(#sd-end\) not clickable: locator\.click: Timeout 3000ms exceeded/);
+  assert.equal(record.moves[1].refusal, "control-unclickable");
+  assert.equal(page.ends(), 1);
+});
+
+test("runDuel: a settled table that differs from the referee, or a visible refusal of an accepted move, stays a mismatch", async () => {
+  const diverged = structuredClone(AFTER_END);
+  diverged.players.wizard.base = 4;
+  const disagreed = await drive(scriptedPage({states: [OPENING, diverged, OVER]}));
+  assert.equal(disagreed.status, "mismatch");
+  assert.deepEqual(disagreed.failures.map((f) => `${f.name} = ${f.detail}`), ["move 0: wizard base = page 4, referee 5"]);
+  assert.deepEqual(fields(disagreed), []);
+  const refused = await drive(scriptedPage({disabled: 0}));
+  assert.equal(refused.status, "mismatch");
+  assert.deepEqual(refused.failures.map((f) => `${f.name} = ${f.detail}`), ["move 0 taken as the referee accepted it = page refused it: End turn button (#sd-end) disabled"]);
+  assert.deepEqual(fields(refused), []);
+});
+
+test("gate: an interrupted duel and a referee mismatch both fail the gate, under different verdicts", async (t) => {
+  const interrupted = await drive(scriptedPage({stuck: 0}));
+  const diverged = structuredClone(AFTER_END);
+  diverged.players.wizard.base = 4;
+  const disagreed = await drive(scriptedPage({states: [OPENING, diverged, OVER]}));
+  const {ctx} = await gateRoot(t, {records: (rs) => {
+    for (const [i, record] of [interrupted, disagreed].entries()) rs[i] = {...record, seed: rs[i].seed, first: rs[i].first, dealKey: rs[i].dealKey};
+  }, report: (r) => { r.totals.complete -= 2; r.totals.incomplete++; r.totals.mismatch++; }});
+  const result = await browserVerdicts(ctx);
+  assert.deepEqual(result.verdicts.slice(0, 2).map((v) => v.verdict), ["incomplete", "mismatch"]);
+  const section = evaluateBrowser(result, ctx);
+  assert.equal(section.status, "fail");
+  assert.equal(section.counts.other, 2);
 });

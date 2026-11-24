@@ -24,7 +24,7 @@
 //   --chrome <path>       Chrome executable (default the macOS Google Chrome app)
 //   --jobs <n>            concurrent isolated Chrome contexts, 1 to 8 (default 1)
 //   --reduced-motion      emulate prefers-reduced-motion (default: full animation, waited out)
-//   --settle-ms <n>       longest wait for one move's animation to settle (default 15000)
+//   --settle-ms <n>       longest wait for one move's animation to settle (default 15000); past it the duel stops, interrupted
 //   --compare             refused: comparison comes only from the referee result inside each transcript
 //
 // A transcript is {duel: {seed, first, decks: {cowboy, wizard}, actions}, ...} or those duel fields at
@@ -35,9 +35,13 @@
 // the table unchanged, and after every step the visible public table must equal the referee's state.
 // browser.gestureGaps[i], when set, names an action the page has no gesture for; it is never clicked and
 // its duel is incomplete. Without referee.result a refused move is incomplete, never a pass.
+// A wait that runs out is not a referee decision: a table not at rest within --settle-ms, or a click that never
+// lands (Playwright's click timeout), stops the duel at once as incomplete, under an "interrupted.settle" or
+// "interrupted.click" field. Nothing after it is clicked, retried or judged. A mismatch is only a disagreement seen
+// on a settled table or a visible refusal, so an interruption cannot turn into one and can never count as a pass.
 //
 // Exit codes: 0 every duel driven to a visible result with no failed assertion; 1 a mismatch or an
-// incomplete duel; 2 bad input or flags; 3 Playwright or Chrome unavailable.
+// incomplete (including interrupted) duel; 2 bad input or flags; 3 Playwright or Chrome unavailable.
 import {createHash} from "node:crypto";
 import {copyFile, mkdir, mkdtemp, readFile, rm, writeFile} from "node:fs/promises";
 import {tmpdir} from "node:os";
@@ -599,6 +603,13 @@ async function press(page, selector) {
   return null;
 }
 
+// A wait that ran out: the table was not observed at rest, or a click never landed. runDuel stops on it and
+// records it as incomplete under `field`; it is never tallied as a failed (mismatch) or passed assertion.
+class Interrupted extends Error {
+  constructor(field, reason, at) { super(reason); this.field = field; this.at = at; }
+}
+const unclickable = (problem) => Boolean(problem) && refusalKind(problem) === "control-unclickable";
+
 async function openTwoPlayers(page) {
   const two = '[data-two="1"]';
   if (!(await page.locator(two).first().isVisible().catch(() => false))) {
@@ -608,7 +619,7 @@ async function openTwoPlayers(page) {
   return press(page, two);
 }
 
-async function runDuel(browser, pageUrl, duel, opts, scratch) {
+export async function runDuel(browser, pageUrl, duel, opts, scratch) {
   const record = {seed: duel.seed, first: duel.first, dealKey: dealKey(duel), status: "complete",
     assertions: {passed: 0, failed: 0, incomplete: 0}, failures: [], incomplete: [], unobservable: [], moves: []};
   const context = await browser.newContext({viewport: {width: 1440, height: 900}, reducedMotion: opts.reducedMotion ? "reduce" : "no-preference",
@@ -616,18 +627,24 @@ async function runDuel(browser, pageUrl, duel, opts, scratch) {
   await context.addInitScript({content: await observerScript()});
   const page = await context.newPage();
   const incomplete = (field, reason, at = null) => { record.incomplete.push({field, reason, at}); record.assertions.incomplete++; };
+  // Every observation that is judged comes from here: a table still moving after --settle-ms is never judged.
+  const observe = async (at, after) => {
+    const {obs: seen, settled} = await settle(page, opts.settleMs);
+    if (settled) return seen;
+    throw new Interrupted("interrupted.settle", `the table was not at rest ${after} within ${opts.settleMs} ms (canvas motion "${seen.world?.motion ?? "none"}"), so it was not judged`, at);
+  };
   try {
     await page.goto(`${pageUrl}?seed=${duel.seed}`);
     const camp = await press(page, "#menu-play");
     if (camp) { incomplete("entry.camp", `#menu-play ${camp}`); return finish(); }
     const two = await openTwoPlayers(page);
     if (two) { incomplete("entry.twoPlayers", `Camp > Two players [data-two="1"] ${two}; Wizard moves need a seat the page lets a person drive`); return finish(); }
-    let {obs} = await settle(page, opts.settleMs);
+    let obs = await observe(null, "at entry");
     record.unobservable = obs.incomplete;
     if (obs.curtain) {
       const ready = await press(page, "#sd-ready");
       if (ready) { incomplete("entry.ready", `#sd-ready ${ready}`); return finish(); }
-      ({obs} = await settle(page, opts.settleMs));
+      obs = await observe(null, "after the opening hand-over");
     }
     const opening = checkOpening(duel, obs);
     record.opening = summarize(obs);
@@ -644,8 +661,12 @@ async function runDuel(browser, pageUrl, duel, opts, scratch) {
     if (ref) tally(record, refereeChecks(obs, ref.initial, {names, at: "opening"}));
     let stopped = false;
     const stop = () => { stopped = true; };
-    const cancelPick = async () => {
-      if (pickOpen(obs) && !(await press(page, "#sd-cancel"))) ({obs} = await settle(page, opts.settleMs));
+    const cancelPick = async (at) => {
+      if (!pickOpen(obs)) return;
+      const problem = await press(page, "#sd-cancel");
+      // A Cancel that never landed leaves the pick open for the next move's first click.
+      if (unclickable(problem)) throw new Interrupted("interrupted.click", `Cancel (#sd-cancel) ${problem}; the open pick was not closed`, at);
+      if (!problem) obs = await observe(at, "after Cancel");
     };
     for (const [index, action] of duel.actions.entries()) {
       const expect = ref ? ref.steps[index] : null;
@@ -668,17 +689,21 @@ async function runDuel(browser, pageUrl, duel, opts, scratch) {
       for (const [n, step] of plan.steps.entries()) {
         const problem = await press(page, step.click);
         move.clicks.push({...step, problem});
-        if (problem) { move.rejected = `${step.what} (${step.click}) ${problem}`; move.refusal = refusalKind(problem); break; }
+        if (problem) {
+          move.rejected = `${step.what} (${step.click}) ${problem}`;
+          move.refusal = refusalKind(problem);
+          // A click that never landed is no refusal the page showed, whatever the referee decided.
+          if (unclickable(problem)) throw new Interrupted("interrupted.click", `${move.rejected}; the page showed no refusal, so the move was not judged`, index);
+          break;
+        }
         if (n === plan.steps.length - 1) break;
         // Every click but the last must leave the page waiting for the next one of the same gesture.
         const mid = await page.evaluate(() => window.__refereeObserver.observeTable());
         if (!pickOpen(mid)) { early = `the page closed the gesture after ${step.what}, before ${plan.steps[n + 1].what}`; break; }
       }
-      let settled;
-      ({obs, settled} = await settle(page, opts.settleMs));
-      if (!settled) tally(record, [{name: `move ${index} animation settled`, pass: false, detail: `canvas motion "${obs.world?.motion}" after ${opts.settleMs} ms`}]);
+      obs = await observe(index, `after move ${index}`);
       if (early) {
-        await cancelPick();
+        await cancelPick(index);
         if (obs.curtain || stableView(obs) !== stableView(before)) {
           // The page made some move from part of the clicks: the table no longer follows the transcript.
           move.rejected = early;
@@ -696,7 +721,7 @@ async function runDuel(browser, pageUrl, duel, opts, scratch) {
         move.refusal = "pick-left-open";
       }
       if (move.rejected) {
-        await cancelPick();
+        await cancelPick(index);
         const unchanged = stableView(obs) === stableView(before);
         tally(record, [{name: `move ${index} rejection leaves the visible table unchanged`, pass: unchanged, detail: "visible table changed after a rejected move"}]);
         move.presentations.push({seat: obs.viewer, after: "rejection", view: summarize(obs)});
@@ -707,12 +732,6 @@ async function runDuel(browser, pageUrl, duel, opts, scratch) {
         }
         if (expect.accepted) {
           tally(record, [{name: `move ${index} taken as the referee accepted it`, pass: false, detail: `page refused it: ${move.rejected}`}]);
-          stop();
-          break;
-        }
-        if (move.refusal === "control-unclickable") {
-          // A click that failed is not a refusal the page showed.
-          incomplete("action.unclickable", move.rejected, index);
           stop();
           break;
         }
@@ -734,7 +753,7 @@ async function runDuel(browser, pageUrl, duel, opts, scratch) {
       if (obs.curtain) {
         const ready = await press(page, "#sd-ready");
         if (ready) { incomplete("handover", `#sd-ready ${ready}`, index); stop(); break; }
-        ({obs} = await settle(page, opts.settleMs));
+        obs = await observe(index, `after the hand-over following move ${index}`);
         tally(record, selfChecks(obs));
         move.presentations.push({seat: obs.viewer, after: "handover", view: summarize(obs)});
       }
@@ -750,7 +769,8 @@ async function runDuel(browser, pageUrl, duel, opts, scratch) {
     record.observedResult = winner ?? null;
     return finish();
   } catch (error) {
-    incomplete("run", error.stack ?? String(error));
+    if (error instanceof Interrupted) incomplete(error.field, error.message, error.at);
+    else incomplete("run", error.stack ?? String(error));
     return finish();
   } finally {
     await context.close();
@@ -797,7 +817,8 @@ async function main() {
   await writeFile(path.join(out, "seeds.json"), JSON.stringify(cohort.seeds) + "\n");
   const pageUrl = pathToFileURL(pageFile).href;
   async function recordDuel(duel, record) {
-    if (duel.referee) {
+    // record.referee is set once the opening is judged; a duel stopped at entry has none.
+    if (duel.referee && record.referee) {
       const last = duel.referee.steps.at(-1)?.state ?? duel.referee.initial;
       Object.assign(record.referee, {winner: last.over ? last.winner : undefined, reason: last.reason});
     }
