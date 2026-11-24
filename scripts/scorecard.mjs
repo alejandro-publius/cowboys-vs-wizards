@@ -443,6 +443,11 @@ export const LISTED_TRIGGERS = Object.freeze([
   ["PreTaskExecution", "Pre Task Execution"], ["PostTaskExecution", "Post Task Execution"],
 ]);
 
+// Kiro CLI 3.5.0 /hooks listed the short v1 spellings and not these long ones. IDE names and historical event
+// payloads still resolve through canonicalPhase; only a v1 config using the long form is flagged, never counted.
+// Registration only: no task lifecycle hook has been observed firing.
+const UNREGISTERED_V1_TASK = /^(?:Pre|Post)TaskExecution$/i;
+
 function scriptMissing(root, command) {
   const script = /^\s*(?:node|sh|bash)\s+(?:-\S+\s+)*([\w./-]+\.(?:mjs|cjs|js|sh))(?:\s|$)/.exec(command ?? "")?.[1];
   return script && !existsSync(join(root, script)) ? script : null;
@@ -461,6 +466,7 @@ export function measureHooks(root = ROOT) {
     for (const hook of hooks) {
       if (hook.enabled === false) continue;
       const phase = canonicalPhase(hook.trigger), missing = scriptMissing(root, hook.action);
+      if (!ide && UNREGISTERED_V1_TASK.test(String(hook.trigger))) { problems.push(`${file}: ${hook.trigger} is not a registered v1 trigger (native /hooks lists PreTaskExec/PostTaskExec)`); continue; }
       if (!phase) { problems.push(`${file}: unsupported trigger ${JSON.stringify(hook.trigger ?? null)}`); continue; }
       if (typeof hook.action !== "string" || !hook.action.trim() || missing) { problems.push(`${file}: ${hook.trigger} has no runnable action${missing ? ` (${missing} missing)` : ""}`); continue; }
       if (!used.has(phase)) used.set(phase, []);
@@ -475,7 +481,7 @@ export function measureHooks(root = ROOT) {
   const ideCount = files.filter((f) => f.endsWith(".kiro.hook")).length;
   return row("hooks", "Distinct supported hook triggers in .kiro/hooks, with the Saloon enabled", `>= ${TARGETS.hooks} + Saloon`, {
     value: used.size, pass: used.size >= TARGETS.hooks && saloon,
-    reason: `${files.length - ideCount} CLI v1 files, ${ideCount} IDE .kiro.hook files; Saloon ${saloon ? "enabled" : "NOT enabled"}; ${listed.filter((t) => t.cliFiles.length || t.ideFiles.length).length}/9 listed triggers configured; ${problems.length} problems`,
+    reason: `${files.length - ideCount} CLI v1 files, ${ideCount} IDE .kiro.hook files; Saloon ${saloon ? "enabled" : "NOT enabled"}; ${listed.filter((t) => t.cliFiles.length || t.ideFiles.length).length}/9 listed triggers configured (configuration only, not proof of execution); ${problems.length} problems`,
     details: {triggers: Object.fromEntries([...used].map(([phase, where]) => [phase, where.map((w) => `${w.surface} ${w.file}`)])), listed, problems},
   });
 }

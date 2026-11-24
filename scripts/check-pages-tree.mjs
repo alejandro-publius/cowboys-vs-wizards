@@ -23,6 +23,7 @@
 //     files, paints the BBS screen and raises no errors
 //   - /?saloon=review opens the recorded Night Shift saloon at the validated Billy proposal card with no
 //     /night-shift/events request; Replay from start hides the decision and Back to map returns to the Camp
+//   - Chrome exposes the named challenge, Outrider controls, Saloon dialog and balance evidence in its accessibility tree
 //   No page error, failed request or HTTP error is allowed anywhere.
 import assert from "node:assert/strict";
 import {spawn} from "node:child_process";
@@ -204,6 +205,14 @@ async function browserChecks() {
       await wait(`document.readyState==='complete'&&location.href===${JSON.stringify(site + rel)}`);
     };
     const shown = (id) => `!!document.getElementById('${id}')&&!document.getElementById('${id}').hidden`;
+    await send("Accessibility.enable");
+    await send("Emulation.setFocusEmulationEnabled", {enabled: true});
+    const axTree = async () => (await send("Accessibility.getFullAXTree")).nodes.filter((node) => !node.ignored);
+    const axProperty = (node, key) => node.properties?.find((p) => p.name === key)?.value?.value;
+    const axNamed = (nodes, role, name, predicate = () => true) => nodes.some((node) =>
+      node.role?.value === role && name.test(node.name?.value ?? "") && predicate(node));
+    const enabled = (node) => axProperty(node, "disabled") !== true;
+    const focused = (node) => enabled(node) && axProperty(node, "focused") === true;
     // Chromium's default favicon probe: a page without <link rel="icon"> (the experimental poker/ page) makes
     // Chrome request the origin-root /favicon.ico. On GitHub Pages that path belongs to the owner's root site,
     // outside BASE_PATH, so it is not a project asset. Only that exact URL with CDP type "Other" is exempt and
@@ -273,6 +282,16 @@ async function browserChecks() {
       assert.match(await evaluate(`document.querySelector('${room} .saloon-target-stat').textContent`), /^Billy\b.*: attack 2 → 1/);
       const at = await evaluate(`document.querySelector('${room} .saloon-progress').textContent`);
       assert.match(at, /^· step [1-9]\d* of \d+$/, "the room opens at the review step");
+      const saloonAx = await axTree();
+      assert.ok(axNamed(saloonAx, "dialog", /^Night Shift saloon$/), "the recorded room has a dialog name");
+      for (const label of [/^Play$/, /^Step$/, /^Replay from start$/]) {
+        assert.ok(axNamed(saloonAx, "button", label, enabled), `${label} is an enabled playback control`);
+      }
+      assert.ok(axNamed(saloonAx, "heading", /^Review of Kiro's proposal: Billy attack 2 → 1$/), "the balance review has a heading");
+      const noticeText = saloonAx.filter((node) => node.role?.value === "StaticText").map((node) => node.name?.value).join(" ");
+      for (const detail of ["59.792%", "51.920%", "100,000", "awaits design approval"]) {
+        assert.ok(noticeText.includes(detail), `the review exposes ${detail}`);
+      }
       await sleep(3500); // longer than the slowest live poll interval
       // Keyboard: a real Enter on the focused control; keyboard focus must land on Play, not <body>.
       const total = Number(at.match(/ of (\d+)$/)[1]);
@@ -290,6 +309,7 @@ async function browserChecks() {
       await enter();
       await wait(`${decision}.hidden&&/^· step 0 of /.test(document.querySelector('${room} .saloon-progress').textContent)`);
       assert.ok(await evaluate(onPlay), "Replay from start by Enter moves focus to the enabled Play button");
+      assert.ok(axNamed(await axTree(), "button", /^Play$/, focused), "Chrome exposes Play as focused after restart");
       for (let n = 0; n < total - 1; n++) await click(`${room} .saloon-step`);
       await wait(`document.querySelector('${room} .saloon-progress').textContent==='· step ${total - 1} of ${total}'`);
       await focusOn("step");
@@ -298,6 +318,7 @@ async function browserChecks() {
       assert.equal(await evaluate(`document.querySelector('${room} .saloon-step').disabled`), true, "Step is disabled at the last event");
       assert.ok(await evaluate(onPlay), "Step by Enter at the last event moves focus to the enabled Replay button");
       assert.equal(await evaluate(`document.activeElement.textContent`), "Replay");
+      assert.ok(axNamed(await axTree(), "button", /^Replay$/, focused), "Chrome exposes Replay as focused after the last event");
       await click(`${room} header button`);
       await wait(`!document.querySelector('${room}').open&&${shown("showdown-camp")}`);
       assert.deepEqual(feedRequests(), [], "?saloon=review makes no /night-shift/events request");
@@ -312,19 +333,25 @@ async function browserChecks() {
       const slots = '[data-slot^="cowboy-"]';
       const rider = await evaluate(`[...document.querySelectorAll(${JSON.stringify(slots)})].find(x => x.textContent.includes('Outrider'))?.dataset.slot`);
       assert.ok(rider, "the Outrider is on the board");
+      assert.ok(axNamed(await axTree(), "button", /\bOutrider\b/, enabled), "Outrider is an enabled named choice");
       await click(`[data-slot="${rider}"]`);
       await wait(`document.querySelector('[data-base="wizard"]')?.dataset.enemy === 'base' && !!document.querySelector('[data-slot^="wizard-"][data-enemy]')`);
       clean();
     };
     await open("");
     await wait(`document.getElementById('menu-challenge')?.textContent === 'Ride or Fight?'`);
+    assert.ok(axNamed(await axTree(), "button", /^Ride or Fight\?$/, enabled), "the title challenge has a name");
     await click("#menu-challenge");
     await challengeOpens();
+    const targets = await axTree();
+    assert.ok(axNamed(targets, "button", /\bBase\b/, enabled), "the Base target is an enabled named choice");
+    assert.ok(axNamed(targets, "button", /\bSkeleton\b/, enabled), "the Skeleton target is an enabled named choice");
     await click('[data-base="wizard"]');
     await wait(`/Outrider struck the Wizards' Base for 1/.test(document.getElementById('sd-log').textContent)`);
     await click("#sd-home");
     await wait(shown("showdown-camp"));
     check("the illustrated title opens the playable Ride or Fight? challenge and Camp is reachable");
+    check("Chrome exposes the challenge and targets, recorded Saloon dialog and results, and replay keyboard focus in its accessibility tree");
 
     await open("3d/?outrider=case-a");
     await challengeOpens();

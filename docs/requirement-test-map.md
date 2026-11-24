@@ -7,8 +7,10 @@ commit `4c0723d` plus the new boundary properties. It is not generated and no
 script checks it, so it can drift: re-read the cited tests before relying on a
 row. It claims nothing about visual quality, fun or animation.
 
-The Showdown slice 2 spec has its own section at the end,
+The Showdown slice 2 spec has its own section,
 [Showdown slice 2: the first hour](#showdown-slice-2-the-first-hour), with `FH-` IDs.
+The Showdown card specs have the last section,
+[Showdown card spec clauses](#showdown-card-spec-clauses-card-), with `CARD-` IDs.
 
 IDs: `R<requirement>.<criterion>`. The spec's "Asset Gaps" section carries its
 own list 1 to 5, written here as `AG.1` to `AG.5`.
@@ -254,3 +256,45 @@ the built pages at `cd764f1` are byte-identical to the ones checked
 | FH-R7.3 | direct (reference) + todo | `keep` "partial lane hunts and lane Frontier cards do not carry into Showdown", "reference Start over resets Showdown progress only…"; `test.todo` "slice 3: the graybox Camp's own Start over…" | Start over is checked as the reference prototype's reset (`keep(newSave())`, `keepLog([])`); the graybox has none until slice 3. Until 2026-11-19 this row was "missing (open)". |
 
 Not mapped, pending: human playtests of the first hour (clarity, fun, Camp wording). None run.
+
+## Showdown card spec clauses (CARD-)
+
+Maps clauses of `.kiro/specs/card-*/requirements.md` (IDs such as `CARD-WIZARD-HELLFIRE-07`) to tests
+whose own literal title cites the ID. That is the only thing `scripts/trace.mjs` counts as proof
+([how](evidence/dec4-trace.md#proof)), so this section lists exactly the IDs that appear in test titles
+and nothing from prose, aliases or neighbouring tests. Written by hand on 2026-11-23 from
+[`tests/game/card-specs.test.js`](../tests/game/card-specs.test.js), where the tests sit after the catalog
+tests. Before them no test title cited any `CARD-` ID. Spec text, card values and rules are unchanged.
+
+Each test builds a Showdown position with the public `createShowdown`, sets boards and hands, and drives
+only `legalActions`, `applyAction` and `presentEvent`. Expected values are written from the clause text.
+The properties run under fast-check seed `20261123`, 150 runs. At that commit `node --test tests/game/card-specs.test.js`
+passed 13 of 13. `node scripts/trace.mjs` was not run for this section (the shell refused it), so the "proven" status below is read
+from the titles, not from a trace report.
+
+| IDs in the title | Class | Precise observable |
+| --- | --- | --- |
+| `CARD-COWBOY-DEADEYE-04`, `CARD-WIZARD-SINGULARITY-14`, `CARD-WIZARD-HELLFIRE-13` | direct | A Deadeye kills a 1-orb Jack-o'-Lantern, a Singularity and a Hellfire kill a 1-orb Dynamiter, in any slot among random bystanders: every event is a `spell` event (no `laststand`), the victim is gone and in its owner's graveyard, and the caster's board is deep-equal to before. |
+| `CARD-WIZARD-SINGULARITY-12`, `-13`, `CARD-WIZARD-HELLFIRE-11`, `-12` | direct | For a random Cowboy board, Cowboy trap row (none, one or two Bear Traps) and Wizard trap row: after the spell both trap rows are unchanged, no Cowboy trap card reached the graveyard, no `trap` or `attack` event, both Bases keep their orbs and the Wizard board is deep-equal to before. |
+| `CARD-WIZARD-SINGULARITY-04`, `-05`, `-06`, `-15` | direct | The targets listed are exactly the non-Ghostly Cowboy troops in slot order, with a Covered Wagon (Guard) beside them. None are listed for an all-Ghostly or empty board, after a Wizard troop takes cover, or after Wizard gear is played. Each cast takes exactly 1 orb from its target, in cover or not, and leaves every other slot deep-equal. |
+| `CARD-WIZARD-HELLFIRE-03`, `-07`, `-09`, `-10`, `-14`, `-15` | direct | For a random Cowboy board of at least one troop (Guard, cover and gear included) and one or two Hellfires in hand: exactly one action `{type, cardId}` with no `target`; events are one `spell` event per troop in slot order with its id and orbs left; each troop is 1 orb lower with its other fields unchanged, or gone at 0 with the troop and its gear, in slot order, as the whole Cowboy graveyard; the Wizard graveyard is the one Hellfire; each log line reads "The Wizards' Hellfire hit <name>: <n> orb(s) left." or "…: defeated." No Hellfire is offered once a Wizard troop has taken cover. |
+| `CARD-WIZARD-HELLFIRE-05`, `CARD-WIZARD-SINGULARITY-07`, `-08` | direct | With every kind of play in hand, a Singularity or a Hellfire removes `spell`, `gear` and `location` from the legal actions and keeps `summon` and `set`. The other spell is then rejected as illegal, and a summon and a Hex set still go through without reopening the other-card play. |
+
+Notes on what these rows do not claim:
+
+- `HELLFIRE-03` is the offer with a Cowboy troop present. Its sibling `CARD-WIZARD-HELLFIRE-04` (no Hellfire on an empty Cowboy board) is an open design decision and no test asserts it either way. `HELLFIRE-03`'s "holds a Hellfire" half is not tested as an absence.
+- `HELLFIRE-07`'s "in slot order" is asserted through the order of the `spell` events (and the graveyard order for defeats). The boards themselves cannot show an order.
+- `SINGULARITY-04` to `-06` and `-15` take Guard and Ghostly from the catalog's `keys` (Covered Wagon, Captured Wraith). They do not re-derive those keywords.
+
+Gaps that were already verified by an existing test that cites no `CARD-` ID. I did not cite these IDs, so they stay unproven in a trace:
+
+| Clause | Existing assertion |
+| --- | --- |
+| `CARD-WIZARD-HELLFIRE-08` (Ghostly troops are hit) | `prototypes/showdown/rules.test.js` "Ghostly troops cannot be targeted by spells, but Hellfire still burns them": board health only. |
+| `CARD-COWBOY-DEADEYE-05` (no gear after a Deadeye) | `prototypes/showdown/rules.test.js` "gear: a Six-Shooter adds 1 attack…" ("a spell uses it too"). |
+| `CARD-COWBOY-LASSO-04`, `-06`, `-07` (stun and its end) | `prototypes/showdown/rules.test.js` "Lasso stuns a troop for its next turn only": the attack list only, not `stunned` or the event. |
+| `CARD-WIZARD-HEX-08`, `-10` (cancel, spent attack) | `prototypes/showdown/rules.test.js` "a set trap springs on the next enemy attack…": one `trap` event, orbs, trap row and graveyard, attack spent. |
+| `CARD-WIZARD-HELLFIRE-16` to `-18` (replay and gallery) | `tests/match/showdown-3d-presentation.test.js` Hellfire gallery tests. Not re-read for this map. |
+| Spell legality, events, orbs, Base and trap timing in general | `scripts/showdown-dec4-properties.mjs` properties `rb10-spells`, `rb2-frame`, `rb4-card-plays`, `rb7-traps`, `rb9-sweep-last-stand`. They run whole random games with no `CARD-` IDs, and a spell that defeats a Last Stand troop or hits a covered troop is reached only by chance. Their receipts are untouched. |
+
+Still without a test that cites the ID, in the same spell and combat group: `CARD-WIZARD-HELLFIRE-01`, `-02`, `-04` (design decision), `-06` (hand to graveyard "before any orb is removed" is not visible in state or events), `-08`, `-16` to `-18`; `CARD-WIZARD-SINGULARITY-01` to `-03`, `-09` to `-11`, `-16` to `-22`; `CARD-COWBOY-DEADEYE-02`, `-03`, `-05`, `-06`; every `CARD-COWBOY-LASSO-*`, `CARD-WIZARD-HEX-*` and `CARD-COWBOY-BEAR-TRAP-*` clause; and every clause of the other card specs. The 20 IDs above are the only `CARD-` clauses a title cites, so `node scripts/trace.mjs --require CARD-` still exits 1.

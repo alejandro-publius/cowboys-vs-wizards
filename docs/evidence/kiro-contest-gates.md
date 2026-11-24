@@ -4,6 +4,10 @@ Date: 2026-11-21 (America/Los_Angeles). Author: Kiro (Claude Opus 5.5 worker, Ki
 
 **State: implemented, partly verified by the coordinator.** The coordinator reports that the first four fast-check properties (G1-G4) were verified. Nothing else below has been run by me (no shell in this session), and no hook has fired natively. The repair of this second pass (stamp hardening and the tasks.md guard) is unrun. See "Pending".
 
+**November 23 registration check.** In a temporary workspace, Kiro CLI 3.5.0 V3's `/hooks` listed `PreTaskExec`, `PostTaskExec`, and a `SessionStart` control. The two otherwise identical probes with the longer spellings were absent. The current v1 hook files use the registered spellings. The Saloon uses `PreTaskExecution` and `PostTaskExecution` as internal journal labels so older recordings stay readable. [AWS v1 format guide](https://builder.aws.com/content/3HSSa3K02m3ExChFKTdxqHH6Gyn)
+
+A subsequent native spec-task attempt hit Kiro's monthly usage limit before invoking a task. Actual dispatch, including the task gate's validation stamp, remains open under Pending 7.
+
 ## Files
 
 | Path | Purpose |

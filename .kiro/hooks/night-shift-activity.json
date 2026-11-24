@@ -83,18 +83,18 @@
     },
     {
       "name": "night-shift-activity-pre-task-execution",
-      "trigger": "PreTaskExecution",
+      "trigger": "PreTaskExec",
       "action": {
         "type": "command",
-        "command": "node scripts/saloon-activity.mjs PreTaskExecution"
+        "command": "node scripts/saloon-activity.mjs PreTaskExec"
       }
     },
     {
       "name": "night-shift-activity-post-task-execution",
-      "trigger": "PostTaskExecution",
+      "trigger": "PostTaskExec",
       "action": {
         "type": "command",
-        "command": "node scripts/saloon-activity.mjs PostTaskExecution"
+        "command": "node scripts/saloon-activity.mjs PostTaskExec"
       }
     },
     {

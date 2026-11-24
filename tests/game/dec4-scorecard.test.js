@@ -229,7 +229,7 @@ test("hooks: enabled supported triggers with runnable actions count once; IDE na
     "scripts/saloon-activity.mjs": "", "scripts/check.mjs": "",
     ".kiro/hooks/night-shift-activity.json": {version: "v1", hooks: [command("Stop", "scripts/saloon-activity.mjs Stop"), command("PreToolUse", "scripts/saloon-activity.mjs PreToolUse")]},
     ".kiro/hooks/save.json": {version: "v1", hooks: [command("PostFileSave"), command("Stop"), command("OnMoonrise"),
-      command("PreTaskExecution", undefined, {enabled: false}), command("PostTaskExecution", "scripts/gone.mjs")]},
+      command("PreTaskExec", undefined, {enabled: false}), command("PostTaskExec", "scripts/gone.mjs")]},
     ".kiro/hooks/create.kiro.hook": {enabled: true, name: "ide", when: {type: "fileCreated", patterns: ["**/*.js"]}, then: {type: "askAgent", prompt: "Check the new file."}},
     ".kiro/hooks/manual.kiro.hook": {enabled: true, name: "manual", when: {type: "userTriggered"}, then: {type: "askAgent", prompt: "Run it."}},
     ".kiro/hooks/broken.json": "{",
@@ -244,7 +244,18 @@ test("hooks: enabled supported triggers with runnable actions count once; IDE na
   assert.deepEqual([listed.PostTaskExecution.cliFiles, listed.PreTaskExecution.cliFiles], [[], []]);
   assert.equal(r.details.problems.length, 4);
 
-  const eight = ["Stop", "PreToolUse", "PostToolUse", "PostFileSave", "PostFileCreate", "PostFileDelete", "PreTaskExecution", "PostTaskExecution"];
+  // Native v1 spellings count under the long listed names; the long spellings are unregistered and flagged.
+  const spelled = fixture(t, {
+    "scripts/check.mjs": "",
+    ".kiro/hooks/short.json": {version: "v1", hooks: [command("PreTaskExec"), command("PostTaskExec")]},
+    ".kiro/hooks/long.json": {version: "v1", hooks: [command("PreTaskExecution"), command("PostTaskExecution")]},
+  });
+  const sp = sc.measureHooks(spelled), spListed = Object.fromEntries(sp.details.listed.map((l) => [l.trigger, l]));
+  assert.deepEqual(Object.keys(sp.details.triggers).sort(), ["PostTaskExecution", "PreTaskExecution"]);
+  assert.deepEqual([spListed.PreTaskExecution.cliFiles, spListed.PostTaskExecution.cliFiles], [["short.json"], ["short.json"]]);
+  assert.deepEqual(sp.details.problems.map((p) => p.split(" is not")[0]), ["long.json: PreTaskExecution", "long.json: PostTaskExecution"]);
+
+  const eight = ["Stop", "PreToolUse", "PostToolUse", "PostFileSave", "PostFileCreate", "PostFileDelete", "PreTaskExec", "PostTaskExec"];
   const noSaloon = fixture(t, {"scripts/check.mjs": "", ".kiro/hooks/all.json": {version: "v1", hooks: eight.map((x) => command(x))}});
   assert.deepEqual([sc.measureHooks(noSaloon).value, sc.measureHooks(noSaloon).pass], [8, false]);
   writeFileSync(join(noSaloon, "scripts/saloon-activity.mjs"), "");
