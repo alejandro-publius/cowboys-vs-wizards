@@ -97,7 +97,17 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
       showdown.start(lessonDuel(episode, Boolean(policy)), episode.seed, {lesson: {createSession: () => createLessonSession({episode, policy})}});
     },
     onClose: () => home()});
+  const startCampDuel = (id, {players = 1, best = 1} = {}) => {
+    const duel = players === 2 ? twoPlayers() : id === "trail" ? campaign.trailDuel() : campaign.duel(id);
+    if (!duel) return false;
+    delete screen.dataset.contestChallenge;
+    last = players === 2 ? `[data-two="${best}"]` : best > 1 ? `[data-match="${id}"]` : `[data-duel="${id}"]`;
+    showOnly(screen);
+    showdown.start(duel, seedFor(), {players, best});
+    return true;
+  };
   const showdown = mountShowdown(screen, {onHome: home, campaign, playtest, nextSeed: seedFor, mountBoard: diorama?.mountDiorama,
+    onBootHill: () => campaign?.trailDuel?.()?.battlefield === "boot-hill" ? startCampDuel("trail") : false,
     onReview: (record) => { showLesson(); lessonPage.openFromDuel(record); },
     onLessonBack: () => { showLesson(); lessonPage.reopen(); },
     // Between the games of a best of three with a side deck: the swap, then the next game.
@@ -114,13 +124,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
       last = "#camp-build";
       builder.openDeck({done: toCamp, cancel: toCamp});
     },
-    onDuel: (id, {players = 1, best = 1}) => {
-      const duel = players === 2 ? twoPlayers() : id === "trail" ? campaign.trailDuel() : campaign.duel(id);
-      if (!duel) return;
-      last = players === 2 ? `[data-two="${best}"]` : best > 1 ? `[data-match="${id}"]` : `[data-duel="${id}"]`;
-      showOnly(screen);
-      showdown.start(duel, seedFor(), {players, best});
-    }});
+    onDuel: startCampDuel});
   diorama?.mountGallery(title, screen);
   // Play from the title is a fresh entry: forget the control of the last duel so toCamp opens on the Trail instead of
   // restoring that duel's room. Only a return from a duel (home, Back to camp) keeps `last`.

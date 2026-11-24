@@ -366,6 +366,24 @@ async function browserChecks() {
     check("Tab and Enter open Ride or Fight?, play the Outrider's Base attack and return to Camp");
     check("Chrome exposes the challenge and targets, recorded Saloon dialog and results, and replay keyboard focus in its accessibility tree");
 
+    await open("");
+    await wait(`document.getElementById('menu-challenge')?.textContent === 'Ride or Fight?'`);
+    await activateByKey("#menu-challenge");
+    await challengeOpens(activateByKey);
+    assert.equal(await evaluate(`document.getElementById('sd-boot-hill')?.hidden`), true, "Continue to Boot Hill starts hidden");
+    await activateByKey('[data-base="wizard"]');
+    await wait(`/Outrider struck the Wizards' Base for 1/.test(document.getElementById('sd-log').textContent) && document.getElementById('sd-boot-hill') && !document.getElementById('sd-boot-hill').hidden`);
+    assert.ok(axNamed(await axTree(), "button", /Continue to Boot Hill/, enabled), "Continue to Boot Hill is an enabled named button");
+    await activateByKey("#sd-boot-hill");
+    await wait(`document.querySelector('#sd-field[data-battlefield="boot-hill"] canvas.sd-world')?.width > 0 && /Boot Hill/.test(document.getElementById('sd-status').textContent) && document.getElementById('sd-boot-hill')?.hidden !== false`);
+    assert.equal(await evaluate(`!!document.getElementById('showdown')?.hasAttribute('data-contest-challenge')`), false, "challenge marker no longer applies");
+    assert.equal(await evaluate(`!!document.activeElement?.closest('#showdown button:not(:disabled), #showdown [tabindex="0"]:not([aria-disabled="true"])')`), true, "focus is on a usable duel control");
+    const bhStatus = await evaluate(`document.getElementById('sd-status').textContent`);
+    await activateByKey("#sd-end");
+    await wait(`document.getElementById('sd-status').textContent !== ${JSON.stringify(bhStatus)}`);
+    clean();
+    check("Continue to Boot Hill opens from the finished challenge via keyboard, moves focus to a usable duel control, clears the challenge marker and advances status on End turn");
+
     await open("3d/?outrider=case-a");
     await challengeOpens(click);
     const enemy = await evaluate(`document.querySelector('[data-slot^="wizard-"][data-enemy]').dataset.slot`);

@@ -622,8 +622,9 @@ export function mountDiorama(root) {
       table.restore();
       root.classList.remove("sd-diorama");
     },
-    animate(trace) {
-      if (!failed) game?.animate(trace);
+    animate(trace, finished) {
+      if (!failed && game) game.animate(trace, finished);
+      else finished?.();
     },
   };
 }

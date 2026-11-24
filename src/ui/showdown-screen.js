@@ -57,6 +57,7 @@ const TEMPLATE = `
   <p id="sd-prompt"></p>
   <div class="sd-row" id="sd-actions">
     <button type="button" id="sd-end">End turn</button>
+    <button type="button" id="sd-boot-hill" hidden>Continue to Boot Hill</button>
     <button type="button" id="sd-cover" hidden>Take cover</button>
     <button type="button" id="sd-cancel" hidden>Cancel</button>
     <button type="button" id="sd-restart">Restart this duel</button>
@@ -85,10 +86,10 @@ const FACTION = {cowboy: "Cowboy", wizard: "Wizard"};
 // Wizard lesson (src/ui/wizard-lesson.js): onReview(record) opens the lesson for a finished single solo Cowboy duel;
 // record is {seed, setup, cowboyActions, expected}. start(duel, seed, {lesson: {createSession}}) plays a lesson rematch
 // (duel.kind "lesson"): it settles nothing and logs nothing, and onLessonBack() returns to the lesson.
-export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nextSeed = freshSeed, onSwap, mountBoard, onReview, onLessonBack}) {
+export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nextSeed = freshSeed, onSwap, mountBoard, onReview, onLessonBack, onBootHill}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
-  let session, duel, seed, lines, latest, pick, outcome, picked, run, started;
+  let session, duel, seed, lines, latest, pick, outcome, picked, run, started, challengeAttacked = false, playbackIdle = true;
   // The lesson record of the current game: its frozen setup and the Cowboy's actions in order. lesson: a rematch's session factory.
   let setup = null, cowboyActions = [], lesson = null;
   // seat: the solo player's side. camp: the campaign this duel settles through, or null (nothing is settled).
@@ -141,6 +142,8 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     picked = null;
     run = newRunId();
     started = Date.now();
+    challengeAttacked = false;
+    playbackIdle = true;
     cues.clear();
     boardPresentation?.clear();
     boardPresentation?.setBattlefield?.(current.battlefield);
@@ -155,14 +158,24 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     const [before, seat] = [session.view(), viewer()];
     const trace = [];
     const events = session.act(action, boardPresentation ? (step) => trace.push(step) : undefined);
+    if (action.type === "attack") challengeAttacked = true;
     if (setup) cowboyActions.push(structuredClone(action));
     const batch = record(events, before);
     finish();
     // Two players: hide the table while the screen changes hands.
     curtain = !solo() && !session.view().result && viewer() !== seat;
+    const canAnimate = !curtain && Boolean(boardPresentation?.animate);
+    playbackIdle = !canAnimate;
+    const activeRun = run;
     render(trace[0]?.before);
     cues.play(batch);
-    if (!curtain) boardPresentation?.animate(trace);
+    if (canAnimate) {
+      boardPresentation.animate(trace, () => {
+        if (run !== activeRun) return;
+        playbackIdle = true;
+        $("sd-boot-hill").hidden = !("contestChallenge" in root.dataset && onBootHill && campaign?.trailDuel?.()?.battlefield === "boot-hill" && challengeAttacked && playbackIdle);
+      });
+    }
   }
   // A game counts once it ends; a solo duel is settled exactly once, when it (or its match) is decided.
   function finish() {
@@ -388,6 +401,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
       : "First play cards (one troop, one other card). Then act with your troops. Once a troop acts, no more cards this turn.";
     $("sd-end").hidden = Boolean(r);
     $("sd-end").disabled = !options.some((a) => a.type === "end");
+    $("sd-boot-hill").hidden = !("contestChallenge" in root.dataset && onBootHill && campaign?.trailDuel?.()?.battlefield === "boot-hill" && challengeAttacked && playbackIdle);
     $("sd-cover").hidden = !canCover;
     $("sd-cancel").hidden = !pick;
     $("sd-restart").hidden = Boolean(r);
@@ -454,6 +468,13 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
       const view = session.view();
       cues.clear(); boardPresentation?.clear();
       onReview({seed, setup, cowboyActions: structuredClone(cowboyActions), expected: {result: view.result, turn: view.turn}});
+    }
+    else if (b.id === "sd-boot-hill" && onBootHill) {
+      cues.clear(); boardPresentation?.clear();
+      if (onBootHill() !== false && keyboard) {
+        usable("#sd-hand button", "#sd-board [data-own]", "#sd-end", "#sd-result button", "#sd-home")?.focus();
+        return;
+      }
     }
     else if (b.id === "sd-lesson-back") { cues.clear(); boardPresentation?.clear(); onLessonBack(); }
     else if (b.id === "sd-home" || b.id === "sd-camp") { cues.clear(); boardPresentation?.clear(); onHome(); }
