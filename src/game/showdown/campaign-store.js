@@ -30,10 +30,13 @@ const canon = (value) => (Array.isArray(value) ? value.map(canon) : isPlain(valu
   ? Object.fromEntries(Object.keys(value).sort().map((key) => [key, canon(value[key])])) : value);
 const same = (a, b) => JSON.stringify(canon(a)) === JSON.stringify(canon(b));
 
-// The saved progress, or a new save when nothing usable is stored. Writes nothing.
-// Same order as the prototype: the v2 save, else the v1 Trail save, each through migrate().
-export function loadCampaign(storage) {
-  return migrate(parsed(read(storage, SAVE_KEY)) ?? parsed(read(storage, OLD_SAVE_KEY)));
+// null means the key is absent; undefined means the browser refused the read.
+export function campaignText(storage) {
+  try { return storage?.getItem(SAVE_KEY) ?? null; } catch { return undefined; }
+}
+// Load the exact v2 text the caller observed, falling back to the v1 Trail save. Writes nothing.
+export function loadCampaign(storage, text = campaignText(storage)) {
+  return migrate(parsed(text) ?? parsed(read(storage, OLD_SAVE_KEY)));
 }
 
 // Writes `progress` to the v2 key. Returns {ok: true} or {ok: false, reason}; never throws.

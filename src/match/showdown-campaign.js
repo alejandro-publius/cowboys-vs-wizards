@@ -1,15 +1,20 @@
 // The graybox Camp's progress (issue 143 slice 2). Holds the current progress object in memory and
 // writes it through the canonical store after every change. Every rule (what a duel is, what a win
 // pays, what is on offer) comes from src/game/showdown/progress.js; nothing here decides a reward.
-import {laneCapturedCards, loadCampaign, saveCampaign} from "../game/showdown/campaign-store.js";
+import {campaignText, laneCapturedCards, loadCampaign, saveCampaign} from "../game/showdown/campaign-store.js";
 import {holdings, joinInherited} from "../game/showdown/inherited.js";
 import {choose, deckProblems, duelFor, duelList, newSave, openPack, owned, settle, withDeck} from "../game/showdown/progress.js";
 import {GRIT_CAP, TRAIL} from "../game/showdown/trail.js";
 
+export class CampaignChanged extends Error {
+  constructor() { super("Your Camp changed in another tab. The latest progress is loaded."); }
+}
+
 // deferImport (K-096, a direct ?practice boot): write nothing yet. The keepsake import and the career load wait
 // for enter(), the first Camp entry, so they read storage as it is then and run once. Default: both at once.
 export function createCampaign(storage, {deferImport = false} = {}) {
-  let progress = loadCampaign(storage);
+  let stored = campaignText(storage);
+  let progress = loadCampaign(storage, stored);
   let saved = true;
   // Cards already won in the lane game stay owned. They are kept in their own record, not in the
   // progress object, so the Trail deck, bounties and offers are unchanged (see inherited.js).
@@ -18,15 +23,26 @@ export function createCampaign(storage, {deferImport = false} = {}) {
   const enter = () => {
     if (entered) return;
     entered = true;
-    if (deferImport) progress = loadCampaign(storage);
+    if (deferImport) {
+      stored = campaignText(storage);
+      progress = loadCampaign(storage, stored);
+    }
     inherited = joinInherited(storage, laneCapturedCards(storage));
   };
   if (!deferImport) enter();
   // saveCampaign returns {ok} and never throws. Storage can be blocked or full: play on with the
   // progress in memory, and the Camp says so.
   const keep = (next) => {
+    const current = campaignText(storage);
+    if (current !== undefined && current !== (stored ?? null)) {
+      stored = current;
+      progress = loadCampaign(storage, current);
+      saved = true;
+      throw new CampaignChanged();
+    }
     progress = next;
-    saved = saveCampaign(storage, progress).ok === true;
+    saved = current !== undefined && saveCampaign(storage, progress).ok === true;
+    if (saved) stored = JSON.stringify(progress);
   };
   return {
     // The first Camp entry: imports the lane keepsakes (once) and, for a deferred campaign, reloads the career.

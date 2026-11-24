@@ -23,7 +23,7 @@ const TEMPLATE = `
   </footer>`;
 
 // campaign: progress(), owned(type), deckProblems(deck, side), withDeck(deck, side).
-export function mountBuilder(root, {campaign, paintCardFaces}) {
+export function mountBuilder(root, {campaign, writeCamp = (change) => change(), paintCardFaces}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
   if (paintCardFaces) {
@@ -114,7 +114,7 @@ export function mountBuilder(root, {campaign, paintCardFaces}) {
     openDeck({done, cancel}) {
       const progress = campaign.progress();
       draft = {pool: null, deck: {...progress.deck}, side: {...progress.side},
-        done: (deck, side) => { campaign.withDeck(deck, side); done(); }, cancel};
+        done: (deck, side) => writeCamp(() => { campaign.withDeck(deck, side); done(); }), cancel};
       render();
       ($("builder-rows").querySelector("button:not(:disabled)") ?? $("builder-save")).focus({preventScroll: true});
     },

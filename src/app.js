@@ -5,6 +5,8 @@
 // page, so no URL opens it here; an old lane address (?mode=lanes, match, ride-out, practice-*,
 // fire-arc) loads this same Showdown menu. The illustrated contest build offers a verified Outrider turn on its title.
 // esbuild inlines the dynamic imports, so the page stays one offline file.
+import {SAVE_KEY} from "./game/showdown/campaign-store.js";
+
 const node = (id) => document.getElementById(id);
 
 Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"), import("./ui/showdown-builder.js"), import("./match/showdown-campaign.js"),
@@ -13,7 +15,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   import("./match/showdown-wizard-campaign.js"), import("./ui/showdown-wizard-camp.js"), import("./match/showdown-earned.js"),
   typeof __CVW_DIORAMA__ !== "undefined" && __CVW_DIORAMA__ ? import("./ui/showdown-3d/scene.js") : null,
   import("./ui/wizard-lesson.js")])
-  .then(([{mountShowdown, freshSeed}, {mountCamp}, {mountBuilder}, {createCampaign}, {createPlaytestLog, PAGE_BUILD}, {twoPlayers}, {turnDuel},
+  .then(([{mountShowdown, freshSeed}, {mountCamp}, {mountBuilder}, {CampaignChanged, createCampaign}, {createPlaytestLog, PAGE_BUILD}, {twoPlayers}, {turnDuel},
     {outriderTurn}, {VERIFIED, outriderControls}, {PRACTICE_SEEDS, practiceDuel, practiceFromQuery},
     {createWizardPreview, wizardFromQuery, previewUnlocked, WIZARD_TRACK}, {mountWizardCamp}, {earnedControl, earnedDuel}, diorama,
     {mountWizardLesson, createLessonSession, lessonDuel}]) => {
@@ -59,15 +61,16 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   // The direct Wizard preview hides the Cowboy parts of the Camp page; these are the ones it hid.
   let hiddenForWizard = [];
   const showCowboyParts = () => { for (const el of hiddenForWizard) el.hidden = false; hiddenForWizard = []; };
-  const toCamp = () => {
+  const toCamp = (message = "") => {
     showCowboyParts();
     outpost?.wizardInCamp();
     campRoot.removeAttribute("aria-labelledby"); // the landmark is "Camp" again (its aria-label)
     showOnly(campRoot);
     campaign.enter();
-    camp.show();
+    camp.show(message);
     wizardCamp.show("camp", {unlocked: previewUnlocked(campaign.progress())});
     showEarned();
+    if (message) { node("camp-changed").focus(); return; }
     // When that control is now disabled (a win's card offer is open), the Camp's own order: the claim
     // (offer or pack), then the first open duel. Selectors are tried in turn, not in document order.
     const usable = (selector) => campRoot.querySelector(`${selector}:not(:disabled)`);
@@ -87,7 +90,31 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     wizardCamp.show("direct");
     wizardCamp.focus(null); // the open tile; Back from a duel then moves focus to the tile that started it
   };
-  const builder = mountBuilder(builderRoot, {campaign, paintCardFaces: diorama?.paintCardFaces});
+  // Commit one Cowboy save at a time across tabs. Offline pages without Web Locks still compare
+  // their saved snapshot before writing. Confirmation dialogs and gameplay stay outside the lock.
+  let locks;
+  try { locks = storage && navigator.locks; } catch { /* storage or locks can be restricted */ }
+  function showChangedCamp(message) {
+    last = back = null;
+    outpost?.close();
+    toCamp(`${message} Your action was skipped.`);
+  }
+  function writeCamp(change, onChanged = showChangedCamp) {
+    const apply = () => {
+      try { return change(); } catch (error) {
+        if (!(error instanceof CampaignChanged)) throw error;
+        return onChanged(error.message);
+      }
+    };
+    if (!locks) return apply();
+    let acquired = false;
+    return locks.request(SAVE_KEY, () => { acquired = true; return apply(); }).catch((error) => {
+      if (acquired || error.name !== "SecurityError") throw error;
+      locks = null;
+      return apply();
+    });
+  }
+  const builder = mountBuilder(builderRoot, {campaign, writeCamp, paintCardFaces: diorama?.paintCardFaces});
   // Wizard lesson: review a finished duel or an episode file, rematch the identical deal. The rematch settles nothing
   // (kind "lesson"); its Wizard uses a lesson only when the player opted in (policy null otherwise).
   const showLesson = () => showOnly(lessonRoot);
@@ -106,7 +133,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     showdown.start(duel, seedFor(), {players, best});
     return true;
   };
-  const showdown = mountShowdown(screen, {onHome: home, campaign, playtest, nextSeed: seedFor, mountBoard: diorama?.mountDiorama,
+  const showdown = mountShowdown(screen, {onHome: home, campaign, writeCamp, playtest, nextSeed: seedFor, mountBoard: diorama?.mountDiorama,
     onBootHill: () => campaign?.trailDuel?.()?.battlefield === "boot-hill" ? startCampDuel("trail") : false,
     onReview: (record) => { showLesson(); lessonPage.openFromDuel(record); },
     onLessonBack: () => { showLesson(); lessonPage.reopen(); },
@@ -115,7 +142,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
       showOnly(builderRoot);
       builder.openSwap({pool, deck, side, done: (nextDeck, nextSide) => { showOnly(screen); done(nextDeck, nextSide); }});
     }});
-  const camp = mountCamp(campRoot, {campaign, playtest, paintCardFaces: diorama?.paintCardFaces,
+  const camp = mountCamp(campRoot, {campaign, writeCamp, playtest, paintCardFaces: diorama?.paintCardFaces,
     openDestination: (id, control) => outpost?.open(id, control),
     dressNotices: (trailComplete) => outpost?.dressNotices(trailComplete),
     onHome: () => { showOnly(title); play.focus(); },

@@ -14,6 +14,7 @@ const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
 const sum = (counts) => Object.values(counts).reduce((total, copies) => total + copies, 0);
 const TEMPLATE = `
   <header><h1>Camp</h1><button id="camp-home" type="button">Main menu</button></header>
+  <p id="camp-changed" class="sd-note" role="status" tabindex="-1" hidden></p>
   <p id="camp-storage" class="sd-note" role="status" hidden>This browser did not save your progress, so a reload will lose it. To keep it, open Save code in the Camp and copy the code.</p>
   <div id="camp-claim" aria-live="polite"></div>
   <section class="camp-map" aria-labelledby="camp-trail-title"><h2 id="camp-trail-title">The Trail</h2><ol id="camp-trail" class="sd-row"></ol></section>
@@ -50,7 +51,7 @@ const TEMPLATE = `
 // onDuel(id, {players, best}): start a Camp duel ("trail", "rival:<id>", "hunt:<id>", "open", or "two" for two players).
 // onBuild(): open the deck builder. playtest (optional): text(progress), saved(), clear().
 // confirm: asks before Start over (window.confirm in the page).
-export function mountCamp(root, {campaign, playtest, paintCardFaces, openDestination, dressNotices, onDuel, onHome, onBuild, confirm = (text) => window.confirm(text)}) {
+export function mountCamp(root, {campaign, writeCamp = (change) => change(), playtest, paintCardFaces, openDestination, dressNotices, onDuel, onHome, onBuild, confirm = (text) => window.confirm(text)}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
   if (paintCardFaces) {
@@ -157,6 +158,13 @@ export function mountCamp(root, {campaign, playtest, paintCardFaces, openDestina
   let pending = null;
   const closePreview = () => { pending = null; $("camp-code-preview").hidden = true; };
   const note = (text) => { $("camp-code-note").textContent = text; };
+  // A button from an old render may have disappeared while another tab was finishing its save.
+  const writeFrom = (button, change) => writeCamp(() => {
+    if (!root.hidden && root.contains(button) && !button.disabled) {
+      $("camp-changed").hidden = true;
+      change();
+    }
+  });
   $("camp-code").addEventListener("input", () => {
     if (!pending) return;
     closePreview();
@@ -175,24 +183,29 @@ export function mountCamp(root, {campaign, playtest, paintCardFaces, openDestina
   }
   function replace() {
     if (!pending) return;
-    const {save, text} = pending;
-    closePreview();
-    if ($("camp-code").value !== text) return note("The code changed, so the preview was closed. Press Load to preview it. Nothing was changed.");
-    const saved = campaign.replace(save);
-    opened = picked = null;
-    render();
-    note(saved ? "Loaded." : "Loaded for this visit only: the browser did not save it.");
-    $("camp-load").focus();
+    const preview = pending;
+    writeFrom($("camp-code-replace"), () => {
+      if (pending !== preview) return;
+      closePreview();
+      if ($("camp-code").value !== preview.text) return note("The code changed, so the preview was closed. Press Load to preview it. Nothing was changed.");
+      const saved = campaign.replace(preview.save);
+      opened = picked = null;
+      render();
+      note(saved ? "Loaded." : "Loaded for this visit only: the browser did not save it.");
+      $("camp-load").focus();
+    });
   }
   // Start over: Showdown progress and the playtest report only; keepsakes and the lane profile stay.
   function reset() {
     if (!confirm("Start over? Your cards, progress and playtest report in this browser are erased.")) return;
     closePreview();
-    campaign.reset();
-    playtest?.clear();
-    opened = picked = null;
-    render();
-    note("Started over.");
+    writeFrom($("camp-reset"), () => {
+      campaign.reset();
+      playtest?.clear();
+      opened = picked = null;
+      render();
+      note("Started over.");
+    });
   }
 
   root.addEventListener("click", (event) => {
@@ -200,10 +213,12 @@ export function mountCamp(root, {campaign, playtest, paintCardFaces, openDestina
     if (!b || b.disabled) return;
     const d = b.dataset;
     if (d.choose && campaign.progress().offer?.includes(d.choose)) {
-      campaign.choose(d.choose);
-      picked = d.choose;
-      render();
-      ($("camp-claim").querySelector("button") ?? root.querySelector("[data-duel]:not(:disabled)"))?.focus();
+      writeFrom(b, () => {
+        campaign.choose(d.choose);
+        picked = d.choose;
+        render();
+        ($("camp-claim").querySelector("button") ?? root.querySelector("[data-duel]:not(:disabled)"))?.focus();
+      });
     } else if (b.id === "camp-start-trail") $("camp-trail").querySelector("[data-duel=trail]")?.click();
     else if (d.campDestination) {
       if (openDestination?.(d.campDestination, b)) return;
@@ -221,10 +236,12 @@ export function mountCamp(root, {campaign, playtest, paintCardFaces, openDestina
     else if (d.match && !campaign.progress().offer) onDuel(d.match, {best: 3});
     else if (d.two) onDuel("two", {players: 2, best: Number(d.two)});
     else if (b.id === "camp-pack" || (b.id === "camp-pack-done" && campaign.progress().packs)) {
-      opened = campaign.openPack();
-      picked = null;
-      render();
-      $("camp-pack-done")?.focus();
+      writeFrom(b, () => {
+        opened = campaign.openPack();
+        picked = null;
+        render();
+        $("camp-pack-done")?.focus();
+      });
     } else if (b.id === "camp-pack-done") { opened = null; render(); ($("camp-claim").querySelector("button") ?? root.querySelector("[data-duel]:not(:disabled)"))?.focus(); }
     else if (b.id === "camp-build") { picked = null; onBuild(); }
     else if (b.id === "camp-load") load();
@@ -234,5 +251,12 @@ export function mountCamp(root, {campaign, playtest, paintCardFaces, openDestina
     else if (b.id === "camp-home") onHome();
     else if (b.id === "camp-report-copy") copyReport();
   });
-  return {show() { picked = null; closePreview(); render(); }};
+  return {show(message = "") {
+    picked = null;
+    if (message) { opened = null; note(""); }
+    $("camp-changed").textContent = message;
+    $("camp-changed").hidden = !message;
+    closePreview();
+    render();
+  }};
 }
