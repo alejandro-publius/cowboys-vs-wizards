@@ -49,7 +49,7 @@ test("one row per catalog card, in catalog order, with real starter counts and s
   }
 });
 
-test("R1.1 is linked only to the eight cards the requirement names", () => {
+test("the ledger links the initial migration clause to exactly the eight cards it names", () => {
   const req = readFileSync(LEDGER.requirement.path, "utf8");
   assert.match(req, new RegExp(`cards are exactly ${R1_1_CARDS.slice(0, -1).join(", ")} and ${R1_1_CARDS.at(-1)}`));
   assert.deepEqual(LEDGER.cards.filter((c) => c.requirement === "R1.1").map((c) => c.name), R1_1_CARDS);

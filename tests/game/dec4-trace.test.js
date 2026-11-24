@@ -276,10 +276,11 @@ test("the CLI gates a required prefix, reports duplicates, ignores design, tasks
 test("the retired orb-duel spec and the balance contract index exactly as their text reads", () => {
   const read = (path) => parseSpec(path, readFileSync(join(ROOT, path), "utf8"));
   const orb = read(".kiro/specs/orb-duel/requirements.md");
-  assert.equal(orb.clauses.length, 84);
-  assert.deepEqual([orb.clauses[0].key, orb.clauses.at(-1).key], ["orb-duel/1.1", "orb-duel/12.9"]);
-  assert.deepEqual(orb.problems.map((p) => [Number(p.at.split(":").at(-1)), p.kind]),
-    [227, 240, 241, 242, 243, 244].map((line) => [line, "unidentified-normative"]));
+  assert.equal(orb.clauses.length, 90);
+  assert.deepEqual([orb.clauses[0].key, orb.clauses[83].key], ["orb-duel/1.1", "orb-duel/12.9"]);
+  assert.deepEqual(orb.clauses.slice(84).map((c) => c.key),
+    ["orb-duel/13.1", "orb-duel/13.2", "orb-duel/13.3", "orb-duel/13.4", "orb-duel/13.5", "orb-duel/13.6"]);
+  assert.deepEqual(orb.problems, []);
   const contract = read(".kiro/specs/night-shift-balance-contract/requirements.md");
   assert.deepEqual(contract.clauses.map((c) => c.key), ["NSB-1", "NSB-2"]);
   assert.deepEqual(contract.problems, []);

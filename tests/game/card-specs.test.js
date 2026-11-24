@@ -9,6 +9,7 @@ import { createMatch } from "../../src/game/state.js";
 import { applyAction } from "../../src/game/actions.js";
 import fc from "fast-check";
 import { applyAction as applyShowdown, canAttack, createShowdown, legalActions as showdownActions } from "../../src/game/showdown/rules.js";
+import { viewFor } from "../../src/game/showdown/contract.js";
 import { presentEvent } from "../../src/game/showdown/presenter.js";
 
 // The JSON specs are the source of truth; the tests compare the engine to them.
@@ -122,7 +123,7 @@ test("cards.csv regenerates byte for byte from the catalog", () => {
 });
 
 // ---------------------------------------------------------------------------------------------
-// Showdown spells are not attacks. Each test below cites, in its literal title, the numbered
+// Each Showdown test below cites, in its literal title, the numbered
 // clauses of .kiro/specs/card-*/requirements.md that it asserts in full, and no others:
 // scripts/trace.mjs reads those titles, and docs/requirement-test-map.md lists them. Expected
 // values come from the clauses, not from the engine's own code. fast-check runs under a fixed seed.
@@ -186,6 +187,82 @@ test("CARD-COWBOY-LASSO-04 CARD-COWBOY-LASSO-05 CARD-COWBOY-LASSO-06 CARD-COWBOY
     assert.equal(target(cowboyTurn).stunned, false);
     const followingWizardTurn = applyShowdown(cowboyTurn, { type: "end" }).state;
     assert.equal(canAttack(followingWizardTurn, target(followingWizardTurn)), true);
+  }), FC);
+});
+
+test("CARD-COWBOY-BEAR-TRAP-05 CARD-COWBOY-BEAR-TRAP-06 CARD-WIZARD-HEX-05 CARD-WIZARD-HEX-06 CARD-WIZARD-HEX-07: setting a second trap hides both cards from the other seat", () => {
+  const cases = [
+    { side: "cowboy", opponent: "wizard", type: "cowboy-bear-trap", log: "The Cowboys set a card face down." },
+    { side: "wizard", opponent: "cowboy", type: "wizard-hex", log: "The Wizards set a card face down." },
+  ];
+  for (const { side, opponent, type, log } of cases) {
+    const [oldest, newest] = [`${type}-1`, `${type}-2`];
+    const state = stage({ active: side, hand: [newest], traps: { [side]: [oldest] } });
+    const out = applyShowdown(state, { type: "set", cardId: newest });
+    assert.deepEqual(out.state.sides[side].traps, [oldest, newest]);
+    assert.deepEqual(out.events, [{ type: "set", side }]);
+    assert.equal(presentEvent(out.events[0]), log);
+
+    const opponentView = viewFor(out.state, opponent);
+    assert.equal(opponentView.sides[side].trapCount, 2);
+    assert.equal(Object.hasOwn(opponentView.sides[side], "traps"), false);
+    assert.equal(JSON.stringify(opponentView).includes(type), false);
+    assert.deepEqual(viewFor(out.state, side).sides[side].traps, [oldest, newest]);
+  }
+});
+
+test("CARD-WIZARD-HEX-08 CARD-WIZARD-HEX-10 CARD-WIZARD-HEX-12 CARD-WIZARD-HEX-14 CARD-WIZARD-HEX-15 CARD-WIZARD-HEX-16: only the oldest Hex springs and spends the attack, including against the Base", () => {
+  const cases = [
+    { type: "cowboy-billy", health: 4, name: "Billy", target: 0, foe: [{ type: "wizard-wizard", health: 4 }] },
+    { type: "cowboy-billy", health: 4, name: "Billy", target: "base", foe: [] },
+    { type: "cowboy-mounted-billy", health: 5, name: "Mounted Billy", target: "base", foe: [{ type: "wizard-wizard", health: 4 }] },
+  ];
+  const [oldest, newest] = ["wizard-hex-1", "wizard-hex-2"];
+  for (const { type, health, name, target, foe } of cases) {
+    const state = stage({ active: "cowboy", own: [{ type, health }], foe, traps: { wizard: [oldest, newest] } });
+    const before = state.sides.cowboy.board[0];
+    const out = applyShowdown(state, { type: "attack", slot: 0, target });
+    assert.deepEqual(out.events, [{
+      type: "trap", side: "wizard", cardId: oldest, target: before.cardId, left: health, stopped: true,
+    }]);
+    assert.deepEqual(out.state.sides.wizard.traps, [newest]);
+    assert.deepEqual(out.state.sides.wizard.discard, [oldest]);
+    assert.deepEqual(out.state.sides.wizard.board, state.sides.wizard.board);
+    assert.equal(out.state.sides.wizard.base, state.sides.wizard.base);
+    assert.deepEqual(out.state.sides.cowboy.board[0], { ...before, attacked: true });
+    assert.equal(kindsOf(out.state).has("attack"), false);
+    assert.equal(presentEvent(out.events[0]), `Trap! The Wizards' Hex caught ${name}: its attack was cancelled.`);
+  }
+});
+
+test("CARD-COWBOY-BEAR-TRAP-07 CARD-COWBOY-BEAR-TRAP-08 CARD-COWBOY-BEAR-TRAP-09 CARD-COWBOY-BEAR-TRAP-10 CARD-COWBOY-BEAR-TRAP-11: the oldest Bear Trap bites before the attack and takes gear on defeat", () => {
+  fc.assert(fc.property(fc.nat({ max: 2 }), fc.integer({ min: 1, max: 4 }), (slot, health) => {
+    const [oldest, newest] = ["cowboy-bear-trap-1", "cowboy-bear-trap-2"];
+    const own = [null, null, null];
+    own[slot] = { type: "wizard-wizard", health, gear: true };
+    const state = stage({
+      active: "wizard", own, foe: [{ type: "cowboy-billy", health: 4, cover: true }],
+      traps: { cowboy: [oldest, newest] },
+    });
+    const attacker = state.sides.wizard.board[slot];
+    const out = applyShowdown(state, { type: "attack", slot, target: 0 });
+    const left = Math.max(0, health - 2);
+    assert.deepEqual(out.events[0], {
+      type: "trap", side: "cowboy", cardId: oldest, target: attacker.cardId, left, stopped: left === 0,
+    });
+    assert.deepEqual(out.state.sides.cowboy.traps, [newest]);
+    assert.deepEqual(out.state.sides.cowboy.discard, [oldest]);
+    if (left === 0) {
+      assert.equal(out.events.length, 1);
+      assert.equal(out.state.sides.wizard.board[slot], null);
+      assert.deepEqual(out.state.sides.wizard.discard, [attacker.cardId, GEAR.wizard]);
+      assert.deepEqual(out.state.sides.cowboy.board, state.sides.cowboy.board);
+    } else {
+      assert.deepEqual(out.events.map((event) => event.type), ["trap", "attack"]);
+      assert.equal(out.events[1].attackerLeft, left);
+      assert.equal(out.state.sides.wizard.board[slot].health, left);
+      assert.equal(out.state.sides.cowboy.board[0].health, 2);
+    }
   }), FC);
 });
 

@@ -21,13 +21,13 @@ for (const property of PROPERTIES) {
   });
 }
 
-test("G1 reaches both a Base ending and the turn-cap ending under the recorded seed", () => {
+test("the ending property reaches both a Base ending and the turn-cap ending under the recorded seed", () => {
   const reasons = new Set();
   fc.assert(fc.property(caseArbitrary, (raw) => { reasons.add(G1.check(inputOf(raw), ENGINE)); }), { seed: FC_SEED, numRuns: 40 });
   assert.deepEqual([...reasons].sort(), ["base", "turn-cap"]);
 });
 
-test("G1 a deal with 120-orb Bases and no choices ends at the cap, on turn TURN_CAP + 1", () => {
+test("a deal with 120-orb Bases and no choices ends at the cap, on turn TURN_CAP + 1", () => {
   const input = inputOf({ setupSeed: 0, baseOrbs: 120, choices: [] });
   assert.equal(G1.check(input, ENGINE), "turn-cap");
 });
