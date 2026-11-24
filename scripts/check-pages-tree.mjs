@@ -356,9 +356,23 @@ async function browserChecks() {
     assert.ok(axNamed(await axTree(), "button", /^Ride or Fight\?$/, enabled), "the title challenge has a name");
     await activateByKey("#menu-challenge");
     await challengeOpens(activateByKey);
+    const aim = await evaluate(`({
+      prompt: document.getElementById('sd-prompt')?.textContent.trim() ?? '',
+      base: document.querySelector('[data-base="wizard"] [id^="sd-preview-"]')?.textContent.trim() ?? '',
+      skeleton: [...document.querySelectorAll('[data-slot^="wizard-"][data-enemy]')].find((b) => b.textContent.includes('Skeleton'))?.querySelector('[id^="sd-preview-"]')?.textContent.trim() ?? ''
+    })`);
+    assert.equal(aim.base, "Ride past: Hit the Base for 1", "Base shows its Ride past preview");
+    assert.ok(aim.skeleton && aim.skeleton !== aim.base, "Skeleton shows its own distinct preview");
+    assert.ok(aim.prompt, "aiming prompt is non-empty");
     const targets = await axTree();
-    assert.ok(axNamed(targets, "button", /\bBase\b/, enabled), "the Base target is an enabled named choice");
-    assert.ok(axNamed(targets, "button", /\bSkeleton\b/, enabled), "the Skeleton target is an enabled named choice");
+    const describes = (preview, other) => (node) => {
+      const description = node.description?.value ?? "";
+      return enabled(node) && !(node.name?.value ?? "").includes(preview)
+        && description.includes(preview) && description.includes(aim.prompt) && !description.includes(other);
+    };
+    assert.ok(axNamed(targets, "button", /\bBase\b/, describes(aim.base, aim.skeleton)), "the Base description carries its own preview and the aiming prompt");
+    assert.ok(axNamed(targets, "button", /\bSkeleton\b/, describes(aim.skeleton, aim.base)), "the Skeleton description carries its own preview and the aiming prompt");
+    check("Chrome exposes distinct Base and Skeleton attack previews as accessible descriptions");
     await activateByKey('[data-base="wizard"]');
     await wait(`/Outrider struck the Wizards' Base for 1/.test(document.getElementById('sd-log').textContent)`);
     await activateByKey("#sd-home");

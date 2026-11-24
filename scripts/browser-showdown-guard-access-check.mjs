@@ -8,8 +8,8 @@
 // opens The Bone Fence from its Camp tile and plays until a Cowboy turn has a ready troop while a
 // Bone Wall (Guard) stands on the Wizard side. From there every input is a keyboard press:
 //   1. Tab to the ready troop, Enter. Focus must land on a Guard troop; every Tab stop among the enemy
-//      buttons must be a Guard troop; the focused target's accessible description must give the
-//      reason (the screen's own prompt, "A Guard stands in the way: attack it first.").
+//      buttons must be a Guard troop; the focused target's accessible description must give its
+//      attack preview and the screen's reason ("A Guard stands in the way: attack it first.").
 //   2. The enemy troops and Base that cannot be chosen are disabled, and their description gives the
 //      same reason.
 //   3. Enter on the Guard, again on later turns if needed, until no Guard is left. The polite live
@@ -207,13 +207,19 @@ try {
   await page.waitForFunction(() => !document.getElementById("sd-cancel").hidden);
   await page.screenshot({path: path.join(out, "guard-pick.png")});
   const focused = await ax(await page.evaluateHandle(() => document.activeElement));
+  const guardPreview = await page.evaluate(() => document.activeElement?.querySelector('[id^="sd-preview-"]')?.textContent.trim() ?? "");
   const prompt = await text("#sd-prompt");
-  report.before = {tabsToTroop: tabs, prompt, focused};
+  report.before = {tabsToTroop: tabs, prompt, guardPreview, focused};
+  assert.ok(guardPreview, "focused Guard target has a visible attack preview");
+  assert.ok(prompt, "Guard aiming prompt is non-empty");
   assert.match(focused.name, /Bone Wall/, `focus after Enter is on ${focused.name}`);
   assert.match(focused.name, /Guard/, "the focused target's name includes its Guard keyword");
+  if (cdp) assert.ok(!focused.name.includes(guardPreview), `focused target name "${focused.name}" duplicates preview "${guardPreview}"`);
   check("Enter on the ready troop moves focus to the Bone Wall, named with Guard", {name: focused.name});
+  assert.ok(focused.description.includes(guardPreview), `focused target description "${focused.description}" lacks preview "${guardPreview}"`);
+  assert.ok(focused.description.includes(prompt), `focused target description "${focused.description}" lacks prompt "${prompt}"`);
   assert.match(focused.description, GUARD_REASON, `focused target description "${focused.description}" gives no Guard reason`);
-  check("The focused Guard target's description gives the reason", {description: focused.description});
+  check("The focused Guard target's description gives its preview and the reason", {description: focused.description});
   const stops = await enemyTabStops();
   report.before.enemyTabStops = stops;
   assert.ok(stops.length > 0 && stops.every((s) => /Bone Wall/.test(s.text)), `enemy Tab stops: ${JSON.stringify(stops)}`);
@@ -229,6 +235,7 @@ try {
   assert.ok(blocked.length > 0, "nothing blocked behind the Guard");
   for (const b of blocked) {
     assert.ok(b.disabled && b.ax.disabled, `${b.slot} is not exposed as disabled`);
+    assert.equal(b.ax.description.trim(), prompt, `${b.slot} (${b.ax.name.slice(0, 40)}) description should be prompt alone: "${b.ax.description}"`);
     assert.match(b.ax.description, GUARD_REASON, `${b.slot} (${b.ax.name.slice(0, 40)}) has no Guard reason: "${b.ax.description}"`);
   }
   check("Blocked enemy troops and the Base are disabled and their description gives the Guard reason", {blocked: blocked.map((b) => b.slot)});
