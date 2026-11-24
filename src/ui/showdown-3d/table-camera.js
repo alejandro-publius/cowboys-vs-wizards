@@ -137,6 +137,7 @@ export function tableCamera(canvas, camera, changed, initialZoom = 1, initialFoc
       fit();
     },
     key(event) {
+      if (event.ctrlKey || event.metaKey || event.altKey) return;
       if (event.key === "0") reset();
       else if (event.key.toLowerCase() === "q" || event.key.toLowerCase() === "e") {
         azimuth += event.key.toLowerCase() === "q" ? -Math.PI / 4 : Math.PI / 4;
