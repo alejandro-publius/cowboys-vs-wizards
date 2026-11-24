@@ -1,0 +1,31 @@
+{
+  "name": "billy-seat-audit",
+  "description": "Billy seat audit, read-only. The independent showdown-seat-auditor runs the original short replay check `node scripts/verify-billy-replay.mjs`, then `node scripts/billy-seat-audit.mjs --verify`, which replays the 100,000 fixed-engine games and compares them with the tracked receipt, then `node scripts/billy-balance-gate.mjs --arm candidate`, which checks the raw receipt independently and evaluates requirements NSB-1 (faction band) and NSB-2 (opening-seat skew growth). The run passes only when the gate exits 0; the simulation count is supporting evidence. Never rewrites the receipt, game data or any checked-in file.",
+  "inputs": {},
+  "steps": [
+    {
+      "type": "step",
+      "id": "release-preflight",
+      "agent": "contest-balance-preparer",
+      "prompt": "Release-gate preflight. Run exactly once from the project root, using the shell tool: node scripts/contest-release-gate.mjs release\nIt runs the fast-check properties at the fixed seed, node scripts/verify-duel.mjs and a small deck-balance sample, then writes the validation stamp; it can take over ten minutes. Give the shell tool a long timeout (at least 20 minutes) if it supports one. Do not say it ran or passed unless the shell tool returned its real terminal exit status; do not report partial, estimated or simulated results. Run it only once, add no arguments, pipes or redirects, run no other command and edit no file. Report the exit status and only the short final gate output (the closing summary or failure lines).\nStep completion: send_message to sessionId \"parent\" only. Only exit 0 with the printed line \"contest gate: release checks passed; stamp written\": severity \"success\". Any nonzero exit, a timeout, or a command that could not run or finish: severity \"error\", quoting the short failure output, so the run terminates."
+    },
+    {
+      "type": "step",
+      "id": "verify-billy-replay",
+      "agent": "showdown-seat-auditor",
+      "prompt": "Run exactly once from the project root, using the shell tool: node scripts/verify-billy-replay.mjs\nDo not say it ran unless the shell tool returned its exit status. Report the exit status and printed lines exactly. Edit no file.\nStep completion: send_message to sessionId \"parent\" only. Exit 0: severity \"success\". Any nonzero exit or a command that could not run: severity \"error\", quoting the output, so the run stops."
+    },
+    {
+      "type": "step",
+      "id": "verify-seat-audit",
+      "agent": "showdown-seat-auditor",
+      "prompt": "Replay check result:\n{{previous.output}}\nRun exactly once from the project root, using the shell tool: node scripts/billy-seat-audit.mjs --verify\nIt replays the 100,000 fixed-engine games and compares them with the tracked receipt; it takes a long time. Give the shell tool a long timeout if it supports one. Otherwise start the command with the shell tool's native background-command handle and check the status of that same command until it reaches terminal exit before reporting. Inspect no other process. Do not say it ran, and do not report partial, estimated or simulated results, unless the shell tool returned its terminal exit status. Report the exit status and printed lines exactly. Never rewrite, regenerate or edit the receipt or any other file.\nStep completion: send_message to sessionId \"parent\" only. Exit 0: severity \"success\". Any nonzero exit, a timeout, or a command that could not run or finish: severity \"error\", quoting the output."
+    },
+    {
+      "type": "step",
+      "id": "balance-gate",
+      "agent": "showdown-seat-auditor",
+      "prompt": "Seat-audit verify result:\n{{previous.output}}\nRun exactly once from the project root, using the shell tool: node scripts/billy-balance-gate.mjs --arm candidate\nIt checks the raw receipt independently and evaluates requirements NSB-1 (faction band) and NSB-2 (opening-seat skew growth). Give the shell tool a long timeout if it supports one; otherwise use the shell tool's native background-command handle and check that same command until it reaches terminal exit. Do not say it ran, and do not report estimated or simulated results, unless the shell tool returned its terminal exit status. Report the exit status and printed lines exactly, then list each requirement ID the script actually printed with its measurement and pass or fail result as printed. Do not add, rename or infer a requirement the script did not print. The number of games simulated is supporting evidence, not the pass criterion. Edit no file and never rewrite or regenerate the receipt or game data.\nStep completion: send_message to sessionId \"parent\" only. Only exit 0: severity \"success\". Any nonzero exit, a timeout, or a command that could not run or finish: severity \"error\", quoting the output and the failing requirement IDs."
+    }
+  ]
+}

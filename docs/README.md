@@ -18,6 +18,7 @@ To play or build the game, start at the [project README](../README.md). To work 
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Current | Showdown engine, session, screen and release boundaries. |
 | [JUDGE-GUIDE.md](JUDGE-GUIDE.md) | Current | A short route for a hackathon judge: what to play, what to inspect, where the evidence is. |
 | [KIRO_USAGE.md](KIRO_USAGE.md) | Current | Observed native Kiro CLI sessions and commands to verify submission checks. |
+| [SCORECARD.md](SCORECARD.md) | Current | What `npm run scorecard` measures for each Dec 4 Step 0 target and which evidence each row accepts. |
 | [PROJECT-STATUS.md](PROJECT-STATUS.md) | Record | The November 16 lane-build snapshot. For current Showdown status, see the [release line](design/release-line.md). |
 | [cards.csv](cards.csv) | Record | Lane card spreadsheet. The current [Showdown card table](../prototypes/showdown/cards.csv) includes visual direction. |
 | [card-types.csv](card-types.csv) | Record | Lane card categories and frame proposals. |

@@ -16,6 +16,8 @@
 // stderr. Exit 1: usage error, missing dependency, or a failure already reported for this unchanged tree.
 // Whether a given hook trigger acts on the exit code is up to the Kiro runtime; see
 // docs/evidence/kiro-contest-gates.md. The stamp lives in .artifacts/kiro/contest-gates/ (generated, not committed).
+// After a decision, completion/tasks-edit refusals and a passing Stop are reported silently to the
+// Night Shift saloon journal (scripts/saloon-hooks.mjs observeGate); that never changes the outcome.
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
@@ -36,13 +38,19 @@ const BALANCE_ARGS = ["scripts/deck-balance.mjs", "--decks", "1", "--from", "0",
 const RERUN = "Run: node scripts/contest-release-gate.mjs release";
 
 // Inputs whose change invalidates the stamp: every source the verifier, its tests and the balance
-// sample load, the lockfile, the GLBs the preflight reads, the gate itself, and the Node version.
+// sample load, the lockfile, the GLBs the preflight reads, the gate itself, the Node version, and the
+// Night Shift policy/decider and Billy seat-audit proof inputs the workflows rely on.
 const WATCHED_DIRS = ["src", "tests", "prototypes/showdown", ".kiro/specs/duel-card-pipeline/cards"];
-const WATCHED_FILES = [
+export const WATCHED_FILES = [
   "package.json", "package-lock.json",
   "scripts/verify-duel.mjs", "scripts/check-sourced-animation.mjs", "scripts/deck-balance.mjs", "scripts/play-match.mjs",
   "scripts/contest-release-gate.mjs", "scripts/contest-gate-properties.mjs",
   "assets/models/dragon.glb", "assets/models/mounted-billy.glb",
+  "scripts/contest-balance.mjs", "scripts/showdown-balance-contract.mjs",
+  ".kiro/specs/night-shift-balance-contract/requirements.md",
+  "scripts/billy-balance-gate.mjs", "scripts/billy-seat-audit.mjs", "scripts/billy-replay-engine.mjs", "scripts/verify-billy-replay.mjs",
+  "docs/evidence/billy-seat-audit/protocol.json", "docs/evidence/billy-seat-audit/result.json",
+  "docs/evidence/billy-seat-audit/outcomes.csv.gz",
 ];
 // Saves that trigger the fast properties.
 const FAST_SCOPE = [/^src\/game\/showdown\//, /^\.kiro\/specs\/duel-card-pipeline\/cards\//, /^tests\/helpers\/boundary-properties\/showdown\//, /^scripts\/contest-gate-properties\.mjs$/];
@@ -73,10 +81,14 @@ function fingerprint() {
   return hash.digest("hex");
 }
 
-// The hook event on stdin, when a runtime sends one (never read from a terminal).
+// The hook event on stdin, when a runtime sends one (never read from a terminal). Read once and
+// kept, so the Night Shift observation after main() sees the same payload.
+let stdinText;
 function readStdin() {
-  if (process.stdin.isTTY) return "";
-  try { return readFileSync(0, "utf8"); } catch { return ""; }
+  if (stdinText !== undefined) return stdinText;
+  if (process.stdin.isTTY) return (stdinText = "");
+  try { stdinText = readFileSync(0, "utf8"); } catch { stdinText = ""; }
+  return stdinText;
 }
 const parse = (raw) => { try { return raw.trim() ? JSON.parse(raw) : null; } catch { return null; } };
 
@@ -368,4 +380,19 @@ async function main() {
   return 1;
 }
 
-if (import.meta.main) process.exitCode = await main();
+// Night Shift saloon observation after the decision: completion/tasks-edit exit 2 -> block,
+// stop exit 0 with a fresh stamp -> bell. Silent and best effort; the exit status, output and the
+// Stop retry count are already final and stay as main() left them. readStdin() returns the text
+// main() already read, so the observation judges the same event; the journal write is awaited.
+async function observe(mode, code) {
+  if (mode === "stop" ? code !== 0 : !(code === 2 && (mode === "completion" || mode === "tasks-edit"))) return;
+  try {
+    await (await import("./saloon-hooks.mjs")).observeGate({ mode, code, raw: readStdin(), fresh: () => stampState().fresh, stamp: () => readJson(STAMP) });
+  } catch { /* observation only */ }
+}
+
+if (import.meta.main) {
+  const code = await main();
+  await observe(process.argv[2], code);
+  process.exitCode = code;
+}

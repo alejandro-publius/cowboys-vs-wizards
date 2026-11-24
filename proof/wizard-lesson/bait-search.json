@@ -1,0 +1,148 @@
+{
+  "search": {
+    "from": 0,
+    "to": 200,
+    "seedsTried": 1,
+    "decks": "cards.js DECKS (default)",
+    "cpu": "level-2 planTurn",
+    "cowboy": "level-2 planTurn stand-in",
+    "policy": {
+      "version": 1,
+      "kind": "wizard-hellfire-hold",
+      "holdBelowTargets": 2,
+      "holdWhenBaseAtLeast": 1,
+      "holdWhenMaxAttackAtMost": 10,
+      "emergencyLethal": true
+    },
+    "ms": 9,
+    "node": "v26.0.0"
+  },
+  "found": true,
+  "episodeKey": "ep1-92c0c36f",
+  "report": {
+    "ok": true,
+    "reasons": [],
+    "targets": 1,
+    "threat": 0,
+    "base": 5,
+    "turn": 3
+  },
+  "comparison": {
+    "turn": 3,
+    "original": {
+      "actions": [
+        {
+          "type": "spell",
+          "cardId": "wizard-hellfire-1"
+        },
+        {
+          "type": "summon",
+          "cardId": "wizard-wizard-1",
+          "tributes": [
+            0
+          ]
+        },
+        {
+          "type": "attack",
+          "slot": 0,
+          "target": 0
+        },
+        {
+          "type": "end"
+        }
+      ],
+      "usedHellfire": true
+    },
+    "lesson": {
+      "actions": [
+        {
+          "type": "summon",
+          "cardId": "wizard-wizard-1",
+          "tributes": [
+            0
+          ]
+        },
+        {
+          "type": "attack",
+          "slot": 0,
+          "target": 0
+        },
+        {
+          "type": "end"
+        }
+      ],
+      "decisions": [
+        {
+          "decision": "hold",
+          "reason": "low-threat",
+          "turn": 3,
+          "hellfireLegal": true,
+          "targets": 1,
+          "base": 5,
+          "threat": 0,
+          "maxAttack": 1,
+          "threatAfter": 0
+        }
+      ],
+      "usedHellfire": false
+    }
+  },
+  "episode": {
+    "version": 1,
+    "seed": 0,
+    "setup": {
+      "first": "wizard",
+      "cpu": {
+        "side": "wizard",
+        "level": 2
+      }
+    },
+    "actions": [
+      {
+        "side": "wizard",
+        "action": {
+          "type": "summon",
+          "cardId": "wizard-jack-o-lantern-1",
+          "tributes": []
+        }
+      },
+      {
+        "side": "wizard",
+        "action": {
+          "type": "end"
+        }
+      },
+      {
+        "side": "cowboy",
+        "action": {
+          "type": "summon",
+          "cardId": "cowboy-covered-wagon-2",
+          "tributes": []
+        }
+      },
+      {
+        "side": "cowboy",
+        "action": {
+          "type": "spell",
+          "cardId": "cowboy-lasso-1",
+          "target": 0
+        }
+      },
+      {
+        "side": "cowboy",
+        "action": {
+          "type": "end"
+        }
+      },
+      {
+        "side": "wizard",
+        "action": {
+          "type": "spell",
+          "cardId": "wizard-hellfire-1"
+        }
+      }
+    ],
+    "markedIndex": 5,
+    "tag": "bait"
+  }
+}

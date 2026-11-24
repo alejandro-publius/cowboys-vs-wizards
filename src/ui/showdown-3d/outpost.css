@@ -422,3 +422,676 @@ body:has(.camp-outpost[open], .builder-inspect[open]) {
     grid-template-columns: 1fr;
   }
 }
+
+/* Night Shift saloon: the Camp wood room dressed as a saloon wall, bar and floor. */
+.outpost-saloon {
+  width: min(1040px, calc(100% - 2rem));
+}
+.outpost-saloon .saloon-room {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+/* Grid children may shrink below their content so nothing pushes past the padded room. */
+.outpost-saloon .saloon-room > *,
+.saloon-room :is(.saloon-stage, .saloon-wall, .saloon-controls) > * {
+  min-width: 0;
+}
+.saloon-controls {
+  grid-template-columns: minmax(0, 1fr);
+}
+.saloon-mode {
+  overflow-wrap: anywhere;
+}
+.saloon-stage {
+  display: grid;
+  gap: 0.9rem;
+  padding: 0.9rem;
+  background:
+    radial-gradient(ellipse 80% 70% at 50% 35%, transparent 55%, #0d0a10a8),
+    repeating-linear-gradient(90deg, #00000020 0 2px, transparent 2px 46px),
+    linear-gradient(#4a2f26 0 66%, #2a1c1c 66% 70%, #5b3a29 70%);
+  box-shadow: inset 0 0 0 3px #1e1418, 0 4px #101420;
+}
+.saloon-wall {
+  display: grid;
+  grid-template-columns: minmax(0, 190px) minmax(0, 1fr) minmax(0, 96px);
+  gap: 0.9rem;
+  align-items: start;
+}
+#showdown-camp .saloon-room :is(h3, h4) {
+  margin: 0 0 0.4rem;
+  font-family: var(--frontier-display);
+  line-height: 1.15;
+}
+.saloon-wanted {
+  position: relative;
+  margin: 0;
+  padding: 0.85rem 0.6rem 0.6rem;
+  color: #37251d;
+  text-align: center;
+  background: #e2bc85;
+  box-shadow: inset 0 -5px #b88656, 3px 4px #1e1c2a;
+  transform: rotate(-1.5deg);
+}
+.saloon-wanted::before {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: calc(50% - 3px);
+  width: 6px;
+  height: 6px;
+  background: #5d4438;
+  box-shadow: 1px 1px #916a4d;
+}
+.saloon-wanted figcaption strong {
+  display: block;
+  font: 700 1.35rem var(--frontier-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.saloon-wanted-art,
+.saloon-target-art {
+  aspect-ratio: 1.18;
+  border: 2px solid #51404a;
+  background: #c79a68;
+  overflow: hidden;
+}
+.saloon-room :is(.saloon-actor-art, .saloon-wanted-portrait, .saloon-target-portrait) {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+.saloon-art-missing {
+  display: grid;
+  place-items: center;
+  min-height: 3rem;
+  font: 700 1.6rem var(--frontier-display);
+  color: #37251d;
+  background: #d7ad7a;
+}
+.saloon-wanted.is-pinned {
+  animation: saloon-pin 520ms steps(4) both;
+}
+.saloon-board {
+  padding: 0.7rem 0.85rem;
+  color: #2c2018;
+  background:
+    repeating-linear-gradient(0deg, #00000012 0 1px, transparent 1px 12px),
+    #c49a6c;
+  box-shadow: inset 0 -5px #8f6745, 3px 4px #1e1c2a;
+}
+.saloon-board p,
+.saloon-board ul {
+  margin: 0 0 0.5rem;
+}
+.saloon-board ul {
+  padding-left: 1.1rem;
+}
+.saloon-board code,
+.ledger-night-shift code {
+  font-size: 0.9em;
+}
+.saloon-patch {
+  overflow-wrap: anywhere;
+}
+.saloon-patch-change,
+.saloon-patch-meta {
+  display: block;
+}
+.saloon-patch-meta {
+  font-size: 0.85em;
+}
+.saloon-patch-commit {
+  color: #3a1f12;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.saloon-patch-commit:hover {
+  color: #1e1c2a;
+}
+.saloon-patch-commit:focus-visible {
+  outline: 2px solid #1e1c2a;
+  outline-offset: 2px;
+}
+.saloon-proposal {
+  margin-bottom: 0.6rem;
+  padding: 0.45rem;
+  background: #e8d2b0;
+  box-shadow: inset 0 0 0 2px #8f6745;
+}
+.saloon-target {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 0.6rem;
+  align-items: center;
+}
+.saloon-target-stat {
+  font-weight: 700;
+}
+.saloon-target[data-change="up"] .saloon-target-stat { color: #2f5e2a; }
+.saloon-target[data-change="down"] .saloon-target-stat { color: #8a2a24; }
+.saloon-target.is-cast .saloon-target-art {
+  animation: saloon-cast 900ms steps(6) both;
+}
+.saloon-bell-post {
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  text-align: center;
+  font-size: 0.85rem;
+}
+.saloon-bell {
+  width: 44px;
+  height: 40px;
+  background: #c99a3f;
+  clip-path: polygon(30% 0, 70% 0, 78% 20%, 84% 78%, 100% 100%, 0 100%, 16% 78%, 22% 20%);
+  box-shadow: inset 0 -6px #8d6427;
+  transform-origin: 50% 0;
+}
+.saloon-bell-post.is-ringing .saloon-bell {
+  background: #ffe2a3;
+  animation: saloon-ring 300ms steps(3) 4 alternate;
+}
+.saloon-bell-post.is-ringing .saloon-bell-note {
+  color: var(--frontier-brass);
+  font-weight: 700;
+}
+.saloon-actors {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.saloon-actor {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 0.4rem;
+  padding: 0.45rem;
+  background: #392722;
+  box-shadow: inset 0 -4px #291d1c, 0 4px #18141d;
+  transition: transform 220ms steps(3), box-shadow 220ms steps(3);
+}
+.saloon-actor-art {
+  aspect-ratio: 1.18;
+  border: 2px solid #51404a;
+}
+.saloon-actor-label {
+  display: grid;
+  gap: 0.2rem;
+}
+.saloon-actor-label strong {
+  font: 700 1.1rem var(--frontier-display);
+}
+.saloon-actor-doing {
+  font-size: 0.95rem;
+  line-height: 1.3;
+}
+.saloon-actor-doing:empty,
+.saloon-actor-ambient:empty,
+.saloon-bell-note:empty {
+  display: none;
+}
+/* Ambient hook notes: quieter than the actor's verified action. */
+.saloon-actor-ambient {
+  margin: 0;
+  padding-left: 0.45rem;
+  border-left: 2px solid #8f6745;
+  color: #d9bf9f;
+  font-size: 0.84rem;
+  font-style: italic;
+  line-height: 1.25;
+}
+/* A spotlight on whoever acts; the others step back into the lamplight. */
+.saloon-actor {
+  transition: transform 220ms steps(3), box-shadow 220ms steps(3), filter 220ms steps(3);
+}
+.saloon-stage:not([data-actor=""]) .saloon-actor:not(.is-acting) {
+  filter: brightness(0.72) saturate(0.85);
+}
+.saloon-actor.is-acting {
+  transform: translateY(-6px);
+  box-shadow: inset 0 -4px #291d1c, 0 0 0 2px #ffe2a3, 0 8px #18141d, 0 0 28px #ffcf7a55;
+}
+.saloon-actor[data-idle="true"] .saloon-actor-label strong {
+  color: #c9b49a;
+}
+.saloon-actor-sheriff.is-acting { animation: saloon-step-in 420ms steps(4) both; }
+.saloon-actor-sheriff.is-refusing .saloon-actor-art { animation: saloon-refuse 480ms steps(4) both; }
+.saloon-actor.is-stirring .saloon-actor-art { animation: saloon-stir 600ms steps(4) both; }
+.saloon-actor.is-stirring .saloon-actor-ambient { color: #ffe2a3; }
+.saloon-wanted-blank {
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(ellipse 22% 26% at 50% 38%, #5d4438 98%, transparent),
+    radial-gradient(ellipse 38% 30% at 50% 92%, #5d4438 98%, transparent),
+    #c79a68;
+}
+.saloon-controls {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.7rem 0.9rem;
+  background: #17243a;
+  box-shadow: 0 3px #0e1829;
+}
+.saloon-controls p {
+  margin: 0;
+}
+.saloon-mode-label {
+  font: 700 1.15rem var(--frontier-display);
+}
+.saloon-mode-date {
+  white-space: nowrap;
+}
+.saloon-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.saloon-buttons button {
+  min-height: 48px;
+  min-width: 6.5rem;
+  padding: 0.6em 1em;
+  border: 0;
+  border-radius: 1px;
+  color: #472a19;
+  background: #e9c18e;
+  box-shadow: inset 0 -3px #b18154, 0 3px #101420;
+  font: 700 1.08rem/1.15 var(--frontier-display);
+}
+.saloon-buttons button:not(:disabled):hover {
+  background: #f8dba2;
+}
+.saloon-buttons button:disabled {
+  color: #f0dfc4;
+  background: #6a5b5b;
+  box-shadow: inset 0 -3px #4d4044, 0 3px #101420;
+}
+.saloon-room button:focus-visible {
+  outline: 3px solid #ffe2a3;
+  outline-offset: 2px;
+}
+.saloon-history ol,
+.ledger-night-shift-log {
+  max-height: 14rem;
+  overflow: auto;
+  margin: 0;
+  padding-left: 1.4rem;
+  line-height: 1.45;
+}
+.saloon-history summary,
+.saloon-repair > summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  cursor: pointer;
+  font: 700 1.1rem var(--frontier-display);
+}
+.saloon-history summary:focus-visible,
+.saloon-repair > summary:focus-visible {
+  outline: 3px solid #ffe2a3;
+  outline-offset: 2px;
+}
+/* Replay the repair: a recorded field trial on a notice board, stepped by hand. */
+.saloon-repair[hidden] {
+  display: none;
+}
+.saloon-repair-body {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.7rem 0.85rem;
+  color: #2c2018;
+  background:
+    repeating-linear-gradient(0deg, #00000012 0 1px, transparent 1px 12px),
+    #c49a6c;
+  box-shadow: inset 0 -5px #8f6745, 3px 4px #1e1c2a;
+}
+.saloon-repair-body > *,
+.saloon-repair-body p {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.saloon-repair-deal {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 0.7rem;
+  align-items: start;
+}
+.saloon-repair-portrait {
+  display: block;
+  aspect-ratio: 1.18;
+  border: 2px solid #51404a;
+  background: #c79a68;
+  overflow: hidden;
+}
+.saloon-repair-portrait > * {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+.saloon-repair-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: 0.3rem 0.9rem;
+  margin: 0;
+}
+.saloon-repair-facts dt {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.saloon-repair-facts dd {
+  margin: 0;
+  font-weight: 700;
+}
+.saloon-repair-stage:empty {
+  display: none;
+}
+/* A failed fresh check: its rule reasons and block reasons as a plain list. */
+.saloon-repair-reasons {
+  margin: 0;
+  padding-left: 1.3rem;
+  line-height: 1.45;
+}
+.saloon-repair-stage {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: #e8d2b0;
+  box-shadow: inset 0 0 0 2px #8f6745;
+}
+.saloon-repair-moves {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.saloon-repair-move {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: flex-start;
+  padding: 0.45rem;
+  border: 2px dashed #8f6745;
+}
+.saloon-repair-move > .saloon-repair-portrait {
+  flex: 0 0 56px;
+}
+.saloon-repair-move > span:last-child {
+  flex: 1 1 8rem;
+  min-width: 0;
+}
+/* The chosen version gets a solid frame and a mark, not colour alone. */
+.saloon-repair-move.is-chosen {
+  border-style: solid;
+  border-color: #1e1c2a;
+  background: #f3e3c6;
+}
+.saloon-repair-move.is-chosen strong::after {
+  content: " (your replay)";
+  font-weight: 400;
+}
+.saloon-repair-finish strong {
+  font: 700 1.15rem var(--frontier-display);
+}
+.saloon-repair-log summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 700;
+}
+.saloon-repair-log ol {
+  max-height: 12rem;
+  overflow: auto;
+  margin: 0;
+  padding-left: 1.4rem;
+  line-height: 1.45;
+}
+.saloon-repair-turn {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+.saloon-repair-now {
+  min-height: 1.3em;
+  font: 700 1.05rem/1.35 var(--frontier-display);
+}
+.saloon-repair-empty {
+  margin: 0;
+  padding: 0.5rem 0;
+}
+.saloon-buttons button[aria-pressed="true"] {
+  background: #ffe2a3;
+  box-shadow: inset 0 0 0 3px #472a19, 0 3px #101420;
+}
+.saloon-buttons button[aria-pressed="true"]::before {
+  content: "✓ ";
+}
+.saloon-buttons button[aria-disabled="true"] {
+  color: #f0dfc4;
+  background: #6a5b5b;
+  box-shadow: inset 0 -3px #4d4044, 0 3px #101420;
+  cursor: not-allowed;
+}
+.saloon-buttons button[aria-disabled="true"]:hover {
+  background: #6a5b5b;
+}
+.saloon-buttons[hidden] {
+  display: none;
+}
+/* The illustrated stage (saloon-stage.js): wide enough for all four miniatures, short enough
+   that the caption and controls under it stay on a 1280x800 screen. */
+.saloon-theater {
+  background: #120d10;
+  box-shadow: inset 0 0 0 3px #1e1418, 0 4px #101420;
+}
+.saloon-theater[hidden] {
+  display: none;
+}
+.saloon-theater-host {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2.7;
+  min-height: 180px;
+  max-height: min(50vh, 420px);
+  overflow: hidden;
+}
+.saloon-theater-host > canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.outpost-saloon .saloon-room[data-view="3d"] {
+  gap: 0.6rem;
+}
+.saloon-room[data-view="3d"] .saloon-controls {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.4rem 1rem;
+}
+.saloon-room[data-view="3d"] .saloon-now {
+  grid-column: 1 / -1;
+  order: -1;
+  min-height: 1.3em;
+  font: 700 1.2rem/1.3 var(--frontier-display);
+  color: #ffe2a3;
+}
+.saloon-room[data-view="3d"] .saloon-mode {
+  order: 1;
+  font-size: 0.9rem;
+}
+.saloon-room[data-view="3d"] .saloon-mode-label {
+  font-size: 1rem;
+}
+/* With the stage drawing the characters, the portrait stage shrinks to labels and notices. */
+.saloon-room[data-view="3d"] .saloon-stage {
+  gap: 0.6rem;
+  padding: 0.6rem;
+  background: #2a1c1c;
+}
+.saloon-room[data-view="3d"] :is(.saloon-actor-art, .saloon-wanted-art, .saloon-target-art, .saloon-actor-doing) {
+  display: none;
+}
+.saloon-room[data-view="3d"] .saloon-wall {
+  grid-template-columns: minmax(0, 160px) minmax(0, 1fr) minmax(0, 96px);
+}
+.saloon-room[data-view="3d"] .saloon-wanted {
+  padding: 0.6rem 0.5rem 0.45rem;
+}
+.saloon-room[data-view="3d"] .saloon-wanted figcaption strong {
+  font-size: 1rem;
+}
+.saloon-room[data-view="3d"] .saloon-target {
+  grid-template-columns: minmax(0, 1fr);
+}
+.saloon-room[data-view="3d"] .saloon-patches ul {
+  max-height: 4.6rem;
+  overflow: auto;
+}
+.saloon-room[data-view="3d"] .saloon-bell {
+  width: 28px;
+  height: 26px;
+}
+.saloon-room[data-view="3d"] .saloon-actor {
+  grid-template-rows: auto;
+  padding: 0.3rem 0.5rem;
+}
+.saloon-room[data-view="3d"] .saloon-actor.is-acting {
+  transform: none;
+  animation: none;
+}
+.saloon-room[data-view="3d"] .saloon-actor-ambient {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.saloon-history time,
+.ledger-night-shift time {
+  color: var(--frontier-brass);
+  font-variant-numeric: tabular-nums;
+}
+.ledger-night-shift {
+  margin-top: 1rem;
+}
+.ledger-night-shift-rules {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0 0 0.6rem;
+}
+.ledger-night-shift-rules > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.6rem;
+}
+.ledger-night-shift-rules dd {
+  margin: 0;
+}
+@keyframes saloon-pin {
+  from { transform: translateY(-14px) rotate(-6deg); }
+  to { transform: rotate(-1.5deg); }
+}
+@keyframes saloon-cast {
+  0% { filter: none; }
+  40% { filter: hue-rotate(220deg) saturate(1.8) brightness(1.3); box-shadow: 0 0 0 3px #b9a2ff; }
+  100% { filter: none; }
+}
+@keyframes saloon-ring {
+  from { transform: rotate(-14deg); }
+  to { transform: rotate(14deg); }
+}
+@keyframes saloon-step-in {
+  from { transform: translateX(-18px); }
+  to { transform: translateY(-6px); }
+}
+@keyframes saloon-refuse {
+  0%, 100% { transform: none; }
+  50% { transform: translateX(6px); filter: brightness(1.2); }
+}
+@keyframes saloon-stir {
+  0%, 100% { transform: none; }
+  50% { transform: translateY(-3px) rotate(-1deg); }
+}
+@media (max-width: 760px) {
+  .saloon-wall {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 84px);
+  }
+  .saloon-board {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .saloon-wanted {
+    max-width: 220px;
+  }
+  .saloon-actors {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .saloon-theater-host {
+    aspect-ratio: 1.9;
+    max-height: 48vh;
+  }
+  .saloon-room[data-view="3d"] .saloon-wall {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 84px);
+  }
+  .saloon-room[data-view="3d"] .saloon-wanted {
+    max-width: none;
+  }
+}
+/* Phones and small tablets: stack the 3D controls so mode, date, progress and buttons
+   each get the full padded width instead of a second column off the dialog edge. */
+@media (max-width: 700px) {
+  .saloon-room[data-view="3d"] .saloon-controls {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+  .saloon-buttons button {
+    flex: 1 1 auto;
+    min-width: min(6.5rem, 100%);
+  }
+  .saloon-repair-moves {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 420px) {
+  .saloon-target {
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+  .saloon-repair-deal {
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+  .saloon-repair-moves {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .saloon-repair-moves {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .saloon-buttons button {
+    flex: 1 1 40%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .saloon-room *,
+  .saloon-room *::before {
+    animation: none !important;
+    transition: none !important;
+  }
+  .saloon-actor.is-acting,
+  .saloon-wanted {
+    transform: none;
+  }
+  .saloon-actor.is-stirring .saloon-actor-ambient {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+}

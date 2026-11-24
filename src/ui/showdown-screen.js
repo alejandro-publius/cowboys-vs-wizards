@@ -19,6 +19,7 @@ import {createShowdownSession} from "../match/showdown-session.js";
 import {matchOver, matchWinner, newMatch, nextGame, offersSwap, recordGame, swapPool, withSwap} from "../match/showdown-match.js";
 import {createCuePlayer, cuesFor} from "./showdown-cues.js";
 import {FRAMES} from "./card-frames.js";
+import {lessonSetup} from "./wizard-lesson.js";
 
 const name = (cardId) => cardOf(cardId).name;
 const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
@@ -81,15 +82,23 @@ const FACTION = {cowboy: "Cowboy", wizard: "Wizard"};
 // nextSeed() deals each later game (the next game of a match, a repeat, two players again); a Rematch
 // after a loss is a fresh deal. onSwap(pool, deck, side, done) opens the between-games side-deck swap.
 // cueOptions go to createCuePlayer (showdown-cues.js); only a check sets them, to shorten the step.
-export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nextSeed = freshSeed, onSwap, mountBoard}) {
+// Wizard lesson (src/ui/wizard-lesson.js): onReview(record) opens the lesson for a finished single solo Cowboy duel;
+// record is {seed, setup, cowboyActions, expected}. start(duel, seed, {lesson: {createSession}}) plays a lesson rematch
+// (duel.kind "lesson"): it settles nothing and logs nothing, and onLessonBack() returns to the lesson.
+export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nextSeed = freshSeed, onSwap, mountBoard, onReview, onLessonBack}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
   let session, duel, seed, lines, latest, pick, outcome, picked, run, started;
+  // The lesson record of the current game: its frozen setup and the Cowboy's actions in order. lesson: a rematch's session factory.
+  let setup = null, cowboyActions = [], lesson = null;
   // seat: the solo player's side. camp: the campaign this duel settles through, or null (nothing is settled).
   let players = 1, match = null, curtain = false, seat = "cowboy", camp = campaign;
   const cues = createCuePlayer(root, cueOptions);
   const boardPresentation = mountBoard?.(root);
   const solo = () => players === 1;
+  // A Wizard lesson reviews one single solo game of the Cowboy seat against the ordinary bot: not a game of a best of
+  // three, two players, the Wizard seat, or a lesson rematch (whose Wizard may not be the ordinary one).
+  const reviewable = (current) => Boolean(onReview) && solo() && seat === "cowboy" && !match && !lesson && current.kind !== "lesson";
   const viewer = () => session.viewer();
   // Solo wording speaks to the player; two players are named by faction.
   const whoseBase = (side) => (solo() && side === viewer() ? "Your" : FACTION[side]);
@@ -107,9 +116,10 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
   // best 3 plays a best of three. players 2: two people on one screen, starter decks, nothing saved.
   // seat "wizard" (solo): the human plays the Wizards. Its campaign, if any, comes with this start; without one the
   // Wizard seat settles nothing. The Cowboy seat keeps the mount's campaign unless another is passed.
-  function start(nextDuel, dealSeed, {players: seats = 1, best = 1, seat: side = "cowboy", campaign: own} = {}) {
+  function start(nextDuel, dealSeed, {players: seats = 1, best = 1, seat: side = "cowboy", campaign: own, lesson: rematch = null} = {}) {
     [duel, players, seat] = [nextDuel, seats, seats === 1 ? side : "cowboy"];
-    camp = own ?? (seat === "cowboy" ? campaign : null);
+    lesson = rematch && seats === 1 && seat === "cowboy" && best === 1 ? rematch : null;
+    camp = lesson ? null : own ?? (seat === "cowboy" ? campaign : null);
     const progress = solo() ? camp?.progress() : null;
     match = best > 1 ? newMatch(progress ? {deck: progress.deck, side: progress.side} : {}) : null;
     deal(dealSeed);
@@ -118,7 +128,11 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
   function deal(dealSeed) {
     seed = dealSeed;
     const current = solo() && match && camp ? camp.duel(duel.id, match.deck) ?? duel : duel;
-    session = createShowdownSession({seed, duel: current, players, seat, ...(match?.first ? {first: match.first} : {})});
+    // The lesson record is taken before the deal, from the duel as it is dealt (grit and all), and frozen. It is null
+    // when the duel cannot be trained (wizard-lesson.js lessonSetup: level-2 Wizard, no landing bosses).
+    setup = reviewable(current) ? lessonSetup(current, seed) : null;
+    cowboyActions = [...(current.prefix ?? [])];
+    session = lesson ? lesson.createSession() : createShowdownSession({seed, duel: current, players, seat, ...(match?.first ? {first: match.first} : {})});
     curtain = !solo();
     lines = [{turn: true, text: `Turn 1: the ${session.view().first === "cowboy" ? "Cowboys" : "Wizards"}.`}];
     latest = [];
@@ -141,6 +155,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     const [before, seat] = [session.view(), viewer()];
     const trace = [];
     const events = session.act(action, boardPresentation ? (step) => trace.push(step) : undefined);
+    if (setup) cowboyActions.push(structuredClone(action));
     const batch = record(events, before);
     finish();
     // Two players: hide the table while the screen changes hands.
@@ -159,8 +174,8 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
       match = recordGame(match, {winner: result.winner, first: view.first});
       outcome.matchOver = matchOver(match);
     }
-    // Two players and an experiment turn (showdown-turn.js) settle nothing and add no playtest line.
-    if (!solo() || duel.kind === "turn") return;
+    // Two players, an experiment turn (showdown-turn.js) and a Wizard lesson rematch settle nothing and add no playtest line.
+    if (!solo() || duel.kind === "turn" || duel.kind === "lesson") return;
     // The run id makes the log ignore a second report of this same finished game. The log is the Cowboy career's.
     if (seat === "cowboy") playtest?.add({name: duel.name, won: result.winner === session.seat, turns: view.turn,
       seconds: Math.round((Date.now() - started) / 1000), rules: false, run, duel: duel.id, seed});
@@ -170,6 +185,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
   function againLabel() {
     if (!outcome.matchOver) return `Game ${match.game + 1}`;
     if (duel.kind === "turn") return "Retry";
+    if (duel.kind === "lesson") return "Same deal again";
     if (!solo()) return duel.kind === "earned" ? "Rematch: earned decks, not an even match" : "Play again";
     if (!outcome.won) return repeat() ? "Rematch" : null;
     return duel.kind === "trail" || !repeat() ? null : "Play it again";
@@ -188,7 +204,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     }
     // Two players again with the same decks (the starter decks, or the earned decks of showdown-earned.js).
     if (!solo()) return start(duel, nextSeed(), {players: 2, best});
-    if (duel.kind === "turn") return deal(seed);
+    if (duel.kind === "turn" || duel.kind === "lesson") return deal(seed);
     // A loss is a fresh deal of the same duel; a repeat (a beaten rival, the next hunt, the even match) uses nextSeed.
     const next = repeat();
     if (next) start(next, outcome.won ? nextSeed() : freshSeed(), {best, seat, campaign: camp});
@@ -253,7 +269,9 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
   // A game inside a match and a two-player game pay nothing, but they still need the button that moves on.
   function rewardPanel() {
     const label = againLabel();
-    const again = label ? `<button type="button" id="sd-again">${label}</button>` : "";
+    const review = setup && onReview ? `<button type="button" id="sd-review">Review a Wizard move</button>`
+      : duel.kind === "lesson" && onLessonBack ? `<button type="button" id="sd-lesson-back">Back to the lesson</button>` : "";
+    const again = (label ? `<button type="button" id="sd-again">${label}</button>` : "") + review;
     if (!outcome.earned) return `<div class="sd-row">${again}<button type="button" id="sd-camp">Back to camp</button></div>`;
     const {won, earned, intoDeck, grit} = outcome;
     const offer = camp.progress().offer;
@@ -354,7 +372,8 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
       : r.winner === own ? `You win: the ${FACTION[foe]} Base fell.` : "You lose: your Base fell.";
     $("sd-status").innerHTML = r ? `<span class="sd-result ${!solo() || r.winner === own ? "sd-good" : "sd-warn"}">${verdict}</span>${score}`
       : `${duel.name}${score} · turn ${view.turn} · ${solo() ? (view.active === own ? "your turn" : `the ${sides(foe)}' turn`) : `the ${sides(view.active)}' turn`}`;
-    $("sd-feedback").textContent = latest.length ? `Last: ${latest.join(" ")}` : "";
+    $("sd-feedback").textContent = session.failure?.() ? `The lesson Wizard stopped: ${session.failure()} Use Back to camp or Restart this duel.`
+      : latest.length ? `Last: ${latest.join(" ")}` : "";
     $("sd-result").innerHTML = r ? rewardPanel() : "";
 
     const canCover = attacking && options.some((a) => a.type === "cover" && a.slot === pick.troop);
@@ -431,6 +450,12 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
       $("sd-camp")?.focus();
     }
     else if (b.id === "sd-again" && outcome) again();
+    else if (b.id === "sd-review" && outcome && setup) {
+      const view = session.view();
+      cues.clear(); boardPresentation?.clear();
+      onReview({seed, setup, cowboyActions: structuredClone(cowboyActions), expected: {result: view.result, turn: view.turn}});
+    }
+    else if (b.id === "sd-lesson-back") { cues.clear(); boardPresentation?.clear(); onLessonBack(); }
     else if (b.id === "sd-home" || b.id === "sd-camp") { cues.clear(); boardPresentation?.clear(); onHome(); }
     if (pickStarted(before)) origin = key;
     if (keyboard) refocus(key, before);

@@ -1,0 +1,2846 @@
+{
+  "nativeWorkflowId": "wf_d5aad547ec014474",
+  "verified": true,
+  "summary": {
+    "games": 16,
+    "wins": {
+      "cautious-sheriff": 13,
+      "reckless-wizard": 3,
+      "draw": 0
+    },
+    "byStartingSeat": {
+      "cowboy": {
+        "games": 8,
+        "cautious-sheriff": 6,
+        "reckless-wizard": 2,
+        "draw": 0
+      },
+      "wizard": {
+        "games": 8,
+        "cautious-sheriff": 7,
+        "reckless-wizard": 1,
+        "draw": 0
+      }
+    },
+    "endings": {
+      "base": 16
+    },
+    "turns": {
+      "min": 11,
+      "mean": 17.5,
+      "max": 27
+    },
+    "actions": {
+      "cautious-sheriff": {
+        "summon": 120,
+        "end": 128,
+        "set": 15,
+        "spell": 16,
+        "attack": 94,
+        "cover": 15
+      },
+      "reckless-wizard": {
+        "spell": 27,
+        "summon": 133,
+        "attack": 121,
+        "end": 136
+      }
+    },
+    "decisionsWithRuledOutActions": {
+      "cautious-sheriff": 259,
+      "reckless-wizard": 15
+    }
+  },
+  "replay": {
+    "kind": "agent-arena-replay/1",
+    "seed": 0,
+    "first": "cowboy",
+    "personas": {
+      "cowboy": "cautious-sheriff",
+      "wizard": "reckless-wizard"
+    },
+    "playbookDigests": {
+      "cautious-sheriff": "8d8069675cdaa619b2a744e6da63eb29e0bc49d2ae093bf8834fe78af0def7fc",
+      "reckless-wizard": "803041a9f167de2a1d3d6b2803a5e552769a854efa3b569258fe55d6baf72608"
+    },
+    "decisions": 54,
+    "steps": [
+      {
+        "n": 1,
+        "turn": 1,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "summon",
+            "cardId": "cowboy-sheriff-3",
+            "tributes": []
+          },
+          {
+            "type": "summon",
+            "cardId": "cowboy-covered-wagon-2",
+            "tributes": []
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 1,
+        "action": {
+          "type": "summon",
+          "cardId": "cowboy-covered-wagon-2",
+          "tributes": []
+        },
+        "type": "summon",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "summon",
+            "side": "cowboy",
+            "cardId": "cowboy-covered-wagon-2"
+          }
+        ]
+      },
+      {
+        "n": 2,
+        "turn": 1,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 1,
+        "action": {
+          "type": "end"
+        },
+        "type": "end",
+        "ruledOut": 1,
+        "events": [
+          {
+            "type": "turn",
+            "side": "wizard",
+            "turn": 2
+          },
+          {
+            "type": "draw",
+            "side": "wizard"
+          }
+        ]
+      },
+      {
+        "n": 3,
+        "turn": 2,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "summon",
+            "cardId": "wizard-jack-o-lantern-1",
+            "tributes": []
+          },
+          {
+            "type": "spell",
+            "cardId": "wizard-hellfire-1"
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-skeleton-4",
+            "tributes": []
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-imp-1",
+            "tributes": []
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 1,
+        "action": {
+          "type": "spell",
+          "cardId": "wizard-hellfire-1"
+        },
+        "type": "spell",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "spell",
+            "side": "wizard",
+            "cardId": "wizard-hellfire-1",
+            "target": "cowboy-covered-wagon-2",
+            "left": 3,
+            "stunned": false
+          }
+        ]
+      },
+      {
+        "n": 4,
+        "turn": 2,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "summon",
+            "cardId": "wizard-jack-o-lantern-1",
+            "tributes": []
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-skeleton-4",
+            "tributes": []
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-imp-1",
+            "tributes": []
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 2,
+        "action": {
+          "type": "summon",
+          "cardId": "wizard-imp-1",
+          "tributes": []
+        },
+        "type": "summon",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "summon",
+            "side": "wizard",
+            "cardId": "wizard-imp-1"
+          }
+        ]
+      },
+      {
+        "n": 5,
+        "turn": 2,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 0,
+        "action": {
+          "type": "attack",
+          "slot": 0,
+          "target": 0
+        },
+        "type": "attack",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "attack",
+            "side": "wizard",
+            "cardId": "wizard-imp-1",
+            "target": "cowboy-covered-wagon-2",
+            "covered": false,
+            "hitBack": 0,
+            "baseDamage": 0,
+            "targetLeft": 0,
+            "attackerLeft": 1
+          }
+        ]
+      },
+      {
+        "n": 6,
+        "turn": 2,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 0,
+        "action": {
+          "type": "end"
+        },
+        "type": "end",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "turn",
+            "side": "cowboy",
+            "turn": 3
+          },
+          {
+            "type": "draw",
+            "side": "cowboy"
+          }
+        ]
+      },
+      {
+        "n": 7,
+        "turn": 3,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "summon",
+            "cardId": "cowboy-sheriff-3",
+            "tributes": []
+          },
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 0,
+        "action": {
+          "type": "summon",
+          "cardId": "cowboy-sheriff-3",
+          "tributes": []
+        },
+        "type": "summon",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "summon",
+            "side": "cowboy",
+            "cardId": "cowboy-sheriff-3"
+          }
+        ]
+      },
+      {
+        "n": 8,
+        "turn": 3,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 0
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 2,
+        "action": {
+          "type": "end"
+        },
+        "type": "end",
+        "ruledOut": 2,
+        "events": [
+          {
+            "type": "turn",
+            "side": "wizard",
+            "turn": 4
+          },
+          {
+            "type": "draw",
+            "side": "wizard"
+          }
+        ]
+      },
+      {
+        "n": 9,
+        "turn": 4,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "summon",
+            "cardId": "wizard-jack-o-lantern-1",
+            "tributes": []
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-skeleton-4",
+            "tributes": []
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-headless-horseman-1",
+            "tributes": [
+              0
+            ]
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-wizard-1",
+            "tributes": [
+              0
+            ]
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-raven-familiar-1",
+            "tributes": []
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 3,
+        "action": {
+          "type": "summon",
+          "cardId": "wizard-wizard-1",
+          "tributes": [
+            0
+          ]
+        },
+        "type": "summon",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "tribute",
+            "side": "wizard",
+            "cardId": "wizard-imp-1"
+          },
+          {
+            "type": "summon",
+            "side": "wizard",
+            "cardId": "wizard-wizard-1"
+          }
+        ]
+      },
+      {
+        "n": 10,
+        "turn": 4,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 0,
+        "action": {
+          "type": "attack",
+          "slot": 0,
+          "target": 0
+        },
+        "type": "attack",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "attack",
+            "side": "wizard",
+            "cardId": "wizard-wizard-1",
+            "target": "cowboy-sheriff-3",
+            "covered": false,
+            "hitBack": 1,
+            "baseDamage": 0,
+            "targetLeft": 1,
+            "attackerLeft": 3
+          }
+        ]
+      },
+      {
+        "n": 11,
+        "turn": 4,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 0,
+        "action": {
+          "type": "end"
+        },
+        "type": "end",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "turn",
+            "side": "cowboy",
+            "turn": 5
+          },
+          {
+            "type": "draw",
+            "side": "cowboy"
+          }
+        ]
+      },
+      {
+        "n": 12,
+        "turn": 5,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "summon",
+            "cardId": "cowboy-billy-2",
+            "tributes": [
+              0
+            ]
+          },
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 0
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 0,
+        "action": {
+          "type": "summon",
+          "cardId": "cowboy-billy-2",
+          "tributes": [
+            0
+          ]
+        },
+        "type": "summon",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "tribute",
+            "side": "cowboy",
+            "cardId": "cowboy-sheriff-3"
+          },
+          {
+            "type": "summon",
+            "side": "cowboy",
+            "cardId": "cowboy-billy-2"
+          }
+        ]
+      },
+      {
+        "n": 13,
+        "turn": 5,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 0
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 3,
+        "action": {
+          "type": "end"
+        },
+        "type": "end",
+        "ruledOut": 3,
+        "events": [
+          {
+            "type": "turn",
+            "side": "wizard",
+            "turn": 6
+          },
+          {
+            "type": "draw",
+            "side": "wizard"
+          }
+        ]
+      },
+      {
+        "n": 14,
+        "turn": 6,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "summon",
+            "cardId": "wizard-jack-o-lantern-1",
+            "tributes": []
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-skeleton-4",
+            "tributes": []
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-headless-horseman-1",
+            "tributes": [
+              0
+            ]
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-raven-familiar-1",
+            "tributes": []
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 2,
+        "action": {
+          "type": "summon",
+          "cardId": "wizard-headless-horseman-1",
+          "tributes": [
+            0
+          ]
+        },
+        "type": "summon",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "tribute",
+            "side": "wizard",
+            "cardId": "wizard-wizard-1"
+          },
+          {
+            "type": "summon",
+            "side": "wizard",
+            "cardId": "wizard-headless-horseman-1"
+          }
+        ]
+      },
+      {
+        "n": 15,
+        "turn": 6,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": "base"
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 1,
+        "action": {
+          "type": "attack",
+          "slot": 0,
+          "target": "base"
+        },
+        "type": "attack",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "attack",
+            "side": "wizard",
+            "cardId": "wizard-headless-horseman-1",
+            "target": "base",
+            "covered": false,
+            "hitBack": 0,
+            "baseDamage": 1,
+            "targetLeft": null,
+            "attackerLeft": 3
+          }
+        ]
+      },
+      {
+        "n": 16,
+        "turn": 6,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 0,
+        "action": {
+          "type": "end"
+        },
+        "type": "end",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "turn",
+            "side": "cowboy",
+            "turn": 7
+          },
+          {
+            "type": "draw",
+            "side": "cowboy"
+          }
+        ]
+      },
+      {
+        "n": 17,
+        "turn": 7,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "summon",
+            "cardId": "cowboy-billy-1",
+            "tributes": [
+              0
+            ]
+          },
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 0
+          },
+          {
+            "type": "set",
+            "cardId": "cowboy-bear-trap-1"
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 2,
+        "action": {
+          "type": "set",
+          "cardId": "cowboy-bear-trap-1"
+        },
+        "type": "set",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "set",
+            "side": "cowboy"
+          }
+        ]
+      },
+      {
+        "n": 18,
+        "turn": 7,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "summon",
+            "cardId": "cowboy-billy-1",
+            "tributes": [
+              0
+            ]
+          },
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 0
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 0,
+        "action": {
+          "type": "summon",
+          "cardId": "cowboy-billy-1",
+          "tributes": [
+            0
+          ]
+        },
+        "type": "summon",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "tribute",
+            "side": "cowboy",
+            "cardId": "cowboy-billy-2"
+          },
+          {
+            "type": "summon",
+            "side": "cowboy",
+            "cardId": "cowboy-billy-1"
+          }
+        ]
+      },
+      {
+        "n": 19,
+        "turn": 7,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 0
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 3,
+        "action": {
+          "type": "end"
+        },
+        "type": "end",
+        "ruledOut": 3,
+        "events": [
+          {
+            "type": "turn",
+            "side": "wizard",
+            "turn": 8
+          },
+          {
+            "type": "draw",
+            "side": "wizard"
+          }
+        ]
+      },
+      {
+        "n": 20,
+        "turn": 8,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "summon",
+            "cardId": "wizard-jack-o-lantern-1",
+            "tributes": []
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-skeleton-4",
+            "tributes": []
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-raven-familiar-1",
+            "tributes": []
+          },
+          {
+            "type": "set",
+            "cardId": "wizard-hex-1"
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": "base"
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 1,
+        "action": {
+          "type": "summon",
+          "cardId": "wizard-skeleton-4",
+          "tributes": []
+        },
+        "type": "summon",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "summon",
+            "side": "wizard",
+            "cardId": "wizard-skeleton-4"
+          }
+        ]
+      },
+      {
+        "n": 21,
+        "turn": 8,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "set",
+            "cardId": "wizard-hex-1"
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": "base"
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "cover",
+            "slot": 1
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 2,
+        "action": {
+          "type": "attack",
+          "slot": 0,
+          "target": "base"
+        },
+        "type": "attack",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "trap",
+            "side": "cowboy",
+            "cardId": "cowboy-bear-trap-1",
+            "target": "wizard-headless-horseman-1",
+            "left": 1,
+            "stopped": false
+          },
+          {
+            "type": "attack",
+            "side": "wizard",
+            "cardId": "wizard-headless-horseman-1",
+            "target": "base",
+            "covered": false,
+            "hitBack": 0,
+            "baseDamage": 1,
+            "targetLeft": null,
+            "attackerLeft": 1
+          }
+        ]
+      },
+      {
+        "n": 22,
+        "turn": 8,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "cover",
+            "slot": 1
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 1,
+        "action": {
+          "type": "end"
+        },
+        "type": "end",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "turn",
+            "side": "cowboy",
+            "turn": 9
+          },
+          {
+            "type": "draw",
+            "side": "cowboy"
+          }
+        ]
+      },
+      {
+        "n": 23,
+        "turn": 9,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 0
+          },
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 1
+          },
+          {
+            "type": "spell",
+            "cardId": "cowboy-deadeye-1",
+            "target": 0
+          },
+          {
+            "type": "spell",
+            "cardId": "cowboy-deadeye-1",
+            "target": 1
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 1
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 2,
+        "action": {
+          "type": "spell",
+          "cardId": "cowboy-deadeye-1",
+          "target": 0
+        },
+        "type": "spell",
+        "ruledOut": 3,
+        "events": [
+          {
+            "type": "spell",
+            "side": "cowboy",
+            "cardId": "cowboy-deadeye-1",
+            "target": "wizard-headless-horseman-1",
+            "left": 0,
+            "stunned": false
+          }
+        ]
+      },
+      {
+        "n": 24,
+        "turn": 9,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 1
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 2,
+        "action": {
+          "type": "end"
+        },
+        "type": "end",
+        "ruledOut": 2,
+        "events": [
+          {
+            "type": "turn",
+            "side": "wizard",
+            "turn": 10
+          },
+          {
+            "type": "draw",
+            "side": "wizard"
+          }
+        ]
+      },
+      {
+        "n": 25,
+        "turn": 10,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "summon",
+            "cardId": "wizard-jack-o-lantern-1",
+            "tributes": []
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-raven-familiar-1",
+            "tributes": []
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-skeleton-1",
+            "tributes": []
+          },
+          {
+            "type": "set",
+            "cardId": "wizard-hex-1"
+          },
+          {
+            "type": "spell",
+            "cardId": "wizard-singularity-1",
+            "target": 0
+          },
+          {
+            "type": "attack",
+            "slot": 1,
+            "target": 0
+          },
+          {
+            "type": "cover",
+            "slot": 1
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 4,
+        "action": {
+          "type": "spell",
+          "cardId": "wizard-singularity-1",
+          "target": 0
+        },
+        "type": "spell",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "spell",
+            "side": "wizard",
+            "cardId": "wizard-singularity-1",
+            "target": "cowboy-billy-1",
+            "left": 3,
+            "stunned": false
+          }
+        ]
+      },
+      {
+        "n": 26,
+        "turn": 10,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "summon",
+            "cardId": "wizard-jack-o-lantern-1",
+            "tributes": []
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-raven-familiar-1",
+            "tributes": []
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-skeleton-1",
+            "tributes": []
+          },
+          {
+            "type": "set",
+            "cardId": "wizard-hex-1"
+          },
+          {
+            "type": "attack",
+            "slot": 1,
+            "target": 0
+          },
+          {
+            "type": "cover",
+            "slot": 1
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 2,
+        "action": {
+          "type": "summon",
+          "cardId": "wizard-skeleton-1",
+          "tributes": []
+        },
+        "type": "summon",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "summon",
+            "side": "wizard",
+            "cardId": "wizard-skeleton-1"
+          }
+        ]
+      },
+      {
+        "n": 27,
+        "turn": 10,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "set",
+            "cardId": "wizard-hex-1"
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "attack",
+            "slot": 1,
+            "target": 0
+          },
+          {
+            "type": "cover",
+            "slot": 1
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 2,
+        "action": {
+          "type": "attack",
+          "slot": 1,
+          "target": 0
+        },
+        "type": "attack",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "attack",
+            "side": "wizard",
+            "cardId": "wizard-skeleton-4",
+            "target": "cowboy-billy-1",
+            "covered": false,
+            "hitBack": 2,
+            "baseDamage": 0,
+            "targetLeft": 2,
+            "attackerLeft": 1
+          }
+        ]
+      },
+      {
+        "n": 28,
+        "turn": 10,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 1,
+        "action": {
+          "type": "end"
+        },
+        "type": "end",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "turn",
+            "side": "cowboy",
+            "turn": 11
+          },
+          {
+            "type": "draw",
+            "side": "cowboy"
+          }
+        ]
+      },
+      {
+        "n": 29,
+        "turn": 11,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 0
+          },
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 1
+          },
+          {
+            "type": "summon",
+            "cardId": "cowboy-ranger-1",
+            "tributes": [
+              0
+            ]
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 1
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 2,
+        "action": {
+          "type": "summon",
+          "cardId": "cowboy-ranger-1",
+          "tributes": [
+            0
+          ]
+        },
+        "type": "summon",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "tribute",
+            "side": "cowboy",
+            "cardId": "cowboy-billy-1"
+          },
+          {
+            "type": "summon",
+            "side": "cowboy",
+            "cardId": "cowboy-ranger-1"
+          },
+          {
+            "type": "draw",
+            "side": "cowboy"
+          }
+        ]
+      },
+      {
+        "n": 30,
+        "turn": 11,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 0
+          },
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 1
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 1
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 3,
+        "action": {
+          "type": "attack",
+          "slot": 0,
+          "target": 1
+        },
+        "type": "attack",
+        "ruledOut": 4,
+        "events": [
+          {
+            "type": "attack",
+            "side": "cowboy",
+            "cardId": "cowboy-ranger-1",
+            "target": "wizard-skeleton-4",
+            "covered": false,
+            "hitBack": 0,
+            "baseDamage": 1,
+            "targetLeft": 0,
+            "attackerLeft": 4
+          }
+        ]
+      },
+      {
+        "n": 31,
+        "turn": 11,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 0,
+        "action": {
+          "type": "end"
+        },
+        "type": "end",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "turn",
+            "side": "wizard",
+            "turn": 12
+          },
+          {
+            "type": "draw",
+            "side": "wizard"
+          }
+        ]
+      },
+      {
+        "n": 32,
+        "turn": 12,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "summon",
+            "cardId": "wizard-jack-o-lantern-1",
+            "tributes": []
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-raven-familiar-1",
+            "tributes": []
+          },
+          {
+            "type": "set",
+            "cardId": "wizard-hex-1"
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-skeleton-3",
+            "tributes": []
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 3,
+        "action": {
+          "type": "summon",
+          "cardId": "wizard-skeleton-3",
+          "tributes": []
+        },
+        "type": "summon",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "summon",
+            "side": "wizard",
+            "cardId": "wizard-skeleton-3"
+          }
+        ]
+      },
+      {
+        "n": 33,
+        "turn": 12,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "set",
+            "cardId": "wizard-hex-1"
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "cover",
+            "slot": 1
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 1,
+        "action": {
+          "type": "attack",
+          "slot": 0,
+          "target": 0
+        },
+        "type": "attack",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "attack",
+            "side": "wizard",
+            "cardId": "wizard-skeleton-1",
+            "target": "cowboy-ranger-1",
+            "covered": false,
+            "hitBack": 2,
+            "baseDamage": 0,
+            "targetLeft": 3,
+            "attackerLeft": 1
+          }
+        ]
+      },
+      {
+        "n": 34,
+        "turn": 12,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "cover",
+            "slot": 1
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 1,
+        "action": {
+          "type": "end"
+        },
+        "type": "end",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "turn",
+            "side": "cowboy",
+            "turn": 13
+          },
+          {
+            "type": "draw",
+            "side": "cowboy"
+          }
+        ]
+      },
+      {
+        "n": 35,
+        "turn": 13,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 0
+          },
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 1
+          },
+          {
+            "type": "summon",
+            "cardId": "cowboy-covered-wagon-1",
+            "tributes": []
+          },
+          {
+            "type": "summon",
+            "cardId": "cowboy-dynamiter-1",
+            "tributes": []
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 1
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 2,
+        "action": {
+          "type": "summon",
+          "cardId": "cowboy-covered-wagon-1",
+          "tributes": []
+        },
+        "type": "summon",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "summon",
+            "side": "cowboy",
+            "cardId": "cowboy-covered-wagon-1"
+          }
+        ]
+      },
+      {
+        "n": 36,
+        "turn": 13,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 0
+          },
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 1
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 1
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "cover",
+            "slot": 1
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 2,
+        "action": {
+          "type": "attack",
+          "slot": 0,
+          "target": 0
+        },
+        "type": "attack",
+        "ruledOut": 5,
+        "events": [
+          {
+            "type": "attack",
+            "side": "cowboy",
+            "cardId": "cowboy-ranger-1",
+            "target": "wizard-skeleton-1",
+            "covered": false,
+            "hitBack": 0,
+            "baseDamage": 1,
+            "targetLeft": 0,
+            "attackerLeft": 3
+          }
+        ]
+      },
+      {
+        "n": 37,
+        "turn": 13,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "cover",
+            "slot": 1
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 1,
+        "action": {
+          "type": "end"
+        },
+        "type": "end",
+        "ruledOut": 1,
+        "events": [
+          {
+            "type": "turn",
+            "side": "wizard",
+            "turn": 14
+          },
+          {
+            "type": "draw",
+            "side": "wizard"
+          }
+        ]
+      },
+      {
+        "n": 38,
+        "turn": 14,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "summon",
+            "cardId": "wizard-jack-o-lantern-1",
+            "tributes": []
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-raven-familiar-1",
+            "tributes": []
+          },
+          {
+            "type": "set",
+            "cardId": "wizard-hex-1"
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-skeleton-2",
+            "tributes": []
+          },
+          {
+            "type": "attack",
+            "slot": 1,
+            "target": 1
+          },
+          {
+            "type": "cover",
+            "slot": 1
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 3,
+        "action": {
+          "type": "summon",
+          "cardId": "wizard-skeleton-2",
+          "tributes": []
+        },
+        "type": "summon",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "summon",
+            "side": "wizard",
+            "cardId": "wizard-skeleton-2"
+          }
+        ]
+      },
+      {
+        "n": 39,
+        "turn": 14,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "set",
+            "cardId": "wizard-hex-1"
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "attack",
+            "slot": 1,
+            "target": 1
+          },
+          {
+            "type": "cover",
+            "slot": 1
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 2,
+        "action": {
+          "type": "attack",
+          "slot": 1,
+          "target": 1
+        },
+        "type": "attack",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "attack",
+            "side": "wizard",
+            "cardId": "wizard-skeleton-3",
+            "target": "cowboy-covered-wagon-1",
+            "covered": false,
+            "hitBack": 1,
+            "baseDamage": 0,
+            "targetLeft": 3,
+            "attackerLeft": 2
+          }
+        ]
+      },
+      {
+        "n": 40,
+        "turn": 14,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 1,
+        "action": {
+          "type": "end"
+        },
+        "type": "end",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "turn",
+            "side": "cowboy",
+            "turn": 15
+          },
+          {
+            "type": "draw",
+            "side": "cowboy"
+          }
+        ]
+      },
+      {
+        "n": 41,
+        "turn": 15,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 0
+          },
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 1
+          },
+          {
+            "type": "summon",
+            "cardId": "cowboy-mounted-billy-1",
+            "tributes": [
+              0,
+              1
+            ]
+          },
+          {
+            "type": "summon",
+            "cardId": "cowboy-dynamiter-1",
+            "tributes": []
+          },
+          {
+            "type": "summon",
+            "cardId": "cowboy-outrider-2",
+            "tributes": []
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 1
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "attack",
+            "slot": 1,
+            "target": 0
+          },
+          {
+            "type": "attack",
+            "slot": 1,
+            "target": 1
+          },
+          {
+            "type": "cover",
+            "slot": 1
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 4,
+        "action": {
+          "type": "summon",
+          "cardId": "cowboy-outrider-2",
+          "tributes": []
+        },
+        "type": "summon",
+        "ruledOut": 1,
+        "events": [
+          {
+            "type": "summon",
+            "side": "cowboy",
+            "cardId": "cowboy-outrider-2"
+          }
+        ]
+      },
+      {
+        "n": 42,
+        "turn": 15,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 0
+          },
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 1
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 1
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "attack",
+            "slot": 1,
+            "target": 0
+          },
+          {
+            "type": "attack",
+            "slot": 1,
+            "target": 1
+          },
+          {
+            "type": "cover",
+            "slot": 1
+          },
+          {
+            "type": "cover",
+            "slot": 2
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 3,
+        "action": {
+          "type": "attack",
+          "slot": 0,
+          "target": 1
+        },
+        "type": "attack",
+        "ruledOut": 8,
+        "events": [
+          {
+            "type": "attack",
+            "side": "cowboy",
+            "cardId": "cowboy-ranger-1",
+            "target": "wizard-skeleton-3",
+            "covered": false,
+            "hitBack": 0,
+            "baseDamage": 0,
+            "targetLeft": 0,
+            "attackerLeft": 3
+          }
+        ]
+      },
+      {
+        "n": 43,
+        "turn": 15,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "attack",
+            "slot": 1,
+            "target": 0
+          },
+          {
+            "type": "cover",
+            "slot": 1
+          },
+          {
+            "type": "cover",
+            "slot": 2
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 3,
+        "action": {
+          "type": "end"
+        },
+        "type": "end",
+        "ruledOut": 3,
+        "events": [
+          {
+            "type": "turn",
+            "side": "wizard",
+            "turn": 16
+          },
+          {
+            "type": "draw",
+            "side": "wizard"
+          }
+        ]
+      },
+      {
+        "n": 44,
+        "turn": 16,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "summon",
+            "cardId": "wizard-jack-o-lantern-1",
+            "tributes": []
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-raven-familiar-1",
+            "tributes": []
+          },
+          {
+            "type": "set",
+            "cardId": "wizard-hex-1"
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-bone-wall-1",
+            "tributes": []
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 1
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 0,
+        "action": {
+          "type": "summon",
+          "cardId": "wizard-jack-o-lantern-1",
+          "tributes": []
+        },
+        "type": "summon",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "summon",
+            "side": "wizard",
+            "cardId": "wizard-jack-o-lantern-1"
+          }
+        ]
+      },
+      {
+        "n": 45,
+        "turn": 16,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "set",
+            "cardId": "wizard-hex-1"
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 1
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "cover",
+            "slot": 1
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 1,
+        "action": {
+          "type": "attack",
+          "slot": 0,
+          "target": 1
+        },
+        "type": "attack",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "attack",
+            "side": "wizard",
+            "cardId": "wizard-skeleton-2",
+            "target": "cowboy-covered-wagon-1",
+            "covered": false,
+            "hitBack": 1,
+            "baseDamage": 0,
+            "targetLeft": 2,
+            "attackerLeft": 2
+          }
+        ]
+      },
+      {
+        "n": 46,
+        "turn": 16,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "cover",
+            "slot": 1
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 1,
+        "action": {
+          "type": "end"
+        },
+        "type": "end",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "turn",
+            "side": "cowboy",
+            "turn": 17
+          },
+          {
+            "type": "draw",
+            "side": "cowboy"
+          }
+        ]
+      },
+      {
+        "n": 47,
+        "turn": 17,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 0
+          },
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 1
+          },
+          {
+            "type": "summon",
+            "cardId": "cowboy-mounted-billy-1",
+            "tributes": [
+              0,
+              1
+            ]
+          },
+          {
+            "type": "summon",
+            "cardId": "cowboy-mounted-billy-1",
+            "tributes": [
+              0,
+              2
+            ]
+          },
+          {
+            "type": "summon",
+            "cardId": "cowboy-mounted-billy-1",
+            "tributes": [
+              1,
+              2
+            ]
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 1
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "attack",
+            "slot": 1,
+            "target": 0
+          },
+          {
+            "type": "attack",
+            "slot": 1,
+            "target": 1
+          },
+          {
+            "type": "cover",
+            "slot": 1
+          },
+          {
+            "type": "attack",
+            "slot": 2,
+            "target": 0
+          },
+          {
+            "type": "attack",
+            "slot": 2,
+            "target": 1
+          },
+          {
+            "type": "attack",
+            "slot": 2,
+            "target": "base"
+          },
+          {
+            "type": "cover",
+            "slot": 2
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 5,
+        "action": {
+          "type": "attack",
+          "slot": 0,
+          "target": 0
+        },
+        "type": "attack",
+        "ruledOut": 10,
+        "events": [
+          {
+            "type": "attack",
+            "side": "cowboy",
+            "cardId": "cowboy-ranger-1",
+            "target": "wizard-skeleton-2",
+            "covered": false,
+            "hitBack": 0,
+            "baseDamage": 0,
+            "targetLeft": 0,
+            "attackerLeft": 3
+          }
+        ]
+      },
+      {
+        "n": 48,
+        "turn": 17,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "attack",
+            "slot": 1,
+            "target": 1
+          },
+          {
+            "type": "cover",
+            "slot": 1
+          },
+          {
+            "type": "attack",
+            "slot": 2,
+            "target": 1
+          },
+          {
+            "type": "attack",
+            "slot": 2,
+            "target": "base"
+          },
+          {
+            "type": "cover",
+            "slot": 2
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 0,
+        "action": {
+          "type": "attack",
+          "slot": 1,
+          "target": 1
+        },
+        "type": "attack",
+        "ruledOut": 2,
+        "events": [
+          {
+            "type": "attack",
+            "side": "cowboy",
+            "cardId": "cowboy-covered-wagon-1",
+            "target": "wizard-jack-o-lantern-1",
+            "covered": false,
+            "hitBack": 0,
+            "baseDamage": 0,
+            "targetLeft": 0,
+            "attackerLeft": 2
+          },
+          {
+            "type": "laststand",
+            "side": "wizard",
+            "cardId": "wizard-jack-o-lantern-1",
+            "target": "cowboy-covered-wagon-1",
+            "left": 1
+          }
+        ]
+      },
+      {
+        "n": 49,
+        "turn": 17,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "attack",
+            "slot": 2,
+            "target": "base"
+          },
+          {
+            "type": "cover",
+            "slot": 2
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 0,
+        "action": {
+          "type": "attack",
+          "slot": 2,
+          "target": "base"
+        },
+        "type": "attack",
+        "ruledOut": 1,
+        "events": [
+          {
+            "type": "attack",
+            "side": "cowboy",
+            "cardId": "cowboy-outrider-2",
+            "target": "base",
+            "covered": false,
+            "hitBack": 0,
+            "baseDamage": 1,
+            "targetLeft": null,
+            "attackerLeft": 3
+          }
+        ]
+      },
+      {
+        "n": 50,
+        "turn": 17,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 0,
+        "action": {
+          "type": "end"
+        },
+        "type": "end",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "turn",
+            "side": "wizard",
+            "turn": 18
+          },
+          {
+            "type": "draw",
+            "side": "wizard"
+          }
+        ]
+      },
+      {
+        "n": 51,
+        "turn": 18,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "summon",
+            "cardId": "wizard-raven-familiar-1",
+            "tributes": []
+          },
+          {
+            "type": "set",
+            "cardId": "wizard-hex-1"
+          },
+          {
+            "type": "summon",
+            "cardId": "wizard-bone-wall-1",
+            "tributes": []
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 0,
+        "action": {
+          "type": "summon",
+          "cardId": "wizard-raven-familiar-1",
+          "tributes": []
+        },
+        "type": "summon",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "summon",
+            "side": "wizard",
+            "cardId": "wizard-raven-familiar-1"
+          },
+          {
+            "type": "draw",
+            "side": "wizard"
+          }
+        ]
+      },
+      {
+        "n": 52,
+        "turn": 18,
+        "side": "wizard",
+        "persona": "reckless-wizard",
+        "legal": [
+          {
+            "type": "set",
+            "cardId": "wizard-hex-1"
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 2,
+        "action": {
+          "type": "end"
+        },
+        "type": "end",
+        "ruledOut": 0,
+        "events": [
+          {
+            "type": "turn",
+            "side": "cowboy",
+            "turn": 19
+          },
+          {
+            "type": "draw",
+            "side": "cowboy"
+          }
+        ]
+      },
+      {
+        "n": 53,
+        "turn": 19,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "spell",
+            "cardId": "cowboy-lasso-1",
+            "target": 0
+          },
+          {
+            "type": "summon",
+            "cardId": "cowboy-mounted-billy-1",
+            "tributes": [
+              0,
+              1
+            ]
+          },
+          {
+            "type": "summon",
+            "cardId": "cowboy-mounted-billy-1",
+            "tributes": [
+              0,
+              2
+            ]
+          },
+          {
+            "type": "summon",
+            "cardId": "cowboy-mounted-billy-1",
+            "tributes": [
+              1,
+              2
+            ]
+          },
+          {
+            "type": "attack",
+            "slot": 0,
+            "target": 0
+          },
+          {
+            "type": "cover",
+            "slot": 0
+          },
+          {
+            "type": "attack",
+            "slot": 1,
+            "target": 0
+          },
+          {
+            "type": "cover",
+            "slot": 1
+          },
+          {
+            "type": "attack",
+            "slot": 2,
+            "target": 0
+          },
+          {
+            "type": "attack",
+            "slot": 2,
+            "target": "base"
+          },
+          {
+            "type": "cover",
+            "slot": 2
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 4,
+        "action": {
+          "type": "attack",
+          "slot": 0,
+          "target": 0
+        },
+        "type": "attack",
+        "ruledOut": 7,
+        "events": [
+          {
+            "type": "attack",
+            "side": "cowboy",
+            "cardId": "cowboy-ranger-1",
+            "target": "wizard-raven-familiar-1",
+            "covered": false,
+            "hitBack": 0,
+            "baseDamage": 1,
+            "targetLeft": 0,
+            "attackerLeft": 3
+          }
+        ]
+      },
+      {
+        "n": 54,
+        "turn": 19,
+        "side": "cowboy",
+        "persona": "cautious-sheriff",
+        "legal": [
+          {
+            "type": "attack",
+            "slot": 1,
+            "target": "base"
+          },
+          {
+            "type": "cover",
+            "slot": 1
+          },
+          {
+            "type": "attack",
+            "slot": 2,
+            "target": "base"
+          },
+          {
+            "type": "cover",
+            "slot": 2
+          },
+          {
+            "type": "end"
+          }
+        ],
+        "chosen": 0,
+        "action": {
+          "type": "attack",
+          "slot": 1,
+          "target": "base"
+        },
+        "type": "attack",
+        "ruledOut": 2,
+        "events": [
+          {
+            "type": "attack",
+            "side": "cowboy",
+            "cardId": "cowboy-covered-wagon-1",
+            "target": "base",
+            "covered": false,
+            "hitBack": 0,
+            "baseDamage": 1,
+            "targetLeft": null,
+            "attackerLeft": 1
+          }
+        ]
+      }
+    ],
+    "result": {
+      "winner": "cowboy",
+      "reason": "base"
+    },
+    "finalBases": {
+      "cowboy": 3,
+      "wizard": 0
+    },
+    "turns": 19
+  },
+  "policies": {
+    "cautious-sheriff": {
+      "schema": "agent-arena-playbook/1",
+      "persona": "cautious-sheriff",
+      "motto": "Nobody dies for nothing in my town. Set the trap, then take the sure shot.",
+      "order": [
+        "set",
+        "summon",
+        "gear",
+        "spell",
+        "cover",
+        "attack",
+        "end"
+      ],
+      "attack": {
+        "prefer": [
+          "win-now",
+          "kill",
+          "attacker-survives",
+          "biggest-threat"
+        ],
+        "avoid": [
+          "suicide",
+          "even-trade",
+          "chip"
+        ]
+      },
+      "summon": {
+        "prefer": [
+          "guard",
+          "toughest",
+          "free"
+        ],
+        "maxTributes": 1
+      },
+      "spell": {
+        "prefer": [
+          "kill",
+          "biggest-threat"
+        ],
+        "onlyToKill": true
+      },
+      "gear": {
+        "prefer": [
+          "most-threatened"
+        ]
+      },
+      "cover": {
+        "when": "threatened"
+      }
+    },
+    "reckless-wizard": {
+      "schema": "agent-arena-playbook/1",
+      "persona": "reckless-wizard",
+      "motto": "Cast first, tribute freely, and send every spark straight at their Base!",
+      "order": [
+        "spell",
+        "summon",
+        "gear",
+        "location",
+        "attack",
+        "end"
+      ],
+      "attack": {
+        "prefer": [
+          "win-now",
+          "go-face",
+          "base-damage",
+          "kill",
+          "biggest-threat"
+        ],
+        "avoid": [
+          "suicide"
+        ]
+      },
+      "summon": {
+        "prefer": [
+          "ready",
+          "hardest-hitting",
+          "strongest"
+        ],
+        "maxTributes": 2
+      },
+      "spell": {
+        "prefer": [
+          "most-hit",
+          "kill",
+          "biggest-threat"
+        ],
+        "onlyToKill": false
+      },
+      "gear": {
+        "prefer": [
+          "ready",
+          "hardest-hitting"
+        ]
+      },
+      "cover": {
+        "when": "threatened"
+      }
+    }
+  },
+  "kind": "saloon-showcase/arena@1",
+  "source": "Agent Arena native workflow wf_d5aad547ec014474; verified 2026-11-23T02:12:47.728Z",
+  "series": {
+    "from": 0,
+    "deals": 8
+  },
+  "games": 16,
+  "preparedAt": "2026-11-23T02:11:19.987Z",
+  "playedAt": "2026-11-23T02:12:16.306Z",
+  "verifiedAt": "2026-11-23T02:12:47.728Z",
+  "engine": {
+    "sha256": "858d10a870321fb5c183fda8b2b10086fadf347be6dc8559ccf7433520ae4e27",
+    "fileCount": 6
+  },
+  "policyDigests": {
+    "cautious-sheriff": "8d8069675cdaa619b2a744e6da63eb29e0bc49d2ae093bf8834fe78af0def7fc",
+    "reckless-wizard": "803041a9f167de2a1d3d6b2803a5e552769a854efa3b569258fe55d6baf72608"
+  },
+  "playbookFileSha256": {
+    "cautious-sheriff": "1b7ef7ec09ec00387ce7fc621ea128307f1c34b12337c2b8b855696c62da6b8b",
+    "reckless-wizard": "034011d664454314d8c191c4a703800a28b02308b0529b2e846dedd02605ff9b"
+  },
+  "replaySha256": "5e69239330e40ea6deb82f30e51ba13eb00b0f57f055d55bfbb85df1679b43f0",
+  "replayCanonicalSha256": "24e1c4fde3745a4547d551052ea3e3354aa02f17c4b1791a86b9492da75c3fa1",
+  "resultsSha256": "3b76ae80e3a2ee61565dc17fa2e44e6e0292616c58536496432224f054facbb3"
+}

@@ -55,6 +55,7 @@ const [template, style, showdownStyle, boardStyle, boardLicense, bundle] = await
     read("src/ui/showdown-3d/board.css"),
     read("src/ui/showdown-3d/table.css"),
     read("src/ui/showdown-3d/outpost.css"),
+    read("src/ui/showdown-3d/saloon-tables.css"),
   ]).then(parts => [`:root{${frontier.join("")}}`, ...parts].join("\n")) : "",
   diorama ? read("src/ui/showdown-3d/graphics/THREE-LICENSE") : "",
   build({...options, entryPoints: ["src/app.js"]}),

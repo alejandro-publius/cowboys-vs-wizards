@@ -1,0 +1,239 @@
+/* The Saloon bar (camp-outpost.js): the Poker doorway and the forge, rules and arena drawers,
+   plus the archived decision under the Wizard's proposal on the notice board (end of file).
+   Rules inside a drawer use :where() so they beat bare element defaults while each drawer
+   module's own class rules still win. Colours: parchment #f2dfc2 on wood #392722 (11:1),
+   brass text #ffe2a3 on #1e1418 (14:1), button ink #472a19 on #e9c18e (7.6:1). */
+.outpost-saloon-bar {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.8rem clamp(0.6rem, 4vw, 2.25rem) 1rem;
+  background:
+    repeating-linear-gradient(90deg, #00000024 0 2px, transparent 2px 64px),
+    #2a1c1c;
+  box-shadow: inset 0 3px #5b3a29;
+}
+.outpost-saloon-bar .outpost-side-game {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.8rem;
+  margin: 0;
+}
+
+/* Poker doorway: a brass-framed door, distinct from the parchment buttons and drawers. */
+.outpost-saloon-bar .outpost-poker-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0.5em 1.1em;
+  color: #ffe2a3;
+  background: #1e1418;
+  box-shadow: inset 0 0 0 2px #c99a3f, inset 6px 0 #5b3a29, inset -6px 0 #5b3a29, 0 3px #101420;
+  font: 700 1.12rem/1.15 var(--frontier-display);
+  text-decoration: none;
+}
+.outpost-saloon-bar .outpost-poker-link:hover {
+  color: #fff3d6;
+  background: #392722;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* Drawers: wood fronts with a brass pull; the open drawer gets a brass lip. */
+.outpost-saloon-bar .outpost-drawer {
+  min-width: 0;
+  color: #f2dfc2;
+  background: #392722;
+  box-shadow: inset 0 -4px #291d1c, 0 3px #101420;
+}
+.outpost-saloon-bar .outpost-drawer > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 48px;
+  padding: 0.4rem 0.9rem;
+  list-style: none;
+  cursor: pointer;
+  font: 700 1.15rem/1.2 var(--frontier-display);
+}
+.outpost-saloon-bar .outpost-drawer > summary::-webkit-details-marker {
+  display: none;
+}
+.outpost-saloon-bar .outpost-drawer > summary::before {
+  content: "";
+  flex: none;
+  width: 0.6rem;
+  height: 0.6rem;
+  background: #c99a3f;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+.outpost-saloon-bar .outpost-drawer[open] > summary {
+  box-shadow: inset 0 -2px #c99a3f;
+}
+.outpost-saloon-bar .outpost-drawer[open] > summary::before {
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+.outpost-saloon-bar .outpost-drawer > summary:hover {
+  color: #ffe2a3;
+}
+.outpost-saloon-bar :is(.outpost-poker-link, .outpost-drawer > summary):focus-visible,
+.outpost-drawer-host :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid #ffe2a3;
+  outline-offset: 2px;
+}
+
+/* Drawer contents: fit a 320px screen, wrap long paths, scroll naturally with the dialog. */
+.outpost-drawer-host {
+  padding: 0.8rem clamp(0.6rem, 3vw, 1rem) 1rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.outpost-drawer-host:empty {
+  display: none;
+}
+.outpost-drawer-host :where(*) {
+  min-width: 0;
+  max-width: 100%;
+}
+.outpost-drawer-host :where(a) {
+  color: #ffe2a3;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.outpost-drawer-host :where(a:hover) {
+  color: #fff3d6;
+}
+.outpost-drawer-host :where(code, kbd, samp) {
+  padding: 0 0.2em;
+  color: #f2dfc2;
+  background: #291d1c;
+  font-size: 0.9em;
+}
+.outpost-drawer-host :where(pre) {
+  white-space: pre-wrap;
+}
+.outpost-drawer-host :where(table) {
+  display: block;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+.outpost-drawer-host :where(img, canvas, svg, video) {
+  height: auto;
+}
+.outpost-drawer-host :where(.sd-row) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.outpost-drawer-host :where(details > summary) {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+/* Same button rule as the saloon's replay buttons, sized for touch. */
+.outpost-drawer-host :where(button) {
+  min-height: 44px;
+  padding: 0.5em 0.9em;
+  border: 0;
+  border-radius: 1px;
+  color: #472a19;
+  background: #e9c18e;
+  box-shadow: inset 0 -3px #b18154, 0 3px #101420;
+  font: 700 1rem/1.15 var(--frontier-display);
+}
+.outpost-drawer-host :where(button:not(:disabled):hover) {
+  background: #f8dba2;
+}
+.outpost-drawer-host :where(button:disabled, button[aria-disabled="true"]) {
+  color: #f0dfc4;
+  background: #6a5b5b;
+  box-shadow: inset 0 -3px #4d4044, 0 3px #101420;
+}
+.outpost-drawer-host :where(button[aria-pressed="true"]) {
+  background: #ffe2a3;
+  box-shadow: inset 0 0 0 3px #472a19, 0 3px #101420;
+}
+.outpost-drawer-host :where(input:not([type="checkbox"], [type="radio"], [type="range"]), select, textarea) {
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 0.4rem 0.55rem;
+  color: #2c2018;
+  background: #f2dfc2;
+  border: 2px solid #8f6745;
+  border-radius: 1px;
+  font: inherit;
+}
+.outpost-drawer-host :where(input[type="checkbox"], input[type="radio"], input[type="range"]) {
+  accent-color: #c99a3f;
+}
+
+/* The current answer or decision a drawer announces: a brass-edged plaque, shown only when filled. */
+.outpost-drawer-host :where(output, [role="status"]):not(:empty) {
+  display: block;
+  margin-block: 0.5rem;
+  padding: 0.5rem 0.7rem;
+  color: #ffe2a3;
+  background: #1e1418;
+  box-shadow: inset 4px 0 #c99a3f;
+  font: 700 1.1rem/1.35 var(--frontier-display);
+}
+
+/* Review of the Wizard's proposal (night-shift-saloon.js decisionHtml): a pinned receipt slip
+   inside the proposal notice, shown in the portrait and illustrated views alike. Ink #2c2018 on
+   parchment #f2dfc2 (12:1), labels #5b3a29 (8:1); outcomes are words, never colour alone. */
+.saloon-decision {
+  margin-top: 0.45rem;
+  padding: 0.4rem 0.55rem 0.45rem 0.75rem;
+  color: #2c2018;
+  background: #f2dfc2;
+  box-shadow: inset 4px 0 #8f6745, 0 2px #8f6745;
+  font-size: 0.86rem;
+  line-height: 1.32;
+  overflow-wrap: anywhere;
+}
+.saloon-decision[hidden] {
+  display: none;
+}
+.saloon-decision h5 {
+  margin: 0 0 0.3rem;
+  font: 700 1rem/1.15 var(--frontier-display);
+}
+.saloon-decision dl {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+}
+.saloon-decision dl > div {
+  display: grid;
+  grid-template-columns: 4.9rem minmax(0, 1fr);
+  gap: 0.45rem;
+}
+.saloon-decision dt {
+  color: #5b3a29;
+  font-weight: 700;
+}
+.saloon-decision dd {
+  margin: 0;
+}
+.saloon-board .saloon-decision ul {
+  margin: 0;
+  padding-left: 1rem;
+}
+.saloon-decision code {
+  padding: 0 0.2em;
+  background: #e2c9a3;
+}
+.saloon-board .saloon-decision-note {
+  margin: 0.3rem 0 0;
+  font-style: italic;
+}
+/* Narrow phones: each label sits above its text so nothing is squeezed. */
+@media (max-width: 420px) {
+  .saloon-decision dl > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+}

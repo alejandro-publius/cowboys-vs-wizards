@@ -1,47 +1,57 @@
 # Cowboys vs. Wizards — quick judge review
 
-[Play the release](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Source](https://github.com/alejandro-publius/cowboys-vs-wizards) · [Kiro usage and evidence](kiro-brag-sheet.md)
+[Play](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Source](https://github.com/alejandro-publius/cowboys-vs-wizards) · [Demo script](submission/judge-demo-script.md) · [Devpost packet](submission/devpost-packet.md)
 
-## Experience the game
+## One-minute walkthrough
 
-The game is **Showdown**, the one supported game, served at the [site root](https://alejandro-publius.github.io/cowboys-vs-wizards/). The first click is **Play**, which opens the Camp. In the Camp, click **Boot Hill**, the first Trail duel, or open a fixed practice deal: [deal 0](https://alejandro-publius.github.io/cowboys-vs-wizards/?practice=0) or [deal 60](https://alejandro-publius.github.io/cowboys-vs-wizards/?practice=60). Current paths and the remaining human gate are in the [release line](design/release-line.md). Commands that replay the current build are in the [judge write-up](submission/kiro-brag-sheet.md#proof-on-the-current-build). Card art briefs for all 29 cards are in the [art direction](../prototypes/showdown/ART-DIRECTION.md) ([coverage](../README.md#card-art-library)).
+This walkthrough was checked on the November 23 local contest build. Build it with `node scripts/build-graybox.mjs --diorama --contest` and open `dist/cowboys-vs-wizards-showdown-3d.html`. The documented November 22 release includes the illustrated title and Ride or Fight? [Release checks](evidence/illustrated-contest-release.md) · [Live build manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json)
 
-- **The Night Shift loop.** At the end of the Camp, open **Sheriff's Ledger**. It lists all 29 cards and the latest Night Watch check of the ruleset: commit, seeds 0–999, 2,000 bot games, first-player and Cowboy shares. It also shows the Night Shift review of one draft one-card, one-number candidate for that run, with its verdict. Night Watch (the [Crew app in this repository](../apps/night-watch/README.md)) measures. The [reviewer](evidence/night-shift-review.md) checks a candidate on paired and holdout seeds. Nothing is applied to the cards; Fable and Alex decide. [Receipts and what has and has not run](evidence/night-shift.md) (pull request [#163](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/163), open).
+| # | Time | Click (**bold**) | What you should see | Source |
+| --- | --- | --- | --- | --- |
+| 1 | 0:00–0:20 | On the title: **Ride or Fight?**, **Outrider**, **Wizard Base**, **End turn**. Then **Restart this duel**, **Outrider**, **Skeleton**. | One real turn at the Bone Fence: turn 3, Outrider on 2 orbs, Skeleton on 3, Bases at 5 and 4. You can try both decisions from the same position. The challenge only appears if the Outrider gate verified this position when the page was built. | [Gate evidence](evidence/outrider-gate.md) · [Ledger still](evidence/outrider-gate/ledger-revealed.png) |
+| 2 | 0:20–0:45 | **Back to camp**, **Back to map**, **Camp ledger**, **Sheriff's Ledger**. Then **Current Billy · 2 attack** and **Next step** ×3. Then **Proposed Billy · 1 attack** and **Next step** ×3. | A recorded Kiro balance decision: seed 726421019, Cowboys first, turn 7. Both versions share the first 29 events. With 2 attack, Billy clears the Bone Wall and the Cowboys win on turn 13. With 1 attack, the Wall survives on 1 orb and the Wizards win on turn 20. The Ledger states that Billy still has 2 attack in this build. If the button reads "Recorded Billy", the live card has changed. | [Billy replay](evidence/billy-replay.md) · [`billy-replay.js`](../src/ui/billy-replay.js) |
+| 3 | 0:45–1:00 | **Back to map**, **Night Shift saloon**, **Step** ×3. | Labelled "Recorded Kiro shift". Step 3 posts "Review of Kiro's proposal: Billy attack 2 → 1" with the written rule, the measured shares, the source revision and the command to recheck it. | [`night-shift-saloon.js`](../src/ui/showdown-3d/night-shift-saloon.js) · [test](../tests/match/saloon-showcases.test.js) |
 
-**Earlier lane duel and illustrated 3D build (retired, history).** The earlier three-lane game and its 3D build are retired. Old `/3d/` links, including the ones in steps 1 and 2, now lead to Showdown. The last playable source is `main` commit `ea183ee29dbd`; build it from a checkout of that commit to replay these steps. The rest of this guide describes that build and its evidence, kept as recorded.
+The demo script records two Chrome runs. One covered both Outrider choices and both Billy endings. The other covered the Saloon route and its reset at 1440×900 and 390×844. The local candidate also opens the validated review directly with `?saloon=review`. In Chrome the link focused **Back to map**, supported replay reset, and made zero live-feed requests at both widths.
 
-1. **Play a guided opening (history).** [Seed 0 with the starter deck and hints](https://alejandro-publius.github.io/cowboys-vs-wizards/3d/?seed=0&deck=starter&guide=1) opened the guided lane duel. Press Play, select Sheriff, pick a lit lane, then confirm the summon. End the turn and watch each life orb disappear at impact.
-2. **See the bigger mechanic (history):** [Seed 60](https://alejandro-publius.github.io/cowboys-vs-wizards/3d/?seed=60). Use two tribute summons to bring in Mounted Billy, then watch Singularity move him into the Dragon's lane. The clash is simultaneous: Billy still gets his attack even though he is defeated. [Exact five-round input route](morning-handoff.md#the-duel-to-film).
-3. **Inspect the character craft:** Sheriff draws his revolver, Wizard casts, Dragon and Mounted Billy use authored attack clips, Skeleton uses an optimized model. [Asset and animation evidence](evidence/kiro-character-assets.md).
-4. **Inspect the required Kiro work:** [Orb Duel Spec](../.kiro/specs/orb-duel/requirements.md), [agent](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df/.kiro/agents/duel-presenter.json), [steering](../.kiro/steering/), [hooks](../.kiro/hooks/), [replay Workflow](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df/.kiro/workflows/orb-duel-replay.workflow.json), and [Power + MCP](../.kiro/powers/orb-duel-review/). [Proof of actual runs](kiro-brag-sheet.md).
-5. **Check verifiability.** [Release evidence](evidence/kiro-release-review-892cada.md) binds the live SHA to the served page and identifies the later native workflow and MCP comparison. [Competitive benchmark](submission/kiroween-competitive-benchmark.md) maps the demo to the five judging criteria.
+## The Kiro decision behind steps 2 and 3
 
-## Demo script and playtest protocol
+- **Proposal.** Kiro CLI worked in an isolated worktree at `eedab93` and proposed three one-number changes. The reviewer passed only Billy attack 2 → 1. In the reviewer's games, Cowboy wins went from 60.75% to 50.25% on tuning seeds and from 59.00% to 51.00% on holdout seeds, with 400 games per arm on each range. [Kiro run](evidence/kiro-contest-run.md#balance-run)
+- **Written gate.** The rules live in the [balance contract spec](../.kiro/specs/night-shift-balance-contract/requirements.md). NSB-1 keeps each faction between 45% and 55%. NSB-2 lets the opening player's distance from 50% grow by at most 1 point. The balancing agent never edits that file, and the reviewer records the file's hash. Two of the economist review's findings, E1 and E3, are still [open](../.kiro/specs/night-shift-balance-contract/game-economist-review.md).
+- **Measured.** The [seat audit](evidence/billy-seat-audit/README.md) ran 100,000 duels in the Node engine on 25,000 held-out seeds, with level-2 bots and the fixed decks from `eedab93`. Cowboy share fell from 59.792% to 51.920%. The first player's share fell from 59.412% to 58.136%, so an opening advantage remains. The gate exits 2 (RED) on the baseline and 0 (PASS) on the candidate. That output was recorded at `c8fa7f2` and matches the archive. This edit did not rerun it.
+- **Independent review.** A separate reviewer step makes each decision ([workflow](../.kiro/workflows/night-shift-review.workflow.json)). The audit Workflow `wf_27f8bf0bb063c889` completed, and all four of its commands exited 0. A read-only Kiro CLI review checked the replay turn, both endings, the win totals and how the verifier hashes each pair. In a separate 10,000-game sample on fresh seeds, Cowboy share went from 61.04% to 52.92% ([Billy replay](evidence/billy-replay.md)).
+- **Design approval is pending.** Billy still has 2 attack.
+- **Control run.** In native Workflow `wf_3e26f2fcd93c25a1`, Kiro picked the card and the number in six attempts. The reviewer rejected all six, and one of them failed only NSB-2 ([six attempts](evidence/billy-seat-audit/README.md#native-free-choice-workflow-six-proposals-six-rejections)).
 
-[Current Showdown demo script and playtest protocol](submission/judge-demo-script.md). Alex completed the playtests. His recorded run won Boot Hill and Raven Roost. Participant count, individual first-time responses and the original build ID are undocumented. The scripted Dragon cut is private, and the public submission video is still pending.
+## Kiro features: what was actually recorded
 
-## Menu, decks and current evidence
+| Feature | Recorded | Not shown |
+| --- | --- | --- |
+| Specs | The [balance contract](../.kiro/specs/night-shift-balance-contract/requirements.md) (NSB-1 and NSB-2, plus economist and rules-lawyer reviews). The [Outrider gate](../.kiro/specs/outrider-gate/requirements.md) (G1–G7). The [Night Shift saloon](../.kiro/specs/night-shift-saloon/requirements.md) (five reviewer files). | No claim about whether these specs were written before the code. |
+| Scoped steering | [`rules-area.md`](../.kiro/steering/rules-area.md) uses `inclusion: fileMatch` on `src/game/**`. Two isolated native Kiro CLI 3.5.0 sessions loaded it for an engine read and left it out for a UI read ([steering run](evidence/showdown-scoped-steering.md)). | Scripted single turns. No IDE run. |
+| Hooks | `check-outrider-gate` on `PostFileSave`. Saving a deliberate ride-strike change failed with "0 fresh, 10 stale", and saving the revert passed with "10 fresh". Each receipt carries the Kiro session ID and the hook event name ([receipts](evidence/outrider-gate/hook-receipts.jsonl)). Separately, the native fence blocked a probe write under `src/game/` before it ran ([fence](evidence/kiro-contest-run.md#balance-run)). | IDE behaviour. Whether a failing hook is shown to the user. One double save missed the change; it was recorded and not counted. |
+| Saloon: recorded vs. live | Public builds replay only the checked-in recording. Live mode is opt-in: `?saloon=live` on a loopback HTTP page served by `scripts/night-shift-saloon.mjs`. In one native session, nine Kiro `fs_write` events reached the screen. At a 3,000 ms poll, four took 154–2,818 ms. At a 1,000 ms poll, five took 298–827 ms. This was one machine running headless Chrome ([live witness](evidence/kiro-saloon-live-witness.md)). | The 2-second target has no approved source. The file-create line appeared in 0 of 9 samples. The live check ran on an undeployed local candidate. The lifecycle audit did not re-verify the recording ([audit](evidence/native-saloon-lifecycle.md)). |
+| Workflows | `wf_87723b3404bba1fc` ([still rendered from the CLI stream](evidence/kiro-night-shift-native.png), not a screen recording). `wf_3e26f2fcd93c25a1`. `wf_27f8bf0bb063c889`. | |
 
-The retired illustrated main menu opened instructions, saved settings, achievements and the deck workbench. A player built a twelve-card Cowboy deck with large illustrated choices, selected a card to read its rules, adjusted counts and saved. [Readability checks](evidence/kiro-readable-deck-workbench.md) include desktop and phone-sized Chrome views of that build; actual phone/Safari review was not done. Showdown's deck builder is in the Camp.
+## Submission status
 
-[Watch the menu and gameplay preview](evidence/gameplay-demo/menu-and-gameplay-preview.mp4) (58.73 seconds: current deck/menu, then real gameplay recorded at `599450a`). [Current closeout ledger](kiro-closeout-queue.md) distinguishes newly checked work, historical receipts and remaining blockers. Night Watch lives in this repository at [`apps/night-watch`](../apps/night-watch/README.md). The separate [Night Watch repository](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch) is a submission mirror. Its Showdown runs so far are on-demand and staged; no clock-triggered scheduled Showdown run has completed, and no Kiro Web session has been used ([status](evidence/night-shift.md#what-ran-and-what-did-not)).
+A captioned private demo shows both Outrider choices, both Billy endings, and the recorded Saloon review. Narration, public video upload, and documented first-time player observations are pending. [Demo script](submission/judge-demo-script.md)
 
-## What is distinctive
+## Archive
 
-The haunted-Western visuals are attached to deterministic game rules. In the retired 3D build, cards became troops on a 3D board; legal tributes, positional spells, simultaneous damage and timed orb loss made the scene a playable duel rather than a prerecorded cinematic. Showdown keeps the seeded engine: the same seed reproduces the same deal, and the 3D layer will be rebuilt on it once the rules are locked.
+- **Dragon turn-five decision (November 20).** Two playable positions where the bots' better target flips between seeds 3 and 70. [Search and replay](../experiments/showdown-dragon-strategy/rival-README.md) · [browser checks](evidence/showdown-turn-k095.md)
+- **Night Watch in the Sheriff's Ledger.** Seed-range bot checks and the Sheriff rejection. [Receipts and what has not run](evidence/night-shift.md) · [reviewer](evidence/night-shift-review.md) · [Crew app](../apps/night-watch/README.md) · [mirror](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch). No Kiro Web session was used.
+- **Retired lane duel and its 3D build.** The last source is `ea183ee29dbd`. Old `/3d/` links now lead to Showdown. Lane evidence: [seed-60 route](morning-handoff.md#the-duel-to-film) · [Orb Duel spec](../.kiro/specs/orb-duel/requirements.md) · [agent](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df/.kiro/agents/duel-presenter.json) · [replay Workflow](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df/.kiro/workflows/orb-duel-replay.workflow.json) · [Power](../.kiro/powers/orb-duel-review/) ([1.1.0 receipt](evidence/kiro-power-package-fix.md)) · [release review `892cada`](evidence/kiro-release-review-892cada.md) · [character assets](evidence/kiro-character-assets.md) · [deck workbench](evidence/kiro-readable-deck-workbench.md) · [58.73-second preview](evidence/gameplay-demo/menu-and-gameplay-preview.mp4)
+- **Playtests.** Alex won Boot Hill and Raven Roost in a recorded run. The participant count, individual first-time responses and build ID are not documented ([release line](design/release-line.md)).
 
-The Kiro story is testable: a Requirements-First spec, scoped agent instructions and hooks, a saved replay Workflow, an MCP artifact reviewer (installed Power 1.1.0 passed and rejected stale copied receipts, without a new browser run: [receipt](evidence/kiro-power-package-fix.md)) that can reject stale builds, and evidence of an independent browser playtest finding a visual defect that unit tests missed. The repository attributes Kiro work separately from Fable and Codex instead of presenting every contribution as Kiro's.
-
-## Source and technical map
+## Source map
 
 | Review question | Direct link |
 | --- | --- |
-| Where are the rules and cards? | [`src/game/showdown/`](../src/game/showdown/) |
-| Where is the Camp and match flow? | [`src/match/`](../src/match/) (`showdown-*.js`) |
-| Where is the card art library? | [Art direction](../prototypes/showdown/ART-DIRECTION.md), generated by `node prototypes/showdown/export-art.mjs` |
-| Where are the tests? | [`tests/`](../tests/) |
-| What ran in Kiro? | [Brag sheet](kiro-brag-sheet.md), [Build log](kiro-build-log.md) |
-| How is deployment checked? | [GitHub Actions workflow](../.github/workflows/pages.yml), [release preflight](evidence/kiro-submission-preflight.md) |
-| What remains unfinished? | [Dated project status](PROJECT-STATUS.md) |
-
-**Disclosure:** animation feel, first-time-player clarity and judging quality require human observation. Test counts and capture descriptions refer to the linked historical evidence, not to fresh checks performed by this documentation change.
+| Rules and cards | [`src/game/showdown/`](../src/game/showdown/) |
+| Illustrated Camp, Ledger and Saloon | [`src/ui/showdown-3d/`](../src/ui/showdown-3d/), [`src/app.js`](../src/app.js) |
+| Card art | [Art direction](../prototypes/showdown/ART-DIRECTION.md) |
+| Tests | [`tests/`](../tests/) |
+| Kiro history | [Build log](kiro-build-log.md), [evidence map](kiro-brag-sheet.md) |
+| Deployment | [Pages workflow](../.github/workflows/pages.yml) |
+| Unfinished | [Project status](PROJECT-STATUS.md) |

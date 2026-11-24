@@ -8,7 +8,9 @@
 
 Showdown is the supported game. The earlier three-lane duel is archived at `ea183ee29dbd`. The `/3d/` route serves illustrated Showdown and accepts the same direct duel links as the home page.
 
-In Camp, open **Sheriff’s Ledger** to see the two verified Outrider positions and the balance review that rejected giving the Sheriff a fourth orb. The balance numbers come from bot play. [Outrider gate](docs/evidence/outrider-gate.md) · [Reproduce the Sheriff verdict](docs/evidence/night-shift/guard-sheriff-health-3-to-4/README.md)
+Open **Camp ledger → Sheriff’s Ledger** to replay one Billy duel at both 2 attack and the proposed 1 attack, starting from the same deal. In the [recorded Night Shift review](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review), you can inspect the rule and the result. Across 100,000 bot duels, the proposed change moved Cowboy wins from 59.792% to 51.920%. Billy still has 2 attack while the proposal awaits design approval. [Audit and recheck command](docs/evidence/billy-seat-audit/README.md)
+
+The **Night Shift saloon** also holds the rules desk, the recorded Dusty Pete card trial, and a 54-decision replay from the Cautious Sheriff and Reckless Wizard agent match. Its back table opens [Boot Hill Poker](https://alejandro-publius.github.io/cowboys-vs-wizards/poker/), an optional experiment. [One-minute judge walkthrough](docs/JUDGE-GUIDE.md) · [Reproduce the Saloon findings](docs/evidence/night-shift-repair/README.md)
 
 ## Card art library
 
@@ -98,6 +100,8 @@ Kiro CLI with Claude Opus 5.5 proposed each one-number change. A separate simula
 | 3 | Billy attack 2 → 1 | 60.75% → 50.25% | 59.00% → 51.00% | Pass |
 
 [Recorded run and seeds](docs/evidence/kiro-contest-run.md) · [Native workflow screenshot](docs/evidence/kiro-night-shift-native.png) · [Observed Kiro usage](docs/KIRO_USAGE.md)
+
+In a later native Kiro CLI workflow (`wf_3e26f2fcd93c25a1`) given no card choices, Kiro proposed six one-number edits, the reviewer rejected all six, and the six-attempt limit ended the loop with no live card changed. Attempt 4, Skeleton attack 1 → 2, met the 45–55% band on both seed sets (48.50% and 46.00% Cowboy wins), but the first player's tuning share rose from 58.75% to 60.00%, 1.25 points against the 1 allowed, so rule NSB-2 rejected it. Independently of those six, the fixed Billy attack 2 → 1 proposal from the original run passed on 25,000 fresh held-out seeds at 51.920% Cowboy wins (exit 0), against 59.792% for the current Billy (exit 2). [Six-attempt receipts, Billy audit and replay commands](docs/evidence/billy-seat-audit/README.md)
 
 For ongoing balance review, the separate [Night Watch Kiro Crew app](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch) compares committed game revisions on matching CPU seeds, records changes and drafts issue reports. It is an optional local development tool, **not** part of the shipped browser game. [Crew run evidence](docs/evidence/kiro-night-watch.md).
 

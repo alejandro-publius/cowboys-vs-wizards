@@ -1,5 +1,32 @@
 import {BOUNTIES, RIVALS} from "../../game/showdown/progress.js";
 import {cardArtwork} from "./table-ui.js";
+import {ledgerSectionHtml, mountNightShiftSaloon} from "./night-shift-saloon.js";
+import {createSaloonStage} from "./saloon-stage.js";
+import {mountForgeShelf} from "../forge-shelf.js";
+import {mountRulesDesk} from "../rules-desk.js";
+import {mountArenaTable} from "../arena-table.js";
+import {mountScoutRuling} from "../scout-ruling.js";
+import RECORDING from "../night-shift-recording.json" with {type: "json"};
+
+// Pure: where the staged Boot Hill Poker page sits for a page served at `base`. This build is
+// staged at the site root and at its /3d/ copy; both reach the one poker/ next to the root.
+// Opened straight from disk, a directory has no index page, so the file is named.
+export function pokerHref(base) {
+  const url = new URL(base);
+  url.search = "";
+  url.hash = "";
+  url.pathname = url.pathname.replace(/[^/]*$/, "").replace(/3d\/$/, "") + "poker/" + (url.protocol === "file:" ? "index.html" : "");
+  return url.href;
+}
+
+// Drawers behind the bar for modules other workers own. Each mounts on its first opening;
+// a mount that throws leaves a plain note and the rest of the saloon working.
+const BAR_DRAWERS = [
+  ["ruling", "Balance ruling", mountScoutRuling],
+  ["forge", "Forge shelf", mountForgeShelf],
+  ["rules", "Rules desk", mountRulesDesk],
+  ["arena", "Agent arena", mountArenaTable],
+];
 
 const RIVAL_ART = {
   stargazer: "wizard-wizard",
@@ -46,8 +73,65 @@ export function mountCampOutpost(root) {
 
   const ledger = rooms.get("camp-collection-room").content;
   ledger.append(byId("camp-report"), byId("camp-ledger"));
+  for (const slot of ledger.querySelectorAll("[data-ledger-portrait]")) {
+    const art = cardArtwork(slot.dataset.ledgerPortrait);
+    if (art) slot.append(art);
+  }
   root.querySelector(".camp-rail-utility").insertAdjacentHTML("beforeend",
     '<button type="button" data-camp-destination="camp-collection-room">Camp ledger</button>');
+
+  // The Night Shift saloon: same dialog, focus and back pattern as the other rooms.
+  const saloonRoom = document.createElement("dialog");
+  saloonRoom.className = "camp-outpost outpost-saloon outpost-wood";
+  saloonRoom.setAttribute("aria-labelledby", "outpost-saloon-title");
+  saloonRoom.innerHTML = `<header><h2 id="outpost-saloon-title">Night Shift saloon</h2><button type="button" autofocus>Back to map</button></header>
+      <div class="outpost-room"></div>`;
+  saloonRoom.querySelector("header button").addEventListener("click", () => saloonRoom.close());
+  root.append(saloonRoom);
+  rooms.set("night-shift-saloon", {room: saloonRoom, content: saloonRoom.querySelector(".outpost-room")});
+  byId("camp-ledger").insertAdjacentHTML("beforeend", ledgerSectionHtml());
+  const saloon = mountNightShiftSaloon({
+    content: rooms.get("night-shift-saloon").content,
+    recording: RECORDING,
+    portrait: cardArtwork,
+    ledger: byId("camp-ledger").querySelector(".ledger-night-shift"),
+    createStage: createSaloonStage,
+  });
+  // Under the saloon scene: the experimental second game and the bar's drawers.
+  const bar = document.createElement("footer");
+  bar.className = "outpost-saloon-bar";
+  bar.innerHTML = `<p class="outpost-side-game"><a class="outpost-poker-link"></a>
+      <span class="sd-note">Experimental second game. Opens its own page.</span></p>`;
+  const poker = bar.querySelector(".outpost-poker-link");
+  poker.textContent = "Boot Hill Poker";
+  poker.href = pokerHref(document.baseURI);
+  for (const [key, label, mount] of BAR_DRAWERS) {
+    const drawer = document.createElement("details");
+    drawer.className = `outpost-drawer outpost-drawer-${key}`;
+    const summary = document.createElement("summary");
+    summary.textContent = label;
+    const host = document.createElement("div");
+    host.className = "outpost-drawer-host";
+    drawer.append(summary, host);
+    let mounted = false;
+    drawer.addEventListener("toggle", () => {
+      if (!drawer.open || mounted) return;
+      mounted = true;
+      try {
+        mount(host);
+      } catch {
+        host.textContent = `The ${label.toLowerCase()} could not open.`;
+      }
+    });
+    bar.append(drawer);
+  }
+  saloonRoom.append(bar);
+  saloonRoom.addEventListener("close", () => {
+    saloon.closed();
+    if (current === saloonRoom) current = null;
+  });
+  root.querySelector('[data-camp-destination="camp-collection-room"]').insertAdjacentHTML("afterend",
+    '<button type="button" data-camp-destination="night-shift-saloon">Night Shift saloon</button>');
 
   const practice = rooms.get("camp-practice").content;
   const replays = document.createElement("details");
@@ -76,6 +160,7 @@ export function mountCampOutpost(root) {
     control.focus({preventScroll: true});
     room.showModal();
     current = room;
+    if (room === saloonRoom) saloon.opened();
   }
 
   function open(id, control = root.querySelector(`[data-camp-destination="${id}"]`)) {
@@ -104,6 +189,12 @@ export function mountCampOutpost(root) {
 
   return {
     close, open, dressNotices,
+    // ?saloon=review: the normal Saloon entry, with the recorded room set to the archived decision first.
+    // Without a decision that checks out, the room opens at its usual start.
+    openSaloonReview() {
+      saloon.review();
+      return open("night-shift-saloon");
+    },
     restoreFocus(control) {
       const room = control.closest(".camp-outpost");
       if (!room) return false;

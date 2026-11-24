@@ -1,5 +1,98 @@
 # Judge demo script
 
+## November 23 recording script: title to one Kiro decision
+
+Drafted November 23, 2026 with Claude Code from Showdown revision `c8fa7f2`. The private captioned draft uses scripted Chrome footage of the two Outrider choices, the Billy replays, and the Saloon review from the local contest build at `35d7447`. This shot list guides the narrated cut. The [78-second cut](#november-22-illustrated-showdown-demo) is an earlier reference.
+
+The cut opens on the illustrated title and plays the Ride or Fight? turn. It then opens one Kiro decision in the Sheriff's Ledger, Billy's attack 2 → 1, and replays it both ways. The candidate passed the written gate and is awaiting design approval. The cut ends with the spec, steering, and a save hook that caught a stale build. The planned runtime is 2:35.
+
+### Before recording
+
+1. Put the filmed build's `build.json` commit in the persistent caption. The **Ride or Fight?** plaque appears only when the Outrider gate verified `case-e` at build time (`src/app.js:168`). No plaque means no verified position, so stop.
+2. In the Sheriff's Ledger the first replay button must read **Current Billy · 2 attack**. "Recorded Billy" means the live card changed and beat 5 is wrong. Stop and rewrite it.
+3. Use a fresh browser profile and play footage at recorded speed. Holding a real frame is allowed. If moves are scripted, keep the Dragon cut's top caption (scripted, build, not a human playtest).
+4. Labels below come from source at `c8fa7f2`. Where the filmed build differs, change this table to match the frames, never the reverse.
+
+### Shot list
+
+| # | Time | Picture (clicks in **bold**) | Narration (planned) | Source for each claim |
+| --- | --- | --- | --- | --- |
+| 1 | 0:00–0:10 | Illustrated title at the root URL, held. | Showdown is a haunted-Western card duel that runs in a browser. You choose every attack, and your troops shield your Base. | [README](../../README.md#play-showdown) |
+| 2 | 0:10–0:32 | **Ride or Fight?** Lesson: "Choose the Outrider. Attack a troop, or ride past it to the Wizard Base." **Outrider**, **Wizard Base**, **End turn**. Then **Restart this duel**, **Outrider**, **Skeleton**. | Ride or Fight opens a real turn at the Bone Fence. Your Outrider can strike the Skeleton, or ride past it and hit the Wizard Base. Restart puts the same turn back, so you can try the other choice. | `src/app.js:163`. Board is Ledger "Position 1": turn 3, Outrider on 2 orbs, Skeleton on 3, Bases 5 and 4 ([still](../evidence/outrider-gate/ledger-revealed.png)) |
+| 3 | 0:32–0:45 | **Back to camp**. Per source, the Camp reopens its Practice room on the Outrider control. **Back to map**, **Camp ledger**, **Sheriff's Ledger**. Hold on "Turn 7 · Seed 726421019 · Cowboys first". | Camp keeps a ledger of what the balance agents measured and proposed. Here is one decision from Kiro's balance agent: lower Billy's attack from two to one. | `src/app.js:62–78`, `camp-outpost.js`; [Kiro run](../evidence/kiro-contest-run.md), attempt 3 |
+| 4 | 0:45–1:15 | **Current Billy · 2 attack**, **Next step** ×3, ending "Step 4 of 4 · The Cowboys win on turn 13." **Proposed Billy · 1 attack**, **Next step** ×3: "The Bone Wall loses 1 orb and survives with 1 orb", then "The Wizards win on turn 20." | The ledger replays one recorded deal both ways. The first twenty-nine events are identical. At two attack, Billy clears the Bone Wall and the Cowboys win on turn thirteen. At one, the Wall survives on one orb and the Wizards win on turn twenty. | [`billy-replay.data.js`](../../src/ui/billy-replay.data.js), [`billy-replay.js`](../../src/ui/billy-replay.js), [Billy replay](../evidence/billy-replay.md) |
+| 5 | 1:15–1:40 | Ledger line "Billy has 2 attack in this build. Night Shift marked the one-point proposal ready for design review." Cut to a terminal: `node scripts/billy-balance-gate.mjs --arm candidate` (PASS, exit 0), then `--arm baseline` (RED, exit 2). Caption: **Evidence: passed the written gate. Card: unchanged, awaiting design approval.** | Two separate approvals. The evidence passed. In a hundred thousand paired bot duels, the proposal measured fifty-two percent Cowboy wins, inside the approved forty-five to fifty-five band. The current card measured sixty. The card itself has not changed. Billy keeps two attack until the design owners approve it. | [Billy seat audit](../evidence/billy-seat-audit/README.md); rerun below. The band is the approved one in the [release line](../design/release-line.md) (PR 168) |
+| 6 | 1:40–2:02 | Kiro IDE showing three files: `.kiro/specs/night-shift-balance-contract/requirements.md` (NSB-1, NSB-2, "The balancer agent never edits this file"); `.kiro/steering/rules-area.md` front matter (`inclusion: fileMatch`, `src/game/**`); `.kiro/hooks/check-outrider-gate.json` (`PostFileSave` → `node scripts/check-outrider-gate-hook.mjs`). | That band is a written spec. The balancing agent is blocked from editing it and may change one number in a scratch copy. Steering loads by area, so rules work carries the rules guidance. Hooks run checks when a file is saved. | Spec file; [fence block](../evidence/kiro-contest-run.md); [native steering run](../evidence/showdown-scoped-steering.md) (reading an engine file loaded `rules-area.md`) |
+| 7 | 2:02–2:25 | `docs/evidence/outrider-gate/hook-receipts.jsonl` lines 10–11. 21:14:00.985Z `failed`: "Ledger: stale; links none; camp none … Outrider gate: 0 fresh, 10 stale". 21:14:23.836Z `passed`: "10 fresh, 0 stale". Then [ledger-stale.png](../evidence/outrider-gate/ledger-stale.png). | One save shows why. A trial edit made a ride past troops hit for two instead of one. The save hook replayed all ten recorded positions and marked all ten stale, and the stale build left them out of the Camp. Reverting the edit restored all ten. | [Outrider gate](../evidence/outrider-gate.md) (mutation, G7, receipts 10–13); [stale build receipt](../evidence/outrider-gate/build-receipt-stale.json) |
+| 8 | 2:25–2:35 | Title held, plain caption with the game URL. | Fixed bots produced every number here. First-time player results are still pending. Play Showdown at the link below. | [Three-player protocol](#three-first-time-players) |
+
+Beat 7's receipts carry Kiro session `sess_2109871e…` and `hook_event_name: "PostFileSave"`, which a manual run lacks. The stale build was a graybox mutation build in the `ce6bdfe` era. No stale illustrated root has been filmed. "Left them out of the Camp" rests on that build's receipt and its six-check browser run.
+
+For an optional ten-second shot after beat 6, choose **Camp** from the title, open **Night Shift saloon**, and press **Step** three times. Hold on the **Review of Kiro's proposal** notice. The replay reveals the written balance rule, measured shares, source revision, and recheck command. This recorded route and its reset passed fresh Chrome checks at 1440×900 and 390×844, with zero live feed requests.
+
+### Where the editor finds each artifact
+
+| ID | Artifact | Location | Status |
+| --- | --- | --- | --- |
+| P | 78-second illustrated cut, Pages `d0bbd14` | This checkout records only its content and revision. [Kiro contest run](../evidence/kiro-contest-run.md) says Codex recorded it from the verified Pages bytes. Ask the coordinator for the file, receipt and timecodes. | EXISTS. Location, hash and in/out points unrecorded |
+| D | 85.4-second Dragon cut | `judge-media/Showdown_Dragon_Decision.mp4` and receipt, private, outside Git | EXISTS. Not used here |
+| G | Beats 1–5, gameplay and Ledger | Local contest build `35d7447` | Captured in the private draft |
+| T | Gate terminal (beat 5) | Rerun on camera. Needs no Git or installed dependencies (run here without either) | Text recorded below; capture NEEDED |
+| S, ST, H | Spec, steering, hook (beat 6) | Paths in beat 6 | Files EXIST; capture NEEDED |
+| R | Hook receipts, stale Ledger (beat 7) | `docs/evidence/outrider-gate/`: `hook-receipts.jsonl`, `ledger-stale.png`, `build-receipt-stale.json` | EXIST as text and graybox stills |
+| W | Native Workflow `wf_87723b3404bba1fc` | [`kiro-night-shift-native.png`](../evidence/kiro-night-shift-native.png) | EXISTS. Rendered from the Kiro CLI 3.5.0 JSONL stream, not a screen recording |
+| N | Three-attempt results card | [`kiro-night-shift-results.png`](../evidence/kiro-night-shift-results.png) | EXISTS. Designed summary card that names another AI product. Owner approval needed |
+| SL | Saloon (optional) | **Camp** → **Night Shift saloon** → **Step** ×3 | Captured in the private draft |
+| V | Narration | — | NEEDED, owner's voice |
+
+### Judging criteria: claims a judge can check
+
+| Criterion | Claim | How to audit it | Open gap |
+| --- | --- | --- | --- |
+| Potential Impact | One click from the title reaches a verified decision. A card's balance evidence sits in the game beside a replay anyone can step through. | `check-pages-tree.mjs --browser`: "the illustrated title opens the playable Ride or Fight? challenge" ([release checks](../evidence/illustrated-contest-release.md), `3c5bb34`) | No first-time player observations recorded for this release |
+| Technological Implementation | A written spec sets the gate (NSB-1, NSB-2). A fenced agent proposes one number, and a separate reviewer decides. The gate re-derives 100,000 recorded duels before it reads the spec. | Gate commands below; [fence](../evidence/kiro-contest-run.md); [steering](../evidence/showdown-scoped-steering.md); [hook receipts](../evidence/outrider-gate/hook-receipts.jsonl) | Sheriff replay and Billy replay verifier need Git history (not rerun here) |
+| Design | One supported path: title → challenge → Camp map → Camp ledger. Replay buttons never move keyboard focus. | `wireBillyReplay` in `src/ui/billy-replay.js`; `src/ui/showdown-3d/camp-outpost.js` | Safari and real-phone checks pending |
+| Innovation | A position ships only while both of its choices replay exactly as measured, and the title plaque depends on that check. | [Outrider gate spec](../../.kiro/specs/outrider-gate/requirements.md) G1–G3; mutation and control in the [evidence](../evidence/outrider-gate.md) | Results assume a fixed greedy policy and the level-0 bot; the pre-registered cue was unsupported (3 of 7) |
+| Presentation | Every on-screen number traces to a file above. Scripted moves are labelled. About 2:35 with narration. | This script | Captioned draft exists. Narration and upload pending |
+
+### Patterns from competing projects
+
+For internal editing, these patterns came from the entrants’ READMEs.
+
+- **A measurable gate inside the product (GOLEM):** the Outrider gate and NSB rules, in beats 2, 5 and 7.
+- **Visible agent activity (Séance):** the optional Saloon beat and the on-screen hook receipts.
+- **Exposed review evidence (Janus):** the Ledger's "How to verify this replay" and "Check each version against the written rule" panels.
+
+Keep competitor names out of the video. The rules bar third-party trademarks ([rules check](rules-check.md#risks-to-settle-before-submitting)). That also covers the Ledger's "Fable and Alex decide" line, the gate's "Fable/Alex" output line and browser chrome. Crop them, or leave the call to the owner.
+
+### Do not claim
+
+- That Billy's change was applied, or that any card is balanced.
+- That bot shares predict human results.
+- That the title plaque was seen disappearing on a stale illustrated build.
+- That the public build shows live Kiro activity, or that the Saloon meets a two-second target.
+- Any playtest count, usage or credit figure, new UI or rule change.
+
+### Verification for this edit (November 23)
+
+These ran in the `c8fa7f2` snapshot, which has no Git metadata and no installed dependencies. Hashes are shortened.
+
+```text
+$ node scripts/billy-balance-gate.mjs --arm baseline     # exit 2
+Evidence re-derived: 100000 duels match result.json (protocol SHA-256 19505748…69b3, CSV SHA-256 94716782…706f).
+NSB-1 RED: Cowboy 59.792%, Wizard 40.208%; allowed 45% to 55% inclusive
+NSB-2 PASS: first-seat distance from 50% 9.412 pp (baseline 9.412 pp); allowed at most 10.412 pp (+1)
+Overall RED. Do not forward this candidate.
+
+$ node scripts/billy-balance-gate.mjs --arm candidate    # exit 0
+Evidence re-derived: 100000 duels match result.json (same hashes).
+NSB-1 PASS: Cowboy 51.92%, Wizard 48.08%; allowed 45% to 55% inclusive
+NSB-2 PASS: first-seat distance from 50% 8.136 pp (baseline 9.412 pp); allowed at most 10.412 pp (+1)
+Overall PASS. Measured match shares meet NSB-1 and NSB-2. Ready for Fable/Alex review only; not applied to any card or release.
+```
+
+Both match the [archived verdicts](../evidence/billy-seat-audit/README.md). Chrome confirmed both Outrider targets from the title challenge and both Billy replay endings from the Ledger on the local contest build. The captioned draft captured both routes. Narration is pending.
+
 ## November 22 illustrated Showdown demo
 
 The 78-second scripted cut opens on Hellfire, shows the two Outrider choices from the same Bone Fence position, then shows the Kiro gate, the Sheriff rejection and the Night Shift balance results. The captured game is the public Pages revision `d0bbd142eb2d3ff64c491b892f12587a016d01e8`. [Play the release](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Build identity and Kiro evidence](../evidence/kiro-contest-run.md)

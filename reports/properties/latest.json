@@ -1,0 +1,324 @@
+{
+  "schema": "cvw-property-receipt/1",
+  "generator": "showdown-dec4-properties/1",
+  "ruleset": "showdown",
+  "commit": "e1e2d325958b82c5f99e54c4831484901d994508",
+  "generatedAt": "2026-11-23T04:45:35.221Z",
+  "authorship": {
+    "draft": "Claude Code: scripts/showdown-dec4-properties.mjs (19 properties, generators, runner, CLI)",
+    "completion": "Kiro CLI, native-handoff-properties agent: stable-log-replay, scorecard receipt fields, tests/game/dec4-showdown-properties.test.js"
+  },
+  "command": "node scripts/showdown-dec4-properties.mjs --runs 25 --seed 57028",
+  "params": {
+    "baseSeed": 57028,
+    "numRuns": 25,
+    "only": null,
+    "path": null
+  },
+  "fingerprint": {
+    "algorithm": "sha256",
+    "digest": "f6736165adf3eb47f96375b4527ddf8372e7d15111377dc87d05ef3e21a4fc37",
+    "fastCheck": "4.11.0",
+    "files": [
+      {
+        "path": "prototypes/showdown/RULEBOOK.md",
+        "sha256": "ce837fec8dfc8e4a9a9e8f630f831a2acc617758f101e5618569a3440f3f1a85"
+      },
+      {
+        "path": "prototypes/showdown/progress.js",
+        "sha256": "783ea7194c87f7000c68313f7cd791627e282b1ecec5a5af3a8b3a7ee51a34e8"
+      },
+      {
+        "path": "prototypes/showdown/trail.js",
+        "sha256": "0593f0b332c5ff3b0c9c8e70388fa9329c66223ab7346d05453e1e5c8bf904b3"
+      },
+      {
+        "path": "scripts/contest-gate-properties.mjs",
+        "sha256": "64ed0499922137a025e78febe80947d56d67f436fbfe7854b961d89294bb6b0c"
+      },
+      {
+        "path": "scripts/showdown-dec4-properties.mjs",
+        "sha256": "48c2d53c8ee0e6267ee446d31cc01e4a15976e3026a81b03a14c9d6669df5791"
+      },
+      {
+        "path": "src/game/card-specs.generated.js",
+        "sha256": "187bb9ca71516227e67edd9f6e248e038ae20028e7e3333b6fa28bdf18b40a8b"
+      },
+      {
+        "path": "src/game/cards.js",
+        "sha256": "e40da80d148c0c2f1743dd00f17550e0e20766dc10a247ab8f1d8d3f3536d6be"
+      },
+      {
+        "path": "src/game/deck-builder.js",
+        "sha256": "1843d838dabfdea9689b71f3d00ea395ced4cc362897fbffa3db47f70ec529ec"
+      },
+      {
+        "path": "src/game/showdown/cards.js",
+        "sha256": "2e9c3c7df707c43bc61b6481b801211de4fabd6ada87d9aa35d52330b868ffe1"
+      },
+      {
+        "path": "src/game/showdown/contract.js",
+        "sha256": "85a356ee3ff9b530162cca870eefead5fb773e45d857b95cfed125e942f1b2be"
+      },
+      {
+        "path": "src/game/showdown/progress.js",
+        "sha256": "e25b8db3093226fc5acb331c0abef74359b9271c71d0cf9706e40ad64510d3f1"
+      },
+      {
+        "path": "src/game/showdown/rules.js",
+        "sha256": "611b8837bc4b53986365a2bbb1a220b3ea8c3338545c6ba76c6142cb714a3b1d"
+      },
+      {
+        "path": "src/game/showdown/trail.js",
+        "sha256": "8fa27db59ee2d6cceaecd72012c198c6ef00d98c88994866509cfe51704fd528"
+      },
+      {
+        "path": "src/game/state.js",
+        "sha256": "bfac48a0f358a3138217dcb2626d80c132541cc601eb10a94d5b5188221ce397"
+      },
+      {
+        "path": "tests/helpers/boundary-properties/invariants.js",
+        "sha256": "d29c225c13dd8489300e3957af183630575e629d5708ad44f1926368efbfbe16"
+      },
+      {
+        "path": "tests/helpers/boundary-properties/rng.js",
+        "sha256": "6b6826911558d368690c9bd1c5e25741054b84a1a32e708b77030fe90ff099b0"
+      },
+      {
+        "path": "tests/helpers/boundary-properties/showdown/engine.js",
+        "sha256": "1438105fbb009340ae0841c0106bce6c6f21c8346c0d820833e8c11558dc8a04"
+      },
+      {
+        "path": "tests/helpers/boundary-properties/showdown/generate.js",
+        "sha256": "f61dd2e80f9beb5d3fce71fb56897e9b021c9d5eb1c821dd155d8af46ca11100"
+      }
+    ]
+  },
+  "turnCap": {
+    "engine": 80,
+    "stepGoal": 60,
+    "kept": "engine",
+    "note": "TURN_CAP is 80 (rules.js; RULEBOOK §10 \"after turn 80\") and is kept. The Step 6 brief's 60-turn goal is not asserted: a createShowdown Base override plays to turn 81. rules-fatigue-clock reports the games that ended after turn 60."
+  },
+  "summary": {
+    "properties": 20,
+    "passed": 20,
+    "failed": 0,
+    "runs": 500
+  },
+  "properties": [
+    {
+      "id": "rb3-deal",
+      "name": "the deal gives each side its declared deck: 4 cards, 5 for the second side, nothing lost or doubled",
+      "file": "tests/game/dec4-showdown-properties.test.js",
+      "status": "passed",
+      "numRuns": 25,
+      "runs": 25,
+      "passed": true,
+      "seed": 1270087447
+    },
+    {
+      "id": "rb2-card-zones",
+      "name": "every card is in exactly one zone of its owner, and each zone holds only its kind of card",
+      "file": "tests/game/dec4-showdown-properties.test.js",
+      "status": "passed",
+      "numRuns": 25,
+      "runs": 25,
+      "passed": true,
+      "seed": -1255543432
+    },
+    {
+      "id": "rb2-frame",
+      "name": "only fights, spells, tributes and traps remove troops; only attacks and fatigue cost Base orbs",
+      "file": "tests/game/dec4-showdown-properties.test.js",
+      "status": "passed",
+      "numRuns": 25,
+      "runs": 25,
+      "passed": true,
+      "seed": -1358521451
+    },
+    {
+      "id": "rb5-targets",
+      "name": "attack targets obey Guard, the open Base and Ride",
+      "file": "tests/game/dec4-showdown-properties.test.js",
+      "status": "passed",
+      "numRuns": 25,
+      "runs": 25,
+      "passed": true,
+      "seed": -2049871237
+    },
+    {
+      "id": "rb5-who-acts",
+      "name": "a troop attacks only when rested, unstunned, armed and not yet acted; any troop that has not acted may take cover",
+      "file": "tests/game/dec4-showdown-properties.test.js",
+      "status": "passed",
+      "numRuns": 25,
+      "runs": 25,
+      "passed": true,
+      "seed": 58444293
+    },
+    {
+      "id": "rb4-card-plays",
+      "name": "one troop, one spell, gear or location and one trap a turn, all before any troop acts, at the right tribute",
+      "file": "tests/game/dec4-showdown-properties.test.js",
+      "status": "passed",
+      "numRuns": 25,
+      "runs": 25,
+      "passed": true,
+      "seed": -8218558
+    },
+    {
+      "id": "rb4-turn-boundary",
+      "name": "ending a turn stands the next side up, recovers the ender's stuns and draws exactly once",
+      "file": "tests/game/dec4-showdown-properties.test.js",
+      "status": "passed",
+      "numRuns": 25,
+      "runs": 25,
+      "passed": true,
+      "seed": -1771351390
+    },
+    {
+      "id": "rb5-fight-numbers",
+      "name": "a fight's damage, overflow, cover and hit-back follow the troops' attack values",
+      "file": "tests/game/dec4-showdown-properties.test.js",
+      "status": "passed",
+      "numRuns": 25,
+      "runs": 25,
+      "passed": true,
+      "seed": 1399060344
+    },
+    {
+      "id": "rb9-sweep-last-stand",
+      "name": "Sweep and Last Stand settle after the fight, and Sweep never reaches a Base",
+      "file": "tests/game/dec4-showdown-properties.test.js",
+      "status": "passed",
+      "numRuns": 25,
+      "runs": 25,
+      "passed": true,
+      "seed": -1766389575
+    },
+    {
+      "id": "rb7-traps",
+      "name": "the oldest trap springs on each enemy attack, one per attack, and the attack still spends the troop",
+      "file": "tests/game/dec4-showdown-properties.test.js",
+      "status": "passed",
+      "numRuns": 25,
+      "runs": 25,
+      "passed": true,
+      "seed": -1727782353
+    },
+    {
+      "id": "rb8-gear-locations",
+      "name": "gear stays and adds; one location for the table, replaced to its owner's graveyard, never over itself",
+      "file": "tests/game/dec4-showdown-properties.test.js",
+      "status": "passed",
+      "numRuns": 25,
+      "runs": 25,
+      "passed": true,
+      "seed": -42739224
+    },
+    {
+      "id": "rb9-arrivals",
+      "name": "tributes pay first, Scout draws, Raise returns the last Undead, and bosses land when due",
+      "file": "tests/game/dec4-showdown-properties.test.js",
+      "status": "passed",
+      "numRuns": 25,
+      "runs": 25,
+      "passed": true,
+      "seed": 1273663481
+    },
+    {
+      "id": "rb10-spells",
+      "name": "spells reach only legal targets: Ghostly cannot be chosen, no second stun, Hellfire hits every enemy troop",
+      "file": "tests/game/dec4-showdown-properties.test.js",
+      "status": "passed",
+      "numRuns": 25,
+      "runs": 25,
+      "passed": true,
+      "seed": -1188921940
+    },
+    {
+      "id": "rb1-game-end",
+      "name": "the game ends exactly when a Base reaches 0 or after turn 80, and nothing is legal afterwards",
+      "file": "tests/game/dec4-showdown-properties.test.js",
+      "status": "passed",
+      "numRuns": 25,
+      "runs": 25,
+      "passed": true,
+      "seed": 118649545
+    },
+    {
+      "id": "rules-fatigue-clock",
+      "name": "an empty deck ends every game by turn 2 x (deck + Base) + 1 for either side, within the turn cap",
+      "file": "tests/game/dec4-showdown-properties.test.js",
+      "status": "passed",
+      "numRuns": 25,
+      "runs": 25,
+      "passed": true,
+      "seed": -808766249,
+      "observed": {
+        "games": 25,
+        "maxFinalTurn": 81,
+        "maxDuelBaseBound": 32,
+        "turnCapEndings": 4,
+        "pastGoal": {
+          "turn": 60,
+          "duelBases": 0,
+          "baseOverride": 4
+        }
+      }
+    },
+    {
+      "id": "contract-hidden-invariance",
+      "name": "a seat's view does not change when the cards hidden from it are dealt again",
+      "file": "tests/game/dec4-showdown-properties.test.js",
+      "status": "passed",
+      "numRuns": 25,
+      "runs": 25,
+      "passed": true,
+      "seed": 1931755921
+    },
+    {
+      "id": "contract-public-agreement",
+      "name": "both seats see the same, true public table, and each sees its own hand and traps",
+      "file": "tests/game/dec4-showdown-properties.test.js",
+      "status": "passed",
+      "numRuns": 25,
+      "runs": 25,
+      "passed": true,
+      "seed": 1960887534
+    },
+    {
+      "id": "contract-count-accounting",
+      "name": "every change to a hidden zone's size is announced by an event",
+      "file": "tests/game/dec4-showdown-properties.test.js",
+      "status": "passed",
+      "numRuns": 25,
+      "runs": 25,
+      "passed": true,
+      "seed": -170657443
+    },
+    {
+      "id": "stable-json-replay",
+      "name": "a JSON copy of any reachable state is the same state and plays on identically",
+      "file": "tests/game/dec4-showdown-properties.test.js",
+      "status": "passed",
+      "numRuns": 25,
+      "runs": 25,
+      "passed": true,
+      "seed": 638127505
+    },
+    {
+      "id": "stable-log-replay",
+      "name": "applyAction leaves its input unchanged, and the seed plus the action log replay the whole game",
+      "file": "tests/game/dec4-showdown-properties.test.js",
+      "status": "passed",
+      "numRuns": 25,
+      "runs": 25,
+      "passed": true,
+      "seed": 931290303
+    }
+  ],
+  "errors": [],
+  "stableSha256": "fccd293bbb4879c303cf584dabeb7ef2071c7cfddaf5b03f6fda020b05c04251"
+}

@@ -1,0 +1,43 @@
+{
+  "name": "saloon-agent-arena",
+  "description": "Kiro Agent Arena: after the release-gate preflight, the referee prepares .artifacts/agent-arena/; the Cautious Sheriff and the Reckless Wizard each write their own data-only Showdown playbook once, in separate fenced steps; then the independent referee plays the seeded series from both starting seats on the real Showdown engine and verifies it (playbook digests, every replay decision, the whole series). Writes only .artifacts/agent-arena/. Changes no card, rule or game file, opens no PR and merges nothing.",
+  "inputs": {},
+  "steps": [
+    {
+      "type": "step",
+      "id": "release-preflight",
+      "agent": "contest-balance-preparer",
+      "prompt": "Release-gate preflight. Run exactly once from the project root, using the shell tool: node scripts/contest-release-gate.mjs release\nIt can take over ten minutes. Give the shell tool a long timeout (at least 20 minutes) if it supports one. Do not say it ran or passed unless the shell tool returned its real terminal exit status; do not report partial, estimated or simulated results. Run it only once, add no arguments, pipes or redirects, run no other command and edit no file. Report the exit status and only the short final gate output.\nStep completion: send_message to sessionId \"parent\" only. Only exit 0 with the printed line \"contest gate: release checks passed; stamp written\": severity \"success\". Any nonzero exit, a timeout, or a command that could not run or finish: severity \"error\", quoting the short failure output, so the run terminates."
+    },
+    {
+      "type": "step",
+      "id": "arena-setup",
+      "agent": "showdown-arena-referee",
+      "prompt": "Arena setup. From the project root, using the shell tool, run exactly these two commands in this order, each once:\n1. node --test tests/match/agent-arena.test.js\n2. node experiments/agent-arena/arena.mjs prepare\nRun the second only if the first exits 0. Add no arguments, pipes or redirects, run no other command and edit no file. Report each exit status, the test pass and fail counts and prepare's printed lines exactly.\nStep completion: send_message to sessionId \"parent\" only. Both commands returned exit 0 and prepare printed a line starting \"agent arena prepared:\": severity \"success\". Any nonzero exit, a command that did not run or finish, or missing output: severity \"error\", quoting the short failure output, so the run terminates."
+    },
+    {
+      "type": "step",
+      "id": "sheriff-playbook",
+      "agent": "cautious-sheriff",
+      "prompt": "Follow your agent instructions: read .artifacts/agent-arena/brief.json and write your one playbook, once, to .artifacts/agent-arena/playbooks/cautious-sheriff.json. Before the write, check each field's JSON type against the brief's playbook.format and playbook.shape: list fields are JSON arrays even with one entry or none, cover.when is one bare string and never an array, summon.maxTributes is an unquoted number and spell.onlyToKill an unquoted boolean. The values are your own choice. Write no other file and do not read the rival's playbook.\nStep completion: send_message to sessionId \"parent\" only, a short text naming the file you wrote and one sentence per playbook section. Severity \"success\" only if the write tool reported the file written; severity \"error\" if the write was refused or failed. Claim no result; the referee has not played."
+    },
+    {
+      "type": "step",
+      "id": "wizard-playbook",
+      "agent": "reckless-wizard",
+      "prompt": "Follow your agent instructions: read .artifacts/agent-arena/brief.json and write your one playbook, once, to .artifacts/agent-arena/playbooks/reckless-wizard.json. Before the write, check each field's JSON type against the brief's playbook.format and playbook.shape: list fields are JSON arrays even with one entry or none, cover.when is one bare string and never an array, summon.maxTributes is an unquoted number and spell.onlyToKill an unquoted boolean. The values are your own choice. Write no other file and do not read the rival's playbook.\nStep completion: send_message to sessionId \"parent\" only, a short text naming the file you wrote and one sentence per playbook section. Severity \"success\" only if the write tool reported the file written; severity \"error\" if the write was refused or failed. Claim no result; the referee has not played."
+    },
+    {
+      "type": "step",
+      "id": "referee-play",
+      "agent": "showdown-arena-referee",
+      "prompt": "You are the independent referee and wrote neither playbook. Run exactly once from the project root, using the shell tool: node experiments/agent-arena/arena.mjs play\nIt strictly validates both playbooks (exit 2 names every schema problem and writes status.json stage \"rejected\"), plays every deal of the brief's series from both starting seats on the Showdown engine, and writes results.json and replay.json. Add no arguments, pipes or redirects, run no other command and edit no file. Report the exit status and every printed line exactly; then read .artifacts/agent-arena/results.json and report each persona's policy digest (first 12 characters).\nStep completion: send_message to sessionId \"parent\" only. Exit 0 with a printed line starting \"agent arena played:\": severity \"success\". Exit 2 (a rejected or missing playbook), any other nonzero exit or a command that did not run or finish: severity \"error\", quoting the printed problems, so the run terminates."
+    },
+    {
+      "type": "step",
+      "id": "referee-verify",
+      "agent": "showdown-arena-referee",
+      "prompt": "Run exactly once from the project root, using the shell tool: node experiments/agent-arena/arena.mjs verify\nIt re-validates both playbooks, checks their file and policy digests against results.json, checks the engine fingerprint and the replay digest, re-runs every recorded replay decision through the engine and the playbook, and replays the whole series. Add no arguments, pipes or redirects, run no other command and edit no file. Report the exit status and printed lines exactly, and whether .artifacts/agent-arena/status.json has pass true. State that the run surface was the local CLI and that no card, rule or game file changed.\nStep completion: send_message to sessionId \"parent\" only. Exit 0 with a printed line starting \"agent arena verified:\" and status pass true: severity \"success\". Any nonzero exit, a command that did not run or finish, or pass not true: severity \"error\", quoting the printed problems."
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "schema": "referee-prove-receipt/1",
+  "key": "6e2f2f904791e114e177577277ca4efee52a59b2d9b1e23d751daba2fa16fcd6",
+  "mode": "full",
+  "startedAt": "2026-11-23T07:32:59.285Z",
+  "finishedAt": "2026-11-23T07:33:28.147Z",
+  "oracle": {
+    "entry": "proof/referee/referee.py",
+    "treeSha256": "b37a1478c683a42b61b1fa51c83ee07cf4f7dd2486bb5b5d5d7fde64ea611f8d",
+    "header": {
+      "framing": "results",
+      "schema": null
+    }
+  },
+  "engineSchema": "showdown-referee/1",
+  "corpus": {
+    "sha256": "81ece1a289649fca55e95040872892f357f3782692e953b810eb7e207bc9e0ff"
+  },
+  "recipe": {
+    "name": "full",
+    "count": 2500,
+    "minMoves": 100000,
+    "seedStart": 1,
+    "fresh": 0,
+    "freshSeeds": [],
+    "probeRate": 0.2,
+    "policies": {
+      "sampler": 4,
+      "bot0": 1,
+      "bot1": 2,
+      "bot1.5": 1,
+      "bot2": 1
+    }
+  },
+  "inputs": {
+    "sha256": "fb37abc02f7425ad5cb232a51056d8bc4163de63cb7b764b1b5cf5075104fa11",
+    "duels": 2500
+  },
+  "baseline": {
+    "head": "4bdd86b450981bebcbd5099bc6014e16f9595009",
+    "engineSha256": "b1d2d3d073ba4feb3f2bd2a5f48b8b16313bed16c350a6ab82e1b3ddf6b64dec",
+    "showdownTreeSha256": "fae6f297ccfa8a46d7acb5ecf4c3c61a50517373108cb7f4b13e63b05fceef8f"
+  },
+  "complete": true,
+  "errors": [],
+  "counts": {
+    "duels": 2500,
+    "distinctSeeds": 2500,
+    "distinctDeals": 2500,
+    "initialStates": 2500,
+    "actions": 155868,
+    "accepted": 129796,
+    "rejected": 26072,
+    "byType": {
+      "location": {
+        "accepted": 1152,
+        "rejected": 83
+      },
+      "end": {
+        "accepted": 38666,
+        "rejected": 4
+      },
+      "summon": {
+        "accepted": 30971,
+        "rejected": 5133
+      },
+      "attack": {
+        "accepted": 31278,
+        "rejected": 12671
+      },
+      "set": {
+        "accepted": 4629,
+        "rejected": 310
+      },
+      "gear": {
+        "accepted": 2234,
+        "rejected": 378
+      },
+      "cover": {
+        "accepted": 14252,
+        "rejected": 5663
+      },
+      "spell": {
+        "accepted": 6614,
+        "rejected": 1830
+      }
+    },
+    "completed": 2477,
+    "completedDistinctSeeds": 2477,
+    "completedDistinctDeals": 2477,
+    "mismatchDuels": 45,
+    "mismatches": 2613,
+    "mismatchesByKind": {
+      "rejected-by-engine": 92,
+      "state": 2268,
+      "rejected-by-referee": 253
+    },
+    "firstDivergence": {
+      "duel": 108,
+      "seed": 109,
+      "step": 1,
+      "turn": 1,
+      "kind": "rejected-by-engine"
+    },
+    "earliestDivergentTurn": 1,
+    "unsupported": 0,
+    "unsupportedSample": [],
+    "oracleViolations": 0,
+    "oracleViolationSample": []
+  },
+  "mismatches": {
+    "count": 2613,
+    "duels": 45,
+    "byKind": {
+      "rejected-by-engine": 92,
+      "state": 2268,
+      "rejected-by-referee": 253
+    },
+    "sha256": "fe88690031fdd4bd1e8538030a4a2db63e48e31dcde572c34cfc0a985b9ca426",
+    "file": "first-run-6e2f2f904791e114e177577277ca4efee52a59b2d9b1e23d751daba2fa16fcd6.mismatches.jsonl"
+  },
+  "kind": "first-run"
+}

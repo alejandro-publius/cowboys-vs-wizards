@@ -1,0 +1,103 @@
+{
+  "schema": 1,
+  "protocolSha256": "195057485d248f0c0fa7a113f263e19d8d34fc446f8712042c01f536f6b369b3",
+  "sourceCommit": "eedab9385931e093e156fdb7885c470eb2ec64eb",
+  "firstSeed": 901010000,
+  "deals": 25000,
+  "totalDuels": 100000,
+  "byFirst": {
+    "cowboy": {
+      "gamesPerArm": 25000,
+      "baseline": {
+        "cowboy": 17301,
+        "wizard": 7699,
+        "draw": 0
+      },
+      "candidate": {
+        "cowboy": 15014,
+        "wizard": 9986,
+        "draw": 0
+      },
+      "transitions": {
+        "cowboy": {
+          "cowboy": 14295,
+          "wizard": 3006,
+          "draw": 0
+        },
+        "wizard": {
+          "cowboy": 719,
+          "wizard": 6980,
+          "draw": 0
+        },
+        "draw": {
+          "cowboy": 0,
+          "wizard": 0,
+          "draw": 0
+        }
+      }
+    },
+    "wizard": {
+      "gamesPerArm": 25000,
+      "baseline": {
+        "cowboy": 12595,
+        "wizard": 12405,
+        "draw": 0
+      },
+      "candidate": {
+        "cowboy": 10946,
+        "wizard": 14054,
+        "draw": 0
+      },
+      "transitions": {
+        "cowboy": {
+          "cowboy": 10162,
+          "wizard": 2433,
+          "draw": 0
+        },
+        "wizard": {
+          "cowboy": 784,
+          "wizard": 11621,
+          "draw": 0
+        },
+        "draw": {
+          "cowboy": 0,
+          "wizard": 0,
+          "draw": 0
+        }
+      }
+    }
+  },
+  "blocks": [
+    {
+      "firstSeed": 901010000,
+      "deals": 5000,
+      "baselineCowboyWins": 5998,
+      "candidateCowboyWins": 5259
+    },
+    {
+      "firstSeed": 901015000,
+      "deals": 5000,
+      "baselineCowboyWins": 6000,
+      "candidateCowboyWins": 5230
+    },
+    {
+      "firstSeed": 901020000,
+      "deals": 5000,
+      "baselineCowboyWins": 6038,
+      "candidateCowboyWins": 5229
+    },
+    {
+      "firstSeed": 901025000,
+      "deals": 5000,
+      "baselineCowboyWins": 5892,
+      "candidateCowboyWins": 5078
+    },
+    {
+      "firstSeed": 901030000,
+      "deals": 5000,
+      "baselineCowboyWins": 5968,
+      "candidateCowboyWins": 5164
+    }
+  ],
+  "csvSha256": "947167821e4480482145a9d30fc6237a4dbe92c795e0a936572a56786b8b706f"
+}

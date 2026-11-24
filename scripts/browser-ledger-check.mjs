@@ -125,26 +125,53 @@ try {
       {initial, order, back, focusOutline: ring});
     await key("Enter", "Enter", 13);
     await wait(`document.getElementById('camp-ledger').open`);
-    const opened = await evaluate(`(()=>{const l=document.getElementById('camp-ledger');const rows=[...l.querySelectorAll('tbody tr')];
+    // The card table is the region labelled by the "Cards" heading. The open ledger also holds other tables
+    // (the Billy replay's 3-row seat table), so rows are counted inside that region only.
+    const opened = await evaluate(`(()=>{const l=document.getElementById('camp-ledger');const wrap=l.querySelector('.sd-ledger-wrap[aria-labelledby=ledger-cards]');
+      const rows=[...wrap.querySelectorAll('tbody tr')];
       const right=Math.max(...[...l.querySelectorAll('*')].map(n=>n.closest('.sd-ledger-wrap')&&n!==n.closest('.sd-ledger-wrap')?0:n.getBoundingClientRect().right));
-      const wrap=l.querySelector('.sd-ledger-wrap');
-      return {rows:rows.length,notObserved:rows.filter(r=>r.cells[1+0]&&r.lastElementChild.textContent==='Not observed').length,
+      return {rows:rows.length,visibleRows:rows.filter(r=>r.getClientRects().length>0).length,allTableRows:l.querySelectorAll('tbody tr').length,
+        names:rows.map(r=>r.querySelector('th strong')?.textContent),
+        notObserved:rows.filter(r=>r.cells[1+0]&&r.lastElementChild.textContent==='Not observed').length,
+        summary:l.querySelector('summary').textContent.replace(/\\s+/g,' ').trim(),
         scrollW:document.documentElement.scrollWidth,right,wrapScroll:wrap.scrollWidth-wrap.clientWidth,run:document.getElementById('ledger-run').textContent}})()`);
-    assert.equal(opened.rows, 29); assert.equal(opened.notObserved, 29);
+    const cards = LEDGER.catalog.count;
+    assert.equal(LEDGER.cards.length, cards, "ledger payload card list matches its catalog count");
+    assert.equal(opened.rows, cards); assert.equal(opened.visibleRows, cards); assert.equal(opened.notObserved, cards);
+    assert.deepEqual(opened.names, LEDGER.cards.map((c) => c.name), "card table rows follow the ledger payload");
+    assert.ok(opened.summary.includes(`${cards} cards`), opened.summary);
     assert.ok(opened.scrollW <= width && opened.right <= width, `open ledger fits ${width}px`);
     assert.ok(opened.run.includes(`commit ${LEDGER.run.revision.slice(0, 7)} against ${LEDGER.run.baseline.slice(0, 7)}, seeds 0–999`), opened.run);
-    check(`${width}px: Enter opens the ledger; 29 rows, all Not observed; fits the viewport`, opened);
+    check(`${width}px: Enter opens the ledger; card table has ${cards} visible rows, all Not observed; fits the viewport`, opened);
     const review = await evaluate(`document.getElementById('ledger-review').textContent`);
     for (const v of LEDGER.reviews) assert.ok(review.includes(`${v.card} ${v.field} ${v.from} → ${v.to}: ${v.verdict}.`), review);
     check(`${width}px: the Night Shift review state of this run is shown (${LEDGER.reviews.map((v) => v.verdict).join(", ") || "none"})`, {review});
     if (width === 1440) { await frame("2-ledger-open", "#camp-ledger"); await frame("3-review", "#ledger-review"); }
-    await key("Tab", "Tab", 9);
-    const region = await evaluate(`document.activeElement.getAttribute('role')`);
-    assert.equal(region, "region");
-    await key("Tab", "Tab", 9, true);
+    // The Billy replay (src/ui/billy-replay.js) sits between the summary and the card table, so Tab passes its
+    // visible controls before the Cards region. Every intervening stop must be a visible control inside the replay
+    // section; the Cards region (role=region, aria-labelledby=ledger-cards) must follow within a few Tabs; and
+    // Shift+Tab must retrace the same stops back to the summary.
+    const stop = `(()=>{const a=document.activeElement;if(!a||a===document.body)return {id:'BODY'};
+      const t=(a.getAttribute('aria-label')||a.textContent||'').replace(/\\s+/g,' ').trim().slice(0,60);
+      const id=a.matches('#camp-ledger > summary')?'summary':a.matches('[role=region][aria-labelledby=ledger-cards]')?'cards-region':
+        a.tagName.toLowerCase()+(a.dataset.billyLine?'[data-billy-line='+a.dataset.billyLine+']':a.dataset.billyStep?'[data-billy-step='+a.dataset.billyStep+']':'')+(a.getAttribute('role')?'[role='+a.getAttribute('role')+']':'')+' "'+t+'"';
+      return {id,inBilly:!!a.closest('#ledger-billy'),inLedger:!!a.closest('#camp-ledger'),visible:a.getClientRects().length>0&&getComputedStyle(a).visibility!=='hidden'}})()`;
+    assert.equal((await evaluate(stop)).id, "summary", "focus on the ledger summary after Enter");
+    const MAX_TABS = 8;
+    const fwd = [];
+    for (let i = 0; i < MAX_TABS && fwd.at(-1)?.id !== "cards-region"; i += 1) { await key("Tab", "Tab", 9); fwd.push(await evaluate(stop)); }
+    const fwdIds = fwd.map((s) => s.id);
+    assert.equal(fwdIds.at(-1), "cards-region", `Cards region not reached within ${MAX_TABS} Tabs: ${fwdIds}`);
+    const between = fwd.slice(0, -1);
+    assert.ok(between.length > 0 && between.every((s) => s.inBilly && s.visible), `intervening stops must be visible Billy replay controls: ${JSON.stringify(between)}`);
+    assert.ok(fwd.every((s) => s.inLedger), `focus left the ledger: ${fwdIds}`);
+    const rev = [];
+    for (let i = 0; i < fwd.length; i += 1) { await key("Tab", "Tab", 9, true); rev.push((await evaluate(stop)).id); }
+    assert.deepEqual(rev, [...between.map((s) => s.id).reverse(), "summary"], `Shift+Tab does not retrace to the summary: ${rev}`);
     await key("Enter", "Enter", 13);
     await wait(`!document.getElementById('camp-ledger').open`);
-    check(`${width}px: the card table region takes focus; Shift+Tab and Enter close the ledger`);
+    check(`${width}px: Tab passes ${between.length} visible Billy replay controls to the Cards region; Shift+Tab retraces to the summary; Enter closes the ledger`,
+      {forward: fwdIds, reverse: rev});
     await evaluate(`document.querySelector('#camp-trail [data-duel=trail]').click()`);
     await wait(`!document.getElementById('showdown').hidden&&document.getElementById('showdown-camp').hidden`);
     const turn = await evaluate(`({inDuel:!!document.querySelector('#showdown .sd-ledger,#showdown #camp-ledger'),

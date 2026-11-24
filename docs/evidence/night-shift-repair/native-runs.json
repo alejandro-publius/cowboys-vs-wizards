@@ -1,0 +1,217 @@
+{
+  "surface": "native Kiro CLI",
+  "model": "claude-opus-5.5",
+  "runs": [
+    {
+      "purpose": "balance-sweep",
+      "nativeWorkflowId": "wf_80aa97dac058694f",
+      "workflowStatus": "failed",
+      "cliExit": 1,
+      "commit": "8ec0fe7195414fb1cba94d20e6c8c8a362fea669",
+      "steps": [
+        "release-preflight",
+        "reset-run",
+        "prepare-attempt",
+        "scout-attempt"
+      ],
+      "observedCommands": [
+        {
+          "command": "node scripts/contest-release-gate.mjs release",
+          "exit": 0
+        },
+        {
+          "command": "node scripts/contest-balance.mjs reset",
+          "exit": 0
+        },
+        {
+          "command": "node scripts/contest-balance.mjs prepare",
+          "exit": 0
+        },
+        {
+          "command": "node scripts/field-trial-scout.mjs",
+          "exit": 1
+        }
+      ],
+      "completedHooks": [
+        "Night Shift saloon: record a successful contest-balance reset as a new job",
+        "Refuse a success completion message without a current passing stamp",
+        "Report Showdown release-check failures at Stop (bounded retries)",
+        "contest-usage-stop",
+        "contest-usage-tool-category",
+        "night-shift-activity-permission-request",
+        "night-shift-activity-post-tool-use",
+        "night-shift-activity-pre-tool-use",
+        "night-shift-activity-stop",
+        "night-shift-activity-user-prompt-submit"
+      ]
+    },
+    {
+      "purpose": "arena-first-refusal",
+      "nativeWorkflowId": "wf_ca086c54e37eac39",
+      "workflowStatus": "failed",
+      "cliExit": 1,
+      "commit": "aa60fe7c377e2b04af1564a348aba8655e3cf2ff",
+      "steps": [
+        "release-preflight",
+        "arena-setup",
+        "sheriff-playbook",
+        "wizard-playbook",
+        "referee-play"
+      ],
+      "observedCommands": [
+        {
+          "command": "node scripts/contest-release-gate.mjs release",
+          "exit": 0
+        },
+        {
+          "command": "node experiments/agent-arena/arena.mjs prepare",
+          "exit": 0
+        },
+        {
+          "command": "node experiments/agent-arena/arena.mjs play",
+          "exit": 2
+        }
+      ],
+      "completedHooks": [
+        "Night Shift saloon: record a successful contest-balance reset as a new job",
+        "Refuse a new [x] in a spec tasks.md without a fresh passing stamp (fs_write)",
+        "Refuse a success completion message without a current passing stamp",
+        "Report Showdown release-check failures at Stop (bounded retries)",
+        "check-showdown-guard-access",
+        "contest-usage-stop",
+        "contest-usage-tool-category",
+        "night-shift-activity-permission-request",
+        "night-shift-activity-post-file-create",
+        "night-shift-activity-post-file-save",
+        "night-shift-activity-post-tool-use",
+        "night-shift-activity-pre-tool-use",
+        "night-shift-activity-stop",
+        "night-shift-activity-user-prompt-submit"
+      ]
+    },
+    {
+      "purpose": "arena-verified",
+      "nativeWorkflowId": "wf_d5aad547ec014474",
+      "workflowStatus": "completed",
+      "cliExit": 0,
+      "commit": "11c46b5c9ec11eea8117b8c137ea44c8fbce3789",
+      "steps": [
+        "release-preflight",
+        "arena-setup",
+        "sheriff-playbook",
+        "wizard-playbook",
+        "referee-play",
+        "referee-verify"
+      ],
+      "observedCommands": [
+        {
+          "command": "node scripts/contest-release-gate.mjs release",
+          "exit": 0
+        },
+        {
+          "command": "node experiments/agent-arena/arena.mjs prepare",
+          "exit": 0
+        },
+        {
+          "command": "node experiments/agent-arena/arena.mjs play",
+          "exit": 0
+        },
+        {
+          "command": "node experiments/agent-arena/arena.mjs verify",
+          "exit": 0
+        }
+      ],
+      "completedHooks": [
+        "Night Shift saloon: record a successful contest-balance reset as a new job",
+        "Refuse a new [x] in a spec tasks.md without a fresh passing stamp (fs_write)",
+        "Refuse a success completion message without a current passing stamp",
+        "Report Showdown release-check failures at Stop (bounded retries)",
+        "check-showdown-guard-access",
+        "contest-usage-stop",
+        "contest-usage-tool-category",
+        "night-shift-activity-permission-request",
+        "night-shift-activity-post-file-create",
+        "night-shift-activity-post-file-save",
+        "night-shift-activity-post-tool-use",
+        "night-shift-activity-pre-tool-use",
+        "night-shift-activity-stop",
+        "night-shift-activity-user-prompt-submit"
+      ]
+    },
+    {
+      "purpose": "forge-runner-refusal",
+      "nativeWorkflowId": "wf_2ce9a1d3d1df7891",
+      "workflowStatus": "failed",
+      "cliExit": 1,
+      "commit": "87888499ac1a447c2d1b6dbc92a8cbfda8a026e4",
+      "steps": [
+        "release-preflight",
+        "prepare-request"
+      ],
+      "observedCommands": [
+        {
+          "command": "node scripts/contest-release-gate.mjs release",
+          "exit": 0
+        }
+      ],
+      "completedHooks": [
+        "Card forge guard: reviewer runs only the two allowlisted commands and reads only .artifacts/card-forge",
+        "Night Shift saloon: record a successful contest-balance reset as a new job",
+        "Refuse a success completion message without a current passing stamp",
+        "Report Showdown release-check failures at Stop (bounded retries)",
+        "contest-usage-stop",
+        "contest-usage-tool-category",
+        "night-shift-activity-permission-request",
+        "night-shift-activity-post-tool-use",
+        "night-shift-activity-pre-tool-use",
+        "night-shift-activity-stop",
+        "night-shift-activity-user-prompt-submit"
+      ]
+    },
+    {
+      "purpose": "forge-verified",
+      "nativeWorkflowId": "wf_a81a1969da647d72",
+      "workflowStatus": "completed",
+      "cliExit": 0,
+      "commit": "b00a5e18b8ad07ec8759635a399cc8117c900fa0",
+      "steps": [
+        "release-preflight",
+        "prepare-request",
+        "author-draft",
+        "verify-draft"
+      ],
+      "observedCommands": [
+        {
+          "command": "node scripts/contest-release-gate.mjs release",
+          "exit": 0
+        },
+        {
+          "command": "node scripts/card-forge.mjs prepare",
+          "exit": 0
+        },
+        {
+          "command": "node scripts/card-forge.mjs verify",
+          "exit": 0
+        }
+      ],
+      "completedHooks": [
+        "Card forge guard: author reads the request and brief and writes only a schema-valid draft.json",
+        "Card forge guard: reviewer runs only the two allowlisted commands and reads only .artifacts/card-forge",
+        "Night Shift saloon: record a successful contest-balance reset as a new job",
+        "Refuse a new [x] in a spec tasks.md without a fresh passing stamp (fs_write)",
+        "Refuse a success completion message without a current passing stamp",
+        "Report Showdown release-check failures at Stop (bounded retries)",
+        "check-showdown-guard-access",
+        "contest-usage-stop",
+        "contest-usage-tool-category",
+        "night-shift-activity-permission-request",
+        "night-shift-activity-post-file-create",
+        "night-shift-activity-post-file-save",
+        "night-shift-activity-post-tool-use",
+        "night-shift-activity-pre-tool-use",
+        "night-shift-activity-stop",
+        "night-shift-activity-user-prompt-submit"
+      ]
+    }
+  ]
+}
