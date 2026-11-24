@@ -10,6 +10,40 @@ const memory = (seed = {}) => {
 };
 const entry = (run, won = true) => ({name: "Boot Hill", won, turns: 9, seconds: 80, rules: false, run, duel: "trail", seed: 0});
 
+test("two open Camps keep both playtest runs, including a line retried after a failed write", () => {
+  const storage = memory();
+  const a = createPlaytestLog(storage);
+  let writable = false;
+  const b = createPlaytestLog({getItem: storage.getItem, setItem(key, value) {
+    if (!writable) throw new Error("full");
+    storage.setItem(key, value);
+  }});
+  assert.deepEqual(b.entries(), []);
+  b.add(entry("pending"));
+  a.add(entry("other-tab"));
+  writable = true;
+  b.add(entry("retry"));
+  assert.deepEqual(a.entries().map((line) => line.run), ["other-tab", "pending", "retry"]);
+  a.clear();
+  b.add(entry("after-reset"));
+  assert.deepEqual(a.entries().map((line) => line.run), ["after-reset"]);
+});
+
+test("a refused read cannot replace the stored report even when writing is allowed", () => {
+  const storage = memory({[PLAYTEST_KEY]: JSON.stringify([entry("earlier")])});
+  let readable = false;
+  const log = createPlaytestLog({getItem(key) {
+    if (!readable) throw new Error("blocked");
+    return storage.getItem(key);
+  }, setItem: storage.setItem});
+  log.add(entry("offline"));
+  assert.equal(log.saved(), false);
+  assert.deepEqual(JSON.parse(storage.data[PLAYTEST_KEY]).map((line) => line.run), ["earlier"]);
+  readable = true;
+  log.add(entry("back"));
+  assert.deepEqual(log.entries().map((line) => line.run), ["earlier", "offline", "back"]);
+});
+
 // FH-R3.9 (.kiro/specs/showdown-first-hour/requirements.md)
 test("a finished duel is stored once under the prototype key, and a reload reads the same report", () => {
   const storage = memory();

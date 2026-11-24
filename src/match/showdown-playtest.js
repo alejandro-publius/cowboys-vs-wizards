@@ -27,9 +27,9 @@ const clean = (entry) => entry && typeof entry.name === "string" && typeof entry
     ...(Number.isFinite(entry.seed) ? {seed: entry.seed} : {}), ...(buildLabel(entry.build) ? {build: entry.build} : {})}
   : null;
 
-function read(storage) {
+function decode(text) {
   try {
-    const raw = JSON.parse(storage?.getItem(PLAYTEST_KEY) ?? "null");
+    const raw = JSON.parse(text ?? "null");
     return Array.isArray(raw) ? raw.map(clean).filter(Boolean) : [];
   } catch { return []; }
 }
@@ -38,26 +38,53 @@ function read(storage) {
 // build: this page's label, stamped on each duel it adds and named in the report (defaults to PAGE_BUILD).
 export function createPlaytestLog(storage, {build = PAGE_BUILD} = {}) {
   const page = buildLabel(build);
-  // Read on first use, not at creation (K-096): a page opened on ?practice uses no log until the Camp, which then sees
-  // the lines stored by then, so a later add never drops a line another tab saved during practice.
-  let stored = null;
-  const current = () => (stored ??= read(storage));
+  // Direct practice never reads the report. Once in Camp, re-read changed storage and retain
+  // just the local lines whose write failed, so a later append preserves both tabs' games.
+  let stored = null, lastText, pending = [];
+  let readable = false;
+  const current = () => {
+    let text;
+    try { text = storage?.getItem(PLAYTEST_KEY); } catch { /* keep this visit's lines */ }
+    readable = text !== undefined;
+    if (stored === null || (text !== undefined && text !== lastText)) {
+      lastText = text;
+      stored = decode(text);
+      const runs = new Set(stored.map((line) => line.run));
+      for (const line of pending) if (!line.run || !runs.has(line.run)) stored = logged(stored, line);
+    }
+    return stored;
+  };
   let saved = Boolean(storage);
+  const persist = () => {
+    if (!readable) { saved = false; return; }
+    const text = JSON.stringify(stored);
+    try {
+      storage.setItem(PLAYTEST_KEY, text);
+      lastText = text;
+      pending = [];
+      saved = true;
+    } catch { saved = false; }
+  };
   return {
     entries: () => current(),
     saved: () => saved,
     // Adds one finished duel. A run id already in the log is ignored. Returns true when it was added.
     add(entry) {
       const line = clean(entry && {...entry, build: page ?? undefined});
-      if (!line || (line.run && current().some((old) => old.run === line.run))) return false;
-      stored = logged(current(), line);
-      try { storage.setItem(PLAYTEST_KEY, JSON.stringify(stored)); saved = true; } catch { saved = false; }
+      if (!line) return false;
+      const lines = current();
+      if (line.run && lines.some((old) => old.run === line.run)) return false;
+      stored = logged(lines, line);
+      pending = logged(pending, line);
+      persist();
       return true;
     },
     // Start over erases the report with the progress, as the reference screen does.
     clear() {
+      current();
       stored = [];
-      try { storage.setItem(PLAYTEST_KEY, JSON.stringify(stored)); saved = true; } catch { saved = false; }
+      pending = [];
+      persist();
     },
     text: (progress) => report(current(), progress, {build: page}),
   };

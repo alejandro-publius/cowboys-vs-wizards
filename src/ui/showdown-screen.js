@@ -86,7 +86,7 @@ const FACTION = {cowboy: "Cowboy", wizard: "Wizard"};
 // Wizard lesson (src/ui/wizard-lesson.js): onReview(record) opens the lesson for a finished single solo Cowboy duel;
 // record is {seed, setup, cowboyActions, expected}. start(duel, seed, {lesson: {createSession}}) plays a lesson rematch
 // (duel.kind "lesson"): it settles nothing and logs nothing, and onLessonBack() returns to the lesson.
-export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nextSeed = freshSeed, onSwap, mountBoard, onReview, onLessonBack, onBootHill}) {
+export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => change(), playtest, cueOptions, nextSeed = freshSeed, onSwap, mountBoard, onReview, onLessonBack, onBootHill}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
   let session, duel, seed, lines, latest, pick, outcome, picked, run, started, challengeAttacked = false, playbackIdle = true;
@@ -94,6 +94,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
   let setup = null, cowboyActions = [], lesson = null;
   // seat: the solo player's side. camp: the campaign this duel settles through, or null (nothing is settled).
   let players = 1, match = null, curtain = false, seat = "cowboy", camp = campaign;
+  let settling = false;
   const cues = createCuePlayer(root, cueOptions);
   const boardPresentation = mountBoard?.(root);
   const solo = () => players === 1;
@@ -148,10 +149,11 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     boardPresentation?.clear();
     boardPresentation?.setBattlefield?.(current.battlefield);
     const batch = record(session.opening, null);
-    finish();
-    render();
-    // An experiment turn opens on its decision: its replayed history is in the log, not played as cues.
-    cues.play(duel.prefix ? [] : batch);
+    finish(() => {
+      render();
+      // An experiment turn opens on its decision: its replayed history is in the log, not played as cues.
+      cues.play(duel.prefix ? [] : batch);
+    });
   }
   function act(action) {
     pick = null;
@@ -161,38 +163,62 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     if (action.type === "attack") challengeAttacked = true;
     if (setup) cowboyActions.push(structuredClone(action));
     const batch = record(events, before);
-    finish();
-    // Two players: hide the table while the screen changes hands.
-    curtain = !solo() && !session.view().result && viewer() !== seat;
-    const canAnimate = !curtain && Boolean(boardPresentation?.animate);
-    playbackIdle = !canAnimate;
-    const activeRun = run;
-    render(trace[0]?.before);
-    cues.play(batch);
-    if (canAnimate) {
-      boardPresentation.animate(trace, () => {
-        if (run !== activeRun) return;
-        playbackIdle = true;
-        $("sd-boot-hill").hidden = !("contestChallenge" in root.dataset && onBootHill && campaign?.trailDuel?.()?.battlefield === "boot-hill" && challengeAttacked && playbackIdle);
-      });
-    }
+    finish(() => {
+      // Two players: hide the table while the screen changes hands.
+      curtain = !solo() && !session.view().result && viewer() !== seat;
+      const canAnimate = !curtain && Boolean(boardPresentation?.animate);
+      playbackIdle = !canAnimate;
+      const activeRun = run;
+      render(trace[0]?.before);
+      cues.play(batch);
+      if (canAnimate) {
+        boardPresentation.animate(trace, () => {
+          if (run !== activeRun) return;
+          playbackIdle = true;
+          $("sd-boot-hill").hidden = !("contestChallenge" in root.dataset && onBootHill && campaign?.trailDuel?.()?.battlefield === "boot-hill" && challengeAttacked && playbackIdle);
+        });
+      }
+    });
   }
   // A game counts once it ends; a solo duel is settled exactly once, when it (or its match) is decided.
-  function finish() {
+  function finish(present) {
     const view = session.view();
     const result = view.result;
-    if (!result || outcome) return;
+    if (!result || outcome) return present();
     outcome = {winner: result.winner, matchOver: true};
     if (match) {
       match = recordGame(match, {winner: result.winner, first: view.first});
       outcome.matchOver = matchOver(match);
     }
     // Two players, an experiment turn (showdown-turn.js) and a Wizard lesson rematch settle nothing and add no playtest line.
-    if (!solo() || duel.kind === "turn" || duel.kind === "lesson") return;
+    if (!solo() || duel.kind === "turn" || duel.kind === "lesson") return present();
     // The run id makes the log ignore a second report of this same finished game. The log is the Cowboy career's.
-    if (seat === "cowboy") playtest?.add({name: duel.name, won: result.winner === session.seat, turns: view.turn,
-      seconds: Math.round((Date.now() - started) / 1000), rules: false, run, duel: duel.id, seed});
-    if (outcome.matchOver && camp) Object.assign(outcome, camp.settle(duel, match ? matchWinner(match) === session.seat : result.winner === session.seat));
+    const logGame = () => {
+      if (seat === "cowboy") playtest?.add({name: duel.name, won: result.winner === session.seat, turns: view.turn,
+        seconds: Math.round((Date.now() - started) / 1000), rules: false, run, duel: duel.id, seed});
+    };
+    const won = match ? matchWinner(match) === session.seat : result.winner === session.seat;
+    if (!camp || camp !== campaign) {
+      logGame();
+      if (camp && outcome.matchOver) Object.assign(outcome, camp.settle(duel, won));
+      return present();
+    }
+    // A duel can end in a tab that was left open. Show its verdict after the save decision,
+    // so no reward is announced or made claimable before the career has accepted it.
+    settling = true;
+    $("sd-end").disabled = true;
+    $("sd-status").textContent = "Saving duel result…";
+    const complete = (payment) => {
+      settling = false;
+      Object.assign(outcome, payment);
+      const hadFocus = root.contains(document.activeElement);
+      present();
+      if (hadFocus && document.activeElement === document.body) usable("#sd-result button", "#sd-home")?.focus();
+    };
+    return writeCamp(() => {
+      logGame();
+      complete(outcome.matchOver ? camp.settle(duel, won) : {});
+    }, (message) => complete({won, conflict: message}));
   }
   // After a result: the next game of the match, a rematch, a repeat, or nothing (back to camp).
   function againLabel() {
@@ -284,11 +310,14 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
   // After a win: what it paid and the two cards to choose from. After a loss: the rematch's grit.
   // A game inside a match and a two-player game pay nothing, but they still need the button that moves on.
   function rewardPanel() {
-    const label = againLabel();
+    const label = outcome.conflict ? null : againLabel();
     const review = setup && onReview ? `<button type="button" id="sd-review">Review a Wizard move</button>`
       : duel.kind === "lesson" && onLessonBack ? `<button type="button" id="sd-lesson-back">Back to the lesson</button>` : "";
     const again = (label ? `<button type="button" id="sd-again">${label}</button>` : "") + review;
-    if (!outcome.earned) return `<div class="sd-row">${again}<button type="button" id="sd-camp">Back to camp</button></div>`;
+    if (!outcome.earned) {
+      const notice = outcome.conflict ? `<p role="status">${outcome.conflict} This duel did not change your career.</p>` : "";
+      return `${notice}<div class="sd-row">${again}<button type="button" id="sd-camp">Back to camp</button></div>`;
+    }
     const {won, earned, intoDeck, grit} = outcome;
     const offer = camp.progress().offer;
     return [
@@ -450,7 +479,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
 
   root.addEventListener("click", (event) => {
     const b = event.target.closest("button");
-    if (!b || b.disabled || !session) return;
+    if (!b || b.disabled || !session || settling) return;
     const [key, before, keyboard] = [keyOf(b), pick, event.detail === 0];
     const d = b.dataset;
     if (d.card) clickCard(d.card);
@@ -462,10 +491,15 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     else if (b.id === "sd-restart") deal(seed);
     else if (b.id === "sd-ready" && curtain) { curtain = false; render(); }
     else if (d.choose && camp?.progress().offer?.includes(d.choose)) {
-      camp.choose(d.choose);
-      picked = d.choose;
-      render();
-      $("sd-camp")?.focus();
+      const claim = () => {
+        if (root.hidden || !root.contains(b)) return;
+        camp.choose(d.choose);
+        picked = d.choose;
+        render();
+        $("sd-camp")?.focus();
+      };
+      if (camp === campaign) writeCamp(claim);
+      else claim();
     }
     else if (b.id === "sd-again" && outcome) again();
     else if (b.id === "sd-review" && outcome && setup) {

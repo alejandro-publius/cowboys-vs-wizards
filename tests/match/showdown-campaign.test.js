@@ -2,7 +2,8 @@
 // progress and store modules, with an in-memory Storage standing in for localStorage.
 import assert from "node:assert/strict";
 import test from "node:test";
-import {createCampaign} from "../../src/match/showdown-campaign.js";
+import {CampaignChanged, createCampaign} from "../../src/match/showdown-campaign.js";
+import {SAVE_KEY} from "../../src/game/showdown/campaign-store.js";
 import {createShowdownSession} from "../../src/match/showdown-session.js";
 import {TRAIL} from "../../src/game/showdown/trail.js";
 
@@ -24,6 +25,43 @@ const firstWinningSeed = (duel) => {
   for (let seed = 0; seed < 50; seed += 1) if (play(duel, seed)?.winner === "cowboy") return seed;
   throw new Error(`no seed in 0-49 wins ${duel.name}`);
 };
+
+test("a stale Trail result keeps another tab's wins and rewards, then the refreshed tab can play again", () => {
+  const storage = memoryStorage();
+  const a = createCampaign(storage), b = createCampaign(storage);
+  const oldDuel = b.trailDuel();
+  for (let i = 0; i < 3; i++) {
+    a.settle(a.trailDuel(), true);
+    a.choose(a.progress().offer[0]);
+  }
+  const earned = storage.getItem(SAVE_KEY);
+  assert.throws(() => b.settle(oldDuel, false), CampaignChanged);
+  assert.equal(storage.getItem(SAVE_KEY), earned);
+  assert.deepEqual(b.progress(), a.progress());
+  b.settle(b.trailDuel(), false);
+  assert.equal(createCampaign(storage).progress().wins, 3);
+  assert.equal(createCampaign(storage).progress().losses.trail, 1);
+});
+
+test("stale card, pack, deck, import and reset actions all leave the latest save intact", () => {
+  const storage = memoryStorage();
+  const a = createCampaign(storage);
+  a.settle(a.trailDuel(), true);
+  a.replace({...a.progress(), packs: 1});
+  const old = a.progress();
+  const actions = [
+    (b) => b.choose(old.offer[1]), (b) => b.openPack(), (b) => b.withDeck(old.deck, old.side),
+    (b) => b.replace(old), (b) => b.reset(),
+  ];
+  const tabs = actions.map(() => createCampaign(storage));
+  a.choose(old.offer[0]);
+  const saved = storage.getItem(SAVE_KEY);
+  actions.forEach((act, i) => {
+    assert.throws(() => act(tabs[i]), CampaignChanged);
+    assert.equal(storage.getItem(SAVE_KEY), saved);
+    assert.deepEqual(tabs[i].progress(), a.progress());
+  });
+});
 
 // FH-R6.1, FH-R6.3, FH-R6.5 (.kiro/specs/showdown-first-hour/requirements.md)
 test("a fresh profile wins Trail duels 1 and 2, is paid the designed cards, and a reload keeps them", () => {
