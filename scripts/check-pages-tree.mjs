@@ -21,6 +21,8 @@
 //   - /showdown/: the reference page loads without errors
 //   - the Camp saloon on / and /3d/ links to the one poker/ page; following it loads all five poker
 //     files, paints the BBS screen and raises no errors
+//   - /?saloon=review opens the recorded Night Shift saloon at the validated Billy proposal card with no
+//     /night-shift/events request; Replay from start hides the decision and Back to map returns to the Camp
 //   No page error, failed request or HTTP error is allowed anywhere.
 import assert from "node:assert/strict";
 import {spawn} from "node:child_process";
@@ -170,9 +172,10 @@ async function browserChecks() {
     const {targetId} = await cdp.send("Target.createTarget", {url: "about:blank"});
     const {sessionId} = await cdp.send("Target.attachToTarget", {targetId, flatten: true});
     const send = (method, params) => cdp.send(method, params, sessionId);
-    const responses = [];
+    const responses = [], requests = [];
     cdp.on(({method, params, sessionId: id}) => {
       if (id !== sessionId) return;
+      if (method === "Network.requestWillBeSent") requests.push(params.request.url);
       if (method === "Runtime.exceptionThrown") report.errors.push(params.exceptionDetails.exception?.description ?? params.exceptionDetails.text);
       if (method === "Runtime.consoleAPICalled" && params.type === "error") report.errors.push(params.args.map((a) => a.value ?? a.description).join(" "));
       if (method === "Network.responseReceived") responses.push({url: params.response.url, status: params.response.status, type: params.type});
@@ -252,6 +255,33 @@ async function browserChecks() {
       const loaded = POKER_FILES.filter((name) => responses.slice(mark).some((r) => r.status === 200 && new URL(r.url).pathname === `${BASE_PATH}poker/${name === "index.html" ? "" : name}`));
       assert.deepEqual(loaded, POKER_FILES, `${rel || "/"} -> poker/ loads all five browser files`);
       check(`${BASE_PATH}${rel}: the Camp saloon opens Boot Hill Poker at ${BASE_PATH}poker/, loads its five files and paints the screen without errors`);
+    }
+
+    // ?saloon=review: the staged illustrated root opens the recorded room at the validated Billy decision.
+    {
+      const room = "#room-for-night-shift-saloon";
+      const decision = `document.querySelector('${room} .saloon-decision')`;
+      const feedRequests = () => requests.filter((url) => url.includes("/night-shift/events"));
+      await send("Storage.clearDataForOrigin", {origin: new URL(site).origin, storageTypes: "all"});
+      const mark = requests.length;
+      await open("?saloon=review");
+      await wait(`document.querySelector('${room}')?.open&&${decision}&&!${decision}.hidden`);
+      assert.ok(await evaluate(shown("showdown-camp")), "?saloon=review opens over the Camp");
+      assert.equal(await evaluate(`document.querySelector('${room} .saloon-mode-label').textContent`), "Recorded Kiro shift");
+      assert.match(await evaluate(`${decision}.querySelector('h5').textContent`), /^Review of Kiro's proposal: Billy\b.* attack 2 → 1$/);
+      assert.match(await evaluate(`${decision}.textContent`), /Passed the written balance rule/);
+      assert.match(await evaluate(`document.querySelector('${room} .saloon-target-stat').textContent`), /^Billy\b.*: attack 2 → 1/);
+      const at = await evaluate(`document.querySelector('${room} .saloon-progress').textContent`);
+      assert.match(at, /^· step [1-9]\d* of \d+$/, "the room opens at the review step");
+      await sleep(3500); // longer than the slowest live poll interval
+      await click(`${room} .saloon-replay`);
+      await wait(`${decision}.hidden&&/^· step 0 of /.test(document.querySelector('${room} .saloon-progress').textContent)`);
+      await click(`${room} header button`);
+      await wait(`!document.querySelector('${room}').open&&${shown("showdown-camp")}`);
+      assert.deepEqual(feedRequests(), [], "?saloon=review makes no /night-shift/events request");
+      assert.ok(requests.length > mark, "the review page made its own requests");
+      clean();
+      check(`${BASE_PATH}?saloon=review: the recorded saloon opens at the validated Billy proposal (${at.slice(2)}), makes 0 /night-shift/events requests; Replay from start hides the decision and Back to map returns to the Camp`);
     }
 
     const challengeOpens = async () => {

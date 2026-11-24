@@ -8,9 +8,9 @@
 
 Showdown is the supported game. The earlier three-lane duel is archived at `ea183ee29dbd`. The `/3d/` route serves illustrated Showdown and accepts the same direct duel links as the home page.
 
-In Camp, open **Sheriff’s Ledger** to see the two verified Outrider positions and the balance review that rejected giving the Sheriff a fourth orb. The balance numbers come from bot play. [Outrider gate](docs/evidence/outrider-gate.md) · [Reproduce the Sheriff verdict](docs/evidence/night-shift/guard-sheriff-health-3-to-4/README.md)
+Open **Camp ledger → Sheriff’s Ledger** to replay one Billy duel at both 2 attack and the proposed 1 attack, starting from the same deal. In the [recorded Night Shift review](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review), you can inspect the rule and the result. Across 100,000 bot duels, the proposed change moved Cowboy wins from 59.792% to 51.920%. Billy still has 2 attack while the proposal awaits design approval. [Audit and recheck command](docs/evidence/billy-seat-audit/README.md)
 
-In Camp, open the **Night Shift** saloon and decide whether to give the Sheriff two health orbs. Its Card Forge shelf holds **Dusty Pete**, a Cowboy troop drafted into the Covered Wagon slot (1 attack, 5 health, 2 stars) and summoned in 27 of 32 sandbox games. Its Agent Arena shows the **Cautious Sheriff** playbook beating the **Reckless Wizard** 13–3 over 16 games, with a 54-decision replay. Both come from native Kiro workflows and bot play, and no live card changed. [Play the Saloon build](https://boot-hill-night-shift.alejandro-publius.chatgpt.site/) · [Watch the Saloon clip](https://boot-hill-night-shift.alejandro-publius.chatgpt.site/night-shift.mp4) · [Reproduce the findings](docs/evidence/night-shift-repair/README.md)
+The **Night Shift saloon** also holds the rules desk, the recorded Dusty Pete card trial, and a 54-decision replay from the Cautious Sheriff and Reckless Wizard agent match. Its back table opens [Boot Hill Poker](https://alejandro-publius.github.io/cowboys-vs-wizards/poker/), an optional experiment. [One-minute judge walkthrough](docs/JUDGE-GUIDE.md) · [Reproduce the Saloon findings](docs/evidence/night-shift-repair/README.md)
 
 ## Card art library
 
