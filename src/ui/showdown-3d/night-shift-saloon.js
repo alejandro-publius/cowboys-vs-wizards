@@ -634,11 +634,15 @@ export function mountNightShiftSaloon({content, recording, portrait = () => null
     } else {
       progress.textContent = `· step ${count} of ${feed.events.length}`;
       const ended = count >= feed.events.length;
+      // A focused control that is about to be disabled would drop keyboard focus to <body>;
+      // hand it to Play/Replay instead.
+      const focused = content.ownerDocument.activeElement;
       play.textContent = playing ? "Pause" : ended && count > 0 ? "Replay" : "Play";
       play.setAttribute("aria-pressed", String(playing));
       play.disabled = !feed.events.length;
       step.disabled = ended || playing;
       replay.disabled = count === 0;
+      if ((focused === step || focused === replay) && focused.disabled && !play.disabled) play.focus({preventScroll: true});
     }
   }
 

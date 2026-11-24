@@ -212,13 +212,17 @@ test("inspect_showdown_receipt: pass on the same engine, stale or rejected when 
   for (const args of [{receipt: "../../etc/passwd"}, {path: "/x"}]) assert.equal((await s.tool("inspect_showdown_receipt", args)).protocolError.code, -32602);
 });
 
-test("the installed-Power Boot Hill receipt passes on this checkout's Showdown engine", async () => {
+test("the installed-Power Boot Hill receipt passes on its recorded Showdown engine", async (t) => {
   const fs = await import("node:fs");
-  const {engineFingerprint, inspectShowdownReceipt} = await import("../showdown.mjs");
+  const {engineFingerprint, inspectShowdownReceipt, loadEngine} = await import("../showdown.mjs");
+  const {historicalEngine} = await import("./historical-engine.mjs");
   const receipt = JSON.parse(fs.readFileSync(join(root, "docs/evidence/showdown-installed-power/boot-hill-receipt.json"), "utf8"));
   assert.equal(receipt.debugSeed, false);
   assert.equal(receipt.startCommitment, receipt.proof.commitment);
   assert.equal(receipt.proof.actions.length, receipt.surfacedToolCalls["@orb-duel-review/review/act_showdown"]);
-  const verdict = inspectShowdownReceipt(engine, engineFingerprint(root), receipt);
+  // docs/evidence/showdown-installed-power.md identifies the source with this fingerprint.
+  const historical = historicalEngine(t, root, "2fcf39b7fe4db6f78cb33f6b2c474e053e89bbc7", Object.keys(receipt.proof.engine.files));
+  if (!historical) return;
+  const verdict = inspectShowdownReceipt(await loadEngine(historical), engineFingerprint(historical), receipt);
   assert.equal(verdict.verdict, "pass", JSON.stringify(verdict.reasons));
 });

@@ -22,17 +22,28 @@ const EXPECTED = [
   "PreTaskExecution", "PostTaskExecution", "PreCompact", "PostCompact",
 ];
 
+// Native Kiro CLI v1 spellings (/hooks, 3.5.0) for the two task triggers; the journal keeps the long names.
+const NATIVE = {PreTaskExecution: "PreTaskExec", PostTaskExecution: "PostTaskExec"};
+const CONFIGURED = EXPECTED.map((p) => NATIVE[p] ?? p);
+
 test("hook file: v1 array, one named command per automatic trigger, no manual", () => {
   assert.equal(config.version, "v1");
   assert.ok(Array.isArray(config.hooks));
   assert.equal(config.hooks.length, EXPECTED.length);
-  assert.deepEqual(config.hooks.map((h) => h.trigger).sort(), [...EXPECTED].sort());
+  assert.deepEqual(config.hooks.map((h) => h.trigger).sort(), [...CONFIGURED].sort());
+  assert.ok(!config.hooks.some((h) => /^(Pre|Post)TaskExecution$/.test(h.trigger)), "long task spellings are unregistered");
+  const task = config.hooks.filter((h) => /TaskExec/.test(h.trigger));
+  assert.deepEqual(task.map((h) => [h.trigger, h.action.command]), [
+    ["PreTaskExec", "node scripts/saloon-activity.mjs PreTaskExec"],
+    ["PostTaskExec", "node scripts/saloon-activity.mjs PostTaskExec"],
+  ]);
   const names = config.hooks.map((h) => h.name);
   assert.equal(new Set(names).size, names.length);
   for (const hook of config.hooks) {
     assert.match(hook.name, /^night-shift-activity-[a-z-]+$/);
     assert.equal(hook.action.type, "command");
     assert.equal(hook.action.command, `node scripts/saloon-activity.mjs ${hook.trigger}`);
+    assert.ok(canonicalPhase(hook.trigger), hook.trigger);
     assert.equal(hook.matcher, undefined);
   }
   assert.ok(!config.hooks.some((h) => /manual/i.test(h.trigger)));
@@ -52,6 +63,13 @@ test("phases: canonical, legacy casing and old names; manual and unknown ignored
   assert.equal(canonicalPhase("stop"), "Stop");
   assert.equal(canonicalPhase("agentSpawn"), "SessionStart");
   assert.equal(canonicalPhase("fileEdited"), "PostFileSave");
+  // Native short task names normalize onto the long internal names; long names stay readable for old payloads.
+  assert.equal(canonicalPhase("PreTaskExec"), "PreTaskExecution");
+  assert.equal(canonicalPhase("PostTaskExec"), "PostTaskExecution");
+  assert.equal(resolvePhase({hook_event_name: "PostTaskExec"}, "Stop"), "PostTaskExecution");
+  assert.equal(resolvePhase({}, "PreTaskExec"), "PreTaskExecution");
+  assert.deepEqual(activityFromHook('{"hook_event_name":"PreTaskExec"}', "PreTaskExec").record, {kind: "activity", actor: "hunter", phase: "PreTaskExecution"});
+  assert.equal(resolvePhase({hook_event_name: "PostTaskExecution"}, "PostTaskExec"), "PostTaskExecution");
   assert.equal(canonicalPhase("Manual"), null);
   assert.equal(canonicalPhase("userTriggered"), null);
   assert.equal(canonicalPhase("Telepathy"), null);

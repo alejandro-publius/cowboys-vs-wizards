@@ -57,6 +57,7 @@ const TEMPLATE = `
   <p id="sd-prompt"></p>
   <div class="sd-row" id="sd-actions">
     <button type="button" id="sd-end">End turn</button>
+    <button type="button" id="sd-boot-hill" hidden>Continue to Boot Hill</button>
     <button type="button" id="sd-cover" hidden>Take cover</button>
     <button type="button" id="sd-cancel" hidden>Cancel</button>
     <button type="button" id="sd-restart">Restart this duel</button>
@@ -85,10 +86,10 @@ const FACTION = {cowboy: "Cowboy", wizard: "Wizard"};
 // Wizard lesson (src/ui/wizard-lesson.js): onReview(record) opens the lesson for a finished single solo Cowboy duel;
 // record is {seed, setup, cowboyActions, expected}. start(duel, seed, {lesson: {createSession}}) plays a lesson rematch
 // (duel.kind "lesson"): it settles nothing and logs nothing, and onLessonBack() returns to the lesson.
-export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nextSeed = freshSeed, onSwap, mountBoard, onReview, onLessonBack}) {
+export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nextSeed = freshSeed, onSwap, mountBoard, onReview, onLessonBack, onBootHill}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
-  let session, duel, seed, lines, latest, pick, outcome, picked, run, started;
+  let session, duel, seed, lines, latest, pick, outcome, picked, run, started, challengeAttacked = false, playbackIdle = true;
   // The lesson record of the current game: its frozen setup and the Cowboy's actions in order. lesson: a rematch's session factory.
   let setup = null, cowboyActions = [], lesson = null;
   // seat: the solo player's side. camp: the campaign this duel settles through, or null (nothing is settled).
@@ -141,6 +142,8 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     picked = null;
     run = newRunId();
     started = Date.now();
+    challengeAttacked = false;
+    playbackIdle = true;
     cues.clear();
     boardPresentation?.clear();
     boardPresentation?.setBattlefield?.(current.battlefield);
@@ -155,14 +158,24 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     const [before, seat] = [session.view(), viewer()];
     const trace = [];
     const events = session.act(action, boardPresentation ? (step) => trace.push(step) : undefined);
+    if (action.type === "attack") challengeAttacked = true;
     if (setup) cowboyActions.push(structuredClone(action));
     const batch = record(events, before);
     finish();
     // Two players: hide the table while the screen changes hands.
     curtain = !solo() && !session.view().result && viewer() !== seat;
+    const canAnimate = !curtain && Boolean(boardPresentation?.animate);
+    playbackIdle = !canAnimate;
+    const activeRun = run;
     render(trace[0]?.before);
     cues.play(batch);
-    if (!curtain) boardPresentation?.animate(trace);
+    if (canAnimate) {
+      boardPresentation.animate(trace, () => {
+        if (run !== activeRun) return;
+        playbackIdle = true;
+        $("sd-boot-hill").hidden = !("contestChallenge" in root.dataset && onBootHill && campaign?.trailDuel?.()?.battlefield === "boot-hill" && challengeAttacked && playbackIdle);
+      });
+    }
   }
   // A game counts once it ends; a solo duel is settled exactly once, when it (or its match) is decided.
   function finish() {
@@ -253,16 +266,19 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     return card.kind === "location" ? "Already the location." : card.kind === "gear" ? "No troop to carry it." : "No target.";
   }
 
+  const previewId = (target) => `sd-preview-${target}`;
+
   // What an attack would do, computed on the public view: face-down traps are not counted.
   function preview(view, target) {
     const o = attackOutcome(view, pick.troop, target);
     const foe = view.sides[opponent(viewer())];
-    if (target === "base") return `<span class="sd-note sd-good">${foe.board.some(Boolean) ? "Ride past: " : ""}Hit the Base for ${o.baseDamage}</span>`;
+    const id = `id="${previewId(target)}" aria-hidden="true"`;
+    if (target === "base") return `<span ${id} class="sd-note sd-good">${foe.board.some(Boolean) ? "Ride past: " : ""}Hit the Base for ${o.baseDamage}</span>`;
     const lastStand = o.targetLeft === 0 && has(foe.board[target].cardId, "laststand") ? ". Its Last Stand costs yours 1 orb" : "";
-    if (o.targetLeft === 0) return `<span class="sd-note sd-good">Defeated${o.baseDamage ? `, ${o.baseDamage} through to the Base` : foe.board[target].cover ? ", nothing reaches the Base" : ""}${lastStand}</span>`;
-    if (foe.board[target].cover) return `<span class="sd-note">Survives on ${o.targetLeft}. It is in cover and does not hit back.</span>`;
-    if (attackOf(view, foe.board[target]) === 0) return `<span class="sd-note">Survives on ${o.targetLeft}. It has no attack, so yours is unharmed.</span>`;
-    return `<span class="sd-note ${o.attackerLeft === 0 ? "sd-warn" : ""}">Survives on ${o.targetLeft} and hits back: yours ${o.attackerLeft === 0 ? "is defeated" : `drops to ${o.attackerLeft}`}</span>`;
+    if (o.targetLeft === 0) return `<span ${id} class="sd-note sd-good">Defeated${o.baseDamage ? `, ${o.baseDamage} through to the Base` : foe.board[target].cover ? ", nothing reaches the Base" : ""}${lastStand}</span>`;
+    if (foe.board[target].cover) return `<span ${id} class="sd-note">Survives on ${o.targetLeft}. It is in cover and does not hit back.</span>`;
+    if (attackOf(view, foe.board[target]) === 0) return `<span ${id} class="sd-note">Survives on ${o.targetLeft}. It has no attack, so yours is unharmed.</span>`;
+    return `<span ${id} class="sd-note ${o.attackerLeft === 0 ? "sd-warn" : ""}">Survives on ${o.targetLeft} and hits back: yours ${o.attackerLeft === 0 ? "is defeated" : `drops to ${o.attackerLeft}`}</span>`;
   }
 
   // After a win: what it paid and the two cards to choose from. After a loss: the rematch's grit.
@@ -314,9 +330,10 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
     const aims = new Set(attacking ? options.filter((a) => a.type === "attack" && a.slot === pick.troop).map((a) => a.target)
       : kind === "spell" ? playsOf(pick.card).map((a) => a.target) : []);
     const carriers = new Set(kind === "gear" ? playsOf(pick.card).map((a) => a.slot) : []);
-    // While an attack or spell is being aimed, each enemy troop and Base takes the prompt as its
-    // description, so a keyboard or screen-reader user hears why a target can or cannot be chosen.
+    // Legal attacks describe the outcome as well as the shared aiming prompt.
     const aiming = attacking || kind === "spell" ? ' aria-describedby="sd-prompt"' : "";
+    const targetDescription = (target) => attacking && aims.has(target)
+      ? ` aria-describedby="${previewId(target)} sd-prompt"` : aiming;
 
     const row = (side) => {
       const s = view.sides[side];
@@ -325,7 +342,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
       const traps = isOwn && !shared ? (s.traps.length ? `Set: ${s.traps.map(name).join(", ")}` : "No trap set") : s.trapCount ? `${plural(s.trapCount, "card")} face down` : "Nothing face down";
       // The other seat's hand is card backs (the deck back's .card-back element) and a count, never faces.
       const backs = isOwn ? "" : `<span class="sd-backs" role="img" aria-label="${FACTION[side]} hand: ${plural(s.handCount, "card")}, face down">${'<span class="card-back" aria-hidden="true"></span>'.repeat(s.handCount)}</span>`;
-      const base = `<button type="button" class="sd-base ${side}${baseOpen ? " sd-can" : ""}" ${baseOpen ? 'data-enemy="base"' : "disabled"}${isOwn ? "" : aiming} data-base="${side}">
+      const base = `<button type="button" class="sd-base ${side}${baseOpen ? " sd-can" : ""}" ${baseOpen ? 'data-enemy="base"' : "disabled"}${isOwn ? "" : targetDescription("base")} data-base="${side}">
         <strong>${whoseBase(side)} Base</strong>${orbs(s.base, s.baseMax)}
         <span class="sd-note">Hand ${s.handCount} · Deck ${s.deckCount} · Graveyard ${s.discard.length}</span>${backs}
         <span class="sd-note">▲ ${traps}</span>${baseOpen ? preview(view, "base") : ""}</button>`;
@@ -348,7 +365,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
           if (kind === "spell") note = cardOf(pick.card).effect === "tie" ? "Would be stunned" : troop.health === 1 ? "Would be defeated" : `Would drop to ${troop.health - 1}`;
         }
         const attack = attackOf(view, troop);
-        return `<button type="button" class="sd-slot ${side}${cls}" data-frame="troop" data-slot="${side}-${slot}" ${data}${isOwn ? "" : aiming}><strong>${card.name}</strong><span class="sd-type">${FRAME.troop.mark} Troop · ${card.tag}</span>
+        return `<button type="button" class="sd-slot ${side}${cls}" data-frame="troop" data-slot="${side}-${slot}" ${data}${isOwn ? "" : targetDescription(slot)}><strong>${card.name}</strong><span class="sd-type">${FRAME.troop.mark} Troop · ${card.tag}</span>
           ${attack} attack${attack !== card.attack ? ` (+${attack - card.attack})` : ""} ${orbs(troop.health, card.health)} ${keywords(card)}
           ${troop.gear.length ? `<span class="sd-note">◆ ${troop.gear.map(name).join(", ")}</span>` : ""}${note ? `<span class="sd-note">${note}</span>` : ""}${!isOwn && attacking && aims.has(slot) ? preview(view, slot) : ""}</button>`;
       }).join("");
@@ -388,6 +405,7 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
       : "First play cards (one troop, one other card). Then act with your troops. Once a troop acts, no more cards this turn.";
     $("sd-end").hidden = Boolean(r);
     $("sd-end").disabled = !options.some((a) => a.type === "end");
+    $("sd-boot-hill").hidden = !("contestChallenge" in root.dataset && onBootHill && campaign?.trailDuel?.()?.battlefield === "boot-hill" && challengeAttacked && playbackIdle);
     $("sd-cover").hidden = !canCover;
     $("sd-cancel").hidden = !pick;
     $("sd-restart").hidden = Boolean(r);
@@ -454,6 +472,13 @@ export function mountShowdown(root, {onHome, campaign, playtest, cueOptions, nex
       const view = session.view();
       cues.clear(); boardPresentation?.clear();
       onReview({seed, setup, cowboyActions: structuredClone(cowboyActions), expected: {result: view.result, turn: view.turn}});
+    }
+    else if (b.id === "sd-boot-hill" && onBootHill) {
+      cues.clear(); boardPresentation?.clear();
+      if (onBootHill() !== false && keyboard) {
+        usable("#sd-hand button", "#sd-board [data-own]", "#sd-end", "#sd-result button", "#sd-home")?.focus();
+        return;
+      }
     }
     else if (b.id === "sd-lesson-back") { cues.clear(); boardPresentation?.clear(); onLessonBack(); }
     else if (b.id === "sd-home" || b.id === "sd-camp") { cues.clear(); boardPresentation?.clear(); onHome(); }

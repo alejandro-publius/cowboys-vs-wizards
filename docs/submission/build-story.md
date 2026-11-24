@@ -1,3 +1,84 @@
+<!--
+PUBLISHING NOTES (not part of the post)
+- Publish only what sits between "PUBLISH START" and "PUBLISH END". The November 16 lane-era draft below the end marker is archived history, kept verbatim.
+- Front matter has `published: false`. Flip it yourself; nothing has been posted anywhere.
+- GitHub and the published site are both at c5fa4ee. Every blob link uses https://github.com/alejandro-publius/cowboys-vs-wizards/blob/c5fa4ee/. This draft was written from the b3b4fec snapshot with no network, so confirm each linked path resolves at c5fa4ee before publishing.
+- The Play and ?saloon=review links work on the published build. The Saloon was verified publicly at 1440 and 390 widths with no live feed. The published judge route is still being rechecked by the coordinator, so this post makes no claim about it.
+- The two Billy gate arms were rerun by the coordinator over the tracked receipts. The terminal excerpt below is still the recorded c8fa7f2 output. Update it if the rerun text differs.
+- The Hellfire probe numbers (all 45 first divergences classified, 0 mismatches in 155,868 actions) come from the coordinator's fresh run at b3b4fec. The tracked source is scripts/referee/hellfire-parity-probe.mjs.
+-->
+<!-- PUBLISH START -->
+---
+title: "How Kiro tested a one-point balance change in Showdown"
+published: false
+description: "A 100,000-duel bot audit passes a balance gate for one card change. The first-seat edge remains, the change isn't approved, and the card is unchanged."
+tags: gamedev, javascript, testing, ai
+---
+
+In a 100,000-duel bot audit, lowering one Cowboy card, Billy, from 2 attack to 1 moves Cowboy wins from **59.792% to 51.920%**. The first number fails my written balance gate (exit 2) and the second passes (exit 0). I haven't applied it: Billy still has 2 attack, the change awaits design approval, and the opening-player edge it leaves behind is what worries me.
+
+This is a build note from my Kiroween 2026 entry, a haunted-Western card duel. [Play it](https://alejandro-publius.github.io/cowboys-vs-wizards/) or open the [recorded review](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review). Both links work on the current build, and GitHub and the published site are at `c5fa4ee`.
+
+## The rule, the numbers, the controls
+
+A Kiro CLI agent proposed the edit. The pass/fail rule sits in a spec file the agent can't edit, and the protocol was published before the run:
+
+- **NSB-1:** Each faction's win share SHALL be within 45% to 55%, inclusive.
+- **NSB-2:** The opening player's absolute win-share distance from 50% SHALL grow by at most 1 percentage point versus the baseline.
+
+Level-2 bots played 25,000 held-out deals from both seats with both versions of Billy, in the Node engine frozen at `eedab93`: 100,000 duels, 50,000 matched pairs.
+
+The [gate script](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/c5fa4ee/scripts/billy-balance-gate.mjs) re-derives every outcome from the tracked `outcomes.csv.gz` and checks two SHA-256 digests first. Both arms have since been rerun over the tracked receipts. On a disposable copy, narrowing NSB-1 to 49–51 turned the same 51.920% RED. The audit ran as Kiro CLI Workflow `wf_27f8bf0bb063c889` with a [read-only auditor agent](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/c5fa4ee/.kiro/agents/showdown-seat-auditor.json); the [write-up](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/c5fa4ee/docs/evidence/billy-seat-audit/README.md) lists six rejected attempts at other cards.
+
+## What the gate lets through
+
+- **The opening edge stays.** The first player wins 59.412% of games at 2 attack and 58.136% at 1. NSB-2 limits growth, not the edge, so a 58% opening advantage passes.
+- **It overshoots by seat.** When the Wizards open, Cowboy share falls from 50.380% to 43.784%. NSB-1 judges seats combined, so this still passes.
+- **Bots, not people.** No first-time player has played this build to a recorded result.
+
+## Replay one deal both ways
+
+In the game, open **Camp → Camp ledger → Sheriff's Ledger** and step through seed 726421019 at 2 attack and at the proposed 1. At 2 attack the Cowboys win on turn 13. At 1 the Bone Wall survives on 1 orb and the Wizards win on turn 20. I picked this deal after the cohort was recorded, so it's an illustration, not a typical game.
+
+The [`?saloon=review`](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) link opens a recorded Kiro shift ending on the written rule, the measured shares and the recheck command. It was checked on the published site at 1440 and 390 widths with no live feed.
+
+## One native hook
+
+A `PostFileSave` hook, [`check-outrider-gate.json`](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/c5fa4ee/.kiro/hooks/check-outrider-gate.json), replays ten recorded Outrider positions when an engine file is saved:
+
+```json
+{
+  "trigger": "PostFileSave",
+  "matcher": "(^|/)(src/game/showdown/[^/]+\\.js|src/game/card-specs\\.generated\\.js|…)$",
+  "action": { "type": "command", "command": "node scripts/check-outrider-gate-hook.mjs" }
+}
+```
+
+In a Kiro CLI session on November 20, a deliberate `rules.js` edit (a ride strike past troops cost 2 orbs, not 1) produced a `failed` [receipt](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/c5fa4ee/docs/evidence/outrider-gate/hook-receipts.jsonl): "0 fresh, 10 stale". Saving the revert gave `passed`, "10 fresh". The receipts carry the Kiro session id. There was no Kiro IDE run.
+
+## The referee's 2,613 disagreements
+
+An independent Python referee, written from the rulebook and card spreadsheet, disagreed with the engine 2,613 times in 45 duels over 2,500 inputs (155,868 actions). Its verdict is `fail`.
+
+A fresh, reproducible hypothetical [probe](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/c5fa4ee/scripts/referee/hellfire-parity-probe.mjs) at `b3b4fec` classified the first divergence in all 45 duels as one case: Hellfire cast on an empty board. The engine rejects it, the referee accepts it, and the rulebook is silent. With a temporary oracle copy under the engine's rule, the probe found 0 mismatches in 155,868 actions. That is a counterfactual, not a result: the frozen referee and receipt are unchanged, and whether Hellfire needs an enemy troop is a gameplay ruling that is still open. The referee hasn't been run against the Billy candidate.
+
+## Who did what
+
+- **Kiro CLI:** the proposal run, spec and reviewer, audit Workflow, save hook, receipt-checking Power, a read-only referee triage and a browser test fixture fix. It changed no rule or card.
+- **Claude Code:** the Billy Ledger, its tests and the first replay verifier, plus four November 23 sessions on Claude Opus 5.5: referee browser canaries, a transcript generator, a repaired history runner and a Wizard search.
+- **Fable** (Claude Fable 5.2 in Claude Code) designed the rules, cards, bots and art direction. Fable and I approve card changes, and this one isn't approved. **Codex** measured the 10,000-game sample. I handled art direction, Tripo exports and merging.
+
+The code is MIT licensed. Models are Tripo exports, the Sheriff idle motion is sourced from Mixamo, and the title illustration was generated with GPT Image in ChatGPT and approved on November 16, 2026. Reference files in `docs/references/lucca-character-factory/` keep their MIT license and attribution to Lucca Cerf. A Claude Code session drafted this post and I reviewed it.
+
+[Source](https://github.com/alejandro-publius/cowboys-vs-wizards/tree/c5fa4ee) · [Kiro evidence map](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/c5fa4ee/docs/kiro-brag-sheet.md) · [Night Watch](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch)
+<!-- PUBLISH END -->
+
+---
+
+# Archive (not part of the post): November 16 lane-era draft, verbatim
+
+The text below is the previous contents of this file, kept unchanged as history. It describes the retired three-lane duel.
+
 # Making a haunted-Western card duel inspectable with Kiro
 
 > **Lane-era draft (November 16, 2026).** It describes the three-lane duel. The December 4 entry is Showdown; its current Kiro answers and proof are in the [judge write-up](kiro-brag-sheet.md). Kept as history.

@@ -224,7 +224,7 @@ Deadeye removes one Health_Orb from a chosen living enemy Troop. Singularity rem
 Existing in `assets/models/` (static exports; the audit of these eight GLBs found no skins, joints or clips): `billy.glb`, `wizard.glb`, `board.glb`, `cowboy-tile.glb`, `wizard-tile.glb`, `saloon.glb`, `gateway.glb`, `revolver.glb`. Billy and Wizard motion is procedural in the renderer.
 
 Card concept references (approved direction, production textures and their import PENDING):
-- Approved card BACK concept: `~/Downloads/Amethyst Horseshoe Arcana.png` (1060x1484, brass horseshoes and amethyst on dark red-purple). `~/Downloads/card back 3d model.glb` (about 70 MB, outside the repo, unaudited) SHALL NOT be committed raw.
+- Approved card BACK concept: `~/Downloads/Amethyst Horseshoe Arcana.png` (1060x1484, brass horseshoes and amethyst on dark red-purple). The unaudited `~/Downloads/card back 3d model.glb` is about 70 MB and outside the repo.
 - Approved card FRONT concept: file not yet identified (see Open Questions).
 - The crown-and-dust card files in Downloads belong to another project and are not references.
 
@@ -235,6 +235,10 @@ Missing:
 - Spell-effect art for Deadeye as a card (an existing revolver shot exists) and Singularity relocation visuals beyond the existing demo effect.
 - Audio beyond synthesized prototype sounds.
 
+### Requirement 13: Prototype Asset Fallbacks
+
+These acceptance criteria describe the retired lane duel.
+
 #### Acceptance Criteria
 
 1. THE Engine SHALL use the card table statistics regardless of which models exist.
@@ -242,6 +246,7 @@ Missing:
 3. THE Card_UI SHALL render plain HTML text cards as a temporary visual that is not the final approved design.
 4. THE Orb_Display SHALL use procedural orbs.
 5. THE renderer SHALL preserve the existing attack demo and approved haunted Western art.
+6. The unaudited `card back 3d model.glb` SHALL NOT be committed raw.
 
 ## Decisions and Open Questions
 

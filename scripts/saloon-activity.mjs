@@ -22,9 +22,13 @@ export const ACTORS = Object.freeze(["sheriff", "wizard", "hunter", "singularity
 
 const MAX_STDIN = 1 << 20;
 const BY_LOWER = new Map(PHASES.map((p) => [p.toLowerCase(), p]));
-// Older delivered names for the same automatic triggers. Manual / on-demand
-// triggers are deliberately absent so they are ignored.
+// Other delivered names for the same automatic triggers. Manual / on-demand
+// triggers are deliberately absent so they are ignored. pretaskexec and
+// posttaskexec are the native Kiro CLI v1 spellings; they map onto the long
+// internal phase names so persisted journal phases stay unchanged.
 const LEGACY = new Map(Object.entries({
+  pretaskexec: "PreTaskExecution",
+  posttaskexec: "PostTaskExecution",
   agentspawn: "SessionStart",
   promptsubmit: "UserPromptSubmit",
   agentstop: "Stop",

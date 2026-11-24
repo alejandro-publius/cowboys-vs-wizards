@@ -34,4 +34,3 @@ Author: Kiro (native Kiro CLI, agent `native-handoff-cowboy-specs`). Every claus
 ## Open items (not counted)
 
 - Open: the JSON has no lane fields (`showdownOnly: true`), so `scripts/sync-card-specs.mjs` keeps it out of `CARD_SPECS` and lists it after the lane cards in `SHOWDOWN_SPECS`.
-- Open: no test title cites any CARD-COWBOY-BEAR-TRAP ID, so the trace reports every clause as an orphan.

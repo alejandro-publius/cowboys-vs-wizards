@@ -34,4 +34,4 @@ Author: Kiro (native Kiro CLI, agent `native-handoff-cowboy-specs`). Every claus
 
 - Open: the JSON `rides: true` and `limit: 2` are lane fields (`src/game/cards.js` `canRide`, `cowboyCopyLimit`). Showdown reads the `ride` keyword and caps the Common card at 4. Whether to drop or align these lane fields is a pipeline decision for Fable.
 - Open: `.kiro/specs/outrider-gate/` is a separate experiment (ride or fight decision cases in the Camp). It changes no Outrider rule and its G-clauses are not restated here.
-- Open: no test title cites any CARD-COWBOY-OUTRIDER ID, so the trace reports every clause as an orphan.
+- Open: `tests/game/card-specs.test.js` cites `CARD-COWBOY-OUTRIDER-04` through `-10` and `-12` through `-14`; `-01` to `-03`, `-11` and `-15` to `-17` are not yet cited in a test title and remain orphans in the trace.

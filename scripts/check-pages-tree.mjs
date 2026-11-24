@@ -23,6 +23,7 @@
 //     files, paints the BBS screen and raises no errors
 //   - /?saloon=review opens the recorded Night Shift saloon at the validated Billy proposal card with no
 //     /night-shift/events request; Replay from start hides the decision and Back to map returns to the Camp
+//   - Chrome exposes the named challenge, Outrider controls, Saloon dialog and balance evidence in its accessibility tree
 //   No page error, failed request or HTTP error is allowed anywhere.
 import assert from "node:assert/strict";
 import {spawn} from "node:child_process";
@@ -104,7 +105,7 @@ try {
     assert.doesNotMatch(html, /chunks\/lanes-|id="arena"|id="menu-lanes"|id="earlier-build"|<script id="models"|rapier_wasm|rapier3d/, `${route} has no retired lane engine`);
   check("the four single-file pages include no retired lane game or separate assets", {files});
 
-  // Boot Hill Poker, the experimental second game, staged as its own four files.
+  // Boot Hill Poker, the experimental second game, staged as its own five files.
   assert.equal((await get("poker", "manual")).location, `${BASE_PATH}poker/`, "/poker redirects to /poker/");
   for (const name of POKER_FILES) {
     const served = await get(`poker/${name}`);
@@ -203,7 +204,33 @@ async function browserChecks() {
       await send("Page.navigate", {url: site + rel});
       await wait(`document.readyState==='complete'&&location.href===${JSON.stringify(site + rel)}`);
     };
+    const press = async (key, keyCode) => {
+      for (const type of ["keyDown", "keyUp"]) {
+        const text = key === "Enter" && type === "keyDown" ? {text: "\r"} : {};
+        await send("Input.dispatchKeyEvent", {type, key, code: key, windowsVirtualKeyCode: keyCode,
+          nativeVirtualKeyCode: keyCode, ...text});
+      }
+    };
+    const activateByKey = async (selector) => {
+      for (let tabs = 0; tabs < 45; tabs++) {
+        if (await evaluate(`document.activeElement?.matches(${JSON.stringify(selector)})`)) {
+          await press("Enter", 13);
+          return;
+        }
+        await press("Tab", 9);
+      }
+      const focus = await evaluate(`document.activeElement?.id || document.activeElement?.tagName`);
+      assert.fail(`Tab could not reach ${selector} (last focus: ${focus})`);
+    };
     const shown = (id) => `!!document.getElementById('${id}')&&!document.getElementById('${id}').hidden`;
+    await send("Accessibility.enable");
+    await send("Emulation.setFocusEmulationEnabled", {enabled: true});
+    const axTree = async () => (await send("Accessibility.getFullAXTree")).nodes.filter((node) => !node.ignored);
+    const axProperty = (node, key) => node.properties?.find((p) => p.name === key)?.value?.value;
+    const axNamed = (nodes, role, name, predicate = () => true) => nodes.some((node) =>
+      node.role?.value === role && name.test(node.name?.value ?? "") && predicate(node));
+    const enabled = (node) => axProperty(node, "disabled") !== true;
+    const focused = (node) => enabled(node) && axProperty(node, "focused") === true;
     // Chromium's default favicon probe: a page without <link rel="icon"> (the experimental poker/ page) makes
     // Chrome request the origin-root /favicon.ico. On GitHub Pages that path belongs to the owner's root site,
     // outside BASE_PATH, so it is not a project asset. Only that exact URL with CDP type "Other" is exempt and
@@ -273,39 +300,106 @@ async function browserChecks() {
       assert.match(await evaluate(`document.querySelector('${room} .saloon-target-stat').textContent`), /^Billy\b.*: attack 2 → 1/);
       const at = await evaluate(`document.querySelector('${room} .saloon-progress').textContent`);
       assert.match(at, /^· step [1-9]\d* of \d+$/, "the room opens at the review step");
+      const saloonAx = await axTree();
+      assert.ok(axNamed(saloonAx, "dialog", /^Night Shift saloon$/), "the recorded room has a dialog name");
+      for (const label of [/^Play$/, /^Step$/, /^Replay from start$/]) {
+        assert.ok(axNamed(saloonAx, "button", label, enabled), `${label} is an enabled playback control`);
+      }
+      assert.ok(axNamed(saloonAx, "heading", /^Review of Kiro's proposal: Billy attack 2 → 1$/), "the balance review has a heading");
+      const noticeText = saloonAx.filter((node) => node.role?.value === "StaticText").map((node) => node.name?.value).join(" ");
+      for (const detail of ["59.792%", "51.920%", "100,000", "awaits design approval"]) {
+        assert.ok(noticeText.includes(detail), `the review exposes ${detail}`);
+      }
       await sleep(3500); // longer than the slowest live poll interval
-      await click(`${room} .saloon-replay`);
+      // Keyboard: a real Enter on the focused control; keyboard focus must land on Play, not <body>.
+      const total = Number(at.match(/ of (\d+)$/)[1]);
+      const focusOn = async (name) => {
+        await evaluate(`document.querySelector('${room} .saloon-${name}').focus()`);
+        assert.ok(await evaluate(`document.activeElement===document.querySelector('${room} .saloon-${name}')`), `${name} holds focus before Enter`);
+      };
+      const onPlay = `document.activeElement===document.querySelector('${room} .saloon-play')&&!document.activeElement.disabled`;
+      await focusOn("replay");
+      await press("Enter", 13);
       await wait(`${decision}.hidden&&/^· step 0 of /.test(document.querySelector('${room} .saloon-progress').textContent)`);
+      assert.ok(await evaluate(onPlay), "Replay from start by Enter moves focus to the enabled Play button");
+      assert.ok(axNamed(await axTree(), "button", /^Play$/, focused), "Chrome exposes Play as focused after restart");
+      for (let n = 0; n < total - 1; n++) await click(`${room} .saloon-step`);
+      await wait(`document.querySelector('${room} .saloon-progress').textContent==='· step ${total - 1} of ${total}'`);
+      await focusOn("step");
+      await press("Enter", 13);
+      await wait(`document.querySelector('${room} .saloon-progress').textContent==='· step ${total} of ${total}'`);
+      assert.equal(await evaluate(`document.querySelector('${room} .saloon-step').disabled`), true, "Step is disabled at the last event");
+      assert.ok(await evaluate(onPlay), "Step by Enter at the last event moves focus to the enabled Replay button");
+      assert.equal(await evaluate(`document.activeElement.textContent`), "Replay");
+      assert.ok(axNamed(await axTree(), "button", /^Replay$/, focused), "Chrome exposes Replay as focused after the last event");
       await click(`${room} header button`);
       await wait(`!document.querySelector('${room}').open&&${shown("showdown-camp")}`);
       assert.deepEqual(feedRequests(), [], "?saloon=review makes no /night-shift/events request");
       assert.ok(requests.length > mark, "the review page made its own requests");
       clean();
-      check(`${BASE_PATH}?saloon=review: the recorded saloon opens at the validated Billy proposal (${at.slice(2)}), makes 0 /night-shift/events requests; Replay from start hides the decision and Back to map returns to the Camp`);
+      check(`${BASE_PATH}?saloon=review: the recorded saloon opens at the validated Billy proposal (${at.slice(2)}), makes 0 /night-shift/events requests; Enter on Replay from start hides the decision and Enter on Step at the last event keeps focus on Play/Replay; Back to map returns to the Camp`);
     }
 
-    const challengeOpens = async () => {
+    const challengeOpens = async (activate) => {
       await wait(`${shown("showdown")} && document.querySelector('#sd-field[data-battlefield="bone-fence"] canvas.sd-world')?.width > 0`);
       assert.match(await evaluate(`document.getElementById('sd-status').textContent`), /^Ride or Fight\?/);
       const slots = '[data-slot^="cowboy-"]';
       const rider = await evaluate(`[...document.querySelectorAll(${JSON.stringify(slots)})].find(x => x.textContent.includes('Outrider'))?.dataset.slot`);
       assert.ok(rider, "the Outrider is on the board");
-      await click(`[data-slot="${rider}"]`);
+      assert.ok(axNamed(await axTree(), "button", /\bOutrider\b/, enabled), "Outrider is an enabled named choice");
+      await activate(`[data-slot="${rider}"]`);
       await wait(`document.querySelector('[data-base="wizard"]')?.dataset.enemy === 'base' && !!document.querySelector('[data-slot^="wizard-"][data-enemy]')`);
       clean();
     };
     await open("");
     await wait(`document.getElementById('menu-challenge')?.textContent === 'Ride or Fight?'`);
-    await click("#menu-challenge");
-    await challengeOpens();
-    await click('[data-base="wizard"]');
+    assert.ok(axNamed(await axTree(), "button", /^Ride or Fight\?$/, enabled), "the title challenge has a name");
+    await activateByKey("#menu-challenge");
+    await challengeOpens(activateByKey);
+    const aim = await evaluate(`({
+      prompt: document.getElementById('sd-prompt')?.textContent.trim() ?? '',
+      base: document.querySelector('[data-base="wizard"] [id^="sd-preview-"]')?.textContent.trim() ?? '',
+      skeleton: [...document.querySelectorAll('[data-slot^="wizard-"][data-enemy]')].find((b) => b.textContent.includes('Skeleton'))?.querySelector('[id^="sd-preview-"]')?.textContent.trim() ?? ''
+    })`);
+    assert.equal(aim.base, "Ride past: Hit the Base for 1", "Base shows its Ride past preview");
+    assert.ok(aim.skeleton && aim.skeleton !== aim.base, "Skeleton shows its own distinct preview");
+    assert.ok(aim.prompt, "aiming prompt is non-empty");
+    const targets = await axTree();
+    const describes = (preview, other) => (node) => {
+      const description = node.description?.value ?? "";
+      return enabled(node) && !(node.name?.value ?? "").includes(preview)
+        && description.includes(preview) && description.includes(aim.prompt) && !description.includes(other);
+    };
+    assert.ok(axNamed(targets, "button", /\bBase\b/, describes(aim.base, aim.skeleton)), "the Base description carries its own preview and the aiming prompt");
+    assert.ok(axNamed(targets, "button", /\bSkeleton\b/, describes(aim.skeleton, aim.base)), "the Skeleton description carries its own preview and the aiming prompt");
+    check("Chrome exposes distinct Base and Skeleton attack previews as accessible descriptions");
+    await activateByKey('[data-base="wizard"]');
     await wait(`/Outrider struck the Wizards' Base for 1/.test(document.getElementById('sd-log').textContent)`);
-    await click("#sd-home");
+    await activateByKey("#sd-home");
     await wait(shown("showdown-camp"));
-    check("the illustrated title opens the playable Ride or Fight? challenge and Camp is reachable");
+    check("Tab and Enter open Ride or Fight?, play the Outrider's Base attack and return to Camp");
+    check("Chrome exposes the challenge and targets, recorded Saloon dialog and results, and replay keyboard focus in its accessibility tree");
+
+    await open("");
+    await wait(`document.getElementById('menu-challenge')?.textContent === 'Ride or Fight?'`);
+    await activateByKey("#menu-challenge");
+    await challengeOpens(activateByKey);
+    assert.equal(await evaluate(`document.getElementById('sd-boot-hill')?.hidden`), true, "Continue to Boot Hill starts hidden");
+    await activateByKey('[data-base="wizard"]');
+    await wait(`/Outrider struck the Wizards' Base for 1/.test(document.getElementById('sd-log').textContent) && document.getElementById('sd-boot-hill') && !document.getElementById('sd-boot-hill').hidden`);
+    assert.ok(axNamed(await axTree(), "button", /Continue to Boot Hill/, enabled), "Continue to Boot Hill is an enabled named button");
+    await activateByKey("#sd-boot-hill");
+    await wait(`document.querySelector('#sd-field[data-battlefield="boot-hill"] canvas.sd-world')?.width > 0 && /Boot Hill/.test(document.getElementById('sd-status').textContent) && document.getElementById('sd-boot-hill')?.hidden !== false`);
+    assert.equal(await evaluate(`!!document.getElementById('showdown')?.hasAttribute('data-contest-challenge')`), false, "challenge marker no longer applies");
+    assert.equal(await evaluate(`!!document.activeElement?.closest('#showdown button:not(:disabled), #showdown [tabindex="0"]:not([aria-disabled="true"])')`), true, "focus is on a usable duel control");
+    const bhStatus = await evaluate(`document.getElementById('sd-status').textContent`);
+    await activateByKey("#sd-end");
+    await wait(`document.getElementById('sd-status').textContent !== ${JSON.stringify(bhStatus)}`);
+    clean();
+    check("Continue to Boot Hill opens from the finished challenge via keyboard, moves focus to a usable duel control, clears the challenge marker and advances status on End turn");
 
     await open("3d/?outrider=case-a");
-    await challengeOpens();
+    await challengeOpens(click);
     const enemy = await evaluate(`document.querySelector('[data-slot^="wizard-"][data-enemy]').dataset.slot`);
     await click(`[data-slot="${enemy}"]`);
     await wait(`document.getElementById('sd-log').textContent.includes('Outrider attacked')`);

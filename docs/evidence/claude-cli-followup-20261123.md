@@ -16,6 +16,7 @@ The original 2,500-duel run showed 2,613 disagreements. A temporary referee copy
 ## Reproduce the checks
 
 ```sh
+node scripts/referee/hellfire-parity-probe.mjs
 node scripts/referee/browser-transcripts.mjs --source corpus --count 250 --out .artifacts/referee-inputs/claude-corpus-250.jsonl
 node scripts/referee/browser.mjs --canary --seed 3 --transcripts .artifacts/referee-inputs/claude-corpus-250.jsonl --reduced-motion
 node scripts/referee/history.mjs run --manifest .artifacts/history-archive-smoke/manifest.json --referee proof/referee/referee.py --adapter scripts/referee/history-adapter.mjs

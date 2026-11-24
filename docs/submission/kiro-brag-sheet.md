@@ -26,9 +26,9 @@ Camp now labels each newly finished duel with the build that recorded it. A copi
 
 Cowboys vs. Wizards is a haunted-Western card duel that runs in a browser. The fight in the December 4 entry is **Showdown**: you choose every attack, your troops shield your Base, and turns alternate. Alex chose it on November 19 after playing it. Fable 5.2 wrote its rules ([rulebook](../../prototypes/showdown/RULEBOOK.md), PR [#142](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/142)). Kiro CLI moved it into the game with its Trail, Camp and saves, put all 29 cards in one catalog, added ten readable combat cues, made the Scout bot fair, added generated property tests, kept keyboard focus across redraws, stopped the hosted page from downloading the lane duel, pointed Night Watch at Showdown and added a Showdown agent profile.
 
-The site root opens the Showdown menu. Camp contains the Trail, rivals, Wanted hunts, packs, deck builder, best of three, two-player mode and the Sheriff’s Ledger. The [earlier illustrated build](https://alejandro-publius.github.io/cowboys-vs-wizards/3d/) retains the lane rules. [Cutover PR](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/161) · [Night Shift receipts](../evidence/night-shift.md).
+The site root opens the Showdown menu. Camp contains the Trail, rivals, Wanted hunts, packs, deck builder, best of three, two-player mode and the Sheriff’s Ledger. The [`/3d/` compatibility route](https://alejandro-publius.github.io/cowboys-vs-wizards/3d/) serves the same illustrated Showdown build as the root; the lane rules are retired. [Cutover PR](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/161) · [Night Shift receipts](../evidence/night-shift.md).
 
-This page is the one judge-facing description. The [Devpost packet](devpost-packet.md), [build story](build-story.md) and [historical evidence map](../kiro-brag-sheet.md) give more detail and older history.
+The [judge walkthrough](../JUDGE-GUIDE.md) shows the current illustrated challenge and Saloon review. The [Devpost packet](devpost-packet.md), [build story](build-story.md) and [historical evidence map](../kiro-brag-sheet.md) give more detail on Kiro’s work.
 
 **Installed Crew dashboard (K-077).** Kiro opened the frozen standalone candidate in Crew. The same report that displayed 118.8% Cowboy wins on the old install displayed 59.4% after the update. Both seat counts and all 2,000 outcomes matched the original receipt. [Installed dashboard and mirror evidence](../evidence/night-watch-showdown.md).
 
@@ -69,10 +69,10 @@ The runs above are automated. Alex separately confirmed the playtests were compl
 
 | Label | Where | What it is | Status |
 | --- | --- | --- | --- |
-| **Public graybox** (the entry) | [graybox/](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) | The rules-first game: flat board, text cards, life orbs, a log. **Play** opens the Camp; the Trail starts at Boot Hill, and wins, rewards and card choices are saved. | Live at the [site root](https://alejandro-publius.github.io/cowboys-vs-wizards/). |
+| **Public graybox** (lightweight fallback) | [graybox/](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) | The rules-first game: flat board, text cards, life orbs, a log. **Play** opens the Camp; the Trail starts at Boot Hill, and wins, rewards and card choices are saved. | Staged at `/graybox/`. The [site root](https://alejandro-publius.github.io/cowboys-vs-wizards/) serves the illustrated build. |
 | **Full Showdown reference** | [showdown/](https://alejandro-publius.github.io/cowboys-vs-wizards/showdown/) · [contents](../../prototypes/showdown/README.md) | Fable's standalone page with the whole design: the Trail of six duels, rivals, bounties, packs, deck builder with side deck, best of three and two players on one screen. | Live reference. The public graybox also includes these Camp modes following [#161](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/161). |
 
-The public front page and the graybox alias open Showdown. The [earlier illustrated build](https://alejandro-publius.github.io/cowboys-vs-wizards/3d/) retains its original rules.
+The site root and [`/3d/`](https://alejandro-publius.github.io/cowboys-vs-wizards/3d/) open the illustrated Showdown; `/graybox/` opens the same game on the lightweight board.
 
 ## Try one action (about a minute)
 
