@@ -8,7 +8,7 @@ import { cardsCsv } from "../../prototypes/showdown/export-cards.mjs";
 import { createMatch } from "../../src/game/state.js";
 import { applyAction } from "../../src/game/actions.js";
 import fc from "fast-check";
-import { applyAction as applyShowdown, canAttack, createShowdown, legalActions as showdownActions } from "../../src/game/showdown/rules.js";
+import { applyAction as applyShowdown, attackOf, canAttack, createShowdown, legalActions as showdownActions } from "../../src/game/showdown/rules.js";
 import { viewFor } from "../../src/game/showdown/contract.js";
 import { presentEvent } from "../../src/game/showdown/presenter.js";
 
@@ -406,4 +406,123 @@ test("CARD-WIZARD-HELLFIRE-05 CARD-WIZARD-SINGULARITY-07 CARD-WIZARD-SINGULARITY
     for (const state2 of [summoned, trapped]) for (const kind of ["spell", "gear", "location"]) assert.equal(kindsOf(state2).has(kind), false);
     assert.deepEqual(trapped.sides.wizard.traps, ["wizard-hex-1"]);
   }
+});
+
+test("CARD-COWBOY-OUTRIDER-04 CARD-COWBOY-OUTRIDER-05: a ready Outrider targets every enemy troop plus the Base unless Guard stands, then only the Guards (fast-check)", () => {
+  const outrider = { type: "cowboy-outrider", health: 3 };
+  const sheriff = { type: "cowboy-sheriff", health: 3 };
+  const skeleton = { type: "wizard-skeleton", health: 3 };
+  const wizard = { type: "wizard-wizard", health: 4 };
+  const horseman = { type: "wizard-headless-horseman", health: 3 };
+  const wall = { type: "wizard-bone-wall", health: 4 };
+  assert.ok(hasKey(outrider.type, "ride") && !hasKey(sheriff.type, "ride"));
+  assert.ok(hasKey(wall.type, "guard") && [skeleton, wizard, horseman].every((spec) => !hasKey(spec.type, "guard")));
+  const attackTargets = (state, slot) => showdownActions(state).filter((action) => action.type === "attack" && action.slot === slot).map((action) => action.target);
+
+  // Ready Outrider boards with gaps on both sides: non-Guards, one Guard and two Guards.
+  const gappedRider = stage({ active: "cowboy", own: [sheriff, null, outrider], foe: [skeleton, null, wizard] });
+  assert.equal(canAttack(gappedRider, gappedRider.sides.cowboy.board[2]), true);
+  assert.deepEqual(attackTargets(gappedRider, 2), [0, 2, "base"]);
+  assert.deepEqual(attackTargets(gappedRider, 0), [0, 2]);
+  assert.deepEqual(attackTargets(stage({ active: "cowboy", own: [null, outrider, null], foe: [null, horseman, null] }), 1), [1, "base"]);
+  assert.deepEqual(attackTargets(stage({ active: "cowboy", own: [null, outrider, null], foe: [skeleton, null, wall] }), 1), [2]);
+  assert.deepEqual(attackTargets(stage({ active: "cowboy", own: [outrider, null, sheriff], foe: [null, wall, wizard] }), 0), [1]);
+  assert.deepEqual(attackTargets(stage({ active: "cowboy", own: [null, outrider, null], foe: [wall, null, wall] }), 1), [0, 2]);
+  assert.deepEqual(attackTargets(stage({ active: "cowboy", own: [outrider, null, null], foe: [wall, skeleton, wall] }), 0), [0, 2]);
+
+  fc.assert(fc.property(
+    fc.record({ slot: fc.nat({ max: 2 }), health: fc.integer({ min: 1, max: 3 }), gear: fc.boolean(), own: boardSpec("cowboy"), foe: boardSpec("wizard", 1) }),
+    ({ slot, health, gear, own, foe }) => {
+      const cowboy = [...own];
+      cowboy[slot] = { type: "cowboy-outrider", health, cover: false, gear };
+      const state = stage({ active: "cowboy", own: cowboy, foe });
+      assert.equal(canAttack(state, state.sides.cowboy.board[slot]), true);
+      const troops = foe.flatMap((spec, at) => (spec ? [at] : []));
+      const guards = troops.filter((at) => hasKey(foe[at].type, "guard"));
+      const expected = guards.length > 0 ? guards : [...troops, "base"];
+      assert.deepEqual(attackTargets(state, slot), expected);
+    },
+  ), FC);
+});
+
+test("CARD-COWBOY-OUTRIDER-06 CARD-COWBOY-OUTRIDER-07 CARD-COWBOY-OUTRIDER-08 CARD-COWBOY-OUTRIDER-09 CARD-COWBOY-OUTRIDER-10 CARD-COWBOY-OUTRIDER-12 CARD-COWBOY-OUTRIDER-13 CARD-COWBOY-OUTRIDER-14: Outrider rides past standing troops for 1 orb with logged attack event and strikes an empty board for its full boosted attack (fast-check)", () => {
+  const officeId = "cowboy-sheriffs-office-1";
+  const skeleton = { type: "wizard-skeleton", health: 3 };
+  const nonGuardWizard = fc.record({
+    type: fc.constantFrom(...troopTypes("wizard").filter((type) => !hasKey(type, "guard"))),
+    health: fc.integer({ min: 1, max: 6 }), cover: fc.boolean(), gear: fc.boolean(),
+  });
+  const nonGuardFoe = fc.array(fc.option(nonGuardWizard, { nil: null }), { minLength: 3, maxLength: 3 }).filter((board) => board.some(Boolean));
+
+  // Measured contrast: Sheriff's Office boosts Outrider attack to 2, yet ride-past deals 1 while an empty board takes 2.
+  const beforeOffice = stage({ active: "cowboy", own: [{ type: "cowboy-outrider", health: 3 }], foe: [skeleton], hand: [officeId] });
+  assert.equal(attackOf(beforeOffice, beforeOffice.sides.cowboy.board[0]), 1);
+  const withOffice = applyShowdown(beforeOffice, { type: "location", cardId: officeId }).state;
+  assert.equal(attackOf(withOffice, withOffice.sides.cowboy.board[0]), 2);
+  const rodePast = applyShowdown(withOffice, { type: "attack", slot: 0, target: "base" });
+  assert.equal(rodePast.state.sides.wizard.base, 4);
+  assert.equal(rodePast.state.sides.wizard.board[0].health, 3);
+  assert.equal(rodePast.state.sides.cowboy.board[0].health, 3);
+  assert.equal(presentEvent(rodePast.events[0]), "The Cowboys' Outrider struck the Wizards' Base for 1.");
+
+  const emptyBoosted = applyShowdown(
+    stage({ active: "cowboy", own: [{ type: "cowboy-outrider", health: 3 }], foe: [], hand: [officeId] }),
+    { type: "location", cardId: officeId },
+  ).state;
+  const fullStrike = applyShowdown(emptyBoosted, { type: "attack", slot: 0, target: "base" });
+  assert.equal(fullStrike.state.sides.wizard.base, 3);
+  assert.equal(fullStrike.events[0].baseDamage, 2);
+  assert.equal(presentEvent(fullStrike.events[0]), "The Cowboys' Outrider struck the Wizards' Base for 2.");
+
+  const lethalRide = applyShowdown(
+    stage({ active: "cowboy", own: [{ type: "cowboy-outrider", health: 2 }], foe: [skeleton], bases: { cowboy: 5, wizard: 1 } }),
+    { type: "attack", slot: 0, target: "base" },
+  );
+  assert.equal(lethalRide.state.sides.wizard.base, 0);
+  assert.deepEqual(lethalRide.state.result, { winner: "cowboy", reason: "base" });
+
+  fc.assert(fc.property(
+    fc.record({
+      slot: fc.nat({ max: 2 }), health: fc.integer({ min: 1, max: 3 }), gear: fc.boolean(), office: fc.boolean(),
+      own: boardSpec("cowboy"), foe: nonGuardFoe,
+      bases: fc.record({ cowboy: fc.integer({ min: 1, max: 5 }), wizard: fc.integer({ min: 1, max: 5 }) }),
+    }),
+    ({ slot, health, gear, office, own, foe, bases }) => {
+      const cowboy = [...own];
+      cowboy[slot] = { type: "cowboy-outrider", health, cover: false, gear };
+      const withLocation = (state) => (office ? { ...state, location: { cardId: officeId, side: "cowboy" } } : state);
+      const fullAttack = 1 + (gear ? 1 : 0) + (office ? 1 : 0);
+      const riderId = idAt(cowboy[slot], slot);
+
+      const defended = withLocation(stage({ active: "cowboy", own: cowboy, foe, bases }));
+      assert.equal(attackOf(defended, defended.sides.cowboy.board[slot]), fullAttack);
+      if (office && !gear) assert.equal(attackOf(defended, defended.sides.cowboy.board[slot]), 2);
+      const ride = applyShowdown(defended, { type: "attack", slot, target: "base" });
+      assert.equal(ride.state.sides.wizard.base, bases.wizard - 1);
+      assert.equal(ride.state.sides.cowboy.base, bases.cowboy);
+      assert.deepEqual(ride.state.sides.wizard.board, defended.sides.wizard.board);
+      defended.sides.cowboy.board.forEach((troop, at) => {
+        assert.deepEqual(ride.state.sides.cowboy.board[at], at === slot ? { ...troop, attacked: true } : troop);
+      });
+      assert.deepEqual(ride.state.result, bases.wizard === 1 ? { winner: "cowboy", reason: "base" } : null);
+      assert.deepEqual(ride.events, [{
+        type: "attack", side: "cowboy", cardId: riderId, target: "base",
+        covered: false, hitBack: 0, baseDamage: 1, targetLeft: null, attackerLeft: health,
+      }]);
+      assert.equal(presentEvent(ride.events[0]), "The Cowboys' Outrider struck the Wizards' Base for 1.");
+
+      const empty = withLocation(stage({ active: "cowboy", own: cowboy, foe: [], bases }));
+      assert.deepEqual(
+        showdownActions(empty).filter((action) => action.type === "attack" && action.slot === slot),
+        [{ type: "attack", slot, target: "base" }],
+      );
+      const strike = applyShowdown(empty, { type: "attack", slot, target: "base" });
+      assert.equal(strike.state.sides.wizard.base, Math.max(0, bases.wizard - fullAttack));
+      assert.deepEqual(strike.events, [{
+        type: "attack", side: "cowboy", cardId: riderId, target: "base",
+        covered: false, hitBack: 0, baseDamage: fullAttack, targetLeft: null, attackerLeft: health,
+      }]);
+      assert.equal(presentEvent(strike.events[0]), `The Cowboys' Outrider struck the Wizards' Base for ${fullAttack}.`);
+    },
+  ), FC);
 });

@@ -209,7 +209,7 @@ classes are those defined above.
 
 Shorthands: `prog` = `prototypes/showdown/progress.test.js`, `store` = `tests/game/showdown-campaign-store.test.js`,
 `inh` = `tests/game/showdown-inherited.test.js`, `keep` = `tests/game/showdown-keepsake-compat.test.js`, `ramp` = `tests/game/showdown-trail-ramp.test.js`,
-`camp` = `tests/match/showdown-campaign.test.js`, `plog` = `tests/match/showdown-playtest.test.js`,
+`pure` = `tests/game/showdown-engine-purity.test.js`, `camp` = `tests/match/showdown-campaign.test.js`, `plog` = `tests/match/showdown-playtest.test.js`,
 `B-entry` = `scripts/browser-showdown-check.mjs`, `B-trail` = `scripts/browser-showdown-trail-check.mjs`
 (Run A new player, Run B lane veteran). Browser receipts:
 [`browser-showdown.json`](evidence/kiro-143-slice2-integrate/browser-showdown.json) (23 of 23) and
@@ -220,7 +220,7 @@ the built pages at `cd764f1` are byte-identical to the ones checked
 | AC | Class | Tests | Notes |
 | --- | --- | --- | --- |
 | FH-R1.1 | direct | `ramp` "the prototype paths export exactly the canonical modules" | |
-| FH-R1.2 | missing | none | No automated purity check. A source grep of `src/game/showdown/` for DOM, storage globals and Node imports found none on `cd764f1`; that is a one-off reading, not a test. |
+| FH-R1.2 | direct | `pure` "FH-R1.2: src/game/showdown and its reachable modules have no DOM, rendering, storage, filesystem, network or model dependencies", "the purity check rejects a planted filesystem dependency in src/game/showdown" | Walks `src/game/showdown/` and its relative import graph with `scripts/trace.mjs`'s `lex` and rejects a planted `node:fs` import in a temp copy; `src/profile/player-profile.js` outside `src/game/showdown/` keeps its unused `globalThis.localStorage` default while `src/game/showdown/` forbids storage globals too. |
 | FH-R2.1 | browser | `B-entry` "Normal entry on a clean profile offers Play and the lane duel link only" | |
 | FH-R2.2 | browser | `B-entry` "Play on a clean profile opens the Camp: Boot Hill open, the other five Trail duels locked"; `B-trail` Run A "Normal entry on a clean profile: Play opens the Camp…" | |
 | FH-R2.3 | browser | `B-entry` "The Camp opens Trail duel 1, Boot Hill (Showdown), not the lane duel"; `B-trail` "Boot Hill opens from its Camp tile…", "Raven Roost opens from its Camp tile…", "The Bone Fence opens from its Camp tile" | |
@@ -267,10 +267,11 @@ and nothing from prose, aliases or neighbouring tests. Written by hand on 2026-1
 tests. Before them no test title cited any `CARD-` ID. Card values and rules are unchanged.
 
 Each test builds a Showdown position with `createShowdown`, sets boards and hands, and
-checks it with `legalActions`, `applyAction`, `canAttack`, `viewFor` or `presentEvent`. Expected values come
+checks it with `legalActions`, `applyAction`, `attackOf`, `canAttack`, `viewFor` or `presentEvent`. Expected values come
 from the clauses. The properties use fast-check seed `20261123` and 150 runs. The first pass linked
-20 card clauses, Lasso added seven, and the two traps added 16. `node scripts/trace.mjs --json` reports
-45 clauses with named tests across all specs, including 43 card clauses. Six previously unnumbered
+20 card clauses, Lasso added seven, the two traps added 16, and Outrider added 10 (plus `FH-R1.2` in
+`showdown-engine-purity.test.js`). `node scripts/trace.mjs --json` reports
+56 clauses with named tests across all specs, including 53 card clauses. Six previously unnumbered
 requirements from the retired lane duel have IDs `orb-duel/13.1` through `orb-duel/13.6`. Those six
 remain unproven. The audit reports zero parser findings and zero unresolved references.
 
@@ -285,6 +286,8 @@ remain unproven. The audit reports zero parser findings and zero unresolved refe
 | `CARD-WIZARD-SINGULARITY-04`, `-05`, `-06`, `-15` | direct | The targets listed are exactly the non-Ghostly Cowboy troops in slot order, with a Covered Wagon (Guard) beside them. None are listed for an all-Ghostly or empty board, after a Wizard troop takes cover, or after Wizard gear is played. Each cast takes exactly 1 orb from its target, in cover or not, and leaves every other slot deep-equal. |
 | `CARD-WIZARD-HELLFIRE-03`, `-07`, `-09`, `-10`, `-14`, `-15` | direct | For a random Cowboy board of at least one troop (Guard, cover and gear included) and one or two Hellfires in hand: exactly one action `{type, cardId}` with no `target`; events are one `spell` event per troop in slot order with its id and orbs left; each troop is 1 orb lower with its other fields unchanged, or gone at 0 with the troop and its gear, in slot order, as the whole Cowboy graveyard; the Wizard graveyard is the one Hellfire; each log line reads "The Wizards' Hellfire hit <name>: <n> orb(s) left." or "…: defeated." No Hellfire is offered once a Wizard troop has taken cover. |
 | `CARD-WIZARD-HELLFIRE-05`, `CARD-WIZARD-SINGULARITY-07`, `-08` | direct | With every kind of play in hand, a Singularity or a Hellfire removes `spell`, `gear` and `location` from the legal actions and keeps `summon` and `set`. The other spell is then rejected as illegal, and a summon and a Hex set still go through without reopening the other-card play. |
+| `CARD-COWBOY-OUTRIDER-04`, `-05` | direct | Across gapped boards with non-Guards, one Guard and two Guards plus fast-check boards, a ready Outrider in any slot is offered every enemy troop slot and `"base"` when no enemy has Guard, and only the Guard slot(s) — never `"base"` or non-Guards — when any enemy Guard stands. |
+| `CARD-COWBOY-OUTRIDER-06` to `-10`, `-12` to `-14` | direct | Against standing non-Guard enemy troops, a ready Outrider (unboosted, Six-Shooter, Sheriff's Office with `attackOf === 2`, or both) removes 1 orb from the Wizard Base, leaves every troop's orbs on both boards unchanged, sets `result` to `{winner: "cowboy", reason: "base"}` at 1 orb, and emits one `attack` event logged as `"The Cowboys' Outrider struck the Wizards' Base for 1."`; on the matched empty enemy board it strikes the Base for its full attack (1, 2 or 3). |
 
 Notes on what these rows do not claim:
 
@@ -299,6 +302,7 @@ Gaps that were already verified by an existing test that cites no `CARD-` ID. I 
 | `CARD-WIZARD-HELLFIRE-08` (Ghostly troops are hit) | `prototypes/showdown/rules.test.js` "Ghostly troops cannot be targeted by spells, but Hellfire still burns them": board health only. |
 | `CARD-COWBOY-DEADEYE-05` (no gear after a Deadeye) | `prototypes/showdown/rules.test.js` "gear: a Six-Shooter adds 1 attack…" ("a spell uses it too"). |
 | `CARD-WIZARD-HELLFIRE-16` to `-18` (replay and gallery) | `tests/match/showdown-3d-presentation.test.js` Hellfire gallery tests. Not re-read for this map. |
+| `CARD-COWBOY-OUTRIDER-11` (Hex cancels Outrider ride-past) | `tests/game/card-specs.test.js` `CARD-WIZARD-HEX-12` checks ride-past Hex cancellation with Mounted Billy rather than Outrider. |
 | Spell legality, events, orbs, Base and trap timing in general | `scripts/showdown-dec4-properties.mjs` properties `rb10-spells`, `rb2-frame`, `rb4-card-plays`, `rb7-traps`, `rb9-sweep-last-stand`. They run whole random games with no `CARD-` IDs, and a spell that defeats a Last Stand troop or hits a covered troop is reached only by chance. Their receipts are untouched. |
 
-Still without a test that cites the ID, in the same spell and combat group: `CARD-WIZARD-HELLFIRE-01`, `-02`, `-04` (design decision), `-06` (hand to graveyard "before any orb is removed" is not visible in state or events), `-08`, `-16` to `-18`; `CARD-WIZARD-SINGULARITY-01` to `-03`, `-09` to `-11`, `-16` to `-22`; `CARD-COWBOY-DEADEYE-02`, `-03`, `-05`, `-06`; `CARD-COWBOY-LASSO-01` to `-03`, `-09` to `-12`, `-15` to `-17`; `CARD-WIZARD-HEX-01` to `-04`, `-09`, `-11`, `-13`, `-17`; `CARD-COWBOY-BEAR-TRAP-01` to `-04`, `-12` to `-17`; and every clause of the other card specs. `node scripts/trace.mjs --require CARD-` still exits 1.
+Still without a test that cites the ID, in the same spell and combat group: `CARD-WIZARD-HELLFIRE-01`, `-02`, `-04` (design decision), `-06` (hand to graveyard "before any orb is removed" is not visible in state or events), `-08`, `-16` to `-18`; `CARD-WIZARD-SINGULARITY-01` to `-03`, `-09` to `-11`, `-16` to `-22`; `CARD-COWBOY-DEADEYE-02`, `-03`, `-05`, `-06`; `CARD-COWBOY-LASSO-01` to `-03`, `-09` to `-12`, `-15` to `-17`; `CARD-WIZARD-HEX-01` to `-04`, `-09`, `-11`, `-13`, `-17`; `CARD-COWBOY-BEAR-TRAP-01` to `-04`, `-12` to `-17`; `CARD-COWBOY-OUTRIDER-01` to `-03`, `-11`, `-15` to `-17`; and every clause of the other card specs. `node scripts/trace.mjs --require CARD-` still exits 1.
