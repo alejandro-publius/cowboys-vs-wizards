@@ -274,14 +274,36 @@ async function browserChecks() {
       const at = await evaluate(`document.querySelector('${room} .saloon-progress').textContent`);
       assert.match(at, /^· step [1-9]\d* of \d+$/, "the room opens at the review step");
       await sleep(3500); // longer than the slowest live poll interval
-      await click(`${room} .saloon-replay`);
+      // Keyboard: a real Enter on the focused control; keyboard focus must land on Play, not <body>.
+      const total = Number(at.match(/ of (\d+)$/)[1]);
+      const focusOn = async (name) => {
+        await evaluate(`document.querySelector('${room} .saloon-${name}').focus()`);
+        assert.ok(await evaluate(`document.activeElement===document.querySelector('${room} .saloon-${name}')`), `${name} holds focus before Enter`);
+      };
+      const enter = async () => {
+        for (const type of ["keyDown", "keyUp"]) {
+          await send("Input.dispatchKeyEvent", {type, key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13, ...(type === "keyDown" ? {text: "\r"} : {})});
+        }
+      };
+      const onPlay = `document.activeElement===document.querySelector('${room} .saloon-play')&&!document.activeElement.disabled`;
+      await focusOn("replay");
+      await enter();
       await wait(`${decision}.hidden&&/^· step 0 of /.test(document.querySelector('${room} .saloon-progress').textContent)`);
+      assert.ok(await evaluate(onPlay), "Replay from start by Enter moves focus to the enabled Play button");
+      for (let n = 0; n < total - 1; n++) await click(`${room} .saloon-step`);
+      await wait(`document.querySelector('${room} .saloon-progress').textContent==='· step ${total - 1} of ${total}'`);
+      await focusOn("step");
+      await enter();
+      await wait(`document.querySelector('${room} .saloon-progress').textContent==='· step ${total} of ${total}'`);
+      assert.equal(await evaluate(`document.querySelector('${room} .saloon-step').disabled`), true, "Step is disabled at the last event");
+      assert.ok(await evaluate(onPlay), "Step by Enter at the last event moves focus to the enabled Replay button");
+      assert.equal(await evaluate(`document.activeElement.textContent`), "Replay");
       await click(`${room} header button`);
       await wait(`!document.querySelector('${room}').open&&${shown("showdown-camp")}`);
       assert.deepEqual(feedRequests(), [], "?saloon=review makes no /night-shift/events request");
       assert.ok(requests.length > mark, "the review page made its own requests");
       clean();
-      check(`${BASE_PATH}?saloon=review: the recorded saloon opens at the validated Billy proposal (${at.slice(2)}), makes 0 /night-shift/events requests; Replay from start hides the decision and Back to map returns to the Camp`);
+      check(`${BASE_PATH}?saloon=review: the recorded saloon opens at the validated Billy proposal (${at.slice(2)}), makes 0 /night-shift/events requests; Enter on Replay from start hides the decision and Enter on Step at the last event keeps focus on Play/Replay; Back to map returns to the Camp`);
     }
 
     const challengeOpens = async () => {
