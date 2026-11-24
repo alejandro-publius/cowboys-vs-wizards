@@ -264,16 +264,18 @@ whose own literal title cites the ID. That is the only thing `scripts/trace.mjs`
 ([how](evidence/dec4-trace.md#proof)), so this section lists exactly the IDs that appear in test titles
 and nothing from prose, aliases or neighbouring tests. Written by hand on 2026-11-23 from
 [`tests/game/card-specs.test.js`](../tests/game/card-specs.test.js), where the tests sit after the catalog
-tests. Before them no test title cited any `CARD-` ID. Spec text, card values and rules are unchanged.
+tests. Before them no test title cited any `CARD-` ID. Card values and rules are unchanged.
 
-Each test builds a Showdown position with the public `createShowdown`, sets boards and hands, and drives
-only `legalActions`, `applyAction` and `presentEvent`. Expected values are written from the clause text.
-The properties use fast-check seed `20261123` and 150 runs. The coordinator verified 64 focused tests
-across the card, trace, scorecard and hook suites. `node scripts/trace.mjs --json` counted 22 proven clauses
-across all specs, up from 2. The six parser findings and three unresolved references also occur in the baseline.
+Each test builds a Showdown position with the public `createShowdown`, sets boards and hands, and
+checks it with `legalActions`, `applyAction`, `canAttack` or `presentEvent`. Expected values come from
+the clauses. The properties use fast-check seed `20261123` and 150 runs. The first pass covered 20
+card clauses and passed 64 focused tests across the card, trace, scorecard and hook suites. The Lasso
+test adds seven clauses, bringing `node scripts/trace.mjs --json` to 29 proven clauses across all specs.
+The six parser findings and three unresolved references also occur in the baseline.
 
 | IDs in the title | Class | Precise observable |
 | --- | --- | --- |
+| `CARD-COWBOY-LASSO-04` to `-08`, `-13`, `-14` | direct | In any slot with 1–4 orbs, the Wizard keeps its orbs and gains stun, the Lasso moves to discard, and one spell event announces the stun. The Wizard can take cover but cannot attack during its turn. Stun clears when that turn ends, and the Wizard can attack on its following turn. |
 | `CARD-COWBOY-DEADEYE-04`, `CARD-WIZARD-SINGULARITY-14`, `CARD-WIZARD-HELLFIRE-13` | direct | A Deadeye kills a 1-orb Jack-o'-Lantern, a Singularity and a Hellfire kill a 1-orb Dynamiter, in any slot among random bystanders: every event is a `spell` event (no `laststand`), the victim is gone and in its owner's graveyard, and the caster's board is deep-equal to before. |
 | `CARD-WIZARD-SINGULARITY-12`, `-13`, `CARD-WIZARD-HELLFIRE-11`, `-12` | direct | For a random Cowboy board, Cowboy trap row (none, one or two Bear Traps) and Wizard trap row: after the spell both trap rows are unchanged, no Cowboy trap card reached the graveyard, no `trap` or `attack` event, both Bases keep their orbs and the Wizard board is deep-equal to before. |
 | `CARD-WIZARD-SINGULARITY-04`, `-05`, `-06`, `-15` | direct | The targets listed are exactly the non-Ghostly Cowboy troops in slot order, with a Covered Wagon (Guard) beside them. None are listed for an all-Ghostly or empty board, after a Wizard troop takes cover, or after Wizard gear is played. Each cast takes exactly 1 orb from its target, in cover or not, and leaves every other slot deep-equal. |
@@ -292,9 +294,8 @@ Gaps that were already verified by an existing test that cites no `CARD-` ID. I 
 | --- | --- |
 | `CARD-WIZARD-HELLFIRE-08` (Ghostly troops are hit) | `prototypes/showdown/rules.test.js` "Ghostly troops cannot be targeted by spells, but Hellfire still burns them": board health only. |
 | `CARD-COWBOY-DEADEYE-05` (no gear after a Deadeye) | `prototypes/showdown/rules.test.js` "gear: a Six-Shooter adds 1 attack…" ("a spell uses it too"). |
-| `CARD-COWBOY-LASSO-04`, `-06`, `-07` (stun and its end) | `prototypes/showdown/rules.test.js` "Lasso stuns a troop for its next turn only": the attack list only, not `stunned` or the event. |
 | `CARD-WIZARD-HEX-08`, `-10` (cancel, spent attack) | `prototypes/showdown/rules.test.js` "a set trap springs on the next enemy attack…": one `trap` event, orbs, trap row and graveyard, attack spent. |
 | `CARD-WIZARD-HELLFIRE-16` to `-18` (replay and gallery) | `tests/match/showdown-3d-presentation.test.js` Hellfire gallery tests. Not re-read for this map. |
 | Spell legality, events, orbs, Base and trap timing in general | `scripts/showdown-dec4-properties.mjs` properties `rb10-spells`, `rb2-frame`, `rb4-card-plays`, `rb7-traps`, `rb9-sweep-last-stand`. They run whole random games with no `CARD-` IDs, and a spell that defeats a Last Stand troop or hits a covered troop is reached only by chance. Their receipts are untouched. |
 
-Still without a test that cites the ID, in the same spell and combat group: `CARD-WIZARD-HELLFIRE-01`, `-02`, `-04` (design decision), `-06` (hand to graveyard "before any orb is removed" is not visible in state or events), `-08`, `-16` to `-18`; `CARD-WIZARD-SINGULARITY-01` to `-03`, `-09` to `-11`, `-16` to `-22`; `CARD-COWBOY-DEADEYE-02`, `-03`, `-05`, `-06`; every `CARD-COWBOY-LASSO-*`, `CARD-WIZARD-HEX-*` and `CARD-COWBOY-BEAR-TRAP-*` clause; and every clause of the other card specs. The 20 IDs above are the only `CARD-` clauses a title cites, so `node scripts/trace.mjs --require CARD-` still exits 1.
+Still without a test that cites the ID, in the same spell and combat group: `CARD-WIZARD-HELLFIRE-01`, `-02`, `-04` (design decision), `-06` (hand to graveyard "before any orb is removed" is not visible in state or events), `-08`, `-16` to `-18`; `CARD-WIZARD-SINGULARITY-01` to `-03`, `-09` to `-11`, `-16` to `-22`; `CARD-COWBOY-DEADEYE-02`, `-03`, `-05`, `-06`; `CARD-COWBOY-LASSO-01` to `-03`, `-09` to `-12`, `-15` to `-17`; every `CARD-WIZARD-HEX-*` and `CARD-COWBOY-BEAR-TRAP-*` clause; and every clause of the other card specs. The 27 IDs above are the only `CARD-` clauses a title cites, so `node scripts/trace.mjs --require CARD-` still exits 1.

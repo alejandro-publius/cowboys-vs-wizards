@@ -34,4 +34,3 @@ Author: Kiro (native Kiro CLI, agent `native-handoff-cowboy-specs`). Every claus
 
 - Open: the JSON `relocates: true` and `limit: 2` belong to the retired lane duel, where a relocating spell could move the surviving troop (`src/game/legal.js`, `src/game/actions.js`). Showdown's Lasso never moves a troop and its cap is the Uncommon limit of 3. Whether to drop or align these lane fields is a pipeline decision for Fable.
 - Open: the Wizards have no stun card, so a stunned Cowboy troop cannot occur in current play. The stun rules above are stated for Wizard targets only.
-- Open: no test title cites any CARD-COWBOY-LASSO ID, so the trace reports every clause as an orphan.

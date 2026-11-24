@@ -8,7 +8,7 @@ import { cardsCsv } from "../../prototypes/showdown/export-cards.mjs";
 import { createMatch } from "../../src/game/state.js";
 import { applyAction } from "../../src/game/actions.js";
 import fc from "fast-check";
-import { applyAction as applyShowdown, createShowdown, legalActions as showdownActions } from "../../src/game/showdown/rules.js";
+import { applyAction as applyShowdown, canAttack, createShowdown, legalActions as showdownActions } from "../../src/game/showdown/rules.js";
 import { presentEvent } from "../../src/game/showdown/presenter.js";
 
 // The JSON specs are the source of truth; the tests compare the engine to them.
@@ -154,6 +154,40 @@ const spellsOf = (state) => showdownActions(state).filter((action) => action.typ
 const kindsOf = (state) => new Set(showdownActions(state).map((action) => action.type));
 const troopSpec = (side) => fc.record({ type: fc.constantFrom(...troopTypes(side)), health: fc.integer({ min: 1, max: 6 }), cover: fc.boolean(), gear: fc.boolean() });
 const boardSpec = (side, min = 0) => fc.array(fc.option(troopSpec(side), { nil: null }), { minLength: 3, maxLength: 3 }).filter((board) => board.filter(Boolean).length >= min);
+
+test("CARD-COWBOY-LASSO-04 CARD-COWBOY-LASSO-05 CARD-COWBOY-LASSO-06 CARD-COWBOY-LASSO-07 CARD-COWBOY-LASSO-08 CARD-COWBOY-LASSO-13 CARD-COWBOY-LASSO-14: Lasso preserves orbs and blocks attacks through the target's next turn", () => {
+  fc.assert(fc.property(fc.nat({ max: 2 }), fc.integer({ min: 1, max: 4 }), (slot, health) => {
+    const lasso = "cowboy-lasso-1";
+    const foe = [null, null, null];
+    foe[slot] = { type: "wizard-wizard", health };
+    const state = stage({ active: "cowboy", hand: [lasso], foe });
+    const target = (position) => position.sides.wizard.board[slot];
+    const afterCast = applyShowdown(state, { type: "spell", cardId: lasso, target: slot });
+
+    assert.deepEqual(target(afterCast.state), { ...target(state), stunned: true });
+    assert.deepEqual(afterCast.state.sides.cowboy.hand, []);
+    assert.deepEqual(afterCast.state.sides.cowboy.discard, [lasso]);
+    assert.deepEqual(afterCast.events, [{
+      type: "spell", side: "cowboy", cardId: lasso, target: target(state).cardId, left: health, stunned: true,
+    }]);
+    assert.equal(presentEvent(afterCast.events[0]), "The Cowboys' Lasso hit Wizard: stunned for its next turn.");
+
+    const wizardTurn = applyShowdown(afterCast.state, { type: "end" }).state;
+    assert.equal(wizardTurn.active, "wizard");
+    assert.equal(target(wizardTurn).stunned, true);
+    assert.equal(canAttack(wizardTurn, target(wizardTurn)), false);
+    const cover = { type: "cover", slot };
+    assert.ok(showdownActions(wizardTurn).some((action) => action.type === "cover" && action.slot === slot));
+    const inCover = applyShowdown(wizardTurn, cover).state;
+    assert.equal(target(inCover).stunned, true);
+    assert.equal(canAttack(inCover, target(inCover)), false);
+
+    const cowboyTurn = applyShowdown(inCover, { type: "end" }).state;
+    assert.equal(target(cowboyTurn).stunned, false);
+    const followingWizardTurn = applyShowdown(cowboyTurn, { type: "end" }).state;
+    assert.equal(canAttack(followingWizardTurn, target(followingWizardTurn)), true);
+  }), FC);
+});
 
 test("CARD-COWBOY-DEADEYE-04 CARD-WIZARD-SINGULARITY-14 CARD-WIZARD-HELLFIRE-13: a spell that takes a Last Stand troop's last orb fires no Last Stand and costs the caster's troops nothing (fast-check)", () => {
   const scenarios = [

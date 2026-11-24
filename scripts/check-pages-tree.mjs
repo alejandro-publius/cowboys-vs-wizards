@@ -204,6 +204,24 @@ async function browserChecks() {
       await send("Page.navigate", {url: site + rel});
       await wait(`document.readyState==='complete'&&location.href===${JSON.stringify(site + rel)}`);
     };
+    const press = async (key, keyCode) => {
+      for (const type of ["keyDown", "keyUp"]) {
+        const text = key === "Enter" && type === "keyDown" ? {text: "\r"} : {};
+        await send("Input.dispatchKeyEvent", {type, key, code: key, windowsVirtualKeyCode: keyCode,
+          nativeVirtualKeyCode: keyCode, ...text});
+      }
+    };
+    const activateByKey = async (selector) => {
+      for (let tabs = 0; tabs < 45; tabs++) {
+        if (await evaluate(`document.activeElement?.matches(${JSON.stringify(selector)})`)) {
+          await press("Enter", 13);
+          return;
+        }
+        await press("Tab", 9);
+      }
+      const focus = await evaluate(`document.activeElement?.id || document.activeElement?.tagName`);
+      assert.fail(`Tab could not reach ${selector} (last focus: ${focus})`);
+    };
     const shown = (id) => `!!document.getElementById('${id}')&&!document.getElementById('${id}').hidden`;
     await send("Accessibility.enable");
     await send("Emulation.setFocusEmulationEnabled", {enabled: true});
@@ -299,21 +317,16 @@ async function browserChecks() {
         await evaluate(`document.querySelector('${room} .saloon-${name}').focus()`);
         assert.ok(await evaluate(`document.activeElement===document.querySelector('${room} .saloon-${name}')`), `${name} holds focus before Enter`);
       };
-      const enter = async () => {
-        for (const type of ["keyDown", "keyUp"]) {
-          await send("Input.dispatchKeyEvent", {type, key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13, ...(type === "keyDown" ? {text: "\r"} : {})});
-        }
-      };
       const onPlay = `document.activeElement===document.querySelector('${room} .saloon-play')&&!document.activeElement.disabled`;
       await focusOn("replay");
-      await enter();
+      await press("Enter", 13);
       await wait(`${decision}.hidden&&/^· step 0 of /.test(document.querySelector('${room} .saloon-progress').textContent)`);
       assert.ok(await evaluate(onPlay), "Replay from start by Enter moves focus to the enabled Play button");
       assert.ok(axNamed(await axTree(), "button", /^Play$/, focused), "Chrome exposes Play as focused after restart");
       for (let n = 0; n < total - 1; n++) await click(`${room} .saloon-step`);
       await wait(`document.querySelector('${room} .saloon-progress').textContent==='· step ${total - 1} of ${total}'`);
       await focusOn("step");
-      await enter();
+      await press("Enter", 13);
       await wait(`document.querySelector('${room} .saloon-progress').textContent==='· step ${total} of ${total}'`);
       assert.equal(await evaluate(`document.querySelector('${room} .saloon-step').disabled`), true, "Step is disabled at the last event");
       assert.ok(await evaluate(onPlay), "Step by Enter at the last event moves focus to the enabled Replay button");
@@ -327,34 +340,34 @@ async function browserChecks() {
       check(`${BASE_PATH}?saloon=review: the recorded saloon opens at the validated Billy proposal (${at.slice(2)}), makes 0 /night-shift/events requests; Enter on Replay from start hides the decision and Enter on Step at the last event keeps focus on Play/Replay; Back to map returns to the Camp`);
     }
 
-    const challengeOpens = async () => {
+    const challengeOpens = async (activate) => {
       await wait(`${shown("showdown")} && document.querySelector('#sd-field[data-battlefield="bone-fence"] canvas.sd-world')?.width > 0`);
       assert.match(await evaluate(`document.getElementById('sd-status').textContent`), /^Ride or Fight\?/);
       const slots = '[data-slot^="cowboy-"]';
       const rider = await evaluate(`[...document.querySelectorAll(${JSON.stringify(slots)})].find(x => x.textContent.includes('Outrider'))?.dataset.slot`);
       assert.ok(rider, "the Outrider is on the board");
       assert.ok(axNamed(await axTree(), "button", /\bOutrider\b/, enabled), "Outrider is an enabled named choice");
-      await click(`[data-slot="${rider}"]`);
+      await activate(`[data-slot="${rider}"]`);
       await wait(`document.querySelector('[data-base="wizard"]')?.dataset.enemy === 'base' && !!document.querySelector('[data-slot^="wizard-"][data-enemy]')`);
       clean();
     };
     await open("");
     await wait(`document.getElementById('menu-challenge')?.textContent === 'Ride or Fight?'`);
     assert.ok(axNamed(await axTree(), "button", /^Ride or Fight\?$/, enabled), "the title challenge has a name");
-    await click("#menu-challenge");
-    await challengeOpens();
+    await activateByKey("#menu-challenge");
+    await challengeOpens(activateByKey);
     const targets = await axTree();
     assert.ok(axNamed(targets, "button", /\bBase\b/, enabled), "the Base target is an enabled named choice");
     assert.ok(axNamed(targets, "button", /\bSkeleton\b/, enabled), "the Skeleton target is an enabled named choice");
-    await click('[data-base="wizard"]');
+    await activateByKey('[data-base="wizard"]');
     await wait(`/Outrider struck the Wizards' Base for 1/.test(document.getElementById('sd-log').textContent)`);
-    await click("#sd-home");
+    await activateByKey("#sd-home");
     await wait(shown("showdown-camp"));
-    check("the illustrated title opens the playable Ride or Fight? challenge and Camp is reachable");
+    check("Tab and Enter open Ride or Fight?, play the Outrider's Base attack and return to Camp");
     check("Chrome exposes the challenge and targets, recorded Saloon dialog and results, and replay keyboard focus in its accessibility tree");
 
     await open("3d/?outrider=case-a");
-    await challengeOpens();
+    await challengeOpens(click);
     const enemy = await evaluate(`document.querySelector('[data-slot^="wizard-"][data-enemy]').dataset.slot`);
     await click(`[data-slot="${enemy}"]`);
     await wait(`document.getElementById('sd-log').textContent.includes('Outrider attacked')`);
