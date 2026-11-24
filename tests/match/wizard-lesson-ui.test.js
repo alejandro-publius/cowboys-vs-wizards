@@ -10,6 +10,7 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import test from "node:test";
 import {DECKS} from "../../src/game/showdown/cards.js";
+import {parseDealSeed} from "../../src/game/showdown/seed.js";
 import {DEFAULT_LESSON_POLICY, findBaitEpisode} from "../../src/game/showdown/wizard-lesson-policy.js";
 import {createShowdownSession} from "../../src/match/showdown-session.js";
 import {simulatedLesson, simulatedReceipt} from "../../scripts/wizard-lesson/fixture.mjs";
@@ -21,6 +22,17 @@ import {
 const BAIT = JSON.parse(readFileSync(new URL("../../proof/wizard-lesson/bait-search.json", import.meta.url), "utf8"));
 // The bait's own deal: seed 0, default decks, the Wizard opens, level-2 Wizard.
 const BAIT_DUEL = {id: "open", kind: "open", name: "Open range", level: 2, options: {first: "wizard"}};
+
+test("link seeds and reviewable lessons use the same unsigned 32-bit range", () => {
+  for (const value of [null, "", "  ", "abc", "-5", "1.5", "4294967296", "Infinity"]) {
+    assert.equal(parseDealSeed(value), null, String(value));
+  }
+  for (const seed of [-5, 1.5, 4294967296, NaN]) assert.equal(lessonSetup(BAIT_DUEL, seed), null);
+  for (const seed of [0, 47, 4294967295]) {
+    assert.equal(parseDealSeed(String(seed)), seed);
+    assert.ok(lessonSetup(BAIT_DUEL, seed));
+  }
+});
 const json = (value) => JSON.parse(JSON.stringify(value));
 const tick = () => new Promise((resolve) => setImmediate(resolve));
 const choose = (legal) => legal.find((a) => a.type === "attack") ?? legal.find((a) => a.type !== "end" && a.type !== "cover") ?? legal.find((a) => a.type === "end");

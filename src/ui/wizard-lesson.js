@@ -14,6 +14,7 @@
 import {DECKS} from "../game/showdown/cards.js";
 import {viewFor} from "../game/showdown/contract.js";
 import {presentEvent} from "../game/showdown/presenter.js";
+import {isDealSeed} from "../game/showdown/seed.js";
 import {applyAction, createShowdown, legalActions} from "../game/showdown/rules.js";
 import {
   CPU_SIDE, PLAYER_SIDE, baitReport, createEpisodeState, episodeKey, loadRematchPolicy, replayEpisode, validateEpisode, validateSetup,
@@ -36,7 +37,7 @@ const engine = (fn, why) => { try { return fn(); } catch (error) { throw new Les
 // The setup of a duel as the trainer and the policy take it, frozen when the duel is dealt, or null when this duel cannot
 // be trained: the lesson policy runs only on the level-2 Wizard, and bosses that land mid-duel (arrivals) are not supported.
 export function lessonSetup(duel, seed) {
-  if (duel?.level !== 2 || !Number.isSafeInteger(seed)) return null;
+  if (duel?.level !== 2 || !isDealSeed(seed)) return null;
   const options = duel.options ?? {};
   if (Object.keys(options).some((key) => !SETUP_OPTIONS.includes(key))) return null;
   try {
@@ -63,7 +64,7 @@ function linesOf(seed, setup, actions) {
 // After a finished duel: replays it from its setup, the Cowboy's actions in order and the original Wizard, and checks it
 // ends the same way. record: {seed, setup, cowboyActions, expected: {result, turn}}. Returns an unmarked draft.
 export function captureEpisode({seed, setup, cowboyActions, expected}) {
-  if (!setup || !Number.isSafeInteger(seed)) throw new LessonError("This duel cannot be reviewed.");
+  if (!setup || !isDealSeed(seed)) throw new LessonError("This duel cannot be reviewed.");
   let state = engine(() => createEpisodeState(seed, setup), "This duel cannot be reviewed");
   const actions = [];
   let next = 0;

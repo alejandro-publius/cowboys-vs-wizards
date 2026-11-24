@@ -5,6 +5,7 @@
 // page, so no URL opens it here; an old lane address (?mode=lanes, match, ride-out, practice-*,
 // fire-arc) loads this same Showdown menu. The illustrated contest build offers a verified Outrider turn on its title.
 // esbuild inlines the dynamic imports, so the page stays one offline file.
+import {parseDealSeed} from "./game/showdown/seed.js";
 import {SAVE_KEY} from "./game/showdown/campaign-store.js";
 
 const node = (id) => document.getElementById(id);
@@ -28,15 +29,15 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   lessonRoot.hidden = true;
   screen.after(lessonRoot);
   const contest = typeof __CVW_CONTEST__ !== "undefined" && __CVW_CONTEST__;
-  const seed = new URLSearchParams(location.search).get("seed");
-  // ?seed fixes every deal started from the Camp and every later game of a match, so a scripted check replays the same duels.
-  const seedFor = () => (seed === null ? freshSeed() : Number(seed));
+  const query = new URLSearchParams(location.search);
+  const seed = parseDealSeed(query.get("seed"));
+  // A valid link fixes every deal. An absent or unusable seed gets a fresh deal each time.
+  const seedFor = () => seed ?? freshSeed();
   // The browser's storage is read through the canonical store; a blocked storage leaves progress in memory only.
   let storage = null;
   try { storage = window.localStorage; } catch { /* storage is blocked */ }
   // Precedence of the opening queries: ?turn, then ?outrider, then ?practice, then ?wizard=1 (Fable: last). Any of the
   // first three in the query, valid or not, keeps its existing behaviour and the Wizard preview does not open.
-  const query = new URLSearchParams(location.search);
   const [turn, outrider] = [query.get("turn"), query.get("outrider")];
   const practice = turn === null && outrider === null ? practiceFromQuery(location.search) : null;
   const wizard = !["turn", "outrider", "practice"].some((key) => query.has(key)) && wizardFromQuery(location.search);

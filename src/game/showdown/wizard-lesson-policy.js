@@ -5,6 +5,7 @@
 // A policy is data from a fixed whitelist (validatePolicy). Nothing in a policy, an episode or
 // a lesson bundle is executed or read as an instruction.
 import {TYPES, cardOf, has} from "./cards.js";
+import {isDealSeed} from "./seed.js";
 import {applyAction, attackOf, createShowdown, legalActions, planTurn, playTurn} from "./rules.js";
 
 export const LESSON_VERSION = 1;
@@ -279,7 +280,7 @@ export function validateEpisode(input) {
   exactKeys(input, ["version", "seed", "setup", "actions", "markedIndex", "tag"], [], "episode");
   if (input.version !== LESSON_VERSION) throw new Error("episode version must be 1");
   if (input.tag !== "bait") throw new Error("episode tag must be bait");
-  if (!isInt(input.seed, 0, 2 ** 32 - 1)) throw new Error("episode seed must be a 32-bit unsigned integer");
+  if (!isDealSeed(input.seed)) throw new Error("episode seed must be a 32-bit unsigned integer");
   if (!Array.isArray(input.actions) || !input.actions.length || input.actions.length > MAX_EPISODE_ACTIONS) throw new Error("episode actions must be a non-empty list");
   if (!isInt(input.markedIndex, 0, input.actions.length - 1)) throw new Error("episode markedIndex must point into actions");
   const actions = input.actions.map((entry, index) => {
