@@ -42,6 +42,26 @@ test("malformed, damaged, oversized and future codes are refused with a reason",
   assert.equal(decodeSaveCode(undefined).ok, false);
 });
 
+test("ordinary codes keep the bytes the game always wrote; only text btoa() cannot take is written as a JSON escape", () => {
+  const save = played();
+  const latin = {...save, losses: {...save.losses, "café": 1}};
+  for (const value of [newSave(), save, migrate({wins: 2, losses: 2}), latin]) assert.equal(encodeSave(value), code(value));
+  const wide = {...save, losses: {...save.losses, "☃": 1, "🤠": 2}};
+  assert.match(atob(encodeSave(wide)), /"\\u2603":1,"\\ud83e\\udd20":2/);
+  assert.deepEqual(JSON.parse(atob(encodeSave(wide))), wide);
+});
+
+test("a v2 code with a field that is not a whole number, a flat count map or a list of names is refused by its shape", () => {
+  const save = played();
+  const shapes = [{deck: [[["cowboy-billy"]]]}, {collection: {"cowboy-deadeye": [1]}}, {losses: []}, {rivals: [["stargazer"]]},
+    {offer: [[]]}, {packs: "1"}];
+  for (const change of shapes) {
+    let read;
+    assert.doesNotThrow(() => { read = decodeSaveCode(code({...save, ...change})); });
+    assert.deepEqual(read, {ok: false, reason: "That is not a save code."}, JSON.stringify(change));
+  }
+});
+
 test("the preview names the progress a code holds", () => {
   assert.match(describeSave(played()), /^Trail 2 of \d+ won, 0 rivals beaten, 0 bounty hunts cleared, \d+ collected cards, 0 unopened packs\.$/);
 });

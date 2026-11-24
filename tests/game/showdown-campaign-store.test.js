@@ -105,6 +105,20 @@ test("whatever loads can be exported and strictly imported back unchanged", () =
   assert.ok(code.ok && !code.legacy && sameSave(code.save, save));
 });
 
+test("a stored career whose loss keys hold text outside Latin-1 still exports, and its code reads back with every field intact", () => {
+  let career = newSave();
+  for (let i = 0; i < TRAIL.length; i++) career = winTrail(career).save;
+  // The earlier importer accepted any loss key, so a browser may already hold a career like this one.
+  career = {...career, losses: {...career.losses, "☃": 1, "🤠": 2}};
+  const storage = memoryStorage();
+  assert.deepEqual(saveCampaign(storage, career), {ok: true});
+  const loaded = loadCampaign(storage);
+  assert.deepEqual(loaded, career);
+  const code = encodeSave(loaded);
+  assert.match(code, /^[A-Za-z0-9+/]+={0,2}$/);
+  assert.deepEqual(decodeSaveCode(code), {ok: true, save: career, legacy: false});
+});
+
 // FH-R3.3 (.kiro/specs/showdown-first-hour/requirements.md)
 test("progress the next load would reset is refused and nothing is written", () => {
   const storage = memoryStorage({[SAVE_KEY]: JSON.stringify(winTrail(newSave()).save)});

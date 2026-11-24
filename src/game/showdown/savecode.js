@@ -7,12 +7,21 @@ export const MAX_CODE_LENGTH = 16384;
 const V2_KEYS = ["v", "wins", "losses", "collection", "deck", "side", "rivals", "hunts", "openWins", "packs", "rolls", "offer"];
 const isPlain = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
 const sameKeys = (value, keys) => Object.keys(value).length === keys.length && keys.every((key) => Object.hasOwn(value, key));
+// Every v2 field is a whole number, a flat map of counts or a list of names. A deeper shape is not a save code,
+// so it is refused before anything below walks it.
+const counts = (value) => isPlain(value) && Object.values(value).every(Number.isInteger);
+const names = (value) => Array.isArray(value) && value.every((name) => typeof name === "string");
+const flat = (raw) => [raw.wins, raw.openWins, raw.packs, raw.rolls].every(Number.isInteger)
+  && [raw.losses, raw.collection, raw.deck, raw.side, raw.hunts].every(counts) && names(raw.rivals) && (raw.offer === null || names(raw.offer));
 // Key order does not matter; values are plain JSON.
 const canon = (value) => (Array.isArray(value) ? value.map(canon) : isPlain(value)
   ? Object.fromEntries(Object.keys(value).sort().map((key) => [key, canon(value[key])])) : value);
 export const sameSave = (a, b) => JSON.stringify(canon(a)) === JSON.stringify(canon(b));
 
-export const encodeSave = (save) => btoa(JSON.stringify(save));
+// JSON may write any character as \uXXXX. Only the ones btoa() cannot take (above U+00FF) are escaped, so every
+// code the game could already write keeps its exact bytes, and decoding reads back the same text.
+const escapeWide = (char) => `\\u${char.charCodeAt(0).toString(16).padStart(4, "0")}`;
+export const encodeSave = (save) => btoa(JSON.stringify(save).replace(/[^\x00-\xff]/g, escapeWide));
 
 // Returns {ok: true, save, legacy} or {ok: false, reason}. Never throws.
 export function decodeSaveCode(text) {
@@ -32,7 +41,7 @@ export function decodeSaveCode(text) {
     return legacy ? {ok: true, save: migrate(raw), legacy: true} : {ok: false, reason: "That is not a save code."};
   }
   if (Number.isInteger(raw.v) && raw.v > 2) return {ok: false, reason: "That code is from a newer version of the game."};
-  if (raw.v !== 2 || !sameKeys(raw, V2_KEYS)) return {ok: false, reason: "That is not a save code."};
+  if (raw.v !== 2 || !sameKeys(raw, V2_KEYS) || !flat(raw)) return {ok: false, reason: "That is not a save code."};
   // migrate() answers a save it cannot trust with a new one, so it must hand back exactly what was pasted.
   const save = migrate(raw);
   return sameSave(save, raw) ? {ok: true, save, legacy: false} : {ok: false, reason: "That save code is damaged or does not follow the rules."};
