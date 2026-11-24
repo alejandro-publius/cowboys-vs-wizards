@@ -1,11 +1,12 @@
 // Local verification, run once from the project root:
-//   node scripts/verify-duel.mjs            Node suites in tests/game, tests/match, tests/assets and
-//                                           prototypes/showdown, then the Dragon and Mounted Billy GLB
+//   node scripts/verify-duel.mjs            Node suites in tests/game, tests/match, tests/assets,
+//                                           prototypes/showdown and the staged /poker/ engine suite
+//                                           (experiments/boot-hill-poker), then the Dragon and Mounted Billy GLB
 //                                           structure preflight (source assets; nothing renders them)
 //   node scripts/verify-duel.mjs --browser  also stage the Pages tree once for HEAD (scripts/stage-pages.mjs)
 //                                           and check it in native Chrome (scripts/check-pages-tree.mjs
 //                                           --browser): Play opens the Camp at / and /graybox/, and /3d/
-//                                           redirects to the game with no script or asset of its own
+//                                           serves the same illustrated build as / (byte-identical)
 // Browser outputs (pages-tree.json) go to .artifacts/pages-tree.
 // The first failing check's exit status is returned.
 import {spawnSync} from "node:child_process";
@@ -30,7 +31,7 @@ function run(cmd, cmdArgs) {
   if (r.status !== 0) process.exit(r.status ?? 1);
 }
 
-const files = ["tests/game", "tests/match", "tests/assets", "prototypes/showdown"].flatMap((dir) =>
+const files = ["tests/game", "tests/match", "tests/assets", "prototypes/showdown", "experiments/boot-hill-poker"].flatMap((dir) =>
   readdirSync(new URL(`../${dir}/`, import.meta.url))
     .filter((f) => /\.test\.m?js$/.test(f))
     .sort()

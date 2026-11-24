@@ -104,7 +104,7 @@ try {
     assert.doesNotMatch(html, /chunks\/lanes-|id="arena"|id="menu-lanes"|id="earlier-build"|<script id="models"|rapier_wasm|rapier3d/, `${route} has no retired lane engine`);
   check("the four single-file pages include no retired lane game or separate assets", {files});
 
-  // Boot Hill Poker, the experimental second game, staged as its own four files.
+  // Boot Hill Poker, the experimental second game, staged as its own five files.
   assert.equal((await get("poker", "manual")).location, `${BASE_PATH}poker/`, "/poker redirects to /poker/");
   for (const name of POKER_FILES) {
     const served = await get(`poker/${name}`);
