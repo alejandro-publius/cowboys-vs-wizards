@@ -31,6 +31,12 @@ export function engineFingerprint(root, entries = ENGINE_ENTRIES) {
       if (!(next in files)) queue.push(next);
     }
   }
+  return closureFingerprint(files);
+}
+
+// The canonical fingerprint of a {path: sha256} file map. A saved closure is coherent only if it
+// equals closureFingerprint(saved.files).
+export function closureFingerprint(files) {
   const sorted = Object.fromEntries(Object.entries(files).sort(([a], [b]) => (a < b ? -1 : 1)));
   const sha256 = createHash("sha256").update(Object.entries(sorted).map(([path, hash]) => `${path} ${hash}\n`).join("")).digest("hex");
   return {sha256, fileCount: Object.keys(sorted).length, files: sorted};
