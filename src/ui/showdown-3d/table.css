@@ -150,6 +150,21 @@
   text-shadow: 1px 2px 2px #13151e;
   font: 600 15px/1.35 Georgia, serif;
 }
+/* On a short landscape screen (740 x 375) the board fills the view and the action row under it starts below
+   the fold. Once the attack has played, Continue to Boot Hill is drawn under the instruction instead, over the
+   sky and pinned to the viewport, so the next step needs no scroll. Boot Hill has no challenge marker and keeps
+   its own row. The underline is the title screen's text-button mark. */
+@media (orientation: landscape) and (max-height: 570px) {
+  #showdown.sd-diorama[data-contest-challenge] #sd-boot-hill {
+    position: fixed;
+    top: 100px;
+    left: 50%;
+    translate: -50% 0;
+    font-size: 15px;
+    text-decoration: underline;
+    text-underline-offset: 0.22em;
+  }
+}
 .sd-diorama #sd-board,
 .sd-diorama .sd-world-labels {
   position: absolute;
