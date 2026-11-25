@@ -20,6 +20,8 @@
 //     "Choose the Outrider" instruction drawn on the first screen (not only screen-reader text)
 //   - at 375 x 740 a pointer reaches Ride, Continue to Boot Hill and Boot Hill on the first screen,
 //     and Boot Hill's own lesson goes back to screen-reader text
+//   - at 740 x 375 (short landscape) Continue to Boot Hill is pressed where the screen shows it: by pointer after
+//     the Ride at scroll 0, by Tab and Enter after the Fight; Boot Hill keeps its control row and takes a card
 //   - Camp on / opens the Trail; Play on /graybox/ opens the Camp
 //   - /showdown/: the reference page loads without errors
 //   - the Camp saloon on / and /3d/ links to the one poker/ page; following it loads all five poker
@@ -214,16 +216,17 @@ async function browserChecks() {
           nativeVirtualKeyCode: keyCode, ...text});
       }
     };
-    const activateByKey = async (selector) => {
+    const tabTo = async (selector) => {
       for (let tabs = 0; tabs < 45; tabs++) {
-        if (await evaluate(`document.activeElement?.matches(${JSON.stringify(selector)})`)) {
-          await press("Enter", 13);
-          return;
-        }
+        if (await evaluate(`document.activeElement?.matches(${JSON.stringify(selector)})`)) return;
         await press("Tab", 9);
       }
       const focus = await evaluate(`document.activeElement?.id || document.activeElement?.tagName`);
       assert.fail(`Tab could not reach ${selector} (last focus: ${focus})`);
+    };
+    const activateByKey = async (selector) => {
+      await tabTo(selector);
+      await press("Enter", 13);
     };
     const shown = (id) => `!!document.getElementById('${id}')&&!document.getElementById('${id}').hidden`;
     await send("Accessibility.enable");
@@ -449,6 +452,92 @@ async function browserChecks() {
     clean();
     await send("Emulation.setDeviceMetricsOverride", {width: 1440, height: 900, deviceScaleFactor: 1, mobile: false});
     check("375 px pointer: the challenge instruction is drawn, Ride shows Continue to Boot Hill on the first screen, and Boot Hill opens with a playable card in view");
+
+    // A short landscape phone, 740 x 375: the board fills the screen and the action row under it starts below the
+    // fold. Every control here is pressed where the viewport already shows it; nothing scrolls it into view first.
+    await send("Emulation.setDeviceMetricsOverride", {width: 740, height: 375, deviceScaleFactor: 1, mobile: true});
+    const seen = (selector) => evaluate(`(() => { const n = document.querySelector(${JSON.stringify(selector)});
+      if (!n || n.hidden || !n.getClientRects().length) return null;
+      const r = n.getBoundingClientRect(), x = r.x + r.width / 2, y = r.y + r.height / 2;
+      return {top: Math.round(r.top), bottom: Math.round(r.bottom), left: Math.round(r.left), right: Math.round(r.right), x, y, scrollY: Math.round(scrollY),
+        onScreen: r.top >= 0 && r.bottom <= innerHeight && r.left >= 0 && r.right <= innerWidth && n.contains(document.elementFromPoint(x, y))}; })()`);
+    const pressSeen = async (selector) => {
+      const at = await seen(selector);
+      assert.ok(at?.onScreen, `740 x 375: ${selector} is on screen and on top where it is pressed: ${JSON.stringify(at)}`);
+      for (const type of ["mouseMoved", "mousePressed", "mouseReleased"]) await send("Input.dispatchMouseEvent", {type, button: "left", clickCount: 1, x: at.x, y: at.y});
+    };
+    const shortChallenge = async (activate) => {
+      await send("Storage.clearDataForOrigin", {origin: new URL(site).origin, storageTypes: "all"});
+      await open("?seed=0");
+      await wait(`document.getElementById('menu-challenge')?.textContent === 'Ride or Fight?'`);
+      await activate("#menu-challenge");
+      await wait(`${shown("showdown")} && document.querySelector('#sd-field[data-battlefield="bone-fence"] canvas.sd-world')?.width > 0`);
+      const rider = await evaluate(`[...document.querySelectorAll('[data-slot^="cowboy-"]')].find(x => x.textContent.includes('Outrider'))?.dataset.slot`);
+      const end = await evaluate(`document.getElementById('sd-end').getBoundingClientRect().top + scrollY`);
+      await activate(`[data-slot="${rider}"]`);
+      await wait(`document.querySelector('[data-base="wizard"]')?.dataset.enemy === 'base' && !!document.querySelector('[data-slot^="wizard-"][data-enemy]')`);
+      return end;
+    };
+    // After the attack has played: Continue to Boot Hill sits under the instruction, clear of the header, turn
+    // line, targets, action row and hand as they are on screen now, and stays on screen at the current scroll.
+    const handoff = async (attack) => {
+      await wait(`document.getElementById('sd-log').textContent.includes(${JSON.stringify(attack)}) && ${shown("sd-boot-hill")}`);
+      const at = await evaluate(`(() => {
+        const box = (n) => { const r = n.getBoundingClientRect(); return {top: r.top, bottom: r.bottom, left: r.left, right: r.right}; };
+        const visible = (n) => n.getClientRects().length && !n.hidden && n.getBoundingClientRect().bottom > 0 && n.getBoundingClientRect().top < innerHeight;
+        return {go: box(document.getElementById('sd-boot-hill')), lesson: box(document.getElementById('sd-lesson')),
+          others: [...document.querySelectorAll('#showdown > header button, #sd-field > .table-turn, #sd-board button:not(:disabled), #sd-actions button:not(#sd-boot-hill), #sd-hand [data-card]')].filter(visible).map(box)};
+      })()`);
+      assert.ok(at.go.top >= at.lesson.bottom, `740 x 375: Continue to Boot Hill is below the instruction: ${JSON.stringify(at)}`);
+      for (const other of at.others) assert.ok(other.bottom <= at.go.top || other.top >= at.go.bottom || other.right <= at.go.left || other.left >= at.go.right,
+        `740 x 375: Continue to Boot Hill covers no control: ${JSON.stringify({go: at.go, other})}`);
+    };
+    // Boot Hill keeps its own layout: no challenge marker, Continue gone and no longer pinned, the lesson back to
+    // screen-reader text, End turn back in its row where the challenge had it. Then one card from the hand is played.
+    const bootHill = async (end) => {
+      await wait(`document.querySelector('#sd-field[data-battlefield="boot-hill"] canvas.sd-world')?.width > 0 && document.getElementById('sd-status').textContent === 'Boot Hill · turn 1 · your turn'`);
+      const layout = await evaluate(`({challenge: document.getElementById('showdown').hasAttribute('data-contest-challenge'), hidden: document.getElementById('sd-boot-hill').hidden,
+        position: getComputedStyle(document.getElementById('sd-boot-hill')).position, lesson: getComputedStyle(document.getElementById('sd-lesson')).clipPath,
+        end: document.getElementById('sd-end').getBoundingClientRect().top + scrollY})`);
+      assert.deepEqual(layout, {challenge: false, hidden: true, position: "static", lesson: "inset(50%)", end}, "740 x 375: Boot Hill returns to its normal control layout");
+    };
+    const played = (hand) => wait(`document.querySelectorAll('#sd-hand [data-card]').length === ${hand - 1} && document.getElementById('sd-status').textContent === 'Boot Hill · turn 1 · your turn'`);
+    const handCount = () => evaluate(`document.querySelectorAll('#sd-hand [data-card]').length`);
+
+    // Pointer: Ride from the first screen, then Continue where it is drawn, at scroll 0.
+    let end = await shortChallenge(pressSeen);
+    await pressSeen('[data-base="wizard"]');
+    await handoff("Outrider struck the Wizards' Base for 1");
+    const pointer = await seen("#sd-boot-hill");
+    assert.ok(pointer.scrollY === 0 && pointer.onScreen, `740 x 375 pointer: after the Ride, Continue to Boot Hill is on the first screen: ${JSON.stringify(pointer)}`);
+    await pressSeen("#sd-boot-hill");
+    await bootHill(end);
+    // A real wheel over the header scrolls the page as usual; then a playable card is pressed where it shows.
+    let hand = await handCount();
+    await send("Input.dispatchMouseEvent", {type: "mouseWheel", x: 60, y: 32, deltaX: 0, deltaY: 400});
+    await wait(`(() => { const n = document.querySelector('#sd-hand [data-card]:not(:disabled)'), r = n?.getBoundingClientRect();
+      return scrollY > 0 && r && r.top >= 0 && r.bottom <= innerHeight; })()`);
+    await pressSeen("#sd-hand [data-card]:not(:disabled)");
+    await played(hand);
+    clean();
+    check(`740 x 375 pointer: after the Ride, Continue to Boot Hill is on the first screen (y ${pointer.top}-${pointer.bottom}, scroll 0), under the instruction and clear of every control; Boot Hill keeps its control row and takes a card after a normal scroll`);
+
+    // Keyboard: Fight, then Tab to Continue, which is on screen while focused; Enter on the focused card plays it.
+    end = await shortChallenge(activateByKey);
+    await activateByKey(`[data-slot="${await evaluate(`document.querySelector('[data-slot^="wizard-"][data-enemy]').dataset.slot`)}"]`);
+    await handoff("Outrider attacked");
+    await tabTo("#sd-boot-hill");
+    const keyed = await seen("#sd-boot-hill");
+    assert.ok(keyed?.onScreen, `740 x 375 keyboard: focused Continue to Boot Hill is on screen: ${JSON.stringify(keyed)}`);
+    await press("Enter", 13);
+    await bootHill(end);
+    assert.ok(await evaluate(`document.activeElement?.matches('#sd-hand [data-card]:not(:disabled)')`), "740 x 375 keyboard: Boot Hill focuses a playable card");
+    hand = await handCount();
+    await press("Enter", 13);
+    await played(hand);
+    clean();
+    await send("Emulation.setDeviceMetricsOverride", {width: 1440, height: 900, deviceScaleFactor: 1, mobile: false});
+    check(`740 x 375 keyboard: after the Fight, Tab reaches Continue to Boot Hill on screen (y ${keyed.top}-${keyed.bottom}, scroll ${keyed.scrollY}); Boot Hill keeps its control row and Enter plays the focused card`);
     cdp.close();
   } finally {
     if (child.exitCode === null) {
