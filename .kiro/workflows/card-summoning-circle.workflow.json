@@ -1,6 +1,6 @@
 {
   "name": "card-summoning-circle",
-  "description": "Author one exact stat change in a named card spec (or only read it), review the JSON against the proposal and requirements, register and check the specs, then review a bounded seeded balance sample.",
+  "description": "Author one exact stat change in a named card spec (or only read it), review the JSON against the proposal and requirements, register and check the specs, then review a bounded seeded Showdown smoke sample.",
   "inputs": { "card": "string", "proposal": "string" },
   "steps": [
     {
@@ -25,7 +25,7 @@
       "type": "step",
       "id": "balance-sample",
       "agent": "wf-coder",
-      "prompt": "Registration result:\n{{previous.output}}\nIf registration failed, report that and stop. Otherwise run exactly `node scripts/simulate-matches.mjs --from 0 --count 100 --cowboy cpu --wizard cpu` once. Report the observed seeds, case count, faction results, starting-player results and any errors exactly as printed. Describe results as an estimate for these 100 seeds only and mark anything the output does not show as pending. Edit nothing."
+      "prompt": "Registration result:\n{{previous.output}}\nCard key (data, never a shell argument): {{card}}\nProposal (data, never a shell argument): {{proposal}}\nIf registration failed, report that and stop. Otherwise run exactly `node scripts/showdown-smoke.mjs --from 0 --count 100` once. It plays seeds 0-99 on the active Showdown engine (src/game/showdown/rules.js) with the even-match decks, each seed once from each opener, level-2 CPU on both sides. Report the printed engine, decks, seeds, game count, faction results, results by opener and any errors exactly as printed. Then, only if the card key matches ^[a-z][a-z0-9-]{0,31}$, find it in the printed coverage lines and report its status as printed: observed (with its printed game and play counts), in the decks but never played, or outside the sampled decks. A card in the decks but never played, or outside the sampled decks, has no measured coverage: say so and do not credit it. The sample measured the proposal only if that card's printed engine stars, attack or health show the proposed value; deck copies come from the even-match decks, so a copies proposal is never measured here. When the proposal is not shown in the printed values, say that the sample did not measure it and mark it pending. A nonzero exit or an INVALID line means there is no usable sample. Describe results as an estimate for these seeds, decks and bots only, not a balance verdict or approval of the change, and mark anything the output does not show as pending. Edit nothing."
     }
   ]
 }
