@@ -99,7 +99,8 @@ export function bindTableUI(root) {
       goHome.textContent = "Camp";
       if (!ended && /^(Choose|A Guard|No enemy)/.test(originalPrompt.textContent)) {
         const text = originalPrompt.textContent.split(".")[0];
-        prompt.textContent = text + (text.endsWith("?") ? "" : ".");
+        const risk = originalPrompt.querySelector(".sd-trap-warning")?.textContent ?? "";
+        prompt.textContent = text + (text.endsWith("?") ? "" : ".") + risk;
         prompt.hidden = false;
       } else {
         prompt.hidden = true;

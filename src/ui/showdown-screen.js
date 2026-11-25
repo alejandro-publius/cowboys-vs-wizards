@@ -323,13 +323,13 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
   function preview(view, target) {
     const o = attackOutcome(view, pick.troop, target);
     const foe = view.sides[opponent(viewer())];
-    const id = `id="${previewId(target)}" aria-hidden="true"`;
-    if (target === "base") return `<span ${id} class="sd-note sd-good">${foe.board.some(Boolean) ? "Ride past: " : ""}Hit the Base for ${o.baseDamage}</span>`;
+    const note = (text, tone = "") => `<span id="${previewId(target)}" aria-hidden="true" class="sd-note${tone ? ` sd-${tone}` : ""}">${foe.trapCount ? "Without trap effects: " : ""}${text}</span>`;
+    if (target === "base") return note(`${foe.board.some(Boolean) ? "Ride past: " : ""}Hit the Base for ${o.baseDamage}`, "good");
     const lastStand = o.targetLeft === 0 && has(foe.board[target].cardId, "laststand") ? ". Its Last Stand costs yours 1 orb" : "";
-    if (o.targetLeft === 0) return `<span ${id} class="sd-note sd-good">Defeated${o.baseDamage ? `, ${o.baseDamage} through to the Base` : foe.board[target].cover ? ", nothing reaches the Base" : ""}${lastStand}</span>`;
-    if (foe.board[target].cover) return `<span ${id} class="sd-note">Survives on ${o.targetLeft}. It is in cover and does not hit back.</span>`;
-    if (attackOf(view, foe.board[target]) === 0) return `<span ${id} class="sd-note">Survives on ${o.targetLeft}. It has no attack, so yours is unharmed.</span>`;
-    return `<span ${id} class="sd-note ${o.attackerLeft === 0 ? "sd-warn" : ""}">Survives on ${o.targetLeft} and hits back: yours ${o.attackerLeft === 0 ? "is defeated" : `drops to ${o.attackerLeft}`}</span>`;
+    if (o.targetLeft === 0) return note(`Defeated${o.baseDamage ? `, ${o.baseDamage} through to the Base` : foe.board[target].cover ? ", nothing reaches the Base" : ""}${lastStand}`, "good");
+    if (foe.board[target].cover) return note(`Survives on ${o.targetLeft}. It is in cover and does not hit back.`);
+    if (attackOf(view, foe.board[target]) === 0) return note(`Survives on ${o.targetLeft}. It has no attack, so yours is unharmed.`);
+    return note(`Survives on ${o.targetLeft} and hits back: yours ${o.attackerLeft === 0 ? "is defeated" : `drops to ${o.attackerLeft}`}`, o.attackerLeft === 0 ? "warn" : "");
   }
 
   // After a win: what it paid and the two cards to choose from. After a loss: the rematch's grit.
@@ -475,6 +475,12 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
       : view.attacking ? "No more cards this turn. Act with your other troops, or end the turn."
       : view.turn === 1 ? "Play your cards: one troop a turn. Nobody attacks on the opening turn."
       : "First play cards (one troop, one other card). Then act with your troops. Once a troop acts, no more cards this turn.";
+    if (attacking && aims.size && view.sides[foe].trapCount) {
+      const warning = document.createElement("span");
+      warning.className = "sd-trap-warning";
+      warning.textContent = " A face-down trap springs before damage.";
+      $("sd-prompt").append(warning);
+    }
     $("sd-end").hidden = Boolean(r);
     $("sd-end").disabled = !options.some((a) => a.type === "end");
     showChallengeChoices();
