@@ -89,7 +89,7 @@ const FACTION = {cowboy: "Cowboy", wizard: "Wizard"};
 export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => change(), playtest, cueOptions, nextSeed = freshSeed, onSwap, mountBoard, onReview, onLessonBack, onBootHill}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
-  let session, duel, seed, lines, latest, pick, outcome, picked, run, started, challengeAttacked = false, playbackIdle = true;
+  let session, duel, seed, lines, latest, pick, outcome, picked, run, started, challengeAttacked = false, playbackIdle = true, bootHillOffered = false;
   // The lesson record of the current game: its frozen setup and the Cowboy's actions in order. lesson: a rematch's session factory.
   let setup = null, cowboyActions = [], lesson = null;
   // seat: the solo player's side. camp: the campaign this duel settles through, or null (nothing is settled).
@@ -157,6 +157,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     started = Date.now();
     challengeAttacked = false;
     playbackIdle = true;
+    bootHillOffered = false;
     cues.clear();
     boardPresentation?.clear();
     boardPresentation?.setBattlefield?.(current.battlefield);
@@ -187,7 +188,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
         boardPresentation.animate(trace, () => {
           if (run !== activeRun) return;
           playbackIdle = true;
-          $("sd-boot-hill").hidden = !("contestChallenge" in root.dataset && onBootHill && campaign?.trailDuel?.()?.battlefield === "boot-hill" && challengeAttacked && playbackIdle);
+          showBootHill();
         });
       }
     });
@@ -345,6 +346,19 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     ].join("");
   }
 
+  // The title challenge shows Continue to Boot Hill once its attack has played. The first time it appears in a deal, the
+  // polite feedback gets one added sentence after the attack line, so a screen reader hears the new choice once; focus
+  // stays put. The next render rewrites the feedback without it.
+  function showBootHill() {
+    const shown = "contestChallenge" in root.dataset && Boolean(onBootHill) && campaign?.trailDuel?.()?.battlefield === "boot-hill" && challengeAttacked && playbackIdle;
+    $("sd-boot-hill").hidden = !shown;
+    if (!shown || bootHillOffered) return;
+    bootHillOffered = true;
+    const note = document.createElement("span");
+    note.textContent = " Continue to Boot Hill is now available.";
+    $("sd-feedback").append(note);
+  }
+
   function render(presentationStart) {
     // The curtain: nothing of either seat's hand or traps stays in the page while the screen is passed.
     // Focus moves only when the curtain goes up or down: onto "I'm ready" when it rises, and off the hidden curtain
@@ -446,7 +460,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
       : "First play cards (one troop, one other card). Then act with your troops. Once a troop acts, no more cards this turn.";
     $("sd-end").hidden = Boolean(r);
     $("sd-end").disabled = !options.some((a) => a.type === "end");
-    $("sd-boot-hill").hidden = !("contestChallenge" in root.dataset && onBootHill && campaign?.trailDuel?.()?.battlefield === "boot-hill" && challengeAttacked && playbackIdle);
+    showBootHill();
     $("sd-cover").hidden = !canCover;
     $("sd-cancel").hidden = !pick;
     $("sd-restart").hidden = Boolean(r);
