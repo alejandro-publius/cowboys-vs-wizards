@@ -257,13 +257,19 @@ async function browserChecks() {
       assert.equal(tile, "Boot Hill");
     };
 
+    const mainLandmarks = async () => (await axTree())
+      .filter((node) => node.role?.value === "main")
+      .map((node) => node.name?.value);
     for (const rel of ["", "graybox/"]) {
       await send("Storage.clearDataForOrigin", {origin: new URL(site).origin, storageTypes: "all"});
       await open(rel);
       if (rel === "graybox/") assert.equal(await evaluate(`Boolean(document.getElementById('menu-challenge'))`), false);
+      assert.deepEqual(await mainLandmarks(), ["Main menu"], `${BASE_PATH}${rel} exposes only the title's main landmark`);
       await playOpensCamp();
+      assert.deepEqual(await mainLandmarks(), ["Camp"], `${BASE_PATH}${rel} exposes only the Camp's main landmark after Play`);
       clean();
       check(`${BASE_PATH}${rel}: Play on a clean profile opens the Camp (first Trail duel Boot Hill)`);
+      check(`${BASE_PATH}${rel}: Chrome exposes one named main landmark for the title and then the Camp`);
     }
     await open("showdown/");
     await wait(`document.body&&document.body.innerText.trim().length>0`);
