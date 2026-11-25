@@ -90,6 +90,8 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
   let session, duel, seed, lines, latest, pick, outcome, picked, run, started, challengeAttacked = false, playbackIdle = true, bootHillOffered = false;
+  // Only an Outrider attack made as the first move can be compared by replaying the opening deal.
+  let atChallengeOpening = false, openingShot = null;
   // The lesson record of the current game: its frozen setup and the Cowboy's actions in order. lesson: a rematch's session factory.
   let setup = null, cowboyActions = [], lesson = null;
   // seat: the solo player's side. camp: the campaign this duel settles through, or null (nothing is settled).
@@ -156,6 +158,10 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     run = newRunId();
     started = Date.now();
     challengeAttacked = false;
+    atChallengeOpening = "contestChallenge" in root.dataset;
+    openingShot = null;
+    $("sd-lesson").textContent = duel.lesson;
+    $("sd-restart").textContent = "Restart this duel";
     playbackIdle = true;
     bootHillOffered = false;
     cues.clear();
@@ -176,6 +182,11 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     if (action.type === "attack") challengeAttacked = true;
     if (setup) cowboyActions.push(structuredClone(action));
     const batch = record(events, before);
+    if (atChallengeOpening && action.type === "attack" && typeOf(before.sides[seat].board[action.slot].cardId) === "cowboy-outrider") {
+      openingShot = {slot: action.slot, report: latest.join(" "),
+        replayLabel: action.target === "base" ? "Try fighting instead" : "Try riding instead"};
+    }
+    atChallengeOpening = false;
     finish(() => {
       // Two players: hide the table while the screen changes hands.
       curtain = !solo() && !session.view().result && viewer() !== seat;
@@ -188,7 +199,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
         boardPresentation.animate(trace, () => {
           if (run !== activeRun) return;
           playbackIdle = true;
-          showBootHill();
+          showChallengeChoices();
         });
       }
     });
@@ -349,7 +360,11 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
   // The title challenge shows Continue to Boot Hill once its attack has played. The first time it appears in a deal, the
   // polite feedback gets one added sentence after the attack line, so a screen reader hears the new choice once; focus
   // stays put. The next render rewrites the feedback without it.
-  function showBootHill() {
+  function showChallengeChoices() {
+    if (openingShot && playbackIdle) {
+      $("sd-lesson").textContent = openingShot.report;
+      $("sd-restart").textContent = openingShot.replayLabel;
+    }
     const shown = "contestChallenge" in root.dataset && Boolean(onBootHill) && campaign?.trailDuel?.()?.battlefield === "boot-hill" && challengeAttacked && playbackIdle;
     $("sd-boot-hill").hidden = !shown;
     if (!shown || bootHillOffered) return;
@@ -460,11 +475,10 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
       : "First play cards (one troop, one other card). Then act with your troops. Once a troop acts, no more cards this turn.";
     $("sd-end").hidden = Boolean(r);
     $("sd-end").disabled = !options.some((a) => a.type === "end");
-    showBootHill();
+    showChallengeChoices();
     $("sd-cover").hidden = !canCover;
     $("sd-cancel").hidden = !pick;
     $("sd-restart").hidden = Boolean(r);
-    $("sd-lesson").textContent = duel.lesson;
     $("sd-log").innerHTML = lines.map((l, i) => `<li data-line="${i}"${l.cue ? ` data-cue-kind="${l.cue}"` : ""}${l.turn ? ' class="sd-turn"' : ""}>${l.text}</li>`).join("");
     $("sd-log").scrollTop = $("sd-log").scrollHeight;
     for (const side of ["cowboy", "wizard"]) $(`sd-${side}-graveyard`).textContent = view.sides[side].discard.map(name).join(", ") || "empty";
@@ -514,7 +528,14 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     else if (b.id === "sd-end") act({type: "end"});
     else if (b.id === "sd-cover" && pick?.troop !== undefined) act(session.legal().find((a) => a.type === "cover" && a.slot === pick.troop));
     else if (b.id === "sd-cancel") { pick = null; render(); }
-    else if (b.id === "sd-restart") deal(seed);
+    else if (b.id === "sd-restart") {
+      const replay = openingShot;
+      deal(seed);
+      if (keyboard && replay) {
+        const rider = usable(`[data-own="${replay.slot}"]`);
+        if (rider) { rider.focus(); return; }
+      }
+    }
     else if (b.id === "sd-ready" && curtain) { curtain = false; render(); }
     else if (d.choose && camp?.progress().offer?.includes(d.choose)) {
       const claim = () => {
