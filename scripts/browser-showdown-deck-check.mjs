@@ -198,7 +198,7 @@ try {
     assert.ok(await resultShown(), `no result after ${turns} turns`);
     return (await text("#sd-status")).startsWith("You win");
   };
-  const winTrail = async (name, pick) => {
+  const winTrail = async (name, pick, claimInCamp = false) => {
     const results = [];
     for (const seed of SEEDS) {
       await load(`?seed=${seed}`);
@@ -211,12 +211,25 @@ try {
       results.push(won);
       report.games.push({duel: name, seed, won});
       if (!won) continue;
+      if (claimInCamp) {
+        await click("#sd-camp");
+        await wait(`Boolean(camp())`, "the unclaimed reward in Camp");
+      }
       const offer = await evaluate(`buttons(document).filter(n=>n.dataset.choose).map(n=>n.dataset.choose)`);
       assert.ok(offer.includes(pick), `${pick} offered after ${name}: ${offer}`);
       await press(`buttons(document).find(n=>n.dataset.choose===${JSON.stringify(pick)})`, pick);
       await wait(`!buttons(document).some(n=>n.dataset.choose)`, "the offer to close");
-      await press(`buttons(document).find(n=>/^Back to camp$/.test(txt(n)))`, "Back to camp");
+      const savedReward = await rawSave();
+      const route = claimInCamp ? "#camp-claim" : "#sd-result";
+      const shortcut = `${route} [data-build-reward]`;
+      assert.equal(await text(shortcut), `Build with ${nameOf(pick)}`);
+      await activate(shortcut);
+      await wait(builderOpen, "the reward's deck row");
+      assert.ok(await evaluate(`document.activeElement.matches(${JSON.stringify(step(pick, 1))})`), "the earned card's add-to-deck control has focus");
+      assert.equal(await rawSave(), savedReward, "opening the builder leaves the saved deck intact");
+      await activate("#builder-cancel");
       await wait(`Boolean(camp())`, "the Camp");
+      assert.equal(await rawSave(), savedReward, "cancelling keeps the claimed card and the original deck");
       return {seed, results, offer, pick};
     }
     throw Error(`${name} not won with seeds ${SEEDS.join(",")}`);
@@ -272,7 +285,7 @@ try {
   await load("?seed=0");
   assert.equal(await evaluate(`localStorage.length`), 0, "fresh profile, empty storage");
   const boot = await winTrail("Boot Hill", PICKS[0]);
-  const raven = await winTrail("Raven Roost", PICKS[1]);
+  const raven = await winTrail("Raven Roost", PICKS[1], true);
   let expected = newSave();
   for (const duel of [boot, raven]) {
     for (const won of duel.results) expected = settle(expected, "trail", won).save;

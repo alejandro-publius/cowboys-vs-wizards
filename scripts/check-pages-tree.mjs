@@ -38,6 +38,8 @@ import {createServer} from "node:http";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {verifyLive} from "./verify-build-identity.mjs";
+import {SAVE_KEY} from "../src/game/showdown/campaign-store.js";
+import {newSave, settle} from "../src/game/showdown/progress.js";
 
 const BASE_PATH = "/cowboys-vs-wizards/";
 const POKER_FILES = ["app.js", "controls.js", "engine.js", "index.html", "render.js"];
@@ -271,6 +273,25 @@ async function browserChecks() {
       check(`${BASE_PATH}${rel}: Play on a clean profile opens the Camp (first Trail duel Boot Hill)`);
       check(`${BASE_PATH}${rel}: Chrome exposes one named main landmark for the title and then the Camp`);
     }
+    // A returning player opens the illustrated Camp with a real, unclaimed first Trail reward.
+    const rewardSave = settle(newSave(), "trail", true).save;
+    const reward = rewardSave.offer[0];
+    const storedCareer = `localStorage.getItem(${JSON.stringify(SAVE_KEY)})`;
+    await evaluate(`localStorage.setItem(${JSON.stringify(SAVE_KEY)}, ${JSON.stringify(JSON.stringify(rewardSave))})`);
+    await open("");
+    await click("#menu-play");
+    await click(`#camp-claim [data-choose="${reward}"]`);
+    await wait(`!!document.querySelector('#camp-claim [data-build-reward]')`);
+    const claimedCareer = await evaluate(storedCareer);
+    await click("#camp-claim [data-build-reward]");
+    assert.equal(await evaluate(`document.activeElement?.dataset.type`), reward, "the illustrated builder opens on the claimed card");
+    assert.equal(await evaluate(`document.activeElement?.dataset.by`), "1", "the card's add control is ready");
+    await activateByKey("#builder-cancel");
+    await wait(shown("showdown-camp"));
+    assert.equal(await evaluate(storedCareer), claimedCareer, "cancelling keeps the claimed card and the equipped deck");
+    clean();
+    check("A returning player can claim a Trail reward in the illustrated Camp and open its deck row directly");
+
     await open("showdown/");
     await wait(`document.body&&document.body.innerText.trim().length>0`);
     await sleep(500);

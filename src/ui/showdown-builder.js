@@ -111,12 +111,16 @@ export function mountBuilder(root, {campaign, writeCamp = (change) => change(), 
 
   return {
     // The saved deck: done() after it is kept, cancel() leaves it as it was.
-    openDeck({done, cancel}) {
+    openDeck({done, cancel, focusType}) {
       const progress = campaign.progress();
       draft = {pool: null, deck: {...progress.deck}, side: {...progress.side},
         done: (deck, side) => writeCamp(() => { campaign.withDeck(deck, side); done(); }), cancel};
       render();
-      ($("builder-rows").querySelector("button:not(:disabled)") ?? $("builder-save")).focus({preventScroll: true});
+      const rows = $("builder-rows");
+      const rewardRow = focusType ? rows.querySelector(`[data-row="${focusType}"]`) : null;
+      const button = rewardRow?.querySelector('[data-zone="deck"][data-by="1"]:not(:disabled)') ?? rewardRow?.querySelector("button:not(:disabled)")
+        ?? rows.querySelector("button:not(:disabled)") ?? $("builder-save");
+      button.focus({preventScroll: !rewardRow});
     },
     // Between games: done(deck, side) plays the next game with them.
     openSwap({pool, deck, side, done}) {

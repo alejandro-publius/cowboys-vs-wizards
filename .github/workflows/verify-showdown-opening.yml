@@ -1,4 +1,4 @@
-name: Verify Showdown opening in Chrome
+name: Verify Showdown rewards and replay in Chrome
 on:
   push:
     branches: [verify/outrider-opening-20261125]
@@ -9,11 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 18
     env:
-      CANDIDATE: 08a693d4f4e8273a3d249966383fc43e4fb20a28
+      CANDIDATE: a8900e2e1d66bca194924cd923f646004743e2f1
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: 08a693d4f4e8273a3d249966383fc43e4fb20a28
+          ref: a8900e2e1d66bca194924cd923f646004743e2f1
           persist-credentials: false
       - uses: actions/setup-node@v6
         with:
@@ -22,6 +22,7 @@ jobs:
       - name: Verify source revision and install locked dependencies
         run: |
           test "$(git rev-parse HEAD)" = "$CANDIDATE"
+          git fetch --depth=1 origin eedab9385931e093e156fdb7885c470eb2ec64eb
           npm ci
       - name: Run the repository checks on the candidate
         run: npm test
@@ -34,3 +35,4 @@ jobs:
           SH
           chmod 700 "$RUNNER_TEMP/showdown-chrome"
           CHROME="$RUNNER_TEMP/showdown-chrome" node scripts/check-pages-tree.mjs --commit "$CANDIDATE" --browser
+          CHROME_PATH="$RUNNER_TEMP/showdown-chrome" node scripts/browser-showdown-deck-check.mjs dist/web/graybox/index.html
