@@ -116,6 +116,11 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     });
   }
   const builder = mountBuilder(builderRoot, {campaign, writeCamp, paintCardFaces: diorama?.paintCardFaces});
+  function openDeck(rewardType) {
+    showOnly(builderRoot);
+    last = rewardType ? null : "#camp-build";
+    builder.openDeck({done: toCamp, cancel: toCamp, focusType: rewardType});
+  }
   // Wizard lesson: review a finished duel or an episode file, rematch the identical deal. The rematch settles nothing
   // (kind "lesson"); its Wizard uses a lesson only when the player opted in (policy null otherwise).
   const showLesson = () => showOnly(lessonRoot);
@@ -135,6 +140,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     return true;
   };
   const showdown = mountShowdown(screen, {onHome: home, campaign, writeCamp, playtest, nextSeed: seedFor, mountBoard: diorama?.mountDiorama,
+    onBuildReward: openDeck,
     onBootHill: () => campaign?.trailDuel?.()?.battlefield === "boot-hill" ? startCampDuel("trail") : false,
     onReview: (record) => { showLesson(); lessonPage.openFromDuel(record); },
     onLessonBack: () => { showLesson(); lessonPage.reopen(); },
@@ -147,11 +153,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     openDestination: (id, control) => outpost?.open(id, control),
     dressNotices: (trailComplete) => outpost?.dressNotices(trailComplete),
     onHome: () => { showOnly(title); play.focus(); },
-    onBuild: () => {
-      showOnly(builderRoot);
-      last = "#camp-build";
-      builder.openDeck({done: toCamp, cancel: toCamp});
-    },
+    onBuild: openDeck,
     onDuel: startCampDuel});
   diorama?.mountGallery(title, screen);
   // Play from the title is a fresh entry: forget the control of the last duel so toCamp opens on the Trail instead of

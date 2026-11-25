@@ -7,7 +7,7 @@ import {TYPES} from "../game/showdown/cards.js";
 import {BOUNTIES, HUNTS, RIVALS, trailDone} from "../game/showdown/progress.js";
 import {decodeSaveCode, describeSave, encodeSave, sameSave} from "../game/showdown/savecode.js";
 import {TRAIL} from "../game/showdown/trail.js";
-import {OFFER_HEADING, face, offerRow, pays} from "./showdown-screen.js";
+import {OFFER_HEADING, face, offerRow, pays, rewardDeckButton} from "./showdown-screen.js";
 import {mountLedger} from "./sheriffs-ledger.js";
 
 const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
@@ -80,7 +80,7 @@ export function mountCamp(root, {campaign, writeCamp = (change) => change(), pla
     const list = campaign.duels();
     const next = TRAIL[progress.wins];
     $("camp-storage").hidden = campaign.saved();
-    const hint = picked ? `<p class="sd-good">Added ${TYPES[picked].name}: you now own ${campaign.owned(picked)}. The new copy is not in your deck yet: use Build deck below.</p>` : "";
+    const hint = picked ? `<p class="sd-good">Added ${TYPES[picked].name}: you now own ${campaign.owned(picked)}. Your deck has ${progress.deck[picked] ?? 0}.</p><div class="sd-row">${rewardDeckButton(picked)}</div>` : "";
     // First things first: a card to choose, then a pack to open. While a card is on offer no solo duel can start.
     $("camp-claim").innerHTML = progress.offer ? `<h2>${OFFER_HEADING}</h2><p class="sd-note">You won. The one you pick goes into your collection.</p>${offerRow(progress.offer, campaign.owned)}`
       : opened ? `<h2>In the pack</h2><div class="sd-row">${opened.map((type) => `<div class="sd-card cowboy ${TYPES[type].rarity}" data-frame="${TYPES[type].kind}" data-opened="${type}">${face(type)}</div>`).join("")}</div>
@@ -217,9 +217,10 @@ export function mountCamp(root, {campaign, writeCamp = (change) => change(), pla
         campaign.choose(d.choose);
         picked = d.choose;
         render();
-        ($("camp-claim").querySelector("button") ?? root.querySelector("[data-duel]:not(:disabled)"))?.focus();
+        ($("camp-claim").querySelector("button:not([data-build-reward])") ?? root.querySelector("[data-duel]:not(:disabled)") ?? $("camp-claim").querySelector("[data-build-reward]"))?.focus();
       });
-    } else if (b.id === "camp-start-trail") $("camp-trail").querySelector("[data-duel=trail]")?.click();
+    } else if (b.hasAttribute("data-build-reward") && picked) onBuild(picked);
+    else if (b.id === "camp-start-trail") $("camp-trail").querySelector("[data-duel=trail]")?.click();
     else if (d.campDestination) {
       if (openDestination?.(d.campDestination, b)) return;
       const destination = $(d.campDestination);
