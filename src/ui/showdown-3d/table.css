@@ -128,17 +128,26 @@
   white-space: nowrap;
   pointer-events: none;
 }
-.sd-diorama[data-contest-challenge] #sd-lesson {
-  position: relative;
-  width: auto;
+/* The Ride or Fight? instruction is drawn over the sky, under the header. Two ids outrank the rule
+   above, whose :is() list counts as (2,1,1). It overlays the board rather than pushing it down, so the
+   hand, End turn and Continue to Boot Hill stay on the first screen of a phone. */
+#showdown.sd-diorama[data-contest-challenge] #sd-lesson {
+  position: absolute;
+  z-index: 3;
+  top: 54px;
+  left: 50%;
+  translate: -50% 0;
+  width: min(92%, 640px);
   height: auto;
   margin: 0;
-  padding: 47px 16px 5px;
+  padding: 0;
   overflow: visible;
   clip-path: none;
   white-space: normal;
+  pointer-events: none;
   text-align: center;
   color: #f8e4c5;
+  text-shadow: 1px 2px 2px #13151e;
   font: 600 15px/1.35 Georgia, serif;
 }
 .sd-diorama #sd-board,
