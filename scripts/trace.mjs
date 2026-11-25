@@ -1,7 +1,9 @@
 // Step 2 traceability for the Kiro specs. Indexes the numbered requirement clauses of every
-// .kiro/specs/*/requirements.md and links each clause to the real node:test tests (example tests or
-// fast-check property tests) whose own literal title cites its ID. Comments, strings, generated
-// titles, skipped or empty tests, design/tasks files, manifests and fixtures never count.
+// .kiro/specs/*/requirements.md, and the Expected and Unchanged Behavior clauses of every native Kiro
+// bugfix spec's bugfix.md (its .config.kiro declares specType "bugfix"), and links each clause to the
+// real node:test tests (example tests or fast-check property tests) whose own literal title cites its
+// ID. Comments, strings, generated titles, skipped or empty tests, design/tasks files, manifests and
+// fixtures never count.
 // Accepted grammar, reference syntax and limits: docs/evidence/dec4-trace.md.
 import {existsSync, readdirSync, readFileSync} from "node:fs";
 import {dirname, join, resolve} from "node:path";
@@ -120,6 +122,46 @@ export function parseSpec(path, text) {
   if (!clauses.length) problem(1, "no-clauses", "no numbered requirement clause recognized");
   const problems = found.sort((a, b) => a.line - b.line).map((p) => ({at: `${path}:${p.line}`, kind: p.kind, detail: p.detail}));
   return {spec, file: path, clauses, problems, styles: [...new Set(clauses.map((c) => c.style))]};
+}
+
+// The Kiro IDE bugfix layout: "N.M WHEN … THEN …" lines under three behaviour headings. Expected
+// (2.N) and Unchanged (3.N) lines are the requirements. Current Behavior (1.N) describes the defect
+// and, like the introduction, is context: neither yields a clause nor is checked for SHALL.
+const BUGFIX_SECTIONS = [[/^expected behaviou?r\b/i, "2"], [/^unchanged behaviou?r\b/i, "3"]];
+const BUGFIX_CLAUSE = /^(\d+)\.(\d+)\s+(.+)$/;
+
+// Clauses of one native bugfix.md, in the shape parseSpec returns. Style "bugfix"; keys are local.
+export function parseBugfix(path, text) {
+  const spec = path.split("/").at(-2), clauses = [], found = [];
+  const problem = (line, kind, detail) => found.push({line, kind, detail: detail.slice(0, 160)});
+  let major = null, title = "", last = null, fenced = false;
+  text.split(/\r?\n/).forEach((raw, i) => {
+    const n = i + 1, line = raw.trimEnd();
+    if (/^\s*(?:```|~~~)/.test(line)) { fenced = !fenced; last = null; return; }
+    if (fenced) return;
+    if (!line.trim()) { last = null; return; }
+    const heading = /^#{1,6}\s+(.+?)[\s#]*$/.exec(line);
+    if (heading) { title = heading[1]; major = BUGFIX_SECTIONS.find(([re]) => re.test(title))?.[1] ?? null; last = null; return; }
+    if (!major) return;
+    const m = /^\s/.test(line) ? null : BUGFIX_CLAUSE.exec(line);
+    if (m) {
+      const id = `${m[1]}.${m[2]}`;
+      if (m[1] !== major) { problem(n, "malformed-id", `${id} under "${title}" (expected ${major}.N)`); last = null; return; }
+      clauses.push(last = {key: keyOf(spec, id), id, spec, file: path, line: n, style: "bugfix", text: m[3], refs: []});
+      return;
+    }
+    // Indented lines and plain prose continue the clause above; a new list item does not.
+    if (last && (/^\s/.test(line) || !/^(?:[-*+]|\d+[.)])\s/.test(line))) { last.text += ` ${line.trim()}`; return; }
+    last = null;
+    if (SHALL.test(line)) problem(n, "unidentified-normative", line.trim());
+  });
+  for (const c of clauses) {
+    if (!SHALL.test(c.text)) problem(c.line, "not-ears", `${c.id} has no SHALL response`);
+    c.text = c.text.replace(/\*\*/g, "").replace(/\s+/g, " ").trim().slice(0, 160);
+  }
+  if (!clauses.length) problem(1, "no-clauses", "no Expected or Unchanged Behavior clause recognized");
+  const problems = found.sort((a, b) => a.line - b.line).map((p) => ({at: `${path}:${p.line}`, kind: p.kind, detail: p.detail}));
+  return {spec, file: path, clauses, problems, styles: clauses.length ? ["bugfix"] : []};
 }
 
 // Code tokens of a JavaScript file. Comments are dropped and every string or template literal is a
@@ -245,7 +287,7 @@ export function namedTests(src) {
 
 // specs and tests are [{path, text}] with repository-relative POSIX paths.
 export function trace({specs, tests}) {
-  const parsed = specs.map(({path, text}) => parseSpec(path, text));
+  const parsed = specs.map(({path, text}) => (path.endsWith("/bugfix.md") ? parseBugfix : parseSpec)(path, text));
   const clauses = parsed.flatMap((s) => s.clauses);
   const byKey = Map.groupBy(clauses, (c) => c.key);
   const localIds = Map.groupBy(clauses.filter((c) => !isGlobal(c.id)), (c) => c.id);
@@ -289,14 +331,29 @@ export function trace({specs, tests}) {
   };
 }
 
-// Every spec requirements.md, and every *.test.{js,mjs,cjs} outside fixtures, builds and this trace's own test.
+// True when the spec directory's Kiro IDE metadata declares a bugfix spec. Fails closed: an unreadable
+// .config.kiro, or a bugfix spec without its bugfix.md, is an error (CLI exit 2), never a silent skip.
+function nativeBugfix(specRoot, name) {
+  const config = join(specRoot, name, ".config.kiro");
+  if (!existsSync(config)) return false;
+  let meta;
+  try { meta = JSON.parse(readFileSync(config, "utf8")); } catch { throw new Error(`.kiro/specs/${name}/.config.kiro is not readable JSON`); }
+  if (meta?.specType !== "bugfix") return false;
+  if (!existsSync(join(specRoot, name, "bugfix.md"))) throw new Error(`.kiro/specs/${name}/.config.kiro declares a bugfix spec but bugfix.md is missing`);
+  return true;
+}
+
+// Every spec requirements.md and native bugfix.md, and every *.test.{js,mjs,cjs} outside fixtures,
+// builds and this trace's own test. A hand-written bugfix.md without that metadata is not read.
 export function collect(root = ROOT) {
   const specRoot = join(root, ".kiro", "specs");
   if (!existsSync(specRoot)) throw new Error(`no .kiro/specs directory under ${root}`);
   const read = (path) => ({path, text: readFileSync(join(root, path), "utf8")});
-  const specs = readdirSync(specRoot, {withFileTypes: true})
-    .filter((d) => d.isDirectory() && existsSync(join(specRoot, d.name, "requirements.md")))
-    .map((d) => `.kiro/specs/${d.name}/requirements.md`).sort().map(read);
+  const specs = readdirSync(specRoot, {withFileTypes: true}).filter((d) => d.isDirectory())
+    .flatMap((d) => [
+      ...(existsSync(join(specRoot, d.name, "requirements.md")) ? [`.kiro/specs/${d.name}/requirements.md`] : []),
+      ...(nativeBugfix(specRoot, d.name) ? [`.kiro/specs/${d.name}/bugfix.md`] : []),
+    ]).sort().map(read);
   const tests = [];
   const walk = (dir) => {
     for (const d of readdirSync(join(root, dir), {withFileTypes: true})) {

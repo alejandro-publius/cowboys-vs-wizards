@@ -7,7 +7,7 @@ import {mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync} from "node:
 import {tmpdir} from "node:os";
 import {dirname, join} from "node:path";
 import {fileURLToPath} from "node:url";
-import {CARD_ID, SELF_TEST, namedTests, parseSpec, trace} from "../../scripts/trace.mjs";
+import {CARD_ID, SELF_TEST, namedTests, parseBugfix, parseSpec, trace} from "../../scripts/trace.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SCRIPT = join(ROOT, "scripts", "trace.mjs");
@@ -284,6 +284,110 @@ test("the retired orb-duel spec and the balance contract index exactly as their 
   const contract = read(".kiro/specs/night-shift-balance-contract/requirements.md");
   assert.deepEqual(contract.clauses.map((c) => c.key), ["NSB-1", "NSB-2"]);
   assert.deepEqual(contract.problems, []);
+});
+
+// The Kiro IDE bugfix layout, as in .kiro/specs/showdown-bear-trap-log/bugfix.md, plus three mistakes.
+const BUGFIX_PATH = ".kiro/specs/fix/bugfix.md";
+const BUGFIX = `# Bugfix Requirements Document
+
+## Introduction
+
+The approved fix: the log SHALL say "defeated" when no orbs are left.
+
+## Bug Analysis
+
+### Current Behavior (Defect)
+
+1.1 WHEN a trap defeats a troop THEN the system shows "cancelled"
+
+### Expected Behavior (Correct)
+
+2.1 WHEN a trap defeats a troop THEN the system SHALL show "defeated"
+    in the trap line.
+
+2.2 WHEN any trap event has 0 orbs left THEN the system SHALL check that before \`stopped\`
+
+- THE log SHALL also flash.
+
+### Unchanged Behavior (Regression Prevention)
+
+3.1 WHEN a Hex springs THEN the system SHALL CONTINUE TO show "cancelled"
+
+2.9 WHEN a Hex springs THEN the system SHALL CONTINUE TO name the Hex
+
+3.2 WHEN any other event is shown THEN the system shows the same text
+
+\`\`\`text
+3.3 WHEN fenced THEN the system SHALL be ignored
+\`\`\`
+`;
+
+test("a native Kiro bugfix spec indexes its Expected (2.N) and Unchanged (3.N) clauses; defect lines and the introduction are context", () => {
+  const spec = parseBugfix(BUGFIX_PATH, BUGFIX);
+  assert.deepEqual(spec.clauses.map((c) => [c.key, c.style, c.line]), [
+    ["fix/2.1", "bugfix", lineOf(BUGFIX, "2.1 WHEN")], ["fix/2.2", "bugfix", lineOf(BUGFIX, "2.2 WHEN")],
+    ["fix/3.1", "bugfix", lineOf(BUGFIX, "3.1 WHEN")], ["fix/3.2", "bugfix", lineOf(BUGFIX, "3.2 WHEN")],
+  ]);
+  assert.equal(clause(spec, "fix/2.1").text, 'WHEN a trap defeats a troop THEN the system SHALL show "defeated" in the trap line.');
+  assert.deepEqual(spec.problems.map((p) => [p.at, p.kind]), [
+    [`${BUGFIX_PATH}:${lineOf(BUGFIX, "also flash")}`, "unidentified-normative"],
+    [`${BUGFIX_PATH}:${lineOf(BUGFIX, "2.9 WHEN")}`, "malformed-id"],
+    [`${BUGFIX_PATH}:${lineOf(BUGFIX, "3.2 WHEN")}`, "not-ears"],
+  ]);
+  assert.deepEqual(parseBugfix(BUGFIX_PATH, "# Bugfix\n\n## Defect\n\n1. The focus moves. It SHALL stay.\n").problems.map((p) => p.kind), ["no-clauses"]);
+  const report = trace({specs: [{path: BUGFIX_PATH, text: BUGFIX}],
+    tests: [{path: "tests/fix.test.js", text: 'test("fix/2.1 fix/3.1 the fatal line reads defeated", () => assert.ok(true));\ntest("fix/1.1 is context, not a clause", () => assert.ok(true));'}]});
+  assert.deepEqual(report.clauses.filter((c) => c.refs.length).map((c) => c.key), ["fix/2.1", "fix/3.1"]);
+  assert.deepEqual(report.unresolved.map((u) => [u.token, u.reason]), [["fix/1.1", "unknown-id"]]);
+});
+
+test("the CLI reads bugfix.md only where .config.kiro declares a bugfix spec, and fails closed on broken metadata", (t) => {
+  const root = mkdtempSync(join(tmpdir(), "dec4-trace-bugfix-"));
+  t.after(() => rmSync(root, {recursive: true, force: true}));
+  const write = (path, text) => { mkdirSync(dirname(join(root, path)), {recursive: true}); writeFileSync(join(root, path), text); };
+  const clauses = "## Expected Behavior\n\n2.1 WHEN it breaks THEN the system SHALL recover\n\n## Unchanged Behavior\n\n3.1 WHEN it works THEN the system SHALL CONTINUE TO work\n";
+  write(".kiro/specs/native/.config.kiro", JSON.stringify({specId: "x", workflowType: "requirements-first", specType: "bugfix"}));
+  write(".kiro/specs/native/bugfix.md", `# Bugfix Requirements Document\n\n${clauses}`);
+  write(".kiro/specs/by-hand/bugfix.md", `# Bugfix written by hand\n\n${clauses}`);
+  write(".kiro/specs/feature/.config.kiro", JSON.stringify({specType: "feature"}));
+  write(".kiro/specs/feature/requirements.md", "# Requirements: feature\n\n- NSB-1: THE gate SHALL hold.\n");
+  write(".kiro/specs/feature/bugfix.md", `# Not read\n\n${clauses}`);
+  write("tests/native.test.js", 'import test from "node:test";\nimport assert from "node:assert/strict";\ntest("native/2.1 recovers", () => assert.ok(true));\n');
+
+  const partial = run("--root", root, "--json", "--require", "native/");
+  assert.equal(partial.status, 1, partial.stderr);
+  const report = JSON.parse(partial.stdout);
+  assert.deepEqual(report.specs.map((s) => s.file), [".kiro/specs/feature/requirements.md", ".kiro/specs/native/bugfix.md"]);
+  assert.deepEqual(report.required, {prefixes: ["native/"], missing: ["native/3.1"], unmatched: []});
+  assert.deepEqual([report.duplicates, report.problems, report.unresolved], [[], [], []]);
+
+  write("tests/native-kept.test.js", 'import test from "node:test";\nimport assert from "node:assert/strict";\ntest("native/3.1 keeps working", () => assert.ok(true));\n');
+  const proven = run("--root", root, "--require", "native/");
+  assert.equal(proven.status, 0, proven.stdout);
+  assert.match(proven.stdout, /^required native\/: all proven$/m);
+
+  rmSync(join(root, ".kiro/specs/native/bugfix.md"));
+  const missing = run("--root", root);
+  assert.equal(missing.status, 2);
+  assert.match(missing.stderr, /native\/\.config\.kiro declares a bugfix spec but bugfix\.md is missing/);
+  write(".kiro/specs/native/.config.kiro", "{specType: bugfix");
+  const broken = run("--root", root);
+  assert.equal(broken.status, 2);
+  assert.match(broken.stderr, /native\/\.config\.kiro is not readable JSON/);
+});
+
+test("the shipped Bear Trap log decision's native bugfix spec is indexed from this checkout and linked to its tests", () => {
+  const config = JSON.parse(readFileSync(join(ROOT, ".kiro/specs/showdown-bear-trap-log/.config.kiro"), "utf8"));
+  assert.equal(config.specType, "bugfix");
+  const report = JSON.parse(run("--json").stdout);
+  const spec = report.specs.find((s) => s.file === ".kiro/specs/showdown-bear-trap-log/bugfix.md");
+  assert.deepEqual(spec && [spec.clauses, spec.styles], [8, ["bugfix"]]);
+  assert.deepEqual(report.problems.filter((p) => p.at.startsWith(".kiro/specs/showdown-bear-trap-log/")), []);
+  for (const id of ["2.1", "2.2", "3.1", "3.2", "3.3", "3.4", "3.6"]) {
+    const refs = clause(report, `showdown-bear-trap-log/${id}`)?.refs ?? [];
+    assert.ok(refs.some((r) => r.at.startsWith("tests/game/showdown-bear-trap.test.js:")), `showdown-bear-trap-log/${id} has no linked test`);
+  }
+  assert.ok(clause(report, "CARD-COWBOY-BEAR-TRAP-14").refs.some((r) => r.at.startsWith("tests/game/showdown-bear-trap.test.js:")));
 });
 
 test("the CLI reads this checkout and never takes evidence from its own fixtures", () => {
