@@ -389,6 +389,13 @@ async function browserChecks() {
     assert.ok(axNamed(await axTree(), "button", /^Ride or Fight\?$/, enabled), "the title challenge has a name");
     await activateByKey("#menu-challenge");
     await challengeOpens(activateByKey);
+    const openingPosition = () => evaluate(`({
+      board: [...document.querySelectorAll('#sd-board button')].map((button) => button.textContent),
+      hand: [...document.querySelectorAll('#sd-hand [data-card]')].map((button) => button.dataset.card),
+      log: document.getElementById('sd-log').textContent,
+      status: document.getElementById('sd-status').textContent
+    })`);
+    const firstPosition = await openingPosition();
     const aim = await evaluate(`({
       prompt: document.getElementById('sd-prompt')?.textContent.trim() ?? '',
       base: document.querySelector('[data-base="wizard"] [id^="sd-preview-"]')?.textContent.trim() ?? '',
@@ -407,7 +414,21 @@ async function browserChecks() {
     assert.ok(axNamed(targets, "button", /\bSkeleton\b/, describes(aim.skeleton, aim.base)), "the Skeleton description carries its own preview and the aiming prompt");
     check("Chrome exposes distinct Base and Skeleton attack previews as accessible descriptions");
     await activateByKey('[data-base="wizard"]');
-    await wait(`/Outrider struck the Wizards' Base for 1/.test(document.getElementById('sd-log').textContent)`);
+    const shotShown = async (eventText, replayLabel) => {
+      await wait(`document.getElementById('sd-restart').textContent === ${JSON.stringify(replayLabel)}`);
+      const shot = await evaluate(`({report: document.getElementById('sd-lesson').innerText,
+        event: [...document.querySelectorAll('#sd-log li')].findLast((line) => line.textContent.includes(${JSON.stringify(eventText)}))?.textContent})`);
+      assert.ok(shot.event, eventText);
+      assert.equal(shot.report, shot.event, "the illustrated board reports the move that actually landed");
+    };
+    await shotShown("Outrider struck the Wizards' Base for 1", "Try fighting instead");
+    await activateByKey("#sd-restart");
+    assert.ok(await evaluate(`document.activeElement?.matches('[data-own]') && document.activeElement.textContent.includes('Outrider')`), "replay returns keyboard focus to the Outrider");
+    await press("Enter", 13);
+    assert.deepEqual(await openingPosition(), firstPosition, "replay restores the same hand, board, history and targets");
+    await activateByKey('[data-slot^="wizard-"][data-enemy]');
+    await shotShown("Outrider attacked Skeleton", "Try riding instead");
+    check("Ride and Fight from the same opening deal show their own combat result and offer the other move");
     await activateByKey("#sd-home");
     await wait(shown("showdown-camp"));
     check("Tab and Enter open Ride or Fight?, play the Outrider's Base attack and return to Camp");
@@ -506,6 +527,7 @@ async function browserChecks() {
         position: getComputedStyle(document.getElementById('sd-boot-hill')).position, lesson: getComputedStyle(document.getElementById('sd-lesson')).clipPath,
         end: document.getElementById('sd-end').getBoundingClientRect().top + scrollY})`);
       assert.deepEqual(layout, {challenge: false, hidden: true, position: "static", lesson: "inset(50%)", end}, "740 x 375: Boot Hill returns to its normal control layout");
+      assert.equal(await evaluate(`document.getElementById('sd-restart').textContent`), "Restart this duel", "Boot Hill restores its ordinary restart control");
     };
     const played = (hand) => wait(`document.querySelectorAll('#sd-hand [data-card]').length === ${hand - 1} && document.getElementById('sd-status').textContent === 'Boot Hill · turn 1 · your turn'`);
     const handCount = () => evaluate(`document.querySelectorAll('#sd-hand [data-card]').length`);
