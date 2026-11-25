@@ -294,6 +294,8 @@ const BUGFIX = `# Bugfix Requirements Document
 
 The approved fix: the log SHALL say "defeated" when no orbs are left.
 
+2.8 WHEN a numbered line sits outside the behaviour sections THEN the system SHALL report it
+
 ## Bug Analysis
 
 ### Current Behavior (Defect)
@@ -308,6 +310,10 @@ The approved fix: the log SHALL say "defeated" when no orbs are left.
 2.2 WHEN any trap event has 0 orbs left THEN the system SHALL check that before \`stopped\`
 
 - THE log SHALL also flash.
+
+#### A sub-heading inside the section
+
+2.3 WHEN a sub-heading sits inside the section THEN the system SHALL still index this line
 
 ### Unchanged Behavior (Regression Prevention)
 
@@ -326,10 +332,12 @@ test("a native Kiro bugfix spec indexes its Expected (2.N) and Unchanged (3.N) c
   const spec = parseBugfix(BUGFIX_PATH, BUGFIX);
   assert.deepEqual(spec.clauses.map((c) => [c.key, c.style, c.line]), [
     ["fix/2.1", "bugfix", lineOf(BUGFIX, "2.1 WHEN")], ["fix/2.2", "bugfix", lineOf(BUGFIX, "2.2 WHEN")],
+    ["fix/2.3", "bugfix", lineOf(BUGFIX, "2.3 WHEN")],
     ["fix/3.1", "bugfix", lineOf(BUGFIX, "3.1 WHEN")], ["fix/3.2", "bugfix", lineOf(BUGFIX, "3.2 WHEN")],
   ]);
   assert.equal(clause(spec, "fix/2.1").text, 'WHEN a trap defeats a troop THEN the system SHALL show "defeated" in the trap line.');
   assert.deepEqual(spec.problems.map((p) => [p.at, p.kind]), [
+    [`${BUGFIX_PATH}:${lineOf(BUGFIX, "2.8 WHEN")}`, "unidentified-normative"],
     [`${BUGFIX_PATH}:${lineOf(BUGFIX, "also flash")}`, "unidentified-normative"],
     [`${BUGFIX_PATH}:${lineOf(BUGFIX, "2.9 WHEN")}`, "malformed-id"],
     [`${BUGFIX_PATH}:${lineOf(BUGFIX, "3.2 WHEN")}`, "not-ears"],
@@ -383,7 +391,7 @@ test("the shipped Bear Trap log decision's native bugfix spec is indexed from th
   const spec = report.specs.find((s) => s.file === ".kiro/specs/showdown-bear-trap-log/bugfix.md");
   assert.deepEqual(spec && [spec.clauses, spec.styles], [8, ["bugfix"]]);
   assert.deepEqual(report.problems.filter((p) => p.at.startsWith(".kiro/specs/showdown-bear-trap-log/")), []);
-  for (const id of ["2.1", "2.2", "3.1", "3.2", "3.3", "3.4", "3.6"]) {
+  for (const id of ["2.1", "2.2", "3.1", "3.2", "3.3", "3.6"]) {
     const refs = clause(report, `showdown-bear-trap-log/${id}`)?.refs ?? [];
     assert.ok(refs.some((r) => r.at.startsWith("tests/game/showdown-bear-trap.test.js:")), `showdown-bear-trap-log/${id} has no linked test`);
   }

@@ -126,7 +126,8 @@ export function parseSpec(path, text) {
 
 // The Kiro IDE bugfix layout: "N.M WHEN … THEN …" lines under three behaviour headings. Expected
 // (2.N) and Unchanged (3.N) lines are the requirements. Current Behavior (1.N) describes the defect
-// and, like the introduction, is context: neither yields a clause nor is checked for SHALL.
+// and, like the introduction, is context: neither yields a clause, and only a numbered line there
+// that carries SHALL is reported.
 const BUGFIX_SECTIONS = [[/^expected behaviou?r\b/i, "2"], [/^unchanged behaviou?r\b/i, "3"]];
 const BUGFIX_CLAUSE = /^(\d+)\.(\d+)\s+(.+)$/;
 
@@ -134,16 +135,23 @@ const BUGFIX_CLAUSE = /^(\d+)\.(\d+)\s+(.+)$/;
 export function parseBugfix(path, text) {
   const spec = path.split("/").at(-2), clauses = [], found = [];
   const problem = (line, kind, detail) => found.push({line, kind, detail: detail.slice(0, 160)});
-  let major = null, title = "", last = null, fenced = false;
+  let major = null, level = 0, title = "", last = null, fenced = false;
   text.split(/\r?\n/).forEach((raw, i) => {
     const n = i + 1, line = raw.trimEnd();
     if (/^\s*(?:```|~~~)/.test(line)) { fenced = !fenced; last = null; return; }
     if (fenced) return;
     if (!line.trim()) { last = null; return; }
-    const heading = /^#{1,6}\s+(.+?)[\s#]*$/.exec(line);
-    if (heading) { title = heading[1]; major = BUGFIX_SECTIONS.find(([re]) => re.test(title))?.[1] ?? null; last = null; return; }
-    if (!major) return;
+    const heading = /^(#{1,6})\s+(.+?)[\s#]*$/.exec(line);
+    if (heading) {
+      last = null;
+      const section = BUGFIX_SECTIONS.find(([re]) => re.test(heading[2]))?.[1];
+      if (section) [major, level, title] = [section, heading[1].length, heading[2]];
+      else if (!major || heading[1].length <= level) major = null; // a deeper sub-heading stays in its section
+      return;
+    }
     const m = /^\s/.test(line) ? null : BUGFIX_CLAUSE.exec(line);
+    // Outside the two sections only a numbered SHALL line is reported; defect lines and prose are context.
+    if (!major) { if (m && SHALL.test(line)) problem(n, "unidentified-normative", line.trim()); return; }
     if (m) {
       const id = `${m[1]}.${m[2]}`;
       if (m[1] !== major) { problem(n, "malformed-id", `${id} under "${title}" (expected ${major}.N)`); last = null; return; }

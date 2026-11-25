@@ -2,8 +2,8 @@
 // Each case replays a seeded deal with the level-2 bot (playTurn applies every step through
 // applyAction, which rejects illegal actions) until the first trap event that matches.
 // Titles cite the clauses of the native Kiro bugfix spec .kiro/specs/showdown-bear-trap-log/bugfix.md
-// (as <spec>/<N.M>), which scripts/trace.mjs indexes; 3.5 compares against the pre-fix tree and is not
-// cited here.
+// (as <spec>/<N.M>), which scripts/trace.mjs indexes. 3.4 ("the same values as before") and 3.5 compare
+// against the pre-fix tree, which a single-commit checkout cannot reach, so neither is cited here.
 import test from "node:test";
 import assert from "node:assert/strict";
 import fc from "fast-check";
@@ -72,7 +72,8 @@ test("showdown-bear-trap-log/2.2 showdown-bear-trap-log/3.6: a trap line with 0 
   assert.deepEqual([caught.counterexample[0].left, caught.counterexample[0].stopped], [0, true]);
 });
 
-test("showdown-bear-trap-log/3.4: trap events from legal play keep side, cardId, target, left and stopped with the same meaning, and the contract still says `stopped` means the attack never lands (seeds 0-79)", () => {
+// The event contract the log line reads. Not a citation of bugfix.md 3.4: values are not compared with the pre-fix tree.
+test("trap events from legal play carry exactly side, cardId, target, left and stopped; a Bear Trap stops the attack exactly at 0 orbs and a Hex always stops it with the attacker standing (seeds 0-79)", () => {
   assert.deepEqual(EVENTS.trap.fields, ["side", "cardId", "target", "left", "stopped"]);
   assert.match(EVENTS.trap.shows, /`stopped` means the attack never lands\./);
   const events = [];
@@ -89,7 +90,7 @@ test("showdown-bear-trap-log/3.4: trap events from legal play keep side, cardId,
   for (const e of events) {
     assert.deepEqual(Object.keys(e).sort(), ["cardId", "left", "side", "stopped", "target", "type"]);
     assert.ok(Number.isInteger(e.left) && e.left >= 0 && typeof e.stopped === "boolean");
-    // Bear Trap stops the attack exactly when it takes the last orb; Hex always stops it and takes none.
+    // Bear Trap stops the attack exactly when it takes the last orb; Hex always stops it and leaves the attacker standing.
     if (bearTrap(e)) assert.equal(e.stopped, e.left === 0);
     else assert.ok(hex(e) && e.stopped && e.left > 0, `unexpected trap event ${JSON.stringify(e)}`);
   }

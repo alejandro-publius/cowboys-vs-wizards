@@ -274,8 +274,8 @@ from the clauses. The properties use fast-check seed `20261123` and 150 runs. Th
 56 clauses with named tests across all specs, including 53 card clauses. Six previously unnumbered
 requirements from the retired lane duel have IDs `orb-duel/13.1` through `orb-duel/13.6`. Those six
 remain unproven. The audit reports zero parser findings and zero unresolved references.
-On 2026-11-25 `tests/game/showdown-bear-trap.test.js` began citing `CARD-COWBOY-BEAR-TRAP-14` and seven clauses
-of the native bugfix spec `showdown-bear-trap-log` ([evidence](evidence/kiro-bugfix-spec-trace.md)): 64 clauses
+On 2026-11-25 `tests/game/showdown-bear-trap.test.js` began citing `CARD-COWBOY-BEAR-TRAP-14` and six clauses
+of the native bugfix spec `showdown-bear-trap-log` ([evidence](evidence/kiro-bugfix-spec-trace.md)): 63 clauses
 with named tests, 54 of them card clauses.
 
 | IDs in the title | Class | Precise observable |
