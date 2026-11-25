@@ -120,7 +120,7 @@ test("server lists inspect_ride_decision and refuses paths and extra inputs", {t
   assert.equal((await call("tools/call", {name: "inspect_ride_decision", arguments: {path: "/etc"}})).error.code, -32602);
   const ok = JSON.parse((await call("tools/call", {name: "inspect_ride_decision", arguments: {case: SEARCH}})).result.content[0].text);
   const current = engineFingerprint(repo, SEARCH_ENTRIES).sha256;
-  assert.equal(ok.power.version, "1.5.0");
+  assert.equal(ok.power.version, "1.6.0");
   assert.equal(ok.closure.current, current);
   assert.equal(ok.closure.recorded, searched.recorded.closure.sha256);
   assert.equal(ok.verdict, current === searched.recorded.closure.sha256 ? "pass" : "stale");

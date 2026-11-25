@@ -2,8 +2,10 @@
 // receipt and the board character GLBs (earlier lane build and its 3D assets), for playing
 // one seat of a Showdown Trail duel in memory (showdown.mjs), and for replaying a recorded
 // Showdown proof against the current Showdown engine fingerprint, and for checking a recorded
-// Outrider ride decision (ride.mjs) before any ride advice is given. It reads only fixed files under
-// this repo: no arbitrary paths, writes, network, shell or database.
+// Outrider ride decision (ride.mjs) before any ride advice is given, and for checking a recorded card
+// proposal review (card.mjs). It reads only fixed files under this repo: no arbitrary paths, writes,
+// network, shell or database. The card review reruns the project's own smoke sample CLI in a child
+// Node process with fixed arguments.
 import {createHash} from "node:crypto";
 import {readFileSync, realpathSync} from "node:fs";
 import {join} from "node:path";
@@ -12,8 +14,9 @@ import {fileURLToPath} from "node:url";
 import {parseGlb} from "./glb.mjs";
 import {createTable, engineFingerprint, inspectShowdownReceipt, loadEngine} from "./showdown.mjs";
 import {RIDE_CASES, inspectRideDecision} from "./ride.mjs";
+import {CARD_RULE, RECEIPT as CARD_RECEIPT, inspectCardReview, parseProposal} from "./card.mjs";
 
-const VERSION = "1.5.0";
+const VERSION = "1.6.0";
 
 // Project binding: with PLUGIN_DATA set, only PLUGIN_DATA/project.json (written by setup.mjs)
 // names the project. Never inferred. Without PLUGIN_DATA (workspace MCP), the source checkout.
@@ -221,6 +224,17 @@ async function rideDecision(id) {
   return {...base, ...(await inspectRideDecision(root, id))};
 }
 
+const CARD_TOOL = {
+  name: "inspect_card_review",
+  description: `Check the recorded review of one card proposal (${CARD_RECEIPT}, written by \`node card.mjs --record\`) against the bound project: same card, proposal, spec bytes and smoke-sample code, and the Showdown smoke sample (seeds 0-99 from both openers) rerun now must equal the receipt. Verdict pass, stale, rejected, malformed, absent or unavailable; measured follows duel-card-pipeline R5.5. Required card: a card spec key. Required proposal: \`review existing\` or \`<stars|health|attack|copies> = <whole number>\`.`,
+  inputSchema: {type: "object", properties: {card: {type: "string", pattern: CARD_RULE.source}, proposal: {type: "string"}}, required: ["card", "proposal"], additionalProperties: false},
+};
+function cardReview(card, proposal) {
+  const base = {power: {name: "orb-duel-review", version: VERSION}};
+  if (unavailable) return {...base, kind: "showdown-card-review", card, proposal, verdict: "unavailable", reasons: [unavailable], measured: false, pending: ["project not bound"]};
+  return {...base, ...inspectCardReview(root, card, proposal)};
+}
+
 const SHOWDOWN_KEYS = {start_showdown_duel: ["duel"], observe_showdown: ["session"], act_showdown: ["session", "revision", "intent"]};
 
 async function showdownCall(name, args) {
@@ -246,7 +260,7 @@ function handle(msg) {
     case "ping":
       return reply(msg.id, {});
     case "tools/list":
-      return reply(msg.id, {tools: [TOOL, CHARACTER_TOOL, ...SHOWDOWN_TOOLS, RECEIPT_TOOL, RIDE_TOOL]});
+      return reply(msg.id, {tools: [TOOL, CHARACTER_TOOL, ...SHOWDOWN_TOOLS, RECEIPT_TOOL, RIDE_TOOL, CARD_TOOL]});
     case "tools/call": {
       const params = msg.params;
       if (Object.hasOwn(SHOWDOWN_KEYS, params?.name ?? "")) {
@@ -269,6 +283,18 @@ function handle(msg) {
         if (typeof id !== "string" || !Object.hasOwn(RIDE_CASES, id)) return fail(msg.id, -32602, `case must be one of: ${Object.keys(RIDE_CASES).join(", ")}`);
         return rideDecision(id).then((body) => reply(msg.id, {content: [{type: "text", text: JSON.stringify(body, null, 2)}]}),
           (error) => reply(msg.id, {content: [{type: "text", text: JSON.stringify({error: error.message})}], isError: true}));
+      }
+      if (params?.name === CARD_TOOL.name) {
+        const args = params.arguments ?? {};
+        if (typeof args !== "object" || args === null || Array.isArray(args)) return fail(msg.id, -32602, "inspect_card_review takes an object");
+        if (Object.keys(args).some((key) => key !== "card" && key !== "proposal")) return fail(msg.id, -32602, "Only card and proposal are accepted");
+        if (typeof args.card !== "string" || !CARD_RULE.test(args.card)) return fail(msg.id, -32602, `card must match ${CARD_RULE.source}`);
+        if (!parseProposal(args.proposal)) return fail(msg.id, -32602, "proposal must be `review existing` or `<stars|health|attack|copies> = <whole number>`");
+        try {
+          return reply(msg.id, {content: [{type: "text", text: JSON.stringify(cardReview(args.card, args.proposal), null, 2)}]});
+        } catch (error) {
+          return reply(msg.id, {content: [{type: "text", text: JSON.stringify({error: error.message})}], isError: true});
+        }
       }
       if (params?.name === RECEIPT_TOOL.name) {
         const args = params.arguments ?? {};
