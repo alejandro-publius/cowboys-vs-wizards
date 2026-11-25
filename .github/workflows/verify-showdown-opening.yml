@@ -1,4 +1,4 @@
-name: Verify Showdown rewards and replay in Chrome
+name: Verify Showdown trap counterplay in Chrome
 on:
   push:
     branches: [verify/outrider-opening-20261125]
@@ -9,11 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 18
     env:
-      CANDIDATE: a8900e2e1d66bca194924cd923f646004743e2f1
+      CANDIDATE: fcc863cfb16fc71330e60af8ab89c743f04b1879
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: a8900e2e1d66bca194924cd923f646004743e2f1
+          ref: fcc863cfb16fc71330e60af8ab89c743f04b1879
           persist-credentials: false
       - uses: actions/setup-node@v6
         with:
@@ -36,3 +36,16 @@ jobs:
           chmod 700 "$RUNNER_TEMP/showdown-chrome"
           CHROME="$RUNNER_TEMP/showdown-chrome" node scripts/check-pages-tree.mjs --commit "$CANDIDATE" --browser
           CHROME_PATH="$RUNNER_TEMP/showdown-chrome" node scripts/browser-showdown-deck-check.mjs dist/web/graybox/index.html
+      - name: Confirm the same browser check catches the old attack forecast
+        env:
+          BEFORE: ccbf566ee7f56a062944054439fcdbef573f2b6a
+        run: |
+          git fetch --depth=1 origin "$BEFORE"
+          git worktree add --detach "$RUNNER_TEMP/pre-trap-warning" "$BEFORE"
+          ln -s "$GITHUB_WORKSPACE/node_modules" "$RUNNER_TEMP/pre-trap-warning/node_modules"
+          (cd "$RUNNER_TEMP/pre-trap-warning" && node scripts/stage-pages.mjs --commit "$BEFORE")
+          if CHROME="$RUNNER_TEMP/showdown-chrome" node scripts/check-pages-tree.mjs --commit "$BEFORE" --dir "$RUNNER_TEMP/pre-trap-warning/dist/web" --browser --out-dir "$RUNNER_TEMP/negative-report" > "$RUNNER_TEMP/baseline.log" 2>&1; then
+            echo "Expected the old preview to lack the trap warning"
+            exit 1
+          fi
+          grep -F 'the aiming prompt and illustrated board explain the public trap risk' "$RUNNER_TEMP/baseline.log"
