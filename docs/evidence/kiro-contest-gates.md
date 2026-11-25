@@ -89,6 +89,7 @@ Release checks, in order, stopping at the first failure:
 1. G1-G4, 60 runs each, at most 60 s per property. An interrupted property counts as a failure.
 2. `node scripts/verify-duel.mjs` (all Node suites in `tests/game`, `tests/match`, `tests/assets`, `prototypes/showdown` and the GLB preflight), 300 s timeout.
 3. `node scripts/deck-balance.mjs --decks 1 --from 0 --count 4`, 120 s timeout. That is 16 matches, and the script throws if a match does not finish. Note: this script drives the retired lane deck builder (`src/game/deck-builder.js`, `scripts/play-match.mjs`). It is included only because the request named it. Drop it from `BALANCE_ARGS` if the lane stays retired.
+   *Superseded 2026-11-24:* step 3 is now the Showdown smoke sample. See [the smoke sample note](showdown-smoke-sample.md). The text above is kept as written.
 
 Validation stamp: `.artifacts/kiro/contest-gates/stamp.json` (gitignored). It holds the fingerprint described under "Stamp integrity", `ok`, the checks that ran and any failures.
 

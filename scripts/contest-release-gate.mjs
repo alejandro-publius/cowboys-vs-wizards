@@ -4,7 +4,8 @@
 //                                                    bounded; with paths, only when one is Showdown rules or card data.
 //                                                    The only mode that honours CONTEST_FC_* replay overrides; never stamps
 //   node scripts/contest-release-gate.mjs release    all four properties at the fixed seed, then node scripts/verify-duel.mjs,
-//                                                    then a small scripts/deck-balance.mjs sample; writes the validation stamp
+//                                                    then a small scripts/showdown-smoke.mjs sample on the active Showdown
+//                                                    engine; writes the validation stamp
 //   node scripts/contest-release-gate.mjs pre-task   records the tree fingerprint at task start, reports the stamp
 //   node scripts/contest-release-gate.mjs post-task  release checks when the tree differs from a passing stamp
 //   node scripts/contest-release-gate.mjs stop       the same, with a retry budget so a failing tree cannot loop Stop
@@ -32,18 +33,23 @@ const TASK_START = `${stampDir}task-start.json`;
 const STOP_RETRIES = 2;
 export const FAST_RUNS = 15;
 export const RELEASE_RUNS = 60;
-const LIMITS = { fastMs: 20_000, propertyMs: 60_000, verifyMs: 300_000, balanceMs: 120_000 };
-// The existing deck-balance sample, cut to the starter and one other deck over four seeds (16 matches).
-const BALANCE_ARGS = ["scripts/deck-balance.mjs", "--decks", "1", "--from", "0", "--count", "4"];
+const LIMITS = { fastMs: 20_000, propertyMs: 60_000, verifyMs: 300_000, sampleMs: 120_000 };
+// The smoke sample: seeds 0-7, each from both openers (16 games), on src/game/showdown/rules.js with the
+// even-match decks. A regression signal, not a balance verdict. It replaces the retired lane
+// scripts/deck-balance.mjs sample (also 16 games, same time limit), which could not play a Showdown card.
+export const SAMPLE_PLAN = Object.freeze({ from: 0, count: 8 });
+export const SAMPLE_ARGS = Object.freeze(["scripts/showdown-smoke.mjs", "--from", String(SAMPLE_PLAN.from), "--count", String(SAMPLE_PLAN.count), "--json"]);
 const RERUN = "Run: node scripts/contest-release-gate.mjs release";
 
-// Inputs whose change invalidates the stamp: every source the verifier, its tests and the balance
+// Inputs whose change invalidates the stamp: every source the verifier, its tests and the smoke
 // sample load, the lockfile, the GLBs the preflight reads, the gate itself, the Node version, and the
 // Night Shift policy/decider and Billy seat-audit proof inputs the workflows rely on.
-const WATCHED_DIRS = ["src", "tests", "prototypes/showdown", ".kiro/specs/duel-card-pipeline/cards"];
+export const WATCHED_DIRS = ["src", "tests", "prototypes/showdown", ".kiro/specs/duel-card-pipeline/cards"];
 export const WATCHED_FILES = [
   "package.json", "package-lock.json",
   "scripts/verify-duel.mjs", "scripts/check-sourced-animation.mjs", "scripts/deck-balance.mjs", "scripts/play-match.mjs",
+  "scripts/showdown-smoke.mjs", "scripts/night-review.mjs",
+  ".kiro/workflows/card-summoning-circle.workflow.json", ".kiro/specs/duel-card-pipeline/requirements.md",
   "scripts/contest-release-gate.mjs", "scripts/contest-gate-properties.mjs",
   "assets/models/dragon.glb", "assets/models/mounted-billy.glb",
   "scripts/contest-balance.mjs", "scripts/showdown-balance-contract.mjs",
@@ -147,10 +153,27 @@ async function propertyFailures(mode) {
   return { failures, plan };
 }
 
-function runCheck(label, args, timeout) {
+// The smoke sample's stdout, judged by its own validator against SAMPLE_PLAN: {problems, summary}.
+// Anything but one complete report on the active engine (lane output, a partial run) has problems.
+export function sampleVerdict(stdout, smoke) {
+  let report;
+  try { report = JSON.parse(stdout); } catch { return { problems: ["stdout is not one JSON sample report"], summary: null }; }
+  try {
+    const problems = smoke.smokeProblems(report, SAMPLE_PLAN);
+    return { problems, summary: problems.length ? null : smoke.smokeSummary(report) };
+  } catch (error) {
+    return { problems: [`the sample validator failed: ${error.message}`], summary: null };
+  }
+}
+
+// Null when the check passed. `inspect(stdout)` returns problems that fail an exit-0 run.
+function runCheck(label, args, timeout, inspect) {
   say(`$ node ${args.join(" ")}`);
   const run = spawnSync(process.execPath, args, { cwd: root, env: childEnv(process.env), encoding: "utf8", timeout, maxBuffer: 64 << 20 });
-  if (run.status === 0) return null;
+  if (run.status === 0) {
+    const problems = inspect ? inspect(run.stdout) : [];
+    return problems.length ? [`${label} INVALID (exit 0)`, ...problems.slice(0, 12).map((line) => `  ${line.slice(0, 240)}`)].join("\n") : null;
+  }
   const tail = `${run.stdout ?? ""}${run.stderr ?? ""}`.split("\n").filter((line) => /not ok|fail|error|assert|Violation|expected|actual/i.test(line)).slice(-12);
   const why = run.error?.code === "ETIMEDOUT" ? `timed out after ${timeout} ms` : `exit ${run.status ?? run.signal}`;
   return [`${label} FAILED (${why})`, ...tail.map((line) => `  ${line.trim().slice(0, 240)}`)].join("\n");
@@ -165,16 +188,28 @@ async function release(trigger) {
     const verify = runCheck("verify-duel", ["scripts/verify-duel.mjs"], LIMITS.verifyMs);
     if (verify) failures.push(verify);
   }
+  let sample = null;
   if (!failures.length) {
-    const balance = runCheck("deck-balance sample", BALANCE_ARGS, LIMITS.balanceMs);
-    if (balance) failures.push(balance);
+    let smoke = null;
+    try { smoke = await import("./showdown-smoke.mjs"); } catch (error) { failures.push(`Showdown smoke sample FAILED (validator did not load: ${error.message})`); }
+    const check = smoke && runCheck("Showdown smoke sample", SAMPLE_ARGS, LIMITS.sampleMs, (stdout) => {
+      const verdict = sampleVerdict(stdout, smoke);
+      sample = verdict.summary;
+      return verdict.problems;
+    });
+    if (check) failures.push(check);
+    else if (sample) {
+      say(`Showdown smoke sample: ${sample.results.games} games on ${sample.engine}, ${sample.decks} decks, seeds ${sample.seeds} from both openers; `
+        + `${Object.keys(sample.observed).length} deck card types observed (${sample.showdownOnlyObserved.length} Showdown-only), `
+        + `${sample.inDeckUnobserved.length} in the decks unobserved, ${sample.outsideSample.length} outside the sample (no coverage)`);
+    }
   }
   if (failures.length === 0 && print !== fingerprint()) failures.push("the tree changed while the checks ran; run the gate again");
   const ok = failures.length === 0;
   writeJson(STAMP, {
     fingerprint: print, ok, trigger,
-    checks: [`fast-check ${plan.ids.join(",")} seed ${plan.seed} x${plan.numRuns}`, "scripts/verify-duel.mjs", BALANCE_ARGS.join(" ")],
-    failures, at: new Date().toISOString(),
+    checks: [`fast-check ${plan.ids.join(",")} seed ${plan.seed} x${plan.numRuns}`, "scripts/verify-duel.mjs", SAMPLE_ARGS.join(" ")],
+    sample, failures, at: new Date().toISOString(),
   });
   return failures;
 }
