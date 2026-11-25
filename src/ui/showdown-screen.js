@@ -119,12 +119,24 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
   // seat "wizard" (solo): the human plays the Wizards. Its campaign, if any, comes with this start; without one the
   // Wizard seat settles nothing. The Cowboy seat keeps the mount's campaign unless another is passed.
   function start(nextDuel, dealSeed, {players: seats = 1, best = 1, seat: side = "cowboy", campaign: own, lesson: rematch = null} = {}) {
+    const opener = document.activeElement; // the control that opened this duel, read before the deal
     [duel, players, seat] = [nextDuel, seats, seats === 1 ? side : "cowboy"];
     lesson = rematch && seats === 1 && seat === "cowboy" && best === 1 ? rematch : null;
     camp = lesson ? null : own ?? (seat === "cowboy" ? campaign : null);
     const progress = solo() ? camp?.progress() : null;
     match = best > 1 ? newMatch(progress ? {deck: progress.deck, side: progress.side} : {}) : null;
     deal(dealSeed);
+    opened(opener);
+  }
+  // A duel opened by keyboard from another screen (the title's Ride or Fight?, a Camp tile, a lesson or preview button)
+  // hides the control that opened it, which would drop focus to the page. Focus goes to the duel's first choice instead:
+  // a troop's decision (an Outrider or experiment turn opens on one), else a playable card, else End turn. A pointer or a
+  // direct link leaves focus alone: the opener is then not :focus-visible, or focus is already on the page.
+  function opened(opener) {
+    if (curtain || root.hidden || !opener || opener === document.body || root.contains(opener) || opener.getClientRects().length > 0) return;
+    let keyed = false;
+    try { keyed = opener.matches(":focus-visible"); } catch { /* a browser without :focus-visible keeps focus as before */ }
+    if (keyed) usable("#sd-board [data-own]", "#sd-hand button", "#sd-end", "#sd-result button", "#sd-home")?.focus();
   }
   // One game: of a single duel, or the current game of a match (the match's deck, the loser opening).
   function deal(dealSeed) {
