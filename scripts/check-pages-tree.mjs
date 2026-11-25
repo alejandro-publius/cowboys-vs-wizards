@@ -292,6 +292,38 @@ async function browserChecks() {
     clean();
     check("A returning player can claim a Trail reward in the illustrated Camp and open its deck row directly");
 
+    // Seed 18 deals the Cowboys a Bear Trap and the Wizards a Quickdraw Imp.
+    // Both players act through the real table. Before committing, the second seat can know only the public risk.
+    await open("?seed=18");
+    await click("#menu-play");
+    await click('[data-camp-destination="camp-open-title"]');
+    await click('[data-two="1"]');
+    await click("#sd-ready");
+    await click('[data-card^="cowboy-bear-trap-"]');
+    await click("#sd-end");
+    await wait(shown("sd-curtain"));
+    await click("#sd-ready");
+    await click('[data-card^="wizard-imp-"]');
+    await activateByKey('[data-slot="wizard-0"]');
+    const trapRisk = "A face-down trap springs before damage.";
+    const baseOrbs = () => evaluate(`document.querySelector('[data-base="cowboy"] .sd-orbs').getAttribute('aria-label')`);
+    const beforeAttack = await baseOrbs();
+    const threat = await evaluate(`(() => {
+      const painted = document.querySelector('#sd-field .table-selection');
+      return {prompt: document.getElementById('sd-prompt').textContent, visible: painted.checkVisibility() ? painted.innerText : '',
+        preview: document.getElementById('sd-preview-base').textContent};
+    })()`);
+    assert.ok(threat.prompt.includes(trapRisk) && threat.visible.includes(trapRisk), "the aiming prompt and illustrated board explain the public trap risk");
+    assert.equal(threat.preview, "Without trap effects: Hit the Base for 3", "the Imp's printed damage is conditional while a trap is set");
+    assert.doesNotMatch(Object.values(threat).join(" "), /Bear Trap|Hex/, "the forecast keeps the trap's identity private");
+    assert.ok(axNamed(await axTree(), "button", /Cowboy Base/, (node) => enabled(node) && node.description?.value?.includes(trapRisk)), "the legal target carries the trap warning");
+    await activateByKey('[data-base="cowboy"]');
+    await wait(`document.getElementById('sd-feedback').textContent.includes('defeated before it struck')`);
+    assert.equal(await baseOrbs(), beforeAttack, "the trap stopped the Imp before it damaged the Base");
+    assert.equal(await evaluate(`document.getElementById('sd-prompt').textContent.includes(${JSON.stringify(trapRisk)})`), false, "the spent trap no longer warns");
+    clean();
+    check("The illustrated table warns before a hidden trap, keeps its identity private, and reports the Imp falling before it strikes");
+
     await open("showdown/");
     await wait(`document.body&&document.body.innerText.trim().length>0`);
     await sleep(500);
