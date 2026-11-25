@@ -2,9 +2,11 @@
 // Legal-action and one-ply branch agreement: the production Showdown engine against the frozen,
 // independently written Python referee (proof/referee/referee.py).
 //
-// prove.mjs compares the one input a corpus duel sends at each position. This script asks both
-// sides about every well-formed action at every position those duels reach. It compares each
-// verdict and, when both sides accept, the state after the action.
+// prove.mjs compares the one input a corpus duel sends at each position. At every unfinished
+// position those duels reach, this script asks both sides about each action in a fixed candidate
+// list (step 3), which includes every engine legal action there. It compares each verdict and,
+// when both sides accept, the state after the action. The list is a bounded set of schema-shaped
+// actions, not every well-formed input.
 //
 //   node scripts/referee/legal-branches.mjs                              frozen 2,500-duel corpus
 //   node scripts/referee/legal-branches.mjs --seed-start N --count M     M corpus duels from seed N
@@ -21,10 +23,19 @@
 //   2. A duel keeps only the inputs the engine accepts. The corpus's deliberate invalid probes are
 //      dropped, and a rejected input changes no engine state. Both sides replay that same input, and
 //      the normalized state at every position is compared ("main line").
-//   3. At every unfinished position, candidateActions() lists every action the boundary schema
-//      allows for the cards in the active hand and the three fixed slots. It is built from the
-//      schema, not from the engine's legalActions. legalActions is checked to be a subset of it.
-//      It includes the two wire forms SCHEMA.md accepts besides the canonical one (FORMS). For
+//   3. At every unfinished position, candidateActions() builds the list from SCHEMA.md's action
+//      shapes, not from the engine's legalActions. legalActions is checked to be a subset of it.
+//      For each card in the active hand, by that card's kind, with slots 0-2 only:
+//        troop     summon with each of 11 tribute lists: every subset of distinct slots in
+//                  ascending order, [] included, and each two-slot list reversed; and summon
+//                  with no tributes field (F1)
+//        spell     no target; target 0-2; slot 0-2 (F2); equal target and slot 0-2 (F2)
+//        gear      slot 0-2         location  once         trap  set
+//      Then attack from each slot 0-2 at enemy slot 0-2 or "base", cover each slot 0-2, and end.
+//      Other well-formed inputs are not asked, for example a card outside the active hand, another
+//      kind's action shape, an integer slot outside 0-2, a repeated tribute slot or a three-slot
+//      tribute list out of order.
+//      F1 and F2 are the two wire forms SCHEMA.md accepts besides the canonical one (FORMS). For
 //      every such candidate, the referee's verdict and state must equal those for its canonical
 //      counterpart. Any difference is a reported problem.
 //   4. The engine judges each candidate through engine.mjs applyInput, and its state goes through
@@ -296,27 +307,35 @@ class Oracle {
     this.child = spawn(python, ["-u", ORACLE_SCRIPT, referee], {cwd: ROOT, stdio: ["pipe", "pipe", "pipe"]});
     this.waiting = [];
     this.stderr = "";
+    this.exit = null; // set when the child cannot start or has closed; no answer can follow
     this.child.stderr.on("data", (d) => { this.stderr = (this.stderr + d).slice(-4000); });
     this.child.stdin.on("error", () => {});
     this.exited = new Promise((resolve) => {
-      this.child.on("error", (e) => resolve({error: e.message}));
-      this.child.on("close", (code, signal) => resolve({code, signal}));
+      const settle = (exit) => {
+        if (this.exit) return;
+        this.exit = exit;
+        for (const waiter of this.waiting.splice(0)) waiter.reject(this.exitError());
+        resolve(exit);
+      };
+      this.child.on("error", (e) => settle({error: e.message}));
+      this.child.on("close", (code, signal) => settle({code, signal}));
     });
     readline.createInterface({input: this.child.stdout, crlfDelay: Infinity}).on("line", (line) => {
       const waiter = this.waiting.shift();
       if (!waiter) return;
       try { waiter.resolve(JSON.parse(line)); } catch { waiter.reject(new Error(`oracle printed non-JSON: ${line.slice(0, 120)}`)); }
     });
-    this.exited.then((exit) => {
-      for (const waiter of this.waiting.splice(0)) {
-        waiter.reject(new Error(`oracle exited (${exit.error ?? exit.signal ?? exit.code}) ${this.stderr.trim().slice(-300)}`));
-      }
-    });
+  }
+
+  exitError() {
+    return new Error(`oracle exited (${this.exit.error ?? this.exit.signal ?? this.exit.code}) ${this.stderr.trim().slice(-300)}`);
   }
 
   get busy() { return this.waiting.length; }
 
+  // A request sent after the child is gone would wait forever, so it fails at once instead.
   ask(request) {
+    if (this.exit) return Promise.reject(this.exitError());
     return new Promise((resolve, reject) => {
       this.waiting.push({resolve, reject});
       this.child.stdin.write(`${JSON.stringify(request)}\n`);

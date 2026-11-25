@@ -1,7 +1,11 @@
 // Legal-action and branch agreement with the frozen referee (scripts/referee/legal-branches.mjs).
 import assert from "node:assert/strict";
 import {spawnSync} from "node:child_process";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import test from "node:test";
+import {fileURLToPath} from "node:url";
 import {BOARD_SIZE, legalActions} from "../../src/game/showdown/rules.js";
 import {canonicalJson, sha256} from "../../scripts/referee/prove.mjs";
 import {DECK_LISTS, VARIANTS, duels, recipe} from "../../scripts/referee/corpus.mjs";
@@ -318,6 +322,43 @@ test("seed 109 opens with the frozen empty-board Hellfire disagreement (C1, stil
   assert.equal(run.totals.branch.byClass.unexplained, 0);
   assert.deepEqual(run.samples.C1.map((s) => [s.position, s.action, s.engineAccepted, s.refereeAccepted]),
     [[0, {type: "spell", cardId: "wizard-hellfire-1"}, false, true]]);
+});
+
+// The CLI with a referee worker that never answers. One worker keeps at most four duels in flight,
+// so with --limit 9 at least five duels are sent after it has gone. Every duel must still fail.
+const CLI = fileURLToPath(new URL("../../scripts/referee/legal-branches.mjs", import.meta.url));
+const cliWithReferee = (referee) => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cvw-legal-branches-"));
+  const out = path.join(dir, "report.json");
+  try {
+    const run = spawnSync(process.execPath, [CLI, "--workers", "1", "--limit", "9", "--out", out],
+      {env: {...process.env, REFEREE_PYTHON: referee}, encoding: "utf8", timeout: 60_000});
+    const report = fs.existsSync(out) ? JSON.parse(fs.readFileSync(out, "utf8")) : null;
+    return {status: run.status, signal: run.signal, stdout: run.stdout, stderr: run.stderr, report};
+  } finally {
+    fs.rmSync(dir, {recursive: true, force: true});
+  }
+};
+const assertFailedRun = (run, closeProblem) => {
+  assert.equal(run.signal, null, `the CLI did not finish: ${run.stdout}${run.stderr}`);
+  assert.equal(run.status, 1, `${run.stdout}${run.stderr}`);
+  assert.equal(run.report?.status, "fail", "a failed report is written");
+  assert.match(run.stdout, /^legal-branches fail: /m);
+  const problems = run.report.problems;
+  assert.equal(problems.filter((p) => /^duel \d+ \(seed \d+\): oracle exited \(/.test(p)).length, 9, problems.join("\n"));
+  assert.ok(problems.some((p) => closeProblem.test(p)), problems.join("\n"));
+  assert.ok(problems.includes("9 of 9 duels were not judged"), problems.join("\n"));
+};
+
+test("CLI: a referee worker that starts and exits without answering fails the run, including later duels", () => {
+  // Node cannot run branch-oracle.py (-u is not a Node option), so it exits at once on every platform.
+  assertFailedRun(cliWithReferee(process.execPath), /^oracle exited with \d+$/);
+});
+
+test("CLI: a referee worker that cannot be started fails the run", () => {
+  const missing = path.join(os.tmpdir(), "cvw-no-such-referee-python");
+  assert.equal(fs.existsSync(missing), false);
+  assertFailedRun(cliWithReferee(missing), /^could not start the oracle: .*ENOENT/);
 });
 
 test("negative controls: a refused legal action and a wrong outcome are both caught", needsPython, async () => {
