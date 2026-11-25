@@ -1,0 +1,36 @@
+name: Verify Showdown opening in Chrome
+on:
+  push:
+    branches: [verify/outrider-opening-20261125]
+permissions:
+  contents: read
+jobs:
+  play:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      CANDIDATE: 08a693d4f4e8273a3d249966383fc43e4fb20a28
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: 08a693d4f4e8273a3d249966383fc43e4fb20a28
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - name: Verify source revision and install locked dependencies
+        run: |
+          test "$(git rev-parse HEAD)" = "$CANDIDATE"
+          npm ci
+      - name: Run the repository checks on the candidate
+        run: npm test
+      - name: Play the staged entry on the software-rendered board
+        run: |
+          node scripts/stage-pages.mjs --commit "$CANDIDATE"
+          cat > "$RUNNER_TEMP/showdown-chrome" <<'SH'
+          #!/bin/sh
+          exec google-chrome --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader "$@"
+          SH
+          chmod 700 "$RUNNER_TEMP/showdown-chrome"
+          CHROME="$RUNNER_TEMP/showdown-chrome" node scripts/check-pages-tree.mjs --commit "$CANDIDATE" --browser
