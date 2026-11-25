@@ -12,7 +12,7 @@ Claude Code (Claude Opus 5.5) wrote this on 2026-11-22 in the `dec4-claude-studi
 | --- | --- |
 | 0 | No duplicate IDs and no unsupported syntax. Orphans alone don't fail. |
 | 1 | Any of: a duplicate ID, an unsupported line, a `--require` prefix with an unproven clause, or a `--require` prefix that matches no clause. |
-| 2 | Bad argument, or no `.kiro/specs` directory under `--root`. |
+| 2 | Bad argument, or no `.kiro/specs` directory under `--root`. Also (added 2026-11-25) a `.config.kiro` that is not JSON, or one that declares a bugfix spec without its `bugfix.md`. |
 
 The JSON report has these keys: `summary`, `specs`, `duplicates`, `problems`, `unresolved`, `orphans`, `clauses` and `required`.
 
@@ -22,7 +22,7 @@ The JSON report has these keys: `summary`, `specs`, `duplicates`, `problems`, `u
 
 ## Clauses
 
-Clauses come only from `.kiro/specs/*/requirements.md`. The existing styles are read as written:
+Clauses come from `.kiro/specs/*/requirements.md` and, since 2026-11-25, from native bugfix specs (see below). The existing styles are read as written:
 
 | Style | Written as | ID |
 | --- | --- | --- |
@@ -44,6 +44,15 @@ CARD IDs (for example `CARD-COWBOY-BILLY-01` or `CARD-WIZARD-DRAGON-01`):
 - They must match `CARD-(COWBOY|WIZARD)-NAME-NN` and contain SHALL (EARS).
 
 IDs with two or more leading capitals (`CL-1`, `PM1`, `FH-R3.2`, `CARD-…`) are global. Single-letter and numeric IDs collide across specs, so their key is `<spec>/<id>`, for example `orb-duel/3.7`.
+
+**Native Kiro bugfix specs (added 2026-11-25).** A spec directory whose Kiro IDE metadata `.config.kiro` has `"specType": "bugfix"` also contributes its `bugfix.md` ([evidence](kiro-bugfix-spec-trace.md)):
+
+- Clauses are `2.N …` lines under an `Expected Behavior` heading and `3.N …` lines under an `Unchanged Behavior` heading. A deeper sub-heading stays inside its section. Their style is `bugfix` and their key is local, for example `showdown-bear-trap-log/2.1`. Indented lines, and plain prose with no blank line before it, continue the clause above, even an indented line that starts with a number.
+- `Current Behavior` (`1.N`, the defect) and the introduction are context. They yield no clause, and their prose is not checked for SHALL.
+- Problems: a number that doesn't match its section (`malformed-id`), a clause without SHALL (`not-ears`), a SHALL line in those two sections that isn't a clause or a numbered SHALL line outside them (`unidentified-normative`), and no clause at all (`no-clauses`). As in `requirements.md`, an unclosed code fence hides the rest of the file.
+- A `bugfix.md` without that metadata, such as the hand-written `showdown-camp-return-focus`, is not read.
+- `--require showdown-bear-trap-log/2.` gates the expected clauses and `--require showdown-bear-trap-log/3.` the unchanged ones.
+- A clause that compares with the pre-fix tree ("as before") can't be proven by a test in a single-commit checkout. In that spec, 3.4 and 3.5 stay unproven.
 
 Problem kinds:
 
