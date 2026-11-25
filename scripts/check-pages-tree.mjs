@@ -16,7 +16,10 @@
 //     import reachable from poker/index.html resolves inside poker/ and is served, and that import
 //     graph is exactly the five staged files; the root carries the saloon link
 // --browser, native headless Chrome with a fresh profile, mouse events only:
-//   - the title challenge and its deep link open the same playable Bone Fence board
+//   - the title challenge and its deep link open the same playable Bone Fence board, with its
+//     "Choose the Outrider" instruction drawn on the first screen (not only screen-reader text)
+//   - at 375 x 740 a pointer reaches Ride, Continue to Boot Hill and Boot Hill on the first screen,
+//     and Boot Hill's own lesson goes back to screen-reader text
 //   - Camp on / opens the Trail; Play on /graybox/ opens the Camp
 //   - /showdown/: the reference page loads without errors
 //   - the Camp saloon on / and /3d/ links to the one poker/ page; following it loads all five poker
@@ -340,9 +343,30 @@ async function browserChecks() {
       check(`${BASE_PATH}?saloon=review: the recorded saloon opens at the validated Billy proposal (${at.slice(2)}), makes 0 /night-shift/events requests; Enter on Replay from start hides the decision and Enter on Step at the last event keeps focus on Play/Replay; Back to map returns to the Camp`);
     }
 
+    // The challenge's one-line instruction is drawn, not just clipped to a 1 px screen-reader box, and it sits
+    // on the first screen without covering the header or pushing End turn below the fold.
+    const instructionShown = async () => {
+      const at = await evaluate(`(() => {
+        const box = (n) => { const r = n.getBoundingClientRect(); return {top: r.top, bottom: r.bottom, left: r.left, right: r.right, width: r.width, height: r.height}; };
+        const lesson = document.getElementById('sd-lesson'), style = getComputedStyle(lesson);
+        return {text: lesson.textContent.trim(), clip: style.clipPath, visibility: style.visibility, opacity: Number(style.opacity), lesson: box(lesson),
+          above: [...document.querySelectorAll('#showdown > header button, #sd-field > .table-turn')].filter((n) => n.getClientRects().length).map(box),
+          end: box(document.getElementById('sd-end')), width: innerWidth, height: innerHeight, scrollY};
+      })()`);
+      const label = `${at.width} px: the challenge instruction`;
+      assert.equal(at.text, "Choose the Outrider. Attack a troop, or ride past it to the Wizard Base.", label);
+      assert.ok(at.clip === "none" && at.visibility === "visible" && at.opacity === 1 && at.lesson.width >= 200 && at.lesson.height >= 18,
+        `${label} is drawn, not screen-reader-only: ${JSON.stringify(at)}`);
+      assert.ok(at.scrollY === 0 && at.lesson.top >= 0 && at.lesson.bottom <= at.height && at.lesson.left >= 0 && at.lesson.right <= at.width,
+        `${label} is on the first screen: ${JSON.stringify(at.lesson)}`);
+      for (const other of at.above) assert.ok(other.bottom <= at.lesson.top || other.top >= at.lesson.bottom || other.right <= at.lesson.left || other.left >= at.lesson.right,
+        `${label} does not cover the header or turn line: ${JSON.stringify({lesson: at.lesson, other})}`);
+      assert.ok(at.end.bottom <= at.height, `${label} leaves End turn on the first screen: ${JSON.stringify(at.end)}`);
+    };
     const challengeOpens = async (activate) => {
       await wait(`${shown("showdown")} && document.querySelector('#sd-field[data-battlefield="bone-fence"] canvas.sd-world')?.width > 0`);
       assert.match(await evaluate(`document.getElementById('sd-status').textContent`), /^Ride or Fight\?/);
+      await instructionShown();
       const slots = '[data-slot^="cowboy-"]';
       const rider = await evaluate(`[...document.querySelectorAll(${JSON.stringify(slots)})].find(x => x.textContent.includes('Outrider'))?.dataset.slot`);
       assert.ok(rider, "the Outrider is on the board");
@@ -404,6 +428,27 @@ async function browserChecks() {
     await click(`[data-slot="${enemy}"]`);
     await wait(`document.getElementById('sd-log').textContent.includes('Outrider attacked')`);
     check("the /3d/ deep link opens the second case and accepts an attack on a troop");
+
+    // A phone-width first visit by pointer: title challenge, Ride, then Boot Hill, each control on the first screen.
+    await send("Emulation.setDeviceMetricsOverride", {width: 375, height: 740, deviceScaleFactor: 1, mobile: true});
+    await send("Storage.clearDataForOrigin", {origin: new URL(site).origin, storageTypes: "all"});
+    await open("");
+    await wait(`document.getElementById('menu-challenge')?.textContent === 'Ride or Fight?'`);
+    await click("#menu-challenge");
+    await challengeOpens(click);
+    await click('[data-base="wizard"]');
+    await wait(`/Outrider struck the Wizards' Base for 1/.test(document.getElementById('sd-log').textContent) && !document.getElementById('sd-boot-hill').hidden`);
+    const firstScreen = (selector) => evaluate(`(() => { const n = document.querySelector(${JSON.stringify(selector)}), r = n.getBoundingClientRect();
+      return scrollY === 0 && r.top >= 0 && r.bottom <= innerHeight && r.left >= 0 && r.right <= innerWidth && n.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)); })()`);
+    for (const control of ["#sd-boot-hill", "#sd-end"]) assert.ok(await firstScreen(control), `375 px: ${control} is on the first screen and on top after the Ride`);
+    await click("#sd-boot-hill");
+    await wait(`document.querySelector('#sd-field[data-battlefield="boot-hill"] canvas.sd-world')?.width > 0 && document.getElementById('sd-status').textContent === 'Boot Hill · turn 1 · your turn'`);
+    assert.equal(await evaluate(`document.getElementById('showdown').hasAttribute('data-contest-challenge')`), false, "375 px: the challenge marker is cleared on Boot Hill");
+    assert.equal(await evaluate(`getComputedStyle(document.getElementById('sd-lesson')).clipPath`), "inset(50%)", "375 px: Boot Hill keeps its lesson as screen-reader text");
+    assert.ok(await firstScreen("#sd-hand [data-card]:not(:disabled)"), "375 px: a playable Boot Hill hand card is on the first screen");
+    clean();
+    await send("Emulation.setDeviceMetricsOverride", {width: 1440, height: 900, deviceScaleFactor: 1, mobile: false});
+    check("375 px pointer: the challenge instruction is drawn, Ride shows Continue to Boot Hill on the first screen, and Boot Hill opens with a playable card in view");
     cdp.close();
   } finally {
     if (child.exitCode === null) {
