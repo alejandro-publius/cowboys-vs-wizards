@@ -1,6 +1,7 @@
 // Standalone offline page: node prototypes/showdown/build.mjs
 // Writes dist/showdown.html (dist/ is a generated build, not committed).
 import {build} from "esbuild";
+import {pagePreview} from "../../scripts/showdown-page-preview.mjs";
 import {grayboxBuildLabel} from "../../scripts/graybox-build-label.mjs";
 import {mkdir, readFile, writeFile} from "node:fs/promises";
 import {fileURLToPath} from "node:url";
@@ -16,5 +17,6 @@ const [template, style, bundle] = await Promise.all([
 ]);
 const script = bundle.outputFiles[0].text.replace(/<\/script/gi, "<\\/script");
 await mkdir(new URL("./", out), {recursive: true});
-await writeFile(out, template.replace("@@STYLE@@", () => style).replace("@@SCRIPT@@", () => script));
+const preview = pagePreview("showdown/", "Showdown | Reference game", "Play the Cowboys vs. Wizards reference game with the Trail, rivals, Wanted bounties, deck building, and two-player matches.");
+await writeFile(out, template.replace("@@PAGE_PREVIEW@@", () => preview).replace("@@STYLE@@", () => style).replace("@@SCRIPT@@", () => script));
 console.log("Built dist/showdown.html");
