@@ -1,45 +1,40 @@
-# Cowboys vs. Wizards
+# Cowboys vs. Wizards: Showdown
 
-**A haunted-Western card duel: cowboys against wizards, where you choose every attack and your troops shield your Base.** It takes what long-running card games already proved (tribute summons, spells that answer a board, a graveyard, a deck you build) and keeps a duel short and easy to read.
+A short, haunted Western card duel built with Kiro for Kiroween 2026. Your troops guard your Base. You choose when they attack, who they hit and which cards to sacrifice for a stronger summon.
+
+**[Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/)** · [One-minute judge walkthrough](docs/JUDGE-GUIDE.md) · [Rules and cards](prototypes/showdown/RULEBOOK.md) · [Current build and review status](docs/PROJECT-STATUS.md#current-build)
+
+![The Bone Fence in the live game. The Outrider faces a Skeleton guarding the Wizard Base, with four Cowboy cards in hand.](docs/evidence/showdown-bone-fence-094af9b.png)
 
 ## Play Showdown
 
-[Open illustrated Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/). Choose **Ride or Fight?** to jump into a verified Outrider turn at The Bone Fence. You can attack a troop or ride past it to hit the Wizard Base. **Camp** opens the Trail, deck builder, Wanted bounties, and other modes. [Graybox](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) runs the same rules with a lighter board, and the [reference page](https://alejandro-publius.github.io/cowboys-vs-wizards/showdown/) documents the full game.
+| Where to start | What to try |
+| --- | --- |
+| [Ride or Fight?](https://alejandro-publius.github.io/cowboys-vs-wizards/?outrider=case-e) | Pick the Outrider. Strike the Skeleton or ride past it and hit the Wizard Base. Restart the same turn and try the other choice. |
+| [Camp and the Trail](https://alejandro-publius.github.io/cowboys-vs-wizards/) | Choose **Camp**, then **Boot Hill** for your first Trail duel. Camp also holds the deck builder, Wanted bounties and two-player mode. |
+| [Recorded Kiro balance review](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) | Inspect the proposal to cut Billy’s attack from 2 to 1. Open **Camp ledger → Sheriff’s Ledger** to play back the same Billy versus Bone Wall turn with each value. |
+| [Boot Hill Poker](https://alejandro-publius.github.io/cowboys-vs-wizards/poker/) | Draw a five-card hand against the Wizard. The Saloon’s back table opens this second game. |
+| [Lightweight board](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) · [Reference game](https://alejandro-publius.github.io/cowboys-vs-wizards/showdown/) | The graybox opens directly into Camp. The reference page has a playable version of the rules. |
 
-Showdown is the supported game. The earlier three-lane duel is archived at `ea183ee29dbd`. The `/3d/` route serves illustrated Showdown and accepts the same direct duel links as the home page.
-
-Open **Camp ledger → Sheriff’s Ledger** to replay one Billy duel at both 2 attack and the proposed 1 attack, starting from the same deal. In the [recorded Night Shift review](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review), you can inspect the rule and the result. Across 100,000 bot duels, the proposed change moved Cowboy wins from 59.792% to 51.920%. Billy still has 2 attack while the proposal awaits design approval. [Audit and recheck command](docs/evidence/billy-seat-audit/README.md)
-
-The **Night Shift saloon** also holds the rules desk, the recorded Dusty Pete card trial, and a 54-decision replay from the Cautious Sheriff and Reckless Wizard agent match. Its back table opens [Boot Hill Poker](https://alejandro-publius.github.io/cowboys-vs-wizards/poker/), an optional experiment. [One-minute judge walkthrough](docs/JUDGE-GUIDE.md) · [Reproduce the Saloon findings](docs/evidence/night-shift-repair/README.md)
-
-## Card art library
-
-The [Showdown art direction catalog](prototypes/showdown/ART-DIRECTION.md) has prompts for all 29 cards, a shared style guide, 18 environment and prop briefs, and 13 model sheets. The [Sheriff](assets/cards/sheriff-card.webp) and [Dragon](assets/cards/dragon-card.webp) paintings are the style references.
-
-Regenerate it after editing the briefs in [`prototypes/showdown/art.js`](prototypes/showdown/art.js):
-
-```sh
-node prototypes/showdown/export-art.mjs
-```
-
-The [Showdown card spreadsheet](prototypes/showdown/cards.csv) uses the same visual direction. Regenerate it with `node prototypes/showdown/export-cards.mjs`.
+The illustrated game also runs at `/3d/`. The [deployment manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) identifies the published commit and its HTML checksum. The [release record](docs/PROJECT-STATUS.md#current-build) links the source for the screenshot above.
 
 ## Local build
 
-Use Node.js 22.18 or later.
+Use Node.js 22.18 or later and run these commands from the repository root.
 
 ```sh
 npm ci
-npm run build
+npm run build -- --diorama --contest
 ```
 
-Open `dist/cowboys-vs-wizards-board-duel.html` in a desktop browser. **Play** opens the Showdown Camp. `?seed=N` fixes every deal started from the Camp, and `?practice=0` or `?practice=60` opens a fixed Boot Hill practice deal. Any old lane address (`?mode=lanes`, `match`, `ride-out`, `practice-*`, `fire-arc`) opens the same Showdown menu.
+Open `dist/cowboys-vs-wizards-showdown-3d.html` in a browser to play the illustrated contest build offline. Use `?seed=N` for a reproducible deal. Fixed Boot Hill practice deals are available at `?practice=0` and `?practice=60`.
 
-`npm run build -- --web` writes the same single file to `dist/web/index.html`, and `npm run build -- --hosted` writes the Pages copy there. `node prototypes/showdown/build.mjs` writes the full Showdown page to `dist/showdown.html`.
-
-Run `node scripts/stage-pages.mjs --commit "$(git rev-parse HEAD)"` to stage the site in `dist/web/`. The same illustrated build serves `/` and `/3d/`. The other routes are `/graybox/` and `/showdown/`. Run `node scripts/check-pages-tree.mjs --browser` to check the tree and play the challenge over local HTTP.
-
-Every Showdown card is in the [Showdown card spreadsheet](prototypes/showdown/cards.csv), and the rules are in the [rulebook](prototypes/showdown/RULEBOOK.md). `docs/cards.csv` and `docs/rules.csv` describe the retired lane duel and are kept as history.
+| Build or check | Command | Output |
+| --- | --- | --- |
+| Lightweight board | `npm run build` | `dist/cowboys-vs-wizards-board-duel.html` |
+| Full Pages site, including Poker | `node scripts/stage-pages.mjs --commit "$(git rev-parse HEAD)"` | `dist/web/` |
+| Play the staged site locally | `python3 -m http.server 8000 --directory dist/web` | Open `http://localhost:8000/` |
+| Verify the staged routes and play them in Chrome | `node scripts/check-pages-tree.mjs --browser` | Checks the page identity, links, table controls and Saloon route |
 
 ## How it is made
 
@@ -47,11 +42,11 @@ Three tools share the work, and each is credited for what it did.
 
 - **Fable (Claude Code)** leads the design: mechanics, progression and engine contracts. Its briefs are in [docs/design](docs/design/README.md).
 - **Kiro** builds those briefs, integrates them and runs the checks. See [Built with Kiro](#built-with-kiro).
-- **Codex** coordinates, reviews and verifies in the browser.
+- **Codex** coordinates development, implements fixes, and checks the published game in the browser.
 
 ## Verify
 
-Start with the normal Showdown Play path. Build once with `npm run build`; each browser check takes the built file.
+Use `npm test` for the repository suite. The Camp and keyboard checks below take the lightweight board built with `npm run build`. The Pages check takes the complete staged site.
 
 | What you need | Command |
 | --- | --- |
@@ -85,7 +80,9 @@ flowchart LR
 
 ## Built with Kiro
 
-Kiro's Requirements-First Orb Duel spec, custom agent, workspace steering, hooks, replay Workflow, and review Power/MCP are part of this repository—not a narrative added after the fact. The Orb Duel spec and its replay receipts record the retired lane build and stay as history. The Kiro work is distinguished from Fable's match rules/CPU and Codex's integration and verification.
+Kiro proposed a one-point change to Billy’s attack. On one recorded deal, that single point decides whether Billy clears a Bone Wall. In 100,000 bot duels on held-out seeds, Cowboy wins moved from 59.792% to 51.920% under the proposal. Billy still has 2 attack in the published game. [Play the recorded review](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) · [Check the audit and seeds](docs/evidence/billy-seat-audit/README.md)
+
+The same Saloon includes the rules desk, the Dusty Pete trial and a replay of 54 decisions from the Cautious Sheriff and Reckless Wizard match. [Reproduce the Saloon findings](docs/evidence/night-shift-repair/README.md)
 
 [Follow the judge evidence trail](docs/JUDGE-GUIDE.md) · [Kiro usage and receipts](docs/kiro-brag-sheet.md) · [Actual build log](docs/kiro-build-log.md) · [Active closeout queue](docs/kiro-closeout-queue.md) · [Research/source register](docs/kiro-source-register.md)
 
@@ -105,6 +102,18 @@ In a later native Kiro CLI workflow (`wf_3e26f2fcd93c25a1`) given no card choice
 
 For ongoing balance review, the separate [Night Watch Kiro Crew app](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch) compares committed game revisions on matching CPU seeds, records changes and drafts issue reports. It is an optional local development tool, **not** part of the shipped browser game. [Crew run evidence](docs/evidence/kiro-night-watch.md).
 
+## Card art library
+
+The [Showdown art direction catalog](prototypes/showdown/ART-DIRECTION.md) has prompts for all 29 cards, a shared style guide, 18 environment and prop briefs, and 13 model sheets. The [Sheriff](assets/cards/sheriff-card.webp) and [Dragon](assets/cards/dragon-card.webp) paintings are the style references.
+
+Regenerate it after editing the briefs in [`prototypes/showdown/art.js`](prototypes/showdown/art.js):
+
+```sh
+node prototypes/showdown/export-art.mjs
+```
+
+The [Showdown card spreadsheet](prototypes/showdown/cards.csv) uses the same visual direction. Regenerate it with `node prototypes/showdown/export-cards.mjs`.
+
 ## Code map
 
 | Path | Owns |
@@ -116,6 +125,7 @@ For ongoing balance review, the separate [Night Watch Kiro Crew app](https://git
 | `prototypes/showdown/` | Rulebook, reference page, card spreadsheet and the [art direction](prototypes/showdown/ART-DIRECTION.md) |
 | `.kiro/specs/duel-card-pipeline/cards/` | Card specs that the Showdown card table reads |
 | `assets/` | Optimized Tripo models, card illustrations and media (source assets, kept) |
+| `experiments/boot-hill-poker/`, `packages/frontier-kit/` | Poker rules and UI, and shared game tools |
 | `scripts/`, `tests/` | Build, replay, simulation and verification |
 | `.kiro/`, `docs/` | Workspace guidance, requirements, research and evidence |
 
@@ -129,4 +139,4 @@ The models and clips in `assets/` are kept as source assets for the Showdown 3D 
 
 The pinned Lucca Cerf references and their MIT license are in [docs/references/lucca-character-factory](docs/references/lucca-character-factory). The [build log](docs/kiro-build-log.md) attributes work by Kiro, Fable, Codex, Tripo and the user.
 
-[Verified closeout deployment](docs/evidence/kiro-closeout-deployment.md)
+[Historical closeout deployment](docs/evidence/kiro-closeout-deployment.md) · [Published build manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json)

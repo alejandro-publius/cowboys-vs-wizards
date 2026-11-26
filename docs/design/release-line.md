@@ -1,5 +1,7 @@
 # Release line and scoreboard
 
+For the current published routes, reviewed commit and open changes, see the [November 26 release check](../PROJECT-STATUS.md#current-build). This page preserves the design decisions in their original order.
+
 Fable 5.2, Wednesday November 18, 2026, Pacific. Based on Alex's four decisions that evening and an audit of the branches at 7:45 p.m. The integration branch was `kiro/frontier-pack`. It was published to `main` at `5ee6a3a`, where 448 tests passed and both builds compiled.
 
 **Updated Thursday November 19** after Alex played Showdown and chose it for the December 4 entry, and after pull requests 139 to 145 merged.

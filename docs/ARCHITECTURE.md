@@ -18,8 +18,8 @@ flowchart TD
 - **Rules.** `src/game/showdown/` owns legal actions, card conservation, turn changes and duel outcomes. `viewFor` in its contract limits each seat to the information it may see.
 - **Session and screen.** `src/match/showdown-session.js` applies actions. `src/ui/showdown-screen.js` draws the resulting board and `src/ui/showdown-cues.js` presents combat cues from the event stream.
 - **Progress.** Campaign progress goes through `src/game/showdown/campaign-store.js`. The legacy profile reader supports keepsakes in the Camp.
-- **Art.** `assets/` contains source models and illustrations for future presentation work. The [art catalog](../prototypes/showdown/ART-DIRECTION.md) covers all current cards.
-- **Release.** `scripts/build-graybox.mjs` builds the offline page. `scripts/stage-pages.mjs` stages illustrated Showdown at `/` and `/3d/` and the lightweight Camp at `/graybox/` for GitHub Pages.
+- **Art.** The illustrated board in `src/ui/showdown-3d/` uses the models and card paintings kept in `assets/`. The [art catalog](../prototypes/showdown/ART-DIRECTION.md) covers all current cards.
+- **Release.** `scripts/build-graybox.mjs` builds the offline page. `scripts/stage-pages.mjs` stages illustrated Showdown at `/` and `/3d/` and the lightweight Camp at `/graybox/`. The same staging command publishes the reference at `/showdown/` and the standalone Poker experiment at `/poker/`. [Published build](PROJECT-STATUS.md#current-build)
 
 ## Smallest useful checks
 
@@ -30,7 +30,7 @@ flowchart TD
 | Combat cues | `node scripts/browser-showdown-cues-check.mjs dist/cowboys-vs-wizards-board-duel.html` |
 | Gameplay integration | `node scripts/verify-duel.mjs` |
 | Visual/browser integration | `node scripts/verify-duel.mjs --browser` on a machine with the supported Chrome setup |
-| Build or deployment | `npm run build -- --web`; inspect GitHub Actions and browser artifact |
+| Build or deployment | `node scripts/stage-pages.mjs --commit "$(git rev-parse HEAD)"`, then `node scripts/check-pages-tree.mjs --browser` |
 
 The `<closest>` placeholder is a filename selection, not a shell command to execute literally. [Exact file-by-task pointers](AGENT-ROUTER.md).
 
