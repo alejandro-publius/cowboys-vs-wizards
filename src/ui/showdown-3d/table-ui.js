@@ -1,5 +1,6 @@
 import { EFFECTS, KEYWORDS, TYPES, typeOf, tributes } from "../../game/showdown/cards.js";
 import { portrait as cardArtwork } from "./gallery.js";
+import { bindAttackForecasts } from "./attack-forecasts.js";
 
 export { cardArtwork };
 
@@ -59,12 +60,15 @@ export function bindTableUI(root) {
   const table = root.querySelector("#sd-table");
   const field = root.querySelector("#sd-field");
   const prompt = el("p", "table-selection");
+  const choices = el("div", "table-pick");
+  choices.append(prompt);
+  const forecasts = bindAttackForecasts(root, choices);
   const turn = el("p", "table-turn");
   // A best of three's game and tally, copied from the status line, which screen readers already hear.
   const series = el("p", "table-series");
   const headline = el("p", "table-award");
   for (const node of [prompt, turn, series, headline]) node.setAttribute("aria-hidden", "true");
-  field.append(turn, series, prompt, headline);
+  field.append(turn, series, choices, headline);
   const nav = root.querySelector("header");
   const goHome = nav.querySelector("#sd-home");
   const status = root.querySelector("#sd-status");
@@ -97,6 +101,7 @@ export function bindTableUI(root) {
       turn.hidden = ended;
       series.textContent = status.querySelector("[data-series]")?.textContent ?? "";
       series.hidden = !series.textContent;
+      forecasts.paint();
       headline.textContent = result.querySelector("[data-choose]")
         ? "Choose a card"
         : (added?.textContent.split(":")[0] ?? status.textContent.split(" · ")[0]);
@@ -112,6 +117,7 @@ export function bindTableUI(root) {
       finish();
     },
     restore() {
+      forecasts.clear();
       hand.inert = false;
       table.classList.remove("table-resolved");
       root.classList.remove("table-resolved");
