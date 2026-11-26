@@ -152,7 +152,7 @@ test("refusals name what each rule refuses; only the bell speaks of a stop passi
   for (const rule of Object.keys(BLOCK_REASONS)) assert.doesNotMatch(refusal(rule), /stop|block/i);
   assert.doesNotMatch(ledgerSectionHtml(), /block|stop/i);
   assert.match(describe({kind: "bell"}), /stop passed/);
-  assert.match(describe({kind: "cast", card: "wizard-imp", field: "attack", before: 2, after: 1}), /scratch, not merged/);
+  assert.match(describe({kind: "cast", card: "wizard-imp", field: "attack", before: 2, after: 1}), /Proposes Imp attack 2 → 1/);
   assert.match(describe(patch("p", 1, "wizard-imp", "attack", 2, 1, "c".repeat(40))), /merged on main in ccccccc/);
   assert.doesNotMatch(deed({kind: "job"}), /Singularity/, "the actor's own line does not repeat its name");
   assert.equal(RECORDED_LABEL, "Recorded Kiro shift");

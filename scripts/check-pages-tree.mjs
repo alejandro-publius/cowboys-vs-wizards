@@ -571,6 +571,12 @@ async function browserChecks() {
       assert.match(await evaluate(`document.querySelector('${room} .saloon-target-stat').textContent`), /^Billy\b.*: attack 2 → 1/);
       const at = await evaluate(`document.querySelector('${room} .saloon-progress').textContent`);
       assert.match(at, /^· step [1-9]\d* of \d+$/, "the room opens at the review step");
+      const audit = `${decision}.querySelector(".saloon-audit")`;
+      assert.equal(await evaluate(`${audit}.open`), false);
+      await evaluate(`${audit}.querySelector("summary").focus()`);
+      await send("Input.dispatchKeyEvent", {type:"keyDown", key:"Enter", code:"Enter", windowsVirtualKeyCode:13});
+      await send("Input.dispatchKeyEvent", {type:"keyUp", key:"Enter", code:"Enter", windowsVirtualKeyCode:13});
+      await wait(`${audit}.open`);
       const saloonAx = await axTree();
       assert.ok(axNamed(saloonAx, "dialog", /^Night Shift saloon$/), "the recorded room has a dialog name");
       for (const label of [/^Play$/, /^Step$/, /^Replay from start$/]) {
