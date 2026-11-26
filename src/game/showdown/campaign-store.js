@@ -5,10 +5,9 @@
 // Keys, as the prototype screen (prototypes/showdown/main.js) spells them:
 //   cvw-showdown-save-v2   the v2 progress object, the only key this file writes
 //   cvw-showdown-trail-v1  the first version, {wins, losses}; read only when v2 is missing or unreadable
-//   cvw-player-v1          the lane game's profile; read through its own store, never written here
+//   cvw-player-v1          the retired profile; read only its cleared hunt IDs
 //   cvw-showdown-playtest-v1  the playtest log; not touched here
-import {earnedRewards} from "../bounty-hunt.js";
-import {createProfileStore} from "../../profile/player-profile.js";
+import {INHERITED_SOURCE} from "./inherited.js";
 import {migrate} from "./progress.js";
 
 export const SAVE_KEY = "cvw-showdown-save-v2";
@@ -65,14 +64,23 @@ export function saveCampaign(storage, progress) {
   }
 }
 
-// The Captured cards the lane game says this profile owns, read through the lane store itself
-// (five cleared hunts of a boss). Read-only: the lane profile is not written.
-// They are not added to the Showdown progress: nothing from the lane game carries into it (Fable's
-// F1 ruling, PR 148 issuecomment-7031816529). They are kept as keepsakes in inherited.js.
+// These are IDs from the cvw-player-v1 save format. The old encounters, decks and profile writer
+// do not belong in the browser build. A partial set never pays a reward, even if a hunt is repeated.
+const LANE_CAPTURES = [
+  ["cowboy-captured-dragon", ["coffin-creek-crossing", "bone-choir-chapel", "hanging-tree-pass", "dusk-at-dry-well", "lantern-row-standoff"]],
+  ["cowboy-captured-wraith", ["gallows-lantern", "chapel-bell-tower", "ferry-crossing", "blacksmith-forge", "lamplighter-row"]],
+];
+
 export function laneCapturedCards(storage) {
   try {
-    return Object.freeze(earnedRewards(createProfileStore(storage).get()));
+    const source = storage === undefined ? globalThis.localStorage : storage;
+    const cleared = parsed(read(source, INHERITED_SOURCE))?.clearedHunts;
+    const captures = Array.isArray(cleared)
+      ? LANE_CAPTURES.filter(([, hunts]) => hunts.every((id) => cleared.includes(id))).map(([reward]) => reward)
+      : [];
+    return Object.freeze(captures);
   } catch {
+    // Some browsers throw when the localStorage property itself is read.
     return Object.freeze([]);
   }
 }
