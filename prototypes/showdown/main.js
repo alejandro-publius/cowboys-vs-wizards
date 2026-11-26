@@ -2,7 +2,8 @@
 // The rules are in rules.js and everything a player keeps is in progress.js; this file only shows them.
 import {DECKS, EFFECTS, KEYWORDS, RARITY, TYPES, cardOf, tributes} from "./cards.js";
 import {viewFor} from "./contract.js";
-import {applyAction, attackOf, attackOutcome, canAttack, createShowdown, legalActions, opponent, playTurn} from "./rules.js";
+import {presentAttackForecast} from "../../src/game/showdown/presenter.js";
+import {applyAction, attackOf, canAttack, createShowdown, legalActions, opponent, playTurn} from "./rules.js";
 import {BOUNTIES, DECK_SIZE, HUNTS, RIVALS, SIDE_SIZE, choose, deckProblems, duelFor, duelList, migrate, newSave, openPack, owned, settle, trailDone, withDeck} from "./progress.js";
 import {logged, report} from "./playtest.js";
 import {GRIT_CAP, TRAIL} from "./trail.js";
@@ -370,15 +371,9 @@ function blocked(cardId) {
 }
 
 // What an attack from the picked troop would do to this target, in words. Face-down traps are not counted.
-function preview(target) {
-  const o = attackOutcome(state, pick.troop, target);
-  const foe = state.sides[opponent(me())];
-  if (target === "base") return `<span class="note good">${foe.board.some(Boolean) ? "Ride past: " : ""}Hit the Base for ${o.baseDamage}</span>`;
-  const lastStand = o.targetLeft === 0 && cardOf(foe.board[target].cardId).keys.includes("laststand") ? ". Its Last Stand costs yours 1 orb" : "";
-  if (o.targetLeft === 0) return `<span class="note good">Defeated${o.baseDamage ? `, ${o.baseDamage} through to the Base` : foe.board[target].cover ? ", nothing reaches the Base" : ""}${lastStand}</span>`;
-  if (foe.board[target].cover) return `<span class="note">Survives on ${o.targetLeft}. It is in cover and does not hit back.</span>`;
-  if (attackOf(state, foe.board[target]) === 0) return `<span class="note">Survives on ${o.targetLeft}. It has no attack, so yours is unharmed.</span>`;
-  return `<span class="note ${o.attackerLeft === 0 ? "warn" : ""}">Survives on ${o.targetLeft} and hits back: yours ${o.attackerLeft === 0 ? "is defeated" : `drops to ${o.attackerLeft}`}</span>`;
+function preview(view, target) {
+  const {text, tone} = presentAttackForecast(view, pick.troop, target);
+  return `<span class="note${tone ? ` ${tone}` : ""}">${text}</span>`;
 }
 
 // What the "again" button does next, in words.
@@ -418,7 +413,7 @@ function drawDuel() {
     const base = `<button type="button" class="base ${side}${baseOpen ? " can" : ""}" ${baseOpen ? 'data-enemy="base"' : "disabled"}>
       <strong>${solo() ? (isOwn ? "Your" : "Wizard") : faction(side)} Base</strong>${orbs(s.base, s.baseMax)}
       <span class="note">Hand ${s.handCount} · Deck ${s.deckCount} · Graveyard ${s.discard.length}</span>
-      ${(isOwn ? s.traps.length || s.hand.some((id) => cardOf(id).kind === "trap") : s.trapCount) ? `<span class="note">▲ ${traps}</span>` : ""}${baseOpen ? preview("base") : ""}</button>`;
+      ${(isOwn ? s.traps.length || s.hand.some((id) => cardOf(id).kind === "trap") : s.trapCount) ? `<span class="note">▲ ${traps}</span>` : ""}${baseOpen ? preview(view, "base") : ""}</button>`;
     const slots = s.board.map((troop, slot) => {
       if (!troop) return `<button type="button" class="slot ${side}" disabled><span class="note">empty</span></button>`;
       const card = cardOf(troop.cardId);
@@ -439,7 +434,7 @@ function drawDuel() {
       const attack = attackOf(state, troop);
       return `<button type="button" class="slot ${side}${cls}" ${data}><strong>${card.name}</strong><span class="type">${MARK.troop} Troop · ${card.tag}</span>
         ${attack} attack${attack !== card.attack ? ` (+${attack - card.attack})` : ""} ${orbs(troop.health, card.health)} ${keywords(card)}
-        ${troop.gear.length ? `<span class="note">◆ ${troop.gear.map(name).join(", ")}</span>` : ""}${note ? `<span class="note">${note}</span>` : ""}${!isOwn && attacking && aims.has(slot) ? preview(slot) : ""}</button>`;
+        ${troop.gear.length ? `<span class="note">◆ ${troop.gear.map(name).join(", ")}</span>` : ""}${note ? `<span class="note">${note}</span>` : ""}${!isOwn && attacking && aims.has(slot) ? preview(view, slot) : ""}</button>`;
     }).join("");
     return `<div class="side">${base}${slots}</div>`;
   };

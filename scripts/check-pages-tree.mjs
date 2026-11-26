@@ -27,7 +27,7 @@
 //     keyboard focus; seed 5 covers both seats, a cover-only troop at 375 px and an attack on a covered troop
 //   - single duels (two players, and Boot Hill at 375 px) draw no best-of-three tally; the tally itself is checked by
 //     MODES=bo3,hotseat scripts/browser-showdown-modes-check.mjs on the illustrated build
-//   - /showdown/: the reference page loads without errors
+//   - /showdown/: the reference forecasts Last Stand before the attack and resolves both defeats
 //   - the Camp saloon on / and /3d/ links to the one poker/ page; following it loads all five poker
 //     files, paints the BBS screen and raises no errors
 //   - /?saloon=review opens the recorded Night Shift saloon at the validated Billy proposal card with no
@@ -447,11 +447,22 @@ async function browserChecks() {
     clean();
     check("Both tribute forecasts match the resolved summon and the other seat's public graveyard");
 
-    await open("showdown/");
-    await wait(`document.body&&document.body.innerText.trim().length>0`);
-    await sleep(500);
+    await open("showdown/?seed=0");
+    await click('[data-two="1"]');
+    await click("#ready");
+    for (const type of ["wizard-jack-o-lantern", "cowboy-sheriff"]) {
+      await click(`[data-card^="${type}-"]:enabled`);
+      await click("#end");
+      await click("#ready");
+    }
+    await click('[data-card^="wizard-hellfire-"]:enabled');
+    await click('[data-own="0"]');
+    assert.match(await evaluate(`document.querySelector('[data-enemy="0"]').textContent`), /Last Stand defeats Sheriff too/);
+    await click('[data-enemy="0"]');
+    assert.match(await evaluate("document.getElementById('cowboy-graveyard').textContent"), /Sheriff/);
+    assert.match(await evaluate("document.getElementById('wizard-graveyard').textContent"), /Jack-o'-Lantern/);
     clean();
-    check(`${BASE_PATH}showdown/: the Showdown reference page loads without errors`);
+    check(`${BASE_PATH}showdown/: the Last Stand forecast matches both cards going to the graveyard`);
 
     for (const rel of ["", "3d/"]) {
       await send("Storage.clearDataForOrigin", {origin: new URL(site).origin, storageTypes: "all"});
