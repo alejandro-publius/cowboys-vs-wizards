@@ -40,7 +40,7 @@ jobs:
         run: node scripts/stage-pages.mjs --commit "$GITHUB_SHA"
 
       # Node only: checks build.json, the /3d/ alias bytes and the exact staged file list. The Chrome half
-      # (--browser) runs locally.
+      # (--browser) runs in the pull request workflow and can also run locally.
       - name: Check the staged tree before upload
         run: node scripts/check-pages-tree.mjs --commit "$GITHUB_SHA"
 
