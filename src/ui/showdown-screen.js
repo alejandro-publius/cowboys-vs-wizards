@@ -90,7 +90,7 @@ const TEMPLATE = `
     <div id="sd-zone-rails"></div>
     <p id="sd-zone-move" aria-live="polite"></p>
   </section>
-  <dialog id="sd-graveyard-sheet" aria-labelledby="sd-graveyard-title"></dialog>`;
+  <dialog id="sd-graveyard-sheet"></dialog>`;
 
 export const OFFER_HEADING = "Bonus: pick 1 more card to keep";
 export const offerRow = (offer, owned) => `<div class="sd-row">${offer.map((type) => `<button type="button" class="sd-card ${TYPES[type].side} ${TYPES[type].rarity} sd-can" data-frame="${TYPES[type].kind}" data-choose="${type}">
@@ -404,6 +404,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     if (curtain || pick || !session.view().sides[side].discard.length) return;
     sheet = {side, row: null};
     paintSheet();
+    graveyardDialog.setAttribute("aria-labelledby", "sd-graveyard-title");
     graveyardDialog.showModal();
     graveyardDialog.querySelector("[data-graveyard-card]").focus();
   }
@@ -412,6 +413,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     const {side} = sheet;
     sheet = null;
     if (graveyardDialog.open) graveyardDialog.close();
+    graveyardDialog.removeAttribute("aria-labelledby");
     graveyardDialog.replaceChildren();
     if (refocus && !root.hidden && !curtain) usable(`[data-graveyard="${side}"]`, "#sd-hand button", "#sd-end", "#sd-home")?.focus();
   }
