@@ -28,6 +28,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SELF = relative(ROOT, fileURLToPath(import.meta.url));
 const REPORT_DIR = "reports/balance";
 const ENGINE_PATH = "src/game/showdown";
+const RNG_PATH = "src/game/frontier-kit/seeded-rng.js";
 const SPEC_PATH = "src/game/card-specs.generated.js";
 export const SCHEMA = "cvw-balance-report/1";
 export const BOT = "playTurn level 2 (both seats)";
@@ -130,7 +131,7 @@ export function buildReport({commit, engine, run, from, deals, generatedAt, runn
   return {
     schema: SCHEMA, ruleset: "showdown", commit, bot: BOT, decks: DECKS_ID,
     seeds: {from, to: from + deals - 1, gamesPerDeal: 2}, games, results: t.results, generatedAt,
-    engine: {tree: engine.tree, specBlob: engine.specBlob, decksSha256: run.decksSha256, paths: [ENGINE_PATH, SPEC_PATH]},
+    engine: {...engine, decksSha256: run.decksSha256, paths: engine.rngBlob ? [ENGINE_PATH, SPEC_PATH, RNG_PATH] : [ENGINE_PATH, SPEC_PATH]},
     runner, elapsedMs,
     seatOrder: "game 2k has Cowboy first, game 2k+1 Wizard first, for deal seed from+k",
     seats: t.seats, byStartingSide: t.byStartingSide, reasons: run.reasons,
@@ -183,6 +184,7 @@ export function reportProblems(r) {
   for (const key of ["cowboy", "wizard", "draw"]) if (!isCount(res[key])) p.push(`results.${key} is missing`);
   if (!HEX40.test(r.engine?.tree ?? "")) p.push("engine.tree is not a git tree id");
   if (!HEX40.test(r.engine?.specBlob ?? "")) p.push("engine.specBlob is not a git blob id");
+  if (r.engine?.rngBlob !== undefined && !HEX40.test(r.engine.rngBlob)) p.push("engine.rngBlob is not a git blob id");
   if (!HEX64.test(r.engine?.decksSha256 ?? "")) p.push("engine.decksSha256 is missing");
   if (p.length) return p;
   if (r.games !== (s.to - s.from + 1) * s.gamesPerDeal) p.push("games does not equal (to - from + 1) x gamesPerDeal");
@@ -208,7 +210,7 @@ export function reportProblems(r) {
 }
 
 // Duel identity (docs/SCORECARD.md): engine (showdown tree + card-spec blob), decks, bot, games per deal; then the seed.
-export const duelKey = (r) => [r.engine.tree, r.engine.specBlob, r.engine.decksSha256, r.bot, r.decks, r.seeds.gamesPerDeal].join("|");
+export const duelKey = (r) => [r.engine.tree, r.engine.specBlob, ...(r.engine.rngBlob ? [r.engine.rngBlob] : []), r.engine.decksSha256, r.bot, r.decks, r.seeds.gamesPerDeal].join("|");
 
 const addCounts = (into, from) => { into.games += from.games; into.wins += from.wins; into.draws += from.draws; };
 
@@ -287,7 +289,10 @@ const gitOut = (...args) => {
 };
 
 export function engineIds(commit) {
-  return {tree: gitOut("rev-parse", `${commit}:${ENGINE_PATH}`), specBlob: gitOut("rev-parse", `${commit}:${SPEC_PATH}`)};
+  const ids = {tree: gitOut("rev-parse", `${commit}:${ENGINE_PATH}`), specBlob: gitOut("rev-parse", `${commit}:${SPEC_PATH}`)};
+  const rng = gitOut("ls-tree", commit, "--", RNG_PATH);
+  if (rng) ids.rngBlob = gitOut("rev-parse", `${commit}:${RNG_PATH}`);
+  return ids;
 }
 
 // Problems with a receipt's git provenance in this clone, and whether it counts as shippable (commit behind HEAD).
@@ -296,6 +301,7 @@ export function provenance(report) {
   const ids = engineIds(report.commit);
   const problems = [];
   if (ids.tree !== report.engine.tree) problems.push(`engine.tree is not ${ENGINE_PATH} at ${report.commit.slice(0, 12)}`);
+  if (ids.rngBlob !== report.engine.rngBlob) problems.push(`engine.rngBlob does not match the shared deal generator at ${report.commit.slice(0, 12)}`);
   if (ids.specBlob !== report.engine.specBlob) problems.push(`engine.specBlob is not ${SPEC_PATH} at ${report.commit.slice(0, 12)}`);
   return {problems, shippable: git(["merge-base", "--is-ancestor", report.commit, "HEAD"]).status === 0};
 }

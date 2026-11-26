@@ -12,7 +12,8 @@ Terminal:
 
 Browser: serve this folder over local http (module scripts do not load from
 `file://`), for example `python3 -m http.server` inside it, then open
-`index.html?seed=17`.
+`index.html?seed=17`. If your checkout disables symbolic links, stage the site with
+`node scripts/stage-pages.mjs` at the repo root and serve `dist/web`, then open `/poker/?seed=17`.
 
 Keys (both front ends): `1`-`5` mark or unmark a card to toss, `Enter` (or `D`)
 draws, `R` replays the same seed, `N` deals a new hand from a derived seed with
@@ -20,7 +21,7 @@ the other seat drawing first, `Q` hangs up.
 
 ## Rules
 
-- 52 unique cards, shuffled by a seeded mulberry32 Fisher-Yates shuffle.
+- 52 unique cards, shuffled by Fisher-Yates using the same Frontier Kit seeded generator as Showdown. Poker handles its own text seeds and draw rules.
 - Five cards each, dealt alternately starting with the first seat.
 - Each seat takes one draw turn in order and may toss 0-5 cards.
   Turn 1 is the first seat's draw, turn 2 the second's, then showdown.

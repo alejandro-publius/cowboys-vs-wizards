@@ -582,11 +582,17 @@ export function frontierKitLocal(root = ROOT) {
   const kit = existsSync(join(root, KIT, "package.json")) || existsSync(join(root, KIT, "index.js"));
   const staged = readText(join(root, "scripts/stage-pages.mjs")).includes(`${SECOND_GAME}/`);
   const importers = new Set(), cross = [];
-  const crossing = (files, forbidden) => { for (const file of files) for (const target of importTargets(root, file)) if (forbidden.some((d) => inside(target, d))) cross.push(`${file} -> ${target}`); };
+  // The portable deal generator lives in src/game so archived duels include it.
+  const sharedRng = "src/game/frontier-kit/seeded-rng.js";
+  const crossing = (files, forbidden) => {
+    for (const file of files) for (const target of importTargets(root, file)) {
+      if (target !== sharedRng && forbidden.some((d) => inside(target, d))) cross.push(`${file} -> ${target}`);
+    }
+  };
   for (const file of moduleFiles(root, SECOND_GAME)) if (importTargets(root, file).some((t) => inside(t, KIT))) importers.add(file);
   crossing(moduleFiles(root, SECOND_GAME), SHOWDOWN_DIRS);
   crossing(SHOWDOWN_DIRS.flatMap((d) => moduleFiles(root, d)), [SECOND_GAME]);
-  crossing(moduleFiles(root, KIT), [...SHOWDOWN_DIRS, SECOND_GAME]);
+  crossing([...moduleFiles(root, KIT), sharedRng], [...SHOWDOWN_DIRS, SECOND_GAME]);
   return {kit, staged, importers: [...importers], cross};
 }
 

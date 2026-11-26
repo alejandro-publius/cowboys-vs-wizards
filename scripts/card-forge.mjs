@@ -40,7 +40,7 @@ export const VERDICT = `${RUN}/verdict.json`;
 const RUN_FILES = ["request.txt", "brief.json", "prepare.json", "draft.json"];
 export const EXAMPLE = "examples/card-forge/request.txt";
 const CARD_DIR = ".kiro/specs/duel-card-pipeline/cards";
-const LIVE_FILES = ["src/game/card-specs.generated.js", "src/game/showdown/cards.js", "src/game/showdown/rules.js"];
+const LIVE_FILES = ["src/game/frontier-kit/seeded-rng.js", "src/game/card-specs.generated.js", "src/game/showdown/cards.js", "src/game/showdown/rules.js"];
 // The snapshot holds only what compiling and playing a variant needs.
 const SNAPSHOT_PATHS = ["package.json", "src/game", "scripts/sync-card-specs.mjs", CARD_DIR];
 

@@ -42,7 +42,7 @@ export const sha256 = (text) => createHash("sha256").update(text).digest("hex");
 
 // Paths that decide a single Showdown duel, and the rule tests that state expected outcomes.
 // Before f44af67 the engine lived in prototypes/showdown/, so both locations are mined.
-export const ENGINE_PATHS = ["src/game/showdown/rules.js", "src/game/showdown/cards.js", "src/game/card-specs.generated.js",
+export const ENGINE_PATHS = ["src/game/frontier-kit/seeded-rng.js", "src/game/showdown/rules.js", "src/game/showdown/cards.js", "src/game/card-specs.generated.js",
   ".kiro/specs/duel-card-pipeline/cards/", "prototypes/showdown/rules.js", "prototypes/showdown/cards.js"];
 // Trees extracted for an engine run; a revision keeps whichever of them it has.
 export const ENGINE_ROOTS = ["src/game", "prototypes/showdown"];
