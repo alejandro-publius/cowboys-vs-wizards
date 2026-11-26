@@ -99,10 +99,11 @@ export function bindTableUI(root) {
       goHome.textContent = "Camp";
       if (!ended && /^(Choose|A Guard|No enemy)/.test(originalPrompt.textContent)) {
         const text = originalPrompt.textContent.split(".")[0];
-        const risk = originalPrompt.querySelector(".sd-trap-warning")?.textContent ?? "";
-        prompt.textContent = text + (text.endsWith("?") ? "" : ".") + risk;
+        const detail = originalPrompt.querySelector(".sd-choice-hint")?.textContent ?? "";
+        prompt.textContent = text + (text.endsWith("?") ? "" : ".") + detail;
         prompt.hidden = false;
       } else {
+        prompt.textContent = "";
         prompt.hidden = true;
       }
       finish();
@@ -112,6 +113,7 @@ export function bindTableUI(root) {
       table.classList.remove("table-resolved");
       root.classList.remove("table-resolved");
       goHome.textContent = "Back to camp";
+      prompt.textContent = "";
       prompt.hidden = turn.hidden = headline.hidden = true;
     },
   };

@@ -230,6 +230,10 @@ function attack(next, action, events) {
   enemy.base = Math.max(0, enemy.base - outcome.baseDamage);
 }
 
+// Discards are oldest first. Both the summon and its public preview skip non-Undead cards.
+export const newestUndeadIndex = (discard) =>
+  discard.findLastIndex((id) => cardOf(id).kind === "troop" && cardOf(id).tag === "Undead");
+
 // Applies one legal action. Returns {state, events}; throws on an illegal one.
 export function applyAction(state, action) {
   if (!legalActions(state).some((legal) => sameAction(legal, action))) throw new Error(`illegal action ${JSON.stringify(action)}`);
@@ -250,7 +254,7 @@ export function applyAction(state, action) {
     next.summonUsed = true;
     events.push({type: "summon", side, cardId: action.cardId});
     if (has(action.cardId, "scout")) draw(next, side, events);
-    const risen = has(action.cardId, "raise") ? own.discard.findLastIndex((id) => cardOf(id).kind === "troop" && cardOf(id).tag === "Undead") : -1;
+    const risen = has(action.cardId, "raise") ? newestUndeadIndex(own.discard) : -1;
     if (risen >= 0 && own.board.includes(null)) {
       const [cardId] = own.discard.splice(risen, 1);
       own.board[own.board.indexOf(null)] = arrive(cardId, next.turn, {health: 1});

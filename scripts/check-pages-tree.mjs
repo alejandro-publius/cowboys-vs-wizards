@@ -324,6 +324,40 @@ async function browserChecks() {
     clean();
     check("The illustrated table warns before a hidden trap, keeps its identity private, and reports the Imp falling before it strikes");
 
+    // Same opening deal, two legal payments. Watch the actual summon and the opposite seat's pile.
+    for (const [slot, tribute] of [[0, "Skeleton"], [1, "Imp"]]) {
+      await open("?seed=5");
+      await click("#menu-play");
+      await click('[data-camp-destination="camp-open-title"]');
+      await click('[data-two="1"]');
+      await click("#sd-ready");
+      for (const type of ["skeleton", "imp"]) {
+        await click(`[data-card^="wizard-${type}-"]`);
+        for (let pass = 0; pass < 2; pass++) {
+          await click("#sd-end");
+          await click("#sd-ready");
+        }
+      }
+      await click('[data-card^="wizard-wizard-"]');
+      const forecast = "Pay Skeleton: Skeleton returns with 1 orb. Pay Imp: no Undead to return.";
+      assert.ok(await evaluate(`document.querySelector('.table-selection').checkVisibility() &&
+        document.querySelector('.table-selection').innerText.includes(${JSON.stringify(forecast)})`),
+        "the illustrated table distinguishes both payments before commitment");
+      assert.ok(axNamed(await axTree(), "button", new RegExp(tribute),
+        (node) => enabled(node) && node.description?.value?.includes(forecast)), "the tribute button describes the choice");
+      await activateByKey(`[data-slot="wizard-${slot}"]`);
+      await wait(`document.getElementById('sd-feedback').textContent.includes('Wizard arrived')`);
+      const result = await evaluate("document.getElementById('sd-feedback').textContent");
+      assert.equal(result.includes("Skeleton returned from the graveyard with 1 orb"), slot === 0);
+      await click("#sd-end");
+      await wait(shown("sd-curtain"));
+      assert.equal(await evaluate("document.querySelector('.table-selection').textContent"), "", "the pass clears the forecast");
+      await click("#sd-ready");
+      assert.equal(await evaluate("document.getElementById('sd-wizard-graveyard').textContent"), slot === 0 ? "empty" : "Imp");
+    }
+    clean();
+    check("Both tribute forecasts match the resolved summon and the other seat's public graveyard");
+
     await open("showdown/");
     await wait(`document.body&&document.body.innerText.trim().length>0`);
     await sleep(500);
