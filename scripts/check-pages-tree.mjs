@@ -316,17 +316,21 @@ async function browserChecks() {
     const beforeAttack = await baseOrbs();
     const threat = await evaluate(`(() => {
       const painted = document.querySelector('#sd-field .table-selection');
+      const note = document.querySelector('.table-forecast-note');
       return {prompt: document.getElementById('sd-prompt').textContent, visible: painted.checkVisibility() ? painted.innerText : '',
-        preview: document.getElementById('sd-preview-base').textContent};
+        preview: document.getElementById('sd-preview-base').textContent,
+        note: note?.checkVisibility({opacityProperty: true, visibilityProperty: true}) ? note.innerText : ''};
     })()`);
     assert.ok(threat.prompt.includes(trapRisk) && threat.visible.includes(trapRisk), "the aiming prompt and illustrated board explain the public trap risk");
     assert.equal(threat.visible, `No enemy troops: strike the Base. ${trapRisk} Or take ${coverRule}`, "the trap risk stays with the attack, and the cover choice is drawn too");
     assert.equal(threat.preview, "Without trap effects: Hit the Base for 3", "the Imp's printed damage is conditional while a trap is set");
+    assert.equal(threat.note, `Cowboy Base · ${threat.preview}`, "the single legal target's conditional forecast is shown before attacking");
     assert.doesNotMatch(Object.values(threat).join(" "), /Bear Trap|Hex/, "the forecast keeps the trap's identity private");
     assert.ok(axNamed(await axTree(), "button", /Cowboy Base/, (node) => enabled(node) && node.description?.value?.includes(trapRisk)), "the legal target carries the trap warning");
     await activateByKey('[data-base="cowboy"]');
     await wait(`document.getElementById('sd-feedback').textContent.includes('defeated before it struck')`);
     assert.equal(await baseOrbs(), beforeAttack, "the trap stopped the Imp before it damaged the Base");
+    assert.equal(await evaluate("document.querySelector('.table-forecast-note').checkVisibility()"), false, "the spent attack clears the drawn forecast");
     assert.equal(await evaluate(`document.getElementById('sd-prompt').textContent.includes(${JSON.stringify(trapRisk)})`), false, "the spent trap no longer warns");
     clean();
     check("The illustrated table warns before a hidden trap, keeps its identity private, and reports the Imp falling before it strikes");
@@ -585,6 +589,13 @@ async function browserChecks() {
     assert.ok(axNamed(targets, "button", /\bBase\b/, describes(aim.base, aim.skeleton)), "the Base description carries its own preview and the aiming prompt");
     assert.ok(axNamed(targets, "button", /\bSkeleton\b/, describes(aim.skeleton, aim.base)), "the Skeleton description carries its own preview and the aiming prompt");
     check("Chrome exposes distinct Base and Skeleton attack previews as accessible descriptions");
+    await activateByKey(".table-compare");
+    const attackRows = ".table-forecast-dialog[open] .table-target-list button";
+    assert.deepEqual(await evaluate(`[...document.querySelectorAll('${attackRows}')].map(b => [b.querySelector('strong').innerText, b.querySelector('span').innerText])`),
+      [["Wizard Base", aim.base], ["Skeleton", aim.skeleton]], "the target picker shows each legal attack with its own public forecast");
+    await press("Escape", 27);
+    assert.ok(await evaluate("!document.querySelector('.table-forecast-dialog').open && document.activeElement.matches('.table-compare')"),
+      "Escape returns to the comparison button with the Outrider still aimed");
     await activateByKey('[data-base="wizard"]');
     const shotShown = async (eventText, replayLabel) => {
       await wait(`document.getElementById('sd-restart').textContent === ${JSON.stringify(replayLabel)}`);
@@ -598,7 +609,8 @@ async function browserChecks() {
     assert.ok(await evaluate(`document.activeElement?.matches('[data-own]') && document.activeElement.textContent.includes('Outrider')`), "replay returns keyboard focus to the Outrider");
     await press("Enter", 13);
     assert.deepEqual(await openingPosition(), firstPosition, "replay restores the same hand, board, history and targets");
-    await activateByKey('[data-slot^="wizard-"][data-enemy]');
+    await activateByKey(".table-compare");
+    await activateByKey(attackRows + ":last-child");
     await shotShown("Outrider attacked Skeleton", "Try riding instead");
     check("Ride and Fight from the same opening deal show their own combat result and offer the other move");
     await activateByKey("#sd-home");
@@ -634,7 +646,7 @@ async function browserChecks() {
     // A phone-width first visit by pointer: title challenge, Ride, then Boot Hill, each control on the first screen.
     await send("Emulation.setDeviceMetricsOverride", {width: 375, height: 740, deviceScaleFactor: 1, mobile: true});
     await send("Storage.clearDataForOrigin", {origin: new URL(site).origin, storageTypes: "all"});
-    await open("");
+    await open("?seed=0"); // This layout check needs a playable Boot Hill card on turn one.
     await wait(`document.getElementById('menu-challenge')?.textContent === 'Ride or Fight?'`);
     await click("#menu-challenge");
     await challengeOpens(click);
