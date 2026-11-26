@@ -73,7 +73,7 @@ const TEMPLATE = `
   <div class="sd-row" id="sd-actions">
     <button type="button" id="sd-end">End turn</button>
     <button type="button" id="sd-boot-hill" hidden>Continue to Boot Hill</button>
-    <button type="button" id="sd-cover" hidden>Take cover</button>
+    <button type="button" id="sd-cover" aria-describedby="sd-prompt" hidden>Take cover</button>
     <button type="button" id="sd-cancel" hidden>Cancel</button>
     <button type="button" id="sd-restart">Restart this duel</button>
   </div>
@@ -486,8 +486,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     $("sd-prompt").textContent = r ? "" : pick?.tributes ? `Choose ${tributes(pick.card)} of your troops to send to the graveyard as payment for ${name(pick.card)}.`
       : kind === "gear" ? `Choose one of your troops to carry ${name(pick.card)}.`
       : kind === "spell" ? `Choose an enemy troop for ${name(pick.card)}.`
-      : attacking ? `${aims.size === 0 ? "This troop cannot attack now." : guarded ? "A Guard stands in the way: attack it first." : aims.has("base") && aims.size === 1 ? "No enemy troops: strike the Base." : "Choose what to attack."}${
-        canCover ? " Or take cover: until your next turn it keeps extra damage off your Base, but it will not hit back." : ""}`
+      : attacking ? (aims.size === 0 ? "This troop cannot attack now." : guarded ? "A Guard stands in the way: attack it first." : aims.has("base") && aims.size === 1 ? "No enemy troops: strike the Base." : "Choose what to attack.")
       : view.attacking ? "No more cards this turn. Act with your other troops, or end the turn."
       : view.turn === 1 ? "Play your cards: one troop a turn. Nobody attacks on the opening turn."
       : "First play cards (one troop, one other card). Then act with your troops. Once a troop acts, no more cards this turn.";
@@ -504,6 +503,8 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
       detail.textContent = " " + hint;
       $("sd-prompt").append(detail);
     }
+    // The cover choice comes after the attack's trap hint, so the hint reads as part of the attack. With no attack, it starts with the button's name.
+    if (canCover) $("sd-prompt").append(` ${aims.size ? "Or take" : "Take"} cover: until your next turn it keeps extra damage off your Base, but it will not hit back.`);
     $("sd-end").hidden = Boolean(r);
     $("sd-end").disabled = !options.some((a) => a.type === "end");
     showChallengeChoices();
