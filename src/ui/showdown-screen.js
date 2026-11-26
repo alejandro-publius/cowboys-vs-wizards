@@ -18,6 +18,7 @@ import {TRAP_SLOTS, attackOf, canAttack, newestUndeadIndex, opponent} from "../g
 import {createShowdownSession} from "../match/showdown-session.js";
 import {matchOver, matchWinner, newMatch, nextGame, offersSwap, recordGame, swapPool, withSwap} from "../match/showdown-match.js";
 import {createCuePlayer, cuesFor} from "./showdown-cues.js";
+import {FACTION, movesOf, railHtml, raiseTarget, sheetHtml} from "./showdown-zones.js";
 import {FRAMES} from "./card-frames.js";
 import {lessonSetup} from "./wizard-lesson.js";
 
@@ -48,9 +49,10 @@ function costLine(type) {
   if (cost) return `Cost: ${cost} of your troops, sent to the graveyard. Attacks the turn it arrives.`;
   return TYPES[type].keys.includes("quickdraw") ? "Cost: none." : "Cost: none. Rests the turn it arrives.";
 }
-export function face(type, extra = "") {
+export function face(type, extra = "", evenFight = false) {
   const card = TYPES[type];
-  const rules = card.kind !== "troop" ? EFFECTS[card.effect].text : "";
+  const rules = evenFight && card.effect === "hellfire" ? "Remove 1 orb from each enemy troop outside cover."
+    : card.kind !== "troop" ? EFFECTS[card.effect].text : "";
   return `<strong>${card.name}</strong>${typeLine(card)}${card.kind === "troop" ? `${card.attack} attack · ${plural(card.health, "orb")} ${keywords(card)}` : ""}
     ${rules ? `<span class="sd-note">${rules}</span>` : ""}${card.kind === "troop" ? `<span class="sd-note">${costLine(type)}</span>` : ""}${extra}`;
 }
@@ -84,15 +86,18 @@ const TEMPLATE = `
     <p class="sd-note">Wizards: <span id="sd-wizard-graveyard"></span></p>
   </section>
   <section aria-label="Keywords"><h2>Keywords</h2><ul id="sd-keywords"></ul></section>
-  </div>`;
+  </div>
+  <section id="sd-zones" aria-label="Card zones" hidden>
+    <div id="sd-zone-rails"></div>
+    <p id="sd-zone-move" aria-live="polite"></p>
+  </section>
+  <dialog id="sd-graveyard-sheet"></dialog>`;
 
 export const OFFER_HEADING = "Bonus: pick 1 more card to keep";
 export const offerRow = (offer, owned) => `<div class="sd-row">${offer.map((type) => `<button type="button" class="sd-card ${TYPES[type].side} ${TYPES[type].rarity} sd-can" data-frame="${TYPES[type].kind}" data-choose="${type}">
   ${face(type, `<span class="sd-note">You own ${owned(type)}.</span>`)}</button>`).join("")}</div>`;
 export const rewardDeckButton = (type) => `<button type="button" data-build-reward>Build with ${TYPES[type].name}</button>`;
 export const pays = (cards) => cards.map(([type, copies]) => `${TYPES[type].name}${copies > 1 ? ` ×${copies}` : ""}`).join(", ");
-
-const FACTION = {cowboy: "Cowboy", wizard: "Wizard"};
 
 // campaign: the Cowboy seat's campaign. settle(duel, won) once per decided solo duel, choose(type), progress(), owned(type), trailDuel(),
 // duel(id, deck) for any Camp duel. playtest (optional): add(entry) once per finished solo game.
@@ -113,12 +118,14 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
   // seat: the solo player's side. camp: the campaign this duel settles through, or null (nothing is settled).
   let players = 1, match = null, curtain = false, seat = "cowboy", camp = campaign;
   let settling = false;
+  let deckLists, moves, sheet = null;
+  const graveyardDialog = $("sd-graveyard-sheet");
   const cues = createCuePlayer(root, cueOptions);
   const boardPresentation = mountBoard?.(root);
   const solo = () => players === 1;
   // A Wizard lesson reviews one single solo game of the Cowboy seat against the ordinary bot: not a game of a best of
   // three, two players, the Wizard seat, or a lesson rematch (whose Wizard may not be the ordinary one).
-  const reviewable = (current) => Boolean(onReview) && solo() && seat === "cowboy" && !match && !lesson && current.kind !== "lesson";
+  const reviewable = (current) => Boolean(onReview) && solo() && seat === "cowboy" && !match && !lesson && current.kind !== "lesson" && current.kind !== "even-fight";
   const viewer = () => session.viewer();
   // Solo wording speaks to the player; two players are named by faction.
   const whoseBase = (side) => (solo() && side === viewer() ? "Your" : FACTION[side]);
@@ -129,7 +136,9 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     latest = events.map((event) => presentEvent(event));
     const first = lines.length;
     for (const [i, event] of events.entries()) lines.push({turn: event.type === "turn", text: latest[i]});
-    const batch = cuesFor(events, before, session.view()).map((cue) => ({...cue, line: first + cue.index}));
+    const after = session.view();
+    moves = before ? movesOf(events, before, after, moves) : null;
+    const batch = cuesFor(events, before, after).map((cue) => ({...cue, line: first + cue.index}));
     for (const cue of batch) lines[cue.line].cue = cue.kind;
     return batch;
   }
@@ -140,7 +149,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     const opener = document.activeElement; // the control that opened this duel, read before the deal
     [duel, players, seat] = [nextDuel, seats, seats === 1 ? side : "cowboy"];
     lesson = rematch && seats === 1 && seat === "cowboy" && best === 1 ? rematch : null;
-    camp = lesson ? null : own ?? (seat === "cowboy" ? campaign : null);
+    camp = lesson || duel.kind === "even-fight" ? null : own ?? (seat === "cowboy" ? campaign : null);
     const progress = solo() ? camp?.progress() : null;
     match = best > 1 ? newMatch(progress ? {deck: progress.deck, side: progress.side} : {}) : null;
     deal(dealSeed);
@@ -158,8 +167,10 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
   }
   // One game: of a single duel, or the current game of a match (the match's deck, the loser opening).
   function deal(dealSeed) {
+    closeSheet(false);
     seed = dealSeed;
     const current = solo() && match && camp ? camp.duel(duel.id, match.deck) ?? duel : duel;
+    deckLists = current.options.decks;
     // The lesson record is taken before the deal, from the duel as it is dealt (grit and all), and frozen. It is null
     // when the duel cannot be trained (wizard-lesson.js lessonSetup: level-2 Wizard, no landing bosses).
     setup = reviewable(current) ? lessonSetup(current, seed) : null;
@@ -191,6 +202,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     });
   }
   function act(action) {
+    closeSheet(false);
     pick = null;
     const [before, seat] = [session.view(), viewer()];
     const trace = [];
@@ -231,7 +243,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
       outcome.matchOver = matchOver(match);
     }
     // Two players, an experiment turn (showdown-turn.js) and a Wizard lesson rematch settle nothing and add no playtest line.
-    if (!solo() || duel.kind === "turn" || duel.kind === "lesson") return present();
+    if (!solo() || duel.kind === "turn" || duel.kind === "lesson" || duel.kind === "even-fight") return present();
     // The run id makes the log ignore a second report of this same finished game. The log is the Cowboy career's.
     const logGame = () => {
       if (seat === "cowboy") playtest?.add({name: duel.name, won: result.winner === session.seat, turns: view.turn,
@@ -265,6 +277,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     if (!outcome.matchOver) return `Game ${match.game + 1}`;
     if (duel.kind === "turn") return "Retry";
     if (duel.kind === "lesson") return "Same deal again";
+    if (duel.kind === "even-fight") return match ? "Play another series" : "Deal again";
     if (!solo()) return duel.kind === "earned" ? "Rematch: earned decks, not an even match" : "Play again";
     if (!outcome.won) return repeat() ? "Rematch" : null;
     return duel.kind === "trail" || !repeat() ? null : "Play it again";
@@ -281,6 +294,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
       }
       return deal(nextSeed());
     }
+    if (duel.kind === "even-fight") return start(duel, nextSeed(), {players, best});
     // Two players again with the same decks (the starter decks, or the earned decks of showdown-earned.js).
     if (!solo()) return start(duel, nextSeed(), {players: 2, best});
     if (duel.kind === "turn" || duel.kind === "lesson") return deal(seed);
@@ -384,6 +398,34 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     $("sd-feedback").append(note);
   }
 
+  function paintSheet() {
+    const discard = session.view().sides[sheet.side].discard;
+    graveyardDialog.innerHTML = sheetHtml(sheet.side, discard, raiseTarget(discard, deckLists[sheet.side]),
+      sheet.row, (id) => face(typeOf(id)));
+  }
+  function openSheet(side) {
+    if (curtain || pick || !session.view().sides[side].discard.length) return;
+    sheet = {side, row: null};
+    paintSheet();
+    graveyardDialog.setAttribute("aria-labelledby", "sd-graveyard-title");
+    graveyardDialog.showModal();
+    graveyardDialog.querySelector("[data-graveyard-card]").focus();
+  }
+  function closeSheet(refocus = true) {
+    if (!sheet) return;
+    const {side} = sheet;
+    sheet = null;
+    if (graveyardDialog.open) graveyardDialog.close();
+    graveyardDialog.removeAttribute("aria-labelledby");
+    graveyardDialog.replaceChildren();
+    if (refocus && !root.hidden && !curtain) usable(`[data-graveyard="${side}"]`, "#sd-hand button", "#sd-end", "#sd-home")?.focus();
+  }
+  graveyardDialog.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    closeSheet();
+  });
+  graveyardDialog.addEventListener("close", () => { if (!graveyardDialog.open) closeSheet(); });
+
   function render(presentationStart) {
     // The curtain: nothing of either seat's hand or traps stays in the page while the screen is passed.
     // Focus moves only when the curtain goes up or down: onto "I'm ready" when it rises, and off the hidden curtain
@@ -392,9 +434,13 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     const lost = clears && (!document.activeElement || document.activeElement === document.body || $("sd-curtain").contains(document.activeElement));
     $("sd-curtain").hidden = !curtain;
     $("sd-table").hidden = curtain;
+    // The scripted Ride or Fight? opening fits on one phone screen. The card zones open with an ordinary duel.
+    $("sd-zones").hidden = curtain || "contestChallenge" in root.dataset;
     if (curtain) {
+      closeSheet(false);
       boardPresentation?.clear();
-      for (const id of ["sd-board", "sd-hand", "sd-result", "sd-prompt", "sd-feedback", "sd-status", "sd-location"]) $(id).innerHTML = "";
+      for (const id of ["sd-board", "sd-hand", "sd-result", "sd-prompt", "sd-feedback", "sd-status", "sd-location",
+        "sd-zone-rails", "sd-zone-move", "sd-cowboy-graveyard", "sd-wizard-graveyard"]) $(id).replaceChildren();
       $("sd-curtain-text").textContent = `Pass the screen to the ${FACTION[session.view().active]} player.`;
       if (rises && !root.hidden) $("sd-ready").focus();
       return;
@@ -461,7 +507,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
       const card = cardOf(cardId);
       const on = playable.has(card.name);
       return `<button type="button" class="sd-card ${card.side} ${card.rarity}${pick?.card === cardId ? " sd-pick" : on ? " sd-can" : ""}" data-frame="${card.kind}" data-card="${cardId}" ${on ? "" : "disabled"}>
-        ${face(typeOf(cardId), mine && !on ? `<span class="sd-note sd-warn">${blocked(view, cardId)}</span>` : "")}</button>`;
+        ${face(typeOf(cardId), mine && !on ? `<span class="sd-note sd-warn">${blocked(view, cardId)}</span>` : "", view.evenFight)}</button>`;
     }).join("");
 
     const r = view.result;
@@ -499,6 +545,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     }
     // The cover choice comes after the attack's trap hint, so the hint reads as part of the attack. With no attack, it starts with the button's name.
     if (canCover) $("sd-prompt").append(` ${aims.size ? "Or take" : "Take"} cover: until your next turn it keeps extra damage off your Base, but it will not hit back.`);
+    if (canCover && view.evenFight) $("sd-prompt").append(" Spells cannot hit a troop in cover.");
     $("sd-end").hidden = Boolean(r);
     $("sd-end").disabled = !options.some((a) => a.type === "end");
     showChallengeChoices();
@@ -508,8 +555,17 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     $("sd-log").innerHTML = lines.map((l, i) => `<li data-line="${i}"${l.cue ? ` data-cue-kind="${l.cue}"` : ""}${l.turn ? ' class="sd-turn"' : ""}>${l.text}</li>`).join("");
     $("sd-log").scrollTop = $("sd-log").scrollHeight;
     for (const side of ["cowboy", "wizard"]) $(`sd-${side}-graveyard`).textContent = view.sides[side].discard.map(name).join(", ") || "empty";
+    // The illustrated hand and action buttons are projected over #sd-table. Keep the zone shelf outside that box.
+    $("sd-zone-rails").innerHTML = [foe, own].map((side) => {
+      const pile = view.sides[side].discard;
+      return railHtml(side, view.sides[side], {own: side === own, named: side === own && !shared,
+        raise: raiseTarget(pile, deckLists[side]), sprung: moves?.sprung[side], grew: moves?.grew[side]});
+    }).join("");
+    if (pick) for (const pile of $("sd-zone-rails").querySelectorAll("[data-graveyard]")) pile.disabled = true;
+    const recent = moves?.lines ?? [];
+    $("sd-zone-move").textContent = recent.length > 4 ? `(+${recent.length - 4} earlier) ${recent.slice(-4).join(" · ")}` : recent.join(" · ");
     // Keywords from the duel's two public deck lists, so the list never depends on a hidden card.
-    const inPlay = new Set(Object.values(duel.options.decks).flatMap((counts) => Object.keys(counts)).flatMap((type) => TYPES[type].keys ?? []));
+    const inPlay = new Set(Object.values(deckLists).flatMap((counts) => Object.keys(counts)).flatMap((type) => TYPES[type].keys ?? []));
     $("sd-keywords").innerHTML = Object.entries(KEYWORDS).filter(([key]) => inPlay.has(key)).map(([, [word, rule]]) => `<li><strong>${word}.</strong> ${rule}</li>`).join("")
       || "<li>No keywords in this duel.</li>";
     cues.paint();
@@ -548,6 +604,16 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     if (!b || b.disabled || !session || settling) return;
     const [key, before, keyboard] = [keyOf(b), pick, event.detail === 0];
     const d = b.dataset;
+    if (d.graveyard && !sheet) return openSheet(d.graveyard);
+    if (d.graveyardCard !== undefined && sheet) {
+      const row = Number(d.graveyardCard);
+      sheet.row = sheet.row === row ? null : row;
+      paintSheet();
+      graveyardDialog.querySelector(`[data-graveyard-card="${row}"]`).focus();
+      return;
+    }
+    if (d.graveyardClose !== undefined) return closeSheet();
+    if (sheet) closeSheet(false);
     if (d.card) clickCard(d.card);
     else if (d.own) clickOwn(Number(d.own));
     else if (d.enemy) clickEnemy(d.enemy === "base" ? "base" : Number(d.enemy));
@@ -597,7 +663,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     if (keyboard) refocus(key, before);
   });
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && pick && !root.hidden) {
+    if (event.key === "Escape" && pick && !sheet && !root.hidden) {
       const [key, before] = [keyOf(document.activeElement), pick];
       pick = null;
       render();

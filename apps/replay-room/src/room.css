@@ -1,0 +1,122 @@
+/* Showdown Replay Room. Every rule is scoped under .rr-room; system fonts only, no remote assets. */
+.rr-room {
+  --rr-ink: #ece2cc;
+  --rr-dim: #b9ab8e;
+  --rr-bg: #17130f;
+  --rr-panel: #221c16;
+  --rr-line: #4a3c2c;
+  --rr-brass: #d2a24c;
+  --rr-ghost: #8fc7b4;
+  --rr-focus: #f3d27a;
+  box-sizing: border-box;
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 1rem 1.1rem 1.4rem;
+  color: var(--rr-ink);
+  background: var(--rr-bg);
+  border: 1px solid var(--rr-line);
+  border-radius: 6px;
+  font: 400 1rem/1.45 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+}
+.rr-room *, .rr-room *::before, .rr-room *::after { box-sizing: inherit; }
+.rr-room [hidden] { display: none !important; }
+.rr-room p, .rr-room ul, .rr-room h2, .rr-room h3, .rr-room h4 { margin: 0; }
+
+.rr-room .rr-kicker {
+  color: var(--rr-brass);
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.rr-room .rr-title {
+  margin-top: 0.15rem;
+  font-size: 1.45rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  font-variant: small-caps;
+}
+.rr-room .rr-lede { margin-top: 0.35rem; color: var(--rr-dim); }
+.rr-room .rr-sub {
+  padding: 0;
+  font-size: 1.02rem;
+  font-weight: 600;
+  font-variant: small-caps;
+  letter-spacing: 0.05em;
+  color: var(--rr-brass);
+}
+.rr-room .rr-label { color: var(--rr-dim); }
+
+.rr-room .rr-deals, .rr-room .rr-actions, .rr-room .rr-step-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+.rr-room .rr-deals { margin: 0.9rem 0; }
+
+.rr-room button, .rr-room .rr-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--rr-line);
+  border-radius: 4px;
+  background: var(--rr-panel);
+  color: var(--rr-ink);
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+.rr-room button:hover:not(:disabled), .rr-room a.rr-btn:hover { border-color: var(--rr-brass); }
+.rr-room button:disabled { cursor: default; opacity: 0.55; }
+.rr-room button[aria-pressed="true"] { border-color: var(--rr-brass); color: var(--rr-brass); opacity: 1; }
+.rr-room :focus-visible { outline: 3px solid var(--rr-focus); outline-offset: 2px; }
+.rr-room h3:focus { outline: none; }
+.rr-room h3:focus-visible { outline: 3px solid var(--rr-focus); outline-offset: 2px; }
+
+.rr-room .rr-panel, .rr-room .rr-choices {
+  margin: 0 0 0.9rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--rr-line);
+  border-radius: 4px;
+  background: var(--rr-panel);
+}
+.rr-room .rr-table, .rr-room .rr-step-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.6rem;
+  margin-top: 0.55rem;
+}
+.rr-room .rr-side, .rr-room .rr-trace {
+  padding: 0.55rem 0.65rem;
+  border-left: 3px solid var(--rr-line);
+  background: rgba(0, 0, 0, 0.18);
+}
+.rr-room .rr-side-name, .rr-room .rr-trace-name { font-weight: 600; letter-spacing: 0.03em; }
+.rr-room .rr-base { font-variant-numeric: tabular-nums; color: var(--rr-brass); }
+.rr-room .rr-board { overflow-wrap: anywhere; }
+.rr-room .rr-traps { grid-column: 1 / -1; }
+
+.rr-room .rr-choices { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.rr-room .rr-choices legend { float: left; width: 100%; margin-bottom: 0.15rem; }
+.rr-room .rr-choice { flex: 1 1 14rem; justify-content: center; font-weight: 600; }
+
+.rr-room .rr-outcomes { margin-top: 0.5rem; padding-left: 1.1rem; }
+.rr-room .rr-outcome { margin: 0.2rem 0; }
+.rr-room .rr-chosen { color: var(--rr-ghost); }
+.rr-room .rr-caveat {
+  margin-top: 0.6rem;
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--rr-dim);
+}
+.rr-room .rr-stepper { margin-top: 0.9rem; padding-top: 0.7rem; border-top: 1px dashed var(--rr-line); }
+.rr-room .rr-step-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.4rem; }
+.rr-room .rr-step-status { flex: 1 1 12rem; font-variant-numeric: tabular-nums; }
+.rr-room .rr-note { margin-top: 0.3rem; font-size: 0.88rem; color: var(--rr-dim); }
+.rr-room .rr-actions { margin-top: 0.9rem; }
+.rr-room .rr-play { border-color: var(--rr-brass); color: var(--rr-brass); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .rr-room button, .rr-room .rr-btn { transition: border-color 120ms ease; }
+}

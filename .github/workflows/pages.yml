@@ -27,6 +27,10 @@ jobs:
           node-version: 22
           cache: npm
 
+      # The paired Billy replay compares the recorded engine, decks and bots at this revision.
+      - name: Fetch the frozen Billy replay inputs
+        run: git fetch --no-tags --depth=1 https://github.com/alejandro-publius/cowboys-vs-wizards.git eedab9385931e093e156fdb7885c470eb2ec64eb
+
       - run: npm ci
 
       - run: node scripts/verify-duel.mjs
@@ -36,7 +40,7 @@ jobs:
         run: node scripts/stage-pages.mjs --commit "$GITHUB_SHA"
 
       # Node only: checks build.json, the /3d/ alias bytes and the exact staged file list. The Chrome half
-      # (--browser) runs locally.
+      # (--browser) runs in the pull request workflow and can also run locally.
       - name: Check the staged tree before upload
         run: node scripts/check-pages-tree.mjs --commit "$GITHUB_SHA"
 

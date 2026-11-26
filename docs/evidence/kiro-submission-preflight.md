@@ -42,7 +42,7 @@ Crew saved a round 2 screenshot in its browser snapshot folder on the Mac. The i
 
 ## Fable audit and latest static replay
 
-Fable 5.2 reviewed the clean candidate at `66b6cb9`. It verified the MIT license, 26 files under root `.kiro/`, and a largest tracked asset of about 3.7 MiB. It flagged local-only play instructions and dead evidence links, which Codex corrected. A fresh read of the public remote on November 16 found `main` at `37960ed`, 52 commits behind the audited candidate. [Play instructions](../../README.md#play)
+Fable 5.2 reviewed the clean candidate at `66b6cb9`. It verified the MIT license, 26 files under root `.kiro/`, and a largest tracked asset of about 3.7 MiB. It flagged local-only play instructions and dead evidence links, which Codex corrected. A fresh read of the public remote on November 16 found `main` at `37960ed`, 52 commits behind the audited candidate. [Play instructions](../../README.md#play-showdown)
 
 Chrome 157 replayed the static build at 1440 × 900. Seed 0 observed 8 of 8 checks and seed 60 observed 4 of 4 checks, with zero console errors. Both receipts cover HTML SHA-256 `0295185db7b77700ae249bdfd2898fe396529a79d00e767dff6ac68459b31b92`. The documentation and hook changes also rebuilt to that same hash.
 

@@ -1,0 +1,169 @@
+{
+  "baseCommit": "b7dacf60d2732277c2512f3e79c26e52a32adb0d",
+  "codeSha256": {
+    "src/game/showdown/rules.js": "beed106fe6a5e718ca21d9cd59e3248feff52104dda730088677b07c1a6e42a9",
+    "src/game/showdown/cards.js": "2e9c3c7df707c43bc61b6481b801211de4fabd6ada87d9aa35d52330b868ffe1",
+    "src/game/card-specs.generated.js": "187bb9ca71516227e67edd9f6e248e038ae20028e7e3333b6fa28bdf18b40a8b",
+    "src/game/frontier-kit/seeded-rng.js": "cf065f21ed8011ec9c40576605c8f9daffea2a0dc1f284970e9b1a7e754ee59a",
+    "src/game/showdown/progress.js": "e9d95a6ff3bb11a88a02309bb6639c15de0d741785ff47db45ab4d8b5016f49d",
+    "src/game/showdown/trail.js": "8fa27db59ee2d6cceaecd72012c198c6ef00d98c88994866509cfe51704fd528",
+    "prototypes/showdown/trail-sim.mjs": "19abcb7ad60131077d4cd4a9f6590973f0b0e8727c9524f89d9dc3d7fa7a713f",
+    "scripts/even-fight-review.mjs": "60f9097d361db2410472c55baf28e78eddc3300cd1ac190d94864bdc4043b490"
+  },
+  "seats": [
+    {
+      "start": 0,
+      "deals": 1000,
+      "games": 2000,
+      "released": {
+        "firstWins": 1142,
+        "cowboyWins": 1188,
+        "draws": 0
+      },
+      "preview": {
+        "firstWins": 990,
+        "cowboyWins": 1036,
+        "draws": 0
+      }
+    },
+    {
+      "start": 1000,
+      "deals": 1000,
+      "games": 2000,
+      "released": {
+        "firstWins": 1165,
+        "cowboyWins": 1221,
+        "draws": 0
+      },
+      "preview": {
+        "firstWins": 1028,
+        "cowboyWins": 1082,
+        "draws": 0
+      }
+    }
+  ],
+  "progression": {
+    "seeds": [0, 299],
+    "dealsPerRulesetPerLevel": 300,
+    "playerLevels": [
+      "careless",
+      "simple",
+      "careful"
+    ],
+    "measure": "Cowboy first-try wins",
+    "rows": [
+      {
+        "duel": "Trail 1. Boot Hill",
+        "released": [298, 300, 300],
+        "preview": [298, 300, 300]
+      },
+      {
+        "duel": "Trail 2. Raven Roost",
+        "released": [299, 298, 300],
+        "preview": [299, 298, 300]
+      },
+      {
+        "duel": "Trail 3. The Bone Fence",
+        "released": [207, 263, 299],
+        "preview": [207, 261, 299]
+      },
+      {
+        "duel": "Trail 4. Imp Hollow",
+        "released": [124, 255, 268],
+        "preview": [122, 255, 268]
+      },
+      {
+        "duel": "Trail 5. The Hexed Mile",
+        "released": [61, 181, 286],
+        "preview": [67, 189, 286]
+      },
+      {
+        "duel": "Trail 6. Dragon's Roost",
+        "released": [58, 122, 233],
+        "preview": [57, 124, 235]
+      },
+      {
+        "duel": "Rival 1. The Stargazer",
+        "released": [65, 100, 271],
+        "preview": [63, 120, 280]
+      },
+      {
+        "duel": "Rival 2. The Imp",
+        "released": [91, 168, 264],
+        "preview": [87, 174, 267]
+      },
+      {
+        "duel": "Rival 3. The Bonewright",
+        "released": [33, 111, 273],
+        "preview": [34, 111, 273]
+      },
+      {
+        "duel": "Rival 4. The Graveyard Coven",
+        "released": [25, 35, 174],
+        "preview": [27, 35, 178]
+      },
+      {
+        "duel": "The Lantern Wraith, hunt 1",
+        "released": [268, 274, 291],
+        "preview": [262, 286, 297]
+      },
+      {
+        "duel": "The Lantern Wraith, hunt 2",
+        "released": [230, 259, 290],
+        "preview": [229, 277, 296]
+      },
+      {
+        "duel": "The Lantern Wraith, hunt 3",
+        "released": [123, 204, 261],
+        "preview": [127, 206, 262]
+      },
+      {
+        "duel": "The Lantern Wraith, hunt 4",
+        "released": [98, 183, 256],
+        "preview": [91, 191, 258]
+      },
+      {
+        "duel": "The Lantern Wraith, hunt 5",
+        "released": [47, 117, 187],
+        "preview": [45, 118, 188]
+      },
+      {
+        "duel": "The Graveyard Dragon, hunt 1",
+        "released": [152, 180, 286],
+        "preview": [146, 182, 286]
+      },
+      {
+        "duel": "The Graveyard Dragon, hunt 2",
+        "released": [81, 131, 236],
+        "preview": [78, 132, 236]
+      },
+      {
+        "duel": "The Graveyard Dragon, hunt 3",
+        "released": [55, 109, 218],
+        "preview": [51, 107, 217]
+      },
+      {
+        "duel": "The Graveyard Dragon, hunt 4",
+        "released": [35, 84, 200],
+        "preview": [38, 80, 197]
+      },
+      {
+        "duel": "The Graveyard Dragon, hunt 5",
+        "released": [18, 60, 165],
+        "preview": [18, 56, 163]
+      },
+      {
+        "duel": "Open range (the even match)",
+        "released": [31, 42, 196],
+        "preview": [30, 34, 176]
+      }
+    ]
+  },
+  "originalReview": {
+    "measuredCommit": "d5a799d61a93db8ed9a90499bc8ae7d68c7a845c",
+    "archiveCommit": "63f8d873328bd3c0a77fcd193beb2abde7a0a048",
+    "archivePath": "docs/evidence/night-shift/even-fight-d5a799d6/bundle.json",
+    "sealSha256": "bd01f65586725b372cd3fcac26cad764d1c8c9f50183468ab6fa8775b0f09d4e",
+    "verdict": "failed"
+  }
+}

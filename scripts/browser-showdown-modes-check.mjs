@@ -27,6 +27,7 @@
 //               shows only the active seat's hand (all its own ids) and no id of the other seat's hand or
 //               traps; the match runs to two wins; Showdown progress and the playtest log are unchanged; Play again
 //               deals the starter decks.
+//   evenfight   Direct solo and series, plus hotseat from the Camp. The preview keeps both careers and the playtest log.
 //   earned      Earned decks (showdown-earned.js): absent with no teaser until the first Wizard preview win; with an
 //               empty Cowboy save, the starter deck; then the Camp deck, chosen with Tab and Enter only; the curtain
 //               first; the Wizards open; each seat's first hand equals the engine's deal of that seed; one game to a
@@ -420,6 +421,74 @@ const replay = (save, id, results, {take = true} = {}) => {
 
 // ---- Runs ----------------------------------------------------------------------------------------
 const RUNS = {
+  async evenfight(s) {
+    await s.seedStorage([[SAVE_KEY, JSON.stringify(withSide)], [LANE_KEY, laneVeteran.raw],
+      ["cvw-showdown-wizard-preview-v1", '{"v":1,"wins":1}'], [PLAYTEST_KEY, "[]"]]);
+    const before = await s.storage();
+    await s.load("?even-fight=1&seed=4");
+    await s.wait(`vis(document.getElementById('showdown'))`, "the direct preview");
+    assert.match(await s.text("#sd-status"), /^Even Fight preview/);
+    assert.match(await s.text("#sd-lesson"), /7 Base orbs/);
+    await s.playGame();
+    assert.equal(await s.text("#sd-again"), "Deal again");
+    assert.equal(await s.evaluate(`Boolean(document.getElementById('sd-review'))`), false);
+    assert.deepEqual(await s.storage(), before, "solo completed without a career, lesson, keepsake or playtest write");
+    s.check("A solo preview plays to its result with the existing browser saves byte-identical");
+
+    await s.load("?even-fight=series&seed=4");
+    await s.wait(`vis(document.getElementById('showdown'))`, "the direct series");
+    await s.assertSeries("game 1 of 3 · you 0, Wizards 0", "in the preview");
+    let previous;
+    for (let n = 1; n <= 3; n++) {
+      const game = await s.playGame();
+      if (previous) assert.equal(game.opened, previous.won ? "wizard" : "cowboy", "the loser opens");
+      previous = game;
+      if (await s.text("#sd-again") === "Play another series") break;
+      assert.ok(n < 3, "the seeded series finishes in three games");
+      assert.equal(await s.text("#sd-again"), `Game ${n + 1}`);
+      await s.click("#sd-again");
+      await s.wait(`document.getElementById('sd-status').textContent.includes('game ${n + 1} of 3')`, "the next game without a career side-deck swap");
+    }
+    await s.click("#sd-again");
+    await s.assertSeries("game 1 of 3 · you 0, Wizards 0", "after a preview series rematch");
+    assert.deepEqual(await s.storage(), before);
+    s.check("A full fixed-deck series and rematch keep the score, the loser’s next opening and the existing saves");
+
+    await s.load("?seed=4");
+    await s.openCamp();
+    const campBefore = await s.storage();
+    if (await s.evaluate(`Boolean(document.querySelector('[data-camp-destination="camp-practice"]'))`)) {
+      await s.click('[data-camp-destination="camp-practice"]');
+      await s.press(`document.getElementById('camp-experiment').closest('details').querySelector('summary')`, "Challenge replays");
+    }
+    await s.click("#camp-even-fight > summary");
+    await s.click("#camp-even-fight-two");
+    assert.ok(await s.curtainUp());
+    await s.playGame({two: true, onFirstBoard: async () => {
+      const bases = await s.evaluate(`[...document.querySelectorAll('#sd-board [data-base] .sd-orbs')].map(n=>n.getAttribute('aria-label')).sort()`);
+      assert.deepEqual(bases, ["5 of 5 orbs", "7 of 7 orbs"]);
+    }});
+    assert.equal(await s.evaluate(`document.querySelectorAll('#sd-hand [data-card]').length`), 0);
+    assert.equal(await s.text("#sd-again"), "Deal again");
+    await s.toCamp();
+    assert.equal((await s.focusAt()).id, "camp-even-fight-two");
+    assert.deepEqual(await s.storage(), campBefore);
+    s.check("The Camp opens two-player preview with 5/7 Base orbs, private handoffs, a private result and focus restored");
+
+    await s.load("?seed=4");
+    await s.openCamp();
+    if (await s.evaluate(`Boolean(document.querySelector('[data-camp-destination="camp-collection-room"]'))`)) {
+      await s.click('[data-camp-destination="camp-collection-room"]');
+    }
+    await s.click("#camp-ledger > summary");
+    await s.click("#ledger-even-fight > summary");
+    assert.match(await s.text("#ledger-even-fight"), /58\.25% → 51\.40%/);
+    assert.match(await s.text("#ledger-even-fight"), /failed/);
+    await s.click("#ledger-even-fight a");
+    await s.wait(`vis(document.getElementById('showdown')) && document.getElementById('sd-status').textContent.startsWith('Even Fight preview')`, "the Ledger's playable preview");
+    assert.deepEqual(await s.storage(), campBefore);
+    s.check("The Sheriff’s Ledger shows the recorded verdict and opens a playable preview");
+  },
   async gated(s) {
     await s.load("?seed=0");
     await s.openCamp();

@@ -13,4 +13,4 @@ On November 17, 2026 Pacific, Alejandro chose to strip the board back and add an
 
 Keep the seed-60 input sequence and the accepted event assertions as the comparison. Reintroduce card arrival, hit feedback and removal as presentation cues. Add sourced character clips after those cues read clearly at the game camera. The rules and public view remain the reference for which troop can act, its life orbs, and when its defeat is processed.
 
-[Build commands](../../README.md#play) · [Seed 60 inputs](../morning-handoff.md#the-duel-to-film) · [Motion plan and provenance](../character-animation-plan.md)
+[Build commands](../../README.md#play-showdown) · [Seed 60 inputs](../morning-handoff.md#the-duel-to-film) · [Motion plan and provenance](../character-animation-plan.md)

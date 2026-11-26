@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "orb-duel-review",
-  "version": "1.6.0",
-  "description": "Independent, read-only review of the Cowboys vs. Wizards Chrome replay receipt against the current built page, plus Showdown seat play and engine-bound Showdown proof replay, a check of the evidence behind Showdown Outrider ride decisions (why take or decline a ride past enemy troops), and a rerun check of a recorded card proposal review (one card spec stat change measured by the Showdown smoke sample).",
+  "version": "1.7.0",
+  "description": "Independent, read-only review of the Cowboys vs. Wizards Chrome replay receipt against the current built page, plus Showdown seat play and engine-bound Showdown proof replay, a check of the evidence behind Showdown Outrider ride decisions (why take or decline a ride past enemy troops), and a rerun check of a recorded card proposal review (one card spec stat change measured by the Showdown smoke sample), and a Replay Room coaching lesson that reveals the two recorded outcomes after a target is chosen.",
   "author": {
     "name": "Cowboys vs. Wizards"
   },
@@ -12,6 +12,7 @@
     "showdown boot hill proof",
     "outrider ride",
     "decline this ride",
-    "card proposal review"
+    "card proposal review",
+    "replay room lesson"
   ]
 }

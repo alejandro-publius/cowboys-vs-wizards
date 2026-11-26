@@ -15,8 +15,8 @@
 .sd-pick { outline: 2px solid #fff; } .sd-can { border-color: #8fd18f; } .sd-chosen { outline: 2px solid var(--cowboy); }
 .sd-note { display: block; font-size: .82rem; color: var(--muted); margin-top: .2rem; }
 .sd-warn { color: #f0a08a; } .sd-good { color: #9fe09f; }
-.sd-type { display: block; font-size: .78rem; letter-spacing: .03em; color: var(--muted); }
-.sd-key { display: inline-block; font-size: .78rem; border: 1px solid var(--line); border-radius: 4px; padding: 0 .3rem; }
+.sd-type { display: block; font-size: .8rem; letter-spacing: .03em; color: var(--muted); }
+.sd-key { display: inline-block; font-size: .8rem; border: 1px solid var(--line); border-radius: 4px; padding: 0 .3rem; }
 .sd-result { font-size: 1.2rem; }
 .sd-backs { display: flex; gap: 2px; margin-top: .2rem; }
 .sd-backs .card-back { width: 14px; height: 20px; border: 1px solid var(--line); border-radius: 2px; }
@@ -29,6 +29,34 @@
 #showdown [data-frame=gear] { border-style: dotted; border-width: 3px; }
 #showdown [data-frame=location] { border-width: 1px 1px 5px; }
 @media (max-width: 40rem) { .sd-side { grid-template-columns: 1fr 1fr; } }
+/* Both renderers share the zone shelf below the duel's playable controls. */
+#sd-zones { width: min(100%, 54rem); margin: .5rem auto; padding: 0 .5rem; box-sizing: border-box; }
+#sd-zone-rails { display: grid; gap: .5rem; }
+.sd-zone-rail { display: grid; grid-template-columns: minmax(5rem, .65fr) repeat(4, minmax(0, 1fr)); gap: .4rem; align-items: center; }
+.sd-zone-faction { margin: 0; font-size: 1rem; }
+.sd-zone-rail[data-zone-side=cowboy] .sd-zone-faction { color: var(--cowboy); }
+.sd-zone-rail[data-zone-side=wizard] .sd-zone-faction { color: var(--wizard); }
+.sd-zone-rail [data-zone] { min-width: 0; overflow-wrap: anywhere; font-size: .87rem; }
+.sd-zone-rail .sd-backs { flex-wrap: wrap; }
+.sd-zone-rail .sd-backs .card-back { width: 8px; height: 12px; }
+.sd-zone-label { font-weight: 600; }
+.sd-zone-rail .sd-pile { display: block; width: 100%; }
+.sd-zone-rail button.sd-pile { min-height: 44px; text-align: left; }
+.sd-zone-rail .sd-pile.sd-grew { border-color: var(--wizard); }
+.sd-trap-sprung, .sd-graveyard-text { display: block; }
+.sd-raise-dot, .sd-raise-tag { color: var(--wizard); }
+#sd-zone-move { margin: .5rem 0; color: var(--muted); overflow-wrap: anywhere; font-size: .9rem; }
+#sd-zone-move:empty { margin: 0; }
+#sd-graveyard-sheet { position: fixed; inset: auto 0 0; width: min(100%, 40rem); box-sizing: border-box; max-height: 75vh; margin: 0 auto; padding: 1rem; overflow: auto; color: inherit; background: var(--panel); border: 1px solid var(--line); border-radius: 8px 8px 0 0; }
+#sd-graveyard-sheet::backdrop { background: rgb(0 0 0 / 60%); }
+.sd-graveyard-list { display: grid; gap: .35rem; margin: .5rem 0; padding: 0; list-style: none; }
+.sd-graveyard-list button { width: 100%; min-height: 44px; text-align: left; overflow-wrap: anywhere; }
+.sd-graveyard-text { padding: .4rem; }
+#sd-graveyard-sheet [data-graveyard-close] { min-height: 44px; }
+@media (max-width: 40rem) {
+  .sd-zone-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .4rem .75rem; }
+  .sd-zone-faction { grid-column: 1 / -1; }
+}
 /* Camp (issue 143 slice 2): the same graybox layout, with the Trail as a row of plain tiles. */
 #showdown-camp { max-width: 920px; margin: auto; padding: clamp(1rem, 3vw, 2rem); display: grid; gap: .5rem; }
 #showdown-camp h2 { font-size: 1rem; margin: .75rem 0 .25rem; }
@@ -52,6 +80,8 @@
 .sd-build-row { display: grid; grid-template-columns: 10rem repeat(2, auto) 1fr; gap: .75rem; align-items: center; margin-bottom: .5rem; }
 .sd-build-row .sd-card { width: 10rem; }
 #camp-code, #camp-report-text { width: 100%; box-sizing: border-box; }
+/* The practice deal links are a row of short links: give each a 44 px tall hit area without restyling the link. */
+#camp-practice .sd-row a, #camp-even-fight a, #ledger-even-fight a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 .25rem; }
 #sd-curtain { display: grid; gap: 1rem; justify-items: start; padding: 3rem 0; font-size: 1.15rem; }
 @media (max-width: 40rem) { .sd-build-row { grid-template-columns: 1fr 1fr; } }
 /* Sheriff's Ledger (The Night Shift, src/ui/sheriffs-ledger.js): collapsed at the end of the Camp; fits 390px. */

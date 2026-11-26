@@ -458,9 +458,20 @@ async function browserChecks() {
       await wait(`document.getElementById('sd-feedback').textContent.includes('Wizard arrived')`);
       const result = await evaluate("document.getElementById('sd-feedback').textContent");
       assert.equal(result.includes("Skeleton returned from the graveyard with 1 orb"), slot === 0);
+      if (slot === 1) {
+        await click('[data-graveyard="wizard"]');
+        await wait("document.querySelector('#sd-graveyard-sheet').matches(':modal')");
+        assert.equal(await evaluate("document.activeElement.dataset.graveyardCard"), "0", "focus starts on the newest discard");
+        await press("Enter", 13);
+        assert.match(await evaluate("document.querySelector('.sd-graveyard-text').textContent"), /Imp/);
+        await press("Escape", 27);
+        await wait("document.activeElement.dataset.graveyard === 'wizard' && !document.querySelector('[data-graveyard-card]')");
+      }
       await click("#sd-end");
       await wait(shown("sd-curtain"));
       assert.equal(await evaluate("document.querySelector('.table-selection').textContent"), "", "the pass clears the forecast");
+      assert.equal(await evaluate("document.querySelectorAll('[data-zone-side], #sd-graveyard-sheet[open], [data-graveyard-card]').length"), 0,
+        "the pass removes the zones and pile contents from the page");
       await click("#sd-ready");
       assert.equal(await evaluate("document.getElementById('sd-wizard-graveyard').textContent"), slot === 0 ? "empty" : "Imp");
     }

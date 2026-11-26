@@ -1,0 +1,186 @@
+[
+ {
+  "id": "dragon-c5",
+  "seed": 3,
+  "board": {
+   "cowboy": "Ranger 2/4 | Dynamiter 3/1 resting | -",
+   "wizard": "Dragon 3/4 | Jack-o'-Lantern 1/1 cover | -"
+  },
+  "bases": {
+   "cowboy": 5,
+   "wizard": 3
+  },
+  "ownTraps": [
+   "Bear Trap"
+  ],
+  "branches": {
+   "dragon": {
+    "winner": "cowboy",
+    "endTurn": 15,
+    "trace": [
+     {
+      "turn": 5,
+      "side": "cowboy",
+      "cowboyBase": 5,
+      "wizardBase": 3,
+      "cowboyBoard": "Ranger 2/1 | Dynamiter 3/1 cover | -",
+      "wizardBoard": "Dragon 3/2 | Jack-o'-Lantern 1/1 | -"
+     },
+     {
+      "turn": 6,
+      "side": "wizard",
+      "cowboyBase": 4,
+      "wizardBase": 3,
+      "cowboyBoard": "- | Dynamiter 3/1 | -",
+      "wizardBoard": "- | Wizard 2/4 | Skeleton 1/1 cover"
+     },
+     {
+      "turn": 7,
+      "side": "cowboy",
+      "cowboyBase": 4,
+      "wizardBase": 3,
+      "cowboyBoard": "Outrider 1/3 | Dynamiter 3/1 | -",
+      "wizardBoard": "- | Wizard 2/4 | -"
+     },
+     {
+      "turn": 8,
+      "side": "wizard",
+      "cowboyBase": 3,
+      "wizardBase": 3,
+      "cowboyBoard": "Outrider 1/2 | - | -",
+      "wizardBoard": "Skeleton 1/3 | Wizard 2/3 | -"
+     }
+    ]
+   },
+   "jack": {
+    "winner": "wizard",
+    "endTurn": 10,
+    "trace": [
+     {
+      "turn": 5,
+      "side": "cowboy",
+      "cowboyBase": 5,
+      "wizardBase": 3,
+      "cowboyBoard": "Ranger 2/3 | Dynamiter 3/1 cover | -",
+      "wizardBoard": "Dragon 3/4 | - | -"
+     },
+     {
+      "turn": 6,
+      "side": "wizard",
+      "cowboyBase": 4,
+      "wizardBase": 3,
+      "cowboyBoard": "- | - | -",
+      "wizardBoard": "Dragon 3/2 | Skeleton 1/3 | -"
+     },
+     {
+      "turn": 7,
+      "side": "cowboy",
+      "cowboyBase": 4,
+      "wizardBase": 3,
+      "cowboyBoard": "Outrider 1/3 | - | -",
+      "wizardBoard": "Dragon 3/2 | Skeleton 1/3 | -"
+     },
+     {
+      "turn": 8,
+      "side": "wizard",
+      "cowboyBase": 2,
+      "wizardBase": 3,
+      "cowboyBoard": "- | - | -",
+      "wizardBoard": "Dragon 3/2 | Wizard 2/4 | Skeleton 1/1"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "id": "dragon-c5-70",
+  "seed": 70,
+  "board": {
+   "cowboy": "Ranger 2/4 | Covered Wagon 1/4 resting | -",
+   "wizard": "Dragon 3/4 | Jack-o'-Lantern 1/1 cover | -"
+  },
+  "bases": {
+   "cowboy": 5,
+   "wizard": 4
+  },
+  "ownTraps": [],
+  "branches": {
+   "dragon": {
+    "winner": "wizard",
+    "endTurn": 14,
+    "trace": [
+     {
+      "turn": 5,
+      "side": "cowboy",
+      "cowboyBase": 5,
+      "wizardBase": 4,
+      "cowboyBoard": "Ranger 2/1 | Covered Wagon 1/4 | -",
+      "wizardBoard": "Dragon 3/2 | Jack-o'-Lantern 1/1 | -"
+     },
+     {
+      "turn": 6,
+      "side": "wizard",
+      "cowboyBase": 4,
+      "wizardBase": 4,
+      "cowboyBoard": "- | - | -",
+      "wizardBoard": "Dragon 3/1 | Wizard 2/4 | Skeleton 1/1"
+     },
+     {
+      "turn": 7,
+      "side": "cowboy",
+      "cowboyBase": 4,
+      "wizardBase": 4,
+      "cowboyBoard": "Outrider 1/3 | - | -",
+      "wizardBoard": "Dragon 3/1 | Wizard 2/4 | Skeleton 1/1"
+     },
+     {
+      "turn": 8,
+      "side": "wizard",
+      "cowboyBase": 4,
+      "wizardBase": 4,
+      "cowboyBoard": "- | - | -",
+      "wizardBoard": "- | Wizard 2/3 | Skeleton 1/1"
+     }
+    ]
+   },
+   "jack": {
+    "winner": "cowboy",
+    "endTurn": 17,
+    "trace": [
+     {
+      "turn": 5,
+      "side": "cowboy",
+      "cowboyBase": 5,
+      "wizardBase": 4,
+      "cowboyBoard": "Ranger 2/3 | Covered Wagon 1/4 | -",
+      "wizardBoard": "Dragon 3/4 | - | -"
+     },
+     {
+      "turn": 6,
+      "side": "wizard",
+      "cowboyBase": 5,
+      "wizardBase": 4,
+      "cowboyBoard": "Ranger 2/2 | Covered Wagon 1/1 | -",
+      "wizardBoard": "Dragon 3/3 | Raven Familiar 1/1 cover | -"
+     },
+     {
+      "turn": 7,
+      "side": "cowboy",
+      "cowboyBase": 5,
+      "wizardBase": 3,
+      "cowboyBoard": "Ranger 2/2 | Billy 2/1 | -",
+      "wizardBoard": "- | Raven Familiar 1/1 | -"
+     },
+     {
+      "turn": 8,
+      "side": "wizard",
+      "cowboyBase": 4,
+      "wizardBase": 3,
+      "cowboyBoard": "Ranger 2/2 | - | -",
+      "wizardBoard": "Wizard 2/2 | Skeleton 1/1 cover | -"
+     }
+    ]
+   }
+  }
+ }
+]

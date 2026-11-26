@@ -3,7 +3,7 @@
 // one seat of a Showdown Trail duel in memory (showdown.mjs), and for replaying a recorded
 // Showdown proof against the current Showdown engine fingerprint, and for checking a recorded
 // Outrider ride decision (ride.mjs) before any ride advice is given, and for checking a recorded card
-// proposal review (card.mjs). It reads only fixed files under this repo: no arbitrary paths, writes,
+// proposal review (card.mjs) and a two-stage coaching lesson (lesson.mjs). It reads only fixed files under this repo: no arbitrary paths, writes,
 // network, shell or database. The card review reruns the project's own smoke sample CLI in a child
 // Node process with fixed arguments.
 import {createHash} from "node:crypto";
@@ -13,10 +13,11 @@ import {createInterface} from "node:readline";
 import {fileURLToPath} from "node:url";
 import {parseGlb} from "./glb.mjs";
 import {createTable, engineFingerprint, inspectShowdownReceipt, loadEngine} from "./showdown.mjs";
+import {LESSON_TOOL, lessonArgsError, replayLesson} from "./lesson.mjs";
 import {RIDE_CASES, inspectRideDecision} from "./ride.mjs";
 import {CARD_RULE, RECEIPT as CARD_RECEIPT, inspectCardReview, parseProposal} from "./card.mjs";
 
-const VERSION = "1.6.0";
+const VERSION = "1.7.0";
 
 // Project binding: with PLUGIN_DATA set, only PLUGIN_DATA/project.json (written by setup.mjs)
 // names the project. Never inferred. Without PLUGIN_DATA (workspace MCP), the source checkout.
@@ -260,7 +261,7 @@ function handle(msg) {
     case "ping":
       return reply(msg.id, {});
     case "tools/list":
-      return reply(msg.id, {tools: [TOOL, CHARACTER_TOOL, ...SHOWDOWN_TOOLS, RECEIPT_TOOL, RIDE_TOOL, CARD_TOOL]});
+      return reply(msg.id, {tools: [TOOL, CHARACTER_TOOL, ...SHOWDOWN_TOOLS, RECEIPT_TOOL, RIDE_TOOL, CARD_TOOL, LESSON_TOOL]});
     case "tools/call": {
       const params = msg.params;
       if (Object.hasOwn(SHOWDOWN_KEYS, params?.name ?? "")) {
@@ -283,6 +284,17 @@ function handle(msg) {
         if (typeof id !== "string" || !Object.hasOwn(RIDE_CASES, id)) return fail(msg.id, -32602, `case must be one of: ${Object.keys(RIDE_CASES).join(", ")}`);
         return rideDecision(id).then((body) => reply(msg.id, {content: [{type: "text", text: JSON.stringify(body, null, 2)}]}),
           (error) => reply(msg.id, {content: [{type: "text", text: JSON.stringify({error: error.message})}], isError: true}));
+      }
+      if (params?.name === LESSON_TOOL.name) {
+        const args = params.arguments ?? {};
+        const problem = lessonArgsError(args);
+        if (problem) return fail(msg.id, -32602, problem);
+        try {
+          const {isError, body} = replayLesson(root, unavailable, args);
+          return reply(msg.id, {content: [{type: "text", text: JSON.stringify(body, null, 2)}], ...(isError && {isError})});
+        } catch (error) {
+          return reply(msg.id, {content: [{type: "text", text: JSON.stringify({error: error.message})}], isError: true});
+        }
       }
       if (params?.name === CARD_TOOL.name) {
         const args = params.arguments ?? {};

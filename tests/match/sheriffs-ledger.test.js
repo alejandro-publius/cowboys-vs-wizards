@@ -27,6 +27,16 @@ test("the Camp shows the checked-in receipt's real run: its commit, rules blob a
   assert.equal(receipt.cards.measured, false);
 });
 
+test("the separate Even Fight preview review keeps the historical verdict and both seat-study rows", () => {
+  const html = ledgerHtml().split('id="ledger-even-fight"')[1].split("</details>")[0];
+  assert.match(html, /57\.10% → 49\.50%/);
+  assert.match(html, /58\.25% → 51\.40%/);
+  assert.match(html, /61\.05% → 54\.10%/);
+  assert.match(html, /<strong>failed<\/strong>/);
+  assert.match(html, /bd01f6558672/);
+  assert.match(html, /href="\?even-fight=1"/);
+});
+
 test("Night Shift reviews appear only when sealed and bound to this run's commit and counts", () => {
   const bundles = reviewBundles();
   assert.ok(bundles.length >= 1);

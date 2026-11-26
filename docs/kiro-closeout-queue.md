@@ -1,8 +1,8 @@
-# Kiro closeout queue
+# Kiro closeout queue, November 16 archive
 
-Latest integration: [November 16 parallel review](evidence/parallel-closeout-2200.md). Current task ownership is in [GitHub #24](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/24); the earlier ledger below is retained as history. #43–46 have implementation/evidence; #49 is a preview, and #35 remains the next Rachel handoff after publication.
+November 16 integration: [November 16 parallel review](evidence/parallel-closeout-2200.md). Ownership at that time was tracked in [GitHub #24](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/24); the earlier ledger below is retained as history. #43–46 have implementation/evidence; #49 is a preview, and #35 remains the next Rachel handoff after publication.
 
-Observed November 16, 2026 (America/Los_Angeles). This is the active ledger, replacing old dispatch lists as a work locator. A checked item means reviewed output exists; publishing, user approval and live services are separate states. The user authorized the full research-derived backlog on this date. Keep one owner per path and transfer a completed task to the next dependency without rerunning old work.
+Observed November 16, 2026 (America/Los_Angeles). This ledger records the November 16 assignments. See the [current build](PROJECT-STATUS.md#current-build) for the supported game. A checked item means reviewed output exists; publishing, user approval and live services are separate states. The user authorized the full research-derived backlog on this date. Keep one owner per path and transfer a completed task to the next dependency without rerunning old work.
 
 ## Historical ownership at the earlier closeout
 - Kiro: completed readable deck UI, final replay Workflow and existing-card lore review. The separate Crew review reached its cap without a browser result; no worker is left waiting.
@@ -21,7 +21,7 @@ Observed November 16, 2026 (America/Los_Angeles). This is the active ledger, rep
 | K05 | Current release Workflow | Completed wf_0572a745f5194cf1 on 02b1bf8: 157 tests, 2 structure checks, 8/8 seed0 and 4/4 seed60, no console errors | [Actual state/receipts](evidence/kiro-final-polish-verification.md); [11 menu +9 keyboard checks](evidence/final-polish-web.md); publication in PR #17 |
 | K06 | Fresh Crew browser review | Actual bounded Crew attempt timed out without a browser receipt or screenshot | [Inconclusive bounded run](evidence/kiro-closeout-crew-review.md); no browser availability or visual-review success claimed. Night Watch app policy is separate |
 | K07 | Safari and real mobile/WebGL | Safari remote-automation setting absent; iOS simulator unavailable; real-device service access not established | Actual device/account setup required; Chrome viewport alone is not iPhone testing |
-| K08 | Human onboarding and opener choice | Needs first-time player | Fable's [protocol](submission/judge-demo-script.md#part-2-first-time-human-playtest-protocol) is prepared and blank; collect real observation; no agent posing as a human |
+| K08 | Human onboarding and opener choice | Needs first-time player | Fable's [protocol](submission/judge-demo-script.md#three-first-time-players) is prepared and blank; collect real observation; no agent posing as a human |
 | K09 | Final-build performance | Codex measured three current-build local loads: median input readiness 689ms; all startup checks passed | [Method/receipt](evidence/kiro-closeout-performance.md); not comparable to the old benchmark method |
 | K10 | Final demonstration / public YouTube | 58.73s preview assembled from current menu/deck/settings plus real seed60 gameplay; public YouTube pending | Final UI and Kiro proof; no fabricated video URL |
 | K11 | README / judge guide / Devpost reconciliation | Published README/judge guide plus reconciled Devpost draft | Actual Devpost form submission remains pending |

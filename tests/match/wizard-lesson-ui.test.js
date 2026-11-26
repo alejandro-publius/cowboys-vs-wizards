@@ -4,8 +4,7 @@
 // exports and the real engine; nothing here stands in for src/game/showdown/wizard-lesson-policy.js.
 // The accepted receipts come from scripts/wizard-lesson/fixture.mjs. They are SIMULATED: no Kiro run made them. The
 // "imported" copy has the fixture marker removed only to exercise the train.mjs label path.
-// mountWizardLesson gets a minimal fake root and document: it reads only innerHTML, querySelector, addEventListener and
-// event.target, so the page logic (opt-in, import, storage) runs unchanged without a browser.
+// The fake root also checks that the lesson's accessible name points to a heading in the rendered view.
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import test from "node:test";
@@ -80,7 +79,14 @@ function memoryStorage(entries = {}) {
 function mountPage({storage = memoryStorage()} = {}) {
   const listeners = {};
   const keydown = [];
-  const root = {hidden: false, innerHTML: "", querySelector: () => null, addEventListener: (type, fn) => { listeners[type] = fn; }};
+  const root = {
+    hidden: false, innerHTML: "", querySelector: () => null,
+    addEventListener: (type, fn) => { listeners[type] = fn; },
+    setAttribute(name, value) {
+      assert.equal(name, "aria-labelledby");
+      assert.ok(this.innerHTML.includes(`<h1 id="${value}">`));
+    },
+  };
   const rematches = [];
   const closes = [];
   const files = [];
