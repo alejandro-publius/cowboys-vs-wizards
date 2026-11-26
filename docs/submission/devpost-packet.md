@@ -6,9 +6,9 @@
 
 **Cowboys vs. Wizards: Showdown** is a haunted-Western card duel you play in a browser. You pick every attack, your troops shield your Base, and turns alternate.
 
-The illustrated title opens **Ride or Fight?**, one real turn at the Bone Fence. Your Outrider can strike the Skeleton, or ride past it and hit the Wizard Base. **Restart this duel** puts the same turn back so you can try the other choice. A build includes this position only if both choices still replay exactly as measured ([Outrider gate](../evidence/outrider-gate.md)).
+On the illustrated title, open **Night Shift Saloon**. Kiro proposed lowering Billy’s attack from two to one. Fire each version at the same Bone Wall. The original rules resolve the shot in your browser. The bots lose with the weaker Billy. Take his next turn against Headless Horseman and see whether attacking or taking cover can change that outcome. The Saloon performers replay the recorded Kiro shift. The Sheriff’s Ledger holds a four-step record of both endings. Billy still has two attack on the Trail.
 
-Camp's ledger holds one Kiro balance decision: lower Billy's attack from 2 to 1. The game replays one recorded deal both ways and shows the written rule the proposal passed. The card itself is unchanged and waits for design approval. The [judge walkthrough](../JUDGE-GUIDE.md#one-minute-walkthrough) covers all three steps in a minute.
+**Ride or Fight?** opens a separate playable turn at the Bone Fence. Ride past the Skeleton to hit the Wizard Base, or fight the Skeleton. Restart the turn to try the other choice. [One-minute walkthrough](../JUDGE-GUIDE.md#one-minute-walkthrough) · [Outrider gate](../evidence/outrider-gate.md)
 
 ## The Kiro balance decision
 
@@ -92,7 +92,7 @@ The Showdown rules are plain JavaScript in `src/game/showdown/`, with no DOM, re
 
 - **Category: OWNER.** The lane-era draft proposed Costume Contest because of the illustrated arena. The public root is now the illustrated Showdown.
 - **Crew bonus:** the Night Watch app has [its own repository](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch). Its form write-up is not drafted.
-- **Blog bonus:** requires a public third-party post that mentions Kiroween 2026. The draft [build story](build-story.md) still tells the lane-era story.
+- **Blog bonus:** requires a public third-party post that mentions Kiroween 2026. The publishable [build story](build-story.md) opens with the Billy audit. The earlier lane version is archived below its end marker.
 - **Social bonus:** optional. A person must write it; no agent should. Nothing has been posted.
 - **Student eligibility: OWNER.** Requires current enrollment and details for every teammate. School affiliation alone is insufficient.
 

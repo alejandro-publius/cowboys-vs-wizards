@@ -1,18 +1,18 @@
 # Cowboys vs. Wizards: Showdown
 
-A short, haunted Western card duel built with Kiro for Kiroween 2026. Your troops guard your Base. You choose when they attack, who they hit and which cards to sacrifice for a stronger summon.
+A haunted Western card duel built with Kiro for Kiroween 2026. In the Night Shift Saloon, Kiro wants to take one attack point from Billy. Fire at Bone Wall with both versions. When the weaker Billy loses in the bots’ hands, take his next turn and try to win the same deal. Out on the Trail, you choose every attack, defend your Base and build your own deck.
 
 **[Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/)** · [One-minute judge walkthrough](docs/JUDGE-GUIDE.md) · [Rules and cards](prototypes/showdown/RULEBOOK.md) · [Current build and review status](docs/PROJECT-STATUS.md#current-build)
 
-![The Bone Fence in the live game. The Outrider faces a Skeleton guarding the Wizard Base, with four Cowboy cards in hand.](docs/evidence/showdown-bone-fence-094af9b.png)
+![The Night Shift Saloon. Beside the recorded Kiro review, Billy can attack Headless Horseman or take cover on turn nine.](docs/evidence/showdown-saloon-billy-table.png)
 
 ## Play Showdown
 
 | Where to start | What to try |
 | --- | --- |
+| [Night Shift Saloon](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) | Fire Billy’s current two-attack shot and Kiro’s proposed one-attack shot at the same Bone Wall. The original rules resolve your shot in your browser. With the proposed Billy, take his next turn against Headless Horseman and change the ending. The notice board holds the [100,000-duel audit](docs/evidence/billy-seat-audit/README.md). |
 | [Ride or Fight?](https://alejandro-publius.github.io/cowboys-vs-wizards/?outrider=case-e) | Pick the Outrider. Strike the Skeleton or ride past it and hit the Wizard Base. Restart the same turn and try the other choice. |
 | [Camp and the Trail](https://alejandro-publius.github.io/cowboys-vs-wizards/) | Choose **Camp**, then **Boot Hill** for your first Trail duel. Camp also holds the deck builder, Wanted bounties and two-player mode. |
-| [Recorded Kiro balance review](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) | Inspect the proposal to cut Billy’s attack from 2 to 1. Then play the same turn at both values. [Replay Billy vs. Bone Wall](https://alejandro-publius.github.io/cowboys-vs-wizards/?replay=billy) |
 | [Replay Room](https://alejandro-publius.github.io/cowboys-vs-wizards/?room=replay) | Pick the Ranger’s target before seeing either outcome. Compare the two recorded lines and play the turn yourself. |
 | [Even Fight](https://alejandro-publius.github.io/cowboys-vs-wizards/?even-fight=1) | Try cover against spells and a seven-orb Base for the second player. Practice also offers a [best of three](https://alejandro-publius.github.io/cowboys-vs-wizards/?even-fight=series) and [two players on one device](https://alejandro-publius.github.io/cowboys-vs-wizards/?even-fight=two). |
 | [Boot Hill Poker](https://alejandro-publius.github.io/cowboys-vs-wizards/poker/) | Draw a five-card hand against the Wizard. The Saloon’s back table opens this second game. |

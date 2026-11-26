@@ -41,7 +41,7 @@ possible. Use human playtests to judge clarity and fun.
   from docs/AGENT-ROUTER.md.
 - Showdown routes, as this checkout stages them (introduced by PR 186): the
   site root / starts the illustrated Showdown (src/ui/showdown-3d) with the
-  Ride or Fight? challenge, Camp secondary; /3d/ is a byte-identical
+  Night Shift Saloon, Ride or Fight? challenge and Camp; /3d/ is a byte-identical
   compatibility copy of that build; /graybox/ stages the same game in the
   lightweight graybox (src/app.js) with direct Camp entry.
 - The earlier lane duel and its lane-based 3D build (src/main.js, src/render/)

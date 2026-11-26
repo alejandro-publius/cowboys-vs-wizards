@@ -520,6 +520,38 @@ async function browserChecks() {
     assert.deepEqual(samples, pokerSeeds.map(seed => [shuffleDeck(seed), newDeal({seed, first: "wizard", human: "wizard"})]));
     check("the staged Poker deck and dealt state match Node for five numeric and text seeds");
 
+    // The title leads to two real engine continuations of one shot. Replaying cannot advance the other arm or the career.
+    {
+      const table = "#room-for-night-shift-saloon .saloon-billy-table";
+      await open("");
+      await wait(`document.querySelector(".title-scene nav button")?.id === "menu-saloon"`);
+      await activateByKey("#menu-saloon");
+      await wait(`document.querySelector("#room-for-night-shift-saloon")?.open && !document.querySelector("${table}").hidden`);
+      const saved = () => evaluate(`localStorage.getItem("cvw-showdown-save-v2")`);
+      const before = await saved();
+      const result = `document.querySelector("${table} .saloon-shot-result").textContent`;
+      assert.equal(await evaluate(result), "");
+      for (const [line, orbs, finish] of [
+        ["candidate", 1, /Bone Wall holds with 1 orb.*Wizards won on turn 20/],
+        ["baseline", 0, /Bone Wall falls.*Cowboys won on turn 13/],
+        ["candidate", 1, /Bone Wall holds with 1 orb.*Wizards won on turn 20/],
+      ]) {
+        const button = `${table} [data-shot="${line}"]`;
+        await activateByKey(button);
+        assert.match(await evaluate(result), finish);
+        assert.equal(await evaluate(`document.querySelector("${table} .saloon-shot-orbs").textContent`), `${orbs} of 2 orbs`);
+        assert.equal(await evaluate(`document.querySelector('${button}').getAttribute("aria-pressed")`), "true");
+        assert.equal(await evaluate(`document.querySelector("${table} .saloon-shot-reply").hidden`), line !== "candidate");
+      }
+      const reply = `document.querySelector("${table} .saloon-reply-result").textContent`;
+      for (const [move, finish] of [["cover", /Cowboys won on turn 21/], ["attack", /Wizards won on turn 18/], ["cover", /Cowboys won on turn 21/]]) {
+        await activateByKey(`${table} [data-reply="${move}"]`);
+        assert.match(await evaluate(reply), finish);
+      }
+      assert.equal(await saved(), before);
+      check("the title opens the Night Shift Saloon; both Billy shots reproduce their finishes, and Billy can attack or take cover to change the result without changing the career");
+    }
+
     // ?saloon=review: the staged illustrated root opens the recorded room at the validated Billy decision.
     {
       const room = "#room-for-night-shift-saloon";

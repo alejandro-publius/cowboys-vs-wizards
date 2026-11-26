@@ -14,6 +14,7 @@ import {activityLabel} from "../night-shift-presence.js";
 import {TYPES} from "../../game/showdown/cards.js";
 import {BOUNTIES} from "../../game/showdown/progress.js";
 import {mountRepairReplay} from "../field-trial-replay.js";
+import {mountBillyTable} from "../saloon-billy-table.js";
 import {seatAuditOk} from "../billy-replay.js";
 import SEAT_AUDIT from "../../../docs/evidence/billy-seat-audit/result.json" with {type: "json"};
 import SEAT_PROTOCOL from "../../../docs/evidence/billy-seat-audit/protocol.json" with {type: "json"};
@@ -385,6 +386,7 @@ const ROOM_HTML = `
   <div class="saloon-theater">
     <div class="saloon-theater-host" aria-hidden="true" inert></div>
   </div>
+  <section class="saloon-billy-table" aria-labelledby="saloon-shot-title" hidden></section>
   <div class="saloon-stage" data-actor="">
     <div class="saloon-wall">
       <figure class="saloon-wanted">
@@ -462,6 +464,8 @@ export function mountNightShiftSaloon({content, recording, portrait = () => null
   content.classList.add("saloon-room");
   content.innerHTML = ROOM_HTML;
   const q = (selector) => content.querySelector(selector);
+  const billyTable = q(".saloon-billy-table");
+  if (mode !== "live" && typeof __CVW_BILLY_TABLE__ !== "undefined") mountBillyTable(billyTable, __CVW_BILLY_TABLE__, portrait);
   // "Replay the repair": a recorded field trial, separate from the shift feed and the stage.
   // Hidden when no fresh check and witness are recorded; `fieldTrial` defaults to FIELD_TRIAL.
   const repair = mountRepairReplay(q(".saloon-repair"), {trial: fieldTrial, portrait});
@@ -523,7 +527,7 @@ export function mountNightShiftSaloon({content, recording, portrait = () => null
     content.dataset.view = view;
     theater.hidden = view !== "3d";
     const focused = controls.contains(document.activeElement) ? document.activeElement : null;
-    if (view === "3d") theater.after(controls); else stage.after(controls);
+    if (view === "3d") billyTable.after(controls); else stage.after(controls);
     if (focused && document.activeElement !== focused) focused.focus({preventScroll: true});
   }
   function dropStage() {
