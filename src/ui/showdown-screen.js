@@ -49,9 +49,10 @@ function costLine(type) {
   if (cost) return `Cost: ${cost} of your troops, sent to the graveyard. Attacks the turn it arrives.`;
   return TYPES[type].keys.includes("quickdraw") ? "Cost: none." : "Cost: none. Rests the turn it arrives.";
 }
-export function face(type, extra = "") {
+export function face(type, extra = "", evenFight = false) {
   const card = TYPES[type];
-  const rules = card.kind !== "troop" ? EFFECTS[card.effect].text : "";
+  const rules = evenFight && card.effect === "hellfire" ? "Remove 1 orb from each enemy troop outside cover."
+    : card.kind !== "troop" ? EFFECTS[card.effect].text : "";
   return `<strong>${card.name}</strong>${typeLine(card)}${card.kind === "troop" ? `${card.attack} attack · ${plural(card.health, "orb")} ${keywords(card)}` : ""}
     ${rules ? `<span class="sd-note">${rules}</span>` : ""}${card.kind === "troop" ? `<span class="sd-note">${costLine(type)}</span>` : ""}${extra}`;
 }
@@ -124,7 +125,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
   const solo = () => players === 1;
   // A Wizard lesson reviews one single solo game of the Cowboy seat against the ordinary bot: not a game of a best of
   // three, two players, the Wizard seat, or a lesson rematch (whose Wizard may not be the ordinary one).
-  const reviewable = (current) => Boolean(onReview) && solo() && seat === "cowboy" && !match && !lesson && current.kind !== "lesson";
+  const reviewable = (current) => Boolean(onReview) && solo() && seat === "cowboy" && !match && !lesson && current.kind !== "lesson" && current.kind !== "even-fight";
   const viewer = () => session.viewer();
   // Solo wording speaks to the player; two players are named by faction.
   const whoseBase = (side) => (solo() && side === viewer() ? "Your" : FACTION[side]);
@@ -148,7 +149,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     const opener = document.activeElement; // the control that opened this duel, read before the deal
     [duel, players, seat] = [nextDuel, seats, seats === 1 ? side : "cowboy"];
     lesson = rematch && seats === 1 && seat === "cowboy" && best === 1 ? rematch : null;
-    camp = lesson ? null : own ?? (seat === "cowboy" ? campaign : null);
+    camp = lesson || duel.kind === "even-fight" ? null : own ?? (seat === "cowboy" ? campaign : null);
     const progress = solo() ? camp?.progress() : null;
     match = best > 1 ? newMatch(progress ? {deck: progress.deck, side: progress.side} : {}) : null;
     deal(dealSeed);
@@ -242,7 +243,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
       outcome.matchOver = matchOver(match);
     }
     // Two players, an experiment turn (showdown-turn.js) and a Wizard lesson rematch settle nothing and add no playtest line.
-    if (!solo() || duel.kind === "turn" || duel.kind === "lesson") return present();
+    if (!solo() || duel.kind === "turn" || duel.kind === "lesson" || duel.kind === "even-fight") return present();
     // The run id makes the log ignore a second report of this same finished game. The log is the Cowboy career's.
     const logGame = () => {
       if (seat === "cowboy") playtest?.add({name: duel.name, won: result.winner === session.seat, turns: view.turn,
@@ -276,6 +277,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     if (!outcome.matchOver) return `Game ${match.game + 1}`;
     if (duel.kind === "turn") return "Retry";
     if (duel.kind === "lesson") return "Same deal again";
+    if (duel.kind === "even-fight") return match ? "Play another series" : "Deal again";
     if (!solo()) return duel.kind === "earned" ? "Rematch: earned decks, not an even match" : "Play again";
     if (!outcome.won) return repeat() ? "Rematch" : null;
     return duel.kind === "trail" || !repeat() ? null : "Play it again";
@@ -292,6 +294,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
       }
       return deal(nextSeed());
     }
+    if (duel.kind === "even-fight") return start(duel, nextSeed(), {players, best});
     // Two players again with the same decks (the starter decks, or the earned decks of showdown-earned.js).
     if (!solo()) return start(duel, nextSeed(), {players: 2, best});
     if (duel.kind === "turn" || duel.kind === "lesson") return deal(seed);
@@ -503,7 +506,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
       const card = cardOf(cardId);
       const on = playable.has(card.name);
       return `<button type="button" class="sd-card ${card.side} ${card.rarity}${pick?.card === cardId ? " sd-pick" : on ? " sd-can" : ""}" data-frame="${card.kind}" data-card="${cardId}" ${on ? "" : "disabled"}>
-        ${face(typeOf(cardId), mine && !on ? `<span class="sd-note sd-warn">${blocked(view, cardId)}</span>` : "")}</button>`;
+        ${face(typeOf(cardId), mine && !on ? `<span class="sd-note sd-warn">${blocked(view, cardId)}</span>` : "", view.evenFight)}</button>`;
     }).join("");
 
     const r = view.result;
@@ -541,6 +544,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     }
     // The cover choice comes after the attack's trap hint, so the hint reads as part of the attack. With no attack, it starts with the button's name.
     if (canCover) $("sd-prompt").append(` ${aims.size ? "Or take" : "Take"} cover: until your next turn it keeps extra damage off your Base, but it will not hit back.`);
+    if (canCover && view.evenFight) $("sd-prompt").append(" Spells cannot hit a troop in cover.");
     $("sd-end").hidden = Boolean(r);
     $("sd-end").disabled = !options.some((a) => a.type === "end");
     showChallengeChoices();

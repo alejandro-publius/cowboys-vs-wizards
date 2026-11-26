@@ -14,7 +14,7 @@
 // Drawing from an empty deck costs your Base one orb instead. A seventh card is discarded.
 import {mulberry32} from "../frontier-kit/seeded-rng.js";
 
-import {EFFECTS, cardOf, deckIds, has, tributes} from "./cards.js";
+import {DECKS, EFFECTS, cardOf, deckIds, has, tributes} from "./cards.js";
 
 export const BOARD_SIZE = 3;
 export const OPENING_HAND = 4;
@@ -22,6 +22,11 @@ export const HAND_CAP = 6;
 export const TRAP_SLOTS = 2;
 // Whoever goes second starts with this many extra cards, to offset the first move.
 export const SECOND_PLAYER_CARDS = 1;
+// Fixed decks for the optional Even Fight rules. The only exchange is one Wizard Skeleton for an Imp.
+export const EVEN_FIGHT_DECKS = Object.freeze({
+  cowboy: DECKS.cowboy,
+  wizard: Object.freeze({...DECKS.wizard, "wizard-skeleton": 3, "wizard-imp": 2}),
+});
 // Only a guard against an endless game: an empty deck already ends games.
 export const TURN_CAP = 80;
 
@@ -39,16 +44,16 @@ const arrive = (cardId, turn, {health = cardOf(cardId).health, paid = false} = {
 // baseOrbs is one number for both sides or {cowboy, wizard}; decks is {cowboy, wizard} card counts (cards.js DECKS by default).
 // opening is {cowboy, wizard} lists of {type, health} troops already on the board, for a bounty's boss.
 // arrivals is {cowboy, wizard} lists of {type, turn, health}: a boss that lands by itself at the start of its side's turn `turn`, or the first turn after with a free slot.
-export function createShowdown(seed, {baseOrbs = 5, first, secondPlayerCards = SECOND_PLAYER_CARDS, decks = {}, opening = {}, arrivals = {}} = {}) {
+export function createShowdown(seed, {baseOrbs, first, secondPlayerCards = SECOND_PLAYER_CARDS, decks = {}, opening = {}, arrivals = {}, evenFight = false} = {}) {
   const next = random(seed);
   const sides = {};
   for (const side of ["cowboy", "wizard"]) {
-    const deck = deckIds(side, decks[side]);
+    const deck = deckIds(side, decks[side] ?? (evenFight ? EVEN_FIGHT_DECKS[side] : undefined));
     for (let i = deck.length - 1; i > 0; i--) {
       const j = Math.floor(next() * (i + 1));
       [deck[i], deck[j]] = [deck[j], deck[i]];
     }
-    const base = baseOrbs[side] ?? baseOrbs;
+    const base = baseOrbs?.[side] ?? baseOrbs ?? 5;
     const board = Array(BOARD_SIZE).fill(null);
     // A troop that opens on the board has been there since before turn 1, so it does not rest.
     (opening[side] ?? []).forEach(({type, health}, slot) => { board[slot] = arrive(`${type}-0`, 0, {health}); });
@@ -59,8 +64,12 @@ export function createShowdown(seed, {baseOrbs = 5, first, secondPlayerCards = S
   for (const side of ["cowboy", "wizard"]) {
     sides[side].hand = sides[side].deck.splice(0, OPENING_HAND + (side === first ? 0 : secondPlayerCards));
   }
+  if (evenFight && baseOrbs === undefined) {
+    const second = sides[opponent(first)];
+    second.base = second.baseMax = 7;
+  }
   const landing = ["cowboy", "wizard"].flatMap((side) => (arrivals[side] ?? []).map((arrival) => ({side, ...arrival})));
-  return {seed, turn: 1, active: first, first, summonUsed: false, castUsed: false, setUsed: false, attacking: false, location: null, arrivals: landing, result: null, sides};
+  return {seed, ...(evenFight ? {evenFight: true} : {}), turn: 1, active: first, first, summonUsed: false, castUsed: false, setUsed: false, attacking: false, location: null, arrivals: landing, result: null, sides};
 }
 
 // A troop's attack now: its card, its gear, and the location if the location names its tag.
@@ -88,6 +97,9 @@ function targetsFor(state, slot) {
   return [...(guards.length ? guards : troops), ...(open ? ["base"] : [])];
 }
 
+// Both the spell menu and Hellfire damage use the same cover rule for this duel.
+const exposedToSpell = (state, troop) => troop && !(state.evenFight && troop.cover);
+
 // Every action the active side may take now. One entry per card type, so copies are not listed twice.
 export function legalActions(state) {
   if (state.result) return [];
@@ -108,10 +120,10 @@ export function legalActions(state) {
     }
     if (card.kind === "spell" && !state.castUsed) {
       if (!EFFECTS[card.effect].target) {
-        if (enemy.board.some(Boolean)) actions.push({type: "spell", cardId});
+        if (enemy.board.some((troop) => exposedToSpell(state, troop))) actions.push({type: "spell", cardId});
       } else {
         enemy.board.forEach((troop, target) => {
-          if (!troop || has(troop.cardId, "ghostly") || (card.effect === "tie" && troop.stunned)) return;
+          if (!exposedToSpell(state, troop) || has(troop.cardId, "ghostly") || (card.effect === "tie" && troop.stunned)) return;
           actions.push({type: "spell", cardId, target});
         });
       }
@@ -271,7 +283,7 @@ export function applyAction(state, action) {
     fromHand();
     own.discard.push(action.cardId);
     next.castUsed = true;
-    const hit = effect === "hellfire" ? enemy.board.flatMap((troop, slot) => (troop ? [slot] : [])) : [action.target];
+    const hit = effect === "hellfire" ? enemy.board.flatMap((troop, slot) => (exposedToSpell(next, troop) ? [slot] : [])) : [action.target];
     for (const slot of hit) {
       const troop = enemy.board[slot];
       if (effect === "tie") troop.stunned = true;
