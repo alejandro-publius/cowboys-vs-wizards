@@ -40,7 +40,8 @@
 //   MODES=bo3,hotseat node scripts/browser-showdown-modes-check.mjs dist/cowboys-vs-wizards-showdown-3d.html):
 // Open range is a Camp room there. On both builds the status line carries the live tally (game N of 3 and the score)
 // on each game's first board and after each result; the illustrated table also draws it on screen, out of the
-// accessibility tree, and never behind the curtain.
+// accessibility tree, and never behind the curtain. After each result it draws a headline that crosses no result
+// button, at 1440 x 900, on a 375 x 740 phone and on a short 320 x 568 one.
 //
 // Bot-driven flow and storage checks. Not a human playtest; says nothing about clarity or fun.
 import assert from "node:assert/strict";
@@ -247,6 +248,41 @@ async function session(label) {
     if (expected) assert.ok(s.status.includes(` · ${expected}`), `the status line carries "${expected}" ${when}: ${s.status}`);
     if (s.copy) assert.deepEqual(s.copy, {drawn: expected, hidden: "true"}, `the table draws the tally ${when}`);
   };
+  // After a result the illustrated table draws its headline, and no line of it crosses a visible result button: at
+  // this size, on a 375 x 740 phone and on a short 320 x 568 one. The graybox draws none; the 3D renderer marks the
+  // illustrated table with the sd-diorama class. gap: px from the headline's lowest line to the nearest button below.
+  const HEADLINE_SIZES = [[WIDTH, HEIGHT, false], [375, 740, true], [320, 568, true]];
+  const measureHeadline = () => evaluate(`(() => {
+    const h = document.querySelector('#sd-field .table-award');
+    const range = document.createRange();
+    if (vis(h)) range.selectNodeContents(h);
+    const lines = vis(h) ? [...range.getClientRects()].filter((l) => l.width && l.height) : [];
+    const shown = buttons(document.getElementById('sd-result')).map((n) => ({id: n.id || txt(n), box: n.getBoundingClientRect()}));
+    const sharesX = (a, b) => a.left < b.right && b.left < a.right;
+    const crosses = (a, b) => sharesX(a, b) && a.top < b.bottom && b.top < a.bottom;
+    const gaps = shown.flatMap(({box}) => lines.filter((l) => sharesX(l, box)).map((l) => box.top - l.bottom));
+    return {
+      headline: vis(h) ? txt(h) : null,
+      lines: lines.length,
+      buttons: shown.map((b) => b.id),
+      crossed: shown.filter(({box}) => lines.some((l) => crosses(l, box))).map((b) => b.id),
+      gap: gaps.length ? Math.round(Math.min(...gaps) * 10) / 10 : null,
+    };
+  })()`);
+  const assertHeadlineClear = async (when) => {
+    if (!(await evaluate(`document.getElementById('showdown').classList.contains('sd-diorama')`))) return;
+    const readings = [];
+    for (const [width, height, mobile] of HEADLINE_SIZES) {
+      await send("Emulation.setDeviceMetricsOverride", {width, height, deviceScaleFactor: 1, mobile});
+      readings.push({size: `${width} x ${height}`, ...(await measureHeadline())});
+    }
+    await send("Emulation.setDeviceMetricsOverride", {width: WIDTH, height: HEIGHT, deviceScaleFactor: 1, mobile: false});
+    for (const r of readings) {
+      assert.ok(r.lines > 0 && r.buttons.length > 0, `a drawn headline and result buttons ${when} at ${r.size}: ${JSON.stringify(r)}`);
+      assert.deepEqual(r.crossed, [], `result buttons under the headline ${when} at ${r.size}: ${JSON.stringify(r)}`);
+    }
+    check(`the result headline clears its buttons ${when}`, readings);
+  };
 
   // Seat privacy for the seat on screen: every hand card is that seat's, the other seat's hand is
   // card backs and a count, and no card id of the other seat outside its public board and graveyard.
@@ -369,7 +405,7 @@ async function session(label) {
     await send("Input.dispatchKeyEvent", {type: "keyUp", key: name, code: name, windowsVirtualKeyCode: code});
   };
   return {focusAt, focusLog, assertReadyFocused, assertTableFocused, key, send, evaluate, wait, press, click, byText, text, shot, storage, progress, seedStorage, load, openCamp, tile, tileState, startFrom,
-    winSolo, playGame, takeOffer, toCamp, assertCurtain, assertSeries, curtainUp, check, run, dialogs: () => dialogs,
+    winSolo, playGame, takeOffer, toCamp, assertCurtain, assertSeries, assertHeadlineClear, curtainUp, check, run, dialogs: () => dialogs,
     close: async () => { cdp.close(); await chrome.close(); }};
 }
 
@@ -554,6 +590,7 @@ const RUNS = {
       const label = await s.evaluate(`document.getElementById('sd-again')?.textContent??null`);
       const wins = games.filter((g) => g.won).length, losses = games.length - wins; // the click bot never drew here; a draw would fail below
       await s.assertSeries(`game ${n} of 3 · you ${wins}, Wizards ${losses}`, `after game ${n}`);
+      await s.assertHeadlineClear(`after game ${n}`);
       if (wins >= 2 || losses >= 2) break;
       assert.equal(label, `Game ${n + 1}`);
       assert.deepEqual(await s.progress(), withSide, "nothing is saved between games");
@@ -603,6 +640,7 @@ const RUNS = {
       games.push(game);
       if (game.won) wins[game.won] += 1;
       await s.assertSeries(tally(games.length), `after game ${games.length}`);
+      await s.assertHeadlineClear(`after game ${games.length}`);
       if (games.length > 1 && games.at(-2).won) assert.equal(game.opened, games.at(-2).won === "cowboy" ? "wizard" : "cowboy", "the loser opens");
       // After a result both look at the board: no hand and no set trap is shown.
       assert.equal(await s.evaluate(`document.querySelectorAll('#sd-hand [data-card]').length`), 0, "no hand after the result");
