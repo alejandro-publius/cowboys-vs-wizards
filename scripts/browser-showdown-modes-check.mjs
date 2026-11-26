@@ -509,7 +509,7 @@ const RUNS = {
     const [first, second] = RIVALS;
     assert.equal((await s.tileState(first.name)).disabled, false);
     const waiting = await s.tileState(second.name);
-    assert.deepEqual([waiting.disabled, /Beat the rival before/.test(waiting.text)], [true, true], waiting.text);
+    assert.deepEqual([waiting.disabled, waiting.text.includes(`Beat ${first.name} first`)], [true, true], waiting.text);
     s.check(`After the Trail: ${first.name} is open and ${second.name} waits for her`, waiting.text);
     const {seed, results} = await s.winSolo(s.tile(first.name), first.name);
     const shown = await s.evaluate(`txt(document.getElementById('sd-result'))`);

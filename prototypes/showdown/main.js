@@ -4,7 +4,7 @@ import {DECKS, EFFECTS, KEYWORDS, RARITY, TYPES, cardOf, tributes} from "./cards
 import {viewFor} from "./contract.js";
 import {presentAttackForecast} from "../../src/game/showdown/presenter.js";
 import {applyAction, attackOf, canAttack, createShowdown, legalActions, opponent, playTurn} from "./rules.js";
-import {BOUNTIES, DECK_SIZE, HUNTS, RIVALS, SIDE_SIZE, choose, deckProblems, duelFor, duelList, newSave, openPack, owned, trailDone, withDeck} from "./progress.js";
+import {BOUNTIES, DECK_SIZE, HUNTS, RIVALS, SIDE_SIZE, choose, deckProblems, duelFor, duelList, newSave, openPack, owned, packOpens, trailDone, withDeck} from "./progress.js";
 import {createCampaign, createCampaignWriter} from "../../src/match/showdown-campaign.js";
 import {createPlaytestLog, newRunId} from "../../src/match/showdown-playtest.js";
 import {TRAIL} from "./trail.js";
@@ -154,12 +154,15 @@ function renderCamp() {
   const list = duelList(save);
   // First things first: a card to choose, then a pack to open.
   const next = TRAIL[save.wins];
+  const opens = packOpens(save);
+  const held = save.packs && !opens
+    ? `<p id="packs-empty" class="note">${plural(save.packs, "pack")} ${save.packs === 1 ? "holds" : "hold"} nothing new: every card you can earn now is yours.</p>` : "";
   const hint = picked ? `<p class="good">Added ${TYPES[picked].name}: you now own ${owned(save, picked)}. The new copy is not in your deck yet: use Build deck below.</p>` : "";
   $("claim").innerHTML = save.offer ? `<h2>${OFFER_HEADING}</h2><p class="note">You won. The one you pick goes into your collection.</p>${offerRow()}`
     : opened ? `<h2>In the pack</h2><div class="row">${opened.map((type) => `<div class="${cardClass(type)} earned">${face(type, {full: true})}</div>`).join("")}</div>
-        <div class="row"><button type="button" id="pack-done">${save.packs ? `Open the next pack (${save.packs} left)` : "Add them to my collection"}</button></div>`
-    : save.packs ? `${hint}<h2>${plural(save.packs, "pack")} to open</h2><div class="row"><button type="button" class="pack can" id="pack">Open a pack: three cards</button></div>`
-    : `${hint}${next ? `<p id="next">${save.wins === 0 && !playtest.entries().length ? "Start here" : "Next"}: click <strong>${next.name}</strong> to play ${save.wins === 0 ? "your first duel" : "it"}.</p>` : ""}`;
+        <div class="row"><button type="button" id="pack-done">${opens ? `Open the next pack (${save.packs} left)` : "Add them to my collection"}</button></div>`
+    : opens ? `${hint}<h2>${plural(save.packs, "pack")} to open</h2><div class="row"><button type="button" class="pack can" id="pack">Open a pack</button></div>`
+    : `${hint}${held}${next ? `<p id="next">${save.wins === 0 && !playtest.entries().length ? "Start here" : "Next"}: click <strong>${next.name}</strong> to play ${save.wins === 0 ? "your first duel" : "it"}.</p>` : ""}`;
 
   // While a card is on offer nothing else can be started: the choice comes first.
   const tile = (duel, note, off = duel.state !== "open") => `<li><button type="button" class="tile ${duel.state}" ${off || save.offer ? "disabled" : `data-duel="${duel.id}"`}>
@@ -544,7 +547,7 @@ document.addEventListener("click", (event) => {
   else if (d.card) clickCard(d.card);
   else if (d.own) clickOwn(Number(d.own));
   else if (d.enemy) clickEnemy(d.enemy === "base" ? "base" : Number(d.enemy));
-  else if (b.id === "pack" || (b.id === "pack-done" && save.packs)) writeFrom(b, () => {
+  else if ((b.id === "pack" || b.id === "pack-done") && packOpens(save)) writeFrom(b, () => {
     const pack = openPack(save);
     keep(pack.save);
     opened = pack.cards;
