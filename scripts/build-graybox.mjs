@@ -24,7 +24,7 @@ const output = diorama ? "dist/cowboys-vs-wizards-showdown-3d.html" : process.ar
   : hosted || process.argv.includes("--web") ? "dist/web/index.html" : "dist/cowboys-vs-wizards-board-duel.html";
 // K-087: the page's public build label (commit, "+local" if uncommitted), so the Camp's playtest report can say
 // which build each duel was finished under. Null without git: the report then says the build is not identified.
-const label = grayboxBuildLabel(fileURLToPath(root));
+const label = grayboxBuildLabel(fileURLToPath(root), diorama ? "illustrated" : "graybox");
 // K-011: the Outrider turns the gate verifies now, from this tree (scripts/outrider-gate.mjs). Stale or missing = none,
 // and the page builds without any Outrider control. --outrider-fixture <dir> builds a test page from a fixture
 // directory, written only under .artifacts/ so it is never staged or shipped.
