@@ -85,7 +85,7 @@ export const REPORT_SCHEMA = "referee-legal-branches/1";
 const ROOT = fileURLToPath(new URL("../../", import.meta.url));
 const PATHS = proofPaths(ROOT);
 const ORACLE_SCRIPT = path.join(ROOT, "scripts/referee/branch-oracle.py");
-const ENGINE_FILES = ["src/game/showdown/rules.js", "src/game/showdown/cards.js", "src/game/card-specs.generated.js", "scripts/referee/engine.mjs"];
+const ENGINE_FILES = ["src/game/frontier-kit/seeded-rng.js", "src/game/showdown/rules.js", "src/game/showdown/cards.js", "src/game/card-specs.generated.js", "scripts/referee/engine.mjs"];
 const IN_FLIGHT_PER_WORKER = 4;
 export const CLASS_LEGEND = Object.freeze({
   C1: "Hellfire with no enemy troops: engine refuses, referee accepts (SCHEMA.md R10; open for Fable, issue 143)",

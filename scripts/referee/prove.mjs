@@ -585,6 +585,8 @@ export async function prove(options = {}) {
   const command = options.refereeCommand ?? [process.env.REFEREE_PYTHON || "python3", "-u", paths.referee, "--stream"];
   const head = options.head !== undefined ? options.head : gitHead(paths.root);
   const baseline = {head, engineSha256: hashFile(paths.engine), showdownTreeSha256: hashTree(paths.showdown)};
+  const dealGenerator = hashFile(path.join(paths.root, "src/game/frontier-kit/seeded-rng.js"));
+  if (dealGenerator) baseline.dealGeneratorSha256 = dealGenerator;
 
   let freeze = null, key, recipe;
   if (quick) {

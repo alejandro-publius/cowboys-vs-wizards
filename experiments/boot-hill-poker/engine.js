@@ -7,6 +7,8 @@
 // (toss 0-5 cards, replace from the deck), then showdown. Turn N is the Nth
 // draw turn, so every deal ends on endTurn 2. No betting, no cash.
 
+import {mulberry32} from "../../packages/frontier-kit/seeded-rng.js";
+
 export const SEATS = Object.freeze(['cowboy', 'wizard']);
 export const SEAT_NAMES = Object.freeze({ cowboy: 'Cowboy', wizard: 'Wizard' });
 export const RANKS = '23456789TJQKA';
@@ -46,14 +48,7 @@ export function normalizeSeed(seed) {
 
 // mulberry32: small, fast, identical in Node and browsers.
 export function createRng(seed) {
-  let a = normalizeSeed(seed);
-  return function next() {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
+  return mulberry32(normalizeSeed(seed));
 }
 
 export function makeDeck() {

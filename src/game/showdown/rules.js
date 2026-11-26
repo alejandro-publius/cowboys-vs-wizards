@@ -12,6 +12,8 @@
 // A free troop cannot attack on the turn it arrives. A troop paid for with a tribute can.
 // A trap waits face down and springs on the next enemy attack, one trap per attack.
 // Drawing from an empty deck costs your Base one orb instead. A seventh card is discarded.
+import {mulberry32} from "../frontier-kit/seeded-rng.js";
+
 import {EFFECTS, cardOf, deckIds, has, tributes} from "./cards.js";
 
 export const BOARD_SIZE = 3;
@@ -27,14 +29,7 @@ export const opponent = (side) => (side === "cowboy" ? "wizard" : "cowboy");
 
 // mulberry32: the same seed always gives the same deal.
 export function random(seed) {
-  let a = seed >>> 0;
-  return () => {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
+  return mulberry32(seed >>> 0);
 }
 
 // ready: whether it may attack on the turn it arrives. Only a troop paid for with a tribute, or one with Quickdraw, may.

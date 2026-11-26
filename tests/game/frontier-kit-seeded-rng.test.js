@@ -1,29 +1,16 @@
-// Frontier kit seeded RNG: packages/frontier-kit/seeded-rng.js against the two game generators it could replace.
-//   Showdown: random(seed) in src/game/showdown/rules.js (createShowdown's deal, progress.js rolls).
-//   Poker:    createRng(seed) in experiments/boot-hill-poker/engine.js (shuffleDeck, newDeal).
-// Evidence, in order:
-//   1. the transition lines are the same text in all three files;
-//   2. all three streams equal an independent BigInt mulberry32 at seed 0, the uint32 edges, wrapped finite numbers
-//      and a 4096-seed sweep, and the state steps by 0x6d2b79f5 in each;
-//   3. the games read finite numbers and decimal text the same way and other seeds differently, and the kit
-//      refuses every non-number;
-//   4. both games' real deals can be rebuilt from the kit alone;
-//   5. an in-memory copy of each engine, with its generator switched to the kit, gives the same streams, deals and
-//      duels (including Poker's recorded 500-seed cohort), and a deliberately wrong switch is caught.
-// Neither game imports the kit RNG. The switch is only rehearsed here, in Node, never in a browser build (see README.md).
+// The two games keep their seed parsing and use the same generator. Compare streams, deals and historical replays.
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import test from "node:test";
 import * as rngModule from "../../packages/frontier-kit/seeded-rng.js";
 import {mulberry32} from "../../packages/frontier-kit/seeded-rng.js";
-import {measurePairedCohort} from "../../packages/frontier-kit/index.js";
+import {createHash} from "node:crypto";
 import * as showdown from "../../src/game/showdown/rules.js";
 import {deckIds} from "../../src/game/showdown/cards.js";
 import * as poker from "../../experiments/boot-hill-poker/engine.js";
 
-const KIT_RNG = "packages/frontier-kit/seeded-rng.js";
+const KIT_RNG = "src/game/frontier-kit/seeded-rng.js";
 const SHOWDOWN_RULES = "src/game/showdown/rules.js";
-const SHOWDOWN_CARDS = "src/game/showdown/cards.js";
 const POKER_ENGINE = "experiments/boot-hill-poker/engine.js";
 const url = (path) => new URL(`../../${path}`, import.meta.url);
 const source = (path) => readFileSync(url(path), "utf8").replace(/\r\n/g, "\n");
@@ -68,26 +55,12 @@ const DISAGREE = [NaN, Infinity, -Infinity, "", undefined, null, "abc", "0x10", 
 // Text both games read as the same integer.
 const AGREE_TEXT = ["17", "-1", " 42 ", "007", "4294967296"];
 
-// ---------------------------------------------------------------- 1. the same transition, and still two copies
-
-const TRANSITION = /a = \(a \+ 0x6d2b79f5\) >>> 0;[\s\S]*?return \(\(t \^ \(t >>> 14\)\) >>> 0\) \/ 4294967296;/g;
-function transitionOf(path) {
-  const found = [...source(path).matchAll(TRANSITION)].map(([text]) => text.replace(/\s+/g, " "));
-  assert.equal(found.length, 1, `${path} holds exactly one mulberry32 transition`);
-  return found[0];
-}
-
-test("the transition lines are the same text in the kit, the Showdown rules and the Poker engine; only the seed line differs", () => {
-  const kit = transitionOf(KIT_RNG);
-  assert.equal(transitionOf(SHOWDOWN_RULES), kit);
-  assert.equal(transitionOf(POKER_ENGINE), kit);
-  assert.match(source(SHOWDOWN_RULES), /export function random\(seed\) \{\n {2}let a = seed >>> 0;\n {2}return \(\) => \{\n/);
-  assert.match(source(POKER_ENGINE), /export function createRng\(seed\) \{\n {2}let a = normalizeSeed\(seed\);\n {2}return function next\(\) \{\n/);
-  assert.match(source(KIT_RNG), /\n {2}let a = seed >>> 0;\n {2}return \(\) => \{\n/);
-});
-
-test("not integrated: both games still run their own generator and neither references the kit RNG", () => {
-  for (const path of [SHOWDOWN_RULES, POKER_ENGINE]) assert.doesNotMatch(source(path), /frontier-kit|seeded-rng/, `${path} does not use the kit`);
+test("the package exposes the same function both games use for deals", async () => {
+  const core = await import(url(KIT_RNG));
+  assert.equal(mulberry32, core.mulberry32);
+  for (const path of [SHOWDOWN_RULES, POKER_ENGINE]) {
+    assert.doesNotMatch(source(path), /0x6d2b79f5/);
+  }
 });
 
 test("the kit module exports one function, imports nothing and touches no runtime global", () => {
@@ -238,99 +211,36 @@ test("Poker: shuffleDeck and the dealt hands rebuild from the kit, seed 0 and te
   }
 });
 
-// ---------------------------------------------------------------- 5. the switch, rehearsed in memory
-// Each engine's own source with its generator body replaced by a call to the kit, loaded from a data: URL so nothing
-// is written to disk. Each game keeps its seed parsing (>>> 0 or normalizeSeed); only the transition comes from the kit.
+// Fingerprints recorded on main 094af9b before removing either original generator.
+const fingerprint = values => createHash("sha256").update(JSON.stringify(values)).digest("hex");
 
-const SHOWDOWN_GENERATOR = `export function random(seed) {
-  let a = seed >>> 0;
-  return () => {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}`;
-const POKER_GENERATOR = `export function createRng(seed) {
-  let a = normalizeSeed(seed);
-  return function next() {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}`;
-const SHOWDOWN_SWITCHED = "export function random(seed) {\n  return mulberry32(seed >>> 0);\n}";
-const POKER_SWITCHED = "export function createRng(seed) {\n  return mulberry32(normalizeSeed(seed));\n}";
-const CARDS_IMPORT = `from "./cards.js";`;
-
-const once = (text, part, what) => assert.equal(text.split(part).length, 2, `${what} appears exactly once`);
-async function switched(path, original, replacement) {
-  let text = source(path);
-  once(text, original, `${path}'s own generator`);
-  text = text.replace(original, () => replacement);
-  if (path === SHOWDOWN_RULES) {
-    // A data: module resolves only absolute specifiers, so point the one relative import at the real cards.js.
-    once(text, CARDS_IMPORT, `${path}'s cards.js import`);
-    text = text.replace(CARDS_IMPORT, () => `from ${JSON.stringify(url(SHOWDOWN_CARDS).href)};`);
-  }
-  const code = `import {mulberry32} from ${JSON.stringify(url(KIT_RNG).href)};\n${text}`;
-  assert.ok(!code.includes("0x6d2b79f5"), "the switched copy has no transition of its own");
-  return import(`data:text/javascript;base64,${Buffer.from(code).toString("base64")}`);
-}
-
-function showdownDuel(engine, seed, first) {
-  let state = engine.createShowdown(seed, {first});
-  while (!state.result) state = engine.playTurn(state, 0).state;
-  return {winner: state.result.winner, endTurn: state.turn};
-}
-
-test("rehearsed switch, Showdown: random() calling the kit keeps every stream, deal and level-0 duel", async () => {
-  const sw = await switched(SHOWDOWN_RULES, SHOWDOWN_GENERATOR, SHOWDOWN_SWITCHED);
-  // Showdown's own seed handling survives the switch, including the seeds the kit itself refuses.
-  for (const seed of [...EDGE_SEEDS, ...WRAPPED, ...DISAGREE, ...AGREE_TEXT]) {
-    assert.deepEqual(take(sw.random(seed), 64), take(showdown.random(seed), 64), `random(${label(seed)})`);
-  }
-  for (const seed of [...EDGE_SEEDS, ...range(500)]) {
-    assert.deepEqual(sw.createShowdown(seed), showdown.createShowdown(seed), `createShowdown(${seed})`);
-    assert.deepEqual(sw.createShowdown(seed, {first: "wizard"}), showdown.createShowdown(seed, {first: "wizard"}), `createShowdown(${seed}, wizard first)`);
-  }
-  // Whole duels through the kit's own paired audit: today's engine is the baseline, the switched copy the candidate.
-  const result = measurePairedCohort({firstSeed: 0, deals: 60, sides: ["cowboy", "wizard"],
-    playBaseline: (seed, first) => showdownDuel(showdown, seed, first), playCandidate: (seed, first) => showdownDuel(sw, seed, first),
-    onPair: ({seed, first, baseline, candidate}) => assert.deepEqual(candidate, baseline, `seed ${seed}, ${first} first`)});
-  assert.equal(result.gamesPerArm, 120);
-  assert.equal(result.switchedWinners, 0);
-  assert.deepEqual(result.candidate, result.baseline);
-});
-
-test("rehearsed switch, Poker: createRng() calling the kit keeps every stream, deal and the recorded 500-seed cohort", async () => {
-  const sw = await switched(POKER_ENGINE, POKER_GENERATOR, POKER_SWITCHED);
-  for (const seed of [...EDGE_SEEDS, ...WRAPPED, ...DISAGREE, ...AGREE_TEXT, "boot hill"]) {
-    assert.deepEqual(take(sw.createRng(seed), 64), take(poker.createRng(seed), 64), `createRng(${label(seed)})`);
-    assert.deepEqual(sw.shuffleDeck(seed), poker.shuffleDeck(seed), `shuffleDeck(${label(seed)})`);
-  }
-  for (const seed of [...EDGE_SEEDS, ...range(200)]) {
-    for (const first of poker.SEATS) {
-      const [after, before] = [sw.newDeal({seed, first, human: null}), poker.newDeal({seed, first, human: null})];
-      assert.deepEqual(after, before, `newDeal(${seed}, ${first} first)`);
-      assert.deepEqual(sw.nextDeal(after), poker.nextDeal(before), `nextDeal after ${seed}, ${first} first`);
+test("500 old Showdown deals in both seats and 120 level-0 duel outcomes replay exactly", () => {
+  const deals = [], duels = [];
+  for (let seed = 0; seed < 500; seed++) {
+    for (const first of ["cowboy", "wizard"]) {
+      let state = showdown.createShowdown(seed, {first});
+      deals.push(state);
+      if (seed < 60) {
+        while (!state.result) state = showdown.playTurn(state, 0).state;
+        duels.push([seed, first, state.result.winner, state.turn]);
+      }
     }
   }
-  const result = measurePairedCohort({firstSeed: 1, deals: 500, sides: ["cowboy", "wizard"],
-    playBaseline: (seed, first) => poker.playPokerDuel(seed, first, "standard"),
-    playCandidate: (seed, first) => sw.playPokerDuel(seed, first, "standard"),
-    onPair: ({seed, first, baseline, candidate}) => assert.deepEqual(candidate, baseline, `seed ${seed}, ${first} first`)});
-  // The totals tests/game/dec4-frontier-kit.test.js records for this cohort (seeds 1-500, standard bot).
-  const recorded = {wins: {cowboy: 500, wizard: 500}, draws: 0, firstWins: 488};
-  assert.deepEqual(result, {gamesPerArm: 1000, baseline: recorded, candidate: recorded, switchedWinners: 0});
+  assert.equal(fingerprint(deals), "59eb499d69e37046d016c7cd2b0461362e625d83de0b55b14163063f7f291a70");
+  assert.equal(fingerprint(duels), "44f6413a1e2f97445bea6d7ac951235245eee54cb783f7cef06dda22047f19e2");
 });
 
-test("the rehearsal is not vacuous: a switch that seeds the kit one off changes both games' seed-0 deals", async () => {
-  const showdownOff = await switched(SHOWDOWN_RULES, SHOWDOWN_GENERATOR, "export function random(seed) {\n  return mulberry32((seed >>> 0) ^ 1);\n}");
-  assert.notDeepEqual(showdownDeal(showdownOff.createShowdown(0)), showdownDeal(showdown.createShowdown(0)));
-  const pokerOff = await switched(POKER_ENGINE, POKER_GENERATOR, "export function createRng(seed) {\n  return mulberry32(normalizeSeed(seed) ^ 1);\n}");
-  assert.notDeepEqual(pokerOff.shuffleDeck(0), poker.shuffleDeck(0));
+test("400 Poker deals with their next deal and 1,000 mirrored outcomes match the original engine", () => {
+  const deals = [], results = [];
+  for (let seed = 0; seed < 500; seed++) {
+    for (const first of poker.SEATS) {
+      if (seed < 200) {
+        const state = poker.newDeal({seed, first, human: null});
+        deals.push([state, poker.nextDeal(state)]);
+      }
+      results.push(poker.playPokerDuel(seed + 1, first, "standard"));
+    }
+  }
+  assert.equal(fingerprint(deals), "0d77a46c73de2cef5a84a19e25101de80668c4e509a281751843c593ef2d4a9b");
+  assert.equal(fingerprint(results), "a8d2066027019018ab4bdc2ae11d2ac39c84ea6aacb06436b401166fad49813d");
 });
