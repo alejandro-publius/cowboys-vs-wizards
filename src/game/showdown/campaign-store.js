@@ -72,15 +72,7 @@ const LANE_CAPTURES = [
 ];
 
 export function laneCapturedCards(storage) {
-  try {
-    const source = storage === undefined ? globalThis.localStorage : storage;
-    const cleared = parsed(read(source, INHERITED_SOURCE))?.clearedHunts;
-    const captures = Array.isArray(cleared)
-      ? LANE_CAPTURES.filter(([, hunts]) => hunts.every((id) => cleared.includes(id))).map(([reward]) => reward)
-      : [];
-    return Object.freeze(captures);
-  } catch {
-    // Some browsers throw when the localStorage property itself is read.
-    return Object.freeze([]);
-  }
+  const cleared = parsed(read(storage, INHERITED_SOURCE))?.clearedHunts;
+  if (!Array.isArray(cleared)) return Object.freeze([]);
+  return Object.freeze(LANE_CAPTURES.filter(([, hunts]) => hunts.every((id) => cleared.includes(id))).map(([reward]) => reward));
 }
