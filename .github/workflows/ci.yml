@@ -22,6 +22,10 @@ jobs:
           node-version: 22
           cache: npm
 
+      # The paired Billy replay compares the recorded engine, decks and bots at this revision.
+      - name: Fetch the frozen Billy replay inputs
+        run: git fetch --no-tags --depth=1 https://github.com/alejandro-publius/cowboys-vs-wizards.git eedab9385931e093e156fdb7885c470eb2ec64eb
+
       - run: npm ci
 
       - run: npm test

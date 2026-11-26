@@ -141,7 +141,13 @@ test("Showdown: the recorded Billy replay cohort reproduces exactly through the 
   const scratch = mkdtempSync(join(tmpdir(), "frontier-kit-billy-"));
   t.after(() => rmSync(scratch, {recursive: true, force: true}));
   let pair;
-  try { pair = await engines(scratch); } catch (error) { t.skip(`pinned Showdown inputs unavailable: ${error.message.split("\n")[0]}`); return; }
+  try {
+    pair = await engines(scratch);
+  } catch (error) {
+    if (process.env.GITHUB_ACTIONS === "true") throw error;
+    t.skip(`pinned Showdown inputs unavailable: ${error.message.split("\n")[0]}`);
+    return;
+  }
   const [baseline, candidate] = pair;
   const k = record.cohort;
   const hash = createHash("sha256").update("seed,first,baseline_winner,candidate_winner,baseline_turn,candidate_turn\n");
