@@ -164,6 +164,21 @@
     text-decoration: underline;
     text-underline-offset: 0.22em;
   }
+  /* The best-of-three tally stays in its top-right place, pinned to the viewport, while focus scrolls to the hand.
+     The header and turn label scroll up from above it, so they never cross it. */
+  .sd-diorama .table-series {
+    position: fixed;
+  }
+  /* A result's headline and buttons scroll through that top band instead; its hand and actions are hidden, so the
+     tally takes their corner. */
+  .sd-diorama.table-resolved .table-series {
+    top: auto;
+    bottom: 16px;
+  }
+  /* Beside a reward offer, it wraps in the room right of the two centred cards (#sd-result .sd-card width). */
+  .sd-diorama.table-resolved:has(#sd-result [data-choose]) .table-series {
+    max-width: calc(50% - clamp(108px, 13vw, 186px) - 43px);
+  }
 }
 .sd-diorama #sd-board,
 .sd-diorama .sd-world-labels {
@@ -367,6 +382,7 @@
 }
 
 .table-turn,
+.table-series,
 .table-selection,
 .table-award {
   position: absolute;
@@ -382,6 +398,16 @@
 .table-turn {
   top: 24px;
   right: 23px;
+}
+/* Under the turn, below the header's bottom edge, and still shown once a game resolves. */
+.table-series {
+  top: 52px;
+  right: 23px;
+  max-width: min(62%, 360px);
+  text-align: right;
+}
+.table-series::first-letter {
+  text-transform: uppercase;
 }
 .table-selection {
   bottom: clamp(172px, 25%, 245px);

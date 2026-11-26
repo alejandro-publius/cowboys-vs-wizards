@@ -60,9 +60,11 @@ export function bindTableUI(root) {
   const field = root.querySelector("#sd-field");
   const prompt = el("p", "table-selection");
   const turn = el("p", "table-turn");
+  // A best of three's game and tally, copied from the status line, which screen readers already hear.
+  const series = el("p", "table-series");
   const headline = el("p", "table-award");
-  for (const node of [prompt, turn, headline]) node.setAttribute("aria-hidden", "true");
-  field.append(turn, prompt, headline);
+  for (const node of [prompt, turn, series, headline]) node.setAttribute("aria-hidden", "true");
+  field.append(turn, series, prompt, headline);
   const nav = root.querySelector("header");
   const goHome = nav.querySelector("#sd-home");
   const status = root.querySelector("#sd-status");
@@ -93,6 +95,8 @@ export function bindTableUI(root) {
       const location = field.dataset.battlefield !== "boot-hill" ? status.textContent.split(" · ")[0] : "";
       turn.textContent = location ? `${location} · Turn ${view.turn}` : `Turn ${view.turn}`;
       turn.hidden = ended;
+      series.textContent = status.querySelector("[data-series]")?.textContent ?? "";
+      series.hidden = !series.textContent;
       headline.textContent = result.querySelector("[data-choose]")
         ? "Choose a card"
         : (added?.textContent.split(":")[0] ?? status.textContent.split(" · ")[0]);
@@ -113,7 +117,7 @@ export function bindTableUI(root) {
       root.classList.remove("table-resolved");
       goHome.textContent = "Back to camp";
       prompt.textContent = "";
-      prompt.hidden = turn.hidden = headline.hidden = true;
+      prompt.hidden = turn.hidden = series.hidden = headline.hidden = true;
     },
   };
 }
