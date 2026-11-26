@@ -47,10 +47,11 @@ const options = {absWorkingDir: fileURLToPath(root), bundle: true, write: false,
   define: {__CVW_GRAYBOX_BUILD__: JSON.stringify(label), __CVW_OUTRIDER__: JSON.stringify({cases: outrider.cases, camp: outrider.camp}),
     __CVW_OUTRIDER_LEDGER__: JSON.stringify(outrider.ledger), __CVW_DIORAMA__: JSON.stringify(diorama), __CVW_CONTEST__: JSON.stringify(contest),
     __CVW_DIORAMA_ATLAS__: JSON.stringify(atlas), __CVW_HAS_PANORAMA__: JSON.stringify(Boolean(panorama))}};
-const [template, style, showdownStyle, boardStyle, boardLicense, bundle] = await Promise.all([
+const [template, style, showdownStyle, replayStyle, boardStyle, boardLicense, bundle] = await Promise.all([
   read("src/ui/graybox.html"),
   read("src/ui/graybox.css"),
   read("src/ui/showdown.css"),
+  read("apps/replay-room/src/room.css"),
   diorama ? Promise.all([
     read("src/ui/showdown-3d/frontier.css"),
     read("src/ui/showdown-3d/board.css"),
@@ -73,7 +74,7 @@ await writeFile(file(`.artifacts/outrider-ledger/${output.replace(/[/.]/g, "_")}
 const preview = diorama
   ? pagePreview("", "Cowboys vs. Wizards: Showdown", "Play a haunted Western card duel. Ride past a Skeleton, protect your Base, and build a deck for the Trail and its Wanted bounties.")
   : pagePreview("graybox/", "Showdown | Lightweight board", "Play the lightweight Cowboys vs. Wizards board. Take on the Trail, build your deck, and hunt the Lantern Wraith and the Graveyard Dragon.");
-await writeFile(file(output), template.replace("@@PAGE_PREVIEW@@", () => preview).replace("@@STYLE@@", () => `${style}\n${showdownStyle}\n${boardStyle}`)
+await writeFile(file(output), template.replace("@@PAGE_PREVIEW@@", () => preview).replace("@@STYLE@@", () => `${style}\n${showdownStyle}\n${replayStyle}\n${boardStyle}`)
   .replace("Cowboys vs. Wizards | Graybox", diorama ? "Cowboys vs. Wizards" : "Cowboys vs. Wizards | Graybox")
   .replace("@@SCRIPT@@", () => script + (boardLicense ? `\n/*\n${boardLicense}\n*/` : "")));
 console.log(`Built ${output} (${diorama ? "3D diorama" : "graybox"}, build ${label ?? "not identified"}); Outrider gate: ${outrider.note}`);

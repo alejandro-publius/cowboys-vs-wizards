@@ -14,6 +14,8 @@
 }
 * { box-sizing: border-box; }
 body { margin: 0; }
+#replay-room { max-width: 50rem; margin: auto; padding: 1rem; }
+#replay-room-back { margin: 0 0 .75rem; }
 [hidden] { display: none !important; }
 button, input { font: inherit; }
 /* Touch targets: 44 px tall at least (WCAG 2.5.5, platform guidance). The disclosure rows were 22 px. */

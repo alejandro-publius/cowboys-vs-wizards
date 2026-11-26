@@ -1,0 +1,19 @@
+{
+  "name": "showdown-replay-room",
+  "displayName": "Showdown Replay Room",
+  "version": "0.1.0",
+  "description": "Choose a target in a recorded card duel and replay the two possible continuations.",
+  "author": "Cowboys vs. Wizards",
+  "license": "MIT",
+  "minKiroCrewVersion": "0.12.2",
+  "ui": {
+    "entry": "index.mjs",
+    "pages": [
+      {
+        "route": "/apps/showdown-replay-room",
+        "label": "Replay Room",
+        "icon": "Rewind"
+      }
+    ]
+  }
+}

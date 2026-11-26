@@ -5,6 +5,8 @@
 // page, so no URL opens it here; an old lane address (?mode=lanes, match, ride-out, practice-*,
 // fire-arc) loads this same Showdown menu. The illustrated contest build offers a verified Outrider turn on its title.
 // esbuild inlines the dynamic imports, so the page stays one offline file.
+import {mountReplayRoom} from "../apps/replay-room/src/room.mjs";
+import replayLessons from "../apps/replay-room/src/lessons.json";
 import {parseDealSeed} from "./game/showdown/seed.js";
 
 const node = (id) => document.getElementById(id);
@@ -39,18 +41,22 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   const [turn, outrider] = [query.get("turn"), query.get("outrider")];
   const practice = turn === null && outrider === null ? practiceFromQuery(location.search) : null;
   const wizard = !["turn", "outrider", "practice"].some((key) => query.has(key)) && wizardFromQuery(location.search);
+  const directRoom = query.get("room") === "replay" &&
+    !["turn", "outrider", "practice", "wizard", "lesson"].some((key) => query.has(key)) &&
+    !(diorama && query.get("saloon") === "review") && query.get("replay") !== "billy";
   // K-096: a direct practice or Wizard preview visit writes no Cowboy key until the player chooses the Camp
   // (campaign.enter() in toCamp).
-  const campaign = createCampaign(storage, {deferImport: practice !== null || wizard});
+  const campaign = createCampaign(storage, {deferImport: practice !== null || wizard || directRoom});
   // The Wizard preview's own save (cvw-showdown-wizard-preview-v1); creating it only reads that key.
   const preview = createWizardPreview(storage);
   // One line per finished solo game for the Camp's playtest report, under the prototype's key.
   const playtest = createPlaytestLog(storage);
+  const room = node("replay-room");
   let outpost;
   const showOnly = (shown) => {
     if (shown !== campRoot) outpost?.close();
     if (shown !== screen) delete screen.dataset.contestChallenge;
-    for (const el of [title, screen, campRoot, builderRoot, lessonRoot]) el.hidden = el !== shown;
+    for (const el of [title, screen, campRoot, builderRoot, lessonRoot, room]) el.hidden = el !== shown;
     window.scrollTo(0, 0);
   };
   let last = null; // the Camp control that started the duel just left, so focus returns to it
@@ -147,7 +153,8 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   campRoot.insertAdjacentHTML("beforeend", `<section id="camp-experiment" aria-labelledby="camp-experiment-title"><h2 id="camp-experiment-title">Experiment</h2>
     <p class="sd-note">For review, not a bounty. Nothing here is saved.</p>
     <div class="sd-row"><button type="button" id="camp-turn-dragon" data-turn="dragon-c5">Try one Dragon turn</button>
-    <button type="button" id="camp-turn-dragon-70" data-turn="dragon-c5-70">Try another Dragon turn</button></div></section>`);
+    <button type="button" id="camp-turn-dragon-70" data-turn="dragon-c5-70">Try another Dragon turn</button>
+    <button type="button" id="camp-replay-room">Replay Room</button></div></section>`);
   const openTurn = (id) => {
     const turn = turnDuel(id);
     if (!turn) return false;
@@ -157,6 +164,23 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     return true;
   };
   campRoot.addEventListener("click", (event) => { const b = event.target.closest("button[data-turn]"); if (b) openTurn(b.dataset.turn); });
+  const roomBack = node("replay-room-back");
+  let unmountRoom;
+  function leaveRoom() {
+    unmountRoom?.();
+    unmountRoom = null;
+    last = "#camp-replay-room";
+  }
+  function openRoom() {
+    unmountRoom?.();
+    unmountRoom = mountReplayRoom(node("replay-room-body"), replayLessons, {onPlayTurn(id) {
+      if (openTurn(id)) leaveRoom();
+    }});
+    showOnly(room);
+    roomBack.focus();
+  }
+  node("camp-replay-room").addEventListener("click", openRoom);
+  roomBack.addEventListener("click", () => { leaveRoom(); toCamp(); });
   // Wizard lesson saved in this browser: reopened from this control or ?lesson=saved. A stale save is cleared there.
   node("camp-experiment").insertAdjacentHTML("beforeend", `<div class="sd-row"><button type="button" id="camp-wizard-lesson">Open saved Wizard lesson</button></div>
     <p class="sd-note">Unlike the rest of this section, a Wizard lesson keeps one marked episode in this browser.</p>`);
@@ -272,6 +296,6 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     } else if (query.get("replay") === "billy") {
       toCamp();
       openBillyReplay();
-    }
+    } else if (directRoom) openRoom();
   }
   });

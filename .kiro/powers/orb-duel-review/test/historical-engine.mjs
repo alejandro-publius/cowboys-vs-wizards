@@ -12,11 +12,11 @@ export function historicalEngine(t, repo, commit, paths) {
   const pin = git(["cat-file", "-e", `${commit}^{commit}`]);
   if (pin.status !== 0) {
     const checkout = git(["rev-parse", "--is-shallow-repository"]);
-    if (checkout.status !== 0 || checkout.stdout.trim() === "true") {
+    if (!process.env.GITHUB_ACTIONS && (checkout.status !== 0 || checkout.stdout.trim() === "true")) {
       t.skip(`historical source ${commit} requires a Git checkout with full history`);
       return null;
     }
-    assert.fail(`historical source ${commit} is missing from the full Git checkout`);
+    assert.fail(`fetch historical source ${commit} before running the receipt tests`);
   }
   const root = mkdtempSync(join(tmpdir(), "orb-power-history-"));
   t.after(() => rmSync(root, {recursive: true, force: true}));

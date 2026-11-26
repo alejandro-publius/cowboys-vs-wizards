@@ -96,7 +96,7 @@ test("the bound Power passes the receipt and refuses another proposal or a bad i
   assert.equal(pass.verdict, "pass", pass.reasons.join("; "));
   assert.equal(pass.measured, true);
   assert.deepEqual(pass.pending, []);
-  assert.deepEqual(pass.power, {name: "orb-duel-review", version: "1.6.0"});
+  assert.deepEqual(pass.power, {name: "orb-duel-review", version: "1.7.0"});
   assert.equal(pass.receiptSha256, sha(readFileSync(receiptFile)));
   assert.equal(pass.closure.recorded, pass.closure.current);
   assert.equal(pass.closure.current, engineFingerprint(project, [SMOKE]).sha256);

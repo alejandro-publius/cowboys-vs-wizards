@@ -22,9 +22,14 @@ jobs:
           node-version: 22
           cache: npm
 
-      # The paired Billy replay compares the recorded engine, decks and bots at this revision.
-      - name: Fetch the frozen Billy replay inputs
-        run: git fetch --no-tags --depth=1 https://github.com/alejandro-publius/cowboys-vs-wizards.git eedab9385931e093e156fdb7885c470eb2ec64eb
+      # The Billy, Ride and Boot Hill receipts bind the engine and decks to four revisions.
+      - name: Fetch engines for the recorded replays
+        run: >
+          git fetch --no-tags --depth=1 https://github.com/alejandro-publius/cowboys-vs-wizards.git
+          eedab9385931e093e156fdb7885c470eb2ec64eb
+          bf510f305058850a03cdcf9e7b7181a428f38288
+          1908eaaa5d995d6f5589d4fbc4a2c30b83e02683
+          2fcf39b7fe4db6f78cb33f6b2c474e053e89bbc7
 
       - run: npm ci
 
@@ -36,8 +41,13 @@ jobs:
           node scripts/stage-pages.mjs --commit "$GITHUB_SHA"
           node scripts/check-pages-tree.mjs --commit "$GITHUB_SHA"
 
-      - name: Kiro review server tests
-        run: node --test .kiro/powers/orb-duel-review/test/server.test.mjs
+      - name: Kiro review Power tests
+        run: node --test .kiro/powers/orb-duel-review/test/*.test.mjs
+
+      - name: Replay Room lessons and Crew bundle
+        run: |
+          node --test apps/replay-room/test/*.test.mjs
+          node apps/replay-room/build.mjs --check
 
       - name: Night Watch unit tests
         working-directory: apps/night-watch/backend
