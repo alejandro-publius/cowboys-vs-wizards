@@ -1,5 +1,7 @@
 # Judge demo script
 
+For a new capture, open the [published Showdown title](https://alejandro-publius.github.io/cowboys-vs-wizards/), read the [live build manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json), and put its commit in the caption. The [latest release check](../PROJECT-STATUS.md#current-build) shows the opening board. The dated cuts below retain the commits they were filmed on.
+
 ## November 23 recording script: title to one Kiro decision
 
 Drafted November 23, 2026 with Claude Code from Showdown revision `c8fa7f2`. The private captioned draft uses scripted Chrome footage of the two Outrider choices, the Billy replays, and the Saloon review from the local contest build at `35d7447`. This shot list guides the narrated cut. The [78-second cut](#november-22-illustrated-showdown-demo) is an earlier reference.

@@ -1,6 +1,6 @@
 ---
 inclusion: fileMatch
-fileMatchPattern: ["src/ui/**", "src/profile/**", "src/main.js", "index.html", "scripts/browser-*.mjs", "scripts/check-match-ui.sh"]
+fileMatchPattern: ["src/app.js", "src/ui/**", "prototypes/showdown/main.js", "prototypes/showdown/index.html", "scripts/browser-*.mjs", "scripts/check-match-ui.sh"]
 ---
 
 # Interface area

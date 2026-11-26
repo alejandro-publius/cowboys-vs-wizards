@@ -1,6 +1,6 @@
 ---
 inclusion: fileMatch
-fileMatchPattern: ["src/render/**", "src/physics/**", "scripts/verify-scene.mjs", "scripts/build.mjs", "assets/**/*.glb"]
+fileMatchPattern: ["src/ui/showdown-3d/**", "src/ui/showdown-cues.js", "scripts/build-graybox.mjs", "scripts/browser-showdown-cues-check.mjs", "assets/cards/**", "assets/scenes/**", "assets/**/*.glb"]
 ---
 
 # Rendering area

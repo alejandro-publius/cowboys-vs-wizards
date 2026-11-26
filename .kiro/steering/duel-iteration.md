@@ -1,6 +1,6 @@
 ---
 inclusion: fileMatch
-fileMatchPattern: ["src/match/**", "src/render/**", "src/ui/**", "scripts/browser-match-check.mjs", "assets/cards/**"]
+fileMatchPattern: ["src/app.js", "src/match/**", "src/ui/**", "prototypes/showdown/**", "scripts/browser-showdown-*.mjs", "assets/cards/**"]
 ---
 
 # Duel iteration
@@ -35,7 +35,7 @@ or the lane 3D build unless the user reopens them.
 ## Iterate cheaply
 
 1. Run the one test file closest to the change, for example
-   `node --test tests/match/presenter.test.js`, before any build.
+   `node --test tests/game/showdown-presenter.test.js`, before any build.
 2. Run `npm run build` and the browser check only for a change that affects
    the page. The coordinator owns builds and browser runs when a task says so.
 3. Reuse the existing checks. Do not add a new script when an existing one

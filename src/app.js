@@ -6,7 +6,6 @@
 // fire-arc) loads this same Showdown menu. The illustrated contest build offers a verified Outrider turn on its title.
 // esbuild inlines the dynamic imports, so the page stays one offline file.
 import {parseDealSeed} from "./game/showdown/seed.js";
-import {SAVE_KEY} from "./game/showdown/campaign-store.js";
 
 const node = (id) => document.getElementById(id);
 
@@ -16,7 +15,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   import("./match/showdown-wizard-campaign.js"), import("./ui/showdown-wizard-camp.js"), import("./match/showdown-earned.js"),
   typeof __CVW_DIORAMA__ !== "undefined" && __CVW_DIORAMA__ ? import("./ui/showdown-3d/scene.js") : null,
   import("./ui/wizard-lesson.js")])
-  .then(([{mountShowdown, freshSeed}, {mountCamp}, {mountBuilder}, {CampaignChanged, createCampaign}, {createPlaytestLog, PAGE_BUILD}, {twoPlayers}, {turnDuel},
+  .then(([{mountShowdown, freshSeed}, {mountCamp}, {mountBuilder}, {createCampaign, createCampaignWriter}, {createPlaytestLog, PAGE_BUILD}, {twoPlayers}, {turnDuel},
     {outriderTurn}, {VERIFIED, outriderControls}, {PRACTICE_SEEDS, practiceDuel, practiceFromQuery},
     {createWizardPreview, wizardFromQuery, previewUnlocked, WIZARD_TRACK}, {mountWizardCamp}, {earnedControl, earnedDuel}, diorama,
     {mountWizardLesson, createLessonSession, lessonDuel}]) => {
@@ -93,28 +92,12 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   };
   // Commit one Cowboy save at a time across tabs. Offline pages without Web Locks still compare
   // their saved snapshot before writing. Confirmation dialogs and gameplay stay outside the lock.
-  let locks;
-  try { locks = storage && navigator.locks; } catch { /* storage or locks can be restricted */ }
   function showChangedCamp(message) {
     last = back = null;
     outpost?.close();
     toCamp(`${message} Your action was skipped.`);
   }
-  function writeCamp(change, onChanged = showChangedCamp) {
-    const apply = () => {
-      try { return change(); } catch (error) {
-        if (!(error instanceof CampaignChanged)) throw error;
-        return onChanged(error.message);
-      }
-    };
-    if (!locks) return apply();
-    let acquired = false;
-    return locks.request(SAVE_KEY, () => { acquired = true; return apply(); }).catch((error) => {
-      if (acquired || error.name !== "SecurityError") throw error;
-      locks = null;
-      return apply();
-    });
-  }
+  const writeCamp = createCampaignWriter(storage, showChangedCamp);
   const builder = mountBuilder(builderRoot, {campaign, writeCamp, paintCardFaces: diorama?.paintCardFaces});
   function openDeck(rewardType) {
     showOnly(builderRoot);

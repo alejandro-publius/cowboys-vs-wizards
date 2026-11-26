@@ -170,6 +170,20 @@ test("a lane-era profile keeps its Captured cards owned in the lane store across
   }
 });
 
+test("the read-only keepsake import matches the original store for all 1,024 hunt combinations", () => {
+  const hunts = [...DRAGON.hunts, ...WRAITH.hunts];
+  for (let mask = 0; mask < 2 ** hunts.length; mask++) {
+    const cleared = hunts.filter((_, index) => mask & (1 << index));
+    const raw = JSON.stringify({clearedHunts: [...cleared, ...cleared, "unknown", null], achievements: {"bounty-hunter": true}});
+    const storage = memoryStorage({[LANE_KEY]: raw});
+    const actual = laneCapturedCards(storage);
+    assert.deepEqual(actual, earnedRewards(createProfileStore(storage).get()), `hunt combination ${mask}`);
+    assert.ok(Object.isFrozen(actual));
+    assert.deepEqual(storage.writes, []);
+    assert.equal(storage.data.get(LANE_KEY), raw);
+  }
+});
+
 // Fable's F1 ruling (PR 148 issuecomment-7031816529): nothing from the lane game carries into Showdown
 // progress. migrate() accepts a Legendary only after the Trail and the Showdown bounty's fifth hunt, so
 // the join adds no Showdown ownership, no Trail win, no hunt and no deck card. The full ruling is checked

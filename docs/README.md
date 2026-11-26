@@ -8,7 +8,7 @@ Each entry has one of three statuses:
 - **Record:** what happened or was planned at the time. It is not updated, so do not edit it; add a new note instead.
 - **Old task list:** assignments that were finished or replaced. Do not treat as open work.
 
-To play or build the game, start at the [project README](../README.md). To work on the code, start at [AGENTS.md](../AGENTS.md).
+[Play the published game](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Review the verified build](PROJECT-STATUS.md#current-build) · [Try the judge walkthrough](JUDGE-GUIDE.md). To build the game, start at the [project README](../README.md). To work on the code, start at [AGENTS.md](../AGENTS.md).
 
 ## Files
 
@@ -19,7 +19,7 @@ To play or build the game, start at the [project README](../README.md). To work 
 | [JUDGE-GUIDE.md](JUDGE-GUIDE.md) | Current | A short route for a hackathon judge: what to play, what to inspect, where the evidence is. |
 | [KIRO_USAGE.md](KIRO_USAGE.md) | Current | Observed native Kiro CLI sessions and commands to verify submission checks. |
 | [SCORECARD.md](SCORECARD.md) | Current | What `npm run scorecard` measures for each Dec 4 Step 0 target and which evidence each row accepts. |
-| [PROJECT-STATUS.md](PROJECT-STATUS.md) | Record | The November 16 lane-build snapshot. For current Showdown status, see the [release line](design/release-line.md). |
+| [PROJECT-STATUS.md](PROJECT-STATUS.md) | Current | Dated Showdown release checks and review links, followed by integration and lane-era history. |
 | [cards.csv](cards.csv) | Record | Lane card spreadsheet. The current [Showdown card table](../prototypes/showdown/cards.csv) includes visual direction. |
 | [card-types.csv](card-types.csv) | Record | Lane card categories and frame proposals. |
 | [rules.csv](rules.csv) | Record | Lane rules. See the current [Showdown rulebook](../prototypes/showdown/RULEBOOK.md). |

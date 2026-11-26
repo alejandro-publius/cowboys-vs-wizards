@@ -1,9 +1,4 @@
-// Step 8 first slice: packages/frontier-kit is the one home of the paired-duel cohort audit, and both games'
-// verifiers use it. What is shared today is the audit only, not a game engine, renderer or network layer.
-//   Showdown: scripts/field-trial-confirm.mjs (and its test) import src/review/paired-duel-kit.js, a re-export
-//             of the kit. Here the recorded Billy replay cohort is replayed through the kit.
-//   Poker:    scripts/verify-poker-kit.mjs imports the kit directly. Here the original 500 mirrored seeds run through it.
-// Neither shipped game's runtime imports the kit yet (see "runtime packaging" below).
+// Both games use the portable deal generator at runtime and the paired cohort audit in their verifiers.
 import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
 import {existsSync, mkdtempSync, readFileSync, rmSync, statSync} from "node:fs";
@@ -18,6 +13,7 @@ import {playPokerDuel} from "../../experiments/boot-hill-poker/engine.js";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const KIT_DIR = "packages/frontier-kit";
+const RNG = "src/game/frontier-kit/seeded-rng.js";
 const POKER_DIR = "experiments/boot-hill-poker";
 const EXPORTS = ["DRAW", "MAX_DEALS", "PairedCohortError", "measurePairedCohort"];
 
@@ -73,7 +69,7 @@ test("the kit imports neither game, nothing outside itself, and no Node, DOM or 
 
 test("shipped Poker paths never reach Showdown code, even indirectly", () => {
   const graph = importGraph(POKER_ENTRIES);
-  const outside = graph.files.filter((f) => !inside(POKER_DIR)(f) && !inside(KIT_DIR)(f));
+  const outside = graph.files.filter((f) => !inside(POKER_DIR)(f) && !inside(KIT_DIR)(f) && f !== RNG);
   assert.deepEqual(outside, [], `poker reaches ${outside.join(", ")}`);
   assert.deepEqual(graph.bare.filter((s) => !s.startsWith("node:")), [], "poker uses only node: built-ins (cli.mjs) besides its own files");
 });
@@ -81,17 +77,22 @@ test("shipped Poker paths never reach Showdown code, even indirectly", () => {
 test("shipped Showdown paths never reach Boot Hill Poker code, even indirectly", () => {
   const graph = importGraph(SHOWDOWN_ENTRIES);
   assert.ok(graph.files.includes("src/game/showdown/rules.js"), "the walk reached the Showdown engine");
+  assert.ok(graph.files.includes(RNG), "Showdown reaches the shared generator");
   const poker = graph.files.filter(inside(POKER_DIR));
   assert.deepEqual(poker, [], `showdown reaches ${poker.join(", ")}`);
   // Verifier code is not part of the shipped bundles either.
   assert.deepEqual(graph.files.filter((f) => f.startsWith("scripts/") || f.startsWith("tests/")), []);
 });
 
-test("runtime packaging: the staged /poker/ graph is still exactly its four scripts, so the deploy is unchanged", () => {
-  // scripts/stage-pages.mjs copies only these files into /poker/ and scripts/check-pages-tree.mjs requires the graph
-  // to equal them. If engine.js imported the kit, both shared scripts would have to stage packages/frontier-kit too.
-  const graph = importGraph([`${POKER_DIR}/app.js`]);
-  assert.deepEqual(graph.files, ["app.js", "controls.js", "engine.js", "render.js"].map((f) => `${POKER_DIR}/${f}`));
+test("Poker’s browser and terminal resolve the kit to the same isolated generator as Showdown", () => {
+  for (const entry of POKER_ENTRIES) {
+    const graph = importGraph([entry]);
+    assert.ok(graph.files.includes(`${KIT_DIR}/seeded-rng.js`));
+    assert.ok(graph.files.includes(RNG));
+  }
+  const browser = importGraph([`${POKER_DIR}/app.js`]);
+  assert.deepEqual(browser.files, [...["app.js", "controls.js", "engine.js", "render.js"].map(f => `${POKER_DIR}/${f}`),
+    `${KIT_DIR}/seeded-rng.js`, RNG].sort());
 });
 
 test("both games' verifier entrypoints reach the kit, one of them only indirectly", () => {
@@ -160,4 +161,11 @@ test("Showdown: the recorded Billy replay cohort reproduces exactly through the 
   assert.equal(cowboyToWizard, k.switchedCowboyToWizard);
   assert.equal(wizardToCowboy, k.switchedWizardToCowboy);
   assert.equal(hash.digest("hex"), k.csvSha256, "SHA-256 of every paired outcome matches the archive");
+});
+
+test("the Showdown browser entry points never import the retired lane runtime to read keepsakes", () => {
+  const files = importGraph(SHOWDOWN_ENTRIES).files;
+  const retired = ["src/profile/player-profile.js", ...["cards", "state", "deck-builder", "bounty-hunt", "bounty-notices", "wraith-notices"]
+    .map(name => `src/game/${name}.js`)];
+  assert.deepEqual(files.filter(file => retired.includes(file)), []);
 });

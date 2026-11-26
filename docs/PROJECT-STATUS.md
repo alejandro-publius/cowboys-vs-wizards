@@ -1,6 +1,20 @@
 # Project status
 
-The [Showdown release line](design/release-line.md#current-status-november-20-supersedes-the-november-19-1015-pm-handoff) tracks the supported game and its current release decisions. The lane build described below was retired on November 20. Its final playable source is [archived in Git](https://github.com/alejandro-publius/cowboys-vs-wizards/tree/ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df).
+## Current build
+
+For the commit and HTML checksum currently served to players, open the [live deployment manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json). The [Pages workflow](../.github/workflows/pages.yml) verifies them after deployment.
+
+The screenshot documents the November 26 check. At that time the root and `/3d/` matched GitHub commit `094af9b` and SHA-256 `d0fdf866772500eafdb418d9ed9b9ec951cae62fb3dcfe7f5cfaed8a87c57190`. [Screenshot](evidence/showdown-bone-fence-094af9b.png) · [Source revision](https://github.com/alejandro-publius/cowboys-vs-wizards/commit/094af9bee94a5f5d545ff24e67c6e0437a420a4c)
+
+| In the public game | Where to see it |
+| --- | --- |
+| Illustrated Outrider challenge, Boot Hill Trail, Camp and the recorded Night Shift Saloon | [Play](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Judge walkthrough](JUDGE-GUIDE.md) |
+| Billy at 2 attack, with a playable comparison against the proposed 1 attack | [Recorded review](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) · [100,000-duel seat audit](evidence/billy-seat-audit/README.md) |
+| Boot Hill Poker in a browser and terminal | [Play Poker](https://alejandro-publius.github.io/cowboys-vs-wizards/poker/) · [Poker source](../experiments/boot-hill-poker/README.md) |
+
+The source in this checkout shares Last Stand and Sweep forecasts across all three Showdown screens, and a seeded shuffle between Showdown and Boot Hill Poker. Camp preserves older earned cards while the Wanted board and deck builder follow the current Showdown rules. The reference Camp now checks for newer progress before applying a write. [Combat](../src/game/showdown/presenter.js) · [Deal generator](../src/game/frontier-kit/seeded-rng.js) · [Camp](../src/match/showdown-campaign.js)
+
+The remaining submission evidence includes an uncoached first duel and human assistive-technology feedback. The public demo video, category and contributor credits still need owner confirmation. [Submission packet](submission/devpost-packet.md) · [Design and release history](design/release-line.md)
 
 ## November 23, 2026 integration
 

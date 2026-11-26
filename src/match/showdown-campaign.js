@@ -1,13 +1,34 @@
 // The graybox Camp's progress (issue 143 slice 2). Holds the current progress object in memory and
 // writes it through the canonical store after every change. Every rule (what a duel is, what a win
 // pays, what is on offer) comes from src/game/showdown/progress.js; nothing here decides a reward.
-import {campaignText, laneCapturedCards, loadCampaign, saveCampaign} from "../game/showdown/campaign-store.js";
+import {SAVE_KEY, campaignText, laneCapturedCards, loadCampaign, saveCampaign} from "../game/showdown/campaign-store.js";
 import {holdings, joinInherited} from "../game/showdown/inherited.js";
 import {choose, deckProblems, duelFor, duelList, newSave, openPack, owned, settle, withDeck} from "../game/showdown/progress.js";
 import {GRIT_CAP, TRAIL} from "../game/showdown/trail.js";
 
 export class CampaignChanged extends Error {
   constructor() { super("Your Camp changed in another tab. The latest progress is loaded."); }
+}
+
+// All public Camp pages share one lock for career writes. Storage can still be blocked or unavailable.
+export function createCampaignWriter(storage, showChangedCamp) {
+  let locks;
+  try { locks = storage && navigator.locks; } catch { /* storage or locks can be restricted */ }
+  return function writeCamp(change, onChanged = showChangedCamp) {
+    const apply = () => {
+      try { return change(); } catch (error) {
+        if (!(error instanceof CampaignChanged)) throw error;
+        return onChanged(error.message);
+      }
+    };
+    if (!locks) return apply();
+    let acquired = false;
+    return locks.request(SAVE_KEY, () => { acquired = true; return apply(); }).catch((error) => {
+      if (acquired || error.name !== "SecurityError") throw error;
+      locks = null;
+      return apply();
+    });
+  };
 }
 
 // deferImport (K-096, a direct ?practice boot): write nothing yet. The keepsake import and the career load wait

@@ -21,7 +21,7 @@ import {BOT_LEVEL, play} from "./billy-replay-engine.mjs";
 import {canonical, sha256, summarize} from "./night-review.mjs";
 
 export const SCHEMA = "showdown-smoke/1";
-export const ENGINE = Object.freeze({rules: "src/game/showdown/rules.js", cards: "src/game/showdown/cards.js", catalog: "src/game/card-specs.generated.js"});
+export const ENGINE = Object.freeze({rng: "src/game/frontier-kit/seeded-rng.js", rules: "src/game/showdown/rules.js", cards: "src/game/showdown/cards.js", catalog: "src/game/card-specs.generated.js"});
 export const DECK_SET = Object.freeze({name: "even-match", source: "src/game/showdown/cards.js DECKS"});
 export const PLAYER = Object.freeze({function: "scripts/billy-replay-engine.mjs play()", botLevel: BOT_LEVEL, sides: "both"});
 export const OPENERS = Object.freeze(["cowboy", "wizard"]);

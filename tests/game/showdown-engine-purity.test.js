@@ -139,7 +139,7 @@ test("FH-R1.2: src/game/showdown and its reachable modules have no DOM, renderin
     assert.ok(report.entries.includes(`${SHOWDOWN_DIR}/${required}`), `missing ${required}`);
   }
   assert.ok(report.files.includes("src/game/card-specs.generated.js"));
-  assert.ok(report.files.includes("src/profile/player-profile.js"));
+  assert.ok(!report.files.includes("src/profile/player-profile.js"), "Showdown loads old hunt IDs without the lane profile writer");
   assert.deepEqual(report.violations, []);
 });
 

@@ -28,7 +28,7 @@ const LAYOUTS = [
   {replay: "replay.json", results: "results.json", policy: "policy.js", fn: "continuation"},
 ];
 // The files the claims run through, hashed for the record only.
-const SOURCES = ["src/game/showdown/rules.js", "src/game/showdown/cards.js", "src/game/card-specs.generated.js", "src/game/showdown/progress.js",
+const SOURCES = ["src/game/frontier-kit/seeded-rng.js", "src/game/showdown/rules.js", "src/game/showdown/cards.js", "src/game/card-specs.generated.js", "src/game/showdown/progress.js",
   "src/game/showdown/trail.js", "src/game/showdown/contract.js", "src/match/showdown-session.js", "src/match/showdown-outrider.js"];
 
 const sha = (text) => createHash("sha256").update(text).digest("hex");
