@@ -1,4 +1,5 @@
 import {build} from "esbuild";
+import {pagePreview} from "./showdown-page-preview.mjs";
 import {mkdir, readFile, rm, writeFile} from "node:fs/promises";
 import {fileURLToPath} from "node:url";
 import {grayboxBuildLabel} from "./graybox-build-label.mjs";
@@ -69,7 +70,10 @@ await mkdir(new URL("./", file(output)), {recursive: true});
 await mkdir(file(".artifacts/outrider-ledger/"), {recursive: true});
 await writeFile(file(`.artifacts/outrider-ledger/${output.replace(/[/.]/g, "_")}.json`), `${JSON.stringify({build: label, gate: outrider.note, camp: outrider.camp,
   output, linked: outrider.cases.map((c) => c.id), ledger: outrider.ledger}, null, 2)}\n`);
-await writeFile(file(output), template.replace("@@STYLE@@", () => `${style}\n${showdownStyle}\n${boardStyle}`)
+const preview = diorama
+  ? pagePreview("", "Cowboys vs. Wizards: Showdown", "Play a haunted Western card duel. Ride past a Skeleton, protect your Base, and build a deck for the Trail and its Wanted bounties.")
+  : pagePreview("graybox/", "Showdown | Lightweight board", "Play the lightweight Cowboys vs. Wizards board. Take on the Trail, build your deck, and hunt the Lantern Wraith and the Graveyard Dragon.");
+await writeFile(file(output), template.replace("@@PAGE_PREVIEW@@", () => preview).replace("@@STYLE@@", () => `${style}\n${showdownStyle}\n${boardStyle}`)
   .replace("Cowboys vs. Wizards | Graybox", diorama ? "Cowboys vs. Wizards" : "Cowboys vs. Wizards | Graybox")
   .replace("@@SCRIPT@@", () => script + (boardLicense ? `\n/*\n${boardLicense}\n*/` : "")));
 console.log(`Built ${output} (${diorama ? "3D diorama" : "graybox"}, build ${label ?? "not identified"}); Outrider gate: ${outrider.note}`);

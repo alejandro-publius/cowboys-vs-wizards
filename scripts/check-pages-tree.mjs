@@ -113,9 +113,24 @@ try {
   assert.equal((await get("3d", "manual")).location, `${BASE_PATH}3d/`, "/3d redirects to /3d/");
   const showdown = await get("showdown/");
   assert.equal(showdown.status, 200);
-  for (const [route, html] of [["/", rootText], ["/graybox/", grayboxText], ["/showdown/", showdown.bytes.toString("utf8")]])
+  const pages = [["", rootText], ["graybox/", grayboxText], ["showdown/", showdown.bytes.toString("utf8")]];
+  const descriptions = new Set();
+  for (const [route, html] of pages) {
     assert.doesNotMatch(html, /chunks\/lanes-|id="arena"|id="menu-lanes"|id="earlier-build"|<script id="models"|rapier_wasm|rapier3d/, `${route} has no retired lane engine`);
+    const head = html.slice(0, html.indexOf("</head>"));
+    const url = `https://alejandro-publius.github.io/cowboys-vs-wizards/${route}`;
+    const description = head.match(/<meta name="description" content="([^"]+)"/)?.[1];
+    assert.ok(description && head.includes(`property="og:description" content="${description}"`), `${route} describes the page and its preview`);
+    descriptions.add(description);
+    assert.ok(head.includes(`rel="canonical" href="${url}"`) && head.includes(`property="og:url" content="${url}"`));
+    assert.match(head, /property="og:title" content="[^"]+"/);
+    assert.match(head, /property="og:image" content="https:\/\/[^"]+\.png"/);
+    assert.match(head, /property="og:image:alt" content="[^"]+"/);
+    assert.ok(head.includes('name="twitter:card" content="summary_large_image"'));
+  }
+  assert.equal(descriptions.size, pages.length, "the three playable pages have distinct descriptions");
   check("the four single-file pages include no retired lane game or separate assets", {files});
+  check("the published game pages expose their own canonical URLs, descriptions and screenshot previews before JavaScript runs");
 
   // Boot Hill Poker, the experimental second game, staged as its six browser files.
   assert.equal((await get("poker", "manual")).location, `${BASE_PATH}poker/`, "/poker redirects to /poker/");
