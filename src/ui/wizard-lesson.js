@@ -281,6 +281,7 @@ export function mountWizardLesson(root, {storage = null, onRematch, onClose, sav
   function render(focus) {
     const body = marked ? markedView() : draft ? choosing() : `${status()}<div class="sd-row">${fileInput}<button type="button" id="wl-close">Close</button></div>`;
     root.innerHTML = `<header><h1 id="wl-title">Wizard lesson</h1></header>${body}`;
+    root.setAttribute("aria-labelledby", "wl-title");
     if (root.hidden) return;
     const target = (focus && root.querySelector(focus)) || root.querySelector("#wl-bait:not(:disabled), .wl-move, #wl-rematch, #wl-close");
     target?.focus();

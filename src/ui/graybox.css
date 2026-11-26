@@ -17,7 +17,7 @@ body { margin: 0; }
 [hidden] { display: none !important; }
 button, input { font: inherit; }
 /* Touch targets: 44 px tall at least (WCAG 2.5.5, platform guidance). The disclosure rows were 22 px. */
-summary { padding: .75rem 0; cursor: pointer; }
+summary { min-height: 44px; padding: .75rem 0; cursor: pointer; }
 button {
   min-height: 44px;
   min-width: 44px;

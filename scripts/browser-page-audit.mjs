@@ -218,9 +218,9 @@ function auditPage() {
   const targets = all.filter((el) => inTree(el) && focusable(el) && el.tagName !== "TEXTAREA" && el.getAttribute("role") !== "region")
     .map((el) => ({el, r: el.getBoundingClientRect()}));
   const inline = (el) => el.tagName === "A" && [...el.parentElement.childNodes].some((c) => c !== el && c.nodeType === 3 && c.textContent.trim().length > 1);
-  let under44 = 0;
+  const smallTargets = [];
   for (const {el, r} of targets) {
-    if (r.width < 44 || r.height < 44) under44 += 1;
+    if (r.width < 44 || r.height < 44) smallTargets.push({control: short(el), width: Math.round(r.width), height: Math.round(r.height)});
     if ((r.width >= 24 && r.height >= 24) || inline(el)) { pass("target-size"); continue; }
     const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
     const crowded = targets.some(({el: o, r: q}) => {
@@ -246,7 +246,7 @@ function auditPage() {
     violations: V, unsure: I, passes: P, elements: all.length,
     minContrast: ratios.length ? Number(Math.min(...ratios).toFixed(2)) : null,
     textUnder12px: chars ? Number((small / chars).toFixed(4)) : 0,
-    targets: {count: targets.length, under44},
+    targets: {count: targets.length, under44: smallTargets.length, smallTargets},
     horizontalOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
     seo: {
       title: document.title, description: meta('meta[name="description"]'), robots: meta('meta[name="robots"]'),

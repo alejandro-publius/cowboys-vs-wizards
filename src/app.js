@@ -24,7 +24,6 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   const lessonRoot = document.createElement("section");
   lessonRoot.id = "wizard-lesson";
   lessonRoot.className = "wizard-lesson";
-  lessonRoot.setAttribute("aria-labelledby", "wl-title");
   lessonRoot.hidden = true;
   screen.after(lessonRoot);
   const contest = typeof __CVW_CONTEST__ !== "undefined" && __CVW_CONTEST__;
