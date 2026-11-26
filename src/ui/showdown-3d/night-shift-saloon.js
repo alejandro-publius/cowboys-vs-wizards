@@ -77,7 +77,7 @@ export function deed(event) {
   switch (event.kind) {
     case "job": return "Hands out a job";
     case "block": return BLOCK_REASONS[event.rule] ?? "Refuses an unknown request";
-    case "cast": return `Proposes ${cardName(event.card)} ${event.field} ${event.before} → ${event.after} (scratch, not merged)`;
+    case "cast": return `Proposes ${cardName(event.card)} ${event.field} ${event.before} → ${event.after}`;
     case "wanted": return `Posts Wanted: ${wantedPoster(event.boss).name}`;
     case "bell": return "Rings the bell: the stop passed its checks";
     default: return "";
@@ -288,7 +288,7 @@ export function proposalDecision(proposal, {seat = SEAT_AUDIT, protocol = SEAT_P
   return {
     change: `${name} ${field} ${from} → ${to}`,
     status: `Passed the written balance rule and awaits design approval. ${name} has ${at(live)} in this build.`,
-    announce: "Decision on the notice board: passed the balance rule, awaiting design approval.",
+    announce: "The review is on the notice board.",
     rules: [
       `NSB-1, each faction wins ${band[0]}–${band[1]}% of games: Cowboys won ${pct3(before.cowboyShare)}% at ${at(from)} (${where(before.cowboyShare)}) and ${pct3(after.cowboyShare)}% at ${at(to)} (inside).`,
       `NSB-2, the opener's distance from 50% may grow by at most ${tolerance} point${tolerance === 1 ? "" : "s"}: ${pct3(before.seatSkew)} at ${at(from)}, ${pct3(after.seatSkew)} at ${at(to)} (within).`,
@@ -307,10 +307,13 @@ export function decisionHtml(decision) {
   return `<h5>Review of Kiro's proposal: ${esc(d.change)}</h5>
     <dl>
       <div><dt>Decision</dt><dd>${esc(d.status)}</dd></div>
+    </dl>
+    <details class="saloon-audit"><summary>Balance test results</summary>
+    <dl>
       <div><dt>Rule</dt><dd><ul>${d.rules.map((line) => `<li>${esc(line)}</li>`).join("")}</ul></dd></div>
       <div><dt>Receipt</dt><dd>Proposed by Kiro CLI; ${d.duels.toLocaleString("en-US")} recorded Node engine duels at source <code>${esc(shortCommit(d.sourceCommit))}</code>, protocol <code>${esc(d.protocolSha256.slice(0, 7))}</code>. Recheck: <code>${esc(DECISION_RECHECK)}</code>. Notes: <code>${esc(DECISION_NOTES)}</code>.</dd></div>
     </dl>
-    <p class="saloon-decision-note">${esc(DECISION_SEPARATE)}</p>
+    <p class="saloon-decision-note">${esc(DECISION_SEPARATE)}</p></details>
     <a data-billy-replay href="?replay=billy">Replay Billy vs. Bone Wall</a>`;
 }
 
@@ -383,10 +386,10 @@ export function guardStage(createStage, host, onFail = () => {}) {
 }
 
 const ROOM_HTML = `
+  <section class="saloon-billy-table" aria-labelledby="saloon-shot-title" hidden></section>
   <div class="saloon-theater">
     <div class="saloon-theater-host" aria-hidden="true" inert></div>
   </div>
-  <section class="saloon-billy-table" aria-labelledby="saloon-shot-title" hidden></section>
   <div class="saloon-stage" data-actor="">
     <div class="saloon-wall">
       <figure class="saloon-wanted">
@@ -395,12 +398,12 @@ const ROOM_HTML = `
       </figure>
       <section class="saloon-board" aria-label="Notices">
         <div class="saloon-proposal">
-          <h4>Scratch proposal, not merged</h4>
+          <h4>Proposed card change</h4>
           <div class="saloon-target" data-change="none"><div class="saloon-target-art"></div><p class="saloon-target-stat">No proposal yet</p></div>
           <div class="saloon-decision" hidden></div>
         </div>
         <div class="saloon-patches">
-          <h4>Merged on main</h4>
+          <h4>Accepted card changes</h4>
           <ul></ul>
         </div>
       </section>
@@ -527,7 +530,7 @@ export function mountNightShiftSaloon({content, recording, portrait = () => null
     content.dataset.view = view;
     theater.hidden = view !== "3d";
     const focused = controls.contains(document.activeElement) ? document.activeElement : null;
-    if (view === "3d") billyTable.after(controls); else stage.after(controls);
+    if (view === "3d") theater.after(controls); else stage.after(controls);
     if (focused && document.activeElement !== focused) focused.focus({preventScroll: true});
   }
   function dropStage() {

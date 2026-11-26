@@ -284,7 +284,7 @@ test("saloon decision: the status line and the opening caption lead to the decis
   const cast = recorded.find((event) => event.kind === "cast");
   assert.equal(recorded.indexOf(cast), 2);
   assert.equal(eventCaption(cast),
-    "Wizard: Proposes Billy attack 2 → 1 (scratch, not merged). Decision on the notice board: passed the balance rule, awaiting design approval.");
+    "Wizard: Proposes Billy attack 2 → 1. The review is on the notice board.");
   assert.equal(eventCaption(recorded[0]), "Singularity: Hands out a job", "other events keep their plain line");
   assert.equal(idleCaption(recorded), `${IDLE_CAPTION} Step 3 shows Kiro's card proposal and its decision.`);
   assert.equal(idleCaption(recorded.filter((event) => event.kind !== "cast")), IDLE_CAPTION);

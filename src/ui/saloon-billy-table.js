@@ -112,7 +112,7 @@ export function mountBillyTable(root, table, portrait) {
     replyResult.textContent = "";
     for (const move of moves) move.setAttribute("aria-pressed", "false");
     if (choice) {
-      reply.querySelector(".saloon-reply-prompt").textContent = `Turn ${choice.turn}. Billy faces ${choice.opponent}. Can you change the ending?`;
+      reply.querySelector(".saloon-reply-prompt").textContent = `Turn ${choice.turn}. Billy faces ${choice.opponent}. Attack or take cover.`;
       reply.querySelector('[data-reply="attack"]').textContent = `Attack ${choice.opponent}`;
     }
   });
