@@ -23,6 +23,8 @@
 //   - at 740 x 375 (short landscape) Continue to Boot Hill is pressed where the screen shows it: by pointer after
 //     the Ride at scroll 0, by Tab and Enter after the Fight; Boot Hill keeps its control row and takes a card
 //   - Camp on / opens the Trail; Play on /graybox/ opens the Camp
+//   - two players on /: the trap, Raise and cover choices are drawn on the table before the click and described at
+//     keyboard focus; seed 5 covers both seats, a cover-only troop at 375 px and an attack on a covered troop
 //   - /showdown/: the reference page loads without errors
 //   - the Camp saloon on / and /3d/ links to the one poker/ page; following it loads all five poker
 //     files, paints the BBS screen and raises no errors
@@ -306,6 +308,7 @@ async function browserChecks() {
     await click('[data-card^="wizard-imp-"]');
     await activateByKey('[data-slot="wizard-0"]');
     const trapRisk = "A face-down trap springs before damage.";
+    const coverRule = "cover: until your next turn it keeps extra damage off your Base, but it will not hit back.";
     const baseOrbs = () => evaluate(`document.querySelector('[data-base="cowboy"] .sd-orbs').getAttribute('aria-label')`);
     const beforeAttack = await baseOrbs();
     const threat = await evaluate(`(() => {
@@ -314,6 +317,7 @@ async function browserChecks() {
         preview: document.getElementById('sd-preview-base').textContent};
     })()`);
     assert.ok(threat.prompt.includes(trapRisk) && threat.visible.includes(trapRisk), "the aiming prompt and illustrated board explain the public trap risk");
+    assert.equal(threat.visible, `No enemy troops: strike the Base. ${trapRisk} Or take ${coverRule}`, "the trap risk stays with the attack, and the cover choice is drawn too");
     assert.equal(threat.preview, "Without trap effects: Hit the Base for 3", "the Imp's printed damage is conditional while a trap is set");
     assert.doesNotMatch(Object.values(threat).join(" "), /Bear Trap|Hex/, "the forecast keeps the trap's identity private");
     assert.ok(axNamed(await axTree(), "button", /Cowboy Base/, (node) => enabled(node) && node.description?.value?.includes(trapRisk)), "the legal target carries the trap warning");
@@ -323,6 +327,84 @@ async function browserChecks() {
     assert.equal(await evaluate(`document.getElementById('sd-prompt').textContent.includes(${JSON.stringify(trapRisk)})`), false, "the spent trap no longer warns");
     clean();
     check("The illustrated table warns before a hidden trap, keeps its identity private, and reports the Imp falling before it strikes");
+
+    // Seed 5: the Wizards' Skeleton can strike the empty Base or take cover. Both are drawn before the click, and Take
+    // cover carries the rule at keyboard focus. The Cowboys see it in cover, their new Sheriff can only take cover, and
+    // the Sheriff's attack on the covered Skeleton lands as forecast.
+    {
+      const painted = () => evaluate(`(() => { const p = document.querySelector('#sd-field .table-selection'); return p.checkVisibility() ? p.innerText : ''; })()`);
+      const orbsOf = (selector) => evaluate(`document.querySelector('${selector} .sd-orbs').getAttribute('aria-label')`);
+      const feedback = (text) => wait(`document.getElementById('sd-feedback').textContent.includes(${JSON.stringify(text)})`);
+      const pass = async () => { await click("#sd-end"); await wait(shown("sd-curtain")); await click("#sd-ready"); };
+      const fight = `Choose what to attack. Or take ${coverRule}`;
+      await open("?seed=5");
+      await click("#menu-play");
+      await click('[data-camp-destination="camp-open-title"]');
+      await click('[data-two="1"]');
+      await click("#sd-ready");
+      await click('[data-card^="wizard-skeleton-"]');
+      await pass();
+      await pass();
+      await click('[data-slot="wizard-0"]');
+      const strike = `No enemy troops: strike the Base. Or take ${coverRule}`;
+      assert.equal(await painted(), strike, "the illustrated table draws both choices before the click");
+      await click("#sd-cancel");
+      assert.equal(await painted(), "", "Cancel clears the drawn choice");
+      await activateByKey('[data-slot="wizard-0"]');
+      assert.ok(axNamed(await axTree(), "button", /Cowboy Base/, (node) => focused(node) && node.description?.value === `Hit the Base for 1 ${strike}`),
+        "keyboard focus lands on the Base with its forecast and the cover choice");
+      await tabTo("#sd-cover");
+      assert.ok(axNamed(await axTree(), "button", /^Take cover$/, (node) => focused(node) && node.description?.value === strike), "Take cover describes the rule at keyboard focus");
+      const untouched = await orbsOf('[data-base="cowboy"]');
+      await press("Enter", 13);
+      await feedback("The Wizards' Skeleton took cover.");
+      assert.equal(await orbsOf('[data-base="cowboy"]'), untouched, "taking cover leaves the Cowboy Base untouched");
+      assert.equal(await painted(), "", "the choice clears once the troop has acted");
+
+      await pass();
+      assert.ok(axNamed(await axTree(), "button", /Skeleton[\s\S]*In cover/), "the Cowboys see the Skeleton in cover");
+      await click('[data-card^="cowboy-sheriff-"]');
+      await feedback("Sheriff arrived");
+      await send("Emulation.setDeviceMetricsOverride", {width: 375, height: 740, deviceScaleFactor: 1, mobile: true});
+      await activateByKey('[data-slot="cowboy-0"]');
+      const only = `This troop cannot attack now. Take ${coverRule}`;
+      assert.ok(axNamed(await axTree(), "button", /^Take cover$/, (node) => focused(node) && node.description?.value === only), "375 px: a troop that cannot attack focuses Take cover, which says why and what it does");
+      assert.equal(await painted(), only, "375 px: the cover-only choice is drawn");
+      const layout = await evaluate(`(() => {
+        const box = (n) => { const r = n.getBoundingClientRect(); return {top: r.top, bottom: r.bottom, left: r.left, right: r.right}; };
+        const text = box(document.querySelector('#sd-field .table-selection'));
+        const crossed = [...document.querySelectorAll('#sd-actions button, #sd-hand button')].filter((n) => n.checkVisibility())
+          .map((n) => ({id: n.id || n.dataset.card, ...box(n)})).filter((c) => c.left < text.right && c.right > text.left && c.top < text.bottom && c.bottom > text.top);
+        const cover = document.getElementById('sd-cover'), r = cover.getBoundingClientRect();
+        return {text, crossed, fits: text.left >= 0 && text.right <= innerWidth,
+          coverOnTop: r.left >= 0 && r.right <= innerWidth && cover.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2))};
+      })()`);
+      assert.ok(layout.fits && layout.crossed.length === 0 && layout.coverOnTop, `375 px: the drawn choice fits and crosses no control; Take cover is on top: ${JSON.stringify(layout)}`);
+      await press("Escape", 27);
+      assert.equal(await painted(), "", "Escape clears the drawn choice");
+      await send("Emulation.setDeviceMetricsOverride", {width: 1440, height: 900, deviceScaleFactor: 1, mobile: false});
+
+      await pass();
+      await click('[data-slot="wizard-0"]');
+      assert.equal(await painted(), fight, "out of cover again, the Skeleton has both choices against the Sheriff");
+      assert.ok(axNamed(await axTree(), "button", /Sheriff/, (node) => enabled(node) && node.description?.value?.startsWith("Survives on 2 and hits back: yours drops to 2")),
+        "the attack forecast names the hit back");
+      await click("#sd-cover");
+      await feedback("The Wizards' Skeleton took cover.");
+
+      await pass();
+      await click('[data-slot="cowboy-0"]');
+      assert.equal(await painted(), fight, "the Cowboy seat sees the same two choices");
+      assert.ok(axNamed(await axTree(), "button", /Skeleton/, (node) => enabled(node) && node.description?.value?.startsWith("Survives on 2. It is in cover and does not hit back.")),
+        "the Cowboys' forecast reads the public cover");
+      const sheriff = await orbsOf('[data-slot="cowboy-0"]');
+      await click('[data-slot="wizard-0"]');
+      await feedback("left it on 2; it was in cover and did not hit back");
+      assert.equal(await orbsOf('[data-slot="cowboy-0"]'), sheriff, "the covered Skeleton did not hit back, as forecast");
+      assert.equal(await orbsOf('[data-slot="wizard-0"]'), "2 of 3 orbs", "the Skeleton dropped to 2, as forecast");
+    }
+    clean();
+    check("Seed 5: both seats see attack and cover drawn before the click; Take cover carries the rule at keyboard focus, including a troop that can only take cover at 375 px; the covered Skeleton's forecast matches the Sheriff's attack");
 
     // Same opening deal, two legal payments. Watch the actual summon and the opposite seat's pile.
     for (const [slot, tribute] of [[0, "Skeleton"], [1, "Imp"]]) {

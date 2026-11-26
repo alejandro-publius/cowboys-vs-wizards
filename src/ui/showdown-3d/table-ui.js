@@ -97,10 +97,9 @@ export function bindTableUI(root) {
         ? "Choose a card"
         : (added?.textContent.split(":")[0] ?? status.textContent.split(" · ")[0]);
       goHome.textContent = "Camp";
-      if (!ended && /^(Choose|A Guard|No enemy)/.test(originalPrompt.textContent)) {
-        const text = originalPrompt.textContent.split(".")[0];
-        const detail = originalPrompt.querySelector(".sd-choice-hint")?.textContent ?? "";
-        prompt.textContent = text + (text.endsWith("?") ? "" : ".") + detail;
+      // A pick's whole instruction: the choice, its trap or Raise hint, and the cover alternative.
+      if (!ended && /^(Choose|A Guard|No enemy|This troop)/.test(originalPrompt.textContent)) {
+        prompt.textContent = originalPrompt.textContent;
         prompt.hidden = false;
       } else {
         prompt.textContent = "";
