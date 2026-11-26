@@ -432,6 +432,53 @@ body:has(.camp-outpost[open], .builder-inspect[open]) {
   grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
 }
+/* The playable table shares the room with the recorded Kiro performers. */
+.saloon-billy-table {
+  padding: 0.8rem 1rem;
+  border-inline-start: 3px solid var(--frontier-brass);
+  background: #272335;
+  color: #fff3d8;
+}
+.saloon-billy-table[hidden] { display: none; }
+.saloon-billy-table p { margin: 0.35rem 0; }
+.saloon-shot-cards, .saloon-shot-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+.saloon-shot-cards { margin: 0.55rem 0; }
+.saloon-shot-cards > span {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-content: center;
+  align-items: center;
+  column-gap: 0.4rem;
+  line-height: 1.15;
+}
+.saloon-shot-cards .sd-card-art { grid-row: span 2; width: 44px; height: 40px; margin: 0; }
+.saloon-shot-cards [data-defeated] .sd-card-art { filter: grayscale(1); opacity: 0.55; }
+.saloon-shot-orbs { grid-column: 2; font-size: 0.88rem; }
+.saloon-shot-actions button { min-height: 44px; padding: 0.35rem; font: inherit; cursor: pointer; }
+.saloon-shot-actions button[aria-pressed="true"] { outline: 2px solid var(--frontier-brass); outline-offset: -3px; }
+.saloon-shot-result:empty, .saloon-reply-result:empty { margin: 0; }
+.saloon-shot-reply { border-top: 1px solid #8f766b; margin-top: 0.6rem; padding-top: 0.6rem; }
+@media (min-width: 980px), (min-width: 640px) and (max-height: 500px) {
+  .outpost-saloon .saloon-room[data-view="3d"]:has(.saloon-billy-table:not([hidden])) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .saloon-room:has(.saloon-billy-table:not([hidden])) > * { grid-column: 1 / -1; }
+  .saloon-room[data-view="3d"]:has(.saloon-billy-table:not([hidden])) > .saloon-theater { grid-area: 1 / 1; align-self: start; }
+  .saloon-room[data-view="3d"]:has(.saloon-billy-table:not([hidden])) > .saloon-controls {
+    grid-area: 2 / 1;
+    grid-template-columns: minmax(0, 1fr);
+    align-self: start;
+  }
+  .saloon-room[data-view="3d"] > .saloon-billy-table { grid-area: 1 / 2 / span 2 / 3; align-self: start; }
+}
+@media (max-width: 639px) and (max-height: 500px) {
+  .saloon-billy-table { order: -1; }
+}
+
 /* Grid children may shrink below their content so nothing pushes past the padded room. */
 .outpost-saloon .saloon-room > *,
 .saloon-room :is(.saloon-stage, .saloon-wall, .saloon-controls) > * {

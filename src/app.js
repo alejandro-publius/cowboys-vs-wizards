@@ -3,7 +3,7 @@
 // Open range, plus two players at any time. The Wizard preview (four Wizard-seat duels with their own save) is the
 // Camp's last section after Boot Hill and opens on its own at ?wizard=1. Slice 3 retired the lane duel from this
 // page, so no URL opens it here; an old lane address (?mode=lanes, match, ride-out, practice-*,
-// fire-arc) loads this same Showdown menu. The illustrated contest build offers a verified Outrider turn on its title.
+// fire-arc) loads this same Showdown menu. The illustrated title opens the Night Shift Saloon, the Outrider turn or Camp.
 // esbuild inlines the dynamic imports, so the page stays one offline file.
 import {mountReplayRoom} from "../apps/replay-room/src/room.mjs";
 import replayLessons from "../apps/replay-room/src/lessons.json";
@@ -230,8 +230,6 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     challenge.textContent = "Ride or Fight?";
     challenge.addEventListener("click", () => openOutrider("case-e"));
     play.before(challenge);
-    play.textContent = "Camp";
-    play.classList.add("menu-camp");
   }
   // K-096: Boot Hill practice, collapsed at the end of the Camp. Each deal is a native link (?practice=<seed>) that can
   // be copied or opened in a new tab; a plain click or Enter opens the same duel here through openPractice.
@@ -289,6 +287,24 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     showdown.start(duel, seedFor(), {players: 2});
   });
   outpost = diorama?.mountCampOutpost(campRoot);
+  const openSaloon = () => {
+    last = null;
+    toCamp();
+    outpost.openSaloonReview();
+  };
+  if (contest && outpost) {
+    const saloon = document.createElement("button");
+    saloon.id = "menu-saloon";
+    saloon.type = "button";
+    saloon.className = "frontier-plaque";
+    saloon.textContent = "Night Shift Saloon";
+    saloon.setAttribute("aria-haspopup", "dialog");
+    saloon.setAttribute("aria-controls", "room-for-night-shift-saloon");
+    saloon.addEventListener("click", openSaloon);
+    play.parentElement.prepend(saloon);
+    play.textContent = "Camp";
+    play.classList.add("menu-camp");
+  }
   const openBillyReplay = () => {
     outpost?.open("camp-collection-room");
     const ledger = node("camp-ledger");
@@ -309,8 +325,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   if (query.get("lesson") === "saved" && !["turn", "outrider", "practice", "wizard"].some((key) => query.has(key))) openSavedLesson();
   if (!["turn", "outrider", "practice", "wizard", "lesson"].some((key) => query.has(key))) {
     if (outpost && query.get("saloon") === "review") {
-      toCamp();
-      outpost.openSaloonReview();
+      openSaloon();
     } else if (query.get("replay") === "billy") {
       toCamp();
       openBillyReplay();

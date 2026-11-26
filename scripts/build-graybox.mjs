@@ -4,6 +4,7 @@ import {mkdir, readFile, rm, writeFile} from "node:fs/promises";
 import {fileURLToPath} from "node:url";
 import {grayboxBuildLabel} from "./graybox-build-label.mjs";
 import {verifiedForBuild} from "./outrider-gate.mjs";
+import {buildSaloonTable} from "./build-saloon-table.mjs";
 
 const root = new URL("../", import.meta.url);
 const file = (name) => new URL(name, root);
@@ -60,7 +61,7 @@ const [template, style, showdownStyle, replayStyle, boardStyle, boardLicense, bu
     read("src/ui/showdown-3d/saloon-tables.css"),
   ]).then(parts => [`:root{${frontier.join("")}}`, ...parts].join("\n")) : "",
   diorama ? read("src/ui/showdown-3d/graphics/THREE-LICENSE") : "",
-  build({...options, entryPoints: ["src/app.js"]}),
+  (diorama ? buildSaloonTable : build)({...options, entryPoints: ["src/app.js"]}),
 ]);
 const script = bundle.outputFiles[0].text.replace(/<\/script/gi, "<\\/script");
 // A Pages tree built before slice 3 may still hold the old lane chunk; drop it so it is never staged.
