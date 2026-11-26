@@ -25,6 +25,8 @@
 //   - Camp on / opens the Trail; Play on /graybox/ opens the Camp
 //   - two players on /: the trap, Raise and cover choices are drawn on the table before the click and described at
 //     keyboard focus; seed 5 covers both seats, a cover-only troop at 375 px and an attack on a covered troop
+//   - single duels (two players, and Boot Hill at 375 px) draw no best-of-three tally; the tally itself is checked by
+//     MODES=bo3,hotseat scripts/browser-showdown-modes-check.mjs on the illustrated build
 //   - /showdown/: the reference page loads without errors
 //   - the Camp saloon on / and /3d/ links to the one poker/ page; following it loads all five poker
 //     files, paints the BBS screen and raises no errors
@@ -301,6 +303,7 @@ async function browserChecks() {
     await click('[data-camp-destination="camp-open-title"]');
     await click('[data-two="1"]');
     await click("#sd-ready");
+    assert.equal(await evaluate(`document.querySelector('#sd-field .table-series').checkVisibility()`), false, "a single two-player duel draws no series tally");
     await click('[data-card^="cowboy-bear-trap-"]');
     await click("#sd-end");
     await wait(shown("sd-curtain"));
@@ -645,6 +648,7 @@ async function browserChecks() {
     assert.equal(await evaluate(`document.getElementById('showdown').hasAttribute('data-contest-challenge')`), false, "375 px: the challenge marker is cleared on Boot Hill");
     assert.equal(await evaluate(`getComputedStyle(document.getElementById('sd-lesson')).clipPath`), "inset(50%)", "375 px: Boot Hill keeps its lesson as screen-reader text");
     assert.ok(await firstScreen("#sd-hand [data-card]:not(:disabled)"), "375 px: a playable Boot Hill hand card is on the first screen");
+    assert.equal(await evaluate(`document.querySelector('#sd-field .table-series').checkVisibility()`), false, "375 px: a single solo duel draws no series tally");
     clean();
     await send("Emulation.setDeviceMetricsOverride", {width: 1440, height: 900, deviceScaleFactor: 1, mobile: false});
     check("375 px pointer: the challenge instruction is drawn, Ride shows Continue to Boot Hill on the first screen, and Boot Hill opens with a playable card in view");

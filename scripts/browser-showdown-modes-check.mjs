@@ -36,6 +36,12 @@
 //               nothing, Replace loads it; Start over (confirm accepted) resets Showdown progress only:
 //               cvw-player-v1 and the keepsake record are byte-identical and the keepsake still shown.
 //
+// bo3 and hotseat also run on the illustrated build (node scripts/build-graybox.mjs --diorama --contest, then
+//   MODES=bo3,hotseat node scripts/browser-showdown-modes-check.mjs dist/cowboys-vs-wizards-showdown-3d.html):
+// Open range is a Camp room there. On both builds the status line carries the live tally (game N of 3 and the score)
+// on each game's first board and after each result; the illustrated table also draws it on screen, out of the
+// accessibility tree, and never behind the curtain.
+//
 // Bot-driven flow and storage checks. Not a human playtest; says nothing about clarity or fun.
 import assert from "node:assert/strict";
 import {spawn} from "node:child_process";
@@ -232,6 +238,15 @@ async function session(label) {
     focusLog.push({when, ...f});
     assert.ok(f.usable && f.inTable, `focus after the curtain ${when}: ${JSON.stringify(f)}`);
   };
+  // A best of three's tally (null: none). The status line must carry it; the illustrated table (its .table-turn marks
+  // it) must draw an aria-hidden copy of exactly that text, or nothing. The graybox's status line is itself on screen.
+  const assertSeries = async (expected, when) => {
+    const s = await evaluate(`(()=>{const p=document.querySelector('#sd-field .table-series');
+      return{status:document.getElementById('sd-status').textContent,copy:p?{drawn:vis(p)?p.textContent:null,hidden:p.getAttribute('aria-hidden')}
+        :document.querySelector('#sd-field .table-turn')?'missing':null};})()`);
+    if (expected) assert.ok(s.status.includes(` · ${expected}`), `the status line carries "${expected}" ${when}: ${s.status}`);
+    if (s.copy) assert.deepEqual(s.copy, {drawn: expected, hidden: "true"}, `the table draws the tally ${when}`);
+  };
 
   // Seat privacy for the seat on screen: every hand card is that seat's, the other seat's hand is
   // card backs and a count, and no card id of the other seat outside its public board and graveyard.
@@ -255,13 +270,15 @@ async function session(label) {
     assert.equal(c.table, false, "the table is hidden behind the curtain");
     assert.deepEqual([c.hand, c.board], [0, 0], "no hand or board in the page behind the curtain");
     assert.deepEqual(c.ids, [], `card ids behind the curtain: ${c.ids}`);
+    await assertSeries(null, "behind the curtain");
     return c.text;
   };
 
   // Plays the game on screen to its result with clicks: what the screen enables (finishing each prompt),
   // every troop that can attack, then End turn. With two players each seat is played the same way,
   // passing the curtain with "I'm ready"; privacy is checked for the seat on screen every turn.
-  const playGame = async ({two = false} = {}) => {
+  // onFirstBoard (two players): called once the first curtain of the game clears.
+  const playGame = async ({two = false, onFirstBoard} = {}) => {
     let turns = 0, curtains = 0, handsSeen = {cowboy: 0, wizard: 0};
     const activeSeat = async () => (two ? ((await text("#sd-status")).match(/the (Cowboys|Wizards)' turn$/)?.[1] === "Cowboys" ? "cowboy" : "wizard") : "cowboy");
     while (!(await resultShown()) && turns < 120) {
@@ -272,6 +289,7 @@ async function session(label) {
         await click("#sd-ready");
         await wait(`vis(document.getElementById('sd-table'))`, "the table after I'm ready");
         await assertTableFocused(`(mouse I'm ready, curtain ${curtains})`);
+        if (curtains === 1) await onFirstBoard?.();
         const seat = await activeSeat();
         assert.equal(said, `Pass the screen to the ${seat === "cowboy" ? "Cowboy" : "Wizard"} player.`);
       }
@@ -313,8 +331,11 @@ async function session(label) {
     run.games.push(game);
     return game;
   };
-  // Starts a Camp duel by its button and waits for its first turn (or the curtain).
+  // Starts a Camp duel by its button and waits for its first turn (or the curtain). The illustrated Camp keeps the
+  // button in a room (camp-outpost.js), opened first from its map control.
   const startFrom = async (finder, what) => {
+    const room = await evaluate(`(${finder})?.closest('dialog.camp-outpost:not([open])')?.id??null`);
+    if (room) await press(`document.querySelector('[aria-controls="${room}"]')`, `the room for ${what}`);
     await press(finder, what);
     await wait(`!document.getElementById('showdown').hidden&&(/ · turn \\d+ · /.test(document.getElementById('sd-status').textContent)||vis(document.getElementById('sd-curtain')))`, `${what} to open`);
   };
@@ -348,7 +369,7 @@ async function session(label) {
     await send("Input.dispatchKeyEvent", {type: "keyUp", key: name, code: name, windowsVirtualKeyCode: code});
   };
   return {focusAt, focusLog, assertReadyFocused, assertTableFocused, key, send, evaluate, wait, press, click, byText, text, shot, storage, progress, seedStorage, load, openCamp, tile, tileState, startFrom,
-    winSolo, playGame, takeOffer, toCamp, assertCurtain, curtainUp, check, run, dialogs: () => dialogs,
+    winSolo, playGame, takeOffer, toCamp, assertCurtain, assertSeries, curtainUp, check, run, dialogs: () => dialogs,
     close: async () => { cdp.close(); await chrome.close(); }};
 }
 
@@ -523,6 +544,7 @@ const RUNS = {
     await s.openCamp();
     await s.startFrom(`document.querySelector('[data-match="open"]')`, "Best of three");
     assert.match(await s.text("#sd-status"), /^Open range · game 1 of 3 · you 0, Wizards 0 · turn 1/);
+    await s.assertSeries("game 1 of 3 · you 0, Wizards 0", "on the first board");
     const games = [];
     let swaps = 0, firstOk = true;
     for (let n = 1; n <= 3; n += 1) {
@@ -531,6 +553,7 @@ const RUNS = {
       if (n > 1) firstOk &&= game.opened === (games[n - 2].won ? "wizard" : "cowboy");
       const label = await s.evaluate(`document.getElementById('sd-again')?.textContent??null`);
       const wins = games.filter((g) => g.won).length, losses = games.length - wins; // the click bot never drew here; a draw would fail below
+      await s.assertSeries(`game ${n} of 3 · you ${wins}, Wizards ${losses}`, `after game ${n}`);
       if (wins >= 2 || losses >= 2) break;
       assert.equal(label, `Game ${n + 1}`);
       assert.deepEqual(await s.progress(), withSide, "nothing is saved between games");
@@ -549,6 +572,7 @@ const RUNS = {
       await s.click("#builder-save");
       swaps += 1;
       await s.wait(`!document.getElementById('showdown').hidden&&new RegExp('game ${n + 1} of 3').test(document.getElementById('sd-status').textContent)`, `game ${n + 1}`);
+      await s.assertSeries(`game ${n + 1} of 3 · you ${wins}, Wizards ${losses}`, `on game ${n + 1}'s first board`);
     }
     const won = games.filter((g) => g.won).length >= 2;
     assert.ok(games.filter((g) => g.won).length >= 2 || games.filter((g) => !g.won).length >= 2, JSON.stringify(games));
@@ -574,9 +598,11 @@ const RUNS = {
     const games = [];
     const wins = {cowboy: 0, wizard: 0};
     while (Math.max(wins.cowboy, wins.wizard) < 2 && games.length < 5) {
-      const game = await s.playGame({two: true});
+      const tally = (n) => `game ${n} of 3 · Cowboys ${wins.cowboy}, Wizards ${wins.wizard}`;
+      const game = await s.playGame({two: true, onFirstBoard: () => s.assertSeries(tally(games.length + 1), `on game ${games.length + 1}'s first board`)});
       games.push(game);
       if (game.won) wins[game.won] += 1;
+      await s.assertSeries(tally(games.length), `after game ${games.length}`);
       if (games.length > 1 && games.at(-2).won) assert.equal(game.opened, games.at(-2).won === "cowboy" ? "wizard" : "cowboy", "the loser opens");
       // After a result both look at the board: no hand and no set trap is shown.
       assert.equal(await s.evaluate(`document.querySelectorAll('#sd-hand [data-card]').length`), 0, "no hand after the result");
@@ -595,6 +621,7 @@ const RUNS = {
     await s.assertReadyFocused("(Play again, new match)");
     await s.click("#sd-ready");
     await s.wait(`vis(document.getElementById('sd-table'))`, "the table");
+    await s.assertSeries("game 1 of 3 · Cowboys 0, Wizards 0", "on the new match's first board");
     assert.deepEqual(await s.evaluate(`[...document.querySelectorAll('#sd-hand [data-card]')].map(n=>n.dataset.card).sort()`), [...fresh.sides[fresh.first].hand].sort());
     const after = await s.storage();
     assert.deepEqual(after, before, "two players changes no stored data: no progress and no playtest line");

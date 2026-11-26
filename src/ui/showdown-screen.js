@@ -472,7 +472,8 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     }).join("");
 
     const r = view.result;
-    const score = match ? ` · game ${match.game} of 3 · ${solo() ? `you ${match.wins[own]}, ${sides(foe)} ${match.wins[foe]}` : `Cowboys ${match.wins.cowboy}, Wizards ${match.wins.wizard}`}` : "";
+    // data-series: the illustrated table (showdown-3d/table-ui.js) draws this same tally where the player can see it.
+    const score = match ? ` · <span data-series>game ${match.game} of 3 · ${solo() ? `you ${match.wins[own]}, ${sides(foe)} ${match.wins[foe]}` : `Cowboys ${match.wins.cowboy}, Wizards ${match.wins.wizard}`}</span>` : "";
     const verdict = !r ? "" : r.winner === null ? "Draw." : !solo() ? `The ${sides(r.winner)} win: the ${FACTION[opponent(r.winner)]} Base fell.`
       : r.winner === own ? `You win: the ${FACTION[foe]} Base fell.` : "You lose: your Base fell.";
     $("sd-status").innerHTML = r ? `<span class="sd-result ${!solo() || r.winner === own ? "sd-good" : "sd-warn"}">${verdict}</span>${score}`
