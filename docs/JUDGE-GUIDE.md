@@ -4,7 +4,7 @@
 
 ## One-minute walkthrough
 
-This walkthrough was checked on the November 23 local contest build. Build it with `node scripts/build-graybox.mjs --diorama --contest` and open `dist/cowboys-vs-wizards-showdown-3d.html`. The documented November 22 release includes the illustrated title and Ride or Fight? [Release checks](evidence/illustrated-contest-release.md) · [Live build manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json)
+Start on the [published illustrated title](https://alejandro-publius.github.io/cowboys-vs-wizards/). The current release check records the Git commit, the served HTML checksum and a screenshot of the opening challenge. To play that version offline, check out the recorded commit and run `npm run build -- --diorama --contest`. Open `dist/cowboys-vs-wizards-showdown-3d.html`. [Verified release](PROJECT-STATUS.md#current-build) · [Live build manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json)
 
 | # | Time | Click (**bold**) | What you should see | Source |
 | --- | --- | --- | --- | --- |
@@ -12,7 +12,7 @@ This walkthrough was checked on the November 23 local contest build. Build it wi
 | 2 | 0:20–0:45 | **Back to camp**, **Back to map**, **Camp ledger**, **Sheriff's Ledger**. Then **Current Billy · 2 attack** and **Next step** ×3. Then **Proposed Billy · 1 attack** and **Next step** ×3. | A recorded Kiro balance decision: seed 726421019, Cowboys first, turn 7. Both versions share the first 29 events. With 2 attack, Billy clears the Bone Wall and the Cowboys win on turn 13. With 1 attack, the Wall survives on 1 orb and the Wizards win on turn 20. The Ledger states that Billy still has 2 attack in this build. If the button reads "Recorded Billy", the live card has changed. | [Billy replay](evidence/billy-replay.md) · [`billy-replay.js`](../src/ui/billy-replay.js) |
 | 3 | 0:45–1:00 | **Back to map**, **Night Shift saloon**, **Step** ×3. | Labelled "Recorded Kiro shift". Step 3 posts "Review of Kiro's proposal: Billy attack 2 → 1" with the written rule, the measured shares, the source revision and the command to recheck it. | [`night-shift-saloon.js`](../src/ui/showdown-3d/night-shift-saloon.js) · [test](../tests/match/saloon-showcases.test.js) |
 
-The demo script records two Chrome runs. One covered both Outrider choices and both Billy endings. The other covered the Saloon route and its reset at 1440×900 and 390×844. The local candidate also opens the validated review directly with `?saloon=review`. In Chrome the link focused **Back to map**, supported replay reset, and made zero live-feed requests at both widths.
+The demo script records two Chrome runs. One covered both Outrider choices and both Billy endings. The other covered the Saloon route and its reset at 1440×900 and 390×844. The [published Saloon link](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) opens the validated review directly. In Chrome the link focused **Back to map**, supported replay reset, and made zero live-feed requests at both widths.
 
 ## The Kiro decision behind steps 2 and 3
 

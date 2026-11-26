@@ -12,10 +12,10 @@ You need Node.js 22.18 or later and a browser with WebGL 2 (current Chrome works
 git clone https://github.com/alejandro-publius/cowboys-vs-wizards.git
 cd cowboys-vs-wizards
 npm ci
-npm run build
+npm run build -- --diorama --contest
 ```
 
-Open `dist/cowboys-vs-wizards-board-duel.html` in the browser. The public build is at <https://alejandro-publius.github.io/cowboys-vs-wizards/>.
+Open `dist/cowboys-vs-wizards-showdown-3d.html` for the illustrated title. For the lightweight Camp used by most input checks, run `npm run build` and open `dist/cowboys-vs-wizards-board-duel.html`. [Public game](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Build instructions](README.md#local-build)
 
 ## Make a change
 
@@ -32,7 +32,7 @@ Open `dist/cowboys-vs-wizards-board-duel.html` in the browser. The public build 
 | --- | --- |
 | Only Markdown or other documents | Nothing. Check that your links open. |
 | Game rules, match flow or the card interface (`src/`) | `node scripts/verify-duel.mjs` |
-| The attack demo scene | `npm run check` |
+| Illustrated entry, release routes or the Saloon link | `node scripts/stage-pages.mjs --commit "$(git rev-parse HEAD)"`, then `node scripts/check-pages-tree.mjs --browser` |
 
 Say in the pull request which command you ran and whether it passed. If you could not run it, say that instead.
 

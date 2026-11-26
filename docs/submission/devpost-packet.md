@@ -1,6 +1,6 @@
 # Kiroween submission packet: Showdown
 
-> Draft for Alex's review. Checked against source revision `35d7447` on November 23, 2026 (America/Los_Angeles). The November 22 public release was `d0bbd14`. See the [current build manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) and the [November 22 release receipt](../evidence/kiro-contest-run.md#release). Fields marked **OWNER** need facts or decisions that only Alex or the team can supply. The November 20 Dragon-era draft is summarized under [History](#history).
+> Draft for Alex’s review. The [November 26 release check](../PROJECT-STATUS.md#current-build) identifies the published game and links a screenshot. The November 23 recording and evidence below use revision `35d7447`. The [live manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) identifies the version a judge will open today. Fields marked **OWNER** need Alex or the team’s decision.
 
 ## Pitch
 
