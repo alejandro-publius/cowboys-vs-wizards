@@ -66,7 +66,8 @@ test("a rival rail and a curtained or shared own rail show no hand or trap ident
       assert.deepEqual(ids(html), []);
       const own = after.sides[after.viewer];
       const hidden = railHtml(after.viewer, own, {own: true, named: false, raise: -1});
-      assert.doesNotMatch(hidden, /Set:|No trap set/);
+      assert.doesNotMatch(hidden, /Set:|No trap set|card-back/);
+      assert.ok(hidden.includes(`data-zone="hand-count" role="group" aria-label="${after.viewer === "cowboy" ? "Cowboy" : "Wizard"} hand: ${own.handCount} card`));
       const shown = hidden.replace(/(Cowboy|Wizard) (zones|deck|traps|hand|Boot Hill)/g, "");
       for (const id of own.traps) assert.ok(!shown.includes(cardOf(id).name) || own.discard.some((d) => cardOf(d).name === cardOf(id).name), `unnamed rail leaks ${id}`);
       traps += s.trapCount;

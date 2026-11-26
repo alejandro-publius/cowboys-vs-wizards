@@ -25,7 +25,7 @@ export function raiseTarget(discard, deckCounts) {
 export function railHtml(side, s, {own, named, raise, sprung = [], grew = false}) {
   const cell = (zone, inner, label) => `<div class="sd-zone" data-zone="${zone}" role="group" aria-label="${label}">${inner}</div>`;
   const deck = cell("deck", `<span class="sd-zone-label">Deck</span> <span class="sd-zone-count">${s.deckCount}</span>`, `${FACTION[side]} deck: ${plural(s.deckCount, "card")}`);
-  const backs = `<span class="sd-backs" role="img" aria-label="${FACTION[side]} hand: ${plural(s.handCount, "card")}, face down">${'<span class="card-back" aria-hidden="true"></span>'.repeat(s.handCount)}</span>`;
+  const backs = own ? "" : `<span class="sd-backs" role="img" aria-label="${FACTION[side]} hand: ${plural(s.handCount, "card")}, face down">${'<span class="card-back" aria-hidden="true"></span>'.repeat(s.handCount)}</span>`;
   const hand = cell("hand-count", `<span class="sd-zone-label">Hand</span> <span class="sd-zone-count">${s.handCount}</span>${backs}`, `${FACTION[side]} hand: ${plural(s.handCount, "card")}`);
   const setLine = own && named ? (s.traps.length ? `Set: ${s.traps.map((id) => cardOf(id).name).join(", ")}` : "No trap set")
     : s.trapCount ? `${plural(s.trapCount, "card")} face down` : "Nothing face down";
@@ -33,15 +33,14 @@ export function railHtml(side, s, {own, named, raise, sprung = [], grew = false}
   const traps = cell("traps", `<span class="sd-zone-label">Traps</span> <span class="sd-trap-line">${setLine}</span>${flip}`, `${FACTION[side]} traps: ${setLine}`);
   const top = s.discard.length ? cardOf(s.discard.at(-1)).name : null;
   const dot = raise >= 0 ? `<span class="sd-raise-dot" data-raise-dot aria-hidden="true">●</span>` : "";
-  const raiseNote = raise >= 0 ? `, Raise returns ${cardOf(s.discard[raise]).name}` : "";
+  const raiseNote = raise >= 0 ? `, current Raise target ${cardOf(s.discard[raise]).name}` : "";
   // An empty pile is plain text, not a button; it becomes one when the first card lands.
   const pile = top
     ? `<button type="button" class="sd-pile${grew ? " sd-grew" : ""}" data-graveyard="${side}" aria-haspopup="dialog" aria-label="${pileName(side)}: ${plural(s.discard.length, "card")}, newest ${top}${raiseNote}. Open the pile">
         <span class="sd-zone-label">Graveyard</span> <span class="sd-zone-top">${top}</span> <span class="sd-zone-count">${s.discard.length}</span>${dot}</button>`
     : `<span class="sd-zone-label">Graveyard</span> <span class="sd-pile sd-empty" data-graveyard-empty="${side}">Boot Hill · empty</span>`;
   const grave = cell("graveyard", pile, pileName(side));
-  const cells = own ? [grave, traps, deck] : [deck, hand, traps, grave];
-  return `<div class="sd-zone-rail" data-zone-side="${side}" role="group" aria-label="${FACTION[side]} zones"><h3 class="sd-zone-faction">${FACTION[side]}s</h3>${cells.join("")}</div>`;
+  return `<div class="sd-zone-rail" data-zone-side="${side}" role="group" aria-label="${FACTION[side]} zones"><h3 class="sd-zone-faction">${FACTION[side]}s</h3>${deck}${hand}${traps}${grave}</div>`;
 }
 
 // The sheet body for one pile: rows newest first, each a button that shows the card's rules text (describe(type)).
@@ -50,7 +49,7 @@ export function sheetHtml(side, discard, raise, open, describe) {
   const rows = newestFirst(discard).map((id, i) => {
     const at = discard.length - 1 - i;
     const card = cardOf(id);
-    const marker = at === raise ? ` <span class="sd-raise-tag" data-raise-target>Raise returns this</span>` : "";
+    const marker = at === raise ? ` <span class="sd-raise-tag" data-raise-target>Current Raise target</span>` : "";
     const text = open === i ? `<span class="sd-graveyard-text">${describe(id)}</span>` : "";
     return `<li><button type="button" data-graveyard-card="${i}" aria-expanded="${open === i}">${card.name}${marker}</button>${text}</li>`;
   }).join("");
