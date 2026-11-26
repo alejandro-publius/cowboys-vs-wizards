@@ -1,17 +1,17 @@
-// The docs index (docs/README.md) lists everything directly in docs/, and no
-// relative Markdown link in the repository points at a missing file.
+// The docs index (docs/README.md) lists everything directly in docs/, no
+// relative Markdown link in the repository points at a missing file, and no
+// #fragment on a link to a Markdown page names a heading that is not there.
 import test from "node:test";
 import assert from "node:assert/strict";
 import {execFileSync} from "node:child_process";
 import {readFileSync} from "node:fs";
 import {fileURLToPath} from "node:url";
-import {checkLinks, linksIn, targetPath} from "../../scripts/check-links.mjs";
+import {anchorsIn, checkLinks, fragmentOf, linksIn, targetPath} from "../../scripts/check-links.mjs";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
 
 // Links that were already broken when this check was added, as "file -> target".
-// None were: all 364 relative links in 105 files resolved on 2026-11-16. Add an entry only
-// for a broken link in a record that must not be edited, with a comment.
+// Keep historical exceptions explicit if a source truly must stay untouched.
 const KNOWN_BROKEN = [];
 
 test("links: the parser finds links, images and definitions, and skips code", () => {
@@ -41,6 +41,30 @@ test("links: code delimiter lengths do not hide real links or expose code exampl
   for (const markdown of ["Paragraph\n    [real](README.md)", "- List item\n\n    [real](README.md)", "- List item\n    - [real](README.md)"]) {
     assert.deepEqual(linksIn(markdown).map(({target}) => target), ["README.md"], markdown);
   }
+});
+
+test("links: anchors follow GitHub's heading slugs, repeats and explicit anchors, and skip code", () => {
+  const anchors = anchorsIn([
+    "# Release line and scoreboard",
+    "## Fable’s answer: the `npm test` [run](x.md) (Nov. 19)!",
+    "## Repeat",
+    "## Repeat",
+    "### _Emphasis_ and **bold**",
+    "```",
+    "## Not a heading",
+    "```",
+    "    ## Indented code",
+    "Text with <a id=\"custom-spot\"></a> in it",
+    "Setext title",
+    "============",
+    "#hashtag is not a heading",
+  ].join("\n"));
+  for (const expected of ["release-line-and-scoreboard", "fables-answer-the-npm-test-run-nov-19", "repeat", "repeat-1",
+    "emphasis-and-bold", "custom-spot", "setext-title"]) assert.ok(anchors.has(expected), expected);
+  for (const absent of ["not-a-heading", "indented-code", "hashtag-is-not-a-heading"]) assert.ok(!anchors.has(absent), absent);
+  assert.equal(fragmentOf("a.md#Part-2"), "Part-2");
+  assert.equal(fragmentOf("a.md#caf%C3%A9"), "café");
+  for (const none of ["a.md", "a.md#", "x.js#L12", "x.js#L3-L9"]) assert.equal(fragmentOf(none), null, none);
 });
 
 test("links: every relative link and image in tracked Markdown points at something that exists", () => {

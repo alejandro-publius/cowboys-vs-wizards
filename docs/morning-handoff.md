@@ -1,6 +1,6 @@
 # Cowboys vs. Wizards morning handoff
 
-[Play the public release](https://alejandro-publius.github.io/cowboys-vs-wizards/) or open the local build with `?seed=0`. [Build instructions](../README.md#play) · [Release verification](evidence/kiro-submission-preflight.md#live-release)
+[Play the public release](https://alejandro-publius.github.io/cowboys-vs-wizards/) or open the local build with `?seed=0`. [Build instructions](../README.md#play-showdown) · [Release verification](evidence/kiro-submission-preflight.md#live-release)
 
 ```sh
 node scripts/verify-duel.mjs

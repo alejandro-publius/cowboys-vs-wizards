@@ -15,8 +15,8 @@
 .sd-pick { outline: 2px solid #fff; } .sd-can { border-color: #8fd18f; } .sd-chosen { outline: 2px solid var(--cowboy); }
 .sd-note { display: block; font-size: .82rem; color: var(--muted); margin-top: .2rem; }
 .sd-warn { color: #f0a08a; } .sd-good { color: #9fe09f; }
-.sd-type { display: block; font-size: .78rem; letter-spacing: .03em; color: var(--muted); }
-.sd-key { display: inline-block; font-size: .78rem; border: 1px solid var(--line); border-radius: 4px; padding: 0 .3rem; }
+.sd-type { display: block; font-size: .8rem; letter-spacing: .03em; color: var(--muted); }
+.sd-key { display: inline-block; font-size: .8rem; border: 1px solid var(--line); border-radius: 4px; padding: 0 .3rem; }
 .sd-result { font-size: 1.2rem; }
 .sd-backs { display: flex; gap: 2px; margin-top: .2rem; }
 .sd-backs .card-back { width: 14px; height: 20px; border: 1px solid var(--line); border-radius: 2px; }
@@ -52,6 +52,8 @@
 .sd-build-row { display: grid; grid-template-columns: 10rem repeat(2, auto) 1fr; gap: .75rem; align-items: center; margin-bottom: .5rem; }
 .sd-build-row .sd-card { width: 10rem; }
 #camp-code, #camp-report-text { width: 100%; box-sizing: border-box; }
+/* The practice deal links are a row of short links: give each a 44 px tall hit area without restyling the link. */
+#camp-practice .sd-row a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 .25rem; }
 #sd-curtain { display: grid; gap: 1rem; justify-items: start; padding: 3rem 0; font-size: 1.15rem; }
 @media (max-width: 40rem) { .sd-build-row { grid-template-columns: 1fr 1fr; } }
 /* Sheriff's Ledger (The Night Shift, src/ui/sheriffs-ledger.js): collapsed at the end of the Camp; fits 390px. */

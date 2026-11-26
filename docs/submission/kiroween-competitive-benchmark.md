@@ -110,7 +110,7 @@ Leave a margin below 3:00 for a limit that is "less than three (3) minutes" ([ru
 
 ## 7. Proposed success metrics for 3 to 5 human playtesters
 
-Proposals. No playtest has been run. Five people cannot support a rate claim, so report counts and quotes only. Use the existing [protocol](judge-demo-script.md#part-2-first-time-human-playtest-protocol) for the script and record notes under `docs/evidence/`.
+Proposals. No playtest has been run. Five people cannot support a rate claim, so report counts and quotes only. Use the existing [protocol](judge-demo-script.md#three-first-time-players) for the script and record notes under `docs/evidence/`.
 
 | Metric | How to observe | Signal worth a text change |
 | --- | --- | --- |
