@@ -14,7 +14,7 @@
 import {EFFECTS, KEYWORDS, RARITY, TYPES, cardOf, has, tributes, typeOf} from "../game/showdown/cards.js";
 import {presentEvent} from "../game/showdown/presenter.js";
 import {newRunId} from "../match/showdown-playtest.js";
-import {TRAP_SLOTS, attackOf, attackOutcome, canAttack, opponent} from "../game/showdown/rules.js";
+import {TRAP_SLOTS, attackOf, attackOutcome, canAttack, newestUndeadIndex, opponent} from "../game/showdown/rules.js";
 import {createShowdownSession} from "../match/showdown-session.js";
 import {matchOver, matchWinner, newMatch, nextGame, offersSwap, recordGame, swapPool, withSwap} from "../match/showdown-match.js";
 import {createCuePlayer, cuesFor} from "./showdown-cues.js";
@@ -28,6 +28,21 @@ const orbs = (now, max) => `<span class="sd-orbs" role="img" aria-label="${now} 
 const FRAME = {...FRAMES, gear: {mark: "◆", line: "Gear"}, location: {mark: "■", line: "Location"}};
 const typeLine = (card) => `<span class="sd-type">${FRAME[card.kind].mark} ${card.kind === "troop" ? `Troop · ${card.tag}` : FRAME[card.kind].line} · ${RARITY[card.rarity][0]}</span>`;
 const keywords = (card) => (card.keys ?? []).map((key) => `<span class="sd-key" title="${KEYWORDS[key][1]}">${KEYWORDS[key][0]}</span>`).join(" ");
+function raisePaymentHint({board, discard}, payments) {
+  const hints = new Set();
+  for (const {tributes: slots} of payments) {
+    if (board.filter(Boolean).length - slots.length + 1 >= board.length)
+      return "The Wizard fills your last slot, so nothing returns.";
+    // Tribute reaches the pile before Raise. Gear cannot be an Undead troop.
+    const paid = slots.map((slot) => board[slot].cardId);
+    const pile = [...discard, ...paid];
+    const target = pile[newestUndeadIndex(pile)];
+    const result = target ? `${name(target)} returns with 1 orb` : "no Undead to return";
+    hints.add(`Pay ${paid.map(name).join(" and ")}: ${result}.`);
+  }
+  return [...hints].join(" ");
+}
+
 function costLine(type) {
   const cost = tributes(`${type}-1`);
   if (cost) return `Cost: ${cost} of your troops, sent to the graveyard. Attacks the turn it arrives.`;
@@ -407,6 +422,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     const targetDescription = (target) => attacking && aims.has(target)
       ? ` aria-describedby="${previewId(target)} sd-prompt"` : aiming;
 
+    const raising = pick?.tributes && has(pick.card, "raise");
     const row = (side) => {
       const s = view.sides[side];
       const isOwn = side === own;
@@ -426,7 +442,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
           const tribute = pick?.tributes && playsOf(pick.card).some((a) => a.tributes.includes(slot));
           const ready = canAttack(view, troop);
           const actable = options.some((a) => (a.type === "attack" || a.type === "cover") && a.slot === slot);
-          if (tribute) { cls = pick.tributes.includes(slot) ? " sd-chosen" : " sd-can"; data = `data-own="${slot}"`; note = "Tribute"; }
+          if (tribute) { cls = pick.tributes.includes(slot) ? " sd-chosen" : " sd-can"; data = `data-own="${slot}"` + (raising ? ' aria-describedby="sd-prompt"' : ""); note = "Tribute"; }
           else if (carriers.has(slot)) { cls = " sd-can"; data = `data-own="${slot}"`; note = "Give it the gear"; }
           else if (pick?.troop === slot) { cls = " sd-pick"; note = ready ? "Choose a target, or take cover" : "It can take cover"; }
           else if (!pick && actable) { cls = " sd-can"; data = `data-own="${slot}"`; note = ready ? "Can attack" : "Can take cover"; }
@@ -475,11 +491,18 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
       : view.attacking ? "No more cards this turn. Act with your other troops, or end the turn."
       : view.turn === 1 ? "Play your cards: one troop a turn. Nobody attacks on the opening turn."
       : "First play cards (one troop, one other card). Then act with your troops. Once a troop acts, no more cards this turn.";
-    if (attacking && aims.size && view.sides[foe].trapCount) {
-      const warning = document.createElement("span");
-      warning.className = "sd-trap-warning";
-      warning.textContent = " A face-down trap springs before damage.";
-      $("sd-prompt").append(warning);
+    let hint = "";
+    if (raising) {
+      $("sd-prompt").textContent = `Choose a tribute for ${name(pick.card)}.`;
+      hint = raisePaymentHint(view.sides[own], playsOf(pick.card));
+    } else if (attacking && aims.size && view.sides[foe].trapCount) {
+      hint = "A face-down trap springs before damage.";
+    }
+    if (hint) {
+      const detail = document.createElement("span");
+      detail.className = "sd-choice-hint";
+      detail.textContent = " " + hint;
+      $("sd-prompt").append(detail);
     }
     $("sd-end").hidden = Boolean(r);
     $("sd-end").disabled = !options.some((a) => a.type === "end");
