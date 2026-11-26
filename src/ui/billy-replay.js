@@ -88,7 +88,7 @@ export function billyReplayHtml(replay = BILLY_REPLAY, seat = SEAT_AUDIT) {
     <button type="button" data-billy-step="next">Next step</button>
     <button type="button" data-billy-step="replay">Replay from the start</button>
   </div>
-  <h4 id="ledger-billy-wins">Cowboy win rate</h4>
+  <h4 id="ledger-billy-wins">Cowboy wins in the ${count(2 * k.gamesPerArm)}-game replay sample</h4>
   <dl class="sd-billy-scores" aria-labelledby="ledger-billy-wins">${score("baseline", k.baselineCowboyWins)}${score("candidate", k.candidateCowboyWins)}</dl>
   <p class="sd-note">${count(k.gamesPerArm)} games per version, fixed decks and two level-2 bots. ${esc(appliedLine(replay))}</p>
   <details class="sd-billy-evidence"><summary>How to verify this replay</summary>

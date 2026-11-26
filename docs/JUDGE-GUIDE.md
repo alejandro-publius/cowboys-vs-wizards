@@ -1,6 +1,6 @@
 # Cowboys vs. Wizards — quick judge review
 
-[Play](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Source](https://github.com/alejandro-publius/cowboys-vs-wizards) · [Demo script](submission/judge-demo-script.md) · [Devpost packet](submission/devpost-packet.md)
+[Play](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Source](https://github.com/alejandro-publius/cowboys-vs-wizards) · [Demo narration and timestamps](submission/judge-demo-narration.md) · [Devpost packet](submission/devpost-packet.md)
 
 ## One-minute walkthrough
 
@@ -8,9 +8,9 @@ Start on the [published illustrated title](https://alejandro-publius.github.io/c
 
 | # | Time | Click (**bold**) | What you should see | Source |
 | --- | --- | --- | --- | --- |
-| 1 | 0:00–0:20 | On the title: **Ride or Fight?**, **Outrider**, **Wizard Base**, **End turn**. Then **Restart this duel**, **Outrider**, **Skeleton**. | One real turn at the Bone Fence: turn 3, Outrider on 2 orbs, Skeleton on 3, Bases at 5 and 4. You can try both decisions from the same position. The challenge only appears if the Outrider gate verified this position when the page was built. | [Gate evidence](evidence/outrider-gate.md) · [Ledger still](evidence/outrider-gate/ledger-revealed.png) |
-| 2 | 0:20–0:45 | **Back to camp**, **Back to map**, **Camp ledger**, **Sheriff's Ledger**. Then **Current Billy · 2 attack** and **Next step** ×3. Then **Proposed Billy · 1 attack** and **Next step** ×3. | A recorded Kiro balance decision: seed 726421019, Cowboys first, turn 7. Both versions share the first 29 events. With 2 attack, Billy clears the Bone Wall and the Cowboys win on turn 13. With 1 attack, the Wall survives on 1 orb and the Wizards win on turn 20. The Ledger states that Billy still has 2 attack in this build. If the button reads "Recorded Billy", the live card has changed. | [Billy replay](evidence/billy-replay.md) · [`billy-replay.js`](../src/ui/billy-replay.js) |
-| 3 | 0:45–1:00 | **Back to map**, **Night Shift saloon**, **Step** ×3. | Labelled "Recorded Kiro shift". Step 3 posts "Review of Kiro's proposal: Billy attack 2 → 1" with the written rule, the measured shares, the source revision and the command to recheck it. | [`night-shift-saloon.js`](../src/ui/showdown-3d/night-shift-saloon.js) · [test](../tests/match/saloon-showcases.test.js) |
+| 1 | 0:00–0:20 | **Ride or Fight?** → **Outrider** → **Wizard Base**. Choose **Try fighting instead** → **Outrider** → **Skeleton**. | Riding hits the Base for one. Fighting leaves the Skeleton on two orbs and the Outrider on one. Both choices start on the same turn. | [Playable opening](https://alejandro-publius.github.io/cowboys-vs-wizards/?outrider=case-e) · [Gate evidence](evidence/outrider-gate.md) |
+| 2 | 0:20–0:45 | Open **Replay Billy vs. Bone Wall**. Choose **Current Billy · 2 attack**, then **Next step** three times. Repeat with **Proposed Billy · 1 attack**. | At two attack the wall falls and the Cowboys win on turn 13. At one attack the wall keeps an orb and the Wizards win on turn 20. To find it in the game, open **Camp ledger → Sheriff’s Ledger** from the Camp map. | [Replay Billy vs. Bone Wall](https://alejandro-publius.github.io/cowboys-vs-wizards/?replay=billy) · [Replay record](evidence/billy-replay.md) |
+| 3 | 0:45–1:00 | Open the **Recorded Kiro review**. Read the notice below the Saloon stage. | The notice identifies the proposed stat, the two balance rules and the result of the 100,000-duel audit. **Replay Billy vs. Bone Wall** returns to the same deal. Billy still has two attack in the published recording. | [Recorded Kiro review](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) · [Audit](evidence/billy-seat-audit/README.md) |
 
 The demo script records two Chrome runs. One covered both Outrider choices and both Billy endings. The other covered the Saloon route and its reset at 1440×900 and 390×844. The [published Saloon link](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) opens the validated review directly. In Chrome the link focused **Back to map**, supported replay reset, and made zero live-feed requests at both widths.
 
@@ -35,7 +35,7 @@ The demo script records two Chrome runs. One covered both Outrider choices and b
 
 ## Submission status
 
-A captioned private demo shows both Outrider choices, both Billy endings, and the recorded Saloon review. Narration, public video upload, and documented first-time player observations are pending. [Demo script](submission/judge-demo-script.md)
+The 1:59 private cut shows the public build at `dad6175`, including both Outrider choices, the 16-card deck builder, both Wanted bounties, both Billy endings, the archived Kiro workflow and the referee result. It includes captions and a temporary synthetic guide voice. Owner narration, a public upload and documented first-time player observations are still pending. [Narration and chapter times](submission/judge-demo-narration.md) · [Earlier shot plan](submission/judge-demo-script.md)
 
 ## Archive
 

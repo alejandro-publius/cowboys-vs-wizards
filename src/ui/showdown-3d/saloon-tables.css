@@ -197,6 +197,11 @@
 .saloon-decision[hidden] {
   display: none;
 }
+.saloon-decision a {
+  color: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+}
 .saloon-decision h5 {
   margin: 0 0 0.3rem;
   font: 700 1rem/1.15 var(--frontier-display);

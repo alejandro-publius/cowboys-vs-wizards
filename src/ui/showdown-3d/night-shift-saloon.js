@@ -309,7 +309,8 @@ export function decisionHtml(decision) {
       <div><dt>Rule</dt><dd><ul>${d.rules.map((line) => `<li>${esc(line)}</li>`).join("")}</ul></dd></div>
       <div><dt>Receipt</dt><dd>Proposed by Kiro CLI; ${d.duels.toLocaleString("en-US")} recorded Node engine duels at source <code>${esc(shortCommit(d.sourceCommit))}</code>, protocol <code>${esc(d.protocolSha256.slice(0, 7))}</code>. Recheck: <code>${esc(DECISION_RECHECK)}</code>. Notes: <code>${esc(DECISION_NOTES)}</code>.</dd></div>
     </dl>
-    <p class="saloon-decision-note">${esc(DECISION_SEPARATE)}</p>`;
+    <p class="saloon-decision-note">${esc(DECISION_SEPARATE)}</p>
+    <a data-billy-replay href="?replay=billy">Replay Billy vs. Bone Wall</a>`;
 }
 
 // Pure: the status line for one shift event. A proposal with an archived decision says where to read it.

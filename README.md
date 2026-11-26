@@ -12,7 +12,7 @@ A short, haunted Western card duel built with Kiro for Kiroween 2026. Your troop
 | --- | --- |
 | [Ride or Fight?](https://alejandro-publius.github.io/cowboys-vs-wizards/?outrider=case-e) | Pick the Outrider. Strike the Skeleton or ride past it and hit the Wizard Base. Restart the same turn and try the other choice. |
 | [Camp and the Trail](https://alejandro-publius.github.io/cowboys-vs-wizards/) | Choose **Camp**, then **Boot Hill** for your first Trail duel. Camp also holds the deck builder, Wanted bounties and two-player mode. |
-| [Recorded Kiro balance review](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) | Inspect the proposal to cut Billy’s attack from 2 to 1. Open **Camp ledger → Sheriff’s Ledger** to play back the same Billy versus Bone Wall turn with each value. |
+| [Recorded Kiro balance review](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) | Inspect the proposal to cut Billy’s attack from 2 to 1. Then play the same turn at both values. [Replay Billy vs. Bone Wall](https://alejandro-publius.github.io/cowboys-vs-wizards/?replay=billy) |
 | [Boot Hill Poker](https://alejandro-publius.github.io/cowboys-vs-wizards/poker/) | Draw a five-card hand against the Wizard. The Saloon’s back table opens this second game. |
 | [Lightweight board](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) · [Reference game](https://alejandro-publius.github.io/cowboys-vs-wizards/showdown/) | The graybox opens directly into Camp. The reference page has a playable version of the rules. |
 
