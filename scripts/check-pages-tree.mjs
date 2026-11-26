@@ -523,12 +523,14 @@ async function browserChecks() {
     // The title leads to two real engine continuations of one shot. Replaying cannot advance the other arm or the career.
     {
       const table = "#room-for-night-shift-saloon .saloon-billy-table";
+      const before = JSON.stringify(rewardSave);
+      await evaluate(`localStorage.setItem(${JSON.stringify(SAVE_KEY)}, ${JSON.stringify(before)})`);
+      await send("Emulation.setDeviceMetricsOverride", {width: 740, height: 375, deviceScaleFactor: 1, mobile: true});
       await open("");
       await wait(`document.querySelector(".title-scene nav button")?.id === "menu-saloon"`);
       await activateByKey("#menu-saloon");
       await wait(`document.querySelector("#room-for-night-shift-saloon")?.open && !document.querySelector("${table}").hidden`);
-      const saved = () => evaluate(`localStorage.getItem("cvw-showdown-save-v2")`);
-      const before = await saved();
+      assert.ok(await evaluate(`(() => { const r = document.querySelector('${table} [data-shot="baseline"]').getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; })()`), "the Saloon shot is in view on a short phone");
       const result = `document.querySelector("${table} .saloon-shot-result").textContent`;
       assert.equal(await evaluate(result), "");
       for (const [line, orbs, finish] of [
@@ -548,7 +550,8 @@ async function browserChecks() {
         await activateByKey(`${table} [data-reply="${move}"]`);
         assert.match(await evaluate(reply), finish);
       }
-      assert.equal(await saved(), before);
+      assert.equal(await evaluate(storedCareer), before);
+      await send("Emulation.setDeviceMetricsOverride", {width: 1440, height: 900, deviceScaleFactor: 1, mobile: false});
       check("the title opens the Night Shift Saloon; both Billy shots reproduce their finishes, and Billy can attack or take cover to change the result without changing the career");
     }
 
