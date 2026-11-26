@@ -12,9 +12,9 @@
 // "wizard"}) gives the human the Wizards against the bot's Cowboys. It settles only through a campaign passed to
 // that start, never through the mount's (Cowboy) campaign, and adds no playtest line.
 import {EFFECTS, KEYWORDS, RARITY, TYPES, cardOf, has, tributes, typeOf} from "../game/showdown/cards.js";
-import {presentEvent} from "../game/showdown/presenter.js";
+import {presentAttackForecast, presentEvent} from "../game/showdown/presenter.js";
 import {newRunId} from "../match/showdown-playtest.js";
-import {TRAP_SLOTS, attackOf, attackOutcome, canAttack, newestUndeadIndex, opponent} from "../game/showdown/rules.js";
+import {TRAP_SLOTS, attackOf, canAttack, newestUndeadIndex, opponent} from "../game/showdown/rules.js";
 import {createShowdownSession} from "../match/showdown-session.js";
 import {matchOver, matchWinner, newMatch, nextGame, offersSwap, recordGame, swapPool, withSwap} from "../match/showdown-match.js";
 import {createCuePlayer, cuesFor} from "./showdown-cues.js";
@@ -336,15 +336,8 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
 
   // What an attack would do, computed on the public view: face-down traps are not counted.
   function preview(view, target) {
-    const o = attackOutcome(view, pick.troop, target);
-    const foe = view.sides[opponent(viewer())];
-    const note = (text, tone = "") => `<span id="${previewId(target)}" aria-hidden="true" class="sd-note${tone ? ` sd-${tone}` : ""}">${foe.trapCount ? "Without trap effects: " : ""}${text}</span>`;
-    if (target === "base") return note(`${foe.board.some(Boolean) ? "Ride past: " : ""}Hit the Base for ${o.baseDamage}`, "good");
-    const lastStand = o.targetLeft === 0 && has(foe.board[target].cardId, "laststand") ? ". Its Last Stand costs yours 1 orb" : "";
-    if (o.targetLeft === 0) return note(`Defeated${o.baseDamage ? `, ${o.baseDamage} through to the Base` : foe.board[target].cover ? ", nothing reaches the Base" : ""}${lastStand}`, "good");
-    if (foe.board[target].cover) return note(`Survives on ${o.targetLeft}. It is in cover and does not hit back.`);
-    if (attackOf(view, foe.board[target]) === 0) return note(`Survives on ${o.targetLeft}. It has no attack, so yours is unharmed.`);
-    return note(`Survives on ${o.targetLeft} and hits back: yours ${o.attackerLeft === 0 ? "is defeated" : `drops to ${o.attackerLeft}`}`, o.attackerLeft === 0 ? "warn" : "");
+    const {text, tone} = presentAttackForecast(view, pick.troop, target);
+    return `<span id="${previewId(target)}" aria-hidden="true" class="sd-note${tone ? ` sd-${tone}` : ""}">${text}</span>`;
   }
 
   // After a win: what it paid and the two cards to choose from. After a loss: the rematch's grit.

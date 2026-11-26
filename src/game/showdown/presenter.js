@@ -4,7 +4,7 @@
 // text goes. Wording follows the prototype screen's log (prototypes/showdown/main.js).
 import {cardOf} from "./cards.js";
 import {EVENTS} from "./contract.js";
-import {HAND_CAP, opponent} from "./rules.js";
+import {forecastAttack, HAND_CAP, opponent} from "./rules.js";
 
 const FACTION = Object.freeze({cowboy: "Cowboys", wizard: "Wizards"});
 const side = (name) => FACTION[name] ?? name;
@@ -13,6 +13,50 @@ const owned = (owner, cardId) => `The ${side(owner)}' ${name(cardId)}`;
 const base = (owner) => `the ${side(owner)}' Base`;
 const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
 const targetName = (target) => (target === "base" ? "the Base" : name(target));
+
+function clashForecast(hit, lastStand) {
+  if (hit.targetLeft === 0) {
+    let text = "Defeated";
+    if (hit.baseDamage) text += `, ${hit.baseDamage} through to the Base`;
+    else if (hit.covered) text += ", nothing reaches the Base";
+    if (lastStand) text += lastStand.left ? `. Its Last Stand leaves yours on ${plural(lastStand.left, "orb")}.` : ". Its Last Stand defeats yours too.";
+    return {text, tone: lastStand?.left === 0 ? "warn" : "good"};
+  }
+  if (lastStand) {
+    const target = name(hit.target);
+    const trade = lastStand.left ? `leaves ${target} on ${plural(lastStand.left, "orb")}` : `defeats ${target} too`;
+    return {text: `${target} hits back and defeats ${name(hit.cardId)}. Last Stand ${trade}.`, tone: "warn"};
+  }
+  if (hit.covered) return {text: `Survives on ${hit.targetLeft}. It is in cover and does not hit back.`, tone: ""};
+  if (!hit.hitBack) return {text: `Survives on ${hit.targetLeft}. It has no attack, so yours is unharmed.`, tone: ""};
+  const yours = hit.attackerLeft ? `drops to ${hit.attackerLeft}` : "is defeated";
+  return {text: `Survives on ${hit.targetLeft} and hits back: yours ${yours}`, tone: hit.attackerLeft ? "" : "warn"};
+}
+
+// The same words describe a focused target, the illustrated comparison and the graybox.
+export function presentAttackForecast(view, slot, target) {
+  const foe = opponent(view.active);
+  const before = view.sides[foe];
+  const {defendingBoard, events} = forecastAttack(view, slot, target);
+  const [hit] = events;
+  const result = target === "base"
+    ? {text: `${before.board.some(Boolean) ? "Ride past: " : ""}Hit the Base for ${hit.baseDamage}`, tone: "good"}
+    : clashForecast(hit, events.find((e) => e.type === "laststand"));
+  if (events.some((e) => e.type === "sweep")) {
+    const changes = [];
+    for (const [i, troop] of before.board.entries()) {
+      if (!troop || i === target) continue;
+      const card = name(troop.cardId);
+      const duplicate = before.board.some((other, at) => at !== i && other && name(other.cardId) === card);
+      const label = duplicate ? `${card} (slot ${i + 1})` : card;
+      const after = defendingBoard[i];
+      changes.push(after ? `leaves ${label} on ${plural(after.health, "orb")}` : `defeats ${label}`);
+    }
+    result.text += `${result.text.endsWith(".") ? "" : "."} Sweep also ${changes.join(" and ")}.`;
+  }
+  if (before.trapCount) result.text = "Without trap effects: " + result.text;
+  return result;
+}
 
 function attackText(e) {
   const defender = base(opponent(e.side));

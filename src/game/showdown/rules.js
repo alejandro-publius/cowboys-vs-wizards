@@ -230,6 +230,17 @@ function attack(next, action, events) {
   enemy.base = Math.max(0, enemy.base - outcome.baseDamage);
 }
 
+// Preview a legal target from the active player's view. A face-down trap can change whether
+// the strike lands. Resolve the untrapped strike on a copy, including Last Stand and Sweep.
+export function forecastAttack(view, slot, target) {
+  const state = structuredClone(view);
+  const defender = state.sides[opponent(state.active)];
+  defender.traps = [];
+  const events = [];
+  attack(state, {slot, target}, events);
+  return {events, defendingBoard: defender.board};
+}
+
 // Discards are oldest first. Both the summon and its public preview skip non-Undead cards.
 export const newestUndeadIndex = (discard) =>
   discard.findLastIndex((id) => cardOf(id).kind === "troop" && cardOf(id).tag === "Undead");
