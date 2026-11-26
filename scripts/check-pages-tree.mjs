@@ -542,6 +542,8 @@ async function browserChecks() {
         await activateByKey(button);
         assert.match(await evaluate(result), finish);
         assert.equal(await evaluate(`document.querySelector("${table} .saloon-shot-orbs").textContent`), `${orbs} of 2 orbs`);
+        assert.equal(await evaluate(`document.querySelectorAll("${table} .saloon-life > :not([data-spent])").length`), orbs);
+        assert.equal(await evaluate(`document.querySelectorAll("${table} .saloon-life > [data-spent]").length`), 2 - orbs);
         assert.equal(await evaluate(`document.querySelector('${button}').getAttribute("aria-pressed")`), "true");
         assert.equal(await evaluate(`document.querySelector("${table} .saloon-shot-reply").hidden`), line !== "candidate");
       }

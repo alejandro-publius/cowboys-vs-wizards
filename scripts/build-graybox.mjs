@@ -44,6 +44,12 @@ const frontier = diorama ? await Promise.all(["title", "camp"].map(async (view) 
   return `--frontier-${view}:url("data:image/webp;base64,${image}");`;
 })) : [];
 if (panorama) frontier.push(`--frontier-panorama:url("${panorama}");`);
+if (diorama) {
+  for (const [name, card] of [["billy", "cowboy-billy"], ["wall", "wizard-bone-wall"]]) {
+    const painting = await artwork(`assets/cards/illustrated/${card}.webp`);
+    if (painting) frontier.push(`--saloon-${name}-art:url("${painting}");`);
+  }
+}
 const options = {absWorkingDir: fileURLToPath(root), bundle: true, write: false, platform: "browser", target: "es2022", minify: true,
   define: {__CVW_GRAYBOX_BUILD__: JSON.stringify(label), __CVW_OUTRIDER__: JSON.stringify({cases: outrider.cases, camp: outrider.camp}),
     __CVW_OUTRIDER_LEDGER__: JSON.stringify(outrider.ledger), __CVW_DIORAMA__: JSON.stringify(diorama), __CVW_CONTEST__: JSON.stringify(contest),

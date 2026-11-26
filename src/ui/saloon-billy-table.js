@@ -48,16 +48,16 @@ export function takeBillyShot(table, line) {
   return {targetLeft: hit.targetLeft, ...finish(engine, state, table.botLevel), choice};
 }
 
-export function mountBillyTable(root, table, portrait) {
+export function mountBillyTable(root, table) {
   if (!table) return;
-  const {attackerId, targetId, baseline, candidate, targetOrbsBefore} = BILLY_REPLAY;
+  const {attackerId, baseline, candidate, targetOrbsBefore} = BILLY_REPLAY;
   const printed = cardOf(attackerId).attack === baseline.attack ? "Current" : "Recorded";
   root.hidden = false;
   root.innerHTML = `<h3 id="saloon-shot-title">Billy at Bone Wall</h3>
     <p>Kiro proposed cutting Billy’s attack from ${baseline.attack} to ${candidate.attack}. Take his shot under either rule.</p>
     <div class="saloon-shot-cards">
       <span data-shot-card="billy"><strong>Billy</strong></span>
-      <span data-shot-card="wall"><strong>Bone Wall</strong><span class="saloon-shot-orbs"></span></span>
+      <span data-shot-card="wall"><strong>Bone Wall</strong><span class="saloon-life" aria-hidden="true"></span><span class="saloon-shot-orbs"></span></span>
     </div>
     <div class="saloon-shot-actions">
       <button type="button" data-shot="baseline" aria-pressed="false">Fire for ${baseline.attack} · ${printed}</button>
@@ -72,17 +72,14 @@ export function mountBillyTable(root, table, portrait) {
       </div>
       <p class="saloon-reply-result" role="status" aria-live="polite" aria-atomic="true"></p>
     </section>`;
-  for (const [name, id] of [["billy", attackerId], ["wall", targetId]]) {
-    const image = portrait(typeOf(id));
-    if (image) {
-      image.setAttribute("aria-hidden", "true");
-      root.querySelector(`[data-shot-card="${name}"]`).prepend(image);
-    }
-  }
+  const wallCard = root.querySelector('[data-shot-card="wall"]');
+  const tokens = root.querySelector(".saloon-life");
+  for (let i = 0; i < targetOrbsBefore; i++) tokens.append(document.createElement("i"));
   const orbs = root.querySelector(".saloon-shot-orbs");
   const showOrbs = left => {
     orbs.textContent = `${left} of ${targetOrbsBefore} orbs`;
-    orbs.parentElement.toggleAttribute("data-defeated", left === 0);
+    wallCard.toggleAttribute("data-defeated", left === 0);
+    Array.from(tokens.children).forEach((token, i) => token.toggleAttribute("data-spent", i >= left));
   };
   showOrbs(targetOrbsBefore);
   const result = root.querySelector(".saloon-shot-result");
