@@ -2,15 +2,17 @@
 
 ## Current build
 
-On November 26, 2026 we checked the public Pages site against GitHub `main`. Both named [`094af9b`](https://github.com/alejandro-publius/cowboys-vs-wizards/commit/094af9bee94a5f5d545ff24e67c6e0437a420a4c). The root and `/3d/` each served HTML with SHA-256 `d0fdf866772500eafdb418d9ed9b9ec951cae62fb3dcfe7f5cfaed8a87c57190`, matching the [live manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json). The [Bone Fence screenshot](evidence/showdown-bone-fence-094af9b.png) was captured from that public game.
+For the commit and HTML checksum currently served to players, open the [live deployment manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json). The [Pages workflow](../.github/workflows/pages.yml) verifies them after deployment.
 
-| At this revision | Where to see it |
+The screenshot documents the November 26 check. At that time the root and `/3d/` matched GitHub commit `094af9b` and SHA-256 `d0fdf866772500eafdb418d9ed9b9ec951cae62fb3dcfe7f5cfaed8a87c57190`. [Screenshot](evidence/showdown-bone-fence-094af9b.png) · [Source revision](https://github.com/alejandro-publius/cowboys-vs-wizards/commit/094af9bee94a5f5d545ff24e67c6e0437a420a4c)
+
+| In the public game | Where to see it |
 | --- | --- |
 | Illustrated Outrider challenge, Boot Hill Trail, Camp and the recorded Night Shift Saloon | [Play](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Judge walkthrough](JUDGE-GUIDE.md) |
 | Billy at 2 attack, with a playable comparison against the proposed 1 attack | [Recorded review](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) · [100,000-duel seat audit](evidence/billy-seat-audit/README.md) |
 | Boot Hill Poker in a browser and terminal | [Play Poker](https://alejandro-publius.github.io/cowboys-vs-wizards/poker/) · [Poker source](../experiments/boot-hill-poker/README.md) |
 
-**Opened for review November 26.** The [combat forecast change](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/213) shows Last Stand and Sweep in the attack preview. The [shared deal generator](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/214) connects the two playable games to one reproducible random stream per seed. Each pull request tracks its own merge status.
+The source in this checkout shares Last Stand and Sweep forecasts across all three Showdown screens, and a seeded shuffle between Showdown and Boot Hill Poker. Camp preserves older earned cards while the Wanted board and deck builder follow the current Showdown rules. The reference Camp now checks for newer progress before applying a write. [Combat](../src/game/showdown/presenter.js) · [Deal generator](../src/game/frontier-kit/seeded-rng.js) · [Camp](../src/match/showdown-campaign.js)
 
 The remaining submission evidence includes an uncoached first duel and human assistive-technology feedback. The public demo video, category and contributor credits still need owner confirmation. [Submission packet](submission/devpost-packet.md) · [Design and release history](design/release-line.md)
 
