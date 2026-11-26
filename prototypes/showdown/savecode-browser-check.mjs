@@ -15,7 +15,7 @@ import {fileURLToPath, pathToFileURL} from "node:url";
 
 const CHROME = process.env.CHROME ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const root = fileURLToPath(new URL("../../", import.meta.url));
-const SAVE = "cvw-showdown-save-v2";
+import {REFUSED_KEY, SAVE_KEY as SAVE} from "../../src/game/showdown/campaign-store.js";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const deadline = setTimeout(() => { console.error("FAIL: timed out after 60 s"); process.exit(1); }, 60000);
 
@@ -144,6 +144,27 @@ try {
   await sleep(800);
   s = await state();
   check(s.code === encodeSave(other) && await stored() === JSON.stringify(other), "after reload the Camp shows the replaced save");
+
+  // Another tab changes the career after this one previews a code. Replace must keep the newer deck.
+  await openCodes();
+  await paste(encodeSave(mine));
+  const changed = JSON.stringify(third);
+  await evaluate(`localStorage.setItem(${JSON.stringify(SAVE)}, ${JSON.stringify(changed)})`);
+  await click('[data-testid="save-import-replace"]');
+  s = await state();
+  check(await stored() === changed && s.code === encodeSave(third) && !s.preview, "a stale Replace loads the other tab's progress");
+  check(await evaluate(`document.getElementById("storage-notice")?.textContent.includes("changed in another tab")`), "Camp explains the skipped write");
+
+  // An older reference page must keep the only copy of a career written by a newer game.
+  const future = JSON.stringify({...mine, v: 3});
+  await evaluate(`localStorage.setItem(${JSON.stringify(SAVE)}, ${JSON.stringify(future)})`);
+  await send("Page.reload");
+  await sleep(800);
+  await openCodes();
+  await paste(encodeSave(mine));
+  await click('[data-testid="save-import-replace"]');
+  check(await stored() === JSON.stringify(mine) && await evaluate(`localStorage.getItem(${JSON.stringify(REFUSED_KEY)})`) === future,
+    "a confirmed replacement preserves the original bytes of a newer-version career");
 
   // Storage blocked: a fresh isolated browser context where only Showdown's own save key refuses to be written.
   const {browserContextId} = await raw("Target.createBrowserContext");

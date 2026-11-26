@@ -248,9 +248,7 @@ test("partial lane hunts and lane Frontier cards do not carry into Showdown", ()
 });
 
 // FH-R7.3 (.kiro/specs/showdown-first-hour/requirements.md)
-// The graybox Camp has no Start over until slice 3. This checks the reference reset that exists today,
-// prototypes/showdown/main.js "reset": keep(newSave()) then keepLog([]), i.e. it writes only the
-// Showdown save and the Showdown playtest log.
+// The reference Camp resets its career and report. Its separate keepsakes and the lane profile survive.
 test("reference Start over resets Showdown progress only; keepsakes and cvw-player-v1 are left alone", () => {
   const storage = storageFor("both-captured-in-deck");
   const campaign = createCampaign(storage);
