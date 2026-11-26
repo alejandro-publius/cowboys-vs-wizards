@@ -434,7 +434,8 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     const lost = clears && (!document.activeElement || document.activeElement === document.body || $("sd-curtain").contains(document.activeElement));
     $("sd-curtain").hidden = !curtain;
     $("sd-table").hidden = curtain;
-    $("sd-zones").hidden = curtain;
+    // The scripted Ride or Fight? opening fits on one phone screen. The card zones open with an ordinary duel.
+    $("sd-zones").hidden = curtain || "contestChallenge" in root.dataset;
     if (curtain) {
       closeSheet(false);
       boardPresentation?.clear();
