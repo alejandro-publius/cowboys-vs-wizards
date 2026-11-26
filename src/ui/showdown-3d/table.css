@@ -509,9 +509,15 @@
   padding: 0.6rem 0.45rem;
 }
 .table-award {
-  top: 27%;
+  /* Its bottom edge sits 6px above #sd-result (top: 34%; #sd-table and #sd-field share one height), so a verdict
+     that wraps grows up into the sky, never down over the buttons, however short the phone. */
+  bottom: calc(66% + 6px);
   left: 50%;
   translate: -50% 0;
+  /* Sized to the field, not the half right of left: 50%, so a phone's verdict wraps to two lines above the buttons. */
+  width: max-content;
+  max-width: 92%;
+  text-align: center;
   font-size: clamp(24px, 3.3vw, 47px);
   letter-spacing: 0.017em;
 }
