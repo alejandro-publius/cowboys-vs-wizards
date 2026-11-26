@@ -81,7 +81,7 @@
 .sd-build-row .sd-card { width: 10rem; }
 #camp-code, #camp-report-text { width: 100%; box-sizing: border-box; }
 /* The practice deal links are a row of short links: give each a 44 px tall hit area without restyling the link. */
-#camp-practice .sd-row a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 .25rem; }
+#camp-practice .sd-row a, #camp-even-fight a, #ledger-even-fight a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 .25rem; }
 #sd-curtain { display: grid; gap: 1rem; justify-items: start; padding: 3rem 0; font-size: 1.15rem; }
 @media (max-width: 40rem) { .sd-build-row { grid-template-columns: 1fr 1fr; } }
 /* Sheriff's Ledger (The Night Shift, src/ui/sheriffs-ledger.js): collapsed at the end of the Camp; fits 390px. */
