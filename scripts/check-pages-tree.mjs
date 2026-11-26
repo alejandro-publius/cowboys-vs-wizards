@@ -550,6 +550,33 @@ async function browserChecks() {
       check(`${BASE_PATH}?saloon=review: the recorded saloon opens at the validated Billy proposal (${at.slice(2)}), makes 0 /night-shift/events requests; Enter on Replay from start hides the decision and Enter on Step at the last event keeps focus on Play/Replay; Back to map returns to the Camp`);
     }
 
+    // Follow the actual evidence link, then open the copied URL in the lightweight build.
+    await open("?saloon=review");
+    const replayLink = '.saloon-decision a[href="?replay=billy"]';
+    await wait(`document.querySelector('${replayLink}')?.getClientRects().length > 0`);
+    const campDocument = await evaluate("performance.timeOrigin");
+    await click(replayLink);
+    const currentBilly = '[data-billy-line="baseline"]';
+    const replayFocused = `document.getElementById('camp-ledger')?.open && document.activeElement?.matches('${currentBilly}')`;
+    const inReplayRoom = `document.querySelector('#room-for-camp-collection-room')?.open && ${replayFocused}`;
+    await wait(inReplayRoom);
+    assert.equal(await evaluate("performance.timeOrigin"), campDocument, "the Saloon opens the replay in the same Camp session");
+    await press("Enter", 13);
+    await wait(`document.querySelector('${currentBilly}').getAttribute('aria-pressed') === 'true'`);
+    await click('[data-billy-line="candidate"]');
+    for (let step = 0; step < 3; step++) await click('[data-billy-step="next"]');
+    assert.match(await evaluate(`document.getElementById('ledger-billy-now').textContent`), /Wizards win on turn 20/);
+    await press("Escape", 27);
+    await wait(`!document.querySelector('#room-for-camp-collection-room').open && document.activeElement.matches('[data-camp-destination="camp-collection-room"]')`);
+    await open("?replay=billy");
+    await wait(inReplayRoom);
+    await open("graybox/?replay=billy");
+    await wait(replayFocused);
+    await open("?outrider=case-e&replay=billy");
+    await wait(`${shown("showdown")} && document.querySelector('#sd-field[data-battlefield="bone-fence"] canvas.sd-world')?.width > 0`);
+    clean();
+    check("The Saloon links directly to Billy's playable replay; the copied URL opens in graybox and respects duel links");
+
     // The challenge's one-line instruction is drawn, not just clipped to a 1 px screen-reader box, and it sits
     // on the first screen without covering the header or pushing End turn below the fold.
     const instructionShown = async () => {

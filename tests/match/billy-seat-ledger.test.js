@@ -118,6 +118,7 @@ test("counts that are not whole numbers or do not add up show no figures", () =>
 
 test("the replay keeps its own 10,000-game text and the seat sample follows it", () => {
   const html = billyReplayHtml(R, synthetic());
+  assert.match(html, /<h4[^>]*>Cowboy wins in the 10,000-game replay sample<\/h4>/);
   assert.match(html, /5,000 games per version, fixed decks and two level-2 bots/);
   assert.match(html, /Independent of the 10,000-game replay cohort above/);
   assert.ok(html.indexOf("How to verify this replay") < html.indexOf("Who wins when they go first?"));
