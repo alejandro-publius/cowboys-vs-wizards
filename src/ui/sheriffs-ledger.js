@@ -8,9 +8,10 @@ import {LEDGER} from "./sheriffs-ledger.data.js";
 import {VERIFIED} from "./outrider-camp.js";
 import {OUTRIDER_LEDGER, outriderLedgerHtml, wireReveal} from "./outrider-ledger.js";
 import {billyReplayHtml, wireBillyReplay} from "./billy-replay.js";
+import evenFightReview from "../../docs/evidence/even-fight-preview.json" with {type: "json"};
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"})[c]);
-const pct = (n, d) => `${((100 * n) / d).toFixed(1)}%`;
+const pct = (n, d, digits = 1) => `${((100 * n) / d).toFixed(digits)}%`;
 const short = (sha) => sha.slice(0, 7);
 const SIDE = {cowboy: "Cowboy", wizard: "Wizard"};
 
@@ -59,6 +60,16 @@ export function ledgerHtml(ledger = LEDGER) {
   <p id="ledger-run" class="sd-note">${esc(rulesetSummary(ledger))}</p>
   ${r ? `<p class="sd-note">Estimates for ${esc(r.bot)} on these seeds only. Commits after ${short(r.revision)} are not measured here. Method: <code>${esc(r.method)}</code>; records: <code>${esc(r.source)}</code>.</p>` : ""}
   ${reviewHtml(ledger)}
+  <details id="ledger-even-fight"><summary>Even Fight balance review</summary>
+    <p>Level-2 bots played each deal from both starting seats. Each row has 2,000 games per ruleset.</p>
+    <div class="sd-ledger-wrap" role="region" aria-label="Even Fight win shares" tabindex="0">
+    <table class="sd-ledger-table"><thead><tr><th scope="col">Deals</th><th scope="col">First seat, released → preview</th><th scope="col">Cowboys, released → preview</th></tr></thead>
+    <tbody>${evenFightReview.seats.map(({start, deals, games, released, preview}) => `<tr><th scope="row">${start}–${start + deals - 1}</th>
+      <td>${pct(released.firstWins, games, 2)} → ${pct(preview.firstWins, games, 2)}</td><td>${pct(released.cowboyWins, games, 2)} → ${pct(preview.cowboyWins, games, 2)}</td></tr>`).join("")}</tbody></table></div>
+    <p>The November 20 sealed review recorded <strong>${esc(evenFightReview.originalReview.verdict)}</strong>. All six Trail fights met the three-point limit.
+    Fable accepted the larger shifts for the Stargazer and the first two Lantern Wraith hunts. Historical seal <code>${esc(evenFightReview.originalReview.sealSha256.slice(0, 12))}</code>.</p>
+    <p><a href="?even-fight=1">Play the Even Fight preview</a></p>
+  </details>
   <p class="sd-note">Engine properties tested over every card (<code>${esc(ledger.properties.source)}</code>):</p>
   <ul class="sd-ledger-props">${ledger.properties.list.map((p) => `<li><strong>${esc(p.id)}</strong> ${esc(p.title)}</li>`).join("")}</ul>
   <p class="sd-note">Each card has one spec under ${esc(ledger.requirement.id)} ${esc(ledger.requirement.title)} (<code>${esc(ledger.requirement.path)}</code>), checked by <code>${esc(ledger.requirement.check)}</code>. R1.1 marks the eight cards it names.</p>

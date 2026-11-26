@@ -20,6 +20,8 @@ Codex replayed both rulesets from the November 26 port based on `b7dacf6`. Level
 | 0–999 | 57.10% | 49.50% | 59.40% | 51.80% |
 | 1000–1999 | 58.25% | 51.40% | 61.05% | 54.10% |
 
+The Sheriff’s Ledger shows the two measurements alongside the historical verdict. A separate progression run compared all 21 fights at each of three player levels, 300 deals per level and ruleset. The largest change among the six required Trail fights was eight wins out of 300 at The Hexed Mile. The Stargazer and first two Lantern Wraith hunts exceeded the wider three-point margin for the simple player. At Open Range, the careful player went from 196 wins to 176 on the earned Trail deck. [Raw counts and measured source hashes](../evidence/even-fight-preview.json)
+
 The 100-duel frozen referee check on the same port matched all 5,086 main-line positions. Its 274,273 alternative-action checks yielded 6,775 classified disagreements and zero unexplained disagreements on the released rules. The empty-board Hellfire decision remains open. [Audit method](../evidence/claude-referee-legal-branches.md)
 
 ## Before making these the default rules

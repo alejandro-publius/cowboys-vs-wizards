@@ -474,6 +474,20 @@ const RUNS = {
     assert.equal((await s.focusAt()).id, "camp-even-fight-two");
     assert.deepEqual(await s.storage(), campBefore);
     s.check("The Camp opens two-player preview with 5/7 Base orbs, private handoffs, a private result and focus restored");
+
+    await s.load("?seed=4");
+    await s.openCamp();
+    if (await s.evaluate(`Boolean(document.querySelector('[data-camp-destination="camp-collection-room"]'))`)) {
+      await s.click('[data-camp-destination="camp-collection-room"]');
+    }
+    await s.click("#camp-ledger > summary");
+    await s.click("#ledger-even-fight > summary");
+    assert.match(await s.text("#ledger-even-fight"), /58\.25% → 51\.40%/);
+    assert.match(await s.text("#ledger-even-fight"), /failed/);
+    await s.click("#ledger-even-fight a");
+    await s.wait(`vis(document.getElementById('showdown')) && document.getElementById('sd-status').textContent.startsWith('Even Fight preview')`, "the Ledger's playable preview");
+    assert.deepEqual(await s.storage(), campBefore);
+    s.check("The Sheriff’s Ledger shows the recorded verdict and opens a playable preview");
   },
   async gated(s) {
     await s.load("?seed=0");
