@@ -129,11 +129,13 @@ export function duelFor(save, id, deck = save.deck) {
 // Cards that can still be earned from an offer or a pack: Cowboy, not basic, not legendary, not yet at the deck limit.
 // On the Trail an offer holds only cards the player has already met, so a new card always arrives with its lesson.
 // A card that an unbeaten rival pays is held back, so gear and locations arrive with the rival that teaches them.
-function pool(save, {met = false} = {}) {
+export function pool(save, {met = false} = {}) {
   const held = RIVALS.filter((rival) => !save.rivals.includes(rival.id)).flatMap((rival) => rival.reward);
   return Object.keys(TYPES).filter((type) => TYPES[type].side === "cowboy" && !["basic", "legendary"].includes(TYPES[type].rarity)
     && owned(save, type) < cap(type) && (!met || owned(save, type) > 0) && !held.includes(type));
 }
+export const packOpens = (save) => save.packs > 0 && pool(save).length > 0;
+
 const WEIGHT = {common: 6, uncommon: 3, rare: 1};
 function pick(types, roll) {
   let at = roll * types.reduce((sum, type) => sum + WEIGHT[TYPES[type].rarity], 0);
