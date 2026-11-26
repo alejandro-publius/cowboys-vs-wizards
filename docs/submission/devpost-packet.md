@@ -42,7 +42,9 @@ The private 1:59 cut shows the Outrider decision, Camp’s deck builder and boun
 
 ## Project
 
-Cowboys vs. Wizards. The entry is **Showdown**. The [site root](https://alejandro-publius.github.io/cowboys-vs-wizards/) serves the illustrated Showdown, starting with Ride or Fight?, and `/3d/` is a byte-identical copy of it ([PR 186](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/186)). `/graybox/` serves the same game on a lightweight board. Camp holds the Trail of duels, rivals, Wanted hunts, packs, the deck builder, best of three, two players on one screen and the Sheriff's Ledger. The browser saves wins, rewards and card choices. At source revision `35d7447`, the Ledger includes the Billy replay and Camp includes the Night Shift saloon. Neither has been confirmed on the public site. The retired lane duel stays at `ea183ee29dbd`.
+**Showdown** opens with Ride or Fight? on the illustrated board. Camp holds the Trail, rivals, Wanted hunts, packs, the deck builder and local two-player games. The browser saves wins, rewards and card choices. The lightweight board opens directly in Camp. [Play the illustrated board](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Open the lightweight board](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/)
+
+On the public November 26 build at `6fbbe8c`, the Night Shift Saloon opened Billy’s replay in the Sheriff’s Ledger. Chrome checks at 390 and 1,280 pixels played both endings. The current Billy won for the Cowboys on turn 13. The proposed Billy lost on turn 20. [Recorded Saloon review](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) · [Play the two endings](https://alejandro-publius.github.io/cowboys-vs-wizards/?replay=billy) · [Verified deployment](https://github.com/alejandro-publius/cowboys-vs-wizards/actions/runs/45800896516)
 
 **Who it is for:** people who play strategy and card games in a browser and want decisions that matter more than reflexes.
 

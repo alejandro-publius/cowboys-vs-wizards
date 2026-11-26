@@ -2,8 +2,8 @@
 PUBLISHING NOTES (not part of the post)
 - Publish only what sits between "PUBLISH START" and "PUBLISH END". The November 16 lane-era draft below the end marker is archived history, kept verbatim.
 - Front matter has `published: false`. Flip it yourself; nothing has been posted anywhere.
-- GitHub and the published site are both at c5fa4ee. Every blob link uses https://github.com/alejandro-publius/cowboys-vs-wizards/blob/c5fa4ee/. This draft was written from the b3b4fec snapshot with no network, so confirm each linked path resolves at c5fa4ee before publishing.
-- The Play and ?saloon=review links work on the published build. The Saloon was verified publicly at 1440 and 390 widths with no live feed. The published judge route is still being rechecked by the coordinator, so this post makes no claim about it.
+- Source links in this article use c5fa4ee, the published build used for the original checks. The current deployment is identified by its live build.json.
+- The recorded Saloon was verified publicly at 1440 and 390 widths with no live feed. On November 26 Codex followed its link into the Ledger and played both Billy endings on public build 6fbbe8c at 390 and 1280 pixels.
 - The two Billy gate arms were rerun by the coordinator over the tracked receipts. The terminal excerpt below is still the recorded c8fa7f2 output. Update it if the rerun text differs.
 - The Hellfire probe numbers (all 45 first divergences classified, 0 mismatches in 155,868 actions) come from the coordinator's fresh run at b3b4fec. The tracked source is scripts/referee/hellfire-parity-probe.mjs.
 -->
@@ -17,7 +17,7 @@ tags: gamedev, javascript, testing, ai
 
 In a 100,000-duel bot audit, lowering one Cowboy card, Billy, from 2 attack to 1 moves Cowboy wins from **59.792% to 51.920%**. The first number fails my written balance gate (exit 2) and the second passes (exit 0). I haven't applied it: Billy still has 2 attack, the change awaits design approval, and the opening-player edge it leaves behind is what worries me.
 
-This is a build note from my Kiroween 2026 entry, a haunted-Western card duel. [Play it](https://alejandro-publius.github.io/cowboys-vs-wizards/) or open the [recorded review](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review). Both links work on the current build, and GitHub and the published site are at `c5fa4ee`.
+This is a build note from my Kiroween 2026 entry, a haunted-Western card duel. I’ve linked the source from the version used for this write-up, `c5fa4ee`. You can play the deal on the current site. [Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Open the recorded review](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review)
 
 ## The rule, the numbers, the controls
 

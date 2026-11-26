@@ -1,6 +1,6 @@
 # Judge demo script
 
-For a new capture, open the [published Showdown title](https://alejandro-publius.github.io/cowboys-vs-wizards/), read the [live build manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json), and put its commit in the caption. The [latest release check](../PROJECT-STATUS.md#current-build) shows the opening board. The dated cuts below retain the commits they were filmed on.
+The current private cut runs 1:59 and includes the deck builder, both Wanted hunts and the referee. Its narration sheet gives the chapter times. The dated shot plans below document earlier cuts. For a new capture, put the commit from the live manifest in the caption. [Current narration sheet](judge-demo-narration.md) · [Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Live build manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) · [Opening board and release notes](../PROJECT-STATUS.md#current-build)
 
 ## November 23 recording script: title to one Kiro decision
 

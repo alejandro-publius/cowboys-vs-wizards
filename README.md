@@ -72,7 +72,7 @@ The Showdown engine decides which moves are legal and what damage happens; the s
 flowchart LR
     Player["Player: Camp, hand and attacks"] --> Screen["Showdown screen (src/ui)"]
     Screen --> Session["Session and Camp (src/match)"]
-    CPU["Wizard CPU"] -->|seat-private view| Engine
+    CPU["Wizard CPU"] -->|chosen action| Engine
     Session --> Engine["Seeded Showdown engine (src/game/showdown)"]
     Engine -->|legal actions and events| Session
     Session --> Screen

@@ -4,7 +4,7 @@
 
 ## One-minute walkthrough
 
-Start on the [published illustrated title](https://alejandro-publius.github.io/cowboys-vs-wizards/). The current release check records the Git commit, the served HTML checksum and a screenshot of the opening challenge. To play that version offline, check out the recorded commit and run `npm run build -- --diorama --contest`. Open `dist/cowboys-vs-wizards-showdown-3d.html`. [Verified release](PROJECT-STATUS.md#current-build) · [Live build manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json)
+Start on the illustrated title. The live manifest gives the commit and HTML checksum for the game you open. To play the same version offline, check out that commit, run `npm run build -- --diorama --contest` and open `dist/cowboys-vs-wizards-showdown-3d.html`. The release notes also link a dated screenshot of the opening challenge. [Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Live build manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) · [Release notes and screenshot](PROJECT-STATUS.md#current-build)
 
 | # | Time | Click (**bold**) | What you should see | Source |
 | --- | --- | --- | --- | --- |

@@ -2,6 +2,8 @@
 
 Prepared November 16, 2026 (Pacific) by Fable (Claude Fable 5.2, in a collaborator's Claude Code session). Checked against `main` at `4c0723d`.
 
+The status column records what the team had on November 16. The current submission packet lists the private judge cut and the items still awaiting confirmation. [Current submission packet](devpost-packet.md)
+
 **Source.** The Rules and Overview pages of kiroween.devpost.com, copied from a logged-in browser on November 16, 2026 and pasted into the session by a team member. The Rules page was marked "Updated November 16, 2026". Earlier project documents had the rules second-hand because the site blocks automated readers; this is the first check against the text itself. The Resources tab was not provided and is not covered. Quotes below are from the pasted text. This document changes no other file and makes no submission.
 
 ## What the rule text changes
