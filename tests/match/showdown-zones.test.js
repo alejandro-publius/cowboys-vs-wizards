@@ -91,3 +91,15 @@ test("the empty pile is plain text, and the ticker names tribute, Raise, spent t
   }
   assert.deepEqual([...seen].sort(), ["Raise", "fell", "trap spent", "tribute"]);
 });
+
+test("a public move survives one empty pass and expires on the incoming player's first action", () => {
+  const sides = {cowboy: {discard: []}, wizard: {discard: []}};
+  const cowboy = {viewer: "cowboy", sides}, wizard = {viewer: "wizard", sides};
+  const spent = {type: "trap", side: "cowboy", cardId: "cowboy-bear-trap-1"};
+  const first = movesOf([spent], cowboy, cowboy);
+  assert.deepEqual(movesOf([], cowboy, wizard, first), first);
+  assert.deepEqual(movesOf([], wizard, wizard, first).lines, []);
+  assert.deepEqual(movesOf([], wizard, cowboy, first).lines, []);
+  const burned = {type: "burn", side: "wizard", cardId: "wizard-imp-1"};
+  assert.match(movesOf([burned], cowboy, wizard, first).lines.join(" "), /Imp.*burned draw/);
+});

@@ -63,7 +63,7 @@ export function sheetHtml(side, discard, raise, open, describe) {
 // Raise, a spent trap); every other card new on a pile (a fallen troop, its gear, a cast spell, a burned draw, an old
 // location) is read from the views' public discards. Card ids are used only to match and never returned.
 // sprung: per side, the names of traps spent in the batch, for the rail's flip.
-export function movesOf(events, before, after) {
+export function movesOf(events, before, after, previous) {
   const lines = [];
   const sprung = {cowboy: [], wizard: []};
   const told = new Set();
@@ -81,5 +81,7 @@ export function movesOf(events, before, after) {
     grew[side] = now.some((id) => !was.has(id));
     for (const id of now) if (!was.has(id) && !told.has(id)) lines.push(into(side, id, cardOf(id).kind === "troop" ? " (fell)" : ""));
   }
-  return {lines, sprung, grew};
+  // An empty End turn carries this seat's last public move through the handoff. The next seat's first action expires it.
+  if (!lines.length && previous && before?.viewer !== after.viewer && previous.viewer === before?.viewer) return previous;
+  return {lines, sprung, grew, viewer: before?.viewer};
 }

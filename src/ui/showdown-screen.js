@@ -136,7 +136,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     const first = lines.length;
     for (const [i, event] of events.entries()) lines.push({turn: event.type === "turn", text: latest[i]});
     const after = session.view();
-    moves = before ? movesOf(events, before, after) : null;
+    moves = before ? movesOf(events, before, after, moves) : null;
     const batch = cuesFor(events, before, after).map((cue) => ({...cue, line: first + cue.index}));
     for (const cue of batch) lines[cue.line].cue = cue.kind;
     return batch;
