@@ -29,7 +29,7 @@ The two versions share the first 29 events of the recorded deal. All of these re
 **Where it comes from.**
 - Proposal: Kiro CLI proposed three one-number changes in an isolated worktree. The reviewer passed only Billy, with Cowboy wins of 60.75% → 50.25% on tuning seeds and 59.00% → 51.00% on holdout seeds ([Kiro run](../evidence/kiro-contest-run.md#balance-run)).
 - Written gate: NSB-1 and NSB-2 in the [balance contract spec](../../.kiro/specs/night-shift-balance-contract/requirements.md). The balancing agent never edits that file. The economist review still has findings E1 and E3 open.
-- Review and replay: a separate reviewer step decides. The audit Workflow `wf_27f8bf0bb063c889` completed. A read-only Kiro CLI review checked the replay ([seat audit](../evidence/billy-seat-audit/README.md) · [Billy replay](../evidence/billy-replay.md)). The gate's output (baseline exit 2, candidate exit 0) was recorded at `c8fa7f2` in the [demo script](judge-demo-script.md#verification-for-this-edit-november-23) and was not rerun for this packet.
+- Review and replay: a separate reviewer step decides. The audit Workflow `wf_27f8bf0bb063c889` completed. A read-only Kiro CLI review checked the replay ([seat audit](../evidence/billy-seat-audit/README.md) · [Billy replay](../evidence/billy-replay.md)). On November 26 we reran the gate for both arms. It re-derived the totals from all 100,000 recorded duels and verified both audit digests. The current card missed the faction target (exit 2). The proposal passed both requirements (exit 0). [Gate and recorded results](../evidence/billy-seat-audit/README.md)
 - Control: in native Workflow `wf_3e26f2fcd93c25a1`, Kiro chose its own card six times and the reviewer rejected all six.
 
 ## What has been played, by whom
@@ -78,7 +78,7 @@ The evidence files linked below are authoritative. The [judge write-up](kiro-bra
 
 ## Implementation
 
-The Showdown rules are plain JavaScript in `src/game/showdown/`, with no DOM, rendering or network code. The illustrated page lives in `src/ui/showdown-3d/` and is built with Three.js. The last recorded full-suite counts were 966/966 at `4908189`, an undeployed integration candidate ([build log](../kiro-build-log.md)), and 1,086 on the November 23 starting candidate ([handoff](../evidence/claude-cli-followup-20261123.md)). No tests ran for this packet.
+The Showdown rules are plain JavaScript in `src/game/showdown/`, with no DOM, rendering or network code. The illustrated page lives in `src/ui/showdown-3d/` and is built with Three.js. The release in [PR #225](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/225) passed 1,214 Node tests and 29 staged Pages checks. The browser checks include the Saloon on a short screen and an existing career save. [GitHub test run](https://github.com/alejandro-publius/cowboys-vs-wizards/actions/runs/45870764428) · [Public deployment](https://github.com/alejandro-publius/cowboys-vs-wizards/actions/runs/45871718146)
 
 ## Public repository check
 
