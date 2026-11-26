@@ -1,5 +1,7 @@
 # Resource checklist: what the 45 recovered sources say to do, ranked
 
+The checklist below records the November 16 research pass. The current release notes track the playable features and remaining submission work. The Billy animation pilot closed after its grip review. [Current project status](../PROJECT-STATUS.md#current-build) · [Billy pilot review](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/53)
+
 Prepared November 16, 2026 (Pacific) by Fable (Claude Fable 5.2, in Rachel's Claude Code session), originally against `ead95f0`. Codex reconciled the completed work against `965bd709` after PR #52. **This is a research and planning document; writing it did not execute any proposal or Kiro tool.** Kiro #43–46 are now integrated, with their precise limits recorded below. Billy #49/#53 remains a preview; its sourced idle/shoot does not yet give a satisfactory grip. The [integration receipts](../evidence/parallel-closeout-2200.md) and [PR #52 CI](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/52) record 184 tests, two model-structure checks and the separate browser checks. Human, device, video and submission work remain open.
 
 The source labels S1–S45 are defined in the [reference legend](#reference-legend) below. Their retained URLs and provenance come from [the source register](../kiro-source-register.md), which does not use these IDs. Labels identify references, not implementation or verification evidence. Open work lives in the GitHub issue list; coordinate an owner before adopting another item.
