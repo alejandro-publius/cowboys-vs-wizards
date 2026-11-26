@@ -1,6 +1,6 @@
 # Showdown (prototype)
 
-The fight Alex chose on November 18, 2026 to build the deeper rules on: you choose every attack, your troops shield your Base, and turns alternate. Its engine now lives in `src/game/showdown/`; `rules.js`, `cards.js` and `contract.js` here re-export it. The Trail, progress, save codes and this page's screens are still only here, and the main graybox opens Showdown's first duel.
+The reference page at [`/showdown/`](https://alejandro-publius.github.io/cowboys-vs-wizards/showdown/) opens in Camp. You can play the Trail, build a deck, or hunt the Lantern Wraith and Graveyard Dragon after the Trail. The illustrated game at the site root and the lightweight version at [`/graybox/`](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) share the same rules, progression and save codes in [`src/game/showdown/`](../../src/game/showdown/). This directory contains the reference screen, rulebook and offline build.
 
 ```sh
 node prototypes/showdown/build.mjs        # writes dist/showdown.html; open it in a browser
