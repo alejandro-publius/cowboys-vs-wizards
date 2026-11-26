@@ -39,7 +39,7 @@ export function railHtml(side, s, {own, named, raise, sprung = [], grew = false}
     ? `<button type="button" class="sd-pile${grew ? " sd-grew" : ""}" data-graveyard="${side}" aria-haspopup="dialog" aria-label="${pileName(side)}: ${plural(s.discard.length, "card")}, newest ${top}${raiseNote}. Open the pile">
         <span class="sd-zone-label">Graveyard</span> <span class="sd-zone-top">${top}</span> <span class="sd-zone-count">${s.discard.length}</span>${dot}</button>`
     : `<span class="sd-zone-label">Graveyard</span> <span class="sd-pile sd-empty" data-graveyard-empty="${side}">Boot Hill · empty</span>`;
-  const grave = `<div class="sd-zone" data-zone="graveyard" aria-label="${pileName(side)}">${pile}</div>`;
+  const grave = cell("graveyard", pile, pileName(side));
   const cells = own ? [grave, traps, deck] : [deck, hand, traps, grave];
   return `<div class="sd-zone-rail" data-zone-side="${side}" role="group" aria-label="${FACTION[side]} zones"><h3 class="sd-zone-faction">${FACTION[side]}s</h3>${cells.join("")}</div>`;
 }
