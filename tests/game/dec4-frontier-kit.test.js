@@ -162,3 +162,10 @@ test("Showdown: the recorded Billy replay cohort reproduces exactly through the 
   assert.equal(wizardToCowboy, k.switchedWizardToCowboy);
   assert.equal(hash.digest("hex"), k.csvSha256, "SHA-256 of every paired outcome matches the archive");
 });
+
+test("the Showdown browser entry points never import the retired lane runtime to read keepsakes", () => {
+  const files = importGraph(SHOWDOWN_ENTRIES).files;
+  const retired = ["src/profile/player-profile.js", ...["cards", "state", "deck-builder", "bounty-hunt", "bounty-notices", "wraith-notices"]
+    .map(name => `src/game/${name}.js`)];
+  assert.deepEqual(files.filter(file => retired.includes(file)), []);
+});
