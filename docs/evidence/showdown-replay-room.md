@@ -6,7 +6,7 @@ November 20, 2026. The Crew sidebar opens a decision a player can try. It uses t
 
 ## Play and verify
 
-In the illustrated game, choose Play → Practice → Challenge replays → Replay Room. The lightweight board has the same button in Camp’s Experiment section. Both builds accept `?room=replay`. In Crew, install the local app and enable Showdown Replay Room in the dashboard. The running gateway was 0.12.2 and the CLI was 0.13.0. Crew stored the per-app approval with empty API and event grants. The panel has no backend. Its game link opens the original decision on the live Showdown site.
+In the illustrated game, choose Camp → Practice → Challenge replays → Replay Room. The lightweight board has the same button in Camp’s Experiment section. Both builds accept `?room=replay`. In Crew, install the local app and enable Showdown Replay Room in the dashboard. The running gateway was 0.12.2 and the CLI was 0.13.0. Crew stored the per-app approval with empty API and event grants. The panel has no backend. Its game link opens the original decision on the live Showdown site.
 
 ```sh
 npm ci

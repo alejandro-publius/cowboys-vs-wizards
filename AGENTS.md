@@ -6,10 +6,11 @@ Read imports one level at a time. Never dump the repo or reference collection.
 
 ## Game design R&D
 
-Fable 5.2 leads core mechanics, progression design and engine contracts. It
-hands off a decision, acceptance cases and any reference prototype. Kiro
-implements that brief, integrates it, and runs the checks. Route unresolved
-gameplay and engine policy decisions back to Fable.
+Codex owns the current build, pull request reviews, integration and release
+verification. Mechanics decisions from Alex and Fable 5.2 live in docs/design/.
+Use their acceptance cases when changing gameplay. Kiro's implementation,
+Workflows and receipts are credited where they were produced. Bring new
+game-design decisions to Alex with the playable alternatives and evidence.
 
 Treat every card, stat, deck and mechanic as a design hypothesis. Propose
 simpler or stronger ideas whenever research or playtests reveal them, even
@@ -33,7 +34,7 @@ possible. Use human playtests to judge clarity and fun.
   Showdown card: prototypes/showdown/ART-DIRECTION.md, generated from
   prototypes/showdown/art.js by `node prototypes/showdown/export-art.mjs`.
 - Showdown is the one supported game. Current state, paths and the remaining
-  human gate: docs/design/release-line.md ("Current status"); Fable's
+  human gate: docs/PROJECT-STATUS.md ("Current build"); Fable's
   decisions: the latest Fable comment on issue 143. Its engine is
   src/game/showdown/. Its rules are prototypes/showdown/RULEBOOK.md; the full
   reference page is prototypes/showdown/ (/showdown/). Start Showdown work

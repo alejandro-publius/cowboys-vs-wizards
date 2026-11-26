@@ -13,6 +13,8 @@ A short, haunted Western card duel built with Kiro for Kiroween 2026. Your troop
 | [Ride or Fight?](https://alejandro-publius.github.io/cowboys-vs-wizards/?outrider=case-e) | Pick the Outrider. Strike the Skeleton or ride past it and hit the Wizard Base. Restart the same turn and try the other choice. |
 | [Camp and the Trail](https://alejandro-publius.github.io/cowboys-vs-wizards/) | Choose **Camp**, then **Boot Hill** for your first Trail duel. Camp also holds the deck builder, Wanted bounties and two-player mode. |
 | [Recorded Kiro balance review](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) | Inspect the proposal to cut Billy’s attack from 2 to 1. Then play the same turn at both values. [Replay Billy vs. Bone Wall](https://alejandro-publius.github.io/cowboys-vs-wizards/?replay=billy) |
+| [Replay Room](https://alejandro-publius.github.io/cowboys-vs-wizards/?room=replay) | Pick the Ranger’s target before seeing either outcome. Compare the two recorded lines and play the turn yourself. |
+| [Even Fight](https://alejandro-publius.github.io/cowboys-vs-wizards/?even-fight=1) | Try cover against spells and a seven-orb Base for the second player. Practice also offers a [best of three](https://alejandro-publius.github.io/cowboys-vs-wizards/?even-fight=series) and [two players on one device](https://alejandro-publius.github.io/cowboys-vs-wizards/?even-fight=two). |
 | [Boot Hill Poker](https://alejandro-publius.github.io/cowboys-vs-wizards/poker/) | Draw a five-card hand against the Wizard. The Saloon’s back table opens this second game. |
 | [Lightweight board](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) · [Reference game](https://alejandro-publius.github.io/cowboys-vs-wizards/showdown/) | The graybox opens directly into Camp. The reference page has a playable version of the rules. |
 
@@ -38,11 +40,11 @@ Open `dist/cowboys-vs-wizards-showdown-3d.html` in a browser to play the illustr
 
 ## How it is made
 
-Three tools share the work, and each is credited for what it did.
+Codex now maintains the build and the pull request queue. The repository also records the original design and implementation work.
 
-- **Fable (Claude Code)** leads the design: mechanics, progression and engine contracts. Its briefs are in [docs/design](docs/design/README.md).
-- **Kiro** builds those briefs, integrates them and runs the checks. See [Built with Kiro](#built-with-kiro).
-- **Codex** coordinates development, implements fixes, and checks the published game in the browser.
+- **Fable (Claude Code)** designed mechanics, progression and engine contracts. Its briefs are in [docs/design](docs/design/README.md).
+- **Kiro** implemented the gameplay briefs and ran the recorded balance, rules and release checks. See [Built with Kiro](#built-with-kiro).
+- **Codex** integrates current changes, reviews the game against its rules and tests the published build in a browser.
 
 ## Verify
 
@@ -83,6 +85,8 @@ flowchart LR
 Kiro proposed a one-point change to Billy’s attack. On one recorded deal, that single point decides whether Billy clears a Bone Wall. In 100,000 bot duels on held-out seeds, Cowboy wins moved from 59.792% to 51.920% under the proposal. Billy still has 2 attack in the published game. [Play the recorded review](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) · [Check the audit and seeds](docs/evidence/billy-seat-audit/README.md)
 
 The same Saloon includes the rules desk, the Dusty Pete trial and a replay of 54 decisions from the Cautious Sheriff and Reckless Wizard match. [Reproduce the Saloon findings](docs/evidence/night-shift-repair/README.md)
+
+A separate Python referee matched the game at all 5,086 played positions in 100 frozen duels. The audit also compared 274,273 possible moves. It classified all 6,775 differences, including 39 empty-board Hellfire cases whose design ruling is still open. [Referee results](docs/evidence/claude-referee-legal-branches.md)
 
 [Follow the judge evidence trail](docs/JUDGE-GUIDE.md) · [Kiro usage and receipts](docs/kiro-brag-sheet.md) · [Actual build log](docs/kiro-build-log.md) · [Active closeout queue](docs/kiro-closeout-queue.md) · [Research/source register](docs/kiro-source-register.md)
 

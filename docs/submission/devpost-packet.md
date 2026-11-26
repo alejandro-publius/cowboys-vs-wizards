@@ -38,7 +38,7 @@ The two versions share the first 29 events of the recorded deal. All of these re
 | Bot | The balance results in the table above. Earlier, Night Watch's scheduled Crew run on November 20 played 2,000 bot games: the first player won 57.1% and the Cowboys 59.4%. | [Seat audit](../evidence/billy-seat-audit/README.md) · [Scheduled run receipt](../evidence/night-shift/crew-scheduled-2026-11-20.json) |
 | Native Kiro | See [How Kiro was used](#how-kiro-was-used-on-showdown). | |
 
-A private captioned draft follows the [November 23 script](judge-demo-script.md) through the title challenge, the Billy comparison and the recorded Saloon review. Narration and a public YouTube URL are pending.
+The private 1:59 cut shows the Outrider decision, Camp’s deck builder and bounties, the Billy comparison, the Kiro Workflow and the referee. It has captions and a temporary guide voice. Alex can review the narration before publishing the final cut. [Recording details](../JUDGE-GUIDE.md#submission-status)
 
 ## Project
 
@@ -103,12 +103,12 @@ Official rules: https://kiroween.devpost.com/rules. Deadlines: credit requests b
 - Source: https://github.com/alejandro-publius/cowboys-vs-wizards
 - Judge guide: https://github.com/alejandro-publius/cowboys-vs-wizards/blob/main/docs/JUDGE-GUIDE.md
 - Crew app: https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch
-- Demo video (public YouTube, under three minutes) **OWNER, PENDING.** The captioned November 23 draft is ready for review. Narration and upload are pending. [Recording script](judge-demo-script.md) The rules forbid third-party trademarks in the video ([rules check](rules-check.md#risks-to-settle-before-submitting)).
+- Demo video (public YouTube, under three minutes) **OWNER, PENDING.** The 1:59 cut has captions and a guide voice. Final narration approval and public upload are pending. [Recording script](judge-demo-script.md) The rules forbid third-party trademarks in the video ([rules check](rules-check.md#risks-to-settle-before-submitting)).
 - Third-party blog: **OWNER, PENDING.**
 
 ## Required form fields and owner inputs still open
 
-- Demo video: narration, Kiro UI footage and the public YouTube URL
+- Demo video approval and public YouTube URL
 - Category selection; Crew, blog and social bonuses if entering them
 - Personal reflection on using Kiro, and the spec-versus-direct comparison in the builder's words (none should be generated)
 - Pre-existing work disclosure: when the board demo and the Tripo exports were made

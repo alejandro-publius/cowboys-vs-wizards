@@ -4,6 +4,8 @@
 
 ## First 30 seconds
 
+Codex currently maintains the integration branch and the published game. For Camp’s optional modes, use the [Even Fight rules and checks](design/even-fight-preview.md) or the [Replay Room verification commands](evidence/showdown-replay-room.md#play-and-verify). The [zone tests](../tests/match/showdown-zones.test.js) cover public graveyards, Raise and hotseat privacy.
+
 1. Identify the requested behavior, the **owned paths**, current branch/HEAD and working-tree changes. Never overwrite another agent's edits.
 2. Select **one** row below. Read the smallest entry point, the immediately imported dependency and the matching test. Search for symbols before reading whole files.
 3. Make one focused change and run the row's targeted check. Expand only when a failure or dependency requires it.
