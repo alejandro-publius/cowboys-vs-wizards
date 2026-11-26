@@ -12,9 +12,9 @@ Start on the illustrated title. The live manifest gives the commit and HTML chec
 | 2 | 0:20–0:40 | Choose **Fire for 1**. Under **Take Billy’s next turn**, try **Attack Headless Horseman**, then **Take cover**. | The bots lose for the Cowboys on turn 20. On your turn nine, attacking loses on turn 18. Taking cover wins for the Cowboys on turn 21. Both choices start from the same board. | [Balance audit](evidence/billy-seat-audit/README.md) · [Recorded Ledger replay](https://alejandro-publius.github.io/cowboys-vs-wizards/?replay=billy) |
 | 3 | 0:40–1:00 | Choose **Back to map**, **Main menu**, then **Ride or Fight?**. Choose the on-board Outrider and the Wizard Base. Restart and target the Skeleton. | Riding hits the Base for one. Fighting leaves the Skeleton on two orbs and the Outrider on one. | [Playable opening](https://alejandro-publius.github.io/cowboys-vs-wizards/?outrider=case-e) · [Outrider evidence](evidence/outrider-gate.md) |
 
-The private judge cut shows both Outrider choices and both Billy endings on `dad6175`. The Saloon opens at its recorded decision. In the updated Camp, following its replay link keeps the same session, including when browser storage is blocked. The replay control was visible and keyboard-focused at 390×844 and 740×375. Escape returned focus to **Camp ledger**. [Browser regression](../scripts/check-pages-tree.mjs) · [Recording notes](submission/judge-demo-narration.md)
+The current 1:20 cut follows the first two steps. The same choices work from the title or the direct Saloon link. Leaving the table returns to Camp with the player’s career intact. [English transcript and captions](submission/judge-demo-narration.md) · [Browser regression](../scripts/check-pages-tree.mjs)
 
-## The Kiro decision behind steps 2 and 3
+## The Kiro decision behind the Saloon
 
 - **Proposal.** Kiro CLI worked in an isolated worktree at `eedab93` and proposed three one-number changes. The reviewer passed only Billy attack 2 → 1. In the reviewer's games, Cowboy wins went from 60.75% to 50.25% on tuning seeds and from 59.00% to 51.00% on holdout seeds, with 400 games per arm on each range. [Kiro run](evidence/kiro-contest-run.md#balance-run)
 - **Written gate.** The rules live in the [balance contract spec](../.kiro/specs/night-shift-balance-contract/requirements.md). NSB-1 keeps each faction between 45% and 55%. NSB-2 lets the opening player's distance from 50% grow by at most 1 point. The balancing agent never edits that file, and the reviewer records the file's hash. Two of the economist review's findings, E1 and E3, are still [open](../.kiro/specs/night-shift-balance-contract/game-economist-review.md).
@@ -36,7 +36,7 @@ The private judge cut shows both Outrider choices and both Billy endings on `dad
 
 ## Submission status
 
-The 1:59 private cut shows the public build at `dad6175`, including both Outrider choices, the 16-card deck builder, both Wanted bounties, both Billy endings, the archived Kiro workflow and the referee result. It includes captions and a temporary synthetic guide voice. Owner narration, a public upload and documented first-time player observations are still pending. [Narration and chapter times](submission/judge-demo-narration.md) · [Earlier shot plan](submission/judge-demo-script.md)
+The November 26 Saloon cut opens in the running game and shows the recorded Kiro workflow, the tracked spec and the measured bot result. English narration and captions run 1:20. Public YouTube publication, the Devpost submission and documented first-time-player observations are pending. [Transcript and captions](submission/judge-demo-narration.md) · [Submission packet](submission/devpost-packet.md)
 
 ## Archive
 

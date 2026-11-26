@@ -1,0 +1,51 @@
+1
+00:00:00,200 --> 00:00:06,122
+Cowboys versus Wizards lets card players test a balance change before it hits their deck.
+
+2
+00:00:06,152 --> 00:00:10,554
+Billy breaks Bone Wall. Kiro wants to take one point off that shot.
+
+3
+00:00:10,880 --> 00:00:16,506
+Try the shot again. Same Billy, same wall. This time it survives with one orb.
+
+4
+00:00:16,536 --> 00:00:20,448
+Let the bots play on, and the Wizards win on turn twenty.
+
+5
+00:00:21,160 --> 00:00:26,074
+But you can take Billy’s next turn. The Headless Horseman is right in front of him.
+
+6
+00:00:26,104 --> 00:00:29,485
+Shoot, and the Wizards still win. Two turns sooner.
+
+7
+00:00:30,200 --> 00:00:35,815
+Back up to that same turn and take cover. Now the Cowboys win on turn twenty-one.
+
+8
+00:00:35,845 --> 00:00:38,094
+The weaker Billy still had a way out.
+
+9
+00:00:38,800 --> 00:00:44,944
+That shot began in a Kiro workflow. One agent could change one number on one card.
+
+10
+00:00:45,680 --> 00:00:53,574
+A separate reviewer used this spec. Each faction had to win between forty-five and fifty-five percent of the bot games.
+
+11
+00:00:54,280 --> 00:01:00,738
+We tested twenty-five thousand unseen deals, from both seats, with both versions of Billy.
+
+12
+00:01:00,768 --> 00:01:10,748
+Across a hundred thousand bot duels, Cowboy wins fell from fifty-nine point eight percent to fifty-one point nine. The first player still had an edge.
+
+13
+00:01:11,480 --> 00:01:19,806
+Billy still hits for two on the Trail. At the Night Shift Saloon, you can play the proposed change before it ever reaches your deck.

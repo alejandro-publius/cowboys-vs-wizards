@@ -1,6 +1,6 @@
 # Judge demo script
 
-The current private cut runs 1:59 and includes the deck builder, both Wanted hunts and the referee. Its narration sheet gives the chapter times. The dated shot plans below document earlier cuts. For a new capture, put the commit from the live manifest in the caption. [Current narration sheet](judge-demo-narration.md) · [Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Live build manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) · [Opening board and release notes](../PROJECT-STATUS.md#current-build)
+The November 26 cut runs 1:20. It opens on Billy firing at Bone Wall and follows the same duel through the Headless Horseman decision. The transcript identifies the game release, Kiro workflow, spec and balance audit on screen. Earlier shot plans follow below. [Current transcript and captions](judge-demo-narration.md) · [Play the filmed position](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review)
 
 ## November 23 recording script: title to one Kiro decision
 

@@ -1,8 +1,8 @@
 # Cowboys vs. Wizards: Showdown
 
-A haunted Western card duel built with Kiro for Kiroween 2026. In the Night Shift Saloon, Kiro wants to take one attack point from Billy. Fire at Bone Wall with both versions. When the weaker Billy loses in the bots’ hands, take his next turn and try to win the same deal. Out on the Trail, you choose every attack, defend your Base and build your own deck.
+Built with Kiro for Kiroween 2026, this haunted Western card duel gives strategy players another shot at a losing turn. In the Night Shift Saloon, Kiro wants to take one attack point from Billy. Fire at Bone Wall with both versions. When the weaker Billy loses in the bots’ hands, take his next turn and try to win the same deal. Out on the Trail, you choose every attack, defend your Base and build your own deck.
 
-**[Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/)** · [One-minute judge walkthrough](docs/JUDGE-GUIDE.md) · [Rules and cards](prototypes/showdown/RULEBOOK.md) · [Current build and review status](docs/PROJECT-STATUS.md#current-build)
+**[Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/)** · [Kiro’s balance spec](.kiro/specs/night-shift-balance-contract/requirements.md) · [Recorded Kiro workflow](docs/evidence/kiro-night-shift-native.png) · [One-minute judge walkthrough](docs/JUDGE-GUIDE.md) · [Rules and cards](prototypes/showdown/RULEBOOK.md) · [Current build and review status](docs/PROJECT-STATUS.md#current-build)
 
 ![The Night Shift Saloon. Beside the recorded Kiro review, Billy can attack Headless Horseman or take cover on turn nine.](docs/evidence/showdown-saloon-billy-table.png)
 

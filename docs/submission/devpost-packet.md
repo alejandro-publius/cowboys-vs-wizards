@@ -1,14 +1,18 @@
 # Kiroween submission packet: Showdown
 
-> Draft for Alex’s review. The [November 26 release check](../PROJECT-STATUS.md#current-build) identifies the published game and links a screenshot. The November 23 recording and evidence below use revision `35d7447`. The [live manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) identifies the version a judge will open today. Fields marked **OWNER** need Alex or the team’s decision.
+Draft for Alex’s review. The pitch and Built With tags below are ready to paste into Devpost. [Play the Saloon](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) · [Judge walkthrough](../JUDGE-GUIDE.md) · [Demo transcript and captions](judge-demo-narration.md)
 
 ## Pitch
 
-**Cowboys vs. Wizards: Showdown** is a haunted-Western card duel you play in a browser. You pick every attack, your troops shield your Base, and turns alternate.
+Cowboys vs. Wizards is a haunted Western card game for strategy players who like to ask, “Could I have won that turn?” In the Night Shift Saloon, Kiro proposes taking one point off Billy’s attack. Fire at the same Bone Wall under both rules. Then take Billy’s next turn against the Headless Horseman and see if you can save the deal the bots lost.
 
-On the illustrated title, open **Night Shift Saloon**. Kiro proposed lowering Billy’s attack from two to one. Fire each version at the same Bone Wall. The original rules resolve the shot in your browser. The bots lose with the weaker Billy. Take his next turn against Headless Horseman and see whether attacking or taking cover can change that outcome. The Saloon performers replay the recorded Kiro shift. The Sheriff’s Ledger holds a four-step record of both endings. Billy still has two attack on the Trail.
+Kiro CLI proposed the change. A separate reviewer used a written Kiro spec to check it. Across 100,000 held-out bot duels, the Cowboys’ win rate moved from 59.792% to 51.920%. The Saloon lets players try the proposal while the Trail keeps Billy’s original attack. Other game makers can rerun the same balance check with `node scripts/billy-balance-gate.mjs --arm candidate`. [Kiro spec](../../.kiro/specs/night-shift-balance-contract/requirements.md) · [Recorded workflow](../evidence/kiro-night-shift-native.png) · [Audit and reproduction steps](../evidence/billy-seat-audit/README.md)
 
-**Ride or Fight?** opens a separate playable turn at the Bone Fence. Ride past the Skeleton to hit the Wizard Base, or fight the Skeleton. Restart the turn to try the other choice. [One-minute walkthrough](../JUDGE-GUIDE.md#one-minute-walkthrough) · [Outrider gate](../evidence/outrider-gate.md)
+## Built With
+
+Kiro, JavaScript, Node.js, Three.js, Python, fast-check, GitHub Actions, GitHub Pages.
+
+Kiro features used here include CLI Workflows, separate preparer and reviewer agents, specs, hooks, scoped steering, a Power with MCP tools, and a scheduled Kiro Crew run. [Feature-by-feature evidence](#how-kiro-was-used-on-showdown) · [Tracked Kiro project files](../../.kiro/)
 
 ## The Kiro balance decision
 
@@ -34,27 +38,23 @@ The two versions share the first 29 events of the recorded deal. All of these re
 | --- | --- | --- |
 | Human, maintainer | Alex played Showdown on November 19 and chose it as the entry. His saved Camp report records two Trail wins: Boot Hill in 13 turns and Raven Roost in 11, 87 active seconds in total. The report does not identify the build. Alex is not a first-time player. | [Release line](../design/release-line.md) |
 | Human, first-time | Alex confirmed that the playtests were completed. First-time participant counts and individual feedback are not documented. | [Playtest guide](../../prototypes/showdown/PLAYTEST.md) |
-| Scripted browser | Pages-tree checks passed 8 of 8 on staged `3c5bb34`, including "the illustrated title opens the playable Ride or Fight? challenge and Camp is reachable". The demo script records local Chrome runs covering both Outrider choices, both Billy endings, and the Saloon route at 1440×900 and 390×844. | [Release checks](../evidence/illustrated-contest-release.md) · [Demo script](judge-demo-script.md#verification-for-this-edit-november-23) |
+| Scripted browser | The illustrated Saloon was played on desktop, portrait phone and landscape phone. Fire for 2 and Fire for 1 resolve through the pinned rules. On the proposed line the player can attack or take cover on turn nine. The regression also checks an existing career save after the trial. | [Public release](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/225) · [Browser checks](../../scripts/check-pages-tree.mjs) |
 | Bot | The balance results in the table above. Earlier, Night Watch's scheduled Crew run on November 20 played 2,000 bot games: the first player won 57.1% and the Cowboys 59.4%. | [Seat audit](../evidence/billy-seat-audit/README.md) · [Scheduled run receipt](../evidence/night-shift/crew-scheduled-2026-11-20.json) |
 | Native Kiro | See [How Kiro was used](#how-kiro-was-used-on-showdown). | |
 
-The private 1:59 cut shows the Outrider decision, Camp’s deck builder and bounties, the Billy comparison, the Kiro Workflow and the referee. It has captions and a temporary guide voice. Alex can review the narration before publishing the final cut. [Recording details](../JUDGE-GUIDE.md#submission-status)
+The current 1:20 review cut follows Billy’s shot and the turn-nine choice. It shows the Kiro CLI workflow record, the actual balance spec and the held-out bot results. The 1:59 cut from the earlier release also covers Camp and the referee. [Transcript, captions and footage sources](judge-demo-narration.md)
 
 ## Project
 
-**Showdown** opens with Ride or Fight? on the illustrated board. Camp holds the Trail, rivals, Wanted hunts, packs, the deck builder and local two-player games. The browser saves wins, rewards and card choices. The lightweight board opens directly in Camp. [Play the illustrated board](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Open the lightweight board](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/)
+The illustrated title opens the Night Shift Saloon, Ride or Fight?, Camp and the card gallery. In the Saloon, the performers replay Kiro’s recorded shift while the rules engine runs the player’s choices in the browser. On turn nine, attacking the Headless Horseman costs the Cowboys the duel. Taking cover from the same position wins it. The developers can also witness an active Kiro shift on their own computer. [Play the Saloon](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) · [Local live feed](../evidence/kiro-saloon-live-witness.md)
 
-On the public November 26 build at `6fbbe8c`, the Night Shift Saloon opened Billy’s replay in the Sheriff’s Ledger. Chrome checks at 390 and 1,280 pixels played both endings. The current Billy won for the Cowboys on turn 13. The proposed Billy lost on turn 20. [Recorded Saloon review](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) · [Play the two endings](https://alejandro-publius.github.io/cowboys-vs-wizards/?replay=billy) · [Verified deployment](https://github.com/alejandro-publius/cowboys-vs-wizards/actions/runs/45800896516)
-
-**Who it is for:** people who play strategy and card games in a browser and want decisions that matter more than reflexes.
-
-**Player problem (a hypothesis).** We think card-duel players have a hard time seeing why one choice was right on a given board. Ride or Fight? lets them try both choices on the same turn. No individual player's explanation has been recorded.
+Camp holds the Trail, rivals, two Wanted bounties, packs, the 16-card deck builder and local two-player games. Wins, rewards and decks share a browser save. Ride or Fight? lets a player try a second tactical decision with the Outrider. [Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Lightweight Camp](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/)
 
 ## Who did what
 
 - **Fable 5.2** (Claude Code) designed Showdown: rules, cards, Trail, bots and art direction ([rulebook](../../prototypes/showdown/RULEBOOK.md), PR [#142](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/142)). Fable also wrote the lane engine, its CPU, and the lane judge script and playtest protocol. Fable owns game design, wording rulings, balance, and the approval of any card change.
 - **Kiro** (CLI workers, native Workflows and Crew) moved Showdown into the game with its Trail, Camp and saves. Kiro built the 29-card catalog, the combat cues, the fair Scout bot, the property tests, the `showdown-presenter` profile, the MCP seat tools and Power 1.3.0. For the contest it built the Outrider gate and its save hook, the contest task and save checks, and the Billy proposal run. It also ran the Saloon lifecycle and live-feed checks. Kiro changed no rule, card number or wording. Earlier, Kiro built the lane match presentation and its spec, and imported and rigged the characters ([character evidence](../evidence/kiro-character-assets.md)).
-- **Codex** coordinated workers, wrote the always-on `build-evidence.md` steering file and checked frozen candidates independently. It staged the illustrated release, recorded the 78-second cut, and measured the fresh-seed Billy sample.
+- **Codex** coordinated workers, wrote the always-on `build-evidence.md` steering file and checked frozen candidates independently. It staged the illustrated release, measured the fresh-seed Billy sample, integrated the playable Saloon table with both pinned engines, and recorded the November 26 demo. [Saloon implementation](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/225)
 - **Claude Code** (Opus 5.5) drafted the Billy Ledger interaction, its focused tests and the first verifier ([Billy replay](../evidence/billy-replay.md)). On November 23 it ran the referee and Wizard-lesson sessions ([handoff](../evidence/claude-cli-followup-20261123.md)) and wrote the recording script.
 - **Rachel Selbrede** (`rachelselbrede`) has 13 commits under her account, all on November 16 during the lane era. They include the rules check (PR [#58](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/58), produced in a Claude Code session), CI on every pull request (#31), the opt-in clash log, the WebKit smoke check, the docs link check, the `?cpu=` levels and the first eight-topic Kiro write-up. **OWNER:** confirm how Rachel wants to be credited, and whether she is a teammate on the form.
 - **Alex** chose Showdown after playing it, asked for the illustrated Showdown as the public game, directs the visuals, supplied the Tripo exports, approved the illustrated title and Sheriff idle, and merges. The title illustration came from GPT Image in ChatGPT ([title provenance](../../assets/menu/README.md), [Sheriff idle](../evidence/kiro-approved-sheriff-idle.md)). **OWNER:** confirm any other artist credits and the source of the card illustrations.
@@ -80,6 +80,10 @@ The evidence files linked below are authoritative. The [judge write-up](kiro-bra
 
 The Showdown rules are plain JavaScript in `src/game/showdown/`, with no DOM, rendering or network code. The illustrated page lives in `src/ui/showdown-3d/` and is built with Three.js. The last recorded full-suite counts were 966/966 at `4908189`, an undeployed integration candidate ([build log](../kiro-build-log.md)), and 1,086 on the November 23 starting candidate ([handoff](../evidence/claude-cli-followup-20261123.md)). No tests ran for this packet.
 
+## Public repository check
+
+On November 26, GitHub served the repository publicly and identified its root license as MIT. The filmed revision tracks 246 files under `.kiro/`. Git ignores local `.env` and `.env.*` values. A redacted Gitleaks 8.30.1 scan of the tracked release and a scan of the main branch history flagged the same five locations, including repeat appearances when branches merged. The matches were one deck name and four references to two SHA-256 identifiers used by the scout cache and referee receipts. [License](../../LICENSE) · [Ignore rules](../../.gitignore) · [Deck label](../../scripts/deck-balance.mjs) · [Scout cache](../../scripts/field-trial-scout.mjs) · [Referee receipt lookup](../../scripts/referee/hellfire-parity-probe.mjs)
+
 ## Third-party tooling and attribution
 
 - **Libraries and build.** The lockfile pins Three.js 0.185.1, esbuild 0.28.2 and fast-check 4.11.0, all MIT. The repository uses MIT.
@@ -90,7 +94,7 @@ The Showdown rules are plain JavaScript in `src/game/showdown/`, with no DOM, re
 
 ## Category and bonuses
 
-- **Category: OWNER.** The lane-era draft proposed Costume Contest because of the illustrated arena. The public root is now the illustrated Showdown.
+- **Proposed category for the form — Costume Contest.** At the Saloon, the Wizard brings a change to the table. The player fires the disputed shot and can take over the duel. The haunted room gives the player a job in the review. Alex confirms the category when submitting.
 - **Crew bonus:** the Night Watch app has [its own repository](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch). Its form write-up is not drafted.
 - **Blog bonus:** requires a public third-party post that mentions Kiroween 2026. The publishable [build story](build-story.md) opens with the Billy audit. The earlier lane version is archived below its end marker.
 - **Social bonus:** optional. A person must write it; no agent should. Nothing has been posted.
@@ -105,7 +109,7 @@ Official rules: https://kiroween.devpost.com/rules. Deadlines: credit requests b
 - Source: https://github.com/alejandro-publius/cowboys-vs-wizards
 - Judge guide: https://github.com/alejandro-publius/cowboys-vs-wizards/blob/main/docs/JUDGE-GUIDE.md
 - Crew app: https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch
-- Demo video (public YouTube, under three minutes) **OWNER, PENDING.** The 1:59 cut has captions and a guide voice. Final narration approval and public upload are pending. [Recording script](judge-demo-script.md) The rules forbid third-party trademarks in the video ([rules check](rules-check.md#risks-to-settle-before-submitting)).
+- Demo video (public YouTube, under three minutes) **OWNER, PENDING.** The 1:20 Saloon cut has English narration and captions. Alex reviews the cut and asset credits before publication. [Transcript and caption file](judge-demo-narration.md) The [official rules](https://kiroween.devpost.com/rules) specify permission for third-party material in the video.
 - Third-party blog: **OWNER, PENDING.**
 
 ## Required form fields and owner inputs still open

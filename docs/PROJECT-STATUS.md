@@ -20,7 +20,7 @@ The source in this checkout shares Last Stand and Sweep forecasts across all thr
 
 On seed 6, swapping the top two cards in the Cowboy draw pile changes the beginner Wizard’s first summon from Jack-o’-Lantern to Skeleton. Both deals look identical from the Wizard’s seat. The effect on difficulty is unmeasured. [Reproduction and proposed check](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/223)
 
-The 1:59 judge cut has captions and a temporary guide voice. A public video URL, documented first-time player observations and human assistive-technology feedback are still outstanding. Alex confirms the submission category and contributor credits. [Submission packet](submission/devpost-packet.md) · [Design and release history](design/release-line.md)
+The November 26 judge cut runs 1:20. It follows the Saloon decision with narration, captions, the Kiro workflow record and the written balance spec. A public video URL, documented first-time player observations and human assistive-technology feedback are still outstanding. Alex confirms the submission category and contributor credits. [Submission packet](submission/devpost-packet.md) · [Design and release history](design/release-line.md)
 
 ## November 23, 2026 integration
 
