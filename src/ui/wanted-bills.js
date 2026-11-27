@@ -1,7 +1,7 @@
 import {TYPES} from "../game/showdown/cards.js";
 import {BOUNTIES, HUNTS} from "../game/showdown/progress.js";
 
-export function mountWantedBills(list, scout) {
+export function mountWantedBills(list, scout, portrait) {
   const lock = document.createElement("p");
   lock.id = "wanted-hunt-condition";
   lock.textContent = `Finish the Trail to hunt. Capture each boss in ${HUNTS} wins.`;
@@ -68,6 +68,8 @@ export function mountWantedBills(list, scout) {
         <strong class="wanted-name">${duel.name}</strong>
         <span class="wanted-tally" aria-hidden="true">Hunts won ${marks}</span>
         <span class="wanted-action">${action}</span>`;
+      const art = portrait?.(bounty.boss);
+      if (art) bill.querySelector(".wanted-portrait").prepend(art);
     }
   };
 }

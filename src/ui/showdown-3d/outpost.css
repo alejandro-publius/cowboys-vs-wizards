@@ -153,17 +153,10 @@ body:has(.camp-outpost[open], .builder-inspect[open]) {
   border: 3px double #684c30;
   mix-blend-mode: multiply;
 }
-.wanted-portrait::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(156deg, transparent 0 3px, #34241726 3px 4px),
-    var(--wanted-art) center 33% / cover no-repeat;
-  image-rendering: pixelated;
-  filter: grayscale(1) contrast(1.12) brightness(1.26);
+.wanted-portrait > .sd-card-art {
+  display: block;
+  width: 100%; height: 100%; margin: 0; aspect-ratio: auto;
 }
-.wanted-portrait[data-portrait="wizard-lantern-wraith"] { --wanted-art: var(--saloon-wraith-art); }
-.wanted-portrait[data-portrait="wizard-dragon"] { --wanted-art: var(--saloon-dragon-art); }
 .wanted-stamp {
   position: absolute;
   left: 50%;

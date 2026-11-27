@@ -84,10 +84,10 @@ const TEMPLATE = `
 // onDuel(id, {players, best}): start a Camp duel ("trail", "rival:<id>", "hunt:<id>", "open", or "two" for two players).
 // onBuild(): open the deck builder. playtest (optional): text(progress), saved(), clear().
 // confirm: asks before Start over (window.confirm in the page).
-export function mountCamp(root, {campaign, writeCamp = (change) => change(), playtest, paintCardFaces, openDestination, dressNotices, onDuel, onHome, onBuild, confirm = (text) => window.confirm(text)}) {
+export function mountCamp(root, {campaign, writeCamp = (change) => change(), playtest, paintCardFaces, cardArtwork, openDestination, dressNotices, onDuel, onHome, onBuild, confirm = (text) => window.confirm(text)}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
-  const showBills = paintCardFaces && mountWantedBills($("camp-bounties"), $("camp-scout-dragon"));
+  const showBills = paintCardFaces && mountWantedBills($("camp-bounties"), $("camp-scout-dragon"), cardArtwork);
   if (paintCardFaces) {
     $("camp-trail").insertAdjacentHTML("afterend", `<aside class="camp-trail-rail" aria-label="Trail actions">
       <h3 id="camp-current-stop"></h3><p id="camp-current-reward" aria-live="polite"></p>

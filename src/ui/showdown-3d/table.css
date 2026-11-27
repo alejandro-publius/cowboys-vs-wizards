@@ -250,7 +250,7 @@
   align-items: end;
   z-index: 4;
 }
-:is(#sd-hand, #sd-result, #camp-claim) .sd-card.table-card-painted {
+:is(#sd-hand, #sd-result, #camp-claim, .book-hero) .sd-card.table-card-painted {
   --foil: #c99960;
   --ink: #332230;
   --contrast: #9e734c;
@@ -270,26 +270,26 @@
   color: #f9e7c9;
   overflow: hidden;
 }
-:is(#sd-hand, #sd-result, #camp-claim) .sd-card.table-card-painted.wizard {
+:is(#sd-hand, #sd-result, #camp-claim, .book-hero) .sd-card.table-card-painted.wizard {
   --foil: #aa91c1;
   --ink: #312645;
   --contrast: #6b577f;
   --paper: #d6c4e9;
 }
-:is(#sd-hand, #sd-result, #camp-claim) .sd-card.table-card-painted[data-frame="spell"] {
+:is(#sd-hand, #sd-result, #camp-claim, .book-hero) .sd-card.table-card-painted[data-frame="spell"] {
   --foil: #c0c2cf;
 }
-:is(#sd-hand, #sd-result, #camp-claim) .sd-card.table-card-painted[data-frame="trap"] {
+:is(#sd-hand, #sd-result, #camp-claim, .book-hero) .sd-card.table-card-painted[data-frame="trap"] {
   --foil: #a19a9d;
 }
-:is(#sd-hand, #sd-result, #camp-claim) .sd-card.table-card-painted[data-frame="gear"] {
+:is(#sd-hand, #sd-result, #camp-claim, .book-hero) .sd-card.table-card-painted[data-frame="gear"] {
   --foil: #bc885a;
   --ink: #49302a;
 }
-:is(#sd-hand, #sd-result, #camp-claim) .sd-card.table-card-painted[data-frame="location"] {
+:is(#sd-hand, #sd-result, #camp-claim, .book-hero) .sd-card.table-card-painted[data-frame="location"] {
   --foil: #ae9f96;
 }
-:is(#sd-hand, #sd-result, #camp-claim) .sd-card.table-card-painted.table-captured {
+:is(#sd-hand, #sd-result, #camp-claim, .book-hero) .sd-card.table-card-painted.table-captured {
   --foil: #cfaa71;
   --ink: #604431;
 }
@@ -380,10 +380,10 @@
   color: #fff0cc;
   padding-inline: 1px;
 }
-.sd-diorama #sd-hand .sd-card-art {
+:is(.sd-diorama #sd-hand, .book-hero) .sd-card-art {
   position: relative;
 }
-.sd-diorama #sd-hand .sd-card-art .table-card-kind {
+:is(.sd-diorama #sd-hand, .book-hero) .sd-card-art .table-card-kind {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -394,10 +394,10 @@
   font: 650 clamp(8px, 0.65vw, 10px)/1.1 system-ui, sans-serif;
   letter-spacing: normal;
 }
-.sd-diorama #sd-hand .table-card-copy {
+:is(.sd-diorama #sd-hand, .book-hero) .table-card-copy {
   font-size: clamp(8px, 0.72vw, 11px);
 }
-.sd-diorama #sd-hand .table-card-rule {
+:is(.sd-diorama #sd-hand, .book-hero) .table-card-rule {
   display: block;
   overflow: visible;
   overflow-wrap: anywhere;

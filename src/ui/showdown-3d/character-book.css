@@ -189,13 +189,13 @@ dialog.character-book::backdrop {
   overflow-wrap: anywhere;
 }
 
-.character-book .book-portrait img {
+.character-book .book-portrait .sd-card-art {
   display: block;
   inline-size: 100%;
   block-size: 100%;
   min-block-size: 0;
-  object-fit: cover;
-  object-position: center 28%;
+  aspect-ratio: auto;
+  margin: 0;
 }
 
 .character-book .book-caption {
@@ -253,17 +253,38 @@ dialog.character-book::backdrop {
   margin: 0;
 }
 
-.character-book .book-hero img {
-  display: block;
-  inline-size: 100%;
-  block-size: 100%;
-  object-fit: contain;
-  filter: drop-shadow(1px 2px 2px #5c422d80);
+.character-book .book-hero {
+  display: grid;
+  place-items: center;
+  container-type: size;
 }
-
-.character-book .book-watch { grid-area: 2 / 1; }
+:is(#field-guide-title, .character-book) .book-hero .sd-card.table-card-painted {
+  display: block;
+  box-sizing: border-box;
+  width: min(94cqw, 68cqh);
+  height: auto;
+  padding: clamp(3px, 1cqw, 6px);
+  transform: rotate(-2deg);
+}
+.character-book .book-hero .table-card-title { font-size: clamp(10px, 5cqw, 23px); }
+.character-book .book-hero .table-card-copy { font-size: clamp(9px, 3.25cqw, 15px); }
+.character-book .book-hero .table-card-kind { font-size: clamp(8px, 2.6cqw, 12px); }
+.character-book .book-moves {
+  grid-area: 2 / 1;
+  display: flex;
+  align-items: stretch;
+  gap: 5px;
+  min-width: 0;
+}
+.character-book .book-moves button { flex: 1; padding-inline: 5px; }
+.character-book .book-practice {
+  min-height: 44px;
+  color: #fff1cb;
+  background: #513723;
+  border: 1px solid #563b23;
+  box-shadow: inset 0 1px #aa7944;
+}
 .character-book .book-details { grid-area: 2 / 2; }
-.character-book .book-watch[hidden] + .book-details { grid-column: 1 / -1; }
 .character-book .book-details > summary {
   min-block-size: 44px;
   min-inline-size: 44px;

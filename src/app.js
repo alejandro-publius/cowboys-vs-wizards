@@ -144,7 +144,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
       showOnly(builderRoot);
       builder.openSwap({pool, deck, side, done: (nextDeck, nextSide) => { showOnly(screen); done(nextDeck, nextSide); }});
     }});
-  const camp = mountCamp(campRoot, {campaign, writeCamp, playtest, paintCardFaces: diorama?.paintCardFaces,
+  const camp = mountCamp(campRoot, {campaign, writeCamp, playtest, paintCardFaces: diorama?.paintCardFaces, cardArtwork: diorama?.cardArtwork,
     openDestination: (id, control) => outpost?.open(id, control),
     dressNotices: (trailComplete) => outpost?.dressNotices(trailComplete),
     onHome: () => { showOnly(title); play.focus(); },

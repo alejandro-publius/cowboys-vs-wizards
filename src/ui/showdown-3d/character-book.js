@@ -39,8 +39,7 @@ function element(tag, className, text) {
   return node;
 }
 
-export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
-  const art = __CVW_BOOK_ART__;
+export function mountCharacterBook(title, duel, {ownedBySide, openReplay, portrait, handFace}) {
   const book = element("dialog", "character-book");
   book.setAttribute("aria-labelledby", "field-guide-title");
   book.innerHTML = `
@@ -59,10 +58,10 @@ export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
       <section class="book-entry" aria-labelledby="book-character-name">
         <h3 id="book-character-name" aria-live="polite"></h3>
         <div class="book-leaf">
-          <figure class="book-hero"><img alt=""></figure>
-          <button class="book-watch" type="button" hidden></button>
+          <figure class="book-hero"></figure>
+          <div class="book-moves"><button class="book-practice" type="button" hidden>Play card</button><button class="book-watch" type="button" hidden></button></div>
           <details class="book-details">
-            <summary>Card details</summary>
+            <summary aria-label="Card details">Details</summary>
             <div class="book-notes">
               <p class="book-faction"></p>
               <dl class="book-stats" aria-label="Troop stats"></dl>
@@ -77,6 +76,8 @@ export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
   const find = selector => book.querySelector(selector);
   const grid = find(".book-grid");
   const watch = find(".book-watch");
+  const practice = find(".book-practice");
+  let goPractice, canPractice, reopenOrigin;
   const ownership = find(".book-ownership");
   const details = find(".book-details");
   const build = element("button", "book-build");
@@ -91,7 +92,13 @@ export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
     selected = id;
     const card = TYPES[id];
     details.open = false;
-    find(".book-hero img").src = art[id];
+    const frame = element("span", `sd-card table-card-painted ${card.side}`);
+    frame.dataset.frame = card.kind;
+    frame.dataset.face = id;
+    if (id.startsWith("cowboy-captured-")) frame.classList.add("table-captured");
+    frame.append(handFace(id, true));
+    find(".book-hero").replaceChildren(frame);
+    practice.hidden = !goPractice || !canPractice();
     find(".book-entry h3").textContent = card.name;
     find(".book-faction").textContent = [card.tag ?? card.kind, card.rarity].join(" · ");
     const troop = card.kind === "troop";
@@ -127,6 +134,14 @@ export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
     book.close();
     onBuild(selected);
   };
+  practice.onclick = () => {
+    if (!goPractice || !canPractice()) return;
+    const id = selected;
+    const docked = book.hasAttribute("data-docked");
+    const resume = docked ? () => practice.focus({preventScroll: true}) : reopenOrigin;
+    if (!docked) book.close();
+    goPractice(id, resume);
+  };
   function turn(id) {
     const spread = bookSpread(side, page, id);
     const {leaves, visible} = spread;
@@ -138,9 +153,7 @@ export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
       stamp.dataset.id = id;
       stamp.setAttribute("aria-label", card.name);
       stamp.title = card.name;
-      const image = element("img");
-      image.alt = "";
-      image.src = art[id];
+      const image = portrait(id) ?? element("span", "book-missing", card.name);
       stamp.append(image, element("span", "book-caption", card.name));
       stamp.onclick = () => select(id);
       return stamp;
@@ -162,7 +175,7 @@ export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
   next.onclick = () => { page++; turn(); if (next.disabled) back.focus(); };
   find(".book-close").onclick = () => book.close();
   book.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") event.stopPropagation();
+    if (event.key === "Escape" && !book.hasAttribute("data-docked")) event.stopPropagation();
     if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
     if ((event.key === "PageUp" || event.key === "PageDown") && event.target.closest(".book-notes")) return;
     const previous = event.key === "ArrowLeft" || event.key === "PageUp";
@@ -177,12 +190,14 @@ export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
   });
   function open(id, source = document.activeElement, buildDeck) {
     if (id !== undefined && !Object.hasOwn(TYPES, id)) return;
+    open.undock();
     const show = (focus) => {
       // The native dialog returns focus to this control, including inside the Wanted room.
       source?.focus({preventScroll: true});
       book.showModal();
       focus.focus();
     };
+    reopenOrigin = () => open(id ?? selected, source, buildDeck);
     onBuild = buildDeck && (type => buildDeck(type, () => show(build)));
     if (id) side = TYPES[id].side;
     turn(id ?? selected);
@@ -205,6 +220,29 @@ export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
       gallery.before(button);
     }
   }
+  open.dock = host => {
+    if (book.parentElement !== host) {
+      if (book.open) book.close();
+      host.append(book);
+      book.dataset.docked = "";
+    }
+    onBuild = null;
+    const id = selected ?? "cowboy-billy";
+    side = TYPES[id].side;
+    turn(id);
+    if (!book.open) book.show();
+  };
+  open.undock = () => {
+    if (!book.hasAttribute("data-docked")) return;
+    if (book.open) book.close();
+    book.removeAttribute("data-docked");
+    document.body.append(book);
+  };
+  open.setPractice = (run, available) => {
+    goPractice = run;
+    canPractice = available;
+    if (selected) practice.hidden = !available();
+  };
   if (new URLSearchParams(location.search).get("book") === "1") open(undefined, title.querySelector(".book-launch"));
   return open;
 }

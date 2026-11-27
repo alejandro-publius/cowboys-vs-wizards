@@ -8,7 +8,7 @@ import { presentationBeats } from "./event-positions.js";
 import { createCombatEffects } from "./combat-effects.js";
 import { makeBases } from "./bases.js";
 import { makeCardModel, makeLiveCardModel } from "./card-models.js";
-import { bindTableUI } from "./table-ui.js";
+import { bindTableUI, cardArtwork, paintedFace } from "./table-ui.js";
 import { tableCamera } from "./table-camera.js";
 import { createTableTransfers } from "./table-transfers.js";
 import { dressTable } from "./table-dressing.js";
@@ -16,7 +16,7 @@ import { makeEmbers, makeFaeries } from "./embers.js";
 import { mountCharacterBook } from "./character-book.js";
 import { mountGallery as mountCardGallery } from "./gallery.js";
 export { mountCampOutpost } from "./camp-outpost.js";
-export { paintCardFaces } from "./table-ui.js";
+export { paintCardFaces, cardArtwork } from "./table-ui.js";
 import { COLORS, SIDES, zone } from "./layout.js";
 
 const FACEDOWN = 0x2a213b;
@@ -553,7 +553,7 @@ function build(host, canvas, screen, closeup = false) {
 
 export function mountGallery(title, duel, ownedBySide) {
   const openReplay = mountCardGallery(title, duel, (host, canvas, dialog) => build(host, canvas, dialog, true));
-  return mountCharacterBook(title, duel, {ownedBySide, openReplay});
+  return mountCharacterBook(title, duel, {ownedBySide, openReplay, portrait: cardArtwork, handFace: paintedFace});
 }
 
 function disposePawn(group) {
