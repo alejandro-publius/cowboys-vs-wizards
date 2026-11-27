@@ -580,7 +580,7 @@
   gap: clamp(3px, .8vw, 12px);
 }
 .sd-diorama #sd-result .bounty-reward-group .sd-card { width: clamp(72px, 23vw, 161px); }
-.sd-diorama #sd-result [data-build-capture] {
+.sd-diorama #sd-result .bounty-earned [data-build-capture] {
   min-height: 44px;
   width: 100%;
   border: 1px solid #b99662;
