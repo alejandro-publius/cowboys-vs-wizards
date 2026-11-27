@@ -634,6 +634,10 @@
   .sd-diorama .sd-world {
     height: max(570px, 96svh);
   }
+  /* Reserve one touch-sized row for Hand rules on the challenge's first screen. */
+  .sd-diorama[data-contest-challenge] .sd-world {
+    height: max(570px, min(96svh, calc(100svh - 3rem)));
+  }
   .sd-diorama #sd-hand {
     width: 97%;
     gap: 2px;
