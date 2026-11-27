@@ -390,30 +390,33 @@ const ROOM_HTML = `
   <div class="saloon-theater">
     <div class="saloon-theater-host" aria-hidden="true" inert></div>
   </div>
-  <div class="saloon-stage" data-actor="">
-    <div class="saloon-wall">
-      <figure class="saloon-wanted">
-        <div class="saloon-wanted-art"></div>
-        <figcaption><strong>Wanted</strong><span class="saloon-wanted-name">No bounty posted</span></figcaption>
-      </figure>
-      <section class="saloon-board" aria-label="Notices">
-        <div class="saloon-proposal">
-          <h4>Proposed card change</h4>
-          <div class="saloon-target" data-change="none"><div class="saloon-target-art"></div><p class="saloon-target-stat">No proposal yet</p></div>
-          <div class="saloon-decision" hidden></div>
+  <details class="saloon-ledger-drawer">
+    <summary>Notice board &amp; cast</summary>
+    <div class="saloon-stage" data-actor="">
+      <div class="saloon-wall">
+        <figure class="saloon-wanted">
+          <div class="saloon-wanted-art"></div>
+          <figcaption><strong>Wanted</strong><span class="saloon-wanted-name">No bounty posted</span></figcaption>
+        </figure>
+        <section class="saloon-board" aria-label="Notices">
+          <div class="saloon-proposal">
+            <h4>Proposed card change</h4>
+            <div class="saloon-target" data-change="none"><div class="saloon-target-art"></div><p class="saloon-target-stat">No proposal yet</p></div>
+            <div class="saloon-decision" hidden></div>
+          </div>
+          <div class="saloon-patches">
+            <h4>Accepted card changes</h4>
+            <ul></ul>
+          </div>
+        </section>
+        <div class="saloon-bell-post">
+          <span class="saloon-bell" aria-hidden="true"></span>
+          <span class="saloon-bell-note"></span>
         </div>
-        <div class="saloon-patches">
-          <h4>Accepted card changes</h4>
-          <ul></ul>
-        </div>
-      </section>
-      <div class="saloon-bell-post">
-        <span class="saloon-bell" aria-hidden="true"></span>
-        <span class="saloon-bell-note"></span>
       </div>
+      <ol class="saloon-actors"></ol>
     </div>
-    <ol class="saloon-actors"></ol>
-  </div>
+  </details>
   <div class="saloon-controls">
     <p class="saloon-mode"><strong class="saloon-mode-label"></strong> <span class="saloon-mode-date" hidden></span> <span class="saloon-progress"></span></p>
     <div class="saloon-buttons">
@@ -472,6 +475,8 @@ export function mountNightShiftSaloon({content, recording, portrait = () => null
   // "Replay the repair": a recorded field trial, separate from the shift feed and the stage.
   // Hidden when no fresh check and witness are recorded; `fieldTrial` defaults to FIELD_TRIAL.
   const repair = mountRepairReplay(q(".saloon-repair"), {trial: fieldTrial, portrait});
+  const ledgerDrawer = q(".saloon-ledger-drawer");
+  const wantsReview = new URLSearchParams(loc?.search ?? "").get("saloon") === "review";
   const stage = q(".saloon-stage");
   const theater = q(".saloon-theater"), host = q(".saloon-theater-host"), controls = q(".saloon-controls");
   const play = q(".saloon-play"), step = q(".saloon-step"), replay = q(".saloon-replay");
@@ -529,8 +534,9 @@ export function mountNightShiftSaloon({content, recording, portrait = () => null
   function setView(view) {
     content.dataset.view = view;
     theater.hidden = view !== "3d";
+    if (view !== "3d" || mode === "live" || wantsReview) ledgerDrawer.open = true;
     const focused = controls.contains(document.activeElement) ? document.activeElement : null;
-    if (view === "3d") theater.append(controls); else stage.after(controls);
+    if (view === "3d") theater.append(controls); else ledgerDrawer.after(controls);
     if (focused && document.activeElement !== focused) focused.focus({preventScroll: true});
   }
   function dropStage() {
@@ -832,6 +838,7 @@ export function mountNightShiftSaloon({content, recording, portrait = () => null
       if (!at) return false;
       restart();
       ({count, shown, ambient} = at);
+      if (wantsReview) ledgerDrawer.open = true;
       render();
       now.textContent = count >= feed.events.length ? `${describe(at.event)}. End of the recording.` : eventCaption(at.event);
       return true;

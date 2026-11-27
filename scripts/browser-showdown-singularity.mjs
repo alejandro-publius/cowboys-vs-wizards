@@ -114,7 +114,13 @@ const READ = `(() => {
   const spans = host ? [...host.querySelectorAll(".sd-world-labels span")] : [];
   const shown = (s) => !s.hidden && s.textContent.length > 0;
   const orbs = (side) => spans.filter((s) => s.dataset.vortexOrbs === side && shown(s)).map((s) => [...s.textContent].filter((c) => c === "●").length);
-  const grave = (side) => { const m = spans.find((s) => s.dataset.graveLabel === side)?.textContent.match(/Graveyard (\\d+)/); return m ? Number(m[1]) : null; };
+  const grave = (side) => {
+    const node = spans.find((s) => s.dataset.graveLabel === side);
+    if (!node) return null;
+    if (node.dataset.zoneCount !== undefined) return Number(node.dataset.zoneCount);
+    const m = node.textContent.match(/(\\d+)/);
+    return m ? Number(m[1]) : null;
+  };
   const names = (wizard) => spans.filter((s) => s.dataset.pieceLabel === "1" && (s.dataset.runeLabel === "1") === wizard && shown(s)).map((s) => s.textContent);
   return {motion: canvas?.dataset.motion ?? null, mode: canvas?.dataset.previewMode ?? null, darkness: Number(host?.style.getPropertyValue("--spell-darkness") || 0),
     cowboyOrbs: orbs("cowboy"), wizardOrbs: orbs("wizard"), cowboyGrave: grave("cowboy"), wizardGrave: grave("wizard"),

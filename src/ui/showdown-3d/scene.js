@@ -321,16 +321,19 @@ function build(host, canvas, screen, closeup = false) {
               : 0,
         );
       }
-      for (const [at, count, title] of [
-        ["deck", s.deckCount, "Deck"],
-        ["discard", s.discard.length, "Graveyard"],
+      for (const [at, count, title, glyph] of [
+        ["deck", s.deckCount, "Deck", ""],
+        ["discard", s.discard.length, "Graveyard", "✝ "],
       ]) {
         const [x, , z] = zone(side, at);
         const stack = pieceAt(side, at);
         stack.visible = count > 0;
         stack.scale.y = Math.min(4, 1 + count / 7);
-        label(side + at, [x, 0.071, z + 0.7], title + " " + count, count > 0);
-        if (at === "discard") worldLabels.get(side + at).dataset.graveLabel = side;
+        label(side + at, [x, 0.071, z + 0.7], count > 0 ? glyph + count : "", count > 0);
+        const tag = worldLabels.get(side + at);
+        tag.dataset.zoneTitle = title;
+        tag.dataset.zoneCount = String(count);
+        if (at === "discard") tag.dataset.graveLabel = side;
       }
       const [x, , z] = zone(side, "trap", TRAP_SLOTS - 1);
       // A trap's identity never leaves Showdown's own seat-scoped controls.
@@ -338,9 +341,13 @@ function build(host, canvas, screen, closeup = false) {
       label(
         side + "traps",
         [x + (side === "wizard" ? 1.04 : -0.28), 0.066, z + 0.81],
-        "Traps " + s.trapCount + "/" + TRAP_SLOTS,
+        s.trapCount > 0 ? "▲ " + s.trapCount : "",
         s.trapCount > 0,
       );
+      const trapTag = worldLabels.get(side + "traps");
+      trapTag.dataset.zoneTitle = "Traps";
+      trapTag.dataset.zoneCount = String(s.trapCount);
+      trapTag.dataset.zoneMax = String(TRAP_SLOTS);
     }
     const location = display.location?.cardId;
     if ((location ?? null) !== locationId) {
@@ -353,7 +360,7 @@ function build(host, canvas, screen, closeup = false) {
         locationGroup.add(prop);
       }
     }
-    label("location", [0, 0.08, 1.5], location ? cardOf(location).name : "Location", Boolean(location));
+    label("location", [0, 0.08, 1.5], location ? cardOf(location).name : "", Boolean(location));
   }
 
   function draw(flare) {

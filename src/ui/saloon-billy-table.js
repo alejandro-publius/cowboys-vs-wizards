@@ -60,7 +60,7 @@ export function mountBillyTable(root, table) {
   const printed = cardOf(attackerId).attack === baseline.attack ? "Current" : "Recorded";
   root.hidden = false;
   root.innerHTML = `<h3 id="saloon-shot-title">Billy at Bone Wall</h3>
-    <p>Fire for ${baseline.attack} at Bone Wall. Then try Kiro’s ${candidate.attack}-damage shot on the same deal.</p>
+    <p class="saloon-sr-only">Fire for ${baseline.attack} at Bone Wall. Then try Kiro’s ${candidate.attack}-damage shot on the same deal.</p>
     <div class="saloon-shot-cards">
       <span data-shot-card="billy"><strong>Billy</strong></span>
       <span data-shot-card="wall"><strong>Bone Wall</strong><span class="saloon-life" aria-hidden="true"></span><span class="saloon-shot-orbs"></span></span>
@@ -76,10 +76,10 @@ export function mountBillyTable(root, table) {
         <h4 id="saloon-reply-title"></h4>
         <p class="saloon-duel-orbs"></p>
       </div>
-      <p>If Billy takes cover, a hit on him can’t spill over to your Base.</p>
+      <p class="saloon-sr-only">If Billy takes cover, a hit on him can’t spill over to your Base.</p>
       <div class="saloon-shot-actions">
         <button type="button" data-reply="attack" aria-pressed="false">Attack</button>
-        <button type="button" data-reply="cover" aria-pressed="false">Take cover</button>
+        <button type="button" data-reply="cover" aria-pressed="false" title="Cover keeps extra damage off your Base">Take cover</button>
       </div>
       <p class="saloon-reply-result" role="status" aria-live="polite" aria-atomic="true"></p>
     </section>

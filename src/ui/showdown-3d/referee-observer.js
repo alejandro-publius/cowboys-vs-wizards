@@ -64,11 +64,17 @@ export function parseGraveyard(text) {
   return !t || t === "empty" ? [] : t.split(", ");
 }
 
-// A 3D world label: "Deck 12", "Graveyard 3", "Traps 1/2".
+// A 3D world label: "Deck 12", "Graveyard 3", "Traps 1/2", or compact "12", "✝ 3", "▲ 1".
 export function parseWorldLabel(text) {
   const t = String(text ?? "").replace(/\s+/g, " ").trim();
   const traps = /^Traps (\d+)\/(\d+)$/.exec(t);
   if (traps) return {title: "Traps", count: Number(traps[1]), of: Number(traps[2])};
+  const compactTrap = /^▲ (\d+)$/.exec(t);
+  if (compactTrap) return {title: "Traps", count: Number(compactTrap[1])};
+  const compactGrave = /^✝ (\d+)$/.exec(t);
+  if (compactGrave) return {title: "Graveyard", count: Number(compactGrave[1])};
+  const bareDeck = /^(\d+)$/.exec(t);
+  if (bareDeck) return {title: "Deck", count: Number(bareDeck[1])};
   const counted = /^(.*\S) (\d+)$/.exec(t);
   return counted ? {title: counted[1], count: Number(counted[2])} : {title: t, count: null};
 }
@@ -183,8 +189,16 @@ function observeSlot(slot, shown, text) {
 // The 3D layer: canvas motion, world labels and, when scene.js offers it, the presented pawns.
 function observeWorld(doc, win, incomplete, shown, text) {
   const canvas = doc.querySelector("canvas.sd-world");
-  const labels = [...doc.querySelectorAll(".sd-world-labels > *")].map((node) => ({
-    ...parseWorldLabel(text(node)), graveSide: node.dataset.graveLabel ?? null, shown: shown(node)}));
+  const labels = [...doc.querySelectorAll(".sd-world-labels > *")].map((node) => {
+    const parsed = node.dataset.zoneTitle
+      ? {
+          title: node.dataset.zoneTitle,
+          count: Number(node.dataset.zoneCount),
+          ...(node.dataset.zoneMax ? {of: Number(node.dataset.zoneMax)} : {}),
+        }
+      : parseWorldLabel(text(node));
+    return {...parsed, graveSide: node.dataset.graveLabel ?? null, shown: shown(node)};
+  });
   const world = {present: Boolean(canvas), shown: shown(canvas), motion: canvas?.dataset.motion ?? null, labels, pawns: null};
   // Integration point: scene.js keeps its pawns in a closure-private map. A seat-safe hook would list
   // {side, slot, name} for each presented miniature after synchronize().

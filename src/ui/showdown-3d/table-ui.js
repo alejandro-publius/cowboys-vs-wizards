@@ -6,6 +6,53 @@ export { cardArtwork };
 
 const icons = { troop: "◆", spell: "✦", trap: "△", gear: "◇", location: "▰" };
 
+export const COMPACT_CARD_RULES = Object.freeze({
+  shot: "−1 ●",
+  tie: "Stun",
+  hellfire: "All foes −1 ●",
+  snare: "−2 ●",
+  hex: "Cancel",
+  sixshooter: "+1 ATK",
+  bonearmor: "+2 ●",
+  office: "Lawmen +1",
+  boneyard: "Undead +1",
+});
+
+export function compactSelectionPrompt(raw) {
+  const text = String(raw ?? "").replace(/\s+/g, " ").trim();
+  if (!text) return "";
+  const payments = [...text.matchAll(/Pay ([^:]+): ([^.]+)\./g)];
+  if (payments.length) {
+    return payments
+      .map(([, who, outcome]) => {
+        const raised = /(\S+) returns with (\d+) orb/.exec(outcome);
+        if (raised) return `${who.trim()} → Raise ${raised[2]}●`;
+        if (/no .* to return/i.test(outcome)) return `${who.trim()} → none`;
+        return `${who.trim()} → ${outcome.trim()}`;
+      })
+      .join(" · ");
+  }
+  const multiTribute = /^Choose (\d+) of your troops .* for ([^.]+)\./.exec(text);
+  if (multiTribute) return `Tribute ${multiTribute[1]} for ${multiTribute[2].trim()}`;
+  const oneTribute = /^Choose a tribute for ([^.]+)\./.exec(text);
+  if (oneTribute) return `Tribute for ${oneTribute[1].trim()}`;
+  const gear = /^Choose one of your troops to carry ([^.]+)\./.exec(text);
+  if (gear) return `Equip ${gear[1].trim()}`;
+  const spell = /^Choose an enemy troop for ([^.]+)\./.exec(text);
+  if (spell) return `Target foe · ${spell[1].trim()}`;
+  const hasTrap = text.includes("A face-down trap springs before damage.");
+  const hasCover = /\bOr take cover:/.test(text);
+  if (/^This troop cannot attack now\./.test(text)) return "Rests this turn · Take cover";
+  if (hasTrap) {
+    const lead = /^No enemy troops:/.test(text) ? "Strike Base" : /^A Guard/.test(text) ? "Strike Guard" : "Pick target";
+    return `${lead} · Trap set!${hasCover ? " · or Cover" : ""}`;
+  }
+  if (/^No enemy troops:/.test(text)) return hasCover ? "Strike Base · or Take cover" : "Strike Base";
+  if (/^A Guard/.test(text)) return hasCover ? "Strike Guard · or Take cover" : "Strike Guard";
+  if (/^Choose what to attack\./.test(text)) return hasCover ? "Pick target · or Take cover" : "Pick target";
+  return "";
+}
+
 const el = (tag, cls, word) => {
   const node = document.createElement(tag);
   if (cls) node.className = cls;
@@ -19,23 +66,22 @@ function paintedFace(type) {
   const title = el("span", "table-card-title", card.name);
   const artwork = cardArtwork(type);
   const notes = el("span", "table-card-copy");
-  const kind = card.kind[0].toUpperCase() + card.kind.slice(1);
-  const category = el("span", "table-card-kind", icons[card.kind] + " " + kind);
   if (card.kind === "troop") {
     const stats = el("span", "table-card-stats");
     stats.append(el("span", "", card.attack + " ATK"), el("span", "", card.health + " ●"));
     const cost = tributes(type + "-1");
-    notes.append(category, stats);
+    notes.append(stats);
     if (cost || card.keys?.length)
       notes.append(
         el(
           "span",
           "table-card-rule",
-          [...(card.keys ?? []).map((key) => KEYWORDS[key][0]), ...(cost ? [cost + " tribute"] : [])].join(" · "),
+          [...(card.keys ?? []).map((key) => KEYWORDS[key][0]), ...(cost ? ["★" + cost] : [])].join(" · "),
         ),
       );
   } else {
-    notes.append(category, el("span", "table-card-rule", EFFECTS[card.effect].text));
+    const badge = COMPACT_CARD_RULES[card.effect] ?? EFFECTS[card.effect].text;
+    notes.append(el("span", "table-card-rule", icons[card.kind] + " " + badge));
   }
   face.append(title);
   if (artwork) face.append(artwork);
@@ -106,9 +152,10 @@ export function bindTableUI(root) {
         ? "Choose a card"
         : (added?.textContent.split(":")[0] ?? status.textContent.split(" · ")[0]));
       if (!goHome.hasAttribute("data-return-wanted")) goHome.textContent = "Camp";
-      // A pick's whole instruction: the choice, its trap or Raise hint, and the cover alternative.
-      if (!ended && /^(Choose|A Guard|No enemy|This troop)/.test(originalPrompt.textContent)) {
-        prompt.textContent = originalPrompt.textContent;
+      // A pick's compact HUD cue; #sd-prompt retains the full sentence for assistive descriptions.
+      const shortPrompt = !ended ? compactSelectionPrompt(originalPrompt.textContent) : "";
+      if (shortPrompt) {
+        prompt.textContent = shortPrompt;
         prompt.hidden = false;
       } else {
         prompt.textContent = "";

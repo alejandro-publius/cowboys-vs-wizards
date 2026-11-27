@@ -197,8 +197,9 @@
 .saloon-decision[hidden] {
   display: none;
 }
-.saloon-decision a {
-  color: inherit;
+.saloon-decision a,
+#showdown-camp .saloon-decision summary {
+  color: #3a1f12;
   font-weight: 700;
   text-decoration: underline;
 }

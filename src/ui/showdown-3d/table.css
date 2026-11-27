@@ -115,9 +115,17 @@
     #sd-prompt,
     #sd-location,
     #sd-table > section:not(#sd-hand),
-    #sd-result > :not(.sd-row)
+    #sd-result > :not(.sd-row),
+    #sd-zones > :not(#sd-zone-rails, dialog),
+    #sd-zones .sd-zone-faction,
+    #sd-zones [data-zone="deck"],
+    #sd-zones [data-zone="hand-count"],
+    #sd-zones [data-zone="traps"],
+    #sd-zones [data-zone="graveyard"]:has(.sd-empty),
+    #sd-zones button[data-graveyard] .sd-zone-label
   ),
 .table-card-original {
+  display: block;
   position: absolute;
   width: 1px;
   height: 1px;
@@ -127,6 +135,45 @@
   clip-path: inset(50%);
   white-space: nowrap;
   pointer-events: none;
+}
+.sd-diorama #sd-zones {
+  position: absolute;
+  top: 50px;
+  left: clamp(12px, 2vw, 20px);
+  z-index: 4;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+}
+.sd-diorama #sd-zones[hidden] {
+  display: none;
+}
+.sd-diorama #sd-zone-rails {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.sd-diorama #sd-zones .sd-zone-rail,
+.sd-diorama #sd-zones [data-zone="graveyard"]:not(:has(.sd-empty)) {
+  display: contents;
+}
+.sd-diorama #sd-zones button[data-graveyard] {
+  pointer-events: auto;
+  min-height: 30px;
+  padding: 0.2rem 0.52rem;
+  border: 1px solid #8a7356;
+  border-radius: 4px;
+  background: rgb(16 20 31 / 82%);
+  color: #f5e1c0;
+  text-shadow: 0 1px 2px #10131c;
+  font:
+    600 12px/1.1 Georgia,
+    serif;
+}
+.sd-diorama #sd-zones button[data-graveyard]::before {
+  content: "✝ ";
+  opacity: 0.85;
 }
 /* The Ride or Fight? instruction is drawn over the sky, under the header. Two ids outrank the rule
    above, whose :is() list counts as (2,1,1). It overlays the board rather than pushing it down, so the
@@ -421,11 +468,20 @@
 }
 .table-selection,
 .table-forecast-note {
+  display: inline-block;
   margin: 0;
+  padding: 0.16rem 0.55rem;
+  border-radius: 4px;
+  background: rgb(15 19 30 / 76%);
+}
+.table-selection[hidden],
+.table-forecast-note[hidden] {
+  display: none;
 }
 .table-forecast-note {
+  display: table;
+  margin: 0 auto 0.3rem;
   color: #ffde97;
-  margin-bottom: 0.35rem;
 }
 .table-compare,
 .table-forecast-dialog .table-back {
