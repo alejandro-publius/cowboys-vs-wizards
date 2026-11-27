@@ -250,6 +250,7 @@
   .opening-wizard { right: 21%; }
 }
 @media (max-height: 480px) and (orientation: landscape) {
+  .title-scene { min-height: 0; }
   #title-screen h1 { padding-top: 9px; }
   .title-matchup { font-size: 14px; }
   .title-showdown { font-size: min(12svh, 62px); }
