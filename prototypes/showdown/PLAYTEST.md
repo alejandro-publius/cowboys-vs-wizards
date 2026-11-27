@@ -38,7 +38,7 @@ Tick these as they happen, with the minute.
 4. What was confusing or annoying?
 5. Would you play another fifteen minutes right now? Why or why not?
 
-Then open **Playtest report** in the camp, select all, copy, and keep it with their answers.
+In the illustrated game, open **Camp ledger**, expand **Playtest report**, and choose **Copy report**. Keep the report with the player's answers.
 
 ## The line to pass
 

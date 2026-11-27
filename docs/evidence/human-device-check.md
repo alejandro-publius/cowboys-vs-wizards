@@ -1,6 +1,6 @@
 # Showdown device check
 
-On November 27, 2026 UTC, Codex played the published illustrated Showdown in a fresh private window of native Safari 18.1.1 on an Apple silicon Mac running macOS 15.1.1. Codex operated Safari through macOS accessibility controls. This records desktop browser behavior for [issue #21](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/21).
+On November 26, 2026 Pacific (November 27 UTC), Codex played the published illustrated Showdown in a fresh private window of native Safari 18.1.1 on an Apple silicon Mac running macOS 15.1.1. The deployment manifest identified the build as [`f4ad5a7`](https://github.com/alejandro-publius/cowboys-vs-wizards/commit/f4ad5a7169936d20c53ad7d07ec1494785a89b45). Codex operated Safari through macOS accessibility controls. This records desktop browser behavior for [issue #21](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/21).
 
 | Step | Observed result |
 | --- | --- |

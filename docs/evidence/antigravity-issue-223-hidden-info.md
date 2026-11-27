@@ -2,7 +2,7 @@
 
 - **Date:** 2026-11-26 (America/Los_Angeles)
 - **Base revision:** `93db9f3` (`main`)
-- **Authoring agent:** Antigravity (branch `antigravity/wizard-hidden-info-223`; open for review, not merged to `main`)
+- **Authorship:** Antigravity proposed the candidate. Codex reviewed it and reproduced the practice outcomes. [Pull request #229](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/229)
 - **Spec requirements:** [`.kiro/specs/beginner-seat-privacy/requirements.md`](../../.kiro/specs/beginner-seat-privacy/requirements.md) (`BSP-1`–`BSP-4`)
 
 ## 1. Root Cause & Opt-In Candidate Design (`BSP-1`, `BSP-2`)
