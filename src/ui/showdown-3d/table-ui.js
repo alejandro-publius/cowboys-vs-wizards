@@ -97,6 +97,23 @@ export function bindTableUI(root) {
   const originalPrompt = root.querySelector("#sd-prompt");
   const hand = root.querySelector("#sd-hand");
   const result = root.querySelector("#sd-result");
+  const handRules = el("details", "table-hand-rules");
+  const rules = el("div");
+  handRules.append(el("summary", "", "Hand rules"), rules);
+  handRules.hidden = true;
+  // Keep the disclosure below the projected controls, including when Ride or Fight hides the zones.
+  table.after(handRules);
+
+  function showHandRules(cards) {
+    rules.replaceChildren();
+    handRules.hidden = cards.length === 0;
+    if (handRules.hidden) handRules.open = false;
+    for (const button of cards) {
+      const rule = el("p");
+      rule.append(...button.querySelector(".table-card-original").cloneNode(true).childNodes);
+      rules.append(rule);
+    }
+  }
 
   function finish() {
     headline.hidden = !root.classList.contains("table-resolved");
@@ -110,20 +127,7 @@ export function bindTableUI(root) {
       root.classList.toggle("table-resolved", ended);
       paintCardFaces(root, "#sd-hand [data-card], #sd-result [data-choose], #sd-result [data-face]", view.evenFight);
       const handCards = [...hand.querySelectorAll("[data-card]")];
-      // The public zone rail is rebuilt per seat. Only the viewing player's hand count opens its rules.
-      const handZone = root.querySelector(`[data-zone-side="${view.viewer}"] [data-zone="hand-count"]`);
-      if (!ended && handCards.length && handZone && !handZone.querySelector("details")) {
-        const details = el("details", "table-hand-rules");
-        const summary = el("summary");
-        summary.append(...handZone.childNodes, " · Rules");
-        details.append(summary);
-        for (const button of handCards) {
-          const rule = el("p");
-          rule.append(...button.querySelector(".table-card-original").cloneNode(true).childNodes);
-          details.append(rule);
-        }
-        handZone.append(details);
-      }
+      showHandRules(ended ? [] : handCards);
       handCards.forEach((button, i) => {
         const fan = i - (handCards.length - 1) / 2;
         button.style.setProperty("--fan", fan * 2.1 + "deg");
@@ -154,6 +158,7 @@ export function bindTableUI(root) {
     },
     restore() {
       forecasts.clear();
+      showHandRules([]);
       hand.inert = false;
       table.classList.remove("table-resolved");
       root.classList.remove("table-resolved");

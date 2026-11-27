@@ -402,12 +402,10 @@
   overflow: visible;
   overflow-wrap: anywhere;
 }
-.table-hand-rules summary {
-  cursor: pointer;
-  padding-block: .65rem;
-}
-.sd-zone-rail [data-zone="hand-count"]:has(.table-hand-rules[open]) {
-  grid-column: 1 / -1;
+.table-hand-rules {
+  max-width: 54rem;
+  margin-inline: auto;
+  padding-inline: .5rem;
 }
 .table-hand-rules p {
   margin: 0 0 .65rem;
