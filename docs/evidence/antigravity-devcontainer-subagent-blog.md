@@ -4,11 +4,27 @@ Antigravity added the judge devcontainer, the initial receipt guard and the blog
 
 ## Judge devcontainer
 
-Open the repository in Codespaces, or use **Dev Containers: Reopen in Container** in Kiro IDE with a running Docker-compatible engine. The [configuration](../../.devcontainer/devcontainer.json) requests Node 22, Python 3.12 and `npm ci`. To inspect the Python referee, run `python3 proof/referee/referee.py --check-catalog prototypes/showdown/cards.csv`. To check the candidate balance receipt, run `node scripts/billy-balance-gate.mjs --arm candidate`. [Kiro devcontainer guide](https://kiro.dev/docs/ide/remote-development/dev-containers/)
+The [configuration](../../.devcontainer/devcontainer.json) requests the Node 22 Bookworm image, the Python 3.12 feature and an `npm ci` bootstrap. You can also open the repository in Codespaces. In either container, `python3 proof/referee/referee.py --check-catalog prototypes/showdown/cards.csv` checks the Python referee’s catalog and `node scripts/billy-balance-gate.mjs --arm candidate` checks the proposal on its own. [Kiro devcontainer guide](https://kiro.dev/docs/ide/remote-development/dev-containers/)
 
-The [Judge devcontainer workflow](../../.github/workflows/judge-devcontainer.yml) boots this configuration on a fresh Linux runner and checks the runtimes, installed dependencies and both commands. The first boot passed both judges but reported Node 22.16.0, below the repository’s 22.18 minimum. The configuration now tracks the Node 22 Bookworm image, and the workflow checks that minimum inside the running container. [First boot](https://github.com/alejandro-publius/cowboys-vs-wizards/actions/runs/45962495706)
+The first hosted boot reported Node 22.16.0, below the repository’s 22.18 minimum. The corrected boot used Node 22.23.5 and Python 3.12.16, installed the dependencies, returned `catalog OK` from the Python referee and passed the Billy **candidate** gate on the recorded 100,000 duels. Those runs predate the two-arm check. [First boot](https://github.com/alejandro-publius/cowboys-vs-wizards/actions/runs/45962495706) · [Corrected boot](https://github.com/alejandro-publius/cowboys-vs-wizards/actions/runs/45963132065)
 
-The corrected container booted with Node 22.23.5 and Python 3.12.16. Its bootstrap installed the project dependencies, the Python referee reported `catalog OK`, and the balance gate reproduced the result from 100,000 recorded duels. [Verified container run](https://github.com/alejandro-publius/cowboys-vs-wizards/actions/runs/45963132065)
+### Reproduce workbook G04
+
+Start Docker and open a fresh clone at the revision under review. From its root, record the host checkout SHA and run the project's image with the same CLI version as CI.
+
+```sh
+judge_sha=$(git rev-parse --verify 'HEAD^{commit}')
+npx --yes --package=@devcontainers/cli@0.90.0 -- devcontainer up --workspace-folder .
+npx --yes --package=@devcontainers/cli@0.90.0 -- devcontainer exec --workspace-folder . node .devcontainer/judge-billy.mjs "$judge_sha"
+```
+
+The [judge](../../.devcontainer/judge-billy.mjs) checks the mounted checkout and re-derives the recorded results from the [frozen protocol and outcomes](billy-seat-audit/README.md#integrity). It prints the build and engine SHAs, both commands, their exits and up to 4 KiB per output stream. At attack 2 the historical baseline must exit **2** with NSB-1 red (59.792% Cowboy wins) and NSB-2 passing. At attack 1 the proposal must exit **0** with both rules passing (51.920% Cowboy wins). The recorded games use engine `eedab9385931e093e156fdb7885c470eb2ec64eb`. Rechecking these receipts runs no new duels.
+
+Codex CLI verified both exits and transcripts on macOS arm64 with Node 26.0.0 in a clean shallow clone of PR #244 plus this change. The baseline emitted 533 bytes on stdout and 169 on stderr. The proposal emitted 617 bytes on stdout and zero on stderr. The worker lacked access to the Docker socket.
+
+For hosted evidence, open the PR’s **Checks → Judge devcontainer → boot** job for the revision under review. Save its run URL and download the log archive from the run’s menu. The [workflow](../../.github/workflows/judge-devcontainer.yml) checks Linux, Node, Python, installed dependencies and the Python catalog before invoking the judge in the same container. On pull requests its build SHA identifies GitHub’s tested merge commit.
+
+For the interactive G04 trial, open the fresh clone in Kiro IDE, choose **Dev Containers: Reopen in Container** and wait for `npm ci`. In the container terminal type `node .devcontainer/judge-billy.mjs`, append the full SHA recorded before reopening, and run it. Retain the IDE container indicator, terminal transcript and build SHA for that trial. A hosted run supplies the CI evidence only.
 
 To use the forwarded ports, run `node scripts/night-shift-saloon.mjs` for the loopback witness on 4179. For the playable site on 8080, run `node scripts/stage-pages.mjs --commit "$(git rev-parse HEAD)"` and then `python3 -m http.server 8080 --bind 127.0.0.1 --directory dist/web`.
 
