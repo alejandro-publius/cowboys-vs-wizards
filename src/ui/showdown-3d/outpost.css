@@ -77,6 +77,12 @@ body:has(.camp-outpost[open], .builder-inspect[open]) {
   grid-template-columns: repeat(2, minmax(0, 220px));
   justify-content: center;
 }
+.outpost-wanted .bounty-scout {
+  background: #18273a;
+  border-color: var(--frontier-brass);
+  box-shadow: 0 3px #101a29;
+}
+.outpost-wanted .bounty-scout h3 { color: var(--frontier-brass); }
 #showdown-camp .outpost-stone .sd-tile {
   position: relative;
   display: flex;

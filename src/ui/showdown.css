@@ -76,6 +76,10 @@
 @media (prefers-reduced-motion: reduce) { #showdown .sd-cue { animation: none; } }
 /* Slice 3: Camp rows for rivals and Wanted, the deck builder and the two-player curtain, as in prototypes/showdown/style.css. */
 #camp-rivals, #camp-bounties { list-style: none; margin: 0; padding: 0; }
+.bounty-scout { max-width: 36rem; margin: 1rem auto 0; padding: .85rem 1rem; border-left: 3px solid var(--cowboy); }
+.bounty-scout h3, .bounty-scout p { margin: 0 0 .5rem; }
+.bounty-scout small { display: block; margin-top: .45rem; line-height: 1.4; }
+#builder-reward-note { grid-column: 1 / -1; margin: .25rem 0; line-height: 1.35; }
 #showdown-builder { max-width: 920px; margin: auto; padding: clamp(1rem, 3vw, 2rem); display: grid; gap: .5rem; }
 .sd-build-row { display: grid; grid-template-columns: 10rem repeat(2, auto) 1fr; gap: .75rem; align-items: center; margin-bottom: .5rem; }
 .sd-build-row .sd-card { width: 10rem; }

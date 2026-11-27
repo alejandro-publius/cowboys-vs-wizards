@@ -145,9 +145,11 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
   // best 3 plays a best of three. players 2: two people on one screen, starter decks, nothing saved.
   // seat "wizard" (solo): the human plays the Wizards. Its campaign, if any, comes with this start; without one the
   // Wizard seat settles nothing. The Cowboy seat keeps the mount's campaign unless another is passed.
-  function start(nextDuel, dealSeed, {players: seats = 1, best = 1, seat: side = "cowboy", campaign: own, lesson: rematch = null} = {}) {
+  function start(nextDuel, dealSeed, {players: seats = 1, best = 1, seat: side = "cowboy", campaign: own, lesson: rematch = null, fromWanted = false} = {}) {
     const opener = document.activeElement; // the control that opened this duel, read before the deal
     [duel, players, seat] = [nextDuel, seats, seats === 1 ? side : "cowboy"];
+    $("sd-home").toggleAttribute("data-return-wanted", fromWanted);
+    $("sd-home").textContent = fromWanted ? "Back to Wanted" : "Back to camp";
     lesson = rematch && seats === 1 && seat === "cowboy" && best === 1 ? rematch : null;
     camp = lesson || duel.kind === "even-fight" ? null : own ?? (seat === "cowboy" ? campaign : null);
     const progress = solo() ? camp?.progress() : null;
@@ -363,13 +365,15 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     const again = (label ? `<button type="button" id="sd-again">${label}</button>` : "") + review;
     if (!outcome.earned) {
       const notice = outcome.conflict ? `<p role="status">${outcome.conflict} This duel did not change your career.</p>` : "";
-      return `${notice}<div class="sd-row">${again}<button type="button" id="sd-camp">Back to camp</button></div>`;
+      return `${notice}<div class="sd-row">${again}<button type="button" id="sd-camp">${$("sd-home").hasAttribute("data-return-wanted") ? "Back to Wanted" : "Back to camp"}</button></div>`;
     }
     const {won, earned, intoDeck, grit} = outcome;
     const offer = camp.progress().offer;
     const build = picked && camp === campaign && onBuildReward ? rewardDeckButton(picked) : "";
     return [
-      earned.captured ? `<h2>Captured</h2><div class="sd-row"><div class="sd-card ${TYPES[earned.captured].side} ${TYPES[earned.captured].rarity}" data-frame="${TYPES[earned.captured].kind}">${face(earned.captured)}</div></div>` : "",
+      earned.captured ? `<h2>Captured</h2><div class="sd-row"><div class="sd-card ${TYPES[earned.captured].side} ${TYPES[earned.captured].rarity}" data-frame="${TYPES[earned.captured].kind}" data-face="${earned.captured}">${face(earned.captured)}</div></div>
+        <p class="sd-good">${TYPES[earned.captured].name} joined your collection on the fifth win.</p>
+        ${camp === campaign && onBuildReward ? `<button type="button" data-build-capture>Build with ${TYPES[earned.captured].name}</button>` : ""}` : "",
       earned.cards.length ? `<h2>New in your collection</h2><p class="sd-good">You earned ${pays(earned.cards)}.</p>` : "",
       intoDeck.length ? `<p class="sd-note">In your deck now: ${intoDeck.map(([type, copies, replaced]) => `${TYPES[type].name} ×${copies} in place of ${TYPES[replaced].name} ×${copies}`).join(", ")}.</p>` : "",
       earned.packs ? `<p class="sd-good">You earned ${plural(earned.packs, "pack")}. Open ${earned.packs > 1 ? "them" : "it"} in camp.</p>` : "",
@@ -640,9 +644,11 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
       if (camp === campaign) writeCamp(claim);
       else claim();
     }
-    else if (b.hasAttribute("data-build-reward") && picked && camp === campaign && onBuildReward) {
+    else if ((b.hasAttribute("data-build-reward") || b.hasAttribute("data-build-capture")) && camp === campaign && onBuildReward) {
+      const reward = b.hasAttribute("data-build-capture") ? outcome?.earned?.captured : picked;
+      if (!reward) return;
       cues.clear(); boardPresentation?.clear();
-      onBuildReward(picked);
+      onBuildReward(reward);
     }
     else if (b.id === "sd-again" && outcome) again();
     else if (b.id === "sd-review" && outcome && setup) {
