@@ -137,3 +137,36 @@ dialog.outpost-saloon .saloon-table-rail :is(button,a) {
   .saloon-booth > [data-saloon-page="home"] { padding-block: 1px; }
 }
 
+#showdown-camp .outpost-saloon .character-book .book-index h2 {
+  color: var(--ink);
+  font: 800 clamp(1.4rem, 3vw, 2.25rem)/1.05 var(--book-serif);
+  text-shadow: 0 1px #ffebbc;
+}
+#showdown-camp .outpost-saloon .book-details > summary { color: #583e25; text-shadow: none; }
+#showdown-camp .outpost-saloon .book-details > summary::marker { color: #71512c; }
+.character-book .book-entry:not(:has(.book-details[open])) > h3 {
+  position: absolute; inline-size: 1px; block-size: 1px;
+  margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+.saloon-billy-table :is([data-shot-card], [data-reply], .saloon-horseman) {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #3a2929;
+}
+.saloon-billy-table :is([data-shot-card], [data-reply], .saloon-horseman) > .sd-card-art {
+  position: absolute; inset: 0; z-index: -2;
+  height: 100%; width: 100%; aspect-ratio: auto; margin: 0;
+}
+.saloon-billy-table :is([data-shot-card], [data-reply], .saloon-horseman)::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(0deg, #1e1417ed, #1e141760 34%, transparent 62%);
+}
+.saloon-booth [data-saloon-page="forge"]:has(.forge-extras[open]),
+.saloon-booth [data-saloon-page="table"]:has(.saloon-bot-finish[open]) { overflow: auto; }
+@media (max-width: 610px) {
+  #showdown-camp .outpost-saloon .character-book .book-index h2 { font-size: 1.35rem; }
+  .character-book .book-moves button { font-size: .78rem; }
+}
+
+

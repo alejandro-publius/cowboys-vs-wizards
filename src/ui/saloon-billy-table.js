@@ -54,7 +54,7 @@ export function takeBillyShot(table, line) {
   return {targetLeft: hit.targetLeft, ...finish(engine, state, table.botLevel), choice};
 }
 
-export function mountBillyTable(root, table) {
+export function mountBillyTable(root, table, portrait) {
   if (!table) return;
   const {attackerId, baseline, candidate, targetOrbsBefore} = BILLY_REPLAY;
   const printed = cardOf(attackerId).attack === baseline.attack ? "Current" : "Recorded";
@@ -85,6 +85,14 @@ export function mountBillyTable(root, table) {
     <details class="saloon-bot-finish" hidden>
       <summary>Bot replay report</summary><p></p>
     </details>`;
+  for (const [selector, type] of [
+    ['[data-shot-card="billy"], [data-reply="cover"]', "cowboy-billy"],
+    ['[data-shot-card="wall"]', "wizard-bone-wall"],
+    ['.saloon-horseman, [data-reply="attack"]', "wizard-headless-horseman"],
+  ]) for (const slot of root.querySelectorAll(selector)) {
+    const face = portrait?.(type);
+    if (face) slot.prepend(face);
+  }
   const wallCard = root.querySelector('[data-shot-card="wall"]');
   const tokens = root.querySelector(".saloon-life");
   for (let i = 0; i < targetOrbsBefore; i++) tokens.append(document.createElement("i"));

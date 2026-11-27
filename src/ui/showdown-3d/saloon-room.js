@@ -17,7 +17,7 @@ const stations = {
   arena: "Agent arena",
   poker: "Boot Hill Poker",
 };
-const readers = {forge: mountForgeShelf, ruling: mountScoutRuling, rules: mountRulesDesk, arena: mountArenaTable};
+const readers = {forge: host => mountForgeShelf(host, {portrait: cardArtwork}), ruling: mountScoutRuling, rules: mountRulesDesk, arena: mountArenaTable};
 const archived = ["shift", "ruling", "rules", "arena"];
 const button = (page, label = stations[page]) => `<button type="button" data-saloon-show="${page}">${label}</button>`;
 

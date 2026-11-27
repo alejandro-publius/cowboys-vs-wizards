@@ -150,17 +150,7 @@ function saveRequest(doc, text) {
   }
 }
 
-// The illustrated build embeds the Field Guide paintings for offline use.
-function cardPainting(id) {
-  const src = typeof __CVW_BOOK_ART__ !== "undefined" && __CVW_BOOK_ART__[id];
-  if (!src) return null;
-  const image = document.createElement("img");
-  image.alt = "";
-  image.src = src;
-  return image;
-}
-
-export function mountForgeShelf(host, {showcase = SHOWCASE, portrait = cardPainting} = {}) {
+export function mountForgeShelf(host, {showcase = SHOWCASE, portrait} = {}) {
   if (!host || typeof host.querySelector !== "function") return null;
   const view = forgeView(showcase);
   host.classList?.add("forge-shelf");

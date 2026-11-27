@@ -468,7 +468,7 @@ export function mountNightShiftSaloon({content, recording, portrait = () => null
   content.innerHTML = ROOM_HTML;
   const q = (selector) => content.querySelector(selector);
   const billyTable = q(".saloon-billy-table");
-  if (mode !== "live" && typeof __CVW_BILLY_TABLE__ !== "undefined") mountBillyTable(billyTable, __CVW_BILLY_TABLE__);
+  if (mode !== "live" && typeof __CVW_BILLY_TABLE__ !== "undefined") mountBillyTable(billyTable, __CVW_BILLY_TABLE__, portrait);
   // "Replay the repair": a recorded field trial, separate from the shift feed and the stage.
   // Hidden when no fresh check and witness are recorded; `fieldTrial` defaults to FIELD_TRIAL.
   const repair = mountRepairReplay(q(".saloon-repair"), {trial: fieldTrial, portrait});
