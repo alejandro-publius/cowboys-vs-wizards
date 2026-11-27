@@ -380,6 +380,40 @@
   color: #fff0cc;
   padding-inline: 1px;
 }
+.sd-diorama #sd-hand .sd-card-art {
+  position: relative;
+}
+.sd-diorama #sd-hand .sd-card-art .table-card-kind {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 1px 3px;
+  border-radius: 0 2px 0 0;
+  background: var(--ink);
+  color: #fff0cc;
+  font: 650 clamp(8px, 0.65vw, 10px)/1.1 system-ui, sans-serif;
+  letter-spacing: normal;
+}
+.sd-diorama #sd-hand .table-card-copy {
+  font-size: clamp(8px, 0.72vw, 11px);
+}
+.sd-diorama #sd-hand .table-card-rule {
+  display: block;
+  overflow: visible;
+}
+.table-hand-rules summary {
+  cursor: pointer;
+  padding-block: .65rem;
+}
+.sd-zone-rail [data-zone="hand-count"]:has(.table-hand-rules[open]) {
+  grid-column: 1 / -1;
+}
+.table-hand-rules p {
+  margin: 0 0 .65rem;
+}
+.table-hand-rules strong {
+  display: block;
+}
 
 .table-turn,
 .table-series,

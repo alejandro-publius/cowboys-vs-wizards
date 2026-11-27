@@ -12,7 +12,23 @@ const el = (tag, cls, word) => {
   if (word) node.textContent = word;
   return node;
 };
-function paintedFace(type) {
+// Antigravity PR #242's short hand cues, with the target, unit and current cover rule spelled out.
+function handEffect(card, evenFight) {
+  const effect = EFFECTS[card.effect];
+  if (card.kind === "gear") return effect.attack ? `Carrier +${effect.attack} ATK` : `Carrier +${effect.orbs} orbs`;
+  if (card.kind === "location") return `All ${effect.tag} troops +1 ATK`;
+  const enemy = evenFight ? "uncovered enemy troop" : "enemy troop";
+  switch (card.effect) {
+    case "shot": return `1 ${enemy} −1 orb`;
+    case "tie": return `Stun 1 ${enemy}`;
+    case "hellfire": return `Each ${enemy} −1 orb`;
+    case "snare": return "Enemy attacker −2 orbs first";
+    case "hex": return "Cancel enemy attack";
+    default: return effect.text;
+  }
+}
+
+export function paintedFace(type, inHand, evenFight) {
   const card = TYPES[type];
   const face = el("span", "table-card-face");
   face.setAttribute("aria-hidden", "true");
@@ -20,22 +36,20 @@ function paintedFace(type) {
   const artwork = cardArtwork(type);
   const notes = el("span", "table-card-copy");
   const kind = card.kind[0].toUpperCase() + card.kind.slice(1);
-  const category = el("span", "table-card-kind", icons[card.kind] + " " + kind);
+  const category = el("span", "table-card-kind", inHand ? (card.tag ?? kind) : icons[card.kind] + " " + kind);
+  if (inHand && artwork) artwork.append(category);
+  else notes.append(category);
   if (card.kind === "troop") {
     const stats = el("span", "table-card-stats");
-    stats.append(el("span", "", card.attack + " ATK"), el("span", "", card.health + " ●"));
-    const cost = tributes(type + "-1");
-    notes.append(category, stats);
-    if (cost || card.keys?.length)
-      notes.append(
-        el(
-          "span",
-          "table-card-rule",
-          [...(card.keys ?? []).map((key) => KEYWORDS[key][0]), ...(cost ? [cost + " tribute"] : [])].join(" · "),
-        ),
-      );
+    const health = inHand ? `${card.health} orb${card.health === 1 ? "" : "s"}` : card.health + " ●";
+    stats.append(el("span", "", card.attack + " ATK"), el("span", "", health));
+    const cost = tributes(type);
+    notes.append(stats);
+    const labels = (card.keys ?? []).map((key) => KEYWORDS[key][0]);
+    if (cost) labels.push(`${cost} tribute${inHand && cost > 1 ? "s" : ""}`);
+    if (labels.length) notes.append(el("span", "table-card-rule", labels.join(" · ")));
   } else {
-    notes.append(category, el("span", "table-card-rule", EFFECTS[card.effect].text));
+    notes.append(el("span", "table-card-rule", inHand ? handEffect(card, evenFight) : EFFECTS[card.effect].text));
   }
   face.append(title);
   if (artwork) face.append(artwork);
@@ -43,13 +57,21 @@ function paintedFace(type) {
   return face;
 }
 
-export function paintCardFaces(root, selector) {
+export function paintCardFaces(root, selector, evenFight = false) {
   for (const card of root.querySelectorAll(selector)) {
     if (card.querySelector(".table-card-face")) continue;
     const type = card.dataset.face ?? card.dataset.choose ?? card.dataset.opened ?? typeOf(card.dataset.card);
+    const inHand = card.dataset.card !== undefined;
     const original = el("span", "table-card-original");
     original.append(...card.childNodes);
-    card.append(original, paintedFace(type));
+    if (inHand) {
+      for (const key of original.querySelectorAll(".sd-key[title]")) key.append(". " + key.title);
+      const effect = EFFECTS[TYPES[type].effect];
+      if (effect?.target) original.append(el("span", "sd-note", evenFight
+        ? "Cannot target Ghostly troops or troops in cover." : "Cannot target Ghostly troops."));
+      if (TYPES[type].kind === "location") original.append(el("span", "sd-note", "Applies to both sides."));
+    }
+    card.append(original, paintedFace(type, inHand, evenFight));
     card.classList.add("table-card-painted");
     card.classList.toggle("table-captured", type.startsWith("cowboy-captured-"));
     card.title = original.textContent.replace(/\s+/g, " ").trim();
@@ -86,8 +108,22 @@ export function bindTableUI(root) {
       const ended = Boolean(view.result);
       table.classList.toggle("table-resolved", ended);
       root.classList.toggle("table-resolved", ended);
-      paintCardFaces(root, "#sd-hand [data-card], #sd-result [data-choose], #sd-result [data-face]");
+      paintCardFaces(root, "#sd-hand [data-card], #sd-result [data-choose], #sd-result [data-face]", view.evenFight);
       const handCards = [...hand.querySelectorAll("[data-card]")];
+      // The public zone rail is rebuilt per seat. Only the viewing player's hand count opens its rules.
+      const handZone = root.querySelector(`[data-zone-side="${view.viewer}"] [data-zone="hand-count"]`);
+      if (!ended && handCards.length && handZone && !handZone.querySelector("details")) {
+        const details = el("details", "table-hand-rules");
+        const summary = el("summary");
+        summary.append(...handZone.childNodes, " · Rules");
+        details.append(summary);
+        for (const button of handCards) {
+          const rule = el("p");
+          rule.append(...button.querySelector(".table-card-original").cloneNode(true).childNodes);
+          details.append(rule);
+        }
+        handZone.append(details);
+      }
       handCards.forEach((button, i) => {
         const fan = i - (handCards.length - 1) / 2;
         button.style.setProperty("--fan", fan * 2.1 + "deg");
