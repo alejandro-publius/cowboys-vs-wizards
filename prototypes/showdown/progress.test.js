@@ -99,6 +99,19 @@ test("the Trail's end pays a pack and opens the rivals in order, the bounties an
   assert.deepEqual(again.save.rivals, ["stargazer"]);
 });
 
+test("CARD-WIZARD-LANTERN-WRAITH-04 CARD-WIZARD-LANTERN-WRAITH-05 CARD-WIZARD-LANTERN-WRAITH-06 CARD-WIZARD-LANTERN-WRAITH-11: the first Wanted poster supplies the Wraith, escort and lesson", () => {
+  const bounty = BOUNTIES[0];
+  assert.equal(bounty.id, "lantern-wraith");
+  assert.equal(bounty.boss, "wizard-lantern-wraith");
+  assert.equal(bounty.entrance, "board");
+  assert.deepEqual(bounty.hunts.map((h) => [h.orbs, h.level, h.base]), [[4, 1, 4], [5, 1, 4], [6, 1.5, 4], [7, 1.5, 4], [8, 2, 4]]);
+  assert.deepEqual(bounty.deck, {"wizard-skeleton": 6, "wizard-jack-o-lantern": 3, "wizard-raven-familiar": 2, "wizard-bone-wall": 2, "wizard-singularity": 2, "wizard-hex": 1});
+  const duel = duelFor(saveAt({hunts: {"lantern-wraith": 4}}), "hunt:lantern-wraith");
+  assert.equal(duel.lesson, "Wanted: the Lantern Wraith. It stands on the board from the start, and spells cannot touch it.");
+  assert.equal(duel.options.first, "cowboy");
+  assert.equal(duel.options.baseOrbs.wizard, 4);
+});
+
 test("a bounty: five hunts, each harder, and the fifth win captures the boss's card", () => {
   let save = saveAt();
   const orbs = [];

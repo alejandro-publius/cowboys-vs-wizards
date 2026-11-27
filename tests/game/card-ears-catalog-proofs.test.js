@@ -478,7 +478,8 @@ test("CARD-COWBOY-DYNAMITER-01 CARD-COWBOY-DYNAMITER-02 CARD-COWBOY-DYNAMITER-03
     assert.equal(cast.events.some((e) => e.type === "laststand"), false);
   }
   const dragSweep = applyAction(stage({active: "wizard", own: [troop("wizard-dragon", 1, {health: 5})], foe: [troop("cowboy-sheriff", 1, {health: 3}), troop("cowboy-dynamiter", 2, {health: 1}), null]}), {type: "attack", slot: 0, target: 0});
-  assert.equal(dragSweep.state.sides.cowboy.board[1], null);
+  assert.deepEqual(dragSweep.state.sides.cowboy.discard, ["cowboy-sheriff-1", "cowboy-dynamiter-2"]);
+  assert.deepEqual(dragSweep.state.sides.cowboy.board, [null, null, null]);
   assert.equal(dragSweep.events.some((e) => e.type === "laststand"), false);
   assert.equal(dragSweep.state.sides.wizard.board[0].health, 5);
 
@@ -1011,28 +1012,15 @@ test("CARD-WIZARD-HEADLESS-HORSEMAN-01 CARD-WIZARD-HEADLESS-HORSEMAN-02 CARD-WIZ
   assert.equal(bearTrap.state.sides.cowboy.base, 4);
 });
 
-test("CARD-WIZARD-LANTERN-WRAITH-01 CARD-WIZARD-LANTERN-WRAITH-03 CARD-WIZARD-LANTERN-WRAITH-04 CARD-WIZARD-LANTERN-WRAITH-05 CARD-WIZARD-LANTERN-WRAITH-06 CARD-WIZARD-LANTERN-WRAITH-07 CARD-WIZARD-LANTERN-WRAITH-08 CARD-WIZARD-LANTERN-WRAITH-09 CARD-WIZARD-LANTERN-WRAITH-10 CARD-WIZARD-LANTERN-WRAITH-11 CARD-WIZARD-LANTERN-WRAITH-12 CARD-WIZARD-LANTERN-WRAITH-13 CARD-WIZARD-LANTERN-WRAITH-14 CARD-WIZARD-LANTERN-WRAITH-15: Lantern Wraith engine and bounty specification", () => {
+test("CARD-WIZARD-LANTERN-WRAITH-01 CARD-WIZARD-LANTERN-WRAITH-03 CARD-WIZARD-LANTERN-WRAITH-07 CARD-WIZARD-LANTERN-WRAITH-08 CARD-WIZARD-LANTERN-WRAITH-09 CARD-WIZARD-LANTERN-WRAITH-10 CARD-WIZARD-LANTERN-WRAITH-12 CARD-WIZARD-LANTERN-WRAITH-13 CARD-WIZARD-LANTERN-WRAITH-14 CARD-WIZARD-LANTERN-WRAITH-15: Lantern Wraith engine and bounty specification", () => {
   assert.deepEqual(TYPES["wizard-lantern-wraith"], {
     side: "wizard", name: "Lantern Wraith", kind: "troop", stars: 6, attack: 2, health: 4,
     bounty: true, keys: ["ghostly"], rarity: "legendary", tag: "Undead",
   });
-  const lwSpec = CARD_SPECS.find((s) => s.type === "wizard-lantern-wraith");
-  assert.equal(lwSpec.kind, "troop");
-  assert.equal(lwSpec.bounty, true);
-  assert.equal(lwSpec.copies, 0);
-  assert.equal("limit" in lwSpec, false);
   assertWizardDecks("wizard-lantern-wraith", {});
-  const bounty = BOUNTIES.find((b) => b.id === "lantern-wraith");
-  assert.equal("wizard-lantern-wraith" in bounty.deck, false);
-  assert.equal(bounty.boss, "wizard-lantern-wraith");
-  assert.equal(bounty.entrance, "board");
-  assert.deepEqual(bounty.hunts.map((h) => [h.orbs, h.level, h.base]), [[4, 1, 4], [5, 1, 4], [6, 1.5, 4], [7, 1.5, 4], [8, 2, 4]]);
-  assert.deepEqual(bounty.deck, {"wizard-skeleton": 6, "wizard-jack-o-lantern": 3, "wizard-raven-familiar": 2, "wizard-bone-wall": 2, "wizard-singularity": 2, "wizard-hex": 1});
 
   const s = trailClearedSave();
   const d5 = duelFor({...s, hunts: {"lantern-wraith": 4}}, "hunt:lantern-wraith");
-  assert.equal(d5.lesson, "Wanted: the Lantern Wraith. It stands on the board from the start, and spells cannot touch it.");
-  assert.equal(d5.options.first, "cowboy");
   const game = createShowdown(1, d5.options);
   assert.equal(game.sides.wizard.board[0].cardId, "wizard-lantern-wraith-0");
   assert.equal(game.sides.wizard.board[0].health, 8);
@@ -1045,6 +1033,9 @@ test("CARD-WIZARD-LANTERN-WRAITH-01 CARD-WIZARD-LANTERN-WRAITH-03 CARD-WIZARD-LA
   ]);
   assert.deepEqual(legalActions(vsWraith).filter((a) => a.type === "attack").map((a) => a.target), [0, 1]);
   const swept = applyAction(vsWraith, {type: "attack", slot: 0, target: 1});
+  assert.deepEqual(swept.events.map((e) => [e.type, e.cardId, e.target ?? e.count]), [
+    ["attack", "cowboy-gatling-crew-1", "wizard-skeleton-2"], ["sweep", "cowboy-gatling-crew-1", 1],
+  ]);
   assert.equal(swept.state.sides.wizard.board[0].health, 3);
 
   const trapped = applyAction(stage({active: "wizard", own: [troop("wizard-lantern-wraith", 1, {health: 4})], foe: [], traps: {cowboy: ["cowboy-bear-trap-1"]}}), {type: "attack", slot: 0, target: "base"});
@@ -1069,11 +1060,16 @@ test("CARD-WIZARD-DRAGON-01 CARD-WIZARD-DRAGON-02 CARD-WIZARD-DRAGON-03 CARD-WIZ
   assert.equal("copies" in SHOWDOWN_SPECS.find((s) => s.type === "wizard-dragon"), false);
   assertWizardDecks("wizard-dragon", {even: 1, "dragons-roost": 1, coven: 1});
 
-  assert.equal(legalActions(stage({active: "wizard", own: [troop("wizard-skeleton", 1)], hand: ["wizard-dragon-1"]})).some((a) => a.type === "summon"), false);
-  const three = stage({active: "wizard", own: [troop("wizard-skeleton", 1), troop("wizard-skeleton", 2), troop("wizard-skeleton", 3)], hand: ["wizard-dragon-1"]});
+  for (const own of [[], [troop("wizard-skeleton")]]) {
+    const short = stage({active: "wizard", own, hand: ["wizard-dragon-1"]});
+    assert.ok(legalActions(short).every((a) => a.type !== "summon"));
+  }
+  const three = stage({active: "wizard", own: [troop("wizard-skeleton", 1), troop("wizard-skeleton", 2), troop("wizard-skeleton", 3)], foe: [troop("cowboy-sheriff")], hand: ["wizard-dragon-1"]});
   assert.deepEqual(legalActions(three).filter((a) => a.type === "summon").map((a) => a.tributes), [[0, 1], [0, 2], [1, 2]]);
   const sum = applyAction(three, {type: "summon", cardId: "wizard-dragon-1", tributes: [0, 1]}).state;
   assert.equal(canAttack(sum, sum.sides.wizard.board[0]), true);
+  assert.equal(sum.sides.wizard.board[0].cardId, "wizard-dragon-1");
+  assert.ok(legalActions(sum).some((a) => a.type === "attack" && a.slot === 0 && a.target === 0));
 
   // Sweep mechanics (08..19)
   const swBoard = stage({
@@ -1093,9 +1089,11 @@ test("CARD-WIZARD-DRAGON-01 CARD-WIZARD-DRAGON-02 CARD-WIZARD-DRAGON-03 CARD-WIZ
   const swEv = swRes.events[1];
   assert.equal(swEv.count, 2);
   assert.equal(presentEvent(swEv), "Sweep: Dragon also hit 2 other troops for 1.");
-  assert.equal(presentEvent({type: "sweep", side: "wizard", cardId: "wizard-dragon-1", count: 1}), "Sweep: Dragon also hit 1 other troop for 1.");
 
-  assert.equal(applyAction(stage({active: "wizard", own: [troop("wizard-dragon", 1)], foe: []}), {type: "attack", slot: 0, target: "base"}).events.some((e) => e.type === "sweep"), false);
+  const openBase = stage({active: "wizard", own: [troop("wizard-dragon")], bases: {cowboy: 5}});
+  const baseStrike = applyAction(openBase, {type: "attack", slot: 0, target: "base"});
+  assert.deepEqual(baseStrike.events.map((e) => [e.type, e.target, e.baseDamage]), [["attack", "base", 3]]);
+  assert.equal(baseStrike.state.sides.cowboy.base, 2);
   const dieDrag = applyAction(stage({active: "wizard", own: [troop("wizard-dragon", 1, {health: 2})], foe: [troop("cowboy-gatling-crew", 1, {health: 4}), troop("cowboy-sheriff", 2, {health: 2}), null]}), {type: "attack", slot: 0, target: 0});
   assert.equal(dieDrag.state.sides.wizard.board[0], null);
   assert.equal(dieDrag.state.sides.cowboy.board[1].health, 1);
@@ -1113,17 +1111,24 @@ test("CARD-WIZARD-DRAGON-01 CARD-WIZARD-DRAGON-02 CARD-WIZARD-DRAGON-03 CARD-WIZ
   assert.deepEqual(trapKill.state.sides.cowboy.board.map((t) => t?.health ?? null), [3, 3, null]);
 
   const trapLive = applyAction(stage({active: "wizard", own: [troop("wizard-dragon", 1, {health: 5})], foe: [troop("cowboy-sheriff", 1), troop("cowboy-sheriff", 2), null], traps: {cowboy: ["cowboy-bear-trap-1"]}}), {type: "attack", slot: 0, target: 0});
-  assert.deepEqual(trapLive.events.map((e) => e.type), ["trap", "attack", "sweep"]);
+  assert.deepEqual(trapLive.events, [
+    {type: "trap", side: "cowboy", cardId: "cowboy-bear-trap-1", target: "wizard-dragon-1", left: 3, stopped: false},
+    {type: "attack", side: "wizard", cardId: "wizard-dragon-1", target: "cowboy-sheriff-1", covered: false,
+      hitBack: 0, baseDamage: 0, targetLeft: 0, attackerLeft: 3},
+    {type: "sweep", side: "wizard", cardId: "wizard-dragon-1", count: 1},
+  ]);
   assert.equal(trapLive.state.sides.wizard.board[0].health, 3);
   assert.deepEqual(trapLive.state.sides.cowboy.board.map((t) => t?.health ?? null), [null, 2, null]);
 
   // Bounty mechanics (22..34)
-  const bounty = BOUNTIES.find((b) => b.id === "graveyard-dragon");
+  const bounty = BOUNTIES[1];
+  assert.equal(bounty.id, "graveyard-dragon");
   assert.equal(bounty.boss, "wizard-dragon");
   assert.equal(bounty.entrance, "lands");
   assert.equal(bounty.lands, 4);
   assert.deepEqual(bounty.hunts.map((h) => [h.orbs, h.level, h.base]), [[2, 1, 4], [3, 1, 4], [3, 1.5, 4], [4, 1.5, 4], [4, 2, 4]]);
   assert.deepEqual(bounty.deck, {"wizard-skeleton": 9, "wizard-raven-familiar": 2, "wizard-jack-o-lantern": 2, "wizard-wizard": 2, "wizard-singularity": 1});
+  assert.ok(Object.keys(bounty.deck).every((type) => !TYPES[type].keys?.includes("guard")));
 
   const s = trailClearedSave();
   const d1 = duelFor(s, "hunt:graveyard-dragon");
@@ -1158,7 +1163,11 @@ test("CARD-WIZARD-DRAGON-01 CARD-WIZARD-DRAGON-02 CARD-WIZARD-DRAGON-03 CARD-WIZ
   assert.equal(landed.state.sides.wizard.board[0].cardId, "wizard-dragon-0");
   assert.equal(landed.state.sides.wizard.board[0].health, 2);
   assert.equal(canAttack(landed.state, landed.state.sides.wizard.board[0]), false);
-  assert.deepEqual(landed.events.map((e) => e.type), ["turn", "summon", "draw"]);
+  assert.deepEqual(landed.events, [
+    {type: "turn", side: "wizard", turn: 4},
+    {type: "summon", side: "wizard", cardId: "wizard-dragon-0"},
+    {type: "draw", side: "wizard"},
+  ]);
   const regularDraw = applyAction({...g, arrivals: []}, {type: "end"}).state.sides.wizard;
   assert.deepEqual(landed.state.sides.wizard.hand, regularDraw.hand);
   assert.deepEqual(landed.state.sides.wizard.deck, regularDraw.deck);
@@ -1166,6 +1175,11 @@ test("CARD-WIZARD-DRAGON-01 CARD-WIZARD-DRAGON-02 CARD-WIZARD-DRAGON-03 CARD-WIZ
   assert.equal(landed.state.castUsed, false);
   assert.equal(landed.state.setUsed, false);
   assert.equal(presentEvent(landed.events.find((e) => e.type === "summon")), "The Wizards' Dragon arrived.");
+  landed.state.sides.wizard.hand = ["wizard-skeleton-1", "wizard-wizard-1"];
+  assert.deepEqual(legalActions(landed.state).filter((a) => a.type === "summon"), [
+    {type: "summon", cardId: "wizard-skeleton-1", tributes: []},
+    {type: "summon", cardId: "wizard-wizard-1", tributes: [0]},
+  ]);
 
   // Next Wizard turn: landed boss acts as ordinary Dragon with Sweep
   const wizNext = applyAction(applyAction(landed.state, {type: "end"}).state, {type: "end"}).state;
@@ -1185,7 +1199,9 @@ test("CARD-WIZARD-DRAGON-01 CARD-WIZARD-DRAGON-02 CARD-WIZARD-DRAGON-03 CARD-WIZ
     assert.equal(hunt.name, `The Graveyard Dragon, hunt ${i} of 5`);
     assert.equal(hunt.level, [1, 1, 1.5, 1.5, 2][i - 1]);
     assert.equal(hunt.options.arrivals.wizard[0].health, [2, 3, 3, 4, 4][i - 1]);
-    prog = settle(prog, "hunt:graveyard-dragon", true).save;
+    const win = settle(prog, "hunt:graveyard-dragon", true);
+    assert.equal(win.earned.captured, i === 5 ? "cowboy-captured-dragon" : null);
+    prog = win.save;
     if (prog.offer) prog = choose(prog, prog.offer[0]);
     assert.equal(prog.hunts["graveyard-dragon"], i);
   }

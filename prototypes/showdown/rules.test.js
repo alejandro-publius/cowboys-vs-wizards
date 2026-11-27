@@ -6,6 +6,7 @@ import {cardsCsv} from "./export-cards.mjs";
 import {FRAMES, FRAME_BASE, FRAMING, LOOK, MODEL_ORDER, PLACES, STYLE} from "./art.js";
 import {artDirection} from "./export-art.mjs";
 import {HAND_CAP, OPENING_HAND, applyAction, attackOf, attackOutcome, canAttack, createShowdown, legalActions, playTurn} from "../../src/game/showdown/rules.js";
+import {presentEvent} from "../../src/game/showdown/presenter.js";
 
 const troop = (type, health = TYPES[type].health, extra = {}) => ({cardId: `${type}-1`, health, attacked: false, stunned: false, cover: false, gear: [], arrived: 0, ...extra});
 // Turn 4, Cowboy to act, nothing spent, boards as given, empty hands.
@@ -94,6 +95,13 @@ test("Guard: enemies must attack it first, and a rider cannot pass it", () => {
   assert.deepEqual(attacks(state), ["0>1", "1>1"]);
 });
 
+test("CARD-WIZARD-LANTERN-WRAITH-13: Billy can attack the lone Wraith until a Bone Wall guards it", () => {
+  const state = position([troop("cowboy-billy")], [troop("wizard-lantern-wraith")]);
+  assert.deepEqual(attacks(state), ["0>0"]);
+  state.sides.wizard.board[1] = troop("wizard-bone-wall");
+  assert.deepEqual(attacks(state), ["0>1"]);
+});
+
 test("Ride: a rider may pass standing troops to strike the Base for one orb", () => {
   const state = position([troop("cowboy-mounted-billy"), troop("cowboy-billy")], [troop("wizard-skeleton")]);
   assert.deepEqual(attacks(state), ["0>0", "0>base", "1>0"]);
@@ -142,6 +150,22 @@ test("Sweep: every other enemy troop loses an orb when it attacks a troop", () =
   const after = act(state, {type: "attack", slot: 0, target: 0});
   assert.deepEqual(after.sides.cowboy.board.map((t) => t && t.health), [null, 3, null]);
   assert.equal(after.sides.cowboy.base, 5);
+});
+
+test("CARD-WIZARD-DRAGON-12 CARD-WIZARD-DRAGON-17 CARD-WIZARD-DRAGON-18: Sweep counts a covered Sheriff and a Ghostly bystander separately in the log", () => {
+  const covered = troop("cowboy-sheriff", 3, {cardId: "cowboy-sheriff-2", cover: true});
+  for (const [bystander, count, health, log] of [
+    [troop("cowboy-captured-wraith"), 2, [null, 2, 1], "Sweep: Dragon also hit 2 other troops for 1."],
+    [null, 1, [null, 2, null], "Sweep: Dragon also hit 1 other troop for 1."],
+  ]) {
+    const state = position([troop("cowboy-sheriff"), covered, bystander], [troop("wizard-dragon")], "wizard");
+    const {events, state: after} = applyAction(state, {type: "attack", slot: 0, target: 0});
+    assert.deepEqual(types(events), ["attack", "sweep"]);
+    assert.equal(events[0].target, "cowboy-sheriff-1");
+    assert.deepEqual(events[1], {type: "sweep", side: "wizard", cardId: "wizard-dragon-1", count});
+    assert.deepEqual(after.sides.cowboy.board.map((t) => t && t.health), health);
+    assert.equal(presentEvent(events[1]), log);
+  }
 });
 
 test("Last Stand: the defeated troop takes an orb off the troop that fought it, attacking or defending", () => {

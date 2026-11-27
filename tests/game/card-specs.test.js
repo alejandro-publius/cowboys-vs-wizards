@@ -26,6 +26,14 @@ test("generated card list matches the JSON specs in deck order", () => {
   assert.deepEqual(CARD_SPECS, SIDES.flatMap(sideSpecs));
 });
 
+test("CARD-WIZARD-LANTERN-WRAITH-02: the synced Wraith is a bounty troop with zero starter copies and no limit field", () => {
+  const wraith = CARD_SPECS.find((spec) => spec.type === "wizard-lantern-wraith");
+  assert.equal(wraith.kind, "troop");
+  assert.equal(wraith.bounty, true);
+  assert.equal(wraith.copies, 0);
+  assert.equal("limit" in wraith, false);
+});
+
 test("registry holds available copies; default decks retain each spec's copies and order", () => {
   const expectedRegistry = [];
   for (const side of SIDES) {
