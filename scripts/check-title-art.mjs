@@ -5,9 +5,14 @@ export async function checkTitleArt() {
     throw new Error(`The opening needs ${page.scrollWidth}×${page.scrollHeight} at ${innerWidth}×${innerHeight}`);
   }
   const scene = document.querySelector("#title-screen .title-scene");
-  const frame = scene.getBoundingClientRect(), heading = scene.querySelector("h1").getBoundingClientRect();
-  if (heading.left < frame.left || heading.right > frame.right || heading.top < frame.top || heading.bottom > frame.bottom) {
-    throw new Error(`The opening clips the title at ${innerWidth}×${innerHeight}`);
+  const frame = scene.getBoundingClientRect();
+  const type = await document.fonts.load('900 1rem "Barlow Condensed"', "SHOWDOWN");
+  if (!type.length) throw new Error("The opening wordmark font is missing");
+  for (const part of scene.querySelectorAll("h1, .title-matchup, .title-showdown")) {
+    const heading = part.getBoundingClientRect();
+    if (heading.left < frame.left || heading.right > frame.right || heading.top < frame.top || heading.bottom > frame.bottom) {
+      throw new Error(`The opening clips ${part.className || part.tagName} at ${innerWidth}×${innerHeight}: ${JSON.stringify(heading)} inside ${JSON.stringify(frame)}`);
+    }
   }
   const images = new Set();
   for (const [selector, pseudo] of [[".opening-stage", "::before"], [".opening-billy"], [".opening-wizard"]]) {

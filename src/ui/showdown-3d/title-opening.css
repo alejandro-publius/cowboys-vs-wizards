@@ -1,4 +1,11 @@
 /* The original title board, Billy's right-hand aiming frame and the Wizard roster cutout. */
+@font-face {
+  font-family: "Barlow Condensed";
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("@@TITLE_FONT@@") format("woff2");
+}
 #title-screen {
   --rim: #856343;
   --paper: #ffe4b3;
@@ -72,7 +79,7 @@
   margin: .045em 0 0;
   transform: skewX(-3deg);
   color: var(--paper);
-  font: 900 clamp(50px, min(12vw, 13.5svh), 126px)/.98 Impact, Haettenschweiler, "Arial Narrow", sans-serif;
+  font: 900 clamp(50px, min(12vw, 13.5svh), 126px)/.98 "Barlow Condensed", Impact, Haettenschweiler, "Arial Narrow", sans-serif;
   letter-spacing: .017em;
   text-shadow: 0 1px #edc284, 0 3px #a56942, 0 5px #754530, 0 7px #33212a, 0 9px 10px #100b15aa;
 }
@@ -227,7 +234,7 @@
 @media (max-width: 600px) and (orientation: portrait) {
   .title-scene { align-content: center; }
   #title-screen h1 { padding-top: 0; }
-  .title-showdown { font-size: clamp(46px, 16vw, 82px); }
+  .title-showdown { font-size: clamp(36px, 14vw, 80px); }
   .opening-stage {
     --table-width: 148%;
     position: relative;
