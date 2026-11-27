@@ -169,17 +169,19 @@ export async function checkWantedCollection({open, click, tap, press, activateBy
     await activateByKey(captureButton);
     await readEntry(reward);
     assert.ok(await visible(build), "the earned Cowboy can be built from its capture");
+    const example = attackExample(reward, "attack");
     if (bounty.id === dragon) {
       assert.equal(await evaluate(`${node(".book-watch")}.innerText`), "Watch Sweep");
-      await click(".book-watch");
-      await wait("document.querySelector('.sd-gallery.book-replay')?.open");
-      const example = attackExample(reward, "attack");
       assert.ok(example.trace[0].events.some(event => event.type === "sweep"));
-      assert.equal(await evaluate("document.querySelector('.sd-attack-result').innerText"), example.summary);
-      await press("Escape", 27);
-      await wait("document.activeElement.matches('.book-watch')");
-      await readEntry(reward);
     }
+    await click(".book-watch");
+    await wait("document.querySelector('.sd-gallery.book-replay')?.open");
+    const canvas = `.book-replay .sd-attack-world[data-card-art="${reward}"][data-preview-mode="attack"]`;
+    await wait(`${node(canvas)}?.checkVisibility()`);
+    assert.equal(await evaluate("document.querySelector('.sd-attack-result').innerText"), example.summary);
+    await press("Escape", 27);
+    await wait("document.activeElement.matches('.book-watch')");
+    await readEntry(reward);
 
     // Build the Dragon at the verdict with its bonus outstanding. Claim the Wraith bonus and build from Camp.
     let expected = captured;
@@ -197,6 +199,16 @@ export async function checkWantedCollection({open, click, tap, press, activateBy
     }
     await click(build);
     const deckStep = (type, by) => `[data-zone="deck"][data-type="${type}"][data-by="${by}"]`;
+    await wait(`document.activeElement.matches(${JSON.stringify(deckStep(reward, 1))})`);
+    await click("#builder-cancel");
+    await readEntry(reward);
+    await press("Escape", 27);
+    const origin = bounty.id === wraith ? capturedBook : captureButton;
+    await wait(`document.activeElement.matches(${JSON.stringify(origin)})`);
+    assert.deepEqual(await career(), expected, "backing out returns to the same source and leaves its bonus and deck intact");
+    await activateByKey(origin);
+    await readEntry(reward);
+    await click(build);
     await wait(`document.activeElement.matches(${JSON.stringify(deckStep(reward, 1))})`);
     await press("Enter", 13);
     assert.ok(await evaluate("document.getElementById('builder-save').disabled"), "cannot save a seventeenth card");
@@ -224,4 +236,18 @@ export async function checkWantedCollection({open, click, tap, press, activateBy
     assert.deepEqual(await career(), expected, "reopening the poster and book pays nothing");
     await press("Escape", 27);
   }
+  await activateByKey(paperAction(dragon, "button[data-book-card]"));
+  await readEntry("cowboy-captured-dragon");
+  const reset = newSave();
+  // A second same-origin browsing context changes the persisted campaign while this book is open.
+  await evaluate(`(() => {
+    const frame = document.createElement("iframe");
+    document.body.append(frame);
+    frame.contentWindow.localStorage.setItem(${JSON.stringify(SAVE_KEY)}, ${JSON.stringify(JSON.stringify(reset))});
+    frame.remove();
+  })()`);
+  await click(build);
+  await wait("!document.querySelector('.character-book').open && document.getElementById('camp-changed').checkVisibility()");
+  assert.ok(!await visible("#builder-save"), "an expired collection cannot open a draft for a lost card");
+  assert.deepEqual(await career(), reset, "the other context's new campaign remains authoritative");
 }

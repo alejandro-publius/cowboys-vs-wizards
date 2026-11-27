@@ -354,6 +354,8 @@ async function browserChecks() {
     await click('[data-card^="cowboy-bear-trap-"]');
     await click("#sd-end");
     await wait(shown("sd-curtain"));
+    assert.ok(await evaluate("!document.querySelector('.table-hand-rules').checkVisibility() && !document.querySelector('.table-hand-rules p')"),
+      "passing the screen removes the previous player's hand rules before the next seat sees the table");
     await click("#sd-ready");
     await click('[data-card^="wizard-imp-"]');
     await activateByKey('[data-slot="wizard-0"]');
@@ -728,6 +730,13 @@ async function browserChecks() {
       status: document.getElementById('sd-status').textContent
     })`);
     const firstPosition = await openingPosition();
+    assert.ok(firstPosition.hand.length > 0, "the Outrider challenge has a hand to inspect");
+    await activateByKey(".table-hand-rules summary");
+    assert.deepEqual(await evaluate(`[...document.querySelectorAll(".table-hand-rules p")].filter(p => p.checkVisibility()).map(p => p.textContent)`),
+      await evaluate(`[...document.querySelectorAll("#sd-hand .table-card-original")].map(c => c.textContent)`),
+      "the challenge exposes the complete rules of each card in the viewing player's hand");
+    await press("Enter", 13);
+    assert.deepEqual(await openingPosition(), firstPosition, "inspecting the hand preserves the Outrider choice");
     const aim = await evaluate(`({
       prompt: document.getElementById('sd-prompt')?.textContent.trim() ?? '',
       base: document.querySelector('[data-base="wizard"] [id^="sd-preview-"]')?.textContent.trim() ?? '',
