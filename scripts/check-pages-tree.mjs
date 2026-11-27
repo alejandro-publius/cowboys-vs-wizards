@@ -533,10 +533,11 @@ async function browserChecks() {
       assert.ok(await evaluate(`(() => { const r = document.querySelector('${table} [data-shot="baseline"]').getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; })()`), "the Saloon shot is in view on a short phone");
       const result = `document.querySelector("${table} .saloon-shot-result").textContent`;
       assert.equal(await evaluate(result), "");
+      const comparison = `document.querySelector("${table} .saloon-bot-finish")`;
       for (const [line, orbs, finish] of [
-        ["candidate", 1, /Bone Wall holds with 1 orb.*Wizards won on turn 20/],
+        ["candidate", 1, /Bone Wall holds with 1 orb/],
         ["baseline", 0, /Bone Wall falls.*Cowboys won on turn 13/],
-        ["candidate", 1, /Bone Wall holds with 1 orb.*Wizards won on turn 20/],
+        ["candidate", 1, /Bone Wall holds with 1 orb/],
       ]) {
         const button = `${table} [data-shot="${line}"]`;
         await activateByKey(button);
@@ -546,11 +547,22 @@ async function browserChecks() {
         assert.equal(await evaluate(`document.querySelectorAll("${table} .saloon-life > [data-spent]").length`), 2 - orbs);
         assert.equal(await evaluate(`document.querySelector('${button}').getAttribute("aria-pressed")`), "true");
         assert.equal(await evaluate(`document.querySelector("${table} .saloon-shot-reply").hidden`), line !== "candidate");
+        assert.equal(await evaluate(`${comparison}.hidden`), line !== "candidate");
+        if (line === "candidate") {
+          assert.doesNotMatch(await evaluate(result), /won on turn/);
+          assert.equal(await evaluate(`${comparison}.open`), false);
+          await activateByKey(`${table} .saloon-bot-finish summary`);
+          assert.match(await evaluate(`${comparison}.innerText`), /Wizards won on turn 20/);
+        }
       }
       const reply = `document.querySelector("${table} .saloon-reply-result").textContent`;
+      const vitals = `document.querySelector("${table} .saloon-duel-orbs").textContent`;
+      const beforeMove = await evaluate(vitals);
       for (const [move, finish] of [["cover", /Cowboys won on turn 21/], ["attack", /Wizards won on turn 18/], ["cover", /Cowboys won on turn 21/]]) {
         await activateByKey(`${table} [data-reply="${move}"]`);
         assert.match(await evaluate(reply), finish);
+        if (move === "cover") assert.equal(await evaluate(vitals), beforeMove);
+        else assert.notEqual(await evaluate(vitals), beforeMove);
       }
       assert.equal(await evaluate(storedCareer), before);
       await send("Emulation.setDeviceMetricsOverride", {width: 1440, height: 900, deviceScaleFactor: 1, mobile: false});
