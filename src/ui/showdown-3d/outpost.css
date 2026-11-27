@@ -95,7 +95,7 @@ body:has(.camp-outpost[open], .builder-inspect[open]) {
   box-shadow: 0 3px #987340;
   font: 700 1rem/1.2 var(--frontier-display);
 }
-#showdown-camp .outpost-wanted .sd-tile { height: auto; }
+#showdown-camp .outpost-wanted .camp-stop-list .sd-tile { height: auto; }
 #showdown-camp .outpost-wanted #camp-scout-dragon:hover { background: #ffe7b7; }
 #showdown-camp .outpost-wanted #camp-scout-dragon:focus-visible { outline: 3px solid white; outline-offset: 3px; }
 #showdown-camp .outpost-stone .sd-tile {
