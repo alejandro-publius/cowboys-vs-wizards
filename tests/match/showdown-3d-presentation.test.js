@@ -347,3 +347,29 @@ test("ordinary Singularity still shows one targeted vortex", () => {
   assert.equal(vortex.hit.sides.cowboy.board[1].health, 2);
   assert.equal(beats[2].cardId, "wizard-singularity-1");
 });
+
+test("a lethal Singularity buries the targeted troop, its attached gear, then the spell", () => {
+  const state = fixture([actor("cowboy-billy", 3), actor("cowboy-sheriff", 1)], [], "wizard");
+  const target = state.sides.cowboy.board[1];
+  const gear = "cowboy-six-shooter-1";
+  const spell = "wizard-singularity-1";
+  target.gear.push(gear);
+  state.sides.wizard.hand = [spell];
+
+  const action = { type: "spell", cardId: spell, target: 1 };
+  const beats = present(state, action);
+  assert.deepEqual(beats.map((beat) => beat.kind), ["play", "vortex", "burial", "burial", "burial"]);
+  assert.deepEqual(beats[1].targets, [{ side: "cowboy", slot: 1 }]);
+  assert.deepEqual(
+    beats.slice(2).map(({ cardId, from, targets }) => [cardId, from.side, from.slot ?? from.at, targets[0].side, targets[0].at]),
+    [
+      [target.cardId, "cowboy", 1, "cowboy", "discard"],
+      [gear, "cowboy", 1, "cowboy", "discard"],
+      [spell, "wizard", "row", "wizard", "discard"],
+    ],
+  );
+  const after = applyAction(state, action).state;
+  for (const side of ["cowboy", "wizard"]) {
+    assert.deepEqual(beats.at(-1).hit.sides[side].discard, after.sides[side].discard);
+  }
+});
