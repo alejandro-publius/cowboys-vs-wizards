@@ -3,21 +3,11 @@
 // report with the fields it carries and what a screen has to show for it (EVENTS).
 // A screen that shows only viewFor and reacts only to EVENTS cannot leak a hidden card and
 // cannot miss a rule. contract.test.js holds both halves to the engine.
-import {opponent} from "./rules.js";
-
 // The state as `side` may see it. Its own hand and traps are listed; the other side's are
 // counts. Neither deck's order is visible to anyone. Boards, Bases, graveyards and the
 // location are public, and so is a boss due to land.
-export function viewFor(state, side) {
-  const seen = (name) => {
-    const {hand, deck, traps, ...open} = state.sides[name];
-    return {...structuredClone(open), handCount: hand.length, deckCount: deck.length, trapCount: traps.length,
-      ...(name === side ? {hand: [...hand], traps: [...traps]} : {})};
-  };
-  // The seed is left out: with it, anyone could deal the game again and read both hands and both decks.
-  const {sides, seed, ...table} = state;
-  return {...structuredClone(table), viewer: side, sides: {[side]: seen(side), [opponent(side)]: seen(opponent(side))}};
-}
+// The seed is left out: with it, anyone could deal the game again and read both hands and both decks.
+export {viewFor} from "./rules.js";
 
 // fields: every key the event carries besides `type`. shows: what a player must be able to see happen.
 // hidden: a field the other side must not be shown (the event still reaches both screens).

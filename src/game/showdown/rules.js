@@ -425,9 +425,21 @@ export function planTurn(state) {
   return best.plan;
 }
 
+// The public table and this seat's private zones. Screens and the candidate beginner bot use the same view.
+export function viewFor(state, side) {
+  const seen = (name) => {
+    const {hand, deck, traps, ...open} = state.sides[name];
+    return {...open, handCount: hand.length, deckCount: deck.length, trapCount: traps.length,
+      ...(name === side ? {hand, traps} : {})};
+  };
+  const {sides, seed, ...table} = state;
+  return structuredClone({...table, viewer: side, sides: {[side]: seen(side), [opponent(side)]: seen(opponent(side))}});
+}
+
 // A weaker opponent's next action, for a new player's first duels.
 // Level 0 takes any legal action it has. Level 1 takes the single action that looks best right now.
-function simpleStep(state, level) {
+// The optional beginner policy hashes only the information visible to the acting seat.
+function simpleStep(state, level, seatPrivate = false) {
   const side = state.active;
   const blind = structuredClone(state);
   blind.sides[opponent(side)].traps = [];
@@ -436,8 +448,9 @@ function simpleStep(state, level) {
   if (level === 0) {
     if (!moves.length) return {type: "end"};
     // The position picks the action, so a deal replays the same way.
+    const source = seatPrivate ? viewFor(state, side) : blind.sides;
     let hash = 0;
-    for (const char of JSON.stringify(blind.sides)) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+    for (const char of JSON.stringify(source)) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
     return moves[hash % moves.length];
   }
   let best = {type: "end"};
@@ -451,13 +464,13 @@ function simpleStep(state, level) {
 
 // Plays the active side's whole turn with the bot. Level 2 plans the whole turn; 0, 1 and 1.5 are weaker opponents.
 // A sprung trap or a Scout draw changes what level 2 knows, so the rest of its plan is made again.
-export function playTurn(state, level = 2, onAction) {
+export function playTurn(state, level = 2, onAction, {seatPrivate = false} = {}) {
   if (state.result) return {state, events: []};
   const side = state.active;
   // Level 1.5 plans every other turn of its own and plays the rest as level 1.
   if (level === 1.5) level = Math.floor(state.turn / 2) % 2 ? 1 : 2;
   const events = [];
-  let plan = level === 2 ? planTurn(state) : [simpleStep(state, level)];
+  let plan = level === 2 ? planTurn(state) : [simpleStep(state, level, seatPrivate)];
   while (!state.result && state.active === side) {
     if (!plan.length) {
       if (level !== 2) break;
@@ -468,7 +481,7 @@ export function playTurn(state, level = 2, onAction) {
     state = applied.state;
     events.push(...applied.events);
     if (state.result || state.active !== side) break;
-    if (level !== 2) plan = [simpleStep(state, level)];
+    if (level !== 2) plan = [simpleStep(state, level, seatPrivate)];
     // A sprung trap changes the board and the bot's own draw reveals a card: plan again from the actual state.
     else if (applied.events.some((event) => event.type === "trap" || ((event.type === "draw" || event.type === "burn") && event.side === side))) plan = planTurn(state);
   }
