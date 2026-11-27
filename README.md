@@ -12,8 +12,8 @@ Ride out from Boot Hill with a 16-card deck. On the far side of the frontier, a 
 
 | If you have… | Take this route |
 | --- | --- |
-| One minute | Open **Wanted**, choose **Scout the Graveyard Dragon**, and pick the Ranger’s target before revealing what happened. On the second deal the board looks familiar. Try your own move. Scouting is open from a fresh save. [Wanted board](https://alejandro-publius.github.io/cowboys-vs-wizards/?room=wanted) |
-| Time for a campaign | Choose **Camp → Boot Hill**. The first win earns two Covered Wagons. Rebuild your deck as you cross the Trail. On the Wanted board, a fifth victory over the same boss earns its card. Choose **Build with** on the result screen to decide what to take out of your 16. [Enter Camp from the title](https://alejandro-publius.github.io/cowboys-vs-wizards/) |
+| One minute | Open **Wanted** and tap the Graveyard Dragon poster to scout with the Ranger. Pick a target before revealing the recorded move, then play the turn yourself. Tap the Lantern Wraith poster to study its Ghostly ability. [Wanted board](https://alejandro-publius.github.io/cowboys-vs-wizards/?room=wanted) |
+| Time for a campaign | Choose **Camp → Boot Hill**. The first win earns two Covered Wagons. Finish the Trail to hunt either boss. Five victories over the same boss earn its card. Open the captured portrait to watch its move, then choose **Build with** and replace one card in your 16. [Enter Camp from the title](https://alejandro-publius.github.io/cowboys-vs-wizards/) |
 | A second player | Open **Even Fight** for two players sharing one device and pass the screen between turns. At the Saloon’s back table, Boot Hill Poker deals a separate five-card game against the Wizard. [Two-player Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/?even-fight=two) · [Boot Hill Poker](https://alejandro-publius.github.io/cowboys-vs-wizards/poker/) |
 
 <picture>
