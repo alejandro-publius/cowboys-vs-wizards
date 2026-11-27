@@ -138,7 +138,10 @@ export function mountCharacterBook(title, duel, {ownedBySide, openReplay, portra
     if (!goPractice || !canPractice()) return;
     const id = selected;
     const docked = book.hasAttribute("data-docked");
-    const resume = docked ? () => practice.focus({preventScroll: true}) : reopenOrigin;
+    const resume = () => {
+      if (!docked) reopenOrigin();
+      practice.focus({preventScroll: true});
+    };
     if (!docked) book.close();
     goPractice(id, resume);
   };

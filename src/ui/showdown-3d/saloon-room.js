@@ -111,6 +111,12 @@ export function mountSaloonRoom({room, ledger, book, pokerURL}) {
     if (trigger) visit(trigger.dataset.saloonShow);
   });
   back.addEventListener("click", retreat);
+  room.addEventListener("keydown", event => {
+    if (event.key !== "Escape" || event.defaultPrevented || event.target.closest("dialog:modal") !== room) return;
+    event.preventDefault();
+    event.stopPropagation();
+    retreat();
+  });
   room.addEventListener("cancel", event => {
     if (at === "home") return;
     event.preventDefault();
