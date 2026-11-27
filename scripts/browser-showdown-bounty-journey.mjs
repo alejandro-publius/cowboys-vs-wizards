@@ -84,9 +84,12 @@ async function scoutJourney(page) {
   await tabTo(page, "[data-saloon-wanted]");
   await page.keyboard.press("Enter");
   await page.locator(wanted + "[open]").waitFor();
-  const locked = page.locator("#camp-bounties .sd-tile");
-  assert.equal(await locked.count(), BOUNTIES.length);
-  for (const tile of await locked.all()) assert.ok(await tile.isDisabled());
+  const papers = page.locator("#camp-bounties [data-wanted-bounty]");
+  assert.equal(await papers.count(), BOUNTIES.length);
+  for (const paper of await papers.all()) {
+    assert.equal(await paper.getAttribute("data-wanted-wins"), "0");
+    assert.equal(await paper.getAttribute("data-duel"), null, "a fresh career can inspect or scout each bill");
+  }
   const before = await stored(page);
   await tabTo(page, scout);
   await page.keyboard.press("Enter");
@@ -159,9 +162,16 @@ async function paidHunts(page) {
   await page.waitForFunction(({key, type}) => JSON.parse(localStorage.getItem(key)).deck[type] === 1, {key: SAVE_KEY, type: boss.reward});
   await page.reload();
   assert.deepEqual(await progress(page), expected, "the capture, chosen deck and unclaimed offer survive reload");
-  const poster = page.locator("#camp-bounties .sd-tile").filter({hasText: boss.name});
-  assert.ok(await poster.isDisabled());
-  assert.ok((await poster.innerText()).includes("Captured: " + TYPES[boss.reward].name));
+  const poster = page.locator(`[data-wanted-bounty="${boss.id}"]`);
+  assert.equal(await poster.getAttribute("data-wanted-wins"), String(HUNTS));
+  assert.equal(await poster.getAttribute("data-duel"), null, "a completed hunt cannot pay again");
+  assert.equal(await poster.getAttribute("data-book-card"), boss.reward);
+  assert.match(await poster.innerText(), /captured/i);
+  await poster.press("Enter");
+  const book = page.locator(".character-book[open]");
+  assert.equal(await book.locator("h3").innerText(), TYPES[boss.reward].name);
+  await page.keyboard.press("Escape");
+  await focusIs(page, `[data-wanted-bounty="${boss.id}"]`);
   await page.keyboard.press("Escape");
   await page.locator("#camp-build").click();
   const count = page.locator(`[data-row="${boss.reward}"] [data-count="deck"]`);
