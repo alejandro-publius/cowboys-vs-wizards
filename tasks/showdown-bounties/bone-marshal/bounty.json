@@ -1,0 +1,23 @@
+{
+  "id": "bone-marshal",
+  "name": "The Bone Marshal",
+  "boss": "wizard-headless-horseman",
+  "reward": "cowboy-mounted-billy",
+  "entrance": "lands",
+  "lands": 4,
+  "lesson": "Wanted: the Bone Marshal. He can land from turn 4 when a Wizard slot is free. A Guard stops him from riding past your troops for 1 Base orb. A Bear Trap takes 2 of his orbs before his attack.",
+  "hunts": [
+    {"level": 1, "base": 4, "orbs": 3},
+    {"level": 1, "base": 4, "orbs": 4},
+    {"level": 1.5, "base": 4, "orbs": 4},
+    {"level": 1.5, "base": 4, "orbs": 5},
+    {"level": 2, "base": 4, "orbs": 5}
+  ],
+  "deck": {
+    "wizard-skeleton": 7,
+    "wizard-raven-familiar": 3,
+    "wizard-jack-o-lantern": 3,
+    "wizard-wizard": 2,
+    "wizard-hex": 1
+  }
+}
