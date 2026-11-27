@@ -102,9 +102,9 @@ export function bindTableUI(root) {
       series.textContent = status.querySelector("[data-series]")?.textContent ?? "";
       series.hidden = !series.textContent;
       forecasts.paint();
-      headline.textContent = result.querySelector("[data-choose]")
+      headline.textContent = result.querySelector("[data-capture-title]")?.textContent ?? (result.querySelector("[data-choose]")
         ? "Choose a card"
-        : (added?.textContent.split(":")[0] ?? status.textContent.split(" · ")[0]);
+        : (added?.textContent.split(":")[0] ?? status.textContent.split(" · ")[0]));
       if (!goHome.hasAttribute("data-return-wanted")) goHome.textContent = "Camp";
       // A pick's whole instruction: the choice, its trap or Raise hint, and the cover alternative.
       if (!ended && /^(Choose|A Guard|No enemy|This troop)/.test(originalPrompt.textContent)) {

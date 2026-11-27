@@ -631,7 +631,8 @@ const RUNS = {
     await s.seedStorage([[SAVE_KEY, JSON.stringify(four)]]);
     const fifth = await s.winSolo(s.tile(bounty.name), bounty.name);
     const shown = await s.evaluate(`txt(document.getElementById('sd-result'))`);
-    assert.match(shown, new RegExp(`Captured[\\s\\S]*${nameOf(bounty.reward)}`));
+    assert.equal(await s.text("#sd-result [data-capture-title]"), `${nameOf(bounty.reward)} joins your collection`);
+    assert.match(shown, /Choose one bonus card/);
     await s.takeOffer();
     assert.equal(await s.evaluate(`Boolean(${s.byText("/^(Play it again|Rematch)$/")})`), false, "a captured bounty offers no repeat");
     const beforeBuild = await s.progress();

@@ -370,10 +370,20 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     const {won, earned, intoDeck, grit} = outcome;
     const offer = camp.progress().offer;
     const build = picked && camp === campaign && onBuildReward ? rewardDeckButton(picked) : "";
+    const campActions = `<div class="sd-row">${again}<button type="button" id="sd-camp">Back to camp</button>${build}</div>`;
+    if (earned.captured) {
+      const card = TYPES[earned.captured];
+      const bonus = offer ? `<section class="bounty-reward-group"><h3>Choose one bonus card</h3>${offerRow(offer, camp.owned)}</section>`
+        : picked ? `<p class="bounty-reward-group">Bonus card added: ${TYPES[picked].name}.</p>` : "";
+      return `<h2 data-capture-title>${card.name} joins your collection</h2>
+        <div class="sd-row bounty-rewards">
+          <section class="bounty-reward-group bounty-earned"><h3>Earned on hunt five</h3>
+            <div class="sd-card ${card.side} ${card.rarity}" data-frame="${card.kind}" data-face="${earned.captured}">${face(earned.captured)}</div>
+            ${camp === campaign && onBuildReward ? `<button type="button" data-build-capture>Build with ${card.name}</button>` : ""}
+          </section>${bonus}
+        </div>${campActions}`;
+    }
     return [
-      earned.captured ? `<h2>Captured</h2><div class="sd-row"><div class="sd-card ${TYPES[earned.captured].side} ${TYPES[earned.captured].rarity}" data-frame="${TYPES[earned.captured].kind}" data-face="${earned.captured}">${face(earned.captured)}</div></div>
-        <p class="sd-good">${TYPES[earned.captured].name} joined your collection on the fifth win.</p>
-        ${camp === campaign && onBuildReward ? `<button type="button" data-build-capture>Build with ${TYPES[earned.captured].name}</button>` : ""}` : "",
       earned.cards.length ? `<h2>New in your collection</h2><p class="sd-good">You earned ${pays(earned.cards)}.</p>` : "",
       intoDeck.length ? `<p class="sd-note">In your deck now: ${intoDeck.map(([type, copies, replaced]) => `${TYPES[type].name} ×${copies} in place of ${TYPES[replaced].name} ×${copies}`).join(", ")}.</p>` : "",
       earned.packs ? `<p class="sd-good">You earned ${plural(earned.packs, "pack")}. Open ${earned.packs > 1 ? "them" : "it"} in camp.</p>` : "",
@@ -381,7 +391,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
       won && offer ? `<h2>${OFFER_HEADING}</h2>${offerRow(offer, camp.owned)}`
         : picked ? `<p class="sd-good">Added ${TYPES[picked].name}: you now own ${camp.owned(picked)}. Your deck has ${camp.progress().deck[picked] ?? 0}.</p>` : "",
       !won && grit ? `<p class="sd-note">Grit: your Base starts the rematch with ${5 + grit} orbs.</p>` : "",
-      `<div class="sd-row">${again}<button type="button" id="sd-camp">Back to camp</button>${build}</div>`,
+      campActions,
     ].join("");
   }
 

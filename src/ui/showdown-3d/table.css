@@ -558,6 +558,34 @@
 .sd-diorama #sd-result .sd-row:has(> button:not(.sd-card)) {
   margin-top: 10px;
 }
+.sd-diorama #sd-result .bounty-rewards {
+  gap: clamp(4px, 1.4vw, 18px);
+  align-items: start;
+  flex-wrap: nowrap;
+}
+.sd-diorama .bounty-reward-group {
+  padding: clamp(5px, .9vw, 13px);
+  color: #fff0d4;
+  background: #152232ee;
+  border: 1px solid #a38967;
+  border-radius: 4px;
+  text-align: center;
+}
+.sd-diorama .bounty-earned { grid-template-columns: min-content; }
+.sd-diorama .bounty-reward-group h3 {
+  font: 700 clamp(12px, 1.45vw, 21px)/1.15 Georgia, serif;
+}
+.sd-diorama .bounty-reward-group .sd-row {
+  flex-wrap: nowrap;
+  gap: clamp(3px, .8vw, 12px);
+}
+.sd-diorama #sd-result .bounty-reward-group .sd-card { width: clamp(72px, 23vw, 161px); }
+.sd-diorama #sd-result [data-build-capture] {
+  min-height: 44px;
+  width: 100%;
+  border: 1px solid #b99662;
+  background: #433427;
+}
 .sd-diorama.table-resolved #sd-hand,
 .sd-diorama.table-resolved #sd-actions {
   visibility: hidden;
