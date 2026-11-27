@@ -1,24 +1,43 @@
 # Cowboys vs. Wizards: Showdown
 
-Built with Kiro for Kiroween 2026, this haunted Western card duel gives strategy players another shot at a losing turn. In the Night Shift Saloon, Kiro wants to take one attack point from Billy. Fire at Bone Wall with both versions. When the weaker Billy loses in the bots’ hands, take his next turn and try to win the same deal. Out on the Trail, you choose every attack, defend your Base and build your own deck.
+Ride out from Boot Hill with a 16-card deck. On the far side of the frontier, a Lantern Wraith ignores spells and a Graveyard Dragon can burn your whole line. Clear six Trail stops, hunt either boss five times, and you can play its card on your side of the table.
 
-**[Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/)** · [Kiro’s balance spec](.kiro/specs/night-shift-balance-contract/requirements.md) · [Recorded Kiro workflow](docs/evidence/kiro-night-shift-native.png) · [One-minute judge walkthrough](docs/JUDGE-GUIDE.md) · [Rules and cards](prototypes/showdown/RULEBOOK.md) · [Current build and review status](docs/PROJECT-STATUS.md#current-build)
+**[Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/)** · [Scout the Graveyard Dragon](https://alejandro-publius.github.io/cowboys-vs-wizards/?room=wanted) · [Visit the Night Shift Saloon](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review)
 
-![The Night Shift Saloon. Beside the recorded Kiro review, Billy can attack Headless Horseman or take cover on turn nine.](docs/evidence/showdown-saloon-billy-table.png)
+[![The illustrated battlefield at the fifth Graveyard Dragon hunt. The Cowboy Ranger and a trap face the Dragon and its escort between the Western town and the Wizard castle.](docs/media/frontier-dragon-hunt.webp)](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5)
 
-## Play Showdown
+<a id="play-showdown"></a>
 
-| Where to start | What to try |
+## From a Wanted poster to your deck
+
+| If you have… | Take this route |
 | --- | --- |
-| [Night Shift Saloon](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) | Fire Billy’s current two-attack shot and Kiro’s proposed one-attack shot at the same Bone Wall. The original rules resolve your shot in your browser. With the proposed Billy, take his next turn against Headless Horseman and change the ending. The notice board holds the [100,000-duel audit](docs/evidence/billy-seat-audit/README.md). |
-| [Ride or Fight?](https://alejandro-publius.github.io/cowboys-vs-wizards/?outrider=case-e) | Pick the Outrider. Strike the Skeleton or ride past it and hit the Wizard Base. Restart the same turn and try the other choice. |
-| [Camp and the Trail](https://alejandro-publius.github.io/cowboys-vs-wizards/) | Choose **Camp**, then **Boot Hill** for your first Trail duel. Camp also holds the deck builder, Wanted bounties and two-player mode. |
-| [Replay Room](https://alejandro-publius.github.io/cowboys-vs-wizards/?room=replay) | Pick the Ranger’s target before seeing either outcome. Compare the two recorded lines and play the turn yourself. |
-| [Even Fight](https://alejandro-publius.github.io/cowboys-vs-wizards/?even-fight=1) | Try cover against spells and a seven-orb Base for the second player. Practice also offers a [best of three](https://alejandro-publius.github.io/cowboys-vs-wizards/?even-fight=series) and [two players on one device](https://alejandro-publius.github.io/cowboys-vs-wizards/?even-fight=two). |
-| [Boot Hill Poker](https://alejandro-publius.github.io/cowboys-vs-wizards/poker/) | Draw a five-card hand against the Wizard. The Saloon’s back table opens this second game. |
-| [Lightweight board](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) · [Reference game](https://alejandro-publius.github.io/cowboys-vs-wizards/showdown/) | The graybox opens directly into Camp. The reference page has a playable version of the rules. |
+| One minute | Open **Wanted**, choose **Scout the Graveyard Dragon**, and pick the Ranger’s target before revealing what happened. On the second deal the board looks familiar. Try your own move. Scouting is open from a fresh save. [Wanted board](https://alejandro-publius.github.io/cowboys-vs-wizards/?room=wanted) |
+| Time for a campaign | Choose **Camp → Boot Hill**. The first win earns two Covered Wagons. Rebuild your deck as you cross the Trail. On the Wanted board, a fifth victory over the same boss earns its card. Choose **Build with** on the result screen to decide what to take out of your 16. [Enter Camp from the title](https://alejandro-publius.github.io/cowboys-vs-wizards/) |
+| A second player | Open **Even Fight** for two players sharing one device and pass the screen between turns. At the Saloon’s back table, Boot Hill Poker deals a separate five-card game against the Wizard. [Two-player Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/?even-fight=two) · [Boot Hill Poker](https://alejandro-publius.github.io/cowboys-vs-wizards/poker/) |
 
-The illustrated game also runs at `/3d/`. The [deployment manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) identifies the published commit and its HTML checksum. The [release record](docs/PROJECT-STATUS.md#current-build) links the source for the screenshot above.
+<picture>
+  <source media="(max-width: 640px)" srcset="docs/media/frontier-dragon-capture-mobile.webp">
+  <img src="docs/media/frontier-dragon-capture.webp" alt="Three actual game screens. Scout the Graveyard Dragon, earn it on the fifth hunt, then save it in the deck builder.">
+</picture>
+
+The full campaign saves in your browser. The Dragon practice positions replay recorded deals and leave your collection alone. You can also try the Outrider’s opening choice or use the lightweight board. [Ride or Fight?](https://alejandro-publius.github.io/cowboys-vs-wizards/?outrider=case-e) · [Lightweight Camp](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) · [Rules and cards](prototypes/showdown/RULEBOOK.md)
+
+<a id="how-kiro-reviews-a-card-change"></a>
+
+## Inside the Night Shift
+
+The Cautious Sheriff sets traps. The Reckless Wizard casts first. Each sends a playbook across the pixel arena to Kiro’s referee, which plays the same eight deals from both starting seats. The rows below show how a player’s card request became Dusty Pete, how Billy’s balance change was tested, and when a release review stops.
+
+<picture>
+  <source media="(max-width: 940px)" srcset="docs/media/frontier-night-shift-mobile.svg">
+  <source media="(max-width: 1150px)" srcset="docs/media/frontier-night-shift.svg">
+  <img width="1024" src="docs/media/frontier-workflow-map.svg" alt="Two playbooks travel across an isometric frontier arena to Kiro’s referee. The Sheriff wins 13 of 16 games. Separate routes show card creation, balance proposals, the Outrider save hook, a seat-private Power, scheduled Night Watch, release review and the independent Python audit.">
+</picture>
+
+[Full-size animated map](docs/media/frontier-workflow-map.svg) · [Expanded diagram](docs/media/frontier-night-shift.svg) · [Still map](https://raw.githubusercontent.com/alejandro-publius/cowboys-vs-wizards/main/docs/media/frontier-workflow-map.svg#still) · [Workflow evidence](docs/evidence/frontier-workflows.md) · [Native Kiro CLI capture](docs/evidence/kiro-night-shift-native.png)
+
+[Judge walkthrough](docs/JUDGE-GUIDE.md) · [Current build and review status](docs/PROJECT-STATUS.md#current-build) · [Live build manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json)
 
 ## Local build
 

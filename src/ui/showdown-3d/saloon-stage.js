@@ -289,7 +289,7 @@ function dressRoom(scene, k) {
     k.mesh(scene, "box", 0x3a2a22, [x, 2.98, -0.4], [0.26, 0.04, 0.26]);
     k.mesh(scene, "orb", 0xffc46a, [x, 2.82, -0.4], [0.2, 0.28, 0.2], true);
     k.mesh(scene, "box", 0x3a2a22, [x, 2.66, -0.4], [0.2, 0.04, 0.2]);
-    const lamp = new T.PointLight(0xffb866, 12, 8, 1.4);
+    const lamp = new T.PointLight(0xffc281, 11, 7, 1.5);
     lamp.position.set(x, 2.7, -0.2);
     scene.add(lamp);
   }
@@ -351,11 +351,11 @@ export function createSaloonStage(host) {
   const k = kit();
   const scene = new T.Scene();
   scene.background = new T.Color(0x1a110c);
-  const hemi = new T.HemisphereLight(0xffe2c4, 0x4a3240, 1.7);
-  const key = new T.DirectionalLight(0xffd29a, 2.3);
+  const hemi = new T.HemisphereLight(0xb9cfdd, 0x463445, 1.25);
+  const key = new T.DirectionalLight(0xffdaa4, 1.85);
   key.position.set(-3, 6, 5);
   // Cool moonlit rim from the window side, against the warm lamps.
-  const rim = new T.DirectionalLight(0x6a8fe0, 1.3);
+  const rim = new T.DirectionalLight(0x8cb3ed, 1.65);
   rim.position.set(4, 4, -6);
   scene.add(hemi, key, rim);
   dressRoom(scene, k);

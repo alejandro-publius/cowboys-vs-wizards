@@ -468,7 +468,7 @@ export function mountNightShiftSaloon({content, recording, portrait = () => null
   content.innerHTML = ROOM_HTML;
   const q = (selector) => content.querySelector(selector);
   const billyTable = q(".saloon-billy-table");
-  if (mode !== "live" && typeof __CVW_BILLY_TABLE__ !== "undefined") mountBillyTable(billyTable, __CVW_BILLY_TABLE__, portrait);
+  if (mode !== "live" && typeof __CVW_BILLY_TABLE__ !== "undefined") mountBillyTable(billyTable, __CVW_BILLY_TABLE__);
   // "Replay the repair": a recorded field trial, separate from the shift feed and the stage.
   // Hidden when no fresh check and witness are recorded; `fieldTrial` defaults to FIELD_TRIAL.
   const repair = mountRepairReplay(q(".saloon-repair"), {trial: fieldTrial, portrait});
@@ -530,7 +530,7 @@ export function mountNightShiftSaloon({content, recording, portrait = () => null
     content.dataset.view = view;
     theater.hidden = view !== "3d";
     const focused = controls.contains(document.activeElement) ? document.activeElement : null;
-    if (view === "3d") theater.after(controls); else stage.after(controls);
+    if (view === "3d") theater.append(controls); else stage.after(controls);
     if (focused && document.activeElement !== focused) focused.focus({preventScroll: true});
   }
   function dropStage() {

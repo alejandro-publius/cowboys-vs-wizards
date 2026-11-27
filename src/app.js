@@ -157,12 +157,12 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     <div class="sd-row"><button type="button" id="camp-turn-dragon" data-turn="dragon-c5">Try one Dragon turn</button>
     <button type="button" id="camp-turn-dragon-70" data-turn="dragon-c5-70">Try another Dragon turn</button>
     <button type="button" id="camp-replay-room">Replay Room</button></div></section>`);
-  const openTurn = (id) => {
+  const openTurn = (id, returnFocus = `#${TURN_CONTROLS[id]}`) => {
     const turn = turnDuel(id);
     if (!turn) return false;
-    last = `#${TURN_CONTROLS[id]}`;
+    last = returnFocus;
     showOnly(screen);
-    showdown.start(turn.duel, turn.seed);
+    showdown.start(turn.duel, turn.seed, {fromWanted: returnFocus === "#camp-scout-dragon"});
     return true;
   };
   campRoot.addEventListener("click", (event) => { const b = event.target.closest("button[data-turn]"); if (b) openTurn(b.dataset.turn); });
@@ -186,18 +186,35 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   function leaveRoom() {
     unmountRoom?.();
     unmountRoom = null;
-    last = "#camp-replay-room";
   }
-  function openRoom() {
+  function openRoom(returnFocus = "#camp-replay-room") {
+    last = returnFocus;
+    roomBack.textContent = returnFocus === "#camp-scout-dragon" ? "Back to Wanted" : "Back to Camp";
     unmountRoom?.();
     unmountRoom = mountReplayRoom(node("replay-room-body"), replayLessons, {onPlayTurn(id) {
-      if (openTurn(id)) leaveRoom();
+      if (openTurn(id, returnFocus)) leaveRoom();
     }});
     showOnly(room);
     roomBack.focus();
   }
-  node("camp-replay-room").addEventListener("click", openRoom);
+  node("camp-replay-room").addEventListener("click", () => openRoom());
+  node("camp-scout-dragon").addEventListener("click", () => openRoom("#camp-scout-dragon"));
   roomBack.addEventListener("click", () => { leaveRoom(); toCamp(); });
+  const openWanted = () => {
+    last = null;
+    toCamp();
+    if (outpost?.open("camp-bounties-title")) return;
+    const heading = node("camp-bounties-title");
+    heading.tabIndex = -1;
+    heading.focus();
+    heading.scrollIntoView({block: "start"});
+  };
+  campRoot.addEventListener("click", (event) => {
+    const link = event.target.closest('a[href="?room=wanted"]');
+    if (!link || event.button !== 0 || event.ctrlKey || event.shiftKey || event.metaKey || event.altKey) return;
+    event.preventDefault();
+    openWanted();
+  });
   // Wizard lesson saved in this browser: reopened from this control or ?lesson=saved. A stale save is cleared there.
   node("camp-experiment").insertAdjacentHTML("beforeend", `<div class="sd-row"><button type="button" id="camp-wizard-lesson">Open saved Wizard lesson</button></div>
     <p class="sd-note">Unlike the rest of this section, a Wizard lesson keeps one marked episode in this browser.</p>`);
@@ -330,5 +347,6 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
       toCamp();
       openBillyReplay();
     } else if (directRoom) openRoom();
+    else if (query.get("room") === "wanted" && evenFight === null) openWanted();
   }
   });
