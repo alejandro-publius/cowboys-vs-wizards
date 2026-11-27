@@ -7,6 +7,7 @@ import {RARITY, TYPES} from "../../src/game/showdown/cards.js";
 import {SAVE_KEY} from "../../src/game/showdown/campaign-store.js";
 import {BOUNTIES, DECK_SIZE, HUNTS, RIVALS, choose, duelList, migrate, newSave, openPack, owned, packOpens, pool, settle, trailDone} from "../../src/game/showdown/progress.js";
 import {nextLine, rivalNote} from "../../src/ui/showdown-camp.js";
+import {capturePortrait} from "../../src/ui/showdown-screen.js";
 import {decodeSaveCode, encodeSave} from "../../src/game/showdown/savecode.js";
 import {TRAIL} from "../../src/game/showdown/trail.js";
 import {createCampaign} from "../../src/match/showdown-campaign.js";
@@ -69,6 +70,18 @@ test("a Wanted hunt repeats: each win clears one hunt, a loss clears none, the f
   }
   assert.equal(campaign.duel(id), null, "a captured bounty is finished");
   assert.equal(campaign.owned(bounty.reward), 1);
+});
+
+test("each fifth-win portrait opens the earned Cowboy card and has a static graybox fallback", () => {
+  for (const {id, reward} of BOUNTIES) {
+    const campaign = createCampaign(stored({...postTrail(), hunts: {[id]: HUNTS - 1}}));
+    const {earned} = campaign.settle(campaign.duel(`hunt:${id}`), true);
+    const portrait = capturePortrait(earned.captured, true);
+    assert.match(portrait, new RegExp(`<button[^>]*data-open-capture-book="${reward}"`));
+    const fallback = capturePortrait(earned.captured, false);
+    assert.ok(fallback.includes(`data-face="${reward}"`));
+    assert.doesNotMatch(fallback, /<button/);
+  }
 });
 
 test("packs open one at a time through the campaign, as progress.js openPack rolls them, and survive a reload", () => {

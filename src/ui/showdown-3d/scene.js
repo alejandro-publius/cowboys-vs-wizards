@@ -553,7 +553,7 @@ function build(host, canvas, screen, closeup = false) {
 
 export function mountGallery(title, duel, ownedBySide) {
   const openReplay = mountCardGallery(title, duel, (host, canvas, dialog) => build(host, canvas, dialog, true));
-  mountCharacterBook(title, duel, {ownedBySide, openReplay});
+  return mountCharacterBook(title, duel, {ownedBySide, openReplay});
 }
 
 function disposePawn(group) {

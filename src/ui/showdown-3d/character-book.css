@@ -277,7 +277,8 @@ dialog.character-book::backdrop {
 }
 .character-book .book-stats dd { margin: 2px 0 0; }
 
-.character-book .book-watch {
+.character-book .book-watch,
+.character-book .book-build {
   margin-top: 8px;
   min-block-size: 36px;
   padding: 5px 12px;

@@ -132,6 +132,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   };
   const showdown = mountShowdown(screen, {onHome: home, campaign, writeCamp, playtest, nextSeed: seedFor, mountBoard: diorama?.mountDiorama,
     onBuildReward: openDeck,
+    onOpenCaptureBook: diorama && ((id, button, build) => openBookCard(id, button, build)),
     onBootHill: () => campaign?.trailDuel?.()?.battlefield === "boot-hill" ? startCampDuel("trail") : false,
     onReview: (record) => { showLesson(); lessonPage.openFromDuel(record); },
     onLessonBack: () => { showLesson(); lessonPage.reopen(); },
@@ -146,7 +147,11 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     onHome: () => { showOnly(title); play.focus(); },
     onBuild: openDeck,
     onDuel: startCampDuel});
-  diorama?.mountGallery(title, screen, {cowboy: campaign.owned, wizard: preview.owned});
+  const openBookCard = diorama?.mountGallery(title, screen, {cowboy: campaign.owned, wizard: preview.owned});
+  if (openBookCard) campRoot.addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-book-card]");
+    if (button && !button.disabled && !campRoot.hidden) openBookCard(button.dataset.bookCard, button, openDeck);
+  });
   // Play from the title is a fresh entry: forget the control of the last duel so toCamp opens on the Trail instead of
   // restoring that duel's room. Only a return from a duel (home, Back to camp) keeps `last`.
   play.addEventListener("click", () => { last = null; outpost?.close(); toCamp(); });

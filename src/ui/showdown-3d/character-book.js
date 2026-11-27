@@ -44,11 +44,14 @@ export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
   const find = selector => book.querySelector(selector);
   const grid = find(".book-grid");
   const watch = find(".book-watch");
+  const ownership = find(".book-ownership");
+  const build = element("button", "book-build");
+  build.type = "button";
   const [back, next] = book.querySelectorAll(".book-pages button");
   let side = "cowboy";
   let page = 0;
   let selected;
-  let opener;
+  let onBuild;
 
   function select(id) {
     selected = id;
@@ -76,19 +79,30 @@ export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
     watch.hidden = !moves.length;
     watch.textContent = id === "wizard-singularity" ? "Watch area preview" : moves[0]?.[1] ?? "";
     const copies = ownedBySide[card.side](id);
-    find(".book-ownership").textContent = card.side === "wizard" ? `In Wizard deck · ${copies}`
+    ownership.textContent = card.side === "wizard" ? `In Wizard deck · ${copies}`
       : copies === Infinity ? "Unlimited copies" : copies === 0 ? "Uncollected" : `Owned · ${copies}`;
+    if (onBuild && card.side === "cowboy" && copies > 0) {
+      build.dataset.buildBookCard = id;
+      build.textContent = `Build with ${card.name}`;
+      ownership.after(build);
+    } else build.remove();
     for (const button of grid.children) button.setAttribute("aria-pressed", String(button.dataset.id === id));
   }
 
+  build.onclick = () => {
+    if (!book.open || !onBuild || TYPES[selected].side !== "cowboy" || !ownedBySide.cowboy(selected)) return;
+    book.close();
+    onBuild(selected);
+  };
   watch.onclick = () => {
     watch.focus();
     openReplay(selected);
   };
 
-  function turn() {
+  function turn(id) {
     const entries = roster.filter(([, card]) => card.side === side);
     const leaves = Math.ceil(entries.length / leafSize);
+    if (id) page = Math.floor(entries.findIndex(([type]) => type === id) / leafSize);
     const visible = entries.slice(page * leafSize, (page + 1) * leafSize);
     for (const tab of find(".book-tabs").children) tab.setAttribute("aria-pressed", String(tab.dataset.side === side));
     grid.replaceChildren(...visible.map(([id, card]) => {
@@ -107,7 +121,7 @@ export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
     find(".book-pages span").textContent = (page + 1) + " / " + leaves;
     back.disabled = page === 0;
     next.disabled = page === leaves - 1;
-    select(visible[0][0]);
+    select(id ?? visible[0][0]);
   }
 
   for (const [id, name] of Object.entries(factions)) {
@@ -123,18 +137,20 @@ export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
   book.addEventListener("keydown", (event) => {
     if (event.key === "Escape") event.stopPropagation();
   });
-  book.addEventListener("close", () => opener?.focus());
-  function open(source) {
-    opener = source;
-    if (selected) select(selected);
-    else turn();
+  function open(id, source = document.activeElement, buildDeck) {
+    if (id !== undefined && !Object.hasOwn(TYPES, id)) return;
+    onBuild = buildDeck;
+    if (id) side = TYPES[id].side;
+    turn(id ?? selected);
+    // The native dialog returns focus to this control, including inside the Wanted room.
+    source?.focus({preventScroll: true});
     book.showModal();
-    find('.book-tabs [aria-pressed="true"]').focus();
+    find(id ? '.book-portrait[aria-pressed="true"]' : '.book-tabs [aria-pressed="true"]').focus();
   }
   for (const gallery of [title, duel].map(screen => screen.querySelector(".sd-open-gallery")).filter(Boolean)) {
     const button = element("button", "book-launch", "Character book");
     button.type = "button";
-    button.onclick = () => open(button);
+    button.onclick = () => open(undefined, button);
     button.setAttribute("aria-label", "Character book");
     button.title = "Character book";
     const icon = '<svg width="24" height="18" viewBox="0 0 24 18" aria-hidden="true" shape-rendering="crispEdges"><path fill="#80512f" d="M0 2h9v1h6V2h9v15H14v1h-4v-1H0z"/><path fill="#f2d49b" d="M2 0h7v1h2v13H9v-1H2zm11 1h2V0h7v13h-7v1h-2z"/><path fill="#987043" d="M4 4h4v1H4zm12 0h4v1h-4zM4 7h5v1H4zm11 0h5v1h-5z"/></svg>';
@@ -148,5 +164,6 @@ export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
       gallery.before(button);
     }
   }
-  if (new URLSearchParams(location.search).get("book") === "1") open(title.querySelector(".book-launch"));
+  if (new URLSearchParams(location.search).get("book") === "1") open(undefined, title.querySelector(".book-launch"));
+  return open;
 }

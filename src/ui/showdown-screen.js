@@ -97,6 +97,11 @@ export const OFFER_HEADING = "Bonus: pick 1 more card to keep";
 export const offerRow = (offer, owned) => `<div class="sd-row">${offer.map((type) => `<button type="button" class="sd-card ${TYPES[type].side} ${TYPES[type].rarity} sd-can" data-frame="${TYPES[type].kind}" data-choose="${type}">
   ${face(type, `<span class="sd-note">You own ${owned(type)}.</span>`)}</button>`).join("")}</div>`;
 export const rewardDeckButton = (type) => `<button type="button" data-build-reward>Build with ${TYPES[type].name}</button>`;
+export function capturePortrait(type, hasBook) {
+  const card = TYPES[type];
+  const portrait = `<span class="sd-card ${card.side} ${card.rarity}" data-frame="${card.kind}" data-face="${type}">${face(type)}</span>`;
+  return hasBook ? `<button type="button" data-open-capture-book="${type}" aria-haspopup="dialog" aria-label="Open in character book · ${card.name}">${portrait}Open in character book</button>` : portrait;
+}
 export const pays = (cards) => cards.map(([type, copies]) => `${TYPES[type].name}${copies > 1 ? ` ×${copies}` : ""}`).join(", ");
 
 // Called only for an active player's hand card with no legal play.
@@ -131,7 +136,7 @@ export function blockedReason(view, seat, cardId) {
 // Wizard lesson (src/ui/wizard-lesson.js): onReview(record) opens the lesson for a finished single solo Cowboy duel;
 // record is {seed, setup, cowboyActions, expected}. start(duel, seed, {lesson: {createSession}}) plays a lesson rematch
 // (duel.kind "lesson"): it settles nothing and logs nothing, and onLessonBack() returns to the lesson.
-export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => change(), playtest, cueOptions, nextSeed = freshSeed, onSwap, mountBoard, onReview, onLessonBack, onBootHill, onBuildReward}) {
+export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => change(), playtest, cueOptions, nextSeed = freshSeed, onSwap, mountBoard, onReview, onLessonBack, onBootHill, onBuildReward, onOpenCaptureBook}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
   let session, duel, seed, lines, latest, pick, outcome, picked, run, started, challengeAttacked = false, playbackIdle = true, bootHillOffered = false;
@@ -387,7 +392,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
       return `<h2 data-capture-title>${card.name} joins your collection</h2>
         <div class="sd-row bounty-rewards">
           <section class="bounty-reward-group bounty-earned"><h3>Earned on hunt five</h3>
-            <div class="sd-card ${card.side} ${card.rarity}" data-frame="${card.kind}" data-face="${earned.captured}">${face(earned.captured)}</div>
+            ${capturePortrait(earned.captured, camp === campaign && onOpenCaptureBook)}
             ${camp === campaign && onBuildReward ? `<button type="button" data-build-capture>Build with ${card.name}</button>` : ""}
           </section>${bonus}
         </div>${campActions}`;
@@ -622,6 +627,12 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     if (next && next !== document.activeElement) next.focus();
   }
 
+  function buildWithReward(type) {
+    cues.clear();
+    boardPresentation?.clear();
+    onBuildReward(type);
+  }
+
   root.addEventListener("click", (event) => {
     const b = event.target.closest("button");
     if (!b || b.disabled || !session || settling) return;
@@ -663,11 +674,13 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
       if (camp === campaign) writeCamp(claim);
       else claim();
     }
+    else if (d.openCaptureBook && d.openCaptureBook === outcome?.earned?.captured && camp === campaign && onOpenCaptureBook) {
+      return onOpenCaptureBook(d.openCaptureBook, b, onBuildReward && buildWithReward);
+    }
     else if ((b.hasAttribute("data-build-reward") || b.hasAttribute("data-build-capture")) && camp === campaign && onBuildReward) {
       const reward = b.hasAttribute("data-build-capture") ? outcome?.earned?.captured : picked;
       if (!reward) return;
-      cues.clear(); boardPresentation?.clear();
-      onBuildReward(reward);
+      buildWithReward(reward);
     }
     else if (b.id === "sd-again" && outcome) again();
     else if (b.id === "sd-review" && outcome && setup) {
