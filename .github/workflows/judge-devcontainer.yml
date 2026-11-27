@@ -30,7 +30,10 @@ jobs:
       - name: Check runtimes, installed dependencies and judge commands
         run: |
           devcontainer exec --workspace-folder . bash -euo pipefail -c '
-            node --version | grep -E "^v22\."
+            version=$(node --version)
+            echo "$version"
+            [[ "$version" =~ ^v22\.([0-9]+)\. ]]
+            (( BASH_REMATCH[1] >= 18 ))
             python3 --version | grep -E "^Python 3\.12\."
             npm ls --depth=0
             python3 proof/referee/referee.py --check-catalog prototypes/showdown/cards.csv

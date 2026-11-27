@@ -6,7 +6,7 @@ Antigravity added the judge devcontainer, the initial receipt guard and the blog
 
 Open the repository in Codespaces, or use **Dev Containers: Reopen in Container** in Kiro IDE with a running Docker-compatible engine. The [configuration](../../.devcontainer/devcontainer.json) requests Node 22, Python 3.12 and `npm ci`. To inspect the Python referee, run `python3 proof/referee/referee.py --check-catalog prototypes/showdown/cards.csv`. To check the candidate balance receipt, run `node scripts/billy-balance-gate.mjs --arm candidate`. [Kiro devcontainer guide](https://kiro.dev/docs/ide/remote-development/dev-containers/)
 
-The [Judge devcontainer workflow](../../.github/workflows/judge-devcontainer.yml) boots this configuration on a fresh Linux runner and checks the runtimes, installed dependencies and both commands. The candidate gate reads the committed outcomes, so a depth-one checkout suffices. A live Actions result is pending.
+The [Judge devcontainer workflow](../../.github/workflows/judge-devcontainer.yml) boots this configuration on a fresh Linux runner and checks the runtimes, installed dependencies and both commands. The first boot passed both judges but reported Node 22.16.0, below the repository’s 22.18 minimum. The configuration now tracks the Node 22 Bookworm image, and the workflow checks that minimum inside the running container. [First boot](https://github.com/alejandro-publius/cowboys-vs-wizards/actions/runs/45962495706)
 
 To use the forwarded ports, run `node scripts/night-shift-saloon.mjs` for the loopback witness on 4179. For the playable site on 8080, run `node scripts/stage-pages.mjs --commit "$(git rev-parse HEAD)"` and then `python3 -m http.server 8080 --bind 127.0.0.1 --directory dist/web`.
 
