@@ -30,9 +30,9 @@ The full campaign saves in your browser. The Dragon practice positions replay re
 The Cautious Sheriff sets traps. The Reckless Wizard casts first. Kiro gave each agent a file for its playbook, then handed both to a referee to play eight deals from each opening seat. Follow the two signals to the result. The rows below show how a player’s card request became Dusty Pete, how Billy’s balance change was tested, and when a release review stops.
 
 <picture>
-  <source media="(max-width: 640px)" srcset="docs/media/frontier-night-shift-mobile.svg">
-  <source media="(max-width: 1000px)" srcset="docs/media/frontier-night-shift.svg">
-  <img src="docs/media/frontier-workflow-map.svg" alt="Kiro's two Arena agents write playbooks for a referee. The Sheriff wins 13 of 16 games. Separate routes show card creation, balance proposals, the Outrider save hook, a seat-private Power, scheduled Night Watch, release review and the independent Python audit.">
+  <source media="(max-width: 940px)" srcset="docs/media/frontier-night-shift-mobile.svg">
+  <source media="(max-width: 1150px)" srcset="docs/media/frontier-night-shift.svg">
+  <img width="1280" src="docs/media/frontier-workflow-map.svg" alt="Kiro's two Arena agents write playbooks for a referee. The Sheriff wins 13 of 16 games. Separate routes show card creation, balance proposals, the Outrider save hook, a seat-private Power, scheduled Night Watch, release review and the independent Python audit.">
 </picture>
 
 [Full-size animated map](docs/media/frontier-workflow-map.svg) · [Expanded diagram](docs/media/frontier-night-shift.svg) · [Still map](https://raw.githubusercontent.com/alejandro-publius/cowboys-vs-wizards/main/docs/media/frontier-workflow-map.svg#still) · [Workflow evidence](docs/evidence/frontier-workflows.md) · [Native Kiro CLI capture](docs/evidence/kiro-night-shift-native.png)
