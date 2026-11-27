@@ -15,7 +15,7 @@ const ROOT = fileURLToPath(new URL("../../", import.meta.url));
 test("JCS-1: .devcontainer/devcontainer.json configures Node 22 + Python 3 with npm ci and zero secrets", () => {
   const raw = readFileSync(join(ROOT, ".devcontainer/devcontainer.json"), "utf8");
   const cfg = JSON.parse(raw);
-  assert.match(cfg.image, /javascript-node:1-22/);
+  assert.equal(cfg.image, "mcr.microsoft.com/devcontainers/javascript-node:22-bookworm");
   assert.equal(cfg.features["ghcr.io/devcontainers/features/python:1"].version, "3.12");
   assert.equal(cfg.postCreateCommand, "npm ci");
   assert.deepEqual(cfg.forwardPorts, [4179, 8080]);

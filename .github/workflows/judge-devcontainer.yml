@@ -1,0 +1,54 @@
+name: Judge devcontainer
+
+on:
+  pull_request:
+    paths:
+      - .devcontainer/**
+      - .github/workflows/judge-devcontainer.yml
+      - .kiro/specs/night-shift-balance-contract/requirements.md
+      - docs/evidence/billy-seat-audit/protocol.json
+      - docs/evidence/billy-seat-audit/result.json
+      - docs/evidence/billy-seat-audit/outcomes.csv.gz
+      - scripts/billy-balance-gate.mjs
+      - scripts/billy-seat-audit.mjs
+      - scripts/billy-replay-engine.mjs
+      - scripts/night-review.mjs
+      - scripts/showdown-balance-contract.mjs
+      - src/ui/billy-replay.data.js
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  boot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install the Dev Container CLI on the runner
+        run: |
+          npm install --prefix "$RUNNER_TEMP/judge-cli" @devcontainers/cli@0.90.0
+          echo "$RUNNER_TEMP/judge-cli/node_modules/.bin" >> "$GITHUB_PATH"
+
+      - name: Boot the judge devcontainer and run its postCreateCommand
+        run: devcontainer up --workspace-folder .
+
+      - name: Check Linux, runtimes, installed dependencies and the Python referee
+        run: |
+          devcontainer exec --workspace-folder . bash -euo pipefail -c '
+            test "$(uname -s)" = Linux
+            version=$(node --version)
+            echo "$version"
+            [[ "$version" =~ ^v22\.([0-9]+)\. ]]
+            (( BASH_REMATCH[1] >= 18 ))
+            python3 --version | grep -E "^Python 3\.12\."
+            npm ls --depth=0
+            python3 proof/referee/referee.py --check-catalog prototypes/showdown/cards.csv
+          '
+
+      - name: Reproduce both historical Billy verdicts in the running container
+        run: devcontainer exec --workspace-folder . node .devcontainer/judge-billy.mjs "$GITHUB_SHA"
