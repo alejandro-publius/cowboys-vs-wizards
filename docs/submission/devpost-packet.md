@@ -4,9 +4,29 @@ Draft for Alex’s review. The pitch and Built With tags below are ready to past
 
 ## Pitch
 
-Cowboys vs. Wizards is a haunted Western card game for strategy players who like to ask, “Could I have won that turn?” In the Night Shift Saloon, Kiro proposes taking one point off Billy’s attack. Fire at the same Bone Wall under both rules. Then take Billy’s next turn against the Headless Horseman and see if you can save the deal the bots lost.
+**Cowboys vs. Wizards: Showdown** is a haunted-Western tactical card game—and playable AI balance courtroom—for strategy players and game designers who want to test an AI balance patch before it hits their deck. Live-service card games struggle with blind nerfs and unverified LLM balance tweaks. In the **Night Shift Saloon**, a Kiro CLI Workflow (`wf_87723b3404bba1fc`) proposed cutting Billy’s attack from `2` to `1` inside a fenced scratch worktree, and an independent Kiro reviewer checked it against a SHA-locked EARS spec (`NSB-1`: `45–55%` faction share; `NSB-2`: `≤1%` first-seat skew growth). Across **100,000 held-out bot duels**, Cowboy wins moved from `59.792%` to `51.920%`. Instead of shipping a blind nerf, the Saloon puts both versions of Billy on the table: fire at Bone Wall under each rule, then take over turn nine against the Headless Horseman and prove the weaker Billy still wins when you take cover.
 
-Kiro CLI proposed the change. A separate reviewer used a written Kiro spec to check it. Across 100,000 held-out bot duels, the Cowboys’ win rate moved from 59.792% to 51.920%. The Saloon lets players try the proposal while the Trail keeps Billy’s original attack. Other game makers can rerun the same balance check with `node scripts/billy-balance-gate.mjs --arm candidate`. [Kiro spec](../../.kiro/specs/night-shift-balance-contract/requirements.md) · [Recorded workflow](../evidence/kiro-night-shift-native.png) · [Audit and reproduction steps](../evidence/billy-seat-audit/README.md)
+Beyond the Saloon, players battle across the six-duel Trail, build custom 16-card Cowboy decks in Camp, hunt Wanted bosses, or step to the back table for **Boot Hill Poker**—a second live game sharing the open-source [`packages/frontier-kit`](../../packages/frontier-kit/README.md) seeded RNG and paired-cohort audit tools. Other developers can rerun the balance gate directly with `node scripts/billy-balance-gate.mjs --arm candidate` or schedule commit-to-commit patrols with the companion [Night Watch Kiro Crew app](night-watch-crew-writeup.md). [Kiro spec](../../.kiro/specs/night-shift-balance-contract/requirements.md) · [Recorded workflow](../evidence/kiro-night-shift-native.png) · [Audit and reproduction steps](../evidence/billy-seat-audit/README.md)
+
+## Judging criteria at a glance
+
+| Criterion (20% each) | Verified evidence in this entry |
+| --- | --- |
+| **Potential Impact** | Solves opaque game-balance tuning for strategy players and indie builders: players test disputed AI patches interactively in the Saloon before adoption, while builders reuse [`packages/frontier-kit`](../../packages/frontier-kit/README.md), `billy-balance-gate.mjs`, the [`orb-duel-review`](../../.kiro/powers/orb-duel-review/) Power, and the [`Night Watch`](night-watch-crew-writeup.md) Crew app. Full keyboard play, `375px` mobile layouts, and hotseat privacy curtain. |
+| **Technological Implementation** | `246+` tracked files in [`.kiro/`](../../.kiro/): `44` specs, `20` path-fenced/read-only custom agents, `12` CLI hook configs across all `9` triggers (including `PostFileSave` Outrider drift refusal), `fileMatch`-scoped steering verified across isolated CLI sessions, `7` native Workflows, MCP seat tools, `fast-check` property suites, and scheduled Kiro Crew runs. |
+| **Design** | Complete illustrated 3D Showdown + pixel Night Shift Saloon + lightweight `/graybox/` + `/poker/`: Trail campaign, 16-card deck builder + side-deck best-of-three, Wanted boss hunts, inspectable graveyards, portable save codes, and reduced-motion support. |
+| **Innovation / Idea** | Kiro runs inside the product's design governance: SHA-locked EARS specs gate AI card-stat proposals over 100,000 paired duels, an independent Python referee audits `274,273` legal branches (isolating 39 empty-board Hellfire cases), and players playtest the contested turn in-browser. |
+| **Presentation** | Focused `1:20` narrated & captioned demo opening immediately in gameplay (`0:00`), live zero-login GitHub Pages deployment with cryptographic `build.json` verification, and receipt-linked judge walkthrough ([`JUDGE-GUIDE.md`](../JUDGE-GUIDE.md)). |
+
+## How the haunted costume does a job
+
+| Haunted Costume Contest element | Functional job for the player |
+| --- | --- |
+| **Night Shift Saloon table** | Interactive A/B diff table for Kiro's `Billy 2 → 1` proposal and turn-9 Headless Horseman counterplay |
+| **Glowing life orbs** | Immediate integer health, cover protection, and Base-overflow readout without small-text math |
+| **Open faction graveyards & pass curtain** | Previews the exact Undead troop `Raise` will summon while hiding private hands/traps during two-player pass-and-play |
+| **Bone Wall (`Guard`) & Outrider (`Ride`)** | On-table combat forecasts show hit-back, trap risk, and Base ride-past before committing a move |
+| **Sheriff’s Ledger & Saloon notice board** | Displays live build checksums, 100,000-duel held-out shares, and fresh/stale Outrider gate verdicts in-world |
 
 ## Built With
 
@@ -52,8 +72,8 @@ Camp holds the Trail, rivals, two Wanted bounties, packs, the 16-card deck build
 
 ## Who did what
 
+- **Kiro** (CLI workers, native Workflows, IDE and Crew) moved Showdown into the game with its Trail, Camp and saves. Kiro built the 29-card catalog, the combat cues, the fair Scout bot, the property tests, the `showdown-presenter` profile, the MCP seat tools and Power 1.3.0. For the contest it built the Outrider gate and its save hook, the contest task and save checks, and the Billy proposal run. It also ran the Saloon lifecycle and live-feed checks. Kiro changed no rule, card number or wording. Earlier, Kiro built the lane match presentation and its spec, and imported and rigged the characters ([character evidence](../evidence/kiro-character-assets.md)).
 - **Fable 5.2** (Claude Code) designed Showdown: rules, cards, Trail, bots and art direction ([rulebook](../../prototypes/showdown/RULEBOOK.md), PR [#142](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/142)). Fable also wrote the lane engine, its CPU, and the lane judge script and playtest protocol. Fable owns game design, wording rulings, balance, and the approval of any card change.
-- **Kiro** (CLI workers, native Workflows and Crew) moved Showdown into the game with its Trail, Camp and saves. Kiro built the 29-card catalog, the combat cues, the fair Scout bot, the property tests, the `showdown-presenter` profile, the MCP seat tools and Power 1.3.0. For the contest it built the Outrider gate and its save hook, the contest task and save checks, and the Billy proposal run. It also ran the Saloon lifecycle and live-feed checks. Kiro changed no rule, card number or wording. Earlier, Kiro built the lane match presentation and its spec, and imported and rigged the characters ([character evidence](../evidence/kiro-character-assets.md)).
 - **Codex** coordinated workers, wrote the always-on `build-evidence.md` steering file and checked frozen candidates independently. It staged the illustrated release, measured the fresh-seed Billy sample, integrated the playable Saloon table with both pinned engines, and recorded the November 26 demo. [Saloon implementation](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/225)
 - **Claude Code** (Opus 5.5) drafted the Billy Ledger interaction, its focused tests and the first verifier ([Billy replay](../evidence/billy-replay.md)). On November 23 it ran the referee and Wizard-lesson sessions ([handoff](../evidence/claude-cli-followup-20261123.md)) and wrote the recording script.
 - **Rachel Selbrede** (`rachelselbrede`) has 13 commits under her account, all on November 16 during the lane era. They include the rules check (PR [#58](https://github.com/alejandro-publius/cowboys-vs-wizards/pull/58), produced in a Claude Code session), CI on every pull request (#31), the opt-in clash log, the WebKit smoke check, the docs link check, the `?cpu=` levels and the first eight-topic Kiro write-up. **OWNER:** confirm how Rachel wants to be credited, and whether she is a teammate on the form.
@@ -94,8 +114,8 @@ On November 26, GitHub served the repository publicly and identified its root li
 
 ## Category and bonuses
 
-- **Proposed category for the form — Costume Contest.** At the Saloon, the Wizard brings a change to the table. The player fires the disputed shot and can take over the duel. The haunted room gives the player a job in the review. Alex confirms the category when submitting.
-- **Crew bonus:** the Night Watch app has [its own repository](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch). Its form write-up is not drafted.
+- **Category: Costume Contest.** At the Saloon, the Wizard brings a change to the table. The player fires the disputed shot and can take over the duel. The haunted room gives the player a job in the review. Alex confirms the category when submitting.
+- **Crew bonus:** the Night Watch app has [its own repository](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch) and a ready-to-paste [Best Kiro Crew App write-up](night-watch-crew-writeup.md).
 - **Blog bonus:** requires a public third-party post that mentions Kiroween 2026. The publishable [build story](build-story.md) opens with the Billy audit. The earlier lane version is archived below its end marker.
 - **Social bonus:** optional. A person must write it; no agent should. Nothing has been posted.
 - **Student eligibility: OWNER.** Requires current enrollment and details for every teammate. School affiliation alone is insufficient.

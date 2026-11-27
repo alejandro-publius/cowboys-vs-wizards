@@ -1,10 +1,13 @@
 # Cowboys vs. Wizards: Showdown
 
-Built with Kiro for Kiroween 2026, this haunted Western card duel gives strategy players another shot at a losing turn. In the Night Shift Saloon, Kiro wants to take one attack point from Billy. Fire at Bone Wall with both versions. When the weaker Billy loses in the bots’ hands, take his next turn and try to win the same deal. Out on the Trail, you choose every attack, defend your Base and build your own deck.
+Built with Kiro for Kiroween 2026 (**Costume Contest**), **Cowboys vs. Wizards: Showdown** lets strategy players and game designers playtest an AI-proposed card balance change before it hits their deck. In the **Night Shift Saloon**, Kiro CLI proposed cutting Billy’s attack from `2` to `1` under a SHA-locked Kiro spec (`NSB-1` / `NSB-2`) verified across **100,000 held-out bot duels** (`59.792% → 51.920%` Cowboy share). Fire at Bone Wall under both rules—and when the weaker Billy loses in the bots’ hands, take over turn nine against the Headless Horseman and save the deal by taking cover. Beyond the Saloon, play the full haunted-Western Trail, build a 16-card deck in Camp, or deal into **Boot Hill Poker**, a second live game powered by the shared [`packages/frontier-kit`](packages/frontier-kit/README.md) engine tools.
 
-**[Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/)** · [Kiro’s balance spec](.kiro/specs/night-shift-balance-contract/requirements.md) · [Recorded Kiro workflow](docs/evidence/kiro-night-shift-native.png) · [One-minute judge walkthrough](docs/JUDGE-GUIDE.md) · [Rules and cards](prototypes/showdown/RULEBOOK.md) · [Current build and review status](docs/PROJECT-STATUS.md#current-build)
+**[Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/)** · [Night Shift Saloon (`?saloon=review`)](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) · [Kiro’s balance spec](.kiro/specs/night-shift-balance-contract/requirements.md) · [One-minute judge walkthrough](docs/JUDGE-GUIDE.md) · [Devpost packet](docs/submission/devpost-packet.md) · [Rules and cards](prototypes/showdown/RULEBOOK.md) · [Current build and review status](docs/PROJECT-STATUS.md#current-build)
 
-![The Night Shift Saloon. Beside the recorded Kiro review, Billy can attack Headless Horseman or take cover on turn nine.](docs/evidence/showdown-saloon-billy-table.png)
+| Playable AI Balance Courtroom (`?saloon=review`) | Recorded Native Kiro CLI Workflow (`wf_87723b3404bba1fc`) |
+| --- | --- |
+| ![The Night Shift Saloon. Beside the recorded Kiro review, Billy can attack Headless Horseman or take cover on turn nine.](docs/evidence/showdown-saloon-billy-table.png) | ![Captured from Kiro CLI 3.5.0 stream output: night-shift-review preparing and testing one-number card balance proposals.](docs/evidence/kiro-night-shift-native.png) |
+| Fire Billy’s printed `2`-attack shot vs. Kiro’s `1`-attack proposal, then play turn nine yourself | Isolated preparer/reviewer agents gated by `.kiro/specs/night-shift-balance-contract/requirements.md` |
 
 ## Play Showdown
 
@@ -40,11 +43,31 @@ Open `dist/cowboys-vs-wizards-showdown-3d.html` in a browser to play the illustr
 
 ## How it is made
 
-Codex now maintains the build and the pull request queue. The repository also records the original design and implementation work.
+**Kiro** sits at the center of both development and the playable Night Shift Saloon (`246+` tracked files under [`.kiro/`](.kiro/)):
 
-- **Fable (Claude Code)** designed mechanics, progression and engine contracts. Its briefs are in [docs/design](docs/design/README.md).
-- **Kiro** implemented the gameplay briefs and ran the recorded balance, rules and release checks. See [Built with Kiro](#built-with-kiro).
-- **Codex** integrates current changes, reviews the game against its rules and tests the published build in a browser.
+| Kiro capability | Tracked in [`.kiro/`](.kiro/) | What it governs |
+| --- | --- | --- |
+| **Specs** | `44` spec folders (`660+` `SHALL` clauses, `10` written reviews) | Card catalog contracts, Outrider `G1–G7` gate, `NSB-1`/`NSB-2` balance thresholds, Saloon rooms |
+| **Custom agents** | `20` profiles in [`.kiro/agents/`](.kiro/agents/) | Path-fenced `contest-balance-preparer` vs. read-only `contest-balance-reviewer`, `showdown-presenter`, `showdown-seat-auditor` |
+| **Hooks** | `12` CLI hook configs across all `9` automatic triggers | `check-outrider-gate` on `PostFileSave` (`0 fresh, 10 stale` on drift), `PreToolUse` scope fences, doc-link checks, Stop gates |
+| **Scoped steering** | `6` files in [`.kiro/steering/`](.kiro/steering/) (`inclusion: fileMatch` & `always`) | `rules-area.md` loaded for `src/game/**` reads and excluded on UI reads ([receipt](docs/evidence/showdown-scoped-steering.md)) |
+| **Workflows, Power & Crew** | `7` Workflows, [`orb-duel-review`](.kiro/powers/orb-duel-review/) Power/MCP, [`Night Watch`](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch) Crew app | Native balance/audit loops, seat-private MCP duel play, and scheduled 2,000-duel commit patrols |
+
+- **Kiro** implemented the Showdown gameplay briefs, the 29-card catalog, Camp/saves, property suites, Power 1.3.0, and the recorded balance, rules, and release workflows. See [Built with Kiro](#built-with-kiro).
+- **Fable (Claude Code)** designed mechanics, progression, and engine contracts ([docs/design](docs/design/README.md)) and approves card/rule changes with Alex.
+- **Codex** maintains the integration queue, reviews PRs against the rules contract, and verifies staged Pages builds in headless Chrome.
+
+## How the haunted costume does a job
+
+Every spooky Western element in the Costume Contest interface carries a concrete gameplay or audit function:
+
+| Haunted interface element | Functional UX job |
+| --- | --- |
+| **Night Shift Saloon card table** | Turns a raw AI balance diff (`Billy attack 2 → 1`) into a playable two-shot courtroom where players prove counterplay survives |
+| **Glowing life orbs on troops & Bases** | Instant integer health & overflow math across desktop and `375px` phone screens without tiny-font arithmetic |
+| **Inspectable faction graveyards** | Shows the exact Undead card `Raise` will return and clears private hands behind a pass curtain in two-player hotseat |
+| **Bone Wall (`Guard`) & Outrider (`Ride`)** | Spatial silhouettes and target-forecast banners communicate blocking vs. riding past before a click commits |
+| **Sheriff’s Ledger & notice board** | Surfaces SHA-256 build digests, 100,000-duel held-out seat shares, and stale/fresh Outrider gate status in-world |
 
 ## Verify
 
