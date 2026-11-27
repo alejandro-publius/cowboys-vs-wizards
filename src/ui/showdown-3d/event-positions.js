@@ -73,7 +73,11 @@ export function presentationBeats(trace) {
       const t = get(mark);
       if (t) {
         fallen.set(t.cardId, { mark, troop: structuredClone(t) });
-        if (transfer) departures.push({ from: mark, side: mark.side, cardId: t.cardId });
+        if (transfer) {
+          for (const cardId of [t.cardId, ...t.gear]) {
+            departures.push({ from: mark, side: mark.side, cardId });
+          }
+        }
         table.sides[mark.side].board[mark.slot] = null;
       }
     };
