@@ -88,7 +88,7 @@ export function mountCampOutpost(root) {
       <a class="saloon-bounty-bill" data-saloon-wanted href="?room=wanted">
         <div class="saloon-bounty-copy">
           <h3>Wanted on the frontier</h3>
-          <p>The Lantern Wraith shrugs off spells. The Graveyard Dragon burns the whole line.</p>
+          <p>Deadeye can't target the Lantern Wraith. When the Graveyard Dragon attacks a troop, its Sweep hits every other enemy troop.</p>
           <span class="saloon-bounty-action">Open the Wanted board <span aria-hidden="true">→</span></span>
         </div>
       </a>

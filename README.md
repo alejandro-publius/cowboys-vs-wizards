@@ -1,6 +1,6 @@
 # Cowboys vs. Wizards: Showdown
 
-Ride out from Boot Hill with a 16-card deck. On the far side of the frontier, a Lantern Wraith ignores spells and a Graveyard Dragon can burn your whole line. Clear six Trail stops, hunt either boss five times, and you can play its card on your side of the table.
+Ride out from Boot Hill with a 16-card deck. Deadeye can't target the Lantern Wraith. The Graveyard Dragon can take an orb from every troop beside the one it attacks. Clear six Trail stops and beat either boss in five hunts to earn its card for your deck.
 
 **[Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/)** · [Scout the Graveyard Dragon](https://alejandro-publius.github.io/cowboys-vs-wizards/?room=wanted) · [Visit the Night Shift Saloon](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review)
 
@@ -22,6 +22,12 @@ Ride out from Boot Hill with a 16-card deck. On the far side of the frontier, a 
 </picture>
 
 The full campaign saves in your browser. The Dragon practice positions replay recorded deals and leave your collection alone. You can also try the Outrider’s opening choice or use the lightweight board. [Ride or Fight?](https://alejandro-publius.github.io/cowboys-vs-wizards/?outrider=case-e) · [Lightweight Camp](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) · [Rules and cards](prototypes/showdown/RULEBOOK.md)
+
+| What you see | What it means for your next move |
+| --- | --- |
+| Five tally marks under a Wanted portrait | Each filled mark records a hunt you won against that boss. Scouting leaves the tally alone. |
+| **Captured** stamped across the portrait | Open the portrait to see the Cowboy card you earned. Choose **Build with** to put it in your deck. |
+| **Ghostly** on the Wraith | A spell that picks a target, such as Deadeye, can't choose it. Once your captured Wraith faces the Wizard, Hellfire can still take an orb from it. |
 
 <a id="how-kiro-reviews-a-card-change"></a>
 
