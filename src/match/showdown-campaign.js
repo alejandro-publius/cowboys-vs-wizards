@@ -51,9 +51,7 @@ export function createCampaign(storage, {deferImport = false} = {}) {
     inherited = joinInherited(storage, laneCapturedCards(storage));
   };
   if (!deferImport) enter();
-  // saveCampaign returns {ok} and never throws. Storage can be blocked or full: play on with the
-  // progress in memory, and the Camp says so.
-  const keep = (next) => {
+  const refresh = () => {
     const current = campaignText(storage);
     if (current !== undefined && current !== (stored ?? null)) {
       stored = current;
@@ -61,6 +59,12 @@ export function createCampaign(storage, {deferImport = false} = {}) {
       saved = true;
       throw new CampaignChanged();
     }
+    return current;
+  };
+  // saveCampaign returns {ok} and never throws. Storage can be blocked or full: play on with the
+  // progress in memory, and the Camp says so.
+  const keep = (next) => {
+    const current = refresh();
     progress = next;
     saved = current !== undefined && saveCampaign(storage, progress).ok === true;
     if (saved) stored = JSON.stringify(progress);
@@ -68,6 +72,7 @@ export function createCampaign(storage, {deferImport = false} = {}) {
   return {
     // The first Camp entry: imports the lane keepsakes (once) and, for a deferred campaign, reloads the career.
     enter,
+    refresh,
     progress: () => progress,
     saved: () => saved && inherited.saved,
     // Owned cards for the Camp list, each once: [{type, copies, inherited}].

@@ -139,13 +139,16 @@ export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
   });
   function open(id, source = document.activeElement, buildDeck) {
     if (id !== undefined && !Object.hasOwn(TYPES, id)) return;
-    onBuild = buildDeck;
+    const show = (focus) => {
+      // The native dialog returns focus to this control, including inside the Wanted room.
+      source?.focus({preventScroll: true});
+      book.showModal();
+      focus.focus();
+    };
+    onBuild = buildDeck && (type => buildDeck(type, () => show(build)));
     if (id) side = TYPES[id].side;
     turn(id ?? selected);
-    // The native dialog returns focus to this control, including inside the Wanted room.
-    source?.focus({preventScroll: true});
-    book.showModal();
-    find(id ? '.book-portrait[aria-pressed="true"]' : '.book-tabs [aria-pressed="true"]').focus();
+    show(find(id ? '.book-portrait[aria-pressed="true"]' : '.book-tabs [aria-pressed="true"]'));
   }
   for (const gallery of [title, duel].map(screen => screen.querySelector(".sd-open-gallery")).filter(Boolean)) {
     const button = element("button", "book-launch", "Character book");

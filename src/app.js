@@ -107,10 +107,13 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   }
   const writeCamp = createCampaignWriter(storage, showChangedCamp);
   const builder = mountBuilder(builderRoot, {campaign, writeCamp, paintCardFaces: diorama?.paintCardFaces});
-  function openDeck(rewardType) {
+  function openDeck(rewardType, cancel) {
+    const finish = () => {
+      last = rewardType ? null : "#camp-build";
+      toCamp();
+    };
     showOnly(builderRoot);
-    last = rewardType ? null : "#camp-build";
-    builder.openDeck({done: toCamp, cancel: toCamp, focusType: rewardType});
+    builder.openDeck({done: finish, cancel: cancel ?? finish, focusType: rewardType});
   }
   // Wizard lesson: review a finished duel or an episode file, rematch the identical deal. The rematch settles nothing
   // (kind "lesson"); its Wizard uses a lesson only when the player opted in (policy null otherwise).
@@ -132,7 +135,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   };
   const showdown = mountShowdown(screen, {onHome: home, campaign, writeCamp, playtest, nextSeed: seedFor, mountBoard: diorama?.mountDiorama,
     onBuildReward: openDeck,
-    onOpenCaptureBook: diorama && ((id, button, build) => openBookCard(id, button, build)),
+    onOpenCaptureBook: diorama && openCollectionBook,
     onBootHill: () => campaign?.trailDuel?.()?.battlefield === "boot-hill" ? startCampDuel("trail") : false,
     onReview: (record) => { showLesson(); lessonPage.openFromDuel(record); },
     onLessonBack: () => { showLesson(); lessonPage.reopen(); },
@@ -148,9 +151,23 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     onBuild: openDeck,
     onDuel: startCampDuel});
   const openBookCard = diorama?.mountGallery(title, screen, {cowboy: campaign.owned, wizard: preview.owned});
+  function openCollectionBook(id, source) {
+    const origin = campRoot.contains(source) ? campRoot : screen;
+    openBookCard(id, source, (type, reopen) => writeCamp(() => {
+      // Closing the book focused its opener. The player may have moved on while waiting for the lock.
+      if (document.activeElement !== source) return;
+      campaign.refresh();
+      if (!campaign.owned(type)) return;
+      openDeck(type, () => {
+        showOnly(origin);
+        if (origin === campRoot) outpost.restoreFocus(source);
+        reopen();
+      });
+    }));
+  }
   if (openBookCard) campRoot.addEventListener("click", (event) => {
     const button = event.target.closest("button[data-book-card]");
-    if (button && !button.disabled && !campRoot.hidden) openBookCard(button.dataset.bookCard, button, openDeck);
+    if (button && !button.disabled && !campRoot.hidden) openCollectionBook(button.dataset.bookCard, button);
   });
   // Play from the title is a fresh entry: forget the control of the last duel so toCamp opens on the Trail instead of
   // restoring that duel's room. Only a return from a duel (home, Back to camp) keeps `last`.

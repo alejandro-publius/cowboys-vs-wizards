@@ -627,12 +627,6 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     if (next && next !== document.activeElement) next.focus();
   }
 
-  function buildWithReward(type) {
-    cues.clear();
-    boardPresentation?.clear();
-    onBuildReward(type);
-  }
-
   root.addEventListener("click", (event) => {
     const b = event.target.closest("button");
     if (!b || b.disabled || !session || settling) return;
@@ -675,12 +669,14 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
       else claim();
     }
     else if (d.openCaptureBook && d.openCaptureBook === outcome?.earned?.captured && camp === campaign && onOpenCaptureBook) {
-      return onOpenCaptureBook(d.openCaptureBook, b, onBuildReward && buildWithReward);
+      return onOpenCaptureBook(d.openCaptureBook, b);
     }
     else if ((b.hasAttribute("data-build-reward") || b.hasAttribute("data-build-capture")) && camp === campaign && onBuildReward) {
       const reward = b.hasAttribute("data-build-capture") ? outcome?.earned?.captured : picked;
       if (!reward) return;
-      buildWithReward(reward);
+      cues.clear();
+      boardPresentation?.clear();
+      onBuildReward(reward);
     }
     else if (b.id === "sd-again" && outcome) again();
     else if (b.id === "sd-review" && outcome && setup) {
