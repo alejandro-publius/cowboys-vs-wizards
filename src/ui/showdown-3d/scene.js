@@ -558,7 +558,11 @@ function build(host, canvas, screen, closeup = false) {
 
 export function mountGallery(title, duel, ownedBySide) {
   const openReplay = mountCardGallery(title, duel, (host, canvas, dialog) => build(host, canvas, dialog, true));
-  return mountCharacterBook(title, duel, {ownedBySide, openReplay, portrait: cardArtwork, handFace: paintedFace});
+  const openBook = mountCharacterBook(title, duel, {ownedBySide, openReplay, portrait: cardArtwork, handFace: paintedFace});
+  const more = title.querySelector(".opening-more");
+  more.open = new URLSearchParams(location.search).get("book") === "1";
+  more.append(title.querySelector(".book-shelf"));
+  return openBook;
 }
 
 function disposePawn(group) {
