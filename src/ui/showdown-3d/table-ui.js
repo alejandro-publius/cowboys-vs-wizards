@@ -6,6 +6,32 @@ export { cardArtwork };
 
 const icons = { troop: "◆", spell: "✦", trap: "△", gear: "◇", location: "▰" };
 
+// Only shorten the visual copy. Keyboard target descriptions and the cover tooltip use the public prompt.
+export function compactSelectionPrompt(text, evenFight = false) {
+  if (!/^(Choose|A Guard|No enemy|This troop)/.test(text)) return "";
+  if (text.startsWith("Choose a tribute for ")) {
+    return text
+      .replace(/^Choose a tribute for (.+?)\./, "$1 tribute")
+      .replace(/ Pay ([^:]+): /g, " · $1 → ")
+      .replaceAll(" returns with 1 orb.", " (1 orb)")
+      .replaceAll("no Undead to return.", "no Undead")
+      .replace(" The Wizard fills your last slot, so nothing returns.", " · Last slot · nothing returns");
+  }
+  return text
+    .replace("Choose what to attack.", "Pick attack target")
+    .replace("No enemy troops: strike the Base.", "Strike Base")
+    .replace("A Guard stands in the way: attack it first.", "Attack a Guard")
+    .replace("This troop cannot attack now.", "Cannot attack")
+    .replace(" A face-down trap springs before damage.", " · trap before damage")
+    .replace(" Or take cover:", " · or take cover:")
+    .replace(" Take cover:", " · Take cover:")
+    .replace("cover: until your next turn it keeps extra damage off your Base, but it will not hit back.", "cover")
+    .replace(" Spells cannot hit a troop in cover.", " (avoids spells)")
+    .replace(/^Choose an enemy troop for (.+)\.$/, evenFight ? "$1 · Pick an uncovered enemy troop" : "$1 · Pick an enemy troop")
+    .replace(/^Choose one of your troops to carry (.+)\.$/, "$1 · Pick your troop")
+    .replace(/^Choose (\d+) of your troops to send to the graveyard as payment for (.+)\.$/, "$2 · Pay with $1 of your troops");
+}
+
 const el = (tag, cls, word) => {
   const node = document.createElement(tag);
   if (cls) node.className = cls;
@@ -95,6 +121,7 @@ export function bindTableUI(root) {
   const goHome = nav.querySelector("#sd-home");
   const status = root.querySelector("#sd-status");
   const originalPrompt = root.querySelector("#sd-prompt");
+  const cover = root.querySelector("#sd-cover");
   const hand = root.querySelector("#sd-hand");
   const result = root.querySelector("#sd-result");
   const handRules = el("details", "table-hand-rules");
@@ -146,14 +173,9 @@ export function bindTableUI(root) {
         ? "Choose a card"
         : (added?.textContent.split(":")[0] ?? status.textContent.split(" · ")[0]));
       if (!goHome.matches("[data-return-wanted], [data-return-book]")) goHome.textContent = "Camp";
-      // A pick's whole instruction: the choice, its trap or Raise hint, and the cover alternative.
-      if (!ended && /^(Choose|A Guard|No enemy|This troop)/.test(originalPrompt.textContent)) {
-        prompt.textContent = originalPrompt.textContent;
-        prompt.hidden = false;
-      } else {
-        prompt.textContent = "";
-        prompt.hidden = true;
-      }
+      prompt.textContent = ended ? "" : compactSelectionPrompt(originalPrompt.textContent, view.evenFight);
+      prompt.hidden = !prompt.textContent;
+      cover.title = cover.hidden || ended ? "" : originalPrompt.textContent;
       finish();
     },
     restore() {
@@ -164,6 +186,7 @@ export function bindTableUI(root) {
       root.classList.remove("table-resolved");
       if (!goHome.matches("[data-return-wanted], [data-return-book]")) goHome.textContent = "Back to camp";
       prompt.textContent = "";
+      cover.removeAttribute("title");
       prompt.hidden = turn.hidden = series.hidden = headline.hidden = true;
     },
   };

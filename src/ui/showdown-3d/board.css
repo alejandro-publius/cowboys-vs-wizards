@@ -55,9 +55,6 @@
       1px 1px 0 #131c2c,
       0 2px 2px #121b2c;
   }
-  .sd-world-labels .empty {
-    color: #d1c8bf;
-  }
   .sd-diorama #sd-board .sd-side {
     display: contents;
   }

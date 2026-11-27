@@ -116,6 +116,14 @@ test("observer parsers read the page's visible wording", () => {
   assert.deepEqual(parseWorldLabel("Deck 12"), {title: "Deck", count: 12});
 });
 
+test("compact world labels preserve public zone counts when empty labels are hidden", () => {
+  assert.deepEqual(parseWorldLabel("12", {zoneTitle: "Deck", zoneCount: "12"}), {title: "Deck", count: 12});
+  assert.deepEqual(parseWorldLabel("", {zoneTitle: "Graveyard", zoneCount: "0"}), {title: "Graveyard", count: 0});
+  assert.deepEqual(parseWorldLabel("▲ 1", {zoneTitle: "Traps", zoneCount: "1", zoneMax: "2"}), {title: "Traps", count: 1, of: 2});
+  assert.deepEqual(parseWorldLabel("", {zoneTitle: "Graveyard"}), {title: "Graveyard", count: null});
+  assert.deepEqual(parseWorldLabel("Graveyard 3", {}), {title: "Graveyard", count: 3});
+});
+
 const side = (hand) => ({base: {now: 5, max: 5}, counts: {hand, deck: 15, graveyard: 0}, traps: {count: 0, names: []}, backs: null,
   slots: [0, 1, 2].map((slot) => ({side: "x", slot, empty: true}))});
 const obs = (hand, extra = {}) => ({curtain: null, viewer: "cowboy", status: {text: "turn 1", turn: 1, active: "cowboy", result: null},
