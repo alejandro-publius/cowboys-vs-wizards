@@ -2,8 +2,8 @@
   "schema": "cvw-property-receipt/1",
   "generator": "dec4-property-suite/1",
   "ruleset": "showdown+frontier-kit+poker",
-  "commit": "93db9f3e2f3970ec8b391650199027eac1d252db",
-  "generatedAt": "2026-11-27T00:54:07.328Z",
+  "commit": "70303354b2cde4af3cba8801122f3c44842ba6d7",
+  "generatedAt": "2026-11-27T06:32:18.448Z",
   "command": "node scripts/run-dec4-property-suite.mjs",
   "summary": {
     "properties": 105,
@@ -240,15 +240,6 @@
       "seed": 1563138424
     },
     {
-      "id": "PROP-036",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": 1613618376
-    },
-    {
       "id": "PROP-004",
       "file": "tests/game/showdown-catalog-fast-check.test.js",
       "status": "passed",
@@ -267,33 +258,6 @@
       "seed": 1663804138
     },
     {
-      "id": "PROP-066",
-      "file": "tests/game/poker-kit-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": 1648012257
-    },
-    {
-      "id": "PROP-037",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": 1630395995
-    },
-    {
-      "id": "PROP-038",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": 1580063138
-    },
-    {
       "id": "PROP-006",
       "file": "tests/game/showdown-catalog-fast-check.test.js",
       "status": "passed",
@@ -301,24 +265,6 @@
       "runs": 30,
       "passed": true,
       "seed": 1647026519
-    },
-    {
-      "id": "PROP-039",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": 1596840757
-    },
-    {
-      "id": "PROP-040",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -667593355
     },
     {
       "id": "PROP-007",
@@ -330,42 +276,6 @@
       "seed": 1630248900
     },
     {
-      "id": "PROP-041",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -684370974
-    },
-    {
-      "id": "PROP-067",
-      "file": "tests/game/poker-kit-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": 1631234638
-    },
-    {
-      "id": "PROP-042",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -701148593
-    },
-    {
-      "id": "PROP-068",
-      "file": "tests/game/poker-kit-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": 1547346543
-    },
-    {
       "id": "PROP-008",
       "file": "tests/game/showdown-catalog-fast-check.test.js",
       "status": "passed",
@@ -373,42 +283,6 @@
       "runs": 30,
       "passed": true,
       "seed": 1479250329
-    },
-    {
-      "id": "PROP-043",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -717926212
-    },
-    {
-      "id": "PROP-069",
-      "file": "tests/game/poker-kit-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": 1530568924
-    },
-    {
-      "id": "PROP-070",
-      "file": "tests/game/poker-kit-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -566780546
-    },
-    {
-      "id": "PROP-044",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -734703831
     },
     {
       "id": "PROP-009",
@@ -420,24 +294,6 @@
       "seed": 1462472710
     },
     {
-      "id": "PROP-045",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -751481450
-    },
-    {
-      "id": "PROP-071",
-      "file": "tests/game/poker-kit-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -550002927
-    },
-    {
       "id": "PROP-010",
       "file": "tests/game/showdown-catalog-fast-check.test.js",
       "status": "passed",
@@ -445,42 +301,6 @@
       "runs": 30,
       "passed": true,
       "seed": 1512658472
-    },
-    {
-      "id": "PROP-072",
-      "file": "tests/game/poker-kit-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -600335784
-    },
-    {
-      "id": "PROP-073",
-      "file": "tests/game/poker-kit-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -583558165
-    },
-    {
-      "id": "PROP-074",
-      "file": "tests/game/poker-kit-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -499670070
-    },
-    {
-      "id": "PROP-046",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -768259069
     },
     {
       "id": "PROP-011",
@@ -501,24 +321,6 @@
       "seed": 1546213710
     },
     {
-      "id": "PROP-047",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -785036688
-    },
-    {
-      "id": "PROP-075",
-      "file": "tests/game/poker-kit-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -482892451
-    },
-    {
       "id": "PROP-013",
       "file": "tests/game/showdown-catalog-fast-check.test.js",
       "status": "passed",
@@ -526,24 +328,6 @@
       "runs": 30,
       "passed": true,
       "seed": 1562991329
-    },
-    {
-      "id": "PROP-076",
-      "file": "tests/game/poker-kit-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -533225308
-    },
-    {
-      "id": "PROP-048",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -533372403
     },
     {
       "id": "PROP-014",
@@ -555,24 +339,6 @@
       "seed": 1579768948
     },
     {
-      "id": "PROP-077",
-      "file": "tests/game/poker-kit-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -516447689
-    },
-    {
-      "id": "PROP-049",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -550150022
-    },
-    {
       "id": "PROP-015",
       "file": "tests/game/showdown-catalog-fast-check.test.js",
       "status": "passed",
@@ -580,24 +346,6 @@
       "runs": 30,
       "passed": true,
       "seed": 1596546567
-    },
-    {
-      "id": "PROP-050",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -768406164
-    },
-    {
-      "id": "PROP-078",
-      "file": "tests/game/poker-kit-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -701001498
     },
     {
       "id": "PROP-016",
@@ -609,24 +357,6 @@
       "seed": 1613324186
     },
     {
-      "id": "PROP-079",
-      "file": "tests/game/poker-kit-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -684223879
-    },
-    {
-      "id": "PROP-051",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -751628545
-    },
-    {
       "id": "PROP-017",
       "file": "tests/game/showdown-catalog-fast-check.test.js",
       "status": "passed",
@@ -636,15 +366,6 @@
       "seed": 1630101805
     },
     {
-      "id": "PROP-052",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -734850926
-    },
-    {
       "id": "PROP-018",
       "file": "tests/game/showdown-catalog-fast-check.test.js",
       "status": "passed",
@@ -652,15 +373,6 @@
       "runs": 30,
       "passed": true,
       "seed": 1378437520
-    },
-    {
-      "id": "PROP-053",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -718073307
     },
     {
       "id": "PROP-019",
@@ -681,33 +393,6 @@
       "seed": -869218973
     },
     {
-      "id": "PROP-080",
-      "file": "tests/game/poker-kit-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": 1343749449
-    },
-    {
-      "id": "PROP-054",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -835516640
-    },
-    {
-      "id": "PROP-055",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -818739021
-    },
-    {
       "id": "PROP-021",
       "file": "tests/game/showdown-catalog-fast-check.test.js",
       "status": "passed",
@@ -715,24 +400,6 @@
       "runs": 30,
       "passed": true,
       "seed": -885996592
-    },
-    {
-      "id": "PROP-056",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -801961402
-    },
-    {
-      "id": "PROP-057",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -785183783
     },
     {
       "id": "PROP-022",
@@ -744,15 +411,6 @@
       "seed": -835663735
     },
     {
-      "id": "PROP-058",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -634185212
-    },
-    {
       "id": "PROP-023",
       "file": "tests/game/showdown-catalog-fast-check.test.js",
       "status": "passed",
@@ -760,15 +418,6 @@
       "runs": 30,
       "passed": true,
       "seed": -852441354
-    },
-    {
-      "id": "PROP-059",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": -617407593
     },
     {
       "id": "PROP-024",
@@ -780,15 +429,6 @@
       "seed": -802108497
     },
     {
-      "id": "PROP-060",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": 1681567495
-    },
-    {
       "id": "PROP-025",
       "file": "tests/game/showdown-catalog-fast-check.test.js",
       "status": "passed",
@@ -796,33 +436,6 @@
       "runs": 30,
       "passed": true,
       "seed": -818886116
-    },
-    {
-      "id": "PROP-061",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": 1664789876
-    },
-    {
-      "id": "PROP-062",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": 1715122733
-    },
-    {
-      "id": "PROP-063",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": 1698345114
     },
     {
       "id": "PROP-026",
@@ -834,42 +447,6 @@
       "seed": -768553259
     },
     {
-      "id": "PROP-064",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": 1614457019
-    },
-    {
-      "id": "PROP-081",
-      "file": "tests/game/poker-kit-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": 1326971830
-    },
-    {
-      "id": "PROP-065",
-      "file": "tests/game/showdown-campaign-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": 1597679400
-    },
-    {
-      "id": "PROP-082",
-      "file": "tests/game/poker-kit-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": 1310194211
-    },
-    {
       "id": "PROP-027",
       "file": "tests/game/showdown-catalog-fast-check.test.js",
       "status": "passed",
@@ -877,33 +454,6 @@
       "runs": 30,
       "passed": true,
       "seed": -785330878
-    },
-    {
-      "id": "PROP-083",
-      "file": "tests/game/poker-kit-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": 1293416592
-    },
-    {
-      "id": "PROP-084",
-      "file": "tests/game/poker-kit-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": 1410859925
-    },
-    {
-      "id": "PROP-085",
-      "file": "tests/game/poker-kit-fast-check.test.js",
-      "status": "passed",
-      "numRuns": 30,
-      "runs": 30,
-      "passed": true,
-      "seed": 1394082306
     },
     {
       "id": "PROP-028",
@@ -976,6 +526,457 @@
       "runs": 30,
       "passed": true,
       "seed": 1663951233
+    },
+    {
+      "id": "PROP-036",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": 1613618376
+    },
+    {
+      "id": "PROP-037",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": 1630395995
+    },
+    {
+      "id": "PROP-038",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": 1580063138
+    },
+    {
+      "id": "PROP-039",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": 1596840757
+    },
+    {
+      "id": "PROP-040",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -667593355
+    },
+    {
+      "id": "PROP-041",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -684370974
+    },
+    {
+      "id": "PROP-042",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -701148593
+    },
+    {
+      "id": "PROP-043",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -717926212
+    },
+    {
+      "id": "PROP-044",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -734703831
+    },
+    {
+      "id": "PROP-045",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -751481450
+    },
+    {
+      "id": "PROP-046",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -768259069
+    },
+    {
+      "id": "PROP-047",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -785036688
+    },
+    {
+      "id": "PROP-048",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -533372403
+    },
+    {
+      "id": "PROP-049",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -550150022
+    },
+    {
+      "id": "PROP-050",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -768406164
+    },
+    {
+      "id": "PROP-051",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -751628545
+    },
+    {
+      "id": "PROP-052",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -734850926
+    },
+    {
+      "id": "PROP-053",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -718073307
+    },
+    {
+      "id": "PROP-054",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -835516640
+    },
+    {
+      "id": "PROP-055",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -818739021
+    },
+    {
+      "id": "PROP-056",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -801961402
+    },
+    {
+      "id": "PROP-057",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -785183783
+    },
+    {
+      "id": "PROP-058",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -634185212
+    },
+    {
+      "id": "PROP-059",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -617407593
+    },
+    {
+      "id": "PROP-060",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": 1681567495
+    },
+    {
+      "id": "PROP-061",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": 1664789876
+    },
+    {
+      "id": "PROP-062",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": 1715122733
+    },
+    {
+      "id": "PROP-063",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": 1698345114
+    },
+    {
+      "id": "PROP-064",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": 1614457019
+    },
+    {
+      "id": "PROP-065",
+      "file": "tests/game/showdown-campaign-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": 1597679400
+    },
+    {
+      "id": "PROP-066",
+      "file": "tests/game/poker-kit-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": 1648012257
+    },
+    {
+      "id": "PROP-067",
+      "file": "tests/game/poker-kit-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": 1631234638
+    },
+    {
+      "id": "PROP-068",
+      "file": "tests/game/poker-kit-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": 1547346543
+    },
+    {
+      "id": "PROP-069",
+      "file": "tests/game/poker-kit-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": 1530568924
+    },
+    {
+      "id": "PROP-070",
+      "file": "tests/game/poker-kit-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -566780546
+    },
+    {
+      "id": "PROP-071",
+      "file": "tests/game/poker-kit-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -550002927
+    },
+    {
+      "id": "PROP-072",
+      "file": "tests/game/poker-kit-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -600335784
+    },
+    {
+      "id": "PROP-073",
+      "file": "tests/game/poker-kit-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -583558165
+    },
+    {
+      "id": "PROP-074",
+      "file": "tests/game/poker-kit-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -499670070
+    },
+    {
+      "id": "PROP-075",
+      "file": "tests/game/poker-kit-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -482892451
+    },
+    {
+      "id": "PROP-076",
+      "file": "tests/game/poker-kit-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -533225308
+    },
+    {
+      "id": "PROP-077",
+      "file": "tests/game/poker-kit-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -516447689
+    },
+    {
+      "id": "PROP-078",
+      "file": "tests/game/poker-kit-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -701001498
+    },
+    {
+      "id": "PROP-079",
+      "file": "tests/game/poker-kit-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": -684223879
+    },
+    {
+      "id": "PROP-080",
+      "file": "tests/game/poker-kit-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": 1343749449
+    },
+    {
+      "id": "PROP-081",
+      "file": "tests/game/poker-kit-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": 1326971830
+    },
+    {
+      "id": "PROP-082",
+      "file": "tests/game/poker-kit-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": 1310194211
+    },
+    {
+      "id": "PROP-083",
+      "file": "tests/game/poker-kit-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": 1293416592
+    },
+    {
+      "id": "PROP-084",
+      "file": "tests/game/poker-kit-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": 1410859925
+    },
+    {
+      "id": "PROP-085",
+      "file": "tests/game/poker-kit-fast-check.test.js",
+      "status": "passed",
+      "numRuns": 30,
+      "runs": 30,
+      "passed": true,
+      "seed": 1394082306
     }
-  ]
+  ],
+  "stableSha256": "62c67ce5509175af602458d566b7dbbd0f6510b4f1fd2a71bf6389695e3c6342"
 }
