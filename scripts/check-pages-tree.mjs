@@ -533,6 +533,17 @@ async function browserChecks() {
     assert.ok(await evaluate("!document.querySelector('.table-hand-rules').checkVisibility() && !document.querySelector('.table-hand-rules p')"),
       "passing the screen removes the previous player's hand rules before the next seat sees the table");
     await click("#sd-ready");
+    const zoneSummary = "#sd-zone-rails [data-board-zone-details] > summary";
+    assert.ok(await visibleWithoutScroll(zoneSummary), "the board-zone inspector is reachable on the first screen");
+    await activateByKey(zoneSummary);
+    const publicZones = await evaluate(`[...document.querySelectorAll('#sd-zone-rails [data-board-zone-details][open] section')]
+      .map(side => side.innerText.replace(/\\s+/g, ' ').trim())`);
+    assert.deepEqual(publicZones, [
+      "Cowboys Base 5/5 orbs · Hand 3 · Deck 12 Traps 1 · Graveyard 0",
+      "Wizards Base 5/5 orbs · Hand 6 · Deck 10 Traps 0 · Graveyard 0",
+    ], "the next seat can inspect both sides' exact public counts without revealing the face-down card");
+    await press("Escape", 27);
+    await wait(`!document.querySelector('#sd-zone-rails [data-board-zone-details][open]') && document.activeElement.matches('${zoneSummary}')`);
     await click('[data-card^="wizard-imp-"]');
     await activateByKey('[data-slot="wizard-0"]');
     const trapRisk = "A face-down trap springs before damage.";
@@ -935,11 +946,14 @@ async function browserChecks() {
     })`);
     const firstPosition = await openingPosition();
     assert.ok(firstPosition.hand.length > 0, "the Outrider challenge has a hand to inspect");
-    await activateByKey(".table-hand-rules summary");
+    const inspectHand = ".table-hand-rules > summary";
+    assert.ok(await visibleWithoutScroll(inspectHand), "the hand inspector is reachable while aiming");
+    await activateByKey(inspectHand);
     assert.deepEqual(await evaluate(`[...document.querySelectorAll(".table-hand-rules p")].filter(p => p.checkVisibility()).map(p => p.textContent)`),
       await evaluate(`[...document.querySelectorAll("#sd-hand .table-card-original")].map(c => c.textContent)`),
       "the challenge exposes the complete rules of each card in the viewing player's hand");
-    await press("Enter", 13);
+    await press("Escape", 27);
+    await wait(`!document.querySelector('.table-hand-rules').open && document.activeElement.matches('${inspectHand}')`);
     assert.deepEqual(await openingPosition(), firstPosition, "inspecting the hand preserves the Outrider choice");
     const aim = await evaluate(`({
       prompt: document.getElementById('sd-prompt')?.textContent.trim() ?? '',
@@ -948,7 +962,7 @@ async function browserChecks() {
     })`);
     assert.equal(aim.base, "Ride past: Hit the Base for 1", "Base shows its Ride past preview");
     assert.ok(aim.skeleton && aim.skeleton !== aim.base, "Skeleton shows its own distinct preview");
-    assert.ok(aim.prompt, "aiming prompt is non-empty");
+    assert.equal(aim.prompt, `Choose what to attack. Or take ${coverRule}`, "the Outrider still explains attack and cover after inspecting the hand");
     const targets = await axTree();
     const describes = (preview, other) => (node) => {
       const description = node.description?.value ?? "";
