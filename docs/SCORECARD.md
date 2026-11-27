@@ -32,7 +32,7 @@ A row passes only on evidence measured during that run. Missing, malformed or un
 
 `games` must equal `(to - from + 1) × gamesPerDeal`, and the results must sum to `games`. `cards` is optional. A report with only a total is rejected.
 
-`reports/properties/latest.json`:
+Generate `reports/properties/latest.json` from a clean checkout with `node scripts/run-dec4-property-suite.mjs`. To record only the 20 rulebook properties, use a separate output path with `node scripts/showdown-dec4-properties.mjs --report <file>`.
 
 ```json
 {"schema": "cvw-property-receipt/1", "commit": "<40-hex commit tested>", "generatedAt": "<ISO time>",
