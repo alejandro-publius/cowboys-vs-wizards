@@ -750,7 +750,10 @@ async function browserChecks() {
       assert.match(await evaluate(`${decision}.textContent`), /Passed the written balance rule/);
       assert.match(await evaluate(`document.querySelector('${room} .saloon-target-stat').textContent`), /^Billy\b.*: attack 2 → 1/);
       const at = await evaluate(`document.querySelector('${room} .saloon-progress').textContent`);
-      assert.match(at, /^· step 5 of \d+$/, "the review link primes Billy's proposal at step 5");
+      const recording = JSON.parse(await readFile(new URL("../src/ui/night-shift-recording.json", import.meta.url), "utf8"));
+      const index = recording.events.findIndex(event => event.kind === "cast" && event.card === "cowboy-billy" && event.field === "attack");
+      assert.ok(index >= 0, "the recording contains Billy’s proposal");
+      assert.equal(at, `· step ${index + 1} of ${recording.events.length}`, "the review link opens at the recorded proposal");
       const audit = `${decision}.querySelector(".saloon-audit")`;
       assert.equal(await evaluate(`${audit}.open`), false);
       await evaluate(`${audit}.querySelector("summary").focus()`);
