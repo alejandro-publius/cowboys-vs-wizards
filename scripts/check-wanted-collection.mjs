@@ -5,6 +5,7 @@ import {TYPES} from "../src/game/showdown/cards.js";
 import {BOUNTIES, DECK_SIZE, HUNTS, choose, duelFor, newSave, settle, trailDone, withDeck} from "../src/game/showdown/progress.js";
 import {applyAction, createShowdown, planTurn, playTurn} from "../src/game/showdown/rules.js";
 import {turnDuel} from "../src/match/showdown-turn.js";
+import {replayCards} from "../src/ui/showdown-3d/replay-cards.js";
 import {attackExample} from "../src/ui/showdown-3d/attack-preview.js";
 import {checkBookEntry} from "./check-character-book.mjs";
 
@@ -83,7 +84,7 @@ export async function checkWantedCollection({open, click, tap, press, activateBy
       const p = ${node(selector)}, r = p.getBoundingClientRect();
       const tally = p.querySelector(".wanted-tally");
       return {wins: p.dataset.wantedWins, marks: tally.childElementCount, filled: tally.querySelectorAll(".won").length,
-        painted: getComputedStyle(p.querySelector(".wanted-portrait"), "::before").backgroundImage.includes('url("data:image/webp;'),
+        painted: getComputedStyle(p.querySelector(".wanted-portrait .sd-card-art")).backgroundImage.includes('url("data:image/webp;'),
         stamped: Boolean(p.querySelector(".wanted-stamp")), fits: r.left >= 0 && r.right <= innerWidth + 1 && p.scrollWidth <= p.clientWidth + 1};
     })()`);
     assert.deepEqual(state, {wins: String(wins), marks: HUNTS, filled: wins, painted: true, stamped: wins === HUNTS, fits: true}, id);
@@ -91,6 +92,7 @@ export async function checkWantedCollection({open, click, tap, press, activateBy
   async function readEntry(id) {
     await wait("document.querySelector('.character-book')?.open");
     assert.deepEqual(await checkBookEntry(evaluate, id), bookIndex.get(id), `${id} opens on its indexed page and spread`);
+    if (!await evaluate(`${node(".book-details")}.open`)) await activateByKey(".book-details > summary");
     const rule = ".character-book .book-rule details";
     if (!await evaluate(`${node(rule)}.open`)) await activateByKey(`${rule} summary`);
     assert.ok(await visible(`${rule} p`), `${id}'s keyword explanation is readable`);
@@ -171,14 +173,14 @@ export async function checkWantedCollection({open, click, tap, press, activateBy
     assert.ok(await visible(build), "the earned Cowboy can be built from its capture");
     const example = attackExample(reward, "attack");
     if (bounty.id === dragon) {
-      assert.equal(await evaluate(`${node(".book-watch")}.innerText`), "Watch Sweep");
+      assert.equal(await evaluate(`${node(".book-watch")}.innerText`), "Sweep");
       assert.ok(example.trace[0].events.some(event => event.type === "sweep"));
     }
     await click(".book-watch");
     await wait("document.querySelector('.sd-gallery.book-replay')?.open");
     const canvas = `.book-replay .sd-attack-world[data-card-art="${reward}"][data-preview-mode="attack"]`;
     await wait(`${node(canvas)}?.checkVisibility()`);
-    assert.equal(await evaluate("document.querySelector('.sd-attack-result').innerText"), example.summary);
+    await wait(`document.querySelector('.sd-attack-result').textContent === ${JSON.stringify(replayCards(reward, example).outcome)}`);
     await press("Escape", 27);
     await wait("document.activeElement.matches('.book-watch')");
     await readEntry(reward);

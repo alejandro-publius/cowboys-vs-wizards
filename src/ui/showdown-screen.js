@@ -178,6 +178,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     const opener = document.activeElement; // the control that opened this duel, read before the deal
     [duel, players, seat] = [nextDuel, seats, seats === 1 ? side : "cowboy"];
     $("sd-home").toggleAttribute("data-return-wanted", fromWanted);
+    $("sd-home").toggleAttribute("data-return-book", fromBook);
     $("sd-home").textContent = fromBook ? "Back to book" : fromWanted ? "Back to Wanted" : "Back to camp";
     lesson = rematch && seats === 1 && seat === "cowboy" && best === 1 ? rematch : null;
     camp = lesson || fromBook || duel.kind === "even-fight" ? null : own ?? (seat === "cowboy" ? campaign : null);

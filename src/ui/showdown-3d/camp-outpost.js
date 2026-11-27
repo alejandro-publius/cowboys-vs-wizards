@@ -34,7 +34,7 @@ export function mountCampOutpost(root, book) {
   const byId = (id) => root.querySelector("#" + id);
   const wizard = byId("camp-wizard");
   const rooms = new Map();
-  let current;
+  let current, wantedSource;
 
   for (const [target, key, title, material] of ROOMS) {
     const room = document.createElement("dialog");
@@ -53,7 +53,14 @@ export function mountCampOutpost(root, book) {
     root.append(room);
     rooms.set(target, {room, content});
     room.addEventListener("close", () => {
-      if (current === room && !room.open) current = null;
+      if (current !== room || room.open) return;
+      current = null;
+      if (key === "wanted" && wantedSource) {
+        const source = wantedSource;
+        resetWantedReturn();
+        open("night-shift-saloon");
+        source.focus({preventScroll: true});
+      }
     });
   }
 
@@ -98,7 +105,13 @@ export function mountCampOutpost(root, book) {
     control.setAttribute("aria-controls", room.id);
   }
 
+  function resetWantedReturn() {
+    wantedSource = null;
+    rooms.get("camp-bounties-title").room.querySelector("header button").textContent = "Back to map";
+  }
+
   function close() {
+    if (wantedSource) resetWantedReturn();
     if (current === saloonRoom) saloon.closed();
     current?.close();
     current = null;
@@ -110,7 +123,10 @@ export function mountCampOutpost(root, book) {
     control.focus({preventScroll: true});
     room.showModal();
     current = room;
-    if (room === saloonRoom) saloon.opened();
+    if (room === saloonRoom) {
+      saloon.opened();
+      window.scrollTo({top: 0, left: 0, behavior: "instant"});
+    }
   }
 
   function open(id, control = root.querySelector(`[data-camp-destination="${id}"]`)) {
@@ -136,6 +152,11 @@ export function mountCampOutpost(root, book) {
 
   return {
     close, open, dressNotices,
+    wantedFromSaloon(source) {
+      open("camp-bounties-title");
+      wantedSource = source;
+      rooms.get("camp-bounties-title").room.querySelector("header button").textContent = "Back to Saloon";
+    },
     // ?saloon=review: the normal Saloon entry, with the recorded room set to the archived decision first.
     // Without a decision that checks out, the room opens at its usual start.
     openSaloonReview() {

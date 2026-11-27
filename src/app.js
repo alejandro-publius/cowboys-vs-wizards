@@ -255,7 +255,8 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     const link = event.target.closest('a[href="?room=wanted"]');
     if (!link || event.button !== 0 || event.ctrlKey || event.shiftKey || event.metaKey || event.altKey) return;
     event.preventDefault();
-    openWanted();
+    if (link.hasAttribute("data-saloon-wanted") && outpost) outpost.wantedFromSaloon(link);
+    else openWanted();
   });
   // Wizard lesson saved in this browser: reopened from this control or ?lesson=saved. A stale save is cleared there.
   node("camp-experiment").insertAdjacentHTML("beforeend", `<div class="sd-row"><button type="button" id="camp-wizard-lesson">Open saved Wizard lesson</button></div>

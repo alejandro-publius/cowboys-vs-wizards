@@ -1,28 +1,40 @@
 import assert from "node:assert/strict";
+import {createHash} from "node:crypto";
 import {readFile} from "node:fs/promises";
 import {EFFECTS, KEYWORDS, TYPES, tributes} from "../src/game/showdown/cards.js";
 import {SAVE_KEY} from "../src/game/showdown/campaign-store.js";
+import {replayCards} from "../src/ui/showdown-3d/replay-cards.js";
 import {attackExample} from "../src/ui/showdown-3d/attack-preview.js";
+
+const handAtlasHash = readFile(new URL("../assets/cards/showdown-diorama.webp", import.meta.url))
+  .then(bytes => createHash("sha256").update(bytes).digest("hex"));
 
 // Also used on arrival from a Wanted paper or capture, before touching the index.
 export async function checkBookEntry(evaluate, id) {
   const card = TYPES[id];
   const entry = await evaluate(`(async () => {
     const book = document.querySelector(".character-book[open]");
-    const img = book.querySelector(".book-hero img");
+    const face = book.querySelector(".book-hero .table-card-face .sd-card-art");
     const portrait = book.querySelector('.book-portrait[aria-pressed="true"]');
-    await img.decode();
+    const sprite = getComputedStyle(face);
+    const thumb = getComputedStyle(portrait.querySelector(".sd-card-art"));
+    const data = sprite.backgroundImage.match(/^url\\("data:image[/]webp;base64,([^"]+)"\\)$/);
+    if (!data) throw new Error("Missing duel hand atlas");
+    const bytes = Uint8Array.from(atob(data[1]), c => c.charCodeAt(0));
+    const hash = [...new Uint8Array(await crypto.subtle.digest("SHA-256", bytes))]
+      .map(n => n.toString(16).padStart(2, "0")).join("");
     return {
       side: book.querySelector('.book-tabs [aria-pressed="true"]').dataset.side,
       portrait: portrait.dataset.id,
       page: book.querySelector(".book-pages span").textContent,
       spread: [...book.querySelectorAll(".book-portrait")].map(button => button.dataset.id),
       name: book.querySelector("h3").textContent,
-      painting: img.currentSrc,
-      painted: img.checkVisibility() && portrait.checkVisibility() && img.naturalWidth > 0 && img.src === portrait.querySelector("img").src,
+      hash, cell: sprite.backgroundPosition,
+      printed: face.closest(".table-card-face").querySelector(".table-card-title").textContent,
+      painted: face.checkVisibility() && portrait.checkVisibility() && sprite.backgroundImage === thumb.backgroundImage && sprite.backgroundPosition === thumb.backgroundPosition,
       fits: book.scrollWidth <= book.clientWidth + 1,
       stats: Object.fromEntries([...book.querySelectorAll(".book-stats div")].map(stat => [stat.firstChild.textContent, Number(stat.lastChild.textContent)])),
-      keywords: [...book.querySelectorAll(".book-rule details")].map(rule => [rule.querySelector("summary").innerText, rule.querySelector("p").textContent]),
+      keywords: [...book.querySelectorAll(".book-rule details")].map(rule => [rule.querySelector("summary").textContent, rule.querySelector("p").textContent]),
       effect: book.querySelector(".book-rule").textContent,
       canWatch: !book.querySelector(".book-watch").hidden
     };
@@ -31,8 +43,10 @@ export async function checkBookEntry(evaluate, id) {
   assert.equal(entry.portrait, id, "the selected portrait is on the current spread");
   assert.equal(entry.name, card.name);
   assert.ok(entry.painted && entry.fits, `${id} shows its painting and fits the spread`);
-  const approved = await readFile(new URL(`../assets/cards/illustrated/${id}.webp`, import.meta.url), "base64");
-  assert.ok(entry.painting === "data:image/webp;base64," + approved, `${id} uses its approved portrait`);
+  const tile = Object.keys(TYPES).indexOf(id);
+  assert.equal(entry.hash, await handAtlasHash, `${id} uses the battle hand atlas`);
+  assert.equal(entry.cell, `${(tile % 6) * 20}% ${Math.floor(tile / 6) * 20}%`, `${id} shows its own character`);
+  assert.equal(entry.printed, card.name);
   if (card.kind === "troop") {
     assert.deepEqual(entry.stats, {Attack: card.attack, Orbs: card.health, Stars: card.stars, Tribute: tributes(id)});
     assert.deepEqual(entry.keywords, card.keys.map(key => KEYWORDS[key]), id);
@@ -76,7 +90,8 @@ export async function checkCharacterBook({open, click, press, evaluate, wait}) {
   await wait("document.querySelector('.sd-gallery.book-replay')?.open");
   assert.equal(await evaluate("document.getElementById('sd-gallery-heading').textContent"), TYPES["cowboy-mounted-billy"].name);
   await click('.book-replay [data-attack-mode="ride"]');
-  assert.equal(await evaluate("document.querySelector('.sd-attack-result').innerText"), attackExample("cowboy-mounted-billy", "ride").summary);
+  const ride = replayCards("cowboy-mounted-billy", attackExample("cowboy-mounted-billy", "ride"));
+  await wait(`document.querySelector('.sd-attack-result').textContent === ${JSON.stringify(ride.outcome)}`);
   await press("Escape", 27);
   await wait("!document.querySelector('.sd-gallery').open && document.activeElement.matches('.book-watch')");
   assert.equal(await evaluate("document.querySelector('.book-portrait[aria-pressed=true]').dataset.id"), "cowboy-mounted-billy");

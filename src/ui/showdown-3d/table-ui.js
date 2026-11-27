@@ -145,7 +145,7 @@ export function bindTableUI(root) {
       headline.textContent = result.querySelector("[data-capture-title]")?.textContent ?? (result.querySelector("[data-choose]")
         ? "Choose a card"
         : (added?.textContent.split(":")[0] ?? status.textContent.split(" · ")[0]));
-      if (!goHome.hasAttribute("data-return-wanted")) goHome.textContent = "Camp";
+      if (!goHome.matches("[data-return-wanted], [data-return-book]")) goHome.textContent = "Camp";
       // A pick's whole instruction: the choice, its trap or Raise hint, and the cover alternative.
       if (!ended && /^(Choose|A Guard|No enemy|This troop)/.test(originalPrompt.textContent)) {
         prompt.textContent = originalPrompt.textContent;
@@ -162,7 +162,7 @@ export function bindTableUI(root) {
       hand.inert = false;
       table.classList.remove("table-resolved");
       root.classList.remove("table-resolved");
-      if (!goHome.hasAttribute("data-return-wanted")) goHome.textContent = "Back to camp";
+      if (!goHome.matches("[data-return-wanted], [data-return-book]")) goHome.textContent = "Back to camp";
       prompt.textContent = "";
       prompt.hidden = turn.hidden = series.hidden = headline.hidden = true;
     },

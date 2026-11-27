@@ -57,12 +57,13 @@ async function checkReplay(viewport, {reduced = false, noWebGL = false} = {}) {
           assert.ok(marks.includes(mode === "ride" ? "5 orbs → 4 orbs" : "3 orbs → Defeated"), "target changes at contact");
         }
         assert.equal(await world.isVisible(), false);
-        const paintings = cards.locator("img");
-        assert.equal(await paintings.count(), mode === "ride" ? 1 : 2);
-        assert.ok(await paintings.evaluateAll(async images => {
-          await Promise.all(images.map(image => image.decode()));
-          return images[0].currentSrc === document.querySelector(".book-hero img").currentSrc;
-        }), "the fallback displays the same approved painting as the book");
+        const faces = cards.locator(".sd-card-art");
+        assert.equal(await faces.count(), mode === "ride" ? 1 : 2);
+        assert.ok(await faces.evaluateAll(items => {
+          const first = getComputedStyle(items[0]), hero = getComputedStyle(document.querySelector(".book-hero .sd-card-art"));
+          return first.backgroundImage.startsWith('url("data:image/webp;') && first.backgroundImage === hero.backgroundImage &&
+            first.backgroundPosition === hero.backgroundPosition;
+        }), "the fallback shows the selected battle portrait");
         assert.match(await cards.innerText(), /Mounted Billy/);
         assert.match(await cards.innerText(), mode === "ride" ? /Base/i : /Skeleton/);
         assert.match(await cards.innerText(), mode === "ride" ? /4\s*orbs?/i : /defeated/i);
