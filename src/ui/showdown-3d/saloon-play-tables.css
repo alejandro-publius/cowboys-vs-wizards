@@ -1,0 +1,215 @@
+/* Single-page play stations. The Saloon supplies the header and the painted card sources. */
+.saloon-billy-table,
+[data-saloon-page="forge"] .forge-shelf {
+  --face-height: clamp(144px, min(38vw, 42dvh), 350px);
+  --table-gap: clamp(6px, 1.5vmin, 16px);
+  --card-shade: linear-gradient(0deg, #180f12 0%, #180f12d9 17%, transparent 60%);
+  box-sizing: border-box;
+  width: min(100%, 66rem);
+  margin-inline: auto;
+  padding: clamp(8px, 2vmin, 22px);
+  color: #fff1d8;
+  background: repeating-linear-gradient(90deg, #0001 0 2px, transparent 2px 64px), #2a1b1b;
+}
+.saloon-billy-table h3, .forge-hellfire h4 {
+  margin: 0 0 var(--table-gap);
+  font: 700 clamp(1.32rem, 4vmin, 2.3rem)/1.08 var(--frontier-display);
+}
+.saloon-billy-table .saloon-shot-cards {
+  grid-template-columns: 2fr 1fr;
+  margin: 0;
+}
+.saloon-billy-table :is(.saloon-shot-cards, .saloon-shot-actions, .saloon-shot-reply),
+.forge-hellfire :is(.forge-board, .sd-row) {
+  display: grid;
+  gap: var(--table-gap);
+  min-width: 0;
+}
+.saloon-billy-table .saloon-shot-actions,
+.forge-hellfire :is(.forge-board, .sd-row) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.saloon-billy-table :is(.saloon-shot-actions button, [data-shot-card="wall"], .saloon-horseman),
+.forge-hellfire :is(.forge-move, .forge-troop) {
+  position: relative;
+  display: grid;
+  align-content: end;
+  min-width: 0;
+  height: var(--face-height);
+  min-height: 0;
+  padding: clamp(6px, 1.5vmin, 14px);
+  border: 1px solid #af8c5e;
+  border-radius: 3px;
+  box-shadow: 0 3px 0 #130e10;
+  color: #fff1d8;
+  text-align: left;
+}
+.saloon-billy-table .saloon-shot-actions button {
+  gap: 2px;
+  background: var(--card-shade), var(--painting) center var(--crop, 24%) / cover no-repeat, #382a22;
+}
+.saloon-billy-table .saloon-move-name {
+  justify-self: start;
+  padding: .12em .32em;
+  color: #392216;
+  background: #edc997;
+}
+.saloon-billy-table .saloon-shot-actions button[data-reply="attack"] { --painting: var(--saloon-horseman-art); }
+.saloon-billy-table .saloon-shot-actions button[data-reply="cover"] { --painting: var(--saloon-billy-art); }
+.saloon-billy-table .saloon-shot-actions button:hover,
+.forge-hellfire .forge-move:hover { border-color: #ffe2a3; }
+.saloon-billy-table .saloon-shot-actions button[aria-pressed="true"] {
+  border-color: #ffe2a3;
+  box-shadow: inset 0 0 0 2px #ffe2a3;
+}
+.saloon-move-name { font: 700 clamp(1.1rem, 2.6vmin, 1.75rem)/1.05 var(--frontier-display); }
+.saloon-move-stat, .saloon-billy-table .saloon-shot-orbs {
+  font: 500 clamp(.8rem, 1.8vmin, 1rem)/1.15 system-ui, sans-serif;
+}
+.saloon-billy-table .saloon-shot-reply {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  margin-top: var(--table-gap);
+  padding-top: var(--table-gap);
+}
+.saloon-billy-table .saloon-horseman {
+  margin: 0;
+  background: var(--card-shade), var(--saloon-horseman-art) center 26% / cover;
+}
+.saloon-billy-table .saloon-horseman h4 { margin: 2px 0; font-size: clamp(1.05rem, 2.7vmin, 1.65rem); }
+.saloon-duel-orbs > span { display: block; }
+.saloon-duel-orbs [role="img"] { color: #ffe2a3; white-space: nowrap; }
+.saloon-billy-table[data-billy-phase="reply"] .saloon-shot-board {
+  --face-height: clamp(60px, 12dvh, 110px);
+}
+.saloon-billy-table[data-billy-phase="reply"] .saloon-shot-board .saloon-life { top: 2px; right: 2px; }
+.saloon-billy-table .saloon-shot-status { margin: var(--table-gap) 0 0; font-size: .95rem; }
+.saloon-billy-table .saloon-bot-finish { margin: 0; }
+.saloon-bot-finish[open] p { font-size: .9rem; }
+.saloon-bot-finish summary, .forge-extras summary {
+  min-height: 44px;
+  color: #ead2a4;
+  font: 600 .93rem/1.2 system-ui, sans-serif;
+}
+.forge-hellfire {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: var(--table-gap);
+  align-items: end;
+}
+.forge-hellfire h4 { grid-column: 1 / -1; }
+.forge-hellfire .forge-board { list-style: none; margin: 0; padding: 0; }
+.forge-hellfire .forge-play p { margin: 0 0 var(--table-gap); font-size: .95rem; }
+.forge-hellfire .forge-move, .forge-hellfire .forge-troop {
+  isolation: isolate;
+  overflow: hidden;
+  background: #352825;
+}
+.forge-hellfire .forge-troop { border-color: #8f7c90; }
+.forge-hellfire .forge-move { padding: 0; }
+.forge-hellfire .forge-move button {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: end;
+  width: 100%;
+  padding: clamp(6px, 1.5vmin, 14px);
+  color: #2f2017;
+  border: 0;
+  box-shadow: none;
+  background: linear-gradient(to top, #edc997 0 3.4em, transparent 3.4em);
+  text-align: left;
+  font: 700 clamp(1rem, 2.2vmin, 1.45rem)/1.12 var(--frontier-display);
+}
+.forge-hellfire .forge-move:focus-within { outline: 3px solid #fff1d8; outline-offset: 2px; }
+.forge-hellfire .forge-troop-art, .forge-hellfire .forge-spell {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+}
+.forge-hellfire [data-painting] > * {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+  object-position: center 28%;
+}
+.forge-troop-art::after { content: ""; position: absolute; inset: 0; background: var(--card-shade); }
+.forge-troop-state { font: 700 clamp(.93rem, 2vmin, 1.2rem)/1.15 var(--frontier-display); }
+.forge-orbs {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  display: flex;
+  gap: 3px;
+  padding: 4px;
+  background: #211820;
+}
+.forge-orbs i {
+  width: 12px;
+  height: 12px;
+  border: 1px solid #ffe2bc;
+  border-radius: 50%;
+  background: #e0a858;
+}
+.forge-orbs i[data-spent] { border-style: dashed; background: transparent; }
+.forge-hellfire:has([data-readings]:not([hidden]) [value="all"]:is(:hover, :active, :focus-visible)) .forge-orbs i:last-child,
+.forge-hellfire:has([data-readings]:not([hidden]) [value="enemy"]:is(:hover, :active, :focus-visible)) .forge-troop:has([data-cowboy]) .forge-orbs i:last-child {
+  background: linear-gradient(135deg, #e0a858 48%, #382a22 50%);
+  border-style: dashed;
+}
+.forge-play [data-result] { align-self: center; }
+.forge-hellfire:has([data-result]:not([hidden])) { align-items: center; }
+.forge-extras {
+  display: flex;
+  gap: 1.2rem;
+  align-items: start;
+  border-top: 1px solid #805f44;
+  margin-top: var(--table-gap);
+}
+.forge-extras summary { display: list-item; padding-block: .75rem; cursor: pointer; }
+.forge-shelf:has(.forge-extras > [open]) .forge-hellfire { display: none; }
+.forge-extras:has(> [open]) {
+  display: block;
+  max-height: calc(100dvh - 100px);
+  overflow-y: auto;
+}
+.forge-extras details[open] > summary { color: #fff1d8; }
+.forge-shelf .forge-form { display: grid; max-width: 35rem; gap: .4rem; }
+.forge-shelf .forge-form button { justify-self: start; }
+.forge-shelf .forge-card { margin: .5rem 0; max-width: 48rem; }
+.forge-shelf .forge-portrait img { width: 68px; height: 80px; object-fit: cover; }
+.forge-shelf .forge-stats { display: flex; gap: 1rem; }
+.forge-shelf .forge-stats dd { margin: 0; }
+@media (max-width: 580px) {
+  .forge-hellfire { grid-template-columns: 1fr; row-gap: var(--table-gap); --face-height: clamp(110px, 23dvh, 175px); }
+  .forge-hellfire h4 { margin: 0; }
+  .saloon-billy-table[data-billy-phase="shot"] .saloon-shot-cards { grid-template-columns: 1fr; }
+  .saloon-billy-table[data-billy-phase="shot"] .saloon-shot-actions { --face-height: clamp(150px, 34dvh, 255px); }
+  .saloon-billy-table[data-billy-phase="shot"] [data-shot-card="wall"] {
+    grid-row: 1;
+    height: clamp(84px, 20dvh, 155px);
+  }
+  .saloon-billy-table .saloon-shot-reply { grid-template-columns: 1fr; }
+  .saloon-billy-table .saloon-horseman {
+    height: clamp(80px, 15dvh, 115px);
+    background: linear-gradient(90deg, #180f12ed, #180f1288 50%, transparent 80%),
+      var(--saloon-horseman-art) 75% 27% / cover;
+  }
+  .saloon-billy-table .saloon-duel-orbs > span { display: inline-block; margin-right: .5rem; }
+}
+@media (max-height: 480px) {
+  .saloon-billy-table, [data-saloon-page="forge"] .forge-shelf {
+    --face-height: clamp(104px, 34dvh, 155px);
+    --table-gap: 5px;
+    padding: 6px 10px;
+  }
+  .saloon-billy-table[data-billy-phase="reply"] .saloon-shot-board { --face-height: 54px; }
+  .saloon-billy-table .saloon-shot-reply { --face-height: 91px; }
+  .saloon-billy-table .saloon-duel-orbs > span { display: inline-block; margin-right: .4rem; }
+  .saloon-billy-table .saloon-horseman { padding-block: 4px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .forge-troop[data-hit] { animation: saloon-cast 600ms steps(6); }
+  .saloon-shot-cards [data-shot-card="wall"]:has([data-spent]) { animation: saloon-refuse 420ms steps(4); }
+  .saloon-billy-table [data-reply][aria-pressed="true"] { animation: saloon-stir 420ms steps(4); }
+}

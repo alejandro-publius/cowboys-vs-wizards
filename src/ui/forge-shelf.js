@@ -16,7 +16,7 @@ export const NAME_MAX = 80;
 export const LINE_MAX = 300;
 export const STAT_MAX = 99;
 export const CHECKS_MAX = 24;
-export const PENDING_NOTE = `Download started for ${REQUEST_FILE}. Your request is pending verification. This page cannot check a card; run the steps below.`;
+export const PENDING_NOTE = `Download started for ${REQUEST_FILE}. Your request is pending verification.`;
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"})[c]);
 const isText = (s, max) => typeof s === "string" && s.trim().length > 0 && s.length <= max;
@@ -55,7 +55,7 @@ export function verdictText(view) {
 // Pure: the showcase card, or an honest note when there is nothing valid to show. All text is escaped.
 export function showcaseHtml(view) {
   if (view.status === "none") {
-    return `<p class="forge-empty">No Card Forge run is recorded yet, so there is no showcase card. You can still write your own idea below.</p>`;
+    return `<p class="forge-empty">No Card Forge run is recorded yet.</p>`;
   }
   if (view.status !== "ok") {
     return `<p class="forge-empty">The recorded Card Forge result is missing fields or has values out of range, so nothing from it is shown.</p>`;
@@ -99,33 +99,38 @@ export const counterText = (value) => `${String(value ?? "").length} of ${REQUES
 
 // Pure: the whole shelf.
 export function shelfHtml(view) {
-  return `<section class="forge-shelf-showcase" aria-labelledby="forge-showcase-title">
-    <h3 id="forge-showcase-title">Card Forge</h3>
-    ${hellfireHtml}
-    ${showcaseHtml(view)}
-  </section>
-  <section class="forge-shelf-own" aria-labelledby="forge-own-title">
-    <h4 id="forge-own-title">Forge your own card</h4>
-    <form class="forge-form" novalidate>
-      <label for="forge-request">Describe your card in plain English</label>
-      <textarea id="forge-request" name="request" rows="4" maxlength="${REQUEST_MAX}" spellcheck="true"
-        aria-describedby="forge-request-count forge-request-help"></textarea>
-      <p id="forge-request-count" class="sd-note">${counterText("")}</p>
-      <p id="forge-request-help" class="sd-note">Nothing is sent or stored. The button saves your words as ${REQUEST_FILE}.</p>
-      <button type="submit">Download ${REQUEST_FILE}</button>
-    </form>
-    <p class="forge-status" role="status" aria-live="polite"></p>
-    <div class="forge-pending" hidden>
-      <span class="forge-label">Pending verification</span>
-      <blockquote class="forge-pending-request" style="white-space: pre-wrap"></blockquote>
-    </div>
-    <ol class="forge-steps">
-      <li>Put ${REQUEST_FILE} in the game's folder, next to <code>scripts/</code>.</li>
-      <li>Run <code>${esc(PREPARE_STEP)}</code> to stage your request.</li>
-      <li>In Kiro, choose the native Card Forge workflow. It keeps your staged request. With no staged request it uses the recorded example.</li>
-      <li>A draft counts as verified only when the verifier passes it. This page never marks one verified and gives no rewards.</li>
-    </ol>
-  </section>`;
+  return `${hellfireHtml}
+  <div class="forge-extras">
+    <details class="forge-shelf-own" name="forge-extra">
+      <summary id="forge-own-title">Write a card request</summary>
+      <form class="forge-form" novalidate>
+        <label for="forge-request">Describe your card in plain English</label>
+        <textarea id="forge-request" name="request" rows="2" maxlength="${REQUEST_MAX}" spellcheck="true"
+          aria-describedby="forge-request-count forge-request-help"></textarea>
+        <p id="forge-request-count" class="sd-note">${counterText("")}</p>
+        <p id="forge-request-help" class="sd-note">Your idea stays on this device.</p>
+        <button type="submit">Download ${REQUEST_FILE}</button>
+      </form>
+      <p class="forge-status" role="status" aria-live="polite"></p>
+      <div class="forge-pending" hidden>
+        <span class="forge-label">Pending verification</span>
+        <blockquote class="forge-pending-request" style="white-space: pre-wrap"></blockquote>
+      </div>
+      <details class="forge-instructions">
+        <summary>Run your request in Kiro</summary>
+        <ol class="forge-steps">
+          <li>Put ${REQUEST_FILE} next to the game's <code>scripts/</code> folder.</li>
+          <li>Run <code>${esc(PREPARE_STEP)}</code>.</li>
+          <li>In Kiro, choose the native Card Forge workflow. It keeps your staged request. With no staged request it uses the recorded example.</li>
+          <li>The verifier records whether the draft passed.</li>
+        </ol>
+      </details>
+    </details>
+    <details class="forge-shelf-report forge-shelf-showcase" name="forge-extra">
+      <summary id="forge-showcase-title">Forge report</summary>
+      ${showcaseHtml(view)}
+    </details>
+  </div>`;
 }
 
 // DOM: offers request.txt as a download. Returns false when the browser cannot.
@@ -145,15 +150,23 @@ function saveRequest(doc, text) {
   }
 }
 
-// DOM: fills the Saloon drawer's `host`. `portrait(cardId)` is the optional atlas helper the drawer
-// already uses; only a card id the catalog knows reaches it.
-export function mountForgeShelf(host, {showcase = SHOWCASE, portrait = null} = {}) {
+// The illustrated build embeds the Field Guide paintings for offline use.
+function cardPainting(id) {
+  const src = typeof __CVW_BOOK_ART__ !== "undefined" && __CVW_BOOK_ART__[id];
+  if (!src) return null;
+  const image = document.createElement("img");
+  image.alt = "";
+  image.src = src;
+  return image;
+}
+
+export function mountForgeShelf(host, {showcase = SHOWCASE, portrait = cardPainting} = {}) {
   if (!host || typeof host.querySelector !== "function") return null;
   const view = forgeView(showcase);
   host.classList?.add("forge-shelf");
   host.innerHTML = shelfHtml(view);
   const q = (selector) => host.querySelector(selector);
-  mountHellfire(q(".forge-hellfire"));
+  mountHellfire(q(".forge-hellfire"), portrait);
 
   if (view.status === "ok" && view.baseName && typeof portrait === "function") {
     try {
