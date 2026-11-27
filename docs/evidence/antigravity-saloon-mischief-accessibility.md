@@ -1,36 +1,41 @@
-# Evidence: Haunted-Western Refusal UX & 8-Route Accessibility Audit
+# Showdown refusal guidance and Chrome route checks
 
-- **Date:** 2026-11-26 (America/Los_Angeles)
-- **Base revision:** `93db9f3` (`main`)
-- **Authoring agent:** Antigravity (branch `antigravity/saloon-mischief-axe`; open for review, not merged to `main`)
-- **Spec requirements:** [`.kiro/specs/haunted-saloon-mischief/requirements.md`](../../.kiro/specs/haunted-saloon-mischief/requirements.md) (`HSM-1`–`HSM-3`)
+Antigravity authored the initial PR at `c531728` against `93db9f3`. Codex reviewed the guidance against the rules, corrected the route checks, and ran them on 2026-11-27 UTC with main at `f4ad5a7`. The staged illustrated index had SHA-256 `563043069e920feda4b0f218f5f5765302fdb7724f190d8e8c6055ec4b98ae43`.
 
-## 1. Haunted-Western Card Refusal Copy With Next-Tap Guidance (`HSM-1`, `HSM-2`)
+## Refusals and play
 
-[`src/ui/showdown-screen.js`](../../src/ui/showdown-screen.js) exports pure `blockedReason(view, seat, cardId)` (rendered inline on disabled graybox hand cards and projected onto 3D card `title` tooltips via `src/ui/showdown-3d/table-ui.js`). Every refusal pairs haunted-Western flavor with a concrete next tap while preserving `"One troop a turn."` verbatim for `scripts/browser-showdown-check.mjs`:
+Missing tribute now names a free troop in the player’s hand when one can be played. A spell without a legal enemy target can be held for a later turn. The unchanged “One troop a turn.” message appears after a summon.
 
-- **After a troop acts:** *"Gunsmoke's out — no more cards this turn. Act with your troops or press End turn."*
-- **Missing tribute fodder:** *"The grave demands N troops in tribute — summon free hands first."*
-- **Full 3-lane board:** *"All three lanes are packed — attack or tribute a troop first."*
-- **Trap row full:** *"Both trap slots are rigged — let a fool step in one first."*
-- **Gear with empty board:** *"Ghost holster — summon a troop first so somebody can wear it."*
-- **Spell with no target:** *"Nothing undead or breathing to hex — summon a troop or press End turn."*
+| Check | Observed result |
+| --- | --- |
+| `node --test tests/match/haunted-mischief.test.js` | All 4 tests passed, including an enemy Ghostly troop that Deadeye cannot target and changes to hidden opposing cards from both seats. |
+| `browser-showdown-check.mjs` on the staged graybox | All 22 checks passed, including two campaign wins, card rewards, three reloads, disabled-card behavior and seat privacy. |
+| `browser-showdown-keyboard-check.mjs` on the staged graybox | All 7 checks passed. Tab, Shift+Tab, Enter and Escape completed Boot Hill and returned focus to the Camp offer. Mouse summons, picks and cancellations preserved scroll and focus. |
 
-Verified in [`tests/match/haunted-mischief.test.js`](../../tests/match/haunted-mischief.test.js) (`HSM-1`, `HSM-2`), including invariance under hidden opponent hand/deck/trap permutations.
+A longer tribute hint moved the page 39 pixels when the player clicked Sheriff in the opening hand. The shorter “Need 1 troop. Play Sheriff.” hint kept the scroll position at 208 pixels before and after that click in the same test.
 
-## 2. Headless Chrome 8-Route WCAG & AXTree Audit (`HSM-3`)
+## Route checks
 
-Executed [`scripts/browser-accessibility-audit.mjs`](../../scripts/browser-accessibility-audit.mjs) against `dist/web` staged at `93db9f3` (`index.html` SHA-256 `52a9d08c62e5a848d1ee7751bc12113c9f6d5c2c1e08c943f1bc0586852da6da`) with `prefers-reduced-motion: reduce` enabled:
+The audit served the staged Pages build over loopback in Chrome 158 at 1440 × 900 with reduced motion enabled. It inspected control names in Chrome’s accessibility tree, active landmarks, expected polite live regions, visible label and description references, document metadata and IDs, browser exceptions, console errors and HTTP errors. The table records the opening state. The Even Fight hand varies with its deal.
 
-| Route | ID | AXTree Nodes | Live Regions | Violations |
-| --- | --- | ---: | ---: | ---: |
-| `/cowboys-vs-wizards/` | `title-3d` | 22 | 3 | `0` |
-| `/cowboys-vs-wizards/?saloon=review` | `saloon-review` | 139 | 12 | `0` |
-| `/cowboys-vs-wizards/?outrider=case-e` | `outrider-challenge` | 219 | 6 | `0` |
-| `/cowboys-vs-wizards/?room=replay` | `replay-room` | 71 | 5 | `0` |
-| `/cowboys-vs-wizards/?even-fight=1` | `even-fight` | 313 | 6 | `0` |
-| `/cowboys-vs-wizards/graybox/` | `graybox-title` | 17 | 3 | `0` |
-| `/cowboys-vs-wizards/showdown/` | `reference-showdown` | 163 | 2 | `0` |
-| `/cowboys-vs-wizards/poker/` | `boot-hill-poker` | 406 | 2 | `0` |
+| Route | Exposed controls | Polite regions | Findings |
+| --- | ---: | ---: | ---: |
+| `/` | 4 | 0 | 0 |
+| `/?saloon=review` | 15 | 2 | 0 |
+| `/?outrider=case-e` | 16 | 2 | 0 |
+| `/?room=replay` | 6 | 0 | 0 |
+| `/?even-fight=1` | 18 | 3 | 0 |
+| `/graybox/` | 1 | 0 | 0 |
+| `/showdown/` | 19 | 1 | 0 |
+| `/poker/` | 9 | 1 | 0 |
 
-All `8` routes passed with `0` unnamed visible controls, `0` broken `aria-labelledby` / `aria-describedby` references, `0` duplicate element IDs, and `0` console or HTTP errors.
+Seven landings exposed one main landmark. The Saloon exposed its named modal dialog. Pressing Enter on a shot in the Saloon or a branch in the Replay Room produced fresh text in an exposed polite live region. Speech output, visual contrast and WCAG conformance require separate evaluation.
+
+In a disposable copy, the graybox Play button had its name removed, a duplicate ID was added, and its description pointed to a missing element. The audit reported all three findings on that route and exited 1. The other seven routes still ran.
+
+```sh
+node scripts/stage-pages.mjs
+node scripts/browser-accessibility-audit.mjs
+node scripts/browser-showdown-check.mjs dist/web/graybox/index.html
+node scripts/browser-showdown-keyboard-check.mjs dist/web/graybox/index.html
+```

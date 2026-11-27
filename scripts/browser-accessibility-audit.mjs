@@ -1,4 +1,4 @@
-// HSM-3: Zero-dependency headless Chrome WCAG & AXTree accessibility audit across all public staged routes.
+// Check eight staged landing states with Chrome’s accessibility tree and DOM.
 // Usage:
 //   node scripts/stage-pages.mjs --commit "$(git rev-parse HEAD)"
 //   node scripts/browser-accessibility-audit.mjs [--dir dist/web] [--out .artifacts/accessibility-audit.json]
@@ -7,10 +7,11 @@ import {spawn} from "node:child_process";
 import {mkdir, mkdtemp, readFile, rm, writeFile} from "node:fs/promises";
 import {createServer} from "node:http";
 import path from "node:path";
+import {tmpdir} from "node:os";
 import {fileURLToPath} from "node:url";
 
 const BASE_PATH = "/cowboys-vs-wizards/";
-const CHROME = process.env.CHROME ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+const CHROME = process.env.CHROME_PATH ?? process.env.CHROME ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const root = fileURLToPath(new URL("../", import.meta.url));
 const args = process.argv.slice(2);
 const option = (name, fallback) => { const i = args.indexOf(name); return i < 0 ? fallback : args[i + 1]; };
@@ -27,16 +28,47 @@ const mime = {
   ".glb": "model/gltf-binary",
 };
 
+// Select generated, route-specific content so static shells and loading screens cannot pass.
 const ROUTES = [
-  {id: "title-3d", rel: "", waitExpr: "!!document.querySelector('#title-screen')"},
-  {id: "saloon-review", rel: "?saloon=review", waitExpr: "!!document.querySelector('.saloon-billy-table button[data-shot]')"},
-  {id: "outrider-challenge", rel: "?outrider=case-e", waitExpr: "!!document.querySelector('#sd-board [data-own]')"},
-  {id: "replay-room", rel: "?room=replay", waitExpr: "document.readyState === 'complete'"},
-  {id: "even-fight", rel: "?even-fight=1", waitExpr: "!!document.querySelector('#sd-board')"},
-  {id: "graybox-title", rel: "graybox/", waitExpr: "!!document.querySelector('#menu-play')"},
-  {id: "reference-showdown", rel: "showdown/", waitExpr: "document.readyState === 'complete'"},
-  {id: "boot-hill-poker", rel: "poker/", waitExpr: "document.readyState === 'complete' && document.body.textContent.trim().length > 40"},
+  {id: "title-3d", rel: "", marker: "#title-screen #menu-saloon"},
+  {id: "saloon-review", rel: "?saloon=review", marker: "#room-for-night-shift-saloon[open] [data-shot=baseline]", modal: true, polite: true, feedback: ".saloon-shot-result"},
+  {id: "outrider-challenge", rel: "?outrider=case-e", marker: "#showdown[data-contest-challenge] [data-own]", polite: true},
+  {id: "replay-room", rel: "?room=replay", marker: "#replay-room [data-branch]", feedback: ".rr-step-status"},
+  {id: "even-fight", rel: "?even-fight=1", marker: "#showdown #sd-status", text: "Even Fight preview", polite: true},
+  {id: "graybox-title", rel: "graybox/", marker: "#title-screen #menu-play", mounted: "#camp-replay-room"},
+  {id: "reference-showdown", rel: "showdown/", marker: "#trail [data-duel]", polite: true},
+  {id: "boot-hill-poker", rel: "poker/", marker: "#screen span", polite: true},
 ];
+const controlRoles = new Set(["button", "link", "checkbox", "radio", "switch", "combobox", "listbox", "searchbox",
+  "textbox", "slider", "spinbutton", "tab", "menuitem", "menuitemcheckbox", "menuitemradio", "DisclosureTriangle"]);
+
+function landingReady(url, route) {
+  const expected = new URL(url);
+  const page = new URL(location.href);
+  const marker = document.querySelector(route.marker);
+  return page.origin === expected.origin && page.pathname === expected.pathname && [...expected.searchParams].every(([key, value]) => page.searchParams.get(key) === value)
+    && document.readyState === "complete" && marker?.checkVisibility({visibilityProperty: true})
+    && (!route.text || marker.textContent.includes(route.text)) && (!route.mounted || document.querySelector(route.mounted));
+}
+
+function inspectDocument() {
+  const seen = new Set(), duplicateIds = [], brokenAriaRefs = [];
+  for (const {id} of document.querySelectorAll("[id]")) {
+    if (!id) continue;
+    if (seen.has(id)) duplicateIds.push(id);
+    seen.add(id);
+  }
+  const scope = document.querySelector("dialog:modal") ?? document;
+  for (const attr of ["aria-labelledby", "aria-describedby"]) {
+    for (const el of scope.querySelectorAll("[" + attr + "]")) {
+      if (el.closest('[aria-hidden="true"], [inert]') || !el.checkVisibility({visibilityProperty: true})) continue;
+      const ids = el.getAttribute(attr).trim().split(/\s+/).filter(Boolean);
+      if (!ids.length) brokenAriaRefs.push(attr + " is empty");
+      for (const id of ids) if (!seen.has(id)) brokenAriaRefs.push(attr + " -> " + id);
+    }
+  }
+  return {lang: document.documentElement.lang.trim(), title: document.title.trim(), duplicateIds, brokenAriaRefs};
+}
 
 function connect(url) {
   return new Promise((resolve, reject) => {
@@ -52,6 +84,10 @@ function connect(url) {
       else entry?.resolve(message.result);
     });
     ws.addEventListener("error", () => reject(new Error(`WebSocket error on ${url}`)));
+    ws.addEventListener("close", () => {
+      for (const entry of waiting.values()) entry.reject(new Error("Chrome disconnected during " + entry.method));
+      waiting.clear();
+    });
     ws.addEventListener("open", () => resolve({
       send(method, params = {}, sessionId) {
         const id = ++next;
@@ -84,7 +120,7 @@ const server = createServer(async (req, res) => {
 await new Promise((done) => server.listen(0, "127.0.0.1", done));
 const site = `http://127.0.0.1:${server.address().port}${BASE_PATH}`;
 const faviconUrl = new URL("/favicon.ico", site).href;
-const profile = await mkdtemp("/tmp/cvw-a11y-chrome-");
+const profile = await mkdtemp(path.join(tmpdir(), "cvw-a11y-chrome-"));
 const child = spawn(CHROME, [
   "--headless=new",
   "--remote-debugging-port=0",
@@ -97,7 +133,7 @@ const child = spawn(CHROME, [
   "about:blank",
 ], {stdio: ["ignore", "ignore", "pipe"]});
 
-const auditReport = {schema: "cvw-accessibility-audit/1", routes: [], violations: []};
+const auditReport = {schema: "cvw-accessibility-audit/2", routes: [], violations: []};
 
 try {
   let stderr = "";
@@ -108,7 +144,8 @@ try {
       const m = stderr.match(/DevTools listening on (ws:\/\/\S+)/);
       if (m) { clearTimeout(timer); resolve(m[1]); }
     });
-    child.once("exit", (code) => { clearTimeout(timer); reject(new Error(`Chrome exited ${code}`)); });
+    child.once("error", (error) => { clearTimeout(timer); reject(error); });
+    child.once("exit", (code, signal) => { clearTimeout(timer); reject(new Error(`Chrome exited ${signal ?? code}: ${stderr}`)); });
   });
 
   const cdp = await connect(wsUrl);
@@ -137,7 +174,7 @@ try {
 
   const evaluate = async (expression) => {
     const r = await send("Runtime.evaluate", {expression, returnByValue: true, awaitPromise: true});
-    if (r.exceptionDetails) throw new Error(r.exceptionDetails.text);
+    if (r.exceptionDetails) throw new Error(r.exceptionDetails.exception?.description ?? r.exceptionDetails.text);
     return r.result.value;
   };
   const wait = async (expression, ms = 15000) => {
@@ -149,81 +186,76 @@ try {
     throw new Error(`Timed out waiting for: ${expression}`);
   };
 
-  for (const route of ROUTES) {
+  // Exercise one keyboard action in each recorded review. Check the updated text and its exposed live property.
+  async function checkFeedback(route) {
+    const status = `document.querySelector(${JSON.stringify(route.feedback)})`;
+    const visibleText = `(${status}?.checkVisibility({visibilityProperty: true}) ? ${status}.textContent.trim() : "")`;
+    const before = await evaluate(visibleText);
+    await evaluate(`document.querySelector(${JSON.stringify(route.marker)}).focus()`);
+    await send("Input.dispatchKeyEvent", {type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, text: "\r"});
+    await send("Input.dispatchKeyEvent", {type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13});
+    await wait(`${visibleText}.length > 0 && ${visibleText} !== ${JSON.stringify(before)}`);
+    const {result} = await send("Runtime.evaluate", {expression: status});
+    const {nodes} = await send("Accessibility.getPartialAXTree", {objectId: result.objectId, fetchRelatives: false});
+    return nodes.some((node) => !node.ignored && isPolite(node));
+  }
+
+  const isPolite = (node) => node.properties?.some((p) => p.name === "live" && p.value.value === "polite");
+  async function inspectRoute(route) {
     pageErrors.length = 0;
     badResponses.length = 0;
-    await send("Page.navigate", {url: site + route.rel});
-    await wait(route.waitExpr);
-    await sleep(150);
+    const url = site + route.rel;
+    const navigation = await send("Page.navigate", {url});
+    if (navigation.errorText) throw new Error(navigation.errorText);
+    await wait(`(${landingReady})(${JSON.stringify(url)}, ${JSON.stringify(route)})`);
 
-    const domAudit = await evaluate(`(() => {
-      const lang = document.documentElement.getAttribute("lang") || "";
-      const title = document.title.trim();
-      const seenIds = new Set(), duplicateIds = [];
-      for (const el of document.querySelectorAll("[id]")) {
-        if (!el.id) continue;
-        if (seenIds.has(el.id)) duplicateIds.push(el.id);
-        seenIds.add(el.id);
-      }
-      const brokenAriaRefs = [];
-      for (const attr of ["aria-labelledby", "aria-describedby"]) {
-        for (const el of document.querySelectorAll("[" + attr + "]")) {
-          if (!el.checkVisibility?.()) continue;
-          const ids = (el.getAttribute(attr) || "").trim().split(/\\s+/).filter(Boolean);
-          for (const id of ids) {
-            if (!document.getElementById(id)) brokenAriaRefs.push(attr + "->" + id);
-          }
-        }
-      }
-      const unnamedControls = [];
-      const controls = document.querySelectorAll("button, a[href], input, select, textarea, summary");
-      for (const el of controls) {
-        if (el.hidden || el.closest("[hidden], [inert]") || !el.checkVisibility?.()) continue;
-        const ariaLabel = (el.getAttribute("aria-label") || "").trim();
-        const labelledBy = (el.getAttribute("aria-labelledby") || "").trim().split(/\\s+/).filter(Boolean)
-          .map((id) => document.getElementById(id)?.textContent?.trim() || "").join(" ").trim();
-        const text = (el.innerText || el.textContent || el.getAttribute("value") || el.getAttribute("title") || "").trim();
-        const imgAlt = [...el.querySelectorAll("img[alt]")].map((i) => i.getAttribute("alt").trim()).join(" ").trim();
-        const labelEl = el.id ? document.querySelector('label[for="' + CSS.escape(el.id) + '"]')?.textContent?.trim() || "" : "";
-        if (!(ariaLabel || labelledBy || text || imgAlt || labelEl)) {
-          unnamedControls.push(el.tagName.toLowerCase() + (el.id ? "#" + el.id : ""));
-        }
-      }
-      const liveRegions = document.querySelectorAll('[aria-live], [role="status"], [role="alert"]').length;
-      return {lang, title, duplicateIds, brokenAriaRefs, unnamedControls, visibleControls: controls.length, liveRegions};
-    })()`);
-
+    const domAudit = await evaluate(`(${inspectDocument})()`);
     const axNodes = (await send("Accessibility.getFullAXTree")).nodes.filter((n) => !n.ignored);
+    const controls = axNodes.filter((node) => controlRoles.has(node.role.value));
+    const unnamed = controls.filter((node) => !node.name?.value.trim());
+    const mains = axNodes.filter((node) => node.role.value === "main").length;
+    const dialogs = axNodes.filter((node) => node.role.value === "dialog" && node.name?.value.trim()).length;
+    const polite = axNodes.filter(isPolite).length;
     const routeIssues = [];
     if (!domAudit.lang) routeIssues.push("missing html[lang]");
     if (!domAudit.title) routeIssues.push("empty <title>");
     if (domAudit.duplicateIds.length) routeIssues.push(`duplicate ids: ${domAudit.duplicateIds.join(", ")}`);
     if (domAudit.brokenAriaRefs.length) routeIssues.push(`broken ARIA refs: ${domAudit.brokenAriaRefs.join(", ")}`);
-    if (domAudit.unnamedControls.length) routeIssues.push(`unnamed controls: ${domAudit.unnamedControls.join(", ")}`);
+    if (!controls.length) routeIssues.push("no exposed controls");
+    if (unnamed.length) routeIssues.push(`unnamed controls: ${unnamed.map((n) => n.role.value + "#" + n.backendDOMNodeId).join(", ")}`);
+    if (route.modal ? dialogs !== 1 || mains !== 0 : mains !== 1) {
+      routeIssues.push(`expected ${route.modal ? "one named modal with the background excluded" : "one main landmark"}; found ${mains} main, ${dialogs} named dialog(s)`);
+    }
+    if (route.polite && !polite) routeIssues.push("no exposed polite live region");
+    const feedback = route.feedback ? await checkFeedback(route) : undefined;
+    if (feedback === false) routeIssues.push("keyboard action produced no exposed polite feedback");
     if (pageErrors.length) routeIssues.push(`console/page errors: ${pageErrors.join("; ")}`);
     if (badResponses.length) routeIssues.push(`HTTP >=400: ${JSON.stringify(badResponses)}`);
 
-    const entry = {
-      route: BASE_PATH + route.rel,
-      id: route.id,
-      lang: domAudit.lang,
-      title: domAudit.title,
-      axNodeCount: axNodes.length,
-      liveRegions: domAudit.liveRegions,
-      issues: routeIssues,
-    };
+    return {lang: domAudit.lang, title: domAudit.title, axNodeCount: axNodes.length, controls: controls.length,
+      mainLandmarks: mains, namedDialogs: dialogs, politeLiveRegions: polite, keyboardFeedback: feedback, issues: routeIssues};
+  }
+
+  for (const route of ROUTES) {
+    let result;
+    try {
+      result = await inspectRoute(route);
+    } catch (error) {
+      result = {issues: [error.message]};
+    }
+    const entry = {route: BASE_PATH + route.rel, id: route.id, ...result};
     auditReport.routes.push(entry);
-    for (const issue of routeIssues) auditReport.violations.push(`${route.id}: ${issue}`);
-    console.log(`${routeIssues.length === 0 ? "PASS" : "FAIL"} ${route.id} (${BASE_PATH}${route.rel}) — ${axNodes.length} AX nodes, 0 violations`);
+    for (const issue of entry.issues) auditReport.violations.push(`${route.id}: ${issue}`);
+    console.log(`${entry.issues.length ? "FAIL" : "PASS"} ${route.id}: ${entry.issues.length} issue(s)`);
   }
 
   cdp.close();
 } finally {
   server.close();
-  if (child.exitCode === null) {
+  if (child.exitCode === null && child.signalCode === null) {
     child.kill("SIGTERM");
     await sleep(300);
-    if (child.exitCode === null) child.kill("SIGKILL");
+    if (child.exitCode === null && child.signalCode === null) child.kill("SIGKILL");
   }
   await rm(profile, {recursive: true, force: true, maxRetries: 5});
 }
@@ -231,4 +263,4 @@ try {
 await mkdir(path.dirname(outFile), {recursive: true});
 await writeFile(outFile, JSON.stringify(auditReport, null, 2) + "\n");
 assert.deepEqual(auditReport.violations, [], `Accessibility violations found:\n${auditReport.violations.join("\n")}`);
-console.log(`All ${auditReport.routes.length} routes passed with 0 accessibility violations -> ${path.relative(root, outFile)}`);
+console.log(`All ${auditReport.routes.length} landing states passed the automated checks -> ${path.relative(root, outFile)}`);
