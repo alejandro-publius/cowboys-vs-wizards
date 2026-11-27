@@ -5,7 +5,7 @@
 - **Trace Impact (`node scripts/trace.mjs`):**
   - Total proven requirement clauses across all 45 specs: **`108` -> `451`** (`+343` newly proven clauses; orphan IDs reduced `620` -> `277`).
   - Across all 29 `.kiro/specs/card-*` EARS specifications (`442` total `CARD-*` clauses): **`441 / 442` (`99.77%`) proven**; **28 of 29 card specs have zero orphan IDs**.
-  - Only [`CARD-WIZARD-HELLFIRE-04`](../../.kiro/specs/card-wizard-hellfire/requirements.md) remains intentionally unasserted because [`proof/referee/report.md`](../../proof/referee/report.md) records empty-board Hellfire legality as an open rulebook-versus-engine ruling.
+  - Only [`CARD-WIZARD-HELLFIRE-04`](../../.kiro/specs/card-wizard-hellfire/requirements.md) remains intentionally unasserted because [`proof/referee/referee.py`](../../proof/referee/referee.py) records empty-board Hellfire legality as an open rulebook-versus-engine ruling.
   - `duplicate IDs: 0`, `unsupported syntax: 0`, and zero new unresolved test references.
 
 ## Reproduce
