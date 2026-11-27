@@ -134,4 +134,3 @@ export function mountSaloonRoom({room, ledger, book, pokerURL}) {
     },
   };
 }
-

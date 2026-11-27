@@ -179,7 +179,9 @@ export async function checkWantedCollection({open, click, tap, press, activateBy
     await click(".book-watch");
     await wait("document.querySelector('.sd-gallery.book-replay')?.open");
     const canvas = `.book-replay .sd-attack-world[data-card-art="${reward}"][data-preview-mode="attack"]`;
-    await wait(`${node(canvas)}?.checkVisibility()`);
+    const still = '.book-replay .sd-replay-cards[data-state="after"]';
+    await wait(`${node(canvas)}?.checkVisibility() || (${node(still)}?.checkVisibility() &&
+      ${node(still)}.querySelector("figure .sd-card-art").style.backgroundPosition === document.querySelector(".book-hero .sd-card-art").style.backgroundPosition)`);
     await wait(`document.querySelector('.sd-attack-result').textContent === ${JSON.stringify(replayCards(reward, example).outcome)}`);
     await press("Escape", 27);
     await wait("document.activeElement.matches('.book-watch')");

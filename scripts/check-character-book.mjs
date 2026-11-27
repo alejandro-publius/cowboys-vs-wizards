@@ -83,6 +83,23 @@ export async function checkCharacterBook({open, click, press, evaluate, wait}) {
   }
   assert.deepEqual([...index.keys()].sort(), Object.keys(TYPES).sort());
 
+  // The book and hand print the very same Billy. The player chooses and resolves a real target.
+  await click('.book-tabs [data-side="cowboy"]');
+  await click('.book-portrait[data-id="cowboy-billy"]');
+  const printed = await evaluate("document.querySelector('.book-hero .table-card-face').innerHTML");
+  await click(".book-practice");
+  await wait("!document.getElementById('showdown').hidden && document.querySelector('#sd-board [data-own=\"0\"]')?.checkVisibility()");
+  assert.equal(await evaluate("document.querySelector('#sd-home').textContent"), "Back to book");
+  assert.ok(await evaluate(`[...document.querySelectorAll('#sd-hand .table-card-face')].some(face => face.innerHTML === ${JSON.stringify(printed)})`),
+    "Billy in the live hand has exactly the same face as Billy in the book");
+  await click('#sd-board [data-own="0"]');
+  await click('#sd-board [data-enemy="0"]');
+  await wait(`document.querySelector('#sd-board [data-slot="wizard-0"] .sd-orbs')?.getAttribute('aria-label') === '2 of 4 orbs'`);
+  await click("#sd-home");
+  await wait("document.querySelector('.character-book')?.open");
+  assert.equal(await evaluate("document.querySelector('.book-portrait[aria-pressed=true]').dataset.id"), "cowboy-billy");
+  assert.equal(await career(), before, "book practice leaves the prior campaign intact");
+
   await click('.book-tabs [data-side="cowboy"]');
   await click('.book-portrait[data-id="cowboy-mounted-billy"]');
   assert.equal(await evaluate("document.querySelector('.book-ownership').textContent"), "Uncollected");

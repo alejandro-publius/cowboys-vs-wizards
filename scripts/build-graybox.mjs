@@ -23,7 +23,8 @@ const artwork = async (name) => {
 const hosted = process.argv.includes("--hosted");
 const diorama = process.argv.includes("--diorama") && !hosted;
 const contest = diorama && process.argv.includes("--contest");
-const output = diorama ? "dist/cowboys-vs-wizards-showdown-3d.html" : process.argv.includes("--outrider-fixture") ? ".artifacts/outrider-fixture/graybox.html"
+const saloonBook = contest && process.argv.includes("--saloon-book");
+const output = saloonBook ? "dist/Showdown_Field_Guide.html" : diorama ? "dist/cowboys-vs-wizards-showdown-3d.html" : process.argv.includes("--outrider-fixture") ? ".artifacts/outrider-fixture/graybox.html"
   : hosted || process.argv.includes("--web") ? "dist/web/index.html" : "dist/cowboys-vs-wizards-board-duel.html";
 // K-087: the page's public build label (commit, "+local" if uncommitted), so the Camp's playtest report can say
 // which build each duel was finished under. Null without git: the report then says the build is not identified.
@@ -81,7 +82,8 @@ await writeFile(file(`.artifacts/outrider-ledger/${output.replace(/[/.]/g, "_")}
 const preview = diorama
   ? pagePreview("", "Cowboys vs. Wizards: Showdown", "Ride the six-stop Trail in a haunted Western card game. Scout the Graveyard Dragon, hunt it and bring its card back to your deck.")
   : pagePreview("graybox/", "Showdown | Lightweight board", "Play the lightweight Cowboys vs. Wizards board. Take on the Trail, build your deck, and hunt the Lantern Wraith and the Graveyard Dragon.");
-await writeFile(file(output), template.replace("@@PAGE_PREVIEW@@", () => preview).replace("@@STYLE@@", () => `${style}\n${showdownStyle}\n${replayStyle}\n${boardStyle}`)
+const pageTemplate = saloonBook ? template.replace("<body>", '<body data-entry-room="saloon">') : template;
+await writeFile(file(output), pageTemplate.replace("@@PAGE_PREVIEW@@", () => preview).replace("@@STYLE@@", () => `${style}\n${showdownStyle}\n${replayStyle}\n${boardStyle}`)
   .replace("Cowboys vs. Wizards | Graybox", diorama ? "Cowboys vs. Wizards" : "Cowboys vs. Wizards | Graybox")
   .replace("@@SCRIPT@@", () => script + (boardLicense ? `\n/*\n${boardLicense}\n*/` : "")));
 console.log(`Built ${output} (${diorama ? "3D diorama" : "graybox"}, build ${label ?? "not identified"}); Outrider gate: ${outrider.note}`);

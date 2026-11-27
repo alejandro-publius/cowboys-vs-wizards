@@ -387,6 +387,8 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   if (!["turn", "outrider", "practice", "wizard", "lesson"].some((key) => query.has(key))) {
     if (outpost && query.get("saloon") === "review") {
       openSaloon(true);
+    } else if (outpost && query.size === 0 && document.body.dataset.entryRoom === "saloon") {
+      openSaloon();
     } else if (query.get("replay") === "billy") {
       toCamp();
       openBillyReplay();
