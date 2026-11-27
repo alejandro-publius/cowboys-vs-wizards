@@ -140,7 +140,10 @@ async function paidHunts(page) {
 
   const capture = page.locator("#sd-result [data-build-capture]");
   assert.ok((await capture.innerText()).includes(TYPES[boss.reward].name));
-  await capture.press("Enter");
+  assert.equal(await page.locator(".table-award").innerText(), TYPES[boss.reward].name + " joins your collection");
+  const bonus = page.locator("#sd-result section").filter({has: page.getByRole("heading", {name: "Choose one bonus card"})});
+  assert.equal(await bonus.locator("[data-choose]").count(), save.offer.length);
+  await capture.click();
   const add = `[data-zone="deck"][data-type="${boss.reward}"][data-by="1"]`;
   await focusIs(page, add);
   const rewardRow = page.locator(`[data-row="${boss.reward}"]`);
