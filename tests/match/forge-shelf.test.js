@@ -73,11 +73,15 @@ test("the player's request is cleaned and bounded", () => {
   assert.equal(counterText("abc"), `3 of ${REQUEST_MAX} characters`);
 });
 
-test("the shelf has one bounded form, one button and the exact CLI step", () => {
+test("the shelf keeps the witness separate from the bounded request form and its CLI step", () => {
   const html = shelfHtml(forgeView(null, TYPES));
   assert.equal(PREPARE_STEP, "node scripts/card-forge.mjs prepare request.txt");
   assert.equal(REQUEST_FILE, "request.txt");
-  assert.equal(html.match(/<button/g).length, 1);
+  assert.equal(html.match(/<form\b/g).length, 1);
+  assert.equal(html.match(/<form\b[\s\S]*?<\/form>/)[0].match(/<button/g).length, 1);
+  assert.match(html, /class="forge-hellfire"/);
+  assert.ok(html.includes('<button type="button" value="all">Remove 1 orb from every troop.</button>'));
+  assert.ok(html.includes('<button type="button" value="enemy">Remove 1 orb from every enemy troop.</button>'));
   assert.match(html, new RegExp(`maxlength="${REQUEST_MAX}"`));
   assert.match(html, /<label for="forge-request">/);
   assert.ok(html.includes(`<code>${PREPARE_STEP}</code>`));

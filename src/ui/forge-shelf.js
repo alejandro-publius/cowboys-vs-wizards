@@ -1,9 +1,10 @@
 // The Card Forge shelf in the Saloon drawer. It shows the one recorded Card Forge run exactly as the
 // coordinator wrote it (docs/evidence/player-card-forge/showcase.json, null until a run is recorded) and
-// lets a player write their own card idea and download it as request.txt.
+// lets a player replay one released rule or write their own card idea and download it as request.txt.
 // The page stores nothing, calls no network, grants no reward and never marks a draft verified:
 // only the recorded verifier outcome is shown, and a player's own request stays pending.
 import {TYPES} from "../game/showdown/cards.js";
+import {hellfireHtml, mountHellfire} from "./forge-hellfire.js";
 import SHOWCASE from "../../docs/evidence/player-card-forge/showcase.json" with {type: "json"};
 
 export const REQUEST_MAX = 500;
@@ -96,10 +97,11 @@ export function cleanRequest(input) {
 export const requestFileText = (text) => `${text}\n`;
 export const counterText = (value) => `${String(value ?? "").length} of ${REQUEST_MAX} characters`;
 
-// Pure: the whole shelf. One form, one button, no stored state.
+// Pure: the whole shelf.
 export function shelfHtml(view) {
   return `<section class="forge-shelf-showcase" aria-labelledby="forge-showcase-title">
     <h3 id="forge-showcase-title">Card Forge</h3>
+    ${hellfireHtml}
     ${showcaseHtml(view)}
   </section>
   <section class="forge-shelf-own" aria-labelledby="forge-own-title">
@@ -151,6 +153,7 @@ export function mountForgeShelf(host, {showcase = SHOWCASE, portrait = null} = {
   host.classList?.add("forge-shelf");
   host.innerHTML = shelfHtml(view);
   const q = (selector) => host.querySelector(selector);
+  mountHellfire(q(".forge-hellfire"));
 
   if (view.status === "ok" && view.baseName && typeof portrait === "function") {
     try {
