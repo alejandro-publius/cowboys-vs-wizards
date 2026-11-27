@@ -1,0 +1,33 @@
+name: Boot Hill Poker balance gate
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/balance-gate-demo.yml'
+      - '.kiro/specs/night-shift-balance-contract/requirements.md'
+      - 'packages/frontier-kit/**'
+      - 'scripts/showdown-balance-contract.mjs'
+      - 'src/game/frontier-kit/seeded-rng.js'
+      - 'experiments/boot-hill-poker/**'
+      - 'tests/game/frontier-balance-gate.test.js'
+
+permissions:
+  contents: read
+
+jobs:
+  poker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - run: node experiments/boot-hill-poker/balance-evidence.mjs standard > "$RUNNER_TEMP/poker.json"
+      - uses: ./packages/frontier-kit
+        with:
+          plan: experiments/boot-hill-poker/balance-plan.json
+          evidence: ${{ runner.temp }}/poker.json
+      - name: Check rejected candidates and invalid evidence
+        run: node --test tests/game/frontier-balance-gate.test.js

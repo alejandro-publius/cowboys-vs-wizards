@@ -1,7 +1,71 @@
 # Frontier kit
 
-Code shared by Showdown and Boot Hill Poker. It imports neither game and has
-no DOM, Node, network or rendering dependency.
+Showdown and Boot Hill Poker share two dependency-free modules. Each game owns its rules. The optional Node CLI and GitHub Action below review paired outcomes from any deterministic two-sided game.
+
+## Run the balance gate in another game
+
+Commit a seed plan before tuning. Have your simulator emit one JSON file for the chosen baseline and candidate on every run. The gate needs two inputs.
+
+- **Plan** — `{"sides":["red","blue"],"tune":{"firstSeed":1,"deals":500},"holdout":{"firstSeed":501,"deals":500}}`. Choose distinct lowercase side names and disjoint seed ranges.
+- **Evidence** — an object with `tune` and `holdout` arrays. For each seed in ascending order, record both openers in the plan's side order. One row looks like `{"seed":1,"first":"red","baseline":{"winner":"blue","endTurn":4},"candidate":{"winner":"red","endTurn":5}}`. Use a side name or an explicit draw (`"draw"` or `null`) and a positive whole ending turn. The kit's `onPair` callback emits this shape. Each input file can be up to 64 MiB. [Poker producer](../../experiments/boot-hill-poker/balance-evidence.mjs)
+
+From the caller's working directory, run Node 22.18+ against a checkout containing the gate. No package install is required.
+
+```sh
+node /path/to/cowboys-vs-wizards/packages/frontier-kit/balance-gate.mjs ci/plan.json pairs.json
+```
+
+For GitHub Actions, run the same check after your simulation. This example assumes your simulator writes the paired evidence to stdout. Replace the producer path and pin the Action to the full SHA of a published revision containing it. The Action reads the two files and needs no secret or write permission. [Runnable Boot Hill workflow](../../.github/workflows/balance-gate-demo.yml)
+
+```yaml
+on: pull_request
+permissions:
+  contents: read
+jobs:
+  balance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - run: node ci/record-pairs.mjs > "$RUNNER_TEMP/pairs.json"
+      - uses: alejandro-publius/cowboys-vs-wizards/packages/frontier-kit@<reviewed-commit>
+        with:
+          plan: ci/plan.json
+          evidence: ${{ runner.temp }}/pairs.json
+```
+
+Exit **0** means both candidate side win shares are within 45–55% and opening-seat skew grew by at most 1 percentage point versus baseline, separately on tune and holdout. All games count in the denominator. Exit **2** reports a measured rejection. Both print JSON with counts and shares per arm, changed winners and each cohort's checks. Exit **1** reports invalid inputs on stderr, including missing, duplicated or out-of-order pairs. The Action reads the thresholds from its pinned [Night Shift contract](../../.kiro/specs/night-shift-balance-contract/requirements.md). The caller supplies the simulator and the evidence of which versions it ran.
+
+### Import the Kiro Power
+
+In Kiro IDE, open **Powers → Add Custom Power → Import power from a folder**, select `.kiro/powers/balance-gate` in the checkout, then click **Install**. Once this directory is public, use **Import power from a repository URL** (called **Import power from GitHub** in earlier versions) and paste its GitHub directory URL. With a game workspace open, ask “Run the paired balance gate on ci/plan.json and pairs.json. Which cohort and rule explain the verdict?” The Power contains the input contract and CLI instructions. [Power directory](../../.kiro/powers/balance-gate/) · [Kiro installation guide](https://kiro.dev/docs/powers/installation/)
+
+### Reproduce the Poker controls
+
+From the root of this checkout, replay both Cowboy discard policies against the Wizard's standard policy. The baseline Cowboy always stands pat. This exercises the same gate as the Action.
+
+```sh
+poker=experiments/boot-hill-poker
+pairs=$(mktemp)
+node "$poker/balance-evidence.mjs" standard > "$pairs"
+node packages/frontier-kit/balance-gate.mjs "$poker/balance-plan.json" "$pairs"  # exit 0
+node "$poker/balance-evidence.mjs" pat > "$pairs"
+node packages/frontier-kit/balance-gate.mjs "$poker/balance-plan.json" "$pairs"  # exit 2
+node --test tests/game/frontier-balance-gate.test.js  # includes invalid evidence at exit 1
+```
+
+Codex CLI measured these controls on November 27, 2026. Each cohort contains 1,000 games per arm. The unchanged stand-pat candidate failed NSB-1 in both cohorts.
+
+| Seeds | Baseline Cowboy wins | Standard Cowboy wins | Opening seat win share, baseline → candidate | Changed winners |
+| --- | ---: | ---: | ---: | ---: |
+| Tune 1–500 | 295 | 500 | 49.5% → 48.8% | 291 |
+| Holdout 501–1,000 | 308 | 500 | 47.1% → 48.6% | 274 |
+
+The Action's shell command was exercised locally from a separate caller directory. Hosted Actions execution and native Kiro import or activation remain unverified. The isolated Kiro CLI 3.5.0 import returned `Operation not permitted`.
 
 ## What is shared
 

@@ -1,0 +1,5 @@
+{
+  "sides": ["cowboy", "wizard"],
+  "tune": {"firstSeed": 1, "deals": 500},
+  "holdout": {"firstSeed": 501, "deals": 500}
+}
