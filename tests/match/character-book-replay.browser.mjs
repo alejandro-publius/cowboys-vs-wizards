@@ -5,6 +5,7 @@ import {existsSync} from "node:fs";
 import {createRequire} from "node:module";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
+import {checkTitleArt} from "../../scripts/check-title-art.mjs";
 
 const bin = process.env.PATH.split(path.delimiter).find(dir => existsSync(path.join(dir, "playwright-core")));
 const require = createRequire(bin ? path.join(bin, "..", "package.json") : import.meta.url);
@@ -54,6 +55,10 @@ async function checkReplay(viewport, {reduced = false, noWebGL = false, loseWebG
     });
     await page.goto(site.href);
     const launch = page.locator("#title-screen .book-launch");
+    await launch.waitFor({state: "attached"});
+    await page.evaluate(checkTitleArt);
+    const more = page.locator("#title-screen details:not([open]) > summary[data-title-more]");
+    if (await more.isVisible()) await more.click();
     await launch.click();
     const book = page.locator(".character-book[open]");
     const billy = book.locator('[data-id="cowboy-mounted-billy"]');

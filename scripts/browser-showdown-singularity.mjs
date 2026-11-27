@@ -223,8 +223,10 @@ try {
   };
 
   await send("Page.navigate", {url: pathToFileURL(htmlFile).href});
-  await wait(`document.readyState==='complete'&&[...document.querySelectorAll('.sd-open-gallery')].some(e=>e.getClientRects().length)`);
-  await click(".sd-open-gallery");
+  await wait(`document.readyState==='complete'&&document.querySelector('#title-screen .sd-open-gallery')`);
+  const more = "#title-screen details:not([open]) > summary[data-title-more]";
+  if (await evaluate(`!!document.querySelector('${more}')`)) await click(more);
+  await click("#title-screen .sd-open-gallery");
   await wait(`document.querySelector('dialog.sd-gallery')?.open`);
   await click('.sd-gallery-menu [data-art="wizard-singularity"]');
   await wait(`document.querySelector('.sd-gallery-info h3')?.textContent===${JSON.stringify(TYPES["wizard-singularity"].name)}&&document.querySelectorAll('.sd-gallery-moves [data-attack-mode]').length===2`);
@@ -339,9 +341,9 @@ try {
       check("the gallery stays usable after stopping the reel", true);
     }
   }
+  await click(".sd-gallery-close");
+  await wait('!document.querySelector("dialog.sd-gallery").open && document.activeElement.matches("#title-screen .sd-open-gallery")');
   if (scope === "--check-maintenance") {
-    await click(".sd-gallery-close");
-    await wait('!document.querySelector("dialog.sd-gallery").open');
     await click("#menu-play");
     await click('[data-camp-destination="camp-open-title"]');
     await click('#camp-open [data-two="1"]');

@@ -1,9 +1,9 @@
 // The public illustrated title by keyboard, in real headless Chrome (fresh profile, file:// build):
 //   node scripts/build-graybox.mjs --diorama --contest
 //   node scripts/browser-showdown-first-match-check.mjs dist/cowboys-vs-wizards-showdown-3d.html [outDir]
-// Tab and Enter only (CDP Input.dispatchKeyEvent): Ride or Fight? on the title, the Outrider and a target,
+// Tab and Enter only (CDP Input.dispatchKeyEvent): Play on the title, the Outrider and a target,
 // Continue to Boot Hill, then the whole first Boot Hill match (?seed=0, the deal the graybox keyboard check wins).
-// Enter on Ride or Fight? hides the title control, so focus must land on the decision the instruction names (the
+// Enter on Play hides the title control, so focus must land on the decision the instruction names (the
 // Outrider), not on the page; a pointer on the same control leaves focus alone. Chrome's accessibility tree is read at
 // each step: the focused control's name and description, the polite play feedback and the turn status. After every
 // play, attack and End turn focus must be on a usable duel control. Rules, wording, timers and art are untouched.
@@ -185,19 +185,21 @@ try {
 
   // 1. The public title on a fresh profile. ?seed=0 fixes the Boot Hill deal that Continue opens; the challenge is recorded.
   await send("Page.navigate", {url: `${page}?seed=0`});
-  await wait(`document.readyState==='complete'&&document.getElementById('menu-challenge')?.textContent==='Ride or Fight?'`);
+  const playVisible = `document.readyState==='complete'&&document.getElementById('menu-challenge')?.checkVisibility()`;
+  await wait(playVisible);
+  assert.match(await evaluate(`document.getElementById('menu-challenge').innerText.trim()`), /^Play$/i, "the title shows Play");
   assert.equal(await evaluate(`localStorage.length`), 0, "fresh Chrome profile has no saved data");
   const toTitle = await tabTo("#menu-challenge");
-  assert.equal((await axFocused())?.name, "Ride or Fight?", "Chrome names the focused title challenge");
+  assert.equal((await axFocused())?.name, "Play Showdown", "Chrome names the focused Play button");
   await key("Enter");
   await wait(`!document.getElementById('showdown').hidden&&document.querySelector('#sd-field[data-battlefield="bone-fence"] canvas.sd-world')?.width>0`);
   await sleep(100);
   await listen();
-  const opened = await step("Enter on Ride or Fight?");
+  const opened = await step("Enter on Play");
   // The title control is hidden now. Its keyboard focus moves to the decision the instruction names, not to the page.
   const rider = await evaluate(`[...document.querySelectorAll('#sd-board [data-own]')].find((b)=>b.textContent.includes('Outrider'))?.dataset.slot??null`);
   assert.ok(rider, "the Outrider is a usable choice on the board");
-  assert.equal(opened.focus.slot, rider, `Enter on Ride or Fight? focuses the Outrider, not ${opened.focus.id}`);
+  assert.equal(opened.focus.slot, rider, `Enter on Play should focus the Outrider, got ${opened.focus.id}`);
   const riderAx = opened.ax;
   assert.equal(riderAx?.role, "button", `Chrome reports a focused control after Ride or Fight?, not ${JSON.stringify(riderAx)}`);
   assert.match(riderAx.name, /\bOutrider\b.*Can attack/, "Chrome names the focused Outrider and says it can attack");
@@ -314,14 +316,14 @@ try {
   // 5. A pointer opens the same challenge without moving focus: only a keyboard opening carries focus into the duel.
   await evaluate(`localStorage.clear()`);
   await send("Page.navigate", {url: `${page}?seed=0`});
-  await wait(`document.readyState==='complete'&&document.getElementById('menu-challenge')?.textContent==='Ride or Fight?'`);
+  await wait(playVisible);
   const challenge = `!document.getElementById('showdown').hidden&&document.querySelector('#sd-field[data-battlefield="bone-fence"] canvas.sd-world')?.width>0`;
   await click("#menu-challenge");
   await wait(challenge);
   await sleep(100);
   const pointed = await focus();
-  assert.ok(!pointed.usable, `a pointer on Ride or Fight? leaves focus alone, not on ${pointed.id}`);
-  check("A pointer on Ride or Fight? opens the challenge without moving focus into the duel", {focus: pointed.id});
+  assert.ok(!pointed.usable, `a pointer on Play should leave focus alone, got ${pointed.id}`);
+  check("A pointer on Play opens Ride or Fight? without moving focus into the duel", {focus: pointed.id});
 
   // 6. Pointer: the Fight, Restart this duel, the Ride, Back to camp mid-attack, then the challenge again from the title.
   // Each deal offers Continue to Boot Hill once, only after its own attack has played; a cut-short attack offers nothing.
