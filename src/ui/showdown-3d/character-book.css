@@ -185,8 +185,8 @@ dialog.character-book::backdrop {
   display: block;
   inline-size: 100%;
   aspect-ratio: 1;
-  object-fit: contain;
-  image-rendering: pixelated;
+  object-fit: cover;
+  object-position: center 28%;
 }
 
 .character-book .book-portrait:is([aria-pressed="true"], [aria-selected="true"], [aria-current="true"], .active, .selected, .is-selected) {
@@ -229,9 +229,8 @@ dialog.character-book::backdrop {
 .character-book .book-hero {
   display: grid;
   place-items: center;
-  inline-size: min(100%, 278px);
-  aspect-ratio: 7 / 5;
-  margin: 21px auto 5px;
+  inline-size: min(100%, 238px);
+  margin: 14px auto 8px;
   background:
     radial-gradient(ellipse at center, #f7e2b4 20%, transparent 70%),
     linear-gradient(135deg, #b99a68, #e8cf9d 45%, #ccab74);
@@ -242,8 +241,7 @@ dialog.character-book::backdrop {
 .character-book .book-hero img {
   display: block;
   inline-size: 100%;
-  block-size: 100%;
-  min-block-size: 0;
+  block-size: auto;
   object-fit: contain;
   image-rendering: pixelated;
 }
@@ -334,9 +332,15 @@ dialog.character-book::backdrop {
   .character-book .book-portrait { padding: 1px; font-size: .65rem; }
   .character-book .book-pages { padding-block-start: 8px; }
   .character-book .book-close { inset: 5px 5px auto auto; min-block-size: 29px; min-inline-size: 29px; }
-  .character-book .book-hero { inline-size: 96%; margin-block-start: 29px; }
+  .character-book .book-hero { inline-size: 96%; margin-block-start: 9px; }
   .character-book .book-rule { font-size: .9rem; line-height: 1.32; }
-  .character-book .book-faction { letter-spacing: .04em; font-size: .67rem; }
+  .character-book .book-faction {
+    align-self: stretch;
+    margin: 0 27px 4px 0;
+    letter-spacing: .04em;
+    font-size: .67rem;
+    overflow-wrap: anywhere;
+  }
   .character-book .book-stats { gap: 4px 7px; padding-inline: 2px; }
 }
 
