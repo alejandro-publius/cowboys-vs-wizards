@@ -1,0 +1,25 @@
+{
+  "name": "showdown-bounty-draft",
+  "description": "Showdown Wanted bounty sandbox pipeline: prepare a target brief under tasks/showdown-bounties/, draft a 5-hunt Showdown boss package with showdown-bounty-drafter, and independently verify escort-deck legality, progressive hunt bounds, art-gate disclosures, and 5-hunt seeded Showdown winnability via showdown-bounty-reviewer. Never touches live src/game/ or generates assets.",
+  "inputs": {},
+  "steps": [
+    {
+      "type": "step",
+      "id": "prepare-bounty-brief",
+      "agent": "showdown-bounty-reviewer",
+      "prompt": "Run exactly once from the project root: node scripts/verify-showdown-bounty-draft.mjs prepare\nReport its real exit status and printed JSON summary without editing any file.\nStep completion: send_message to sessionId \"parent\" with severity \"success\" on exit 0, or severity \"error\" on nonzero exit."
+    },
+    {
+      "type": "step",
+      "id": "draft-bounty-package",
+      "agent": "showdown-bounty-drafter",
+      "prompt": "Prepare summary:\n{{previous.output}}\nInspect the target folder under tasks/showdown-bounties/ named in the prepare output. Ensure bounty.json, reward.md, portrait-brief.md, and model-brief.md satisfy all Showdown Wanted bounty rules (16-card Wizard escort deck within rarity caps, 5 progressive hunts, existing boss and Cowboy reward catalog cards, and explicit human gameplay approval gates before any art or Tripo model work). Write only under tasks/showdown-bounties/. Report completion with send_message to sessionId \"parent\" and severity \"success\"."
+    },
+    {
+      "type": "step",
+      "id": "verify-bounty-package",
+      "agent": "showdown-bounty-reviewer",
+      "prompt": "Author summary:\n{{previous.output}}\nRun exactly once from the project root: node scripts/verify-showdown-bounty-draft.mjs verify\nIt validates bounty.json, reward.md, portrait-brief.md, and model-brief.md against src/game/showdown/cards.js and progress.js, then simulates all 5 hunts across seeds 0-23 against the post-Trail Cowboy deck. Report the real exit status and printed JSON verdict without modifying any file.\nStep completion: send_message to sessionId \"parent\" with severity \"success\" on exit 0, or severity \"error\" on nonzero exit."
+    }
+  ]
+}

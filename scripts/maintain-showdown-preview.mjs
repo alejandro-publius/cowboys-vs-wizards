@@ -64,7 +64,38 @@ async function sourceFor(head, published) {
   throw new Error("The preview and the checkout have diverged. Integrate the accepted preview before updating.");
 }
 
-async function repairsFrom(candidate) {
+export const REPAIR_AGENT_OWNERS = Object.freeze({
+  "showdown-preview-maintainer": "src/ui/showdown-3d/gallery.js",
+  "showdown-camp-maintainer": "src/app.js",
+});
+
+export async function verifyRepairAgentFence(candidate, task) {
+  const expectedFile = REPAIR_AGENT_OWNERS[task.agent];
+  if (!expectedFile || expectedFile !== task.file) {
+    throw new Error(`Repair agent ${task.agent} is not pinned to ${task.file}.`);
+  }
+  const profilePath = path.join(candidate, ".kiro", "agents", `${task.agent}.json`);
+  let profile;
+  try {
+    profile = JSON.parse(await readFile(profilePath, "utf8"));
+  } catch {
+    throw new Error(`Missing or invalid Kiro agent profile for ${task.agent}.`);
+  }
+  const tools = Array.isArray(profile?.tools) ? profile.tools : [];
+  if (!tools.some((t) => t === "write" || t === "fs_write") ||
+      tools.some((t) => t === "shell" || t === "execute_bash" || t === "*" || t === "@builtin")) {
+    throw new Error(`Repair agent ${task.agent} must allow writes without shell tools.`);
+  }
+  const rules = Array.isArray(profile?.permissions?.rules) ? profile.permissions.rules : [];
+  const allowedWrites = rules
+    .filter((r) => r?.capability === "fs_write" && r?.effect === "allow")
+    .flatMap((r) => Array.isArray(r.match) ? r.match : []);
+  if (allowedWrites.length !== 1 || allowedWrites[0] !== task.file) {
+    throw new Error(`Repair agent ${task.agent} fs_write allowlist must be [${task.file}].`);
+  }
+}
+
+export async function repairsFrom(candidate) {
   const tasks = JSON.parse(await readFile(path.join(candidate, spec, "repairs.json"), "utf8"));
   const wording = await readFile(path.join(candidate, spec, "requirements.md"), "utf8");
   const requirements = new Map([...wording.matchAll(/^- \*\*(PM\d+)\.\*\* (.+)$/gm)]
@@ -74,14 +105,17 @@ async function repairsFrom(candidate) {
       throw new Error("Repair cases must use distinct " + field + " values.");
     }
   }
-  return new Map(tasks.map((task) => {
+  const out = [];
+  for (const task of tasks) {
     const statement = requirements.get(task.requirement);
     if (!statement || !/^[a-z0-9-]+$/.test(task.id) || !/^[a-z0-9-]+$/.test(task.agent) ||
       !/^src(?:\/[a-z0-9-]+)+\.js$/.test(task.file) || !task.check || !task.commit) {
       throw new Error("Invalid preview repair case: " + task.id);
     }
-    return [task.check, {...task, statement}];
-  }));
+    await verifyRepairAgentFence(candidate, task);
+    out.push([task.check, {...task, statement}]);
+  }
+  return new Map(out);
 }
 
 async function addCheckout(directory, revision, dependencies = false) {
@@ -167,47 +201,53 @@ async function promote(revision, verified, repairedCases) {
   return manifest;
 }
 
-await mkdir(preview, {recursive: true});
-await mkdir(lock);
-try {
-  await mkdir(run, {recursive: true});
-  const published = await readCurrent();
-  const head = await git(["rev-parse", "HEAD"]);
-  const base = await sourceFor(head, published);
-  await mkdir(path.dirname(checkout), {recursive: true});
-  await addCheckout(checkout, base, true);
-  const tasks = await repairsFrom(checkout);
-  let revision = base;
-  let outcome = await verify(base, "baseline", tasks);
-  const repairedCases = [];
-  if (!outcome.pass) {
-    const failing = outcome.failures.map((failure) => ({failure, task: tasks.get(failure.name)}));
-    console.log("Routing " + failing.map(({task}) => task.requirement).join(", ") + " to Kiro.");
-    const repairs = await Promise.allSettled(failing.map(({task, failure}) => repair(base, task, failure)));
-    const errors = repairs.filter((result) => result.status === "rejected");
-    if (errors.length) throw new Error(errors.map(({reason}) => reason.message).join("\n"));
-    for (const [index, result] of repairs.entries()) {
-      await git(["-c", "commit.gpgsign=false", "cherry-pick", result.value], checkout);
-      repairedCases.push(failing[index].task.requirement);
+async function runPreviewCycle() {
+  await mkdir(preview, {recursive: true});
+  await mkdir(lock);
+  try {
+    await mkdir(run, {recursive: true});
+    const published = await readCurrent();
+    const head = await git(["rev-parse", "HEAD"]);
+    const base = await sourceFor(head, published);
+    await mkdir(path.dirname(checkout), {recursive: true});
+    await addCheckout(checkout, base, true);
+    const tasks = await repairsFrom(checkout);
+    let revision = base;
+    let outcome = await verify(base, "baseline", tasks);
+    const repairedCases = [];
+    if (!outcome.pass) {
+      const failing = outcome.failures.map((failure) => ({failure, task: tasks.get(failure.name)}));
+      console.log("Routing " + failing.map(({task}) => task.requirement).join(", ") + " to Kiro.");
+      const repairs = await Promise.allSettled(failing.map(({task, failure}) => repair(base, task, failure)));
+      const errors = repairs.filter((result) => result.status === "rejected");
+      if (errors.length) throw new Error(errors.map(({reason}) => reason.message).join("\n"));
+      for (const [index, result] of repairs.entries()) {
+        await git(["-c", "commit.gpgsign=false", "cherry-pick", result.value], checkout);
+        repairedCases.push(failing[index].task.requirement);
+      }
+      revision = await git(["rev-parse", "HEAD"], checkout);
+      outcome = await verify(revision, "candidate", tasks);
+      if (!outcome.pass) throw new Error("The combined candidate still fails a declared check.");
     }
-    revision = await git(["rev-parse", "HEAD"], checkout);
-    outcome = await verify(revision, "candidate", tasks);
-    if (!outcome.pass) throw new Error("The combined candidate still fails a declared check.");
+    if (published?.revision === revision && published.sha256 === outcome.sha256) {
+      console.log(JSON.stringify({status: "current", ...published}));
+    } else {
+      console.log(JSON.stringify({status: "updated", ...await promote(revision, outcome, repairedCases)}));
+    }
+    const cleanup = await Promise.allSettled(worktrees.map((directory) => git(["worktree", "remove", directory])));
+    for (const [index, result] of cleanup.entries()) {
+      if (result.status === "rejected") console.error("Checkout retained at " + path.relative(root, worktrees[index]));
+    }
+  } catch (error) {
+    console.error(error.message);
+    for (const directory of worktrees) console.error("Candidate retained at " + path.relative(root, directory));
+    console.error("Run output: " + path.relative(root, run));
+    process.exitCode = 1;
+  } finally {
+    await rm(lock, {recursive: true});
   }
-  if (published?.revision === revision && published.sha256 === outcome.sha256) {
-    console.log(JSON.stringify({status: "current", ...published}));
-  } else {
-    console.log(JSON.stringify({status: "updated", ...await promote(revision, outcome, repairedCases)}));
-  }
-  const cleanup = await Promise.allSettled(worktrees.map((directory) => git(["worktree", "remove", directory])));
-  for (const [index, result] of cleanup.entries()) {
-    if (result.status === "rejected") console.error("Checkout retained at " + path.relative(root, worktrees[index]));
-  }
-} catch (error) {
-  console.error(error.message);
-  for (const directory of worktrees) console.error("Candidate retained at " + path.relative(root, directory));
-  console.error("Run output: " + path.relative(root, run));
-  process.exitCode = 1;
-} finally {
-  await rm(lock, {recursive: true});
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  await runPreviewCycle();
 }

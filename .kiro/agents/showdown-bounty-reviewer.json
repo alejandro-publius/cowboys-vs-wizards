@@ -1,0 +1,32 @@
+{
+  "name": "showdown-bounty-reviewer",
+  "description": "Independent Showdown Wanted bounty verifier: runs only `node scripts/verify-showdown-bounty-draft.mjs prepare` or `node scripts/verify-showdown-bounty-draft.mjs verify` and reports the real exit status and simulation counts. Read-only.",
+  "tools": ["read", "shell"],
+  "includeMcpJson": false,
+  "resources": [
+    "file://./AGENTS.md"
+  ],
+  "permissions": {
+    "rules": [
+      {
+        "capability": "shell",
+        "match": [
+          "node scripts/verify-showdown-bounty-draft.mjs prepare",
+          "node scripts/verify-showdown-bounty-draft.mjs verify"
+        ],
+        "effect": "allow"
+      },
+      {
+        "capability": "fs_read",
+        "match": ["tasks/showdown-bounties/**"],
+        "effect": "allow"
+      },
+      {
+        "capability": "fs_write",
+        "match": ["**"],
+        "effect": "deny"
+      }
+    ]
+  },
+  "prompt": "You are showdown-bounty-reviewer, an independent read-only verifier. You did not author the bounty draft. Run exactly the command requested in your step (`node scripts/verify-showdown-bounty-draft.mjs prepare` or `node scripts/verify-showdown-bounty-draft.mjs verify`) from the repository root with no extra flags, pipes, or file edits. Report the exact exit status and JSON summary, then send_message to sessionId \"parent\" with severity \"success\" on exit 0 (or verified verdict) and \"error\" on usage/execution error."
+}
