@@ -34,4 +34,6 @@ At Boot Hill, Kiro played through the workspace Model Context Protocol (MCP) ser
 
 The installed Orb Duel Review Power played a separate Boot Hill game. That Cowboy win took 23 legal actions. The Power replayed the game against the matching engine. A later session changed one comment in the copied rules file and the same replay was marked stale. [Installed Power sessions](showdown-installed-power.md) · [23-action record](showdown-installed-power/boot-hill-receipt.json)
 
-The diagram uses the game's [Sheriff painting](../../assets/cards/illustrated/cowboy-sheriff.webp), [Wizard painting](../../assets/cards/illustrated/wizard-wizard.webp) and [frontier scene](../../assets/scenes/showdown-storybook.webp). To redraw the three layouts from these paintings and the recorded results, run `python3 scripts/render-frontier-dispatch.py` with Pillow installed.
+Codex drew the isometric Saloon on a 240 × 134 pixel grid. The Sheriff and Wizard send sealed playbooks to the umpire’s open ledger. The inventory uses a separate 24 × 24 sprite grid. The linked Arena result supplies the score and replay. [Scene source](../../scripts/frontier_dispatch/scene.py) · [Original sprite sheet](../../scripts/frontier_dispatch/props.py)
+
+To rebuild the three standalone SVGs from the drawing and the recorded results, run `python3 scripts/render-frontier-dispatch.py` with Pillow installed. Append `--check` to compare the output with the published files.
