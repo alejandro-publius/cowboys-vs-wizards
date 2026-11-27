@@ -521,6 +521,21 @@ body:has(.camp-outpost[open], .builder-inspect[open]) {
 .saloon-shot-actions button:focus-visible { outline: 3px solid #fff3d5; outline-offset: 2px; }
 .saloon-shot-result:empty, .saloon-reply-result:empty { margin: 0; }
 .saloon-shot-reply { border-top: 1px solid #846448; margin-top: 0.6rem; padding-top: 0.6rem; }
+.saloon-horseman {
+  display: grid;
+  align-content: end;
+  min-height: clamp(100px, 16vh, 150px);
+  padding: 0.65rem;
+  margin-bottom: 0.5rem;
+  color: #fff2da;
+  background: linear-gradient(90deg, #19151c 31%, #19151ced 42%, #19151c66 68%, transparent 90%),
+    var(--saloon-horseman-art, none) right 29% / 66% auto no-repeat, #251c28;
+}
+.saloon-horseman h4 { margin: 0.1rem 0 0.25rem; font: 700 clamp(1.25rem, 2.5vw, 1.7rem)/1.1 var(--frontier-display); }
+.saloon-horseman .saloon-reply-prompt { margin: 0; color: #ead2a4; font-weight: 600; font-size: 0.85rem; }
+.saloon-horseman .saloon-duel-orbs { margin: 0; font-size: 0.88rem; }
+.saloon-bot-finish { margin-top: 0.55rem; }
+.saloon-bot-finish summary { padding-block: 0.55rem; cursor: pointer; color: #f1d6ab; }
 @media (max-height: 500px) {
   .saloon-shot-cards { margin: 0.35rem 0; }
   .saloon-shot-cards > span { min-height: 54px; padding: 0.25rem 0.45rem; }

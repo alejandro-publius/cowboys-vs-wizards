@@ -45,7 +45,7 @@ const frontier = diorama ? await Promise.all(["title", "camp"].map(async (view) 
 })) : [];
 if (panorama) frontier.push(`--frontier-panorama:url("${panorama}");`);
 if (diorama) {
-  for (const [name, card] of [["billy", "cowboy-billy"], ["wall", "wizard-bone-wall"]]) {
+  for (const [name, card] of [["billy", "cowboy-billy"], ["wall", "wizard-bone-wall"], ["horseman", "wizard-headless-horseman"]]) {
     const painting = await artwork(`assets/cards/illustrated/${card}.webp`);
     if (painting) frontier.push(`--saloon-${name}-art:url("${painting}");`);
   }
