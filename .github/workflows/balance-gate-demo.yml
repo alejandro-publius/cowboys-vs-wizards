@@ -34,6 +34,11 @@ jobs:
         with:
           plan: experiments/boot-hill-poker/balance-plan.json
           evidence: ${{ runner.temp }}/poker.json
+      - name: Consume the documented revision from GitHub as another game would
+        uses: alejandro-publius/cowboys-vs-wizards/packages/frontier-kit@27583b16aab4ab38805fab93b720d383eb4fb7d8
+        with:
+          plan: experiments/boot-hill-poker/balance-plan.json
+          evidence: ${{ runner.temp }}/poker.json
       - id: stand-pat
         uses: ./packages/frontier-kit
         continue-on-error: true
