@@ -14,7 +14,7 @@
 import {EFFECTS, KEYWORDS, RARITY, TYPES, cardOf, has, tributes, typeOf} from "../game/showdown/cards.js";
 import {presentAttackForecast, presentEvent} from "../game/showdown/presenter.js";
 import {newRunId} from "../match/showdown-playtest.js";
-import {TRAP_SLOTS, attackOf, canAttack, newestUndeadIndex, opponent} from "../game/showdown/rules.js";
+import {attackOf, canAttack, newestUndeadIndex, opponent} from "../game/showdown/rules.js";
 import {createShowdownSession} from "../match/showdown-session.js";
 import {matchOver, matchWinner, newMatch, nextGame, offersSwap, recordGame, swapPool, withSwap} from "../match/showdown-match.js";
 import {createCuePlayer, cuesFor} from "./showdown-cues.js";
@@ -98,6 +98,30 @@ export const offerRow = (offer, owned) => `<div class="sd-row">${offer.map((type
   ${face(type, `<span class="sd-note">You own ${owned(type)}.</span>`)}</button>`).join("")}</div>`;
 export const rewardDeckButton = (type) => `<button type="button" data-build-reward>Build with ${TYPES[type].name}</button>`;
 export const pays = (cards) => cards.map(([type, copies]) => `${TYPES[type].name}${copies > 1 ? ` ×${copies}` : ""}`).join(", ");
+
+// Called only for an active player's hand card with no legal play.
+export function blockedReason(view, seat, cardId) {
+  const card = cardOf(cardId);
+  const mine = view.sides[seat];
+  if (view.attacking) return "Gunsmoke's out — no more cards this turn. Use a ready troop or press End turn.";
+  if (card.kind === "troop") {
+    if (view.summonUsed) return "One troop a turn.";
+    const cost = tributes(cardId);
+    if (mine.board.filter(Boolean).length < cost) {
+      const free = mine.hand.find((id) => cardOf(id).kind === "troop" && tributes(id) === 0);
+      return `Need ${plural(cost, "troop")}. ${free ? "Play " + name(free) : "End turn"}.`;
+    }
+    return "All three slots are full. Save this troop and press End turn.";
+  }
+  if (card.kind === "trap") {
+    return view.setUsed ? "One trap a turn. Press End turn when you’re ready."
+      : "Both trap slots are rigged. Press End turn and wait for one to spring.";
+  }
+  if (view.castUsed) return "One spell, gear or location a turn. Use a ready troop or press End turn.";
+  return card.kind === "location" ? "That haunted ground is already in play. Play another card if you can, or press End turn."
+    : card.kind === "gear" ? "No troop to carry this gear. Summon one if you can, or press End turn."
+    : "No enemy troop this spell can hit. Hold it and press End turn.";
+}
 
 // campaign: the Cowboy seat's campaign. settle(duel, won) once per decided solo duel, choose(type), progress(), owned(type), trailDuel(),
 // duel(id, deck) for any Camp duel. playtest (optional): add(entry) once per finished solo game.
@@ -333,21 +357,6 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     if (chosen) act(chosen);
   }
 
-  // Why a card in hand cannot be played now, read from this seat's view.
-  function blocked(view, cardId) {
-    const card = cardOf(cardId);
-    const mine = view.sides[viewer()];
-    if (view.attacking) return "No more cards this turn: a troop has acted.";
-    if (card.kind === "troop") {
-      if (view.summonUsed) return "One troop a turn.";
-      const cost = tributes(cardId);
-      return mine.board.filter(Boolean).length < cost ? `Needs ${plural(cost, "troop")} of yours to pay with.` : "Your board is full.";
-    }
-    if (card.kind === "trap") return view.setUsed ? "One trap a turn." : mine.traps.length >= TRAP_SLOTS ? "Both trap slots are full." : "Not now.";
-    if (view.castUsed) return "One spell, gear or location a turn.";
-    return card.kind === "location" ? "Already the location." : card.kind === "gear" ? "No troop to carry it." : "No target.";
-  }
-
   const previewId = (target) => `sd-preview-${target}`;
 
   // What an attack would do, computed on the public view: face-down traps are not counted.
@@ -521,7 +530,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
       const card = cardOf(cardId);
       const on = playable.has(card.name);
       return `<button type="button" class="sd-card ${card.side} ${card.rarity}${pick?.card === cardId ? " sd-pick" : on ? " sd-can" : ""}" data-frame="${card.kind}" data-card="${cardId}" ${on ? "" : "disabled"}>
-        ${face(typeOf(cardId), mine && !on ? `<span class="sd-note sd-warn">${blocked(view, cardId)}</span>` : "", view.evenFight)}</button>`;
+        ${face(typeOf(cardId), mine && !on ? `<span class="sd-note sd-warn">${blockedReason(view, own, cardId)}</span>` : "", view.evenFight)}</button>`;
     }).join("");
 
     const r = view.result;
