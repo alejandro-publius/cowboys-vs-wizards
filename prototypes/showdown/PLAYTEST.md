@@ -1,12 +1,12 @@
 # Playtest: three first-time players
 
-The rules have only been played by bots. Before any model or animation is made for them, three people who have never seen the game play it for fifteen minutes each. This page is the whole procedure.
+Ask three to five people who have never seen Showdown to play for fifteen minutes each. Alex’s saved Camp report records his own two Trail wins. The project still needs dated observations from first-time players. [Playtest issue](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/20) · [Maintainer playtest](../../docs/design/release-line.md)
 
 ## Set up
 
-1. Build the page: `node prototypes/showdown/build.mjs`. The result, `dist/showdown.html`, is one file that works offline. Send it, or open it on your own machine and hand over the mouse.
-2. If someone has played on that browser before, open **Save code** in the camp and press **Start over**. That also clears the report.
-3. One player at a time. Do not let the next one watch.
+1. Record the date, device, browser and commit from the [live build manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json). Open the [published game](https://alejandro-publius.github.io/cowboys-vs-wizards/) and start at Camp for the Trail session.
+2. Give each player a fresh browser profile or a new private session after closing the previous private window. This keeps each session’s progress separate and preserves existing saves.
+3. Run one player at a time, out of sight of the others. Ask before recording. For an offline prototype session, build `dist/showdown.html` with `node prototypes/showdown/build.mjs` and record the exact local commit and route.
 
 ## What to say
 
@@ -49,7 +49,16 @@ All of these, across the three players:
 - At least two can say how you win and what a tribute costs.
 - At least two say yes to another fifteen minutes.
 
-## What the result decides
+## First-time session results
+
+No first-time participant rows have been documented here. Use P1, P2 and P3 as anonymous labels. Add rows for a fourth or fifth session if observed. Enter the player's own words and leave unobserved cells blank.
+
+| Player | Date and build commit | Device and browser | First unassisted attack / time | First hesitation or exact quote | Trail wins / elapsed time | Would play again and why |
+| --- | --- | --- | --- | --- | --- | --- |
+
+## Original prototype decisions
+
+The criteria below were written before the illustrated release. The [release record](../../docs/design/release-line.md) documents the implementation and subsequent design decisions.
 
 - **Passed:** the rules are locked for the first release. Kiro integrates them and models can start, in the order players meet the cards.
 - **A step failed:** fix that step and nothing else, then run one more player.
