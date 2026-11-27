@@ -19,7 +19,8 @@
 //   bounty      post-Trail save: the Lantern Wraith hunt is won, then repeated from the result screen as
 //               hunt 2 of 5 and won again; stored hunts count each win once; a reload keeps the count.
 //               A second fixture at 4 of 5 wins the fifth hunt: Captured is shown, the Legendary owned,
-//               the tile reads Captured and no repeat is offered.
+//               the captured card opens in the builder after claiming the separate reward, and cancelling
+//               preserves the deck. The tile reads Captured and no repeat is offered.
 //   bo3         post-Trail save with a side deck: best of three on the even match; nothing is saved between
 //               games; the loser of a game opens the next; the side-deck swap screen accepts only a full deck
 //               from this match's cards; the match settles once (openWins), one playtest line per game.
@@ -633,14 +634,23 @@ const RUNS = {
     assert.match(shown, new RegExp(`Captured[\\s\\S]*${nameOf(bounty.reward)}`));
     await s.takeOffer();
     assert.equal(await s.evaluate(`Boolean(${s.byText("/^(Play it again|Rematch)$/")})`), false, "a captured bounty offers no repeat");
-    await s.toCamp();
+    const beforeBuild = await s.progress();
+    await s.click("[data-build-capture]");
+    await s.wait(`vis(document.getElementById('showdown-builder'))`, "build with the captured boss");
+    assert.equal(await s.evaluate(`document.activeElement.closest('[data-row]')?.dataset.row`), bounty.reward,
+      "the capture opens its own card even after choosing the other reward");
+    await s.click(`[data-row="${bounty.reward}"] [data-zone="deck"][data-by="1"]`);
+    assert.ok(await s.evaluate("document.getElementById('builder-save').disabled"), "the player chooses which card to remove");
+    assert.deepEqual(await s.progress(), beforeBuild, "adding the boss to a draft preserves the saved deck");
+    await s.click("#builder-cancel");
+    await s.wait(`vis(document.getElementById('showdown-camp'))`, "back to Camp from the builder");
     const stored = await s.progress();
     assert.deepEqual(stored, replay(four, `hunt:${bounty.id}`, fifth.results));
     assert.equal(stored.collection[bounty.reward], 1);
     const t = await s.tileState(bounty.name);
     assert.deepEqual([t.disabled, t.text.includes(`Captured: ${nameOf(bounty.reward)}`)], [true, true], t.text);
     await s.shot("bounty-captured");
-    s.check(`The fifth ${bounty.name} hunt (seed ${fifth.seed}) captures ${nameOf(bounty.reward)}; the tile reads Captured; no repeat`, fifth.results);
+    s.check(`${bounty.name}, hunt five (seed ${fifth.seed}): capture opens ${nameOf(bounty.reward)} in the builder, cancelling keeps the deck and the bounty stays closed`, fifth.results);
   },
 
   async bo3(s) {
