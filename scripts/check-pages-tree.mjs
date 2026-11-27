@@ -116,7 +116,12 @@ try {
   const entries = await readdir(dir, {recursive: true, withFileTypes: true});
   const files = entries.filter((e) => e.isFile()).map((e) => path.relative(dir, path.join(e.parentPath, e.name)).split(path.sep).join("/")).sort();
   assert.deepEqual(files, ["3d/index.html", "build.json", "graybox/index.html", "index.html",
-    ...POKER_FILES.map((name) => `poker/${name}`), "showdown/index.html"], "staged files");
+    ...POKER_FILES.map((name) => `poker/${name}`), "showdown-trailer.mp4", "showdown/index.html"], "staged files");
+  const trailer = await get("showdown-trailer.mp4");
+  assert.equal(trailer.status, 200);
+  assert.ok(trailer.bytes.equals(await readFile(path.join(root, "docs/media/showdown-trailer.mp4"))), "the served trailer matches the master");
+  assert.equal(trailer.bytes.toString("ascii", 4, 8), "ftyp", "MP4 container");
+  check("the gameplay trailer is available separately from the game");
   assert.equal((await get("3d", "manual")).location, `${BASE_PATH}3d/`, "/3d redirects to /3d/");
   const showdown = await get("showdown/");
   assert.equal(showdown.status, 200);

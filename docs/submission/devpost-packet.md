@@ -1,6 +1,6 @@
 # Kiroween submission packet: Showdown
 
-Draft for Alex’s review. The pitch and Built With tags below are ready to paste into Devpost. [Play the Saloon](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) · [Judge walkthrough](../JUDGE-GUIDE.md) · [Demo transcript and captions](judge-demo-narration.md)
+Draft for Alex’s review. The pitch and Built With tags below are ready to paste into Devpost. [Play the Saloon](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) · [Judge walkthrough](../JUDGE-GUIDE.md) · [Watch the gameplay trailer](https://alejandro-publius.github.io/cowboys-vs-wizards/showdown-trailer.mp4) · [Demo transcript and captions](judge-demo-narration.md)
 
 ## Pitch
 
