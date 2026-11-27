@@ -23,13 +23,19 @@ Ride out from Boot Hill with a 16-card deck. On the far side of the frontier, a 
 
 The full campaign saves in your browser. The Dragon practice positions replay recorded deals and leave your collection alone. You can also try the Outrider’s opening choice or use the lightweight board. [Ride or Fight?](https://alejandro-publius.github.io/cowboys-vs-wizards/?outrider=case-e) · [Lightweight Camp](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) · [Rules and cards](prototypes/showdown/RULEBOOK.md)
 
-## How Kiro reviews a card change
+<a id="how-kiro-reviews-a-card-change"></a>
 
-Built with Kiro for Kiroween. In the Night Shift Saloon, a recorded Kiro shift plays out at the bar. Behind the scene, Kiro drafts a card edit and bots play the same deals from both seats. The local reviewer can send a proposal back. Alex decides what goes into the game.
+## Inside the Night Shift
 
-![An animated telegraph traces Kiro's proposal through paired bot duels and the local reviewer to design approval. A separate Python referee checks the rules.](docs/media/frontier-night-shift.svg)
+The Cautious Sheriff sets traps. The Reckless Wizard casts first. Kiro gave each agent a file for its playbook, then handed both to a referee to play eight deals from each opening seat. Follow the two signals to the result. The rows below show how a player’s card request became Dusty Pete, how Billy’s balance change was tested, and when a release review stops.
 
-One proposed edit moved Cowboy wins from **59.792% to 51.920%** across 100,000 bot duels. A separate Python referee agreed with the engine at **5,086 played positions** across 100 frozen duels. Its alternate-move audit still has an open Hellfire ruling. [Recorded Kiro workflow](docs/evidence/kiro-night-shift-native.png) · [Kiro balance spec](.kiro/specs/night-shift-balance-contract/requirements.md) · [Balance audit](docs/evidence/billy-seat-audit/README.md) · [Referee report](docs/evidence/claude-referee-legal-branches.md)
+<picture>
+  <source media="(max-width: 640px)" srcset="docs/media/frontier-night-shift-mobile.svg">
+  <source media="(max-width: 1000px)" srcset="docs/media/frontier-night-shift.svg">
+  <img src="docs/media/frontier-workflow-map.svg" alt="Kiro's two Arena agents write playbooks for a referee. The Sheriff wins 13 of 16 games. Separate routes show card creation, balance proposals, the Outrider save hook, a seat-private Power, scheduled Night Watch, release review and the independent Python audit.">
+</picture>
+
+[Full-size animated map](docs/media/frontier-workflow-map.svg) · [Expanded diagram](docs/media/frontier-night-shift.svg) · [Still map](https://raw.githubusercontent.com/alejandro-publius/cowboys-vs-wizards/main/docs/media/frontier-workflow-map.svg#still) · [Workflow evidence](docs/evidence/frontier-workflows.md) · [Native Kiro CLI capture](docs/evidence/kiro-night-shift-native.png)
 
 [Judge walkthrough](docs/JUDGE-GUIDE.md) · [Current build and review status](docs/PROJECT-STATUS.md#current-build) · [Live build manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json)
 
