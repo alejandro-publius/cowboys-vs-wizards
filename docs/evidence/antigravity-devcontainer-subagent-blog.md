@@ -10,7 +10,7 @@ To use the forwarded ports, run `node scripts/night-shift-saloon.mjs` for the lo
 
 ## Local receipt verification
 
-The [installed hook](../../.kiro/hooks/stop-receipt-guard.json) runs the [receipt guard](../../scripts/check-subagent-stop.mjs) on ordinary `Stop`. Run it directly from the repository root with `node scripts/check-subagent-stop.mjs Stop`. It checks the committed bundle paths against their SHA-256 seals and checks the property run entries against the scorecard's receipt rules. Each test file must also contain fast-check at the cited commit. A shallow clone needs the commit named in its receipt. CI fetches that exact object from the project repository. To prepare a shallow judge checkout, run these commands from its root:
+The [installed hook](../../.kiro/hooks/stop-receipt-guard.json) runs the [receipt guard](../../scripts/check-subagent-stop.mjs) on ordinary `Stop`. Run it directly from the repository root with `node scripts/check-subagent-stop.mjs Stop`. It checks the committed bundle paths against their SHA-256 seals and checks the property run entries against the scorecard's receipt rules. Each test file must also contain fast-check at the cited commit. A shallow clone needs the commit named in its receipt. The PR tests and Pages build both run the same [fetch step](../../scripts/fetch-property-receipt-commit.sh) before the test suite. It fetches that exact object from the project repository. To prepare a shallow judge checkout, run these commands from its root:
 
 ```sh
 revision=$(node -p "require('./reports/properties/latest.json').commit")
