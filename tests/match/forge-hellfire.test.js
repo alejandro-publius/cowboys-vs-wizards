@@ -1,7 +1,40 @@
 import assert from "node:assert/strict";
 import {test} from "node:test";
-import {applyAction} from "../../src/game/showdown/rules.js";
+import {applyAction, createShowdown, legalActions} from "../../src/game/showdown/rules.js";
 import {dealHellfire, mountHellfire} from "../../src/ui/forge-hellfire.js";
+
+test("CARD-WIZARD-HELLFIRE-06: Hellfire leaves the hand and reaches the graveyard before either enemy loses an orb", t => {
+  const opening = createShowdown(0, {first: "cowboy", opening: {cowboy: [
+    {type: "cowboy-sheriff", health: 1}, {type: "cowboy-covered-wagon"},
+  ]}});
+  const before = applyAction(opening, {type: "end"}).state;
+  const card = "wizard-hellfire-1";
+  const cast = legalActions(before).find(action => action.type === "spell" && action.cardId === card);
+  assert.ok(cast);
+  const hits = [];
+  const clone = globalThis.structuredClone;
+  // A cast with the discard moved to its very end has the same public result.
+  // Inspect the Wizard's zones at each actual health write on the working board.
+  t.mock.method(globalThis, "structuredClone", state => {
+    const copy = clone(state);
+    const wizard = copy.sides.wizard;
+    for (const troop of copy.sides.cowboy.board.filter(Boolean)) {
+      let orbs = troop.health;
+      Object.defineProperty(troop, "health", {
+        get() { return orbs; },
+        set(value) {
+          assert.equal(wizard.hand.includes(card), false, "Hellfire is still in hand when damage lands");
+          assert.equal(wizard.discard.at(-1), card, "Hellfire has not reached its graveyard when damage lands");
+          hits.push([troop.cardId, orbs, value]);
+          orbs = value;
+        },
+      });
+    }
+    return copy;
+  }, {times: 1});
+  applyAction(before, cast);
+  assert.deepEqual(hits, [["cowboy-sheriff-0", 1, 0], ["cowboy-covered-wagon-0", 4, 3]]);
+});
 
 test("CARD-WIZARD-HELLFIRE-07 and CARD-WIZARD-HELLFIRE-11: only the opposing Sheriff loses an orb on the Forge board", () => {
   const before = dealHellfire();

@@ -2,7 +2,13 @@
 
 Antigravity authored the initial card tests. Codex reviewed the assertions, exercised the card sync validator, and fixed the illustrated replay when a defeated troop takes its gear to the graveyard. The replay uses the existing burial beat for each discarded card.
 
-## Named coverage
+## November 27 follow-up
+
+The trace now links 442 of 443 card clauses to named tests. The [Dragon test](../../tests/game/showdown-wanted-combat.test.js) observes the graveyards during a lethal Sweep. The [Hellfire test](../../tests/match/forge-hellfire.test.js) checks the Wizard's hand and graveyard at the moment each enemy loses an orb.
+
+Two scratch versions moved either the discard or the removal from hand until after damage. Both returned the same events and final state as the released rules. The new test rejected both. The remaining question is **CARD-WIZARD-HELLFIRE-04**, which governs casting on an empty enemy board. [Independent referee investigation](kiro-referee-disagreement-triage.md)
+
+## Original named coverage
 
 At the branch base `93db9f3`, the trace linked 55 of the 443 card clauses to named tests. With these changes it links 440, an increase of 385. Across the 29 card specifications, 27 have a named test for every clause. Across the 45 specifications on this branch, 449 of 728 clauses have named coverage, up from 64. The trace reported zero duplicate IDs, zero unsupported declarations, and the same two unresolved historical references. A trace link records which test names the clause. Running that test checks the assertions.
 
