@@ -73,11 +73,11 @@ test("PROP-068: shuffleDeck produces a deterministic 52-card bijection of makeDe
 });
 
 test("PROP-069: evaluateHand is invariant under all 5-card permutations", () => {
-  assertProp("PROP-069", FILE, fc.property(handArb, fc.integer({min: 0, max: 4}), (hand, rot) => {
-    const rotated = [...hand.slice(rot), ...hand.slice(0, rot)];
+  assertProp("PROP-069", FILE, fc.property(handArb, fc.shuffledSubarray([0, 1, 2, 3, 4], {minLength: 5, maxLength: 5}), (hand, order) => {
+    const permuted = order.map((i) => hand[i]);
     const reversed = [...hand].reverse();
     const e0 = evaluateHand(hand);
-    const e1 = evaluateHand(rotated);
+    const e1 = evaluateHand(permuted);
     const e2 = evaluateHand(reversed);
     assert.deepEqual([e1.category, e1.ranks, e1.wheel, e1.label], [e0.category, e0.ranks, e0.wheel, e0.label]);
     assert.deepEqual([e2.category, e2.ranks, e2.wheel, e2.label], [e0.category, e0.ranks, e0.wheel, e0.label]);
@@ -97,11 +97,12 @@ test("PROP-070: evaluateHand and compareHands are invariant under suit permutati
 });
 
 test("PROP-071: compareHands forms a total preorder (reflexive, antisymmetric, transitive)", () => {
-  assertProp("PROP-071", FILE, fc.property(handArb, handArb, handArb, (a, b, c) => {
+  assertProp("PROP-071", FILE, fc.property(handArb, handArb, handArb, fc.boolean(), (a, other, c, tie) => {
+    const b = tie ? [...a].reverse() : other;
     assert.equal(compareHands(a, a), 0);
     const ab = compareHands(a, b);
     const ba = compareHands(b, a);
-    assert.equal(ab, -ba);
+    assert.equal(ab + ba, 0);
     const bc = compareHands(b, c);
     const ac = compareHands(a, c);
     if (ab >= 0 && bc >= 0) assert.ok(ac >= 0);
@@ -209,7 +210,7 @@ test("PROP-077: viewState redacts opponentHand, deck, and muck during draw and r
 
     const endSt = submitDraw(drawSt, []);
     const vEnd = viewState(endSt, seat);
-    assert.ok(vEnd.opponentHand.every(isCard));
+    assert.deepEqual(vEnd.opponentHand, endSt.hands[otherSeat(seat)]);
     assert.notEqual(vEnd.result, null);
   }));
 });
@@ -257,7 +258,12 @@ test("PROP-080: measurePairedCohort counts 2*deals games in seed-then-seat order
     assert.equal(res.gamesPerArm, deals * 2);
     assert.equal(pairs.length, deals * 2);
     assert.equal(res.baseline.wins.cowboy + res.baseline.wins.wizard + res.baseline.draws, deals * 2);
-    assert.ok(pairs.every((p) => p.baseline.winner !== null));
+    assert.equal(res.candidate.wins.cowboy + res.candidate.wins.wizard + res.candidate.draws, deals * 2);
+    pairs.forEach((pair, i) => {
+      const seed = firstSeed + Math.floor(i / 2);
+      const first = ["cowboy", "wizard"][i % 2];
+      assert.deepEqual([pair.seed, pair.first, pair.baseline.winner], [seed, first, fn(seed, first).winner ?? DRAW]);
+    });
   }));
 });
 
@@ -267,6 +273,7 @@ test("PROP-081: swapping playBaseline and playCandidate swaps arm tallies and pr
     const candFn = (s, f) => playPokerDuel(s, f, "standard");
     const forward = measurePairedCohort({firstSeed, deals, sides: ["cowboy", "wizard"], playBaseline: baseFn, playCandidate: candFn});
     const swapped = measurePairedCohort({firstSeed, deals, sides: ["cowboy", "wizard"], playBaseline: candFn, playCandidate: baseFn});
+    assert.equal(forward.gamesPerArm, swapped.gamesPerArm);
     assert.deepEqual(forward.baseline, swapped.candidate);
     assert.deepEqual(forward.candidate, swapped.baseline);
     assert.equal(forward.switchedWinners, swapped.switchedWinners);
@@ -279,6 +286,7 @@ test("PROP-082: measurePairedCohort throws PairedCohortError on malformed inputs
     {firstSeed: 0, deals: 1, sides: ["draw", "wizard"], playBaseline: playPokerDuel, playCandidate: playPokerDuel},
     {firstSeed: 0, deals: 1, sides: ["cowboy", "cowboy"], playBaseline: playPokerDuel, playCandidate: playPokerDuel},
     {firstSeed: 0, deals: 1, sides: ["cowboy", "wizard"], playBaseline: () => ({winner: "cowboy", endTurn: 0}), playCandidate: playPokerDuel},
+    {firstSeed: 0, deals: 1, sides: ["cowboy", "wizard"], playBaseline: () => ({endTurn: 2}), playCandidate: playPokerDuel},
     {firstSeed: 0, deals: 1, sides: ["cowboy", "wizard"], playBaseline: () => Promise.resolve({winner: "cowboy", endTurn: 2}), playCandidate: playPokerDuel}
   ), (badInput) => {
     assert.throws(() => measurePairedCohort(badInput), PairedCohortError);

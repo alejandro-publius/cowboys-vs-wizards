@@ -2,13 +2,13 @@
 // requirement-traced fast-check properties (`PROP-001`..`PROP-085`) via `node --test`, and writes a unified
 // `cvw-property-receipt/1` receipt to `reports/properties/latest.json` (105 distinct passing properties).
 //
-//   node scripts/run-dec4-property-suite.mjs [--commit <sha>=HEAD] [--out reports/properties/latest.json]
+//   node scripts/run-dec4-property-suite.mjs [--out reports/properties/latest.json]
 import {spawnSync} from "node:child_process";
 import {mkdtempSync, readFileSync, rmSync, writeFileSync} from "node:fs";
 import {tmpdir} from "node:os";
 import {dirname, join, resolve} from "node:path";
 import {fileURLToPath} from "node:url";
-import {BASE_SEED, DEFAULT_REPORT, PROPERTIES, QUICK_RUNS, SCHEMA, TEST_FILE, readCommit, runProperty} from "./showdown-dec4-properties.mjs";
+import {BASE_SEED, DEFAULT_REPORT, PROPERTIES, QUICK_RUNS, SCHEMA, TEST_FILE, readCommit, receiptProblems, runProperty, stableDigest} from "./showdown-dec4-properties.mjs";
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 export const EXTRA_SUITES = Object.freeze([
@@ -19,25 +19,23 @@ export const EXTRA_SUITES = Object.freeze([
 
 function parseArgs(argv) {
   let out = DEFAULT_REPORT;
-  let commit = readCommit(ROOT);
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === "--out") {
       out = argv[++i];
-    } else if (argv[i] === "--commit") {
-      commit = argv[++i];
+      if (!out || out.startsWith("--")) throw new Error("--out needs a file path");
     } else {
       throw new RangeError(`Unknown option: ${argv[i]}`);
     }
   }
-  if (!commit || !/^[0-9a-f]{40}$/.test(commit)) {
-    throw new Error(`Invalid commit SHA: ${commit}`);
-  }
-  return {out, commit};
+  return {out};
 }
 
-export function runFullPropertySuite({commit = readCommit(ROOT), out = DEFAULT_REPORT} = {}) {
+export function runFullPropertySuite({out = DEFAULT_REPORT} = {}) {
+  const commit = readCommit(ROOT);
+  if (!commit) throw new Error("The property receipt requires a checkout with a commit.");
   const coreEntries = PROPERTIES.map((prop) => {
     const r = runProperty(prop, {numRuns: QUICK_RUNS, baseSeed: BASE_SEED});
+    if (!r.passed) throw new Error(`${prop.id} failed at seed ${r.seed}: ${JSON.stringify(r.error)}`);
     return {
       id: prop.id,
       name: prop.name,
@@ -67,7 +65,12 @@ export function runFullPropertySuite({commit = readCommit(ROOT), out = DEFAULT_R
       .trim()
       .split("\n")
       .filter(Boolean)
-      .map((line) => JSON.parse(line));
+      .map((line) => JSON.parse(line))
+      .sort((a, b) => a.id.localeCompare(b.id));
+    const expectedIds = Array.from({length: 85}, (_, i) => `PROP-${String(i + 1).padStart(3, "0")}`);
+    if (extraEntries.length !== expectedIds.length || extraEntries.some((p, i) => p.id !== expectedIds[i])) {
+      throw new Error("Missing, duplicate or unexpected property results in the three test suites.");
+    }
 
     const properties = [...coreEntries, ...extraEntries];
     const passedCount = properties.filter((p) => p.status === "passed").length;
@@ -87,6 +90,9 @@ export function runFullPropertySuite({commit = readCommit(ROOT), out = DEFAULT_R
       },
       properties,
     };
+    receipt.stableSha256 = stableDigest(receipt);
+    const problems = receiptProblems(receipt);
+    if (problems.length) throw new Error(problems.join("\n"));
     if (out) {
       writeFileSync(resolve(ROOT, out), JSON.stringify(receipt, null, 2) + "\n");
     }

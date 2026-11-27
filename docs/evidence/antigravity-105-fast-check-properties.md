@@ -14,14 +14,14 @@
 
 ## Verified results
 
-- `reports/properties/latest.json`: **`105` distinct passing `fast-check` properties** (`3,050` executed random cases at quick default seeds, `0` rejected, engine commit `93db9f3e2f3970ec8b391650199027eac1d252db`).
-- `node scripts/trace.mjs --require PROP-`: **`required PROP-: all proven`** (`85/85` registered as `(property)`).
-- `node scripts/scorecard.mjs --offline`: **`PASS properties value 105 target >= 100`**, plus `shall` increased from `663` to `748`.
+The quick suite runs 25 cases for each of 20 rulebook properties and 30 for each of 85 additional properties. The receipt records the checkout and the results. The scorecard's properties row counts distinct passing IDs from that receipt plus any separately verified release-gate IDs. The trace reports named coverage for the 85 PROP clauses.
 
 ## Reproduce
 
+From a clean checkout of the source commit recorded in the receipt:
+
 ```sh
-node scripts/run-dec4-property-suite.mjs --commit 93db9f3e2f3970ec8b391650199027eac1d252db
+node scripts/run-dec4-property-suite.mjs
 node --test tests/game/dec4-showdown-properties.test.js tests/game/showdown-catalog-fast-check.test.js tests/game/showdown-campaign-fast-check.test.js tests/game/poker-kit-fast-check.test.js tests/game/dec4-scorecard.test.js tests/game/dec4-trace.test.js tests/assets/links.test.mjs
 node scripts/trace.mjs --require PROP-
 node scripts/scorecard.mjs --offline

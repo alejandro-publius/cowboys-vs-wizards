@@ -11,8 +11,8 @@
 - PROP-005: THE `EVEN_FIGHT_DECKS` table SHALL keep `16` cards per side and differ from `DECKS` solely by replacing one `wizard-skeleton` with one `wizard-imp`.
 - PROP-006: WHEN `createShowdown` runs with `evenFight: true` and default `baseOrbs`, THE engine SHALL grant `7` Base orbs to the second player and `5` to the first player, whereas `evenFight: false` grants `5` to both sides.
 - PROP-007: WHILE `state.turn === 1`, `canAttack` SHALL return `false` and `legalActions(state)` SHALL omit all `attack` actions even for `Quickdraw` or opening-board troops.
-- PROP-008: WHEN a zero-tribute troop arrives on `turn >= 2`, THE engine SHALL mark `ready` as `true` and allow same-turn attacks if and only if the troop carries `quickdraw`.
-- PROP-009: WHEN a troop requiring `1` or `2` tributes is summoned on `turn >= 2`, THE engine SHALL move the tributed troops and their attached gear to `discard`, decrease occupied board count by `tributes - 1`, and mark the summoned troop `ready` to attack.
+- PROP-008: WHEN a zero-tribute troop arrives on `turn >= 2`, THE engine SHALL set `ready` to whether the troop has `quickdraw` and allow an otherwise legal same-turn attack only when ready.
+- PROP-009: WHEN a troop requiring `1` or `2` tributes is summoned on `turn >= 2`, THE engine SHALL move the tributed troops and their attached gear to `discard`, decrease occupied board count by `tributes - 1` before any Raise effect, and mark the summoned troop `ready` to attack.
 - PROP-010: WHILE the defending board holds at least one `guard` troop, `legalActions(state)` SHALL restrict every attacker's targets exclusively to enemy `guard` slots and forbid direct Base or non-Guard strikes.
 - PROP-011: WHILE the defending board holds non-Guard troops and zero `guard` troops, `legalActions(state)` SHALL allow `"base"` targeting only for `ride` attackers, and `attackOutcome` for that ride-past strike SHALL deal `1` Base damage.
 - PROP-012: WHEN the defending board has zero troops, ANY ready attacker SHALL be permitted to target `"base"` and deal its full `attackOf(state, attacker)` to the defending Base.
@@ -43,7 +43,7 @@
 ### Campaign Progression, Deck Validation, Save Codes, and Storage
 
 - PROP-036: FOR ALL Trail win counts `0..6`, `deckAfter(wins)` SHALL contain exactly `16` Cowboy cards with positive integer counts within each card's `RARITY` copy cap.
-- PROP-037: THE initial `newSave()` profile SHALL pass `deckProblems` with zero errors, round-trip unchanged through `migrate`, and expose `Boot Hill` as the sole `"open"` duel in `duelList`.
+- PROP-037: Regardless of edits to a previously created campaign, THE initial `newSave()` profile SHALL pass `deckProblems` with zero errors, round-trip unchanged through `migrate`, and expose `Boot Hill` as the sole `"open"` duel in `duelList`.
 - PROP-038: WHEN `deckProblems(save, deck, side)` inspects candidate counts, THE validator SHALL reject any main deck whose total differs from `16` or any side deck whose total exceeds `4`.
 - PROP-039: WHEN `deckProblems` receives any Wizard card, unknown type, negative count, or non-integer count in `deck` or `side`, THE validator SHALL report at least one problem and `withDeck` SHALL throw.
 - PROP-040: FOR ALL Cowboy card splits where `deck[t] + side[t]` obeys ownership and rarity caps and `sum(deck) === 16` and `sum(side) <= 4`, `withDeck` SHALL succeed and prune zero-count entries.
@@ -61,7 +61,7 @@
 - PROP-052: FOR ALL reachable v2 campaign saves and arbitrary surrounding whitespace, `decodeSaveCode(encodeSave(save))` SHALL return `{ok: true, legacy: false}` with `sameSave(decoded.save, save) === true`.
 - PROP-053: WHEN `encodeSave` serializes objects containing Unicode characters above `U+00FF`, THE encoder SHALL `\uXXXX`-escape wide code units without throwing and preserve exact string content after `JSON.parse(atob(code))`.
 - PROP-054: FOR ALL legacy v1 Trail objects `{wins: 0..6, losses?: >= 0}`, `decodeSaveCode` SHALL return `{ok: true, legacy: true}` with `sameSave(decoded.save, migrate(raw)) === true`.
-- PROP-055: FOR ALL arbitrary strings, malformed base64 inputs, oversized strings (`> 16384`), future versions (`v > 2`), and tampered v2 payloads, `decodeSaveCode` SHALL return `{ok: false}` with a non-empty `reason` and SHALL NEVER throw.
+- PROP-055: FOR ALL malformed base64 inputs, oversized strings (`> 16384`), future versions (`v > 2`), and tampered v2 payloads, `decodeSaveCode` SHALL return `{ok: false}` with a non-empty `reason` and SHALL NEVER throw.
 - PROP-056: FOR ALL valid v2 campaign saves, permuting key insertion order at top-level and nested count maps SHALL preserve `sameSave` equivalence and `decodeSaveCode` acceptance.
 - PROP-057: FOR ALL valid v2 campaign saves, `describeSave(save)` SHALL format exact Trail wins, beaten Rivals, cleared Bounty hunts, collected card copies, and unopened packs.
 - PROP-058: FOR ALL arbitrary JavaScript values `x`, `migrate(x)` SHALL NEVER throw, SHALL return a valid v2 save, and SHALL be idempotent (`sameSave(migrate(migrate(x)), migrate(x))`).

@@ -18,7 +18,6 @@ import {
   createShowdown,
   forecastAttack,
   legalActions,
-  newestUndeadIndex,
   opponent,
   planTurn,
   playTurn,
@@ -28,7 +27,6 @@ import {assertProp} from "../helpers/dec4-prop-harness.js";
 const FILE = "tests/game/showdown-catalog-fast-check.test.js";
 const ALL_TYPES = Object.keys(TYPES);
 const TROOP_TYPES = ALL_TYPES.filter((t) => TYPES[t].kind === "troop");
-const COWBOY_TYPES = ALL_TYPES.filter((t) => TYPES[t].side === "cowboy");
 const WIZARD_TYPES = ALL_TYPES.filter((t) => TYPES[t].side === "wizard");
 const SIDES = ["cowboy", "wizard"];
 
@@ -79,9 +77,10 @@ test("PROP-003: tributes(cardId) partitions troop star tiers into 0, 1, and 2 sa
 });
 
 test("PROP-004: deckIds produces unique suffixed IDs preserving per-type counts", () => {
-  const countsArb = fc.dictionary(fc.constantFrom(...COWBOY_TYPES), fc.integer({min: 1, max: 4}), {minKeys: 1, maxKeys: 6});
-  assertProp("PROP-004", FILE, fc.property(countsArb, (counts) => {
-    const ids = deckIds("cowboy", counts);
+  const decks = fc.constantFrom(...SIDES).chain((side) => fc.tuple(fc.constant(side),
+    fc.dictionary(fc.constantFrom(...ALL_TYPES.filter((t) => TYPES[t].side === side)), fc.integer({min: 1, max: 4}), {minKeys: 1, maxKeys: 6})));
+  assertProp("PROP-004", FILE, fc.property(decks, ([side, counts]) => {
+    const ids = deckIds(side, counts);
     const sum = Object.values(counts).reduce((a, b) => a + b, 0);
     assert.equal(ids.length, sum);
     assert.equal(new Set(ids).size, sum);
@@ -98,8 +97,8 @@ test("PROP-005: EVEN_FIGHT_DECKS preserves 16-card totals and swaps one Skeleton
     if (side === "cowboy") {
       assert.deepEqual(EVEN_FIGHT_DECKS.cowboy, DECKS.cowboy);
     } else {
-      assert.equal(EVEN_FIGHT_DECKS.wizard["wizard-skeleton"], DECKS.wizard["wizard-skeleton"] - 1);
-      assert.equal(EVEN_FIGHT_DECKS.wizard["wizard-imp"], DECKS.wizard["wizard-imp"] + 1);
+      assert.deepEqual(EVEN_FIGHT_DECKS.wizard, {...DECKS.wizard,
+        "wizard-skeleton": DECKS.wizard["wizard-skeleton"] - 1, "wizard-imp": DECKS.wizard["wizard-imp"] + 1});
     }
   }));
 });
@@ -216,6 +215,7 @@ test("PROP-012: ready attackers deal full attackOf to an undefended Base", () =>
     state.sides.cowboy.board = [makeTroop(atkType, 1, {turn: 1, ready: true}), null, null];
     state.sides.wizard.board = [null, null, null];
     const out = attackOutcome(state, 0, "base");
+    assert.ok(legalActions(state).some((a) => a.type === "attack" && a.slot === 0 && a.target === "base"));
     assert.equal(out.baseDamage, attackOf(state, state.sides.cowboy.board[0]));
   }));
 });
@@ -285,8 +285,13 @@ test("PROP-015: Sweep attackers reduce every other occupied enemy slot by 1 orb"
       ];
       const res = applyAction(state, {type: "attack", slot: 0, target: 0});
       assert.ok(res.events.some((e) => e.type === "sweep" && e.count === 2));
-      assert.equal(res.state.sides[defSide].board[1]?.health ?? 0, hp1 - 1);
-      assert.equal(res.state.sides[defSide].board[2]?.health ?? 0, hp2 - 1);
+      for (const [slot, hp] of [[1, hp1], [2, hp2]]) {
+        const defender = res.state.sides[defSide];
+        if (hp === 1) {
+          assert.equal(defender.board[slot], null);
+          assert.ok(defender.discard.includes(state.sides[defSide].board[slot].cardId));
+        } else assert.equal(defender.board[slot].health, hp - 1);
+      }
     }
   ));
 });
@@ -307,6 +312,12 @@ test("PROP-016: Last Stand triggers on combat defeat when opponent survives, nev
     const spell = applyAction(state, {type: "spell", cardId: "cowboy-deadeye-1", target: 0});
     assert.equal(spell.events.some((e) => e.type === "laststand"), false);
     assert.equal(spell.state.sides.cowboy.board[0].health, atkHp);
+    const tribute = structuredClone(state);
+    tribute.active = "wizard";
+    tribute.sides.wizard.hand = ["wizard-wizard-1"];
+    const paid = applyAction(tribute, {type: "summon", cardId: "wizard-wizard-1", tributes: [0]});
+    assert.ok(paid.events.some((e) => e.type === "tribute"));
+    assert.equal(paid.events.some((e) => e.type === "laststand"), false);
   }));
 });
 
@@ -340,10 +351,10 @@ test("PROP-018: Raise revives newestUndeadIndex at 1 orb and skips non-Undead di
     state.sides.wizard.board = [makeTroop("wizard-imp", 9), null, null];
     state.sides.wizard.discard = [...discard];
     state.sides.wizard.hand = ["wizard-wizard-1"];
-    const expectedIdx = newestUndeadIndex(["wizard-imp-9", ...discard]);
+    const expected = discard.findLast((card) => ["wizard-skeleton-1", "wizard-bone-wall-1"].includes(card));
     const res = applyAction(state, {type: "summon", cardId: "wizard-wizard-1", tributes: [0]});
-    if (expectedIdx >= 0) {
-      const expectedId = ["wizard-imp-9", ...discard][expectedIdx];
+    if (expected) {
+      const expectedId = expected;
       assert.ok(res.events.some((e) => e.type === "raise" && e.cardId === expectedId));
       const risen = res.state.sides.wizard.board[1];
       assert.equal(risen.cardId, expectedId);
@@ -543,15 +554,16 @@ test("PROP-027: scheduled boss arrivals land at ready=false on empty slot or def
 test("PROP-028: forecastAttack matches applyAction events and defendingBoard when untrapped", () => {
   assertProp("PROP-028", FILE, fc.property(fc.integer({min: 0, max: 20000}), fc.integer({min: 1, max: 14}), (seed, steps) => {
     const {state} = advanceSteps(seed, steps);
-    if (state.result) return;
-    const clean = structuredClone(state);
-    clean.sides[opponent(clean.active)].traps = [];
-    for (const action of legalActions(clean).filter((a) => a.type === "attack")) {
-      const view = viewFor(clean, clean.active);
+    fc.pre(!state.result);
+    fc.pre(state.sides[opponent(state.active)].traps.length === 0);
+    const attacks = legalActions(state).filter((a) => a.type === "attack");
+    fc.pre(attacks.length > 0);
+    for (const action of attacks) {
+      const view = viewFor(state, state.active);
       const forecast = forecastAttack(view, action.slot, action.target);
-      const actual = applyAction(clean, action);
+      const actual = applyAction(state, action);
       assert.deepEqual(forecast.events, actual.events);
-      assert.deepEqual(forecast.defendingBoard, actual.state.sides[opponent(clean.active)].board);
+      assert.deepEqual(forecast.defendingBoard, actual.state.sides[opponent(state.active)].board);
     }
   }));
 });
@@ -586,7 +598,7 @@ test("PROP-030: presentEvent formats every emitted Showdown event and rejects un
 test("PROP-031: applyAction never mutates input state and rejects illegal actions", () => {
   assertProp("PROP-031", FILE, fc.property(fc.integer({min: 0, max: 20000}), fc.integer({min: 0, max: 10}), (seed, steps) => {
     const {state} = advanceSteps(seed, steps);
-    if (state.result) return;
+    fc.pre(!state.result);
     const before = structuredClone(state);
     const legal = legalActions(state)[0];
     const actionCopy = structuredClone(legal);
@@ -600,7 +612,7 @@ test("PROP-031: applyAction never mutates input state and rejects illegal action
 test("PROP-032: playTurn level 0 chooses only legal non-cover moves and leaves caller state intact", () => {
   assertProp("PROP-032", FILE, fc.property(fc.integer({min: 0, max: 20000}), fc.integer({min: 0, max: 8}), (seed, steps) => {
     const {state} = advanceSteps(seed, steps);
-    if (state.result) return;
+    fc.pre(!state.result);
     const snapshot = structuredClone(state);
     const observed = [];
     const out = playTurn(state, 0, (cur, applied) => observed.push({cur, applied}));
@@ -629,7 +641,7 @@ test("PROP-033: playTurn level 1 is deterministic and invariant to unseen enemy 
 test("PROP-034: playTurn level 1.5 executes legal moves and completes turns cleanly", () => {
   assertProp("PROP-034", FILE, fc.property(fc.integer({min: 0, max: 20000}), fc.integer({min: 0, max: 8}), (seed, steps) => {
     const {state} = advanceSteps(seed, steps);
-    if (state.result) return;
+    fc.pre(!state.result);
     const out = playTurn(state, 1.5);
     assert.ok(out.state.result !== null || out.state.active !== state.active);
     for (const ev of out.events) assert.ok(Object.hasOwn(EVENTS, ev.type));
@@ -639,12 +651,15 @@ test("PROP-034: playTurn level 1.5 executes legal moves and completes turns clea
 test("PROP-035: planTurn is invariant to active deck permutations and hidden enemy traps", () => {
   assertProp("PROP-035", FILE, fc.property(fc.integer({min: 0, max: 20000}), fc.integer({min: 0, max: 8}), (seed, steps) => {
     const {state} = advanceSteps(seed, steps);
-    if (state.result) return;
+    fc.pre(!state.result);
     const reversedDeck = structuredClone(state);
     reversedDeck.sides[reversedDeck.active].deck.reverse();
-    const trapped = structuredClone(state);
-    trapped.sides[opponent(trapped.active)].traps = ["wizard-hex-99"];
     assert.deepEqual(planTurn(state), planTurn(reversedDeck));
-    assert.deepEqual(planTurn(state), planTurn(trapped));
+    const hiddenHex = structuredClone(state);
+    const hiddenSnare = structuredClone(state);
+    hiddenHex.sides[opponent(state.active)].traps = ["wizard-hex-99"];
+    hiddenSnare.sides[opponent(state.active)].traps = ["cowboy-bear-trap-99"];
+    assert.deepEqual(viewFor(hiddenHex, state.active), viewFor(hiddenSnare, state.active));
+    assert.deepEqual(planTurn(hiddenHex), planTurn(hiddenSnare));
   }));
 });

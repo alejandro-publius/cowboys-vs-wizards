@@ -75,8 +75,15 @@ test("PROP-036: deckAfter(wins) maintains 16 Cowboy cards within rarity caps acr
 });
 
 test("PROP-037: newSave passes deckProblems, round-trips migrate, and opens only Boot Hill", () => {
-  assertProp("PROP-037", FILE, fc.property(fc.constant(null), () => {
+  assertProp("PROP-037", FILE, fc.property(fc.integer({min: 1, max: 16}), fc.constantFrom(...COWBOY_CARDS), (copies, type) => {
+    const other = newSave();
+    other.deck[type] = copies;
+    other.collection[type] = copies;
+    other.rivals.push("unlocked-in-other-campaign");
     const s = newSave();
+    assert.deepEqual(s.deck, STARTER);
+    assert.deepEqual(s.collection, {"cowboy-deadeye": STARTER["cowboy-deadeye"]});
+    assert.deepEqual(s.rivals, []);
     assert.deepEqual(deckProblems(s, s.deck, s.side), []);
     assert.equal(sameSave(migrate(s), s), true);
     const open = duelList(s).filter((d) => d.state === "open");
@@ -329,17 +336,17 @@ test("PROP-054: decodeSaveCode migrates legacy v1 {wins, losses} codes with lega
   }));
 });
 
-test("PROP-055: decodeSaveCode never throws on arbitrary strings, future versions, or oversized codes", () => {
+test("PROP-055: decodeSaveCode rejects malformed, tampered, future-version and oversized codes", () => {
   const arb = fc.oneof(
-    fc.string({maxLength: 200}),
+    fc.string({maxLength: 200}).map((s) => "!" + s),
     fc.constant("A".repeat(MAX_CODE_LENGTH + 4)),
     fc.integer({min: 3, max: 99}).map((v) => btoa(JSON.stringify({v}))),
     fc.constant(btoa(JSON.stringify({...newSave(), wins: 99})))
   );
   assertProp("PROP-055", FILE, fc.property(arb, (input) => {
     const res = decodeSaveCode(input);
-    assert.equal(typeof res.ok, "boolean");
-    if (!res.ok) assert.ok(typeof res.reason === "string" && res.reason.length > 0);
+    assert.equal(res.ok, false);
+    assert.ok(typeof res.reason === "string" && res.reason.length > 0);
   }));
 });
 
@@ -356,13 +363,21 @@ test("PROP-056: permuting object key order preserves sameSave and decodeSaveCode
 });
 
 test("PROP-057: describeSave reports exact Trail wins, rivals, bounty hunts, collection sum, and packs", () => {
-  assertProp("PROP-057", FILE, fc.property(fc.integer({min: 0, max: TRAIL.length}), fc.integer({min: 0, max: 5}), (wins, extraPacks) => {
-    const s = {...playTrailSave(wins), packs: extraPacks};
+  assertProp("PROP-057", FILE, fc.property(fc.integer({min: 0, max: TRAIL.length}), fc.integer({min: 0, max: 5}), fc.integer({min: 0, max: RIVALS.length}),
+    fc.integer({min: 0, max: HUNTS}), (wins, extraPacks, rivals, hunts) => {
+    let s = playTrailSave(wins);
+    if (trailDone(s)) {
+      for (const rival of RIVALS.slice(0, rivals)) s = settle(s, "rival:" + rival.id, true).save;
+      for (let i = 0; i < hunts; i++) s = settle(s, "hunt:" + BOUNTIES[0].id, true).save;
+    }
+    s = {...s, packs: s.packs + extraPacks};
     const line = describeSave(s);
     const collected = Object.values(s.collection).reduce((a, b) => a + b, 0);
     assert.ok(line.includes(`Trail ${wins} of ${TRAIL.length} won`));
     assert.ok(line.includes(`${collected} collected cards`));
-    assert.ok(line.includes(`${extraPacks} unopened packs`));
+    assert.ok(line.includes(`${s.packs} unopened packs`));
+    assert.ok(line.includes(`${trailDone(s) ? rivals : 0} rivals beaten`));
+    assert.ok(line.includes(`${trailDone(s) ? hunts : 0} bounty hunts cleared`));
   }));
 });
 
