@@ -11,3 +11,5 @@ Codex adapted the proposal to the playable Saloon release at `36ed4b6`.
 The staged browser check exercises the first-screen controls, looks up each book portrait in the battle atlas, and resolves combat choices with the full accessible descriptions. [Staged route checks](../../scripts/check-pages-tree.mjs) · [Book portrait checks](../../scripts/check-character-book.mjs)
 
 During integration, Codex ran `node --test tests/match/art-first-minimal-ui.test.js`. All five checks passed, including a Guard behind a face-down trap, Even Fight targeting, and a Raise payment that returns a different troop.
+
+Antigravity revised the pull request at `d94d0c1`. The referee now reads a bare deck count, a graveyard cross and a trap triangle in views that lack zone metadata. Current views supply each zone’s name and count, including empty piles and trap capacity. Players can inspect both factions’ public hand counts, traps and graveyards during ordinary duels. [Revision](https://github.com/alejandro-publius/cowboys-vs-wizards/commit/d94d0c14cf6dacfa8c7ce5972f163d5f3bf9e20b) · [Referee checks](../../tests/match/referee-browser.test.js)

@@ -328,7 +328,7 @@ async function browserChecks() {
       assert.equal(shot.report, shot.event, "the illustrated board reports the move that actually landed");
     };
 
-    for (const [width, height] of [[375, 667], [740, 375], [1440, 900]]) {
+    const checkOpeningAt = async (width, height) => {
       await send("Emulation.setDeviceMetricsOverride", {width, height, deviceScaleFactor: 1, mobile: width < 1000});
       await open("");
       await waitForTitle();
@@ -340,6 +340,13 @@ async function browserChecks() {
         assert.equal(await evaluate(`document.querySelector('${selector}').innerText.trim().toLowerCase()`), label.toLowerCase());
         assert.ok(await visibleWithoutScroll(selector), `${width} x ${height}: ${label} receives the first-screen hit`);
       }
+    };
+    await checkOpeningAt(320, 568);
+    await checkOpeningAt(568, 320);
+    check("The wordmark, both characters and the menu fit a 320-pixel phone in either orientation");
+
+    for (const [width, height] of [[375, 667], [740, 375], [1440, 900]]) {
+      await checkOpeningAt(width, height);
       await pressSeen("#menu-challenge");
       await waitForChallenge();
       await selectOutrider(pressSeen);

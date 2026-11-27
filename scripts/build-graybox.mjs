@@ -41,6 +41,10 @@ const atlas = diorama ? await readFile(file("assets/cards/showdown-diorama.webp"
   throw error;
 }) : "";
 const panorama = diorama ? await artwork("assets/scenes/showdown-storybook.webp") : "";
+const [titleFont, fontLicense] = diorama ? await Promise.all([
+  readFile(file("assets/fonts/barlow-condensed/BarlowCondensed-Black.woff2"), "base64"),
+  read("assets/fonts/barlow-condensed/OFL.txt"),
+]) : ["", ""];
 const frontier = diorama ? await Promise.all(Object.entries({
   title: "showdown-title", camp: "showdown-camp", billy: "billy-poses", wizard: "actors/wizard-wizard",
 }).map(async ([view, scene]) => {
@@ -88,7 +92,8 @@ const preview = diorama
 const pageTemplate = saloonBook ? template.replace("<body>", '<body data-entry-room="saloon">') : template;
 await writeFile(file(output), pageTemplate.replace("@@PAGE_PREVIEW@@", () => preview).replace("@@STYLE@@", () => `${style}\n${showdownStyle}\n${replayStyle}\n${boardStyle}`)
   .replace("Cowboys vs. Wizards | Graybox", diorama ? "Cowboys vs. Wizards" : "Cowboys vs. Wizards | Graybox")
+  .replace("@@TITLE_FONT@@", () => `data:font/woff2;base64,${titleFont}`)
   .replace("@@TITLE_NAME@@", diorama ? ' <span class="title-showdown">Showdown</span>' : "")
   .replace("@@TITLE_STAGE@@", diorama ? '<div class="opening-stage" aria-hidden="true"><i class="opening-billy"></i><i class="opening-wizard"></i></div><details class="opening-more"><summary data-title-more aria-label="More" title="More">•••</summary></details>' : "")
-  .replace("@@SCRIPT@@", () => script + (boardLicense ? `\n/*\n${boardLicense}\n*/` : "")));
+  .replace("@@SCRIPT@@", () => script + (boardLicense ? `\n/*\n${boardLicense}\n${fontLicense}\n*/` : "")));
 console.log(`Built ${output} (${diorama ? "3D diorama" : "graybox"}, build ${label ?? "not identified"}); Outrider gate: ${outrider.note}`);

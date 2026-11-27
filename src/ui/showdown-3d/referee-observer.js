@@ -74,6 +74,11 @@ export function parseWorldLabel(text, {zoneTitle, zoneCount, zoneMax} = {}) {
   const t = String(text ?? "").replace(/\s+/g, " ").trim();
   const traps = /^Traps (\d+)\/(\d+)$/.exec(t);
   if (traps) return {title: "Traps", count: Number(traps[1]), of: Number(traps[2])};
+  const badge = /^(?:(✝|▲) )?(\d+)$/.exec(t);
+  if (badge) {
+    const title = {"✝": "Graveyard", "▲": "Traps"}[badge[1]] ?? "Deck";
+    return {title, count: Number(badge[2])};
+  }
   const counted = /^(.*\S) (\d+)$/.exec(t);
   return counted ? {title: counted[1], count: Number(counted[2])} : {title: t, count: null};
 }
