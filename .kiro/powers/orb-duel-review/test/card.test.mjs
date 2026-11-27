@@ -55,7 +55,9 @@ assert.equal(spawnSync(process.execPath, [join(plugin, "setup.mjs"), project, da
 const power = start();
 after(() => power.stop());
 
-test("proposal grammar (R5.3) and the R5.5 measured rule", () => {
+// These helpers implement parts of duel-card-pipeline/R5.3 and duel-card-pipeline/R5.5.
+// Workflow edits and the full seeded sample are outside this unit test.
+test("parses card proposals and compares proposed stats with an observed sample entry", () => {
   assert.deepEqual(parseProposal("attack = 3"), {kind: "stat", field: "attack", value: 3});
   assert.deepEqual(parseProposal("review existing"), {kind: "review"});
   for (const bad of ["attack=3", "attack = 3; echo", "name = 3", "attack = -1", "attack = 03", " attack = 3", "attack = 3\n", 3, null]) assert.equal(parseProposal(bad), null, String(bad));

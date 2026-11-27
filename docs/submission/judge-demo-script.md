@@ -103,7 +103,7 @@ The 78-second scripted cut opens on Hellfire, shows the two Outrider choices fro
 
 Verify `build.json` names the filmed revision before the session. Start each player at the illustrated title in a fresh browser profile. Say, “Open Ride or Fight? and make your first move.” Once they act, ask, “What did your move do, and why did it work?” Give the explanation and show the alternate replay only after recording their answer. Record the action, their answer in their own words, any hint, and whether they correctly explained how their chosen target was available or affected the board. Ask for consent before recording a participant.
 
-Report the count of independent explanations out of three. Observations for this release are pending.
+Report the count of independent explanations out of three. Observations for this release are pending. For first-time Trail play, use the separate [fifteen-minute Showdown protocol and results table](../../prototypes/showdown/PLAYTEST.md#first-time-session-results).
 
 ## November 20 Showdown turn-five Dragon decision (private cut)
 

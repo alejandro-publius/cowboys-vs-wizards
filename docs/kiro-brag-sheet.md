@@ -26,7 +26,7 @@ Fable 5.2 designed six unlockable cards, two 12-card decks, and Ride. Kiro CLI i
 
 ## November 17 steering follow-up
 
-Four fresh Kiro CLI V3 sessions verified that rules, rendering and interface guidance loads on matching file reads. The control read of `package.json` loaded only the always-on guidance. Each response followed the format supplied by the loaded files in the test fixture. [Activation evidence and scope](evidence/kiro-scoped-steering-hook.md#file-scoped-activation-verified-on-november-17-2026-pacific).
+Codex ran four fresh Kiro CLI V3 sessions against a fixture from `892cadac`. Three file reads loaded their matching guidance for rules, rendering or interface work. The `package.json` control loaded only the always-on guidance. Each response contained the tags from the files the CLI reported loading. [Activation evidence and scope](evidence/kiro-scoped-steering-hook.md#file-scoped-activation-verified-on-november-17-2026-pacific).
 
 ## Current evidence (November 17, 2026, Pacific; main `e214e8d`)
 
@@ -35,7 +35,7 @@ Text audit only; nothing was re-run. Full reconciliation: [evidence note](eviden
 - **Batch #56 is complete, not dispatched.** PR #61 merged Kiro's boundary property tests (7 properties, 1,203 cases at seed 45274), six test-only mutants each caught, and a bounded shrink demonstration (24 cards to 5, 7 actions to 5). [Evidence](evidence/kiro-boundary-properties.md). Samples, not proof; engine and CPU only; no product bug found.
 - **Native Workflow `independent-release-review` completed 3/3** (PR #76, frozen `7506599`): 222/222 tests, seed 0 8/8, seed 60 4/4, no console errors. No run ID was captured and web build identity is unverified. [Note](evidence/kiro-independent-release-review-66.md).
 - **Later Kiro-authored merges:** #62 First Spell fix, #63 trap-zone spec (design only), #65 `?pace=fast`, #69 CI coverage, #70 Night Watch Host guard, #73 seed range, #74 deck UI constants, #77 startup-measure flag. Several checks were run by the Codex coordinator, not Kiro; each evidence note says which. PR #58 (rules check) is Rachel's.
-- **Configured, not shown running:** the five steering files (activation unobserved) and the #69 CI additions **executed successfully** in [PR CI run 44047204959](https://github.com/alejandro-publius/cowboys-vs-wizards/actions/runs/44047204959) (web build, Kiro review server and Night Watch tests all passed). **Not run:** Memory, Web, cloud sessions, a Kiro IDE hook.
+- The `e214e8d` audit documented the five steering files from their configuration. The November 17 follow-up above records their CLI activation. The web build, Kiro review server tests and Night Watch tests added in #69 passed. This snapshot has no execution receipts for Memory, Web, cloud sessions or a Kiro IDE hook. [PR CI run 44047204959](https://github.com/alejandro-publius/cowboys-vs-wizards/actions/runs/44047204959)
 - **Night Watch:** manual and Crew-scheduled runs are verified ([receipt](evidence/night-watch-activation.md)). The #70 Host guard passed 7/7 unit tests and a coordinator loopback check; a request through the installed Crew gateway has not been made.
 - **Attribution:** Kiro wrote the items above marked Kiro; Codex coordinated, integrated and repaired; Fable wrote the engine and CPU; Rachel wrote the rules check and other docs; art and motion come from the user's Tripo exports and Mixamo/Quaternius clips. Git author names do not distinguish them.
 - **Personal reflection:** needed from the user; none is written here.

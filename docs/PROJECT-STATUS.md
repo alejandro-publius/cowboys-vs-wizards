@@ -20,7 +20,9 @@ The archived [Saloon table](evidence/showdown-saloon-billy-table.png) shows the 
 
 The source in this checkout shares Last Stand and Sweep forecasts across all three Showdown screens, and a seeded shuffle between Showdown and Boot Hill Poker. Camp preserves older earned cards while the Wanted board and deck builder follow the current Showdown rules. The reference Camp now checks for newer progress before applying a write. [Combat](../src/game/showdown/presenter.js) · [Deal generator](../src/game/frontier-kit/seeded-rng.js) · [Camp](../src/match/showdown-campaign.js)
 
-On seed 6, swapping the top two cards in the Cowboy draw pile changes the beginner Wizard’s first summon from Jack-o’-Lantern to Skeleton. Both deals look identical from the Wizard’s seat. The effect on difficulty is unmeasured. [Reproduction and proposed check](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/223)
+On seed 6, the released beginner Wizard can change its first summon when two hidden Cowboy cards trade places. An opt-in fix uses only what the Wizard can see. In the Boot Hill test that picks the first legal attack, the Cowboy won 36 of 40 deals with the released bot and 26 with the candidate. The next rules decision is whether to adopt that change. [Test and practice replays](evidence/antigravity-issue-223-hidden-info.md) · [Decision thread](https://github.com/alejandro-publius/cowboys-vs-wizards/issues/223)
+
+On the published build, native desktop Safari rendered the illustrated board and played through the Wizard’s turn. Physical phone input and readability still need a device check. [Safari results](evidence/human-device-check.md)
 
 The November 26 judge cut runs 1:20. It follows the Saloon decision with narration, captions, the Kiro workflow record and the written balance spec. A public video URL, documented first-time player observations and human assistive-technology feedback are still outstanding. Alex confirms the submission category and contributor credits. [Submission packet](submission/devpost-packet.md) · [Design and release history](design/release-line.md)
 
