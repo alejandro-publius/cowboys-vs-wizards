@@ -30,7 +30,16 @@ async function checkPracticeFallback(page, book, noWebGL) {
   assert.equal(await card.locator(".table-card-face").innerHTML(), printed);
   await card.click();
   assert.equal(await card.evaluate(el => el.classList.contains("sd-pick")), true);
-  assert.match(await page.locator("#sd-prompt").innerText(), /Choose 1/);
+  const prompt = await page.locator("#sd-prompt").innerText();
+  assert.match(prompt, /Choose 1/);
+  const inspect = page.locator(".table-hand-rules > summary");
+  await inspect.tap();
+  const rules = page.locator(".table-hand-rules[open] p").filter({has: page.getByText("Billy", {exact: true})}).first();
+  assert.match(await rules.innerText(), /1 of your troops, sent to the graveyard\. Attacks the turn it arrives\./);
+  await page.locator("[data-close-hand-rules]").tap();
+  assert.ok(await inspect.evaluate(el => el === document.activeElement), "closing hand rules returns focus to its opener");
+  assert.equal(await page.locator("#sd-prompt").innerText(), prompt, "touch inspection preserves Billy’s tribute choice");
+  assert.equal(await card.evaluate(el => el.classList.contains("sd-pick")), true);
   await page.locator("#sd-cancel").click();
   await page.locator('#sd-board [data-own="0"]').click();
   await page.locator('#sd-board [data-enemy="0"]').click();

@@ -150,13 +150,13 @@ function saveRequest(doc, text) {
   }
 }
 
-export function mountForgeShelf(host, {showcase = SHOWCASE, portrait} = {}) {
+export function mountForgeShelf(host, {showcase = SHOWCASE, portrait, handFace} = {}) {
   if (!host || typeof host.querySelector !== "function") return null;
   const view = forgeView(showcase);
   host.classList?.add("forge-shelf");
   host.innerHTML = shelfHtml(view);
   const q = (selector) => host.querySelector(selector);
-  mountHellfire(q(".forge-hellfire"), portrait);
+  mountHellfire(q(".forge-hellfire"), handFace ?? portrait);
 
   if (view.status === "ok" && view.baseName && typeof portrait === "function") {
     try {

@@ -58,6 +58,63 @@ export async function checkBookEntry(evaluate, id) {
   return {page: entry.page, cards: entry.spread};
 }
 
+async function checkPracticeFace({click, evaluate, wait}, id) {
+  const card = TYPES[id];
+  const selector = `#sd-hand [data-card^="${id}-"]`;
+  const printed = await evaluate("document.querySelector('.book-hero .table-card-face').innerHTML");
+  await click(".book-practice");
+  await wait(`document.querySelector('${selector} .sd-card-art')?.checkVisibility()`);
+  const hand = await evaluate(`(() => {
+    const button = document.querySelector('${selector}');
+    const face = button.querySelector('.table-card-face');
+    const art = face.querySelector('.sd-card-art');
+    const sprite = getComputedStyle(art);
+    const book = getComputedStyle(document.querySelector('.book-hero .sd-card-art'));
+    const drawn = node => node.checkVisibility({opacityProperty: true, visibilityProperty: true}) &&
+      node.getBoundingClientRect().height > 0;
+    return {
+      printed: face.innerHTML, description: document.getElementById(button.getAttribute('aria-describedby'))?.textContent, copy: face.querySelector('.table-card-copy').innerText,
+      rule: face.querySelector('.table-card-rule')?.innerText,
+      stats: Object.fromEntries([...face.querySelectorAll('[data-stat]')].filter(drawn)
+        .map(stat => [stat.dataset.stat, stat.innerText.match(/[0-9]+/)?.[0]])),
+      samePainting: drawn(art) &&
+        sprite.backgroundImage === book.backgroundImage && sprite.backgroundPosition === book.backgroundPosition
+    };
+  })()`);
+  assert.equal(hand.printed, printed, `${id} has the exact book face in its real hand`);
+  assert.ok(hand.samePainting, `${id} shows its own book painting in the duel`);
+  assert.doesNotMatch(hand.copy, /enemy troop|enemy attack|carrier|all (lawman|undead) troops|uncovered|sent to|when it/i, id);
+  if (card.kind === "troop") {
+    assert.equal(hand.stats.attack, String(card.attack), `${id} shows attack`);
+    assert.equal(hand.stats.health, String(card.health), `${id} shows orbs`);
+    if (tributes(id)) assert.equal(hand.stats.tribute, String(tributes(id)), `${id} shows tribute cost`);
+  } else assert.ok(hand.rule?.trim(), `${id} shows its effect badge`);
+
+  await click(".table-hand-rules > summary");
+  const inspected = await evaluate(`[...document.querySelectorAll('.table-hand-rules[open] p')]
+    .find(p => p.checkVisibility() && p.querySelector('strong')?.textContent === ${JSON.stringify(card.name)})?.innerText`);
+  assert.ok(inspected, `${id} can be inspected from the hand`);
+  const rules = card.kind === "troop" ? [
+    `${card.attack} attack`, `${card.health} orb`, ...card.keys.map(key => KEYWORDS[key][1]),
+    tributes(id) ? `${tributes(id)} of your troops, sent to the graveyard` : "Cost: none"
+  ] : [EFFECTS[card.effect].text];
+  if (EFFECTS[card.effect]?.target) rules.push("Cannot target Ghostly troops.");
+  if (card.kind === "location") rules.push("Applies to both sides.");
+  for (const rule of rules) {
+    assert.ok(inspected.includes(rule), `${id} hand inspection explains "${rule}"`);
+    assert.ok(hand.description?.includes(rule), `${id} accessible description explains "${rule}"`);
+  }
+  await click("[data-close-hand-rules]");
+  if (id === "cowboy-billy") {
+    assert.equal(await evaluate("document.querySelector('#sd-home').textContent"), "Back to book");
+    await click('#sd-board [data-own="0"]');
+    await click('#sd-board [data-enemy="0"]');
+    await wait(`document.querySelector('#sd-board [data-slot="wizard-0"] .sd-orbs')?.getAttribute('aria-label') === '2 of 4 orbs'`);
+  }
+  await click("#sd-home");
+  await wait(`document.querySelector('.character-book[open] .book-portrait[aria-pressed=true]')?.dataset.id === "${id}"`);
+}
+
 // Play the staged book through its pages and launchers, including a troop a new player does not own.
 export async function checkCharacterBook({open, click, press, evaluate, wait}) {
   await open("");
@@ -84,28 +141,13 @@ export async function checkCharacterBook({open, click, press, evaluate, wait}) {
         assert.equal(card.side, side);
         await click(`.book-portrait[data-id="${id}"]`);
         index.set(id, await checkBookEntry(evaluate, id));
+        await checkPracticeFace({click, evaluate, wait}, id);
       }
       if (await evaluate("document.querySelector('.book-pages button:last-child').disabled")) break;
       await click(".book-pages button:last-child");
     }
   }
   assert.deepEqual([...index.keys()].sort(), Object.keys(TYPES).sort());
-
-  // The book and hand print the very same Billy. The player chooses and resolves a real target.
-  await click('.book-tabs [data-side="cowboy"]');
-  await click('.book-portrait[data-id="cowboy-billy"]');
-  const printed = await evaluate("document.querySelector('.book-hero .table-card-face').innerHTML");
-  await click(".book-practice");
-  await wait("!document.getElementById('showdown').hidden && document.querySelector('#sd-board [data-own=\"0\"]')?.checkVisibility()");
-  assert.equal(await evaluate("document.querySelector('#sd-home').textContent"), "Back to book");
-  assert.ok(await evaluate(`[...document.querySelectorAll('#sd-hand .table-card-face')].some(face => face.innerHTML === ${JSON.stringify(printed)})`),
-    "Billy in the live hand has exactly the same face as Billy in the book");
-  await click('#sd-board [data-own="0"]');
-  await click('#sd-board [data-enemy="0"]');
-  await wait(`document.querySelector('#sd-board [data-slot="wizard-0"] .sd-orbs')?.getAttribute('aria-label') === '2 of 4 orbs'`);
-  await click("#sd-home");
-  await wait("document.querySelector('.character-book')?.open");
-  assert.equal(await evaluate("document.querySelector('.book-portrait[aria-pressed=true]').dataset.id"), "cowboy-billy");
   assert.equal(await career(), before, "book practice leaves the prior campaign intact");
 
   await click('.book-tabs [data-side="cowboy"]');

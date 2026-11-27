@@ -36,7 +36,7 @@ const ROUTES = [
     marker: '[data-saloon-page="table"] [data-shot=baseline]', modal: true, polite: true, feedback: ".saloon-shot-result"},
   {id: "outrider-challenge", rel: "?outrider=case-e", marker: "#showdown[data-contest-challenge] [data-own]", polite: true},
   {id: "replay-room", rel: "?room=replay", marker: "#replay-room [data-branch]", feedback: ".rr-step-status"},
-  {id: "even-fight", rel: "?even-fight=1", marker: "#showdown #sd-status", text: "Even Fight preview", polite: true},
+  {id: "even-fight", rel: "?even-fight=1&seed=3", marker: "#showdown #sd-status", text: "Even Fight preview", polite: true},
   {id: "graybox-title", rel: "graybox/", marker: "#title-screen #menu-play", mounted: "#camp-replay-room"},
   {id: "reference-showdown", rel: "showdown/", marker: "#trail [data-duel]", polite: true},
   {id: "boot-hill-poker", rel: "poker/", marker: "#screen span", polite: true},
@@ -188,16 +188,80 @@ try {
     throw new Error(`Timed out waiting for: ${expression}`);
   };
 
+  async function press(key, code) {
+    const event = {key, code: key, windowsVirtualKeyCode: code};
+    await send("Input.dispatchKeyEvent", {type: "keyDown", ...event, ...(key === "Enter" ? {text: "\r"} : {})});
+    await send("Input.dispatchKeyEvent", {type: "keyUp", ...event});
+  }
+
   async function activateByKey(selector) {
     await evaluate(`document.querySelector(${JSON.stringify(selector)}).focus()`);
-    await send("Input.dispatchKeyEvent", {type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, text: "\r"});
-    await send("Input.dispatchKeyEvent", {type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13});
+    assert.ok(await evaluate(`document.activeElement.matches(${JSON.stringify(selector)})`), `cannot focus ${selector}`);
+    await press("Enter", 13);
   }
 
   async function exposedNodes(selector) {
     const {result} = await send("Runtime.evaluate", {expression: `document.querySelector(${JSON.stringify(selector)})`});
     const {nodes} = await send("Accessibility.getPartialAXTree", {objectId: result.objectId, fetchRelatives: false});
     return nodes.filter((node) => !node.ignored);
+  }
+
+  async function checkDuelNavigation() {
+    for (const [selector, name] of [[".sd-open-gallery", "Card gallery"], [".book-launch", "Character book"]]) {
+      const launcher = "#showdown > header " + selector;
+      const [button] = await exposedNodes(launcher);
+      assert.equal(button?.role.value, "button", launcher);
+      assert.equal(button.name.value, name, launcher);
+      await activateByKey(launcher);
+      const [dialog] = await exposedNodes("dialog:modal");
+      assert.equal(dialog?.role.value, "dialog", name);
+      assert.equal(dialog.name.value, name, launcher);
+      assert.ok(await evaluate("!!document.activeElement.closest('dialog:modal')"), `keyboard focus entered ${name}`);
+      await press("Escape", 27);
+      await wait(`!document.querySelector("dialog:modal") && document.activeElement.matches(${JSON.stringify(launcher)})`);
+    }
+  }
+
+  async function checkEvenFight() {
+    const hand = ".table-hand-rules > summary";
+    const rules = [
+      ["cowboy-covered-wagon", "Covered Wagon", "Guard", "Enemies must attack this troop before any other troop or the Base."],
+      ["cowboy-bear-trap", "Bear Trap", "△ −2 ●", "Trap. When an enemy troop attacks, it loses 2 orbs first. If that defeats it, the attack never lands."],
+      ["cowboy-deadeye", "Deadeye", "✦ −1 ●", "Cannot target Ghostly troops or troops in cover."],
+    ];
+    const [summary] = await exposedNodes(hand);
+    assert.equal(summary?.role.value, "DisclosureTriangle", "Hand rules is a disclosure");
+    assert.equal(summary.name.value, "Hand rules");
+    for (const [id, name, cue, rule] of rules) {
+      const selector = `#sd-hand [data-card^="${id}-"]`;
+      const badge = JSON.stringify(selector + " .table-card-rule");
+      assert.equal(await evaluate(`document.querySelector(${badge})?.checkVisibility({visibilityProperty: true, opacityProperty: true}) && document.querySelector(${badge}).innerText`), cue, name);
+      const [card] = await exposedNodes(selector);
+      assert.equal(card?.role.value, "button", name);
+      assert.equal(card.name.value, "Play " + name);
+      assert.ok(card.description?.value.includes(rule), `hand button for ${name} describes its rule: ${card.description?.value}`);
+    }
+    await activateByKey(hand);
+    const list = ".table-hand-rules[open] > .table-hand-rule-list";
+    await wait(`document.querySelector(${JSON.stringify(list)})?.checkVisibility({visibilityProperty: true})`);
+    const entries = await evaluate(`[...document.querySelectorAll(${JSON.stringify(list + " p")})].filter(p => p.checkVisibility({visibilityProperty: true, opacityProperty: true})).map(p => p.innerText.replace(/\\s+/g, ' '))`);
+    for (const [, name, , rule] of rules) {
+      assert.ok(entries.some(entry => entry.startsWith(name) && entry.includes(rule)), `hand inspection shows the full rule for ${name}: ${rule}`);
+    }
+    await activateByKey("[data-close-hand-rules]");
+    await wait(`!document.querySelector('.table-hand-rules').open && document.activeElement.matches(${JSON.stringify(hand)})`);
+    await activateByKey('#sd-hand [data-card^="cowboy-covered-wagon-"]');
+    await activateByKey("#sd-end");
+    await wait(`document.querySelector("#sd-status").textContent.includes("turn 3 · your turn")`);
+    await activateByKey('#sd-board [data-own="0"]');
+    const [guard] = await exposedNodes('#sd-board [data-enemy="0"]');
+    assert.equal(guard?.role.value, "button");
+    assert.match(guard.name.value, /Bone Wall/);
+    assert.ok(guard.properties.some((p) => p.name === "focused" && p.value.value), "the sole legal attack target has keyboard focus");
+    assert.equal(guard.description?.value, "Survives on 3. It has no attack, so yours is unharmed. A Guard stands in the way: attack it first. Or take cover: until your next turn it keeps extra damage off your Base, but it will not hit back. Spells cannot hit a troop in cover.");
+    assert.deepEqual(await evaluate(`[...document.querySelectorAll('#sd-board [data-enemy]')].map(b => b.dataset.enemy)`), ["0"], "Guard blocks the Base");
+    await press("Enter", 13);
+    await wait(`document.querySelector("#sd-feedback").textContent.includes("Covered Wagon attacked Bone Wall and left it on 3")`);
   }
 
   // Exercise one keyboard action in each recorded review. Check the updated text and its exposed live property.
@@ -246,6 +310,8 @@ try {
     if (route.polite && !polite) routeIssues.push("no exposed polite live region");
     const feedback = route.feedback ? await checkFeedback(route) : undefined;
     if (feedback === false) routeIssues.push("keyboard action produced no exposed polite feedback");
+    if (route.id === "title-play") await checkDuelNavigation();
+    if (route.id === "even-fight") await checkEvenFight();
     if (pageErrors.length) routeIssues.push(`console/page errors: ${pageErrors.join("; ")}`);
     if (badResponses.length) routeIssues.push(`HTTP >=400: ${JSON.stringify(badResponses)}`);
 

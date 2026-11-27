@@ -62,10 +62,10 @@
 }
 .sd-diorama > header {
   position: absolute;
-  top: 14px;
-  left: 20px;
+  top: 6px;
+  left: 12px;
   z-index: 5;
-  gap: 14px;
+  gap: 3px;
 }
 .sd-diorama > header h1 {
   display: none;
@@ -100,11 +100,68 @@
 }
 .sd-diorama #sd-end {
   order: 9;
-  font-size: clamp(13px, 1.15vw, 17px);
+  font-size: clamp(15px, 1.15vw, 17px);
 }
 .sd-diorama #sd-restart {
   font-size: 12px;
-  opacity: 0.84;
+}
+.sd-diorama #sd-actions button { min-height: 44px; }
+.sd-diorama #sd-restart[data-replay-choice] {
+  color: #ffe3a3;
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+/* Match the brass and stepped silhouettes of the character book's existing pixel icon. */
+.sd-diorama #sd-home {
+  --hud-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath d='M10 1h12v18H10v-2h9V4h-9zM6 5h3v3h6v4H9v3H6v-2H4v-2H2V9h2V7h2z'/%3E%3C/svg%3E");
+}
+.sd-diorama .sd-open-gallery {
+  --hud-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath fill-rule='evenodd' d='M1 2h22v16H1zm2 2v12h18V4z'/%3E%3Cpath d='M15 5h3v3h-3zM4 13h2v-2h2V9h3v2h2v2h2v-2h3v2h2v2H4z'/%3E%3C/svg%3E");
+}
+.sd-diorama #sd-restart {
+  --hud-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath d='M4 2h3v3h2V3h3V2h5v1h3v2h2v3h1v5h-1v3h-3v2h-7v-3h6v-2h2V8h-2V6h-7v2H9v1h4v3H3V2z'/%3E%3C/svg%3E");
+}
+.sd-diorama .table-hand-rules summary {
+  --hud-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath d='M1 5h2v11h6v2H1zm4-3h2v11h2v2H5z'/%3E%3Cpath fill-rule='evenodd' d='M10 1h13v18H10zm3 4v2h7V5zm0 4v2h7V9zm0 4v2h4v-2z'/%3E%3C/svg%3E");
+}
+#showdown.sd-diorama :is(header > .book-launch, header > .sd-open-gallery, #sd-home, #sd-restart:not([data-replay-choice]), .table-hand-rules > summary) {
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  min-height: 44px;
+  height: 44px;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #927651;
+  border-radius: 3px;
+  background: #211e29ee;
+  color: #f2d49b;
+  font-size: 0;
+  line-height: 0;
+  cursor: pointer;
+}
+.sd-diorama :is(#sd-home, .sd-open-gallery, #sd-restart:not([data-replay-choice]), .table-hand-rules > summary)::before {
+  content: "";
+  width: 24px;
+  height: 20px;
+  background-color: currentColor;
+  mask: var(--hud-icon) center / contain no-repeat;
+}
+#showdown.sd-diorama :is(header > button, #sd-restart, .table-hand-rules > summary):is(:hover, :focus-visible) {
+  border-color: #f2d49b;
+  background-color: #42353a;
+}
+#sd-hud-tip {
+  position: fixed;
+  z-index: 12;
+  width: max-content;
+  max-width: min(18rem, calc(100vw - 8px));
+  padding: .35rem .55rem;
+  color: #ffedce;
+  background: #211e29;
+  border: 1px solid #927651;
+  font: 600 14px/1.3 Georgia, serif;
 }
 .sd-diorama
   :is(
@@ -150,11 +207,11 @@
   text-shadow: 1px 2px 2px #13151e;
   font: 600 15px/1.35 Georgia, serif;
 }
-/* On a short landscape screen (740 x 375) the board fills the view and the action row under it starts below
-   the fold. Once the attack has played, Continue to Boot Hill is drawn under the instruction instead, over the
-   sky and pinned to the viewport, so the next step needs no scroll. Boot Hill has no challenge marker and keeps
-   its own row. The underline is the title screen's text-button mark. */
+/* Keep the challenge handoff in view on short landscape screens. The compact board below
+   docks it with the rest of the actions when the full hand fits beneath the field. */
 @media (orientation: landscape) and (max-height: 570px) {
+  /* A vertical swipe across the board reaches the hand below it. Horizontal drags still orbit. */
+  .sd-diorama #sd-field .sd-world { touch-action: pan-y; }
   #showdown.sd-diorama[data-contest-challenge] #sd-boot-hill {
     position: fixed;
     top: 100px;
@@ -229,6 +286,13 @@
     1px 1px 1px #161926,
     -1px 0 1px #161926,
     0 2px 2px #12151b;
+}
+.sd-diorama #sd-field .sd-world-labels > span:not(:empty) {
+  padding: 1px 3px;
+  border-radius: 2px;
+  background: #171922d9;
+  font: 650 clamp(11px, 1vw, 14px)/1.1 system-ui, sans-serif;
+  text-shadow: 0 1px 1px #12151b;
 }
 .sd-diorama .sd-world-labels span[data-piece-label="1"] {
   color: #fff1d9;
@@ -422,6 +486,45 @@
 .table-hand-rules strong {
   display: block;
 }
+.sd-diorama .table-hand-rules {
+  position: absolute;
+  z-index: 7;
+  left: 12px;
+  bottom: clamp(16px, 3.8%, 34px);
+  margin: 0;
+  padding: 0;
+}
+.table-hand-rules summary::-webkit-details-marker { display: none; }
+.table-hand-rule-list, .table-hand-preview {
+  box-sizing: border-box;
+  color: #fff0d4;
+  background: #211e29;
+  border: 1px solid #927651;
+  border-radius: 3px;
+  padding: .7rem .8rem;
+  text-align: left;
+  font: 15px/1.4 Georgia, serif;
+}
+.sd-diorama .table-hand-rule-list {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  width: min(23rem, calc(100vw - 24px));
+  max-height: min(24rem, 65svh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.sd-battle-hud:not(.sd-diorama) #sd-hand { position: relative; }
+#sd-hand > .table-hand-preview {
+  --preview-width: min(17rem, 90vw, 100%);
+  pointer-events: none;
+  position: absolute;
+  z-index: 6;
+  bottom: 100%;
+  left: clamp(0px, calc(var(--card-center) - var(--preview-width) / 2), calc(100% - var(--preview-width)));
+  width: var(--preview-width);
+}
+.table-hand-preview strong { display: block; }
 
 .table-turn,
 .table-series,
@@ -648,10 +751,7 @@
   .sd-diorama .sd-world {
     height: max(570px, 96svh);
   }
-  /* Reserve one touch-sized row for Hand rules on the challenge's first screen. */
-  .sd-diorama[data-contest-challenge] .sd-world {
-    height: max(570px, min(96svh, calc(100svh - 3rem)));
-  }
+  .sd-diorama .table-hand-rules { bottom: 7px; }
   .sd-diorama #sd-hand {
     width: 97%;
     gap: 2px;
@@ -675,7 +775,7 @@
     align-items: center;
   }
   .sd-diorama #sd-actions button {
-    font-size: 12px;
+    font-size: 13px;
   }
   .sd-diorama #sd-restart {
     order: 6;
@@ -683,11 +783,74 @@
   .table-pick {
     bottom: 151px;
   }
-  .sd-diorama .sd-world-labels span[data-piece-label="1"] {
-    font-size: 8px;
-  }
   .sd-diorama > header {
     left: 12px;
+  }
+}
+/* The two post-attack choices wrap within their own buttons, leaving the bottom-left
+   corner for Hand rules and the whole hand clear of the action row. */
+@media (orientation: portrait) and (max-width: 480px) {
+  .sd-diorama[data-contest-challenge] #sd-actions:has(#sd-boot-hill:not([hidden])) {
+    display: grid;
+    left: 62px;
+    right: 8px;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.1fr) minmax(52px, .7fr);
+    align-items: stretch;
+    gap: 3px;
+  }
+  .sd-diorama[data-contest-challenge] #sd-actions:has(#sd-boot-hill:not([hidden])) button {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 2px;
+    white-space: normal;
+    text-wrap: balance;
+  }
+  .sd-diorama[data-contest-challenge]:has(#sd-boot-hill:not([hidden])) #sd-hand {
+    bottom: 61px;
+  }
+}
+/* Short landscape gives the hand its own strip below the playfield. The canvas, its
+   projected controls and world labels share the same dimensions through the camera resize. */
+@media (orientation: landscape) and (min-width: 550px) and (max-width: 799px) and (max-height: 480px) {
+  .sd-diorama #sd-table {
+    min-height: 100svh;
+    background: #142033;
+  }
+  .sd-diorama #sd-field .sd-world {
+    height: calc(100svh - 106px);
+    touch-action: none;
+  }
+  .sd-diorama #sd-hand {
+    left: 46%;
+    bottom: 15px;
+    width: calc(100% - 210px);
+    gap: 4px;
+  }
+  .sd-diorama #sd-hand .sd-card {
+    flex: 0 1 66px;
+    min-width: 44px;
+    max-width: 66px;
+  }
+  .sd-diorama #sd-actions {
+    right: 8px;
+    bottom: 4px;
+    display: grid;
+    gap: 0;
+  }
+  #showdown.sd-diorama[data-contest-challenge] #sd-boot-hill {
+    position: absolute;
+    top: auto;
+    right: 0;
+    bottom: 100%;
+    left: auto;
+    translate: none;
+    width: 136px;
+  }
+  .sd-diorama .table-pick,
+  .sd-diorama .table-pick:has(.table-compare:not([hidden])) {
+    bottom: 0;
+    width: calc(100% - 210px);
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -707,4 +870,25 @@
   .table-pick {
     bottom: 168px;
   }
+}
+
+.table-card-face .sd-card-art { position: relative; }
+.table-card-face .sd-card-art :is(.table-card-kind, [data-stat="tribute"]) {
+  position: absolute;
+  padding: 1px 3px;
+  background: var(--ink);
+  color: #fff0cc;
+  font: 700 clamp(8px, .7vw, 11px)/1.1 system-ui, sans-serif;
+}
+.table-card-face .sd-card-art .table-card-kind { left: 0; bottom: 0; }
+.table-card-face .sd-card-art [data-stat="tribute"] {
+  right: 0;
+  top: 0;
+  border-radius: 0 0 0 3px;
+  color: #ffda88;
+}
+.table-card-stats .table-card-badge {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  font-size: 1.15em;
 }

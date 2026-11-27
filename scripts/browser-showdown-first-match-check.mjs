@@ -133,7 +133,22 @@ try {
     const {nodes} = await send("Accessibility.getPartialAXTree", {nodeId, fetchRelatives: false});
     const node = nodes[0];
     const prop = (name) => node?.properties?.find((p) => p.name === name)?.value?.value;
-    return node ? {ignored: Boolean(node.ignored), role: node.role?.value ?? "", live: prop("live") ?? null, text: await evaluate(`document.querySelector(${JSON.stringify(selector)}).textContent.trim()`)} : null;
+    return node ? {ignored: Boolean(node.ignored), role: node.role?.value ?? "", name: node.name?.value ?? "", live: prop("live") ?? null} : null;
+  };
+  const checkRestart = async (name) => {
+    const button = await axOf("#sd-restart");
+    assert.deepEqual([button?.role, button?.name], ["button", name], "Chrome names the current restart or replay action");
+    const layout = await evaluate(`(() => {
+      const control = document.getElementById('sd-restart'), box = control.getBoundingClientRect();
+      const label = document.createRange();
+      label.selectNodeContents(control);
+      const text = label.getBoundingClientRect();
+      const fits = text.width > 0 && text.height > 0 && text.left >= box.left && text.right <= box.right
+        && text.top >= box.top && text.bottom <= box.bottom;
+      return {width: box.width, height: box.height, caption: fits ? label.toString().trim() : ''};
+    })()`);
+    assert.ok(layout.width >= 44 && layout.height >= 44, `${name} has a touch target of at least 44 × 44: ${JSON.stringify(layout)}`);
+    assert.equal(layout.caption, name === "Restart this duel" ? "" : name, "ordinary restart hides the caption and each alternative attack shows its full name");
   };
   const step = async (label) => {
     const entry = {label, focus: await focus(), ax: await axFocused(),
@@ -250,6 +265,7 @@ try {
   await sleep(60);
   const boot = await step("Enter on Continue to Boot Hill");
   assert.ok(boot.focus.card, `Continue to Boot Hill focuses a playable hand card, not ${boot.focus.id}`);
+  await checkRestart("Restart this duel");
   check("Enter on Continue to Boot Hill opens Boot Hill with focus on a playable hand card", {focus: boot.focus.id, ax: boot.ax});
 
   // 4. Boot Hill to the end: free plays, attacks and End turn, by Tab and Enter only.
@@ -349,12 +365,14 @@ try {
   };
   await attack("troop");
   const fight = await offeredOnce(1, /^Last: The Cowboys' Outrider attacked .+\. Continue to Boot Hill\b/, "the Fight");
+  await checkRestart("Try riding instead");
   await click("#sd-restart");
   await sleep(300);
   const restarted = await step("pointer: Restart this duel");
   assert.ok(!restarted.continueShown && !restarted.feedback.includes("Continue to Boot Hill") && (await offers()).length === 1, "Restart this duel hides Continue and repeats nothing");
   await attack("base");
   const ride = await offeredOnce(2, /^Last: The Cowboys' Outrider struck the Wizards' Base for 1\. Continue to Boot Hill\b/, "the Ride after Restart");
+  await checkRestart("Try fighting instead");
   await click("#sd-restart");
   await attack("base");
   await click("#sd-home");

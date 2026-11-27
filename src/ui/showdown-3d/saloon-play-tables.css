@@ -133,6 +133,21 @@
   object-fit: cover;
   object-position: center 28%;
 }
+/* The Forge uses the exact duel faces. Its lower strip shows the cast choices or the current orbs. */
+.forge-hellfire [data-painting] > .table-card-face {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  padding: 0;
+  border: 0;
+  background: #251c1d;
+}
+.forge-hellfire .table-card-title {
+  padding: 5px 4px;
+  font-size: clamp(.78rem, 1.7vmin, 1.15rem);
+}
+.forge-hellfire .forge-troop-art .table-card-title { text-align: left; }
+.forge-hellfire .table-card-face .sd-card-art { border: 0; }
+.forge-hellfire [data-painting] :is(.table-card-copy, .table-card-kind) { display: none; }
 .forge-troop-art::after { content: ""; position: absolute; inset: 0; background: var(--card-shade); }
 .forge-troop-state { font: 700 clamp(.93rem, 2vmin, 1.2rem)/1.15 var(--frontier-display); }
 .forge-orbs {

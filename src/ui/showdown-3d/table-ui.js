@@ -4,8 +4,6 @@ import { bindAttackForecasts } from "./attack-forecasts.js";
 
 export { cardArtwork };
 
-const icons = { troop: "◆", spell: "✦", trap: "△", gear: "◇", location: "▰" };
-
 // Only shorten the visual copy. Keyboard target descriptions and the cover tooltip use the public prompt.
 export function compactSelectionPrompt(text, evenFight = false) {
   if (!/^(Choose|A Guard|No enemy|This troop)/.test(text)) return "";
@@ -38,44 +36,58 @@ const el = (tag, cls, word) => {
   if (word) node.textContent = word;
   return node;
 };
-// Antigravity PR #242's short hand cues, with the target, unit and current cover rule spelled out.
-function handEffect(card, evenFight) {
+
+function effectBadge(card) {
   const effect = EFFECTS[card.effect];
-  if (card.kind === "gear") return effect.attack ? `Carrier +${effect.attack} ATK` : `Carrier +${effect.orbs} orbs`;
-  if (card.kind === "location") return `All ${effect.tag} troops +1 ATK`;
-  const enemy = evenFight ? "uncovered enemy troop" : "enemy troop";
+  if (card.kind === "gear") return effect.attack ? `◇ +${effect.attack} ⚔︎` : `◇ +${effect.orbs} ●`;
+  if (card.kind === "location") return `▰ ${effect.tag} +1`;
   switch (card.effect) {
-    case "shot": return `1 ${enemy} −1 orb`;
-    case "tie": return `Stun 1 ${enemy}`;
-    case "hellfire": return `Each ${enemy} −1 orb`;
-    case "snare": return "Enemy attacker −2 orbs first";
-    case "hex": return "Cancel enemy attack";
-    default: return effect.text;
+    case "shot": return "✦ −1 ●";
+    case "tie": return "✦ Stun";
+    case "hellfire": return "✦ Foes −1 ●";
+    case "snare": return "△ −2 ●";
+    case "hex": return "△ Cancel";
   }
 }
 
-export function paintedFace(type, inHand, evenFight) {
+// The printed badge stays short. These rulings accompany the catalog text in the hand inspector.
+function handRuling(card, evenFight) {
+  if (card.keys?.includes("raise")) return "Pay tributes first. The returned troop needs an open slot.";
+  if (card.kind === "gear") return "Choose one of your troops to carry it.";
+  if (card.kind === "location") return "Applies to both sides. Replaces the location in play.";
+  if (card.kind === "trap") return "Set face down. The oldest trap springs first, one per attack, even against the Base.";
+  if (card.effect === "hellfire") return "Hits Ghostly troops because it chooses no target.";
+  if (EFFECTS[card.effect]?.target) {
+    const restriction = evenFight ? "Cannot target Ghostly troops or troops in cover." : "Cannot target Ghostly troops.";
+    return card.effect === "tie" ? restriction + " Choose a troop that is not already stunned." : restriction;
+  }
+  return "";
+}
+
+function statBadge(stat, text) {
+  const badge = el("span", "table-card-badge", text);
+  badge.dataset.stat = stat;
+  return badge;
+}
+
+export function paintedFace(type) {
   const card = TYPES[type];
   const face = el("span", "table-card-face");
   face.setAttribute("aria-hidden", "true");
   const title = el("span", "table-card-title", card.name);
   const artwork = cardArtwork(type);
   const notes = el("span", "table-card-copy");
-  const kind = card.kind[0].toUpperCase() + card.kind.slice(1);
-  const category = el("span", "table-card-kind", inHand ? (card.tag ?? kind) : icons[card.kind] + " " + kind);
-  if (inHand && artwork) artwork.append(category);
-  else notes.append(category);
   if (card.kind === "troop") {
-    const stats = el("span", "table-card-stats");
-    const health = inHand ? `${card.health} orb${card.health === 1 ? "" : "s"}` : card.health + " ●";
-    stats.append(el("span", "", card.attack + " ATK"), el("span", "", health));
+    const tags = artwork ?? notes;
+    tags.append(el("span", "table-card-kind", card.tag));
     const cost = tributes(type);
+    if (cost) tags.append(statBadge("tribute", `★${cost}`));
+    const stats = el("span", "table-card-stats");
+    stats.append(statBadge("attack", `⚔︎${card.attack}`), statBadge("health", `●${card.health}`));
     notes.append(stats);
-    const labels = (card.keys ?? []).map((key) => KEYWORDS[key][0]);
-    if (cost) labels.push(`${cost} tribute${inHand && cost > 1 ? "s" : ""}`);
-    if (labels.length) notes.append(el("span", "table-card-rule", labels.join(" · ")));
+    if (card.keys.length) notes.append(el("span", "table-card-rule", card.keys.map(key => KEYWORDS[key][0]).join(" · ")));
   } else {
-    notes.append(el("span", "table-card-rule", inHand ? handEffect(card, evenFight) : EFFECTS[card.effect].text));
+    notes.append(el("span", "table-card-rule", effectBadge(card)));
   }
   face.append(title);
   if (artwork) face.append(artwork);
@@ -89,19 +101,105 @@ export function paintCardFaces(root, selector, evenFight = false) {
     const type = card.dataset.face ?? card.dataset.choose ?? card.dataset.opened ?? typeOf(card.dataset.card);
     const inHand = card.dataset.card !== undefined;
     const original = el("span", "table-card-original");
-    original.append(...card.childNodes);
+    for (const part of [...card.childNodes]) original.append(part, " ");
     if (inHand) {
       for (const key of original.querySelectorAll(".sd-key[title]")) key.append(". " + key.title);
-      const effect = EFFECTS[TYPES[type].effect];
-      if (effect?.target) original.append(el("span", "sd-note", evenFight
-        ? "Cannot target Ghostly troops or troops in cover." : "Cannot target Ghostly troops."));
-      if (TYPES[type].kind === "location") original.append(el("span", "sd-note", "Applies to both sides."));
+      const ruling = handRuling(TYPES[type], evenFight);
+      if (ruling) original.append(el("span", "sd-note", ruling));
+      original.id = "table-rule-" + card.dataset.card;
+      card.setAttribute("aria-label", "Play " + TYPES[type].name);
+      card.setAttribute("aria-describedby", original.id);
+    } else {
+      card.title = original.textContent.replace(/\s+/g, " ").trim();
     }
-    card.append(original, paintedFace(type, inHand, evenFight));
+    card.append(original, paintedFace(type));
     card.classList.add("table-card-painted");
     card.classList.toggle("table-captured", type.startsWith("cowboy-captured-"));
-    card.title = original.textContent.replace(/\s+/g, " ").trim();
   }
+}
+
+function bindHandRules(table, hand) {
+  const details = el("details", "table-hand-rules");
+  const summary = el("summary", "", "Hand rules");
+  const list = el("div", "table-hand-rule-list");
+  list.tabIndex = 0;
+  list.setAttribute("role", "region");
+  list.setAttribute("aria-label", "Rules for cards in your hand");
+  const close = el("button", "", "Close hand rules");
+  close.type = "button";
+  close.dataset.closeHandRules = "";
+  details.append(summary, list);
+  details.hidden = true;
+  table.after(details);
+
+  const preview = el("div", "table-hand-preview");
+  preview.id = "table-hand-preview";
+  preview.setAttribute("role", "tooltip");
+  preview.hidden = true;
+  let previewCard = null;
+  function showPreview(card) {
+    if (details.open || details.hidden) card = null;
+    if (card === previewCard) return;
+    if (previewCard) previewCard.setAttribute("aria-describedby", "table-rule-" + previewCard.dataset.card);
+    previewCard = card;
+    preview.hidden = !card;
+    preview.replaceChildren();
+    if (!card) return;
+    preview.append(...card.querySelector(".table-card-original").cloneNode(true).childNodes);
+    card.setAttribute("aria-describedby", preview.id);
+    const box = card.getBoundingClientRect();
+    preview.style.setProperty("--card-center", box.left + box.width / 2 - hand.getBoundingClientRect().left + "px");
+  }
+  hand.addEventListener("pointerover", (event) => {
+    const card = event.target.closest("[data-card]");
+    if (event.pointerType !== "touch" && card && !card.contains(event.relatedTarget)) showPreview(card);
+  });
+  hand.addEventListener("pointerleave", () => showPreview(hand.querySelector("[data-card]:focus-visible")));
+  hand.addEventListener("focusin", (event) => {
+    if (event.target.matches("[data-card]:focus-visible")) showPreview(event.target);
+  });
+  hand.addEventListener("focusout", () => showPreview(hand.querySelector("[data-card]:hover")));
+  details.addEventListener("toggle", () => { if (details.open) showPreview(null); });
+  function closeList() {
+    details.open = false;
+    summary.focus();
+  }
+  close.onclick = (event) => {
+    event.stopPropagation();
+    closeList();
+  };
+  // Escape dismisses inspection before the duel gets a chance to cancel a pending attack.
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || (!details.open && !previewCard) || event.target.closest?.("dialog[open]")) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (details.open) closeList();
+    else showPreview(null);
+  }, true);
+  document.addEventListener("pointerdown", (event) => {
+    if (details.open && !details.contains(event.target)) details.open = false;
+  });
+  details.addEventListener("focusout", (event) => {
+    if (event.relatedTarget && !details.contains(event.relatedTarget)) details.open = false;
+  });
+
+  return (cards) => {
+    showPreview(null);
+    list.replaceChildren();
+    details.hidden = cards.length === 0;
+    if (details.hidden) {
+      details.open = false;
+      preview.remove();
+      return;
+    }
+    hand.append(preview);
+    list.append(close);
+    for (const card of cards) {
+      const rule = el("p");
+      rule.append(...card.querySelector(".table-card-original").cloneNode(true).childNodes);
+      list.append(rule);
+    }
+  };
 }
 
 export function bindTableUI(root) {
@@ -124,23 +222,7 @@ export function bindTableUI(root) {
   const cover = root.querySelector("#sd-cover");
   const hand = root.querySelector("#sd-hand");
   const result = root.querySelector("#sd-result");
-  const handRules = el("details", "table-hand-rules");
-  const rules = el("div");
-  handRules.append(el("summary", "", "Hand rules"), rules);
-  handRules.hidden = true;
-  // Keep the disclosure below the projected controls, including when Ride or Fight hides the zones.
-  table.after(handRules);
-
-  function showHandRules(cards) {
-    rules.replaceChildren();
-    handRules.hidden = cards.length === 0;
-    if (handRules.hidden) handRules.open = false;
-    for (const button of cards) {
-      const rule = el("p");
-      rule.append(...button.querySelector(".table-card-original").cloneNode(true).childNodes);
-      rules.append(rule);
-    }
-  }
+  const showHandRules = bindHandRules(table, hand);
 
   function finish() {
     headline.hidden = !root.classList.contains("table-resolved");
