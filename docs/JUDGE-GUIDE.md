@@ -12,7 +12,12 @@ Start on the illustrated title. The live manifest gives the commit and HTML chec
 | 2 | 0:20–0:40 | Choose **Fire for 1**. Under **Take Billy’s next turn**, try **Attack Headless Horseman**, then **Take cover**. | The bots lose for the Cowboys on turn 20. On your turn nine, attacking loses on turn 18. Taking cover wins for the Cowboys on turn 21. Both choices start from the same board. | [Balance audit](evidence/billy-seat-audit/README.md) · [Recorded Ledger replay](https://alejandro-publius.github.io/cowboys-vs-wizards/?replay=billy) |
 | 3 | 0:40–1:00 | Choose **Back to map**, **Main menu**, then **Ride or Fight?**. Choose the on-board Outrider and the Wizard Base. Restart and target the Skeleton. | Riding hits the Base for one. Fighting leaves the Skeleton on two orbs and the Outrider on one. | [Playable opening](https://alejandro-publius.github.io/cowboys-vs-wizards/?outrider=case-e) · [Outrider evidence](evidence/outrider-gate.md) |
 
-The current 1:20 cut follows the first two steps. The same choices work from the title or the direct Saloon link. Leaving the table returns to Camp with the player’s career intact. [English transcript and captions](submission/judge-demo-narration.md) · [Browser regression](../scripts/check-pages-tree.mjs)
+The current 1:20 cut follows the first two steps. The same choices work from the title or the direct Saloon link. Leaving the table returns to Camp with the player’s career intact. [English transcript and captions](submission/judge-demo-narration.md) · [Browser regression](../scripts/check-pages-tree.mjs) · [GIF capture receipt](evidence/antigravity-gameplay-gifs.md)
+
+| Night Shift Saloon (`?saloon=review`) | 3D Ride or Fight? (`?outrider=case-e`) | Camp, Deck Builder & Poker (`/`, `/poker/`) |
+| --- | --- | --- |
+| ![Night Shift Saloon loop: Billy fires for 2 and clears Bone Wall, fires Kiro's proposed 1-attack shot, then takes cover on turn 9 against Headless Horseman to win on turn 21.](evidence/showdown-saloon-billy.gif) | ![Illustrated 3D Showdown loop: the Outrider fights the Skeleton and drops to 1 orb, then restarts the turn and rides past to hit the Wizard Base.](evidence/showdown-outrider-3d.gif) | ![Camp loop: illustrated title into 3D Camp, 16-card Cowboy deck builder, Wanted boss bounties, and Boot Hill Poker.](evidence/showdown-camp-deck-poker.gif) |
+| Kiro’s proposed `2 → 1` Billy shot + playable turn-9 counterplay | Same seeded deal, two tactical lines on the 3D table | Career Camp, 16-card builder, Wanted hunts & second game |
 
 ## The Kiro decision behind the Saloon
 
