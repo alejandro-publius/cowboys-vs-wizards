@@ -326,11 +326,12 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     showOnly(screen);
     showdown.start(duel, seedFor(), {players: 2});
   });
-  outpost = diorama?.mountCampOutpost(campRoot);
-  const openSaloon = () => {
+  outpost = diorama?.mountCampOutpost(campRoot, openBookCard);
+  const openSaloon = (review = false) => {
     last = null;
     toCamp();
-    outpost.openSaloonReview();
+    if (review) outpost.openSaloonReview();
+    else outpost.open("night-shift-saloon");
   };
   if (contest && outpost) {
     const saloon = document.createElement("button");
@@ -340,7 +341,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     saloon.textContent = "Night Shift Saloon";
     saloon.setAttribute("aria-haspopup", "dialog");
     saloon.setAttribute("aria-controls", "room-for-night-shift-saloon");
-    saloon.addEventListener("click", openSaloon);
+    saloon.addEventListener("click", () => openSaloon());
     play.parentElement.prepend(saloon);
     play.textContent = "Camp";
     play.classList.add("menu-camp");
@@ -365,7 +366,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
   if (query.get("lesson") === "saved" && !["turn", "outrider", "practice", "wizard"].some((key) => query.has(key))) openSavedLesson();
   if (!["turn", "outrider", "practice", "wizard", "lesson"].some((key) => query.has(key))) {
     if (outpost && query.get("saloon") === "review") {
-      openSaloon();
+      openSaloon(true);
     } else if (query.get("replay") === "billy") {
       toCamp();
       openBillyReplay();

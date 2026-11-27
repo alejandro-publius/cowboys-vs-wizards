@@ -1,12 +1,7 @@
 import {RIVALS} from "../../game/showdown/progress.js";
 import {cardArtwork} from "./table-ui.js";
-import {ledgerSectionHtml, mountNightShiftSaloon} from "./night-shift-saloon.js";
-import {createSaloonStage} from "./saloon-stage.js";
-import {mountForgeShelf} from "../forge-shelf.js";
-import {mountRulesDesk} from "../rules-desk.js";
-import {mountArenaTable} from "../arena-table.js";
-import {mountScoutRuling} from "../scout-ruling.js";
-import RECORDING from "../night-shift-recording.json" with {type: "json"};
+import {ledgerSectionHtml} from "./night-shift-saloon.js";
+import {mountSaloonRoom} from "./saloon-room.js";
 
 // Pure: where the staged Boot Hill Poker page sits for a page served at `base`. This build is
 // staged at the site root and at its /3d/ copy; both reach the one poker/ next to the root.
@@ -18,15 +13,6 @@ export function pokerHref(base) {
   url.pathname = url.pathname.replace(/[^/]*$/, "").replace(/3d\/$/, "") + "poker/" + (url.protocol === "file:" ? "index.html" : "");
   return url.href;
 }
-
-// Drawers behind the bar for modules other workers own. Each mounts on its first opening;
-// a mount that throws leaves a plain note and the rest of the saloon working.
-const BAR_DRAWERS = [
-  ["ruling", "Balance ruling", mountScoutRuling],
-  ["forge", "Forge shelf", mountForgeShelf],
-  ["rules", "Rules desk", mountRulesDesk],
-  ["arena", "Agent arena", mountArenaTable],
-];
 
 const RIVAL_ART = {
   stargazer: "wizard-wizard",
@@ -44,7 +30,7 @@ const ROOMS = [
 ];
 
 // Move the existing controls into their rooms so their rules and event handlers stay in Camp.
-export function mountCampOutpost(root) {
+export function mountCampOutpost(root, book) {
   const byId = (id) => root.querySelector("#" + id);
   const wizard = byId("camp-wizard");
   const rooms = new Map();
@@ -84,56 +70,13 @@ export function mountCampOutpost(root) {
   const saloonRoom = document.createElement("dialog");
   saloonRoom.className = "camp-outpost outpost-saloon outpost-wood";
   saloonRoom.setAttribute("aria-labelledby", "outpost-saloon-title");
-  saloonRoom.innerHTML = `<header><h2 id="outpost-saloon-title">Night Shift saloon</h2><button type="button" autofocus>Back to map</button></header>
-      <a class="saloon-bounty-bill" data-saloon-wanted href="?room=wanted">
-        <div class="saloon-bounty-copy">
-          <h3>Wanted on the frontier</h3>
-          <p>Deadeye can't target the Lantern Wraith. When the Graveyard Dragon attacks a troop, its Sweep hits every other enemy troop.</p>
-          <span class="saloon-bounty-action">Open the Wanted board <span aria-hidden="true">→</span></span>
-        </div>
-      </a>
-      <div class="outpost-room"></div>`;
-  saloonRoom.querySelector("header button").addEventListener("click", () => saloonRoom.close());
   root.append(saloonRoom);
-  rooms.set("night-shift-saloon", {room: saloonRoom, content: saloonRoom.querySelector(".outpost-room")});
+  rooms.set("night-shift-saloon", {room: saloonRoom});
   byId("camp-ledger").insertAdjacentHTML("beforeend", ledgerSectionHtml());
-  const saloon = mountNightShiftSaloon({
-    content: rooms.get("night-shift-saloon").content,
-    recording: RECORDING,
-    portrait: cardArtwork,
-    ledger: byId("camp-ledger").querySelector(".ledger-night-shift"),
-    createStage: createSaloonStage,
-  });
-  // Under the saloon scene: the experimental second game and the bar's drawers.
-  const bar = document.createElement("footer");
-  bar.className = "outpost-saloon-bar";
-  bar.innerHTML = `<p class="outpost-side-game"><a class="outpost-poker-link"></a>
-      <span class="sd-note">Experimental second game. Opens its own page.</span></p>`;
-  const poker = bar.querySelector(".outpost-poker-link");
-  poker.textContent = "Boot Hill Poker";
-  poker.href = pokerHref(document.baseURI);
-  for (const [key, label, mount] of BAR_DRAWERS) {
-    const drawer = document.createElement("details");
-    drawer.className = `outpost-drawer outpost-drawer-${key}`;
-    const summary = document.createElement("summary");
-    summary.textContent = label;
-    const host = document.createElement("div");
-    host.className = "outpost-drawer-host";
-    drawer.append(summary, host);
-    let mounted = false;
-    drawer.addEventListener("toggle", () => {
-      if (!drawer.open || mounted) return;
-      mounted = true;
-      try {
-        mount(host);
-      } catch {
-        host.textContent = `The ${label.toLowerCase()} could not open.`;
-      }
-    });
-    bar.append(drawer);
-  }
-  saloonRoom.append(bar);
-  saloonRoom.addEventListener("close", () => {
+  const saloon = mountSaloonRoom({room: saloonRoom, book, pokerURL: pokerHref(document.baseURI),
+    ledger: byId("camp-ledger").querySelector(".ledger-night-shift")});
+  saloonRoom.addEventListener("close", event => {
+    if (event.target !== saloonRoom || saloonRoom.open) return;
     saloon.closed();
     if (current === saloonRoom) current = null;
   });
@@ -156,6 +99,7 @@ export function mountCampOutpost(root) {
   }
 
   function close() {
+    if (current === saloonRoom) saloon.closed();
     current?.close();
     current = null;
   }
@@ -203,6 +147,7 @@ export function mountCampOutpost(root) {
       if (!room) return false;
       const opener = root.querySelector(`[aria-controls="${room.id}"]`);
       show(room, opener);
+      if (room === saloonRoom) saloon.restore(control);
       for (let group = control.parentElement; group !== room; group = group.parentElement) {
         if (group.matches("details")) group.open = true;
       }

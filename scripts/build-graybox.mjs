@@ -75,6 +75,7 @@ const [template, style, showdownStyle, replayStyle, boardStyle, boardLicense, bu
     read("src/ui/showdown-3d/character-book.css"),
     read("src/ui/showdown-3d/outpost.css"),
     read("src/ui/showdown-3d/saloon-tables.css"),
+    read("src/ui/showdown-3d/saloon-room.css"),
   ]).then(parts => [`:root{${frontier.join("")}}`, ...parts].join("\n")) : "",
   diorama ? read("src/ui/showdown-3d/graphics/THREE-LICENSE") : "",
   (diorama ? buildSaloonTable : build)({...options, entryPoints: ["src/app.js"]}),

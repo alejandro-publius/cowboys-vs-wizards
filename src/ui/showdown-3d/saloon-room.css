@@ -1,0 +1,139 @@
+/* The Saloon is a tabletop. Its rail stays reachable while players change stations. */
+dialog.outpost-saloon {
+  --saloon-gold: #edcc87;
+  --saloon-cream: #f6e7c6;
+  box-sizing: border-box;
+  inline-size: min(1040px, calc(100vw - 28px));
+  block-size: min(762px, calc(100vh - 28px));
+  block-size: min(762px, calc(100dvh - 28px));
+  max-width: none;
+  max-height: none;
+  margin: auto;
+  padding: 0;
+  border: 1px solid #b18a54;
+  overflow: hidden;
+  color: var(--saloon-cream);
+  background: #251a18;
+  box-shadow: 0 0 0 3px #1a1312, 0 0 0 4px #7f6242, 0 15px 55px #110e15bb;
+}
+dialog.outpost-saloon[open] { display: flex; flex-direction: column; }
+dialog.outpost-saloon [hidden] { display: none !important; }
+dialog.outpost-saloon > .saloon-rail {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  flex: none;
+  padding: 2px clamp(8px, 2vw, 22px);
+  min-height: 46px;
+  gap: .5rem;
+  color: var(--saloon-cream);
+  background: #21191a;
+  border-bottom: 3px double #8c6a45;
+}
+#showdown-camp .outpost-saloon > .saloon-rail h2 {
+  color: var(--saloon-cream);
+  font: 700 clamp(19px, 2.5vw, 30px)/1 var(--frontier-display);
+  text-align: center;
+  letter-spacing: .01em;
+  text-shadow: 0 2px #0d0809;
+}
+dialog.outpost-saloon .saloon-rail button,
+dialog.outpost-saloon .saloon-table-rail :is(button,a) {
+  appearance: none;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .35em;
+  min-height: 44px;
+  padding: 3px clamp(7px, 1.3vw, 18px);
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  color: var(--saloon-cream);
+  text-decoration: none;
+  font: 700 clamp(14px, 1.55vw, 18px)/1.1 var(--frontier-display);
+  text-shadow: 0 2px #140e0d;
+  cursor: pointer;
+}
+dialog.outpost-saloon .saloon-rail button:first-child { justify-self: start; }
+dialog.outpost-saloon .saloon-rail button:last-child { justify-self: end; }
+.saloon-exit > span:first-child { font: 600 1.45em/.7 Georgia, serif; color: var(--saloon-gold); }
+dialog.outpost-saloon :is(.saloon-rail,.saloon-table-rail,.saloon-journal-index) :is(button,a):is(:hover,:focus-visible) {
+  color: #ffda85; background: #61473880;
+}
+dialog.outpost-saloon :is(.saloon-rail,.saloon-table-rail,.saloon-journal-index) :focus-visible {
+  outline: 2px solid var(--saloon-gold); outline-offset: -3px;
+}
+.saloon-booth {
+  flex: 1 1 0;
+  min-block-size: 0;
+  position: relative;
+  isolation: isolate;
+  background: radial-gradient(ellipse at 52% 48%, #442d2299, #2a1b16dc 85%), var(--frontier-panorama) 8% 64% / cover;
+}
+.saloon-booth > [data-saloon-page] {
+  position: absolute;
+  inset: 0;
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+  padding: clamp(5px, 1.25vw, 16px);
+}
+.saloon-book-dock { box-sizing: border-box; height: 100%; display: grid; place-items: center; }
+.saloon-book-dock > dialog.character-book[open] {
+  position: relative;
+  inset: auto;
+  box-sizing: border-box;
+  inline-size: min(100%, 930px);
+  block-size: 100%;
+  max-inline-size: 100%;
+  max-block-size: 100%;
+  margin: 0;
+  overflow: visible;
+  border: 0;
+  padding: 0;
+  box-shadow: none;
+  background: transparent;
+}
+.saloon-book-dock .book-close { display: none !important; }
+.saloon-book-dock .book-cover { box-sizing: border-box; height: 100%; max-height: 100%; }
+dialog.outpost-saloon .saloon-table-rail {
+  display: flex;
+  justify-content: center;
+  flex: none;
+  border-top: 3px double #916e47;
+  background: #2b1e1a;
+  padding: 2px 4px;
+}
+dialog.outpost-saloon .saloon-table-rail :is(button,a) {
+  flex: 0 1 145px;
+  position: relative;
+}
+.saloon-table-rail > * + *::before {
+  position: absolute; content: ""; left: 0; width: 1px; height: 1em; background: #776043;
+}
+.saloon-booth [data-saloon-page="journal"] { display: grid; place-content: center; }
+.saloon-journal-index { display: grid; min-width: min(63vw, 390px); gap: 2px; padding: 8px 0; border-block: 3px double #9e7951; }
+.saloon-journal-index button {
+  min-height: 48px; padding: 8px 13px; border: 0; border-bottom: 1px solid #644936;
+  background: #281d1be8; color: var(--saloon-cream); font: 700 1.05rem var(--frontier-display); text-align: left; cursor: pointer;
+}
+.saloon-journal-index button::after { content: "›"; float: right; color: var(--saloon-gold); }
+.saloon-booth > :is([data-saloon-page="shift"],[data-saloon-page="ruling"],[data-saloon-page="rules"],[data-saloon-page="arena"]) { overflow: auto; overscroll-behavior: contain; }
+.saloon-booth > [data-saloon-page="poker"] { padding: 0; }
+.saloon-booth iframe { display: block; width: 100%; height: 100%; border: 0; }
+@media (max-width: 620px), (max-height: 505px) {
+  dialog.outpost-saloon { width: 100%; height: 100vh; height: 100dvh; border: 0; box-shadow: none; }
+  dialog.outpost-saloon > .saloon-rail { min-height: 44px; padding: 0 4px; border-width: 1px; }
+  .saloon-booth > [data-saloon-page] { padding: 4px; }
+  dialog.outpost-saloon .saloon-table-rail { border-width: 1px; padding: 0 max(2px, env(safe-area-inset-right)) env(safe-area-inset-bottom); }
+  .saloon-book-dock > dialog.character-book[open] { width: 100%; }
+}
+@media (max-height: 500px) and (min-width: 620px) {
+  dialog.outpost-saloon { padding-inline: env(safe-area-inset-left) env(safe-area-inset-right); }
+  .saloon-booth > [data-saloon-page="home"] { padding-block: 1px; }
+}
+
