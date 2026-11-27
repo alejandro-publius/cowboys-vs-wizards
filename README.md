@@ -1,6 +1,6 @@
 # Cowboys vs. Wizards: Showdown
 
-Ride out from Boot Hill with a 16-card deck. Deadeye can't target the Lantern Wraith. The Graveyard Dragon can take an orb from every troop beside the one it attacks. Clear six Trail stops and beat either boss in five hunts to earn its card for your deck.
+Press **Play** and take the Outrider’s turn. Shoot the Skeleton or ride past it to hit the Wizard Base. In **Camp**, build a 16-card deck, clear six Trail stops and win five hunts to earn the Lantern Wraith or Graveyard Dragon.
 
 **[Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/)** · [Scout the Graveyard Dragon](https://alejandro-publius.github.io/cowboys-vs-wizards/?room=wanted) · [Play the Saloon character book](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=play)
 
