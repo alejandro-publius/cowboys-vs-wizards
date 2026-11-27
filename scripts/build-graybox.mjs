@@ -6,6 +6,7 @@ import {fileURLToPath} from "node:url";
 import {grayboxBuildLabel} from "./graybox-build-label.mjs";
 import {verifiedForBuild} from "./outrider-gate.mjs";
 import {buildSaloonTable} from "./build-saloon-table.mjs";
+import {buildPocketPoker} from "./build-pocket-poker.mjs";
 
 const root = new URL("../", import.meta.url);
 const file = (name) => new URL(name, root);
@@ -60,6 +61,8 @@ if (diorama) {
   }
 }
 const options = {absWorkingDir: fileURLToPath(root), bundle: true, write: false, platform: "browser", target: "es2022", minify: true,
+  // Escape the child document's markup inside Showdown's own inline script.
+  banner: diorama ? {js: `globalThis.__CVW_POCKET_POKER__=${JSON.stringify(await buildPocketPoker()).replace(/</g, "\\u003c")};`} : {},
   define: {__CVW_GRAYBOX_BUILD__: JSON.stringify(label), __CVW_OUTRIDER__: JSON.stringify({cases: outrider.cases, camp: outrider.camp}),
     __CVW_OUTRIDER_LEDGER__: JSON.stringify(outrider.ledger), __CVW_DIORAMA__: JSON.stringify(diorama), __CVW_CONTEST__: JSON.stringify(contest),
     __CVW_BOOK_ART__: JSON.stringify(bookArt), __CVW_DIORAMA_ATLAS__: JSON.stringify(atlas), __CVW_HAS_PANORAMA__: JSON.stringify(Boolean(panorama))}};
