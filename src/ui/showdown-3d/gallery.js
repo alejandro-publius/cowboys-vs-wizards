@@ -7,6 +7,7 @@ import { PixelRenderer } from "./graphics/pixel-renderer.js";
 import { attackExample, attackPreviews } from "./attack-preview.js";
 import { presentationBeats } from "./event-positions.js";
 import { replayCards } from "./replay-cards.js";
+import { bindBattleHud } from "./battle-hud.js";
 
 export const ROSTER = Object.keys(TYPES);
 const order = new Map(ROSTER.map((id, i) => [id, i]));
@@ -371,10 +372,15 @@ export function mountGallery(title, duel, makeAttackStage) {
     button.type = "button";
     button.className = "sd-open-gallery";
     button.textContent = "Card gallery";
-    button.onclick = open;
+    button.setAttribute("aria-haspopup", "dialog");
+    button.onclick = () => {
+      button.focus({preventScroll: true});
+      open();
+    };
     if (anchor.parentElement === duel) anchor.insertBefore(button, anchor.querySelector("#sd-home"));
     else anchor.append(button);
   }
+  bindBattleHud(duel);
   if (new URLSearchParams(location.search).get("gallery") === "1") open();
   return function openReplay(id) {
     const moves = attackPreviews(id);

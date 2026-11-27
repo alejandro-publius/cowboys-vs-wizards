@@ -96,12 +96,100 @@ export function paintCardFaces(root, selector, evenFight = false) {
       if (effect?.target) original.append(el("span", "sd-note", evenFight
         ? "Cannot target Ghostly troops or troops in cover." : "Cannot target Ghostly troops."));
       if (TYPES[type].kind === "location") original.append(el("span", "sd-note", "Applies to both sides."));
+      original.id = "table-rule-" + card.dataset.card;
+      card.setAttribute("aria-label", "Play " + TYPES[type].name);
+      card.setAttribute("aria-describedby", original.id);
+    } else {
+      card.title = original.textContent.replace(/\s+/g, " ").trim();
     }
     card.append(original, paintedFace(type, inHand, evenFight));
     card.classList.add("table-card-painted");
     card.classList.toggle("table-captured", type.startsWith("cowboy-captured-"));
-    card.title = original.textContent.replace(/\s+/g, " ").trim();
   }
+}
+
+function bindHandRules(table, hand) {
+  const details = el("details", "table-hand-rules");
+  const summary = el("summary", "", "Hand rules");
+  const list = el("div", "table-hand-rule-list");
+  list.tabIndex = 0;
+  list.setAttribute("role", "region");
+  list.setAttribute("aria-label", "Rules for cards in your hand");
+  const close = el("button", "", "Close hand rules");
+  close.type = "button";
+  close.dataset.closeHandRules = "";
+  details.append(summary, list);
+  details.hidden = true;
+  table.after(details);
+
+  const preview = el("div", "table-hand-preview");
+  preview.id = "table-hand-preview";
+  preview.setAttribute("role", "tooltip");
+  preview.hidden = true;
+  let previewCard = null;
+  function showPreview(card) {
+    if (details.open || details.hidden) card = null;
+    if (card === previewCard) return;
+    if (previewCard) previewCard.setAttribute("aria-describedby", "table-rule-" + previewCard.dataset.card);
+    previewCard = card;
+    preview.hidden = !card;
+    preview.replaceChildren();
+    if (!card) return;
+    preview.append(...card.querySelector(".table-card-original").cloneNode(true).childNodes);
+    card.setAttribute("aria-describedby", preview.id);
+    const box = card.getBoundingClientRect();
+    preview.style.setProperty("--card-center", box.left + box.width / 2 - hand.getBoundingClientRect().left + "px");
+  }
+  hand.addEventListener("pointerover", (event) => {
+    const card = event.target.closest("[data-card]");
+    if (event.pointerType !== "touch" && card && !card.contains(event.relatedTarget)) showPreview(card);
+  });
+  hand.addEventListener("pointerleave", () => showPreview(hand.querySelector("[data-card]:focus-visible")));
+  hand.addEventListener("focusin", (event) => {
+    if (event.target.matches("[data-card]:focus-visible")) showPreview(event.target);
+  });
+  hand.addEventListener("focusout", () => showPreview(hand.querySelector("[data-card]:hover")));
+  details.addEventListener("toggle", () => { if (details.open) showPreview(null); });
+  function closeList() {
+    details.open = false;
+    summary.focus();
+  }
+  close.onclick = (event) => {
+    event.stopPropagation();
+    closeList();
+  };
+  // Escape dismisses inspection before the duel gets a chance to cancel a pending attack.
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || (!details.open && !previewCard) || event.target.closest?.("dialog[open]")) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (details.open) closeList();
+    else showPreview(null);
+  }, true);
+  document.addEventListener("pointerdown", (event) => {
+    if (details.open && !details.contains(event.target)) details.open = false;
+  });
+  details.addEventListener("focusout", (event) => {
+    if (event.relatedTarget && !details.contains(event.relatedTarget)) details.open = false;
+  });
+
+  return (cards) => {
+    showPreview(null);
+    list.replaceChildren();
+    details.hidden = cards.length === 0;
+    if (details.hidden) {
+      details.open = false;
+      preview.remove();
+      return;
+    }
+    hand.append(preview);
+    list.append(close);
+    for (const card of cards) {
+      const rule = el("p");
+      rule.append(...card.querySelector(".table-card-original").cloneNode(true).childNodes);
+      list.append(rule);
+    }
+  };
 }
 
 export function bindTableUI(root) {
@@ -124,23 +212,7 @@ export function bindTableUI(root) {
   const cover = root.querySelector("#sd-cover");
   const hand = root.querySelector("#sd-hand");
   const result = root.querySelector("#sd-result");
-  const handRules = el("details", "table-hand-rules");
-  const rules = el("div");
-  handRules.append(el("summary", "", "Hand rules"), rules);
-  handRules.hidden = true;
-  // Keep the disclosure below the projected controls, including when Ride or Fight hides the zones.
-  table.after(handRules);
-
-  function showHandRules(cards) {
-    rules.replaceChildren();
-    handRules.hidden = cards.length === 0;
-    if (handRules.hidden) handRules.open = false;
-    for (const button of cards) {
-      const rule = el("p");
-      rule.append(...button.querySelector(".table-card-original").cloneNode(true).childNodes);
-      rules.append(rule);
-    }
-  }
+  const showHandRules = bindHandRules(table, hand);
 
   function finish() {
     headline.hidden = !root.classList.contains("table-resolved");

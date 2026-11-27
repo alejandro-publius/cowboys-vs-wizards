@@ -62,10 +62,10 @@
 }
 .sd-diorama > header {
   position: absolute;
-  top: 14px;
-  left: 20px;
+  top: 6px;
+  left: 12px;
   z-index: 5;
-  gap: 14px;
+  gap: 3px;
 }
 .sd-diorama > header h1 {
   display: none;
@@ -104,7 +104,64 @@
 }
 .sd-diorama #sd-restart {
   font-size: 12px;
-  opacity: 0.84;
+}
+.sd-diorama #sd-actions button { min-height: 44px; }
+.sd-diorama #sd-restart[data-replay-choice] {
+  color: #ffe3a3;
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+/* Match the brass and stepped silhouettes of the character book's existing pixel icon. */
+.sd-diorama #sd-home {
+  --hud-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath d='M10 1h12v18H10v-2h9V4h-9zM6 5h3v3h6v4H9v3H6v-2H4v-2H2V9h2V7h2z'/%3E%3C/svg%3E");
+}
+.sd-diorama .sd-open-gallery {
+  --hud-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath fill-rule='evenodd' d='M1 2h22v16H1zm2 2v12h18V4z'/%3E%3Cpath d='M15 5h3v3h-3zM4 13h2v-2h2V9h3v2h2v2h2v-2h3v2h2v2H4z'/%3E%3C/svg%3E");
+}
+.sd-diorama #sd-restart {
+  --hud-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath d='M4 2h3v3h2V3h3V2h5v1h3v2h2v3h1v5h-1v3h-3v2h-7v-3h6v-2h2V8h-2V6h-7v2H9v1h4v3H3V2z'/%3E%3C/svg%3E");
+}
+.sd-diorama .table-hand-rules summary {
+  --hud-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath d='M1 5h2v11h6v2H1zm4-3h2v11h2v2H5z'/%3E%3Cpath fill-rule='evenodd' d='M10 1h13v18H10zm3 4v2h7V5zm0 4v2h7V9zm0 4v2h4v-2z'/%3E%3C/svg%3E");
+}
+#showdown.sd-diorama :is(header > .book-launch, header > .sd-open-gallery, #sd-home, #sd-restart:not([data-replay-choice]), .table-hand-rules > summary) {
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  min-height: 44px;
+  height: 44px;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #927651;
+  border-radius: 3px;
+  background: #211e29ee;
+  color: #f2d49b;
+  font-size: 0;
+  line-height: 0;
+  cursor: pointer;
+}
+.sd-diorama :is(#sd-home, .sd-open-gallery, #sd-restart:not([data-replay-choice]), .table-hand-rules > summary)::before {
+  content: "";
+  width: 24px;
+  height: 20px;
+  background-color: currentColor;
+  mask: var(--hud-icon) center / contain no-repeat;
+}
+#showdown.sd-diorama :is(header > button, #sd-restart, .table-hand-rules > summary):is(:hover, :focus-visible) {
+  border-color: #f2d49b;
+  background-color: #42353a;
+}
+#sd-hud-tip {
+  position: fixed;
+  z-index: 12;
+  width: max-content;
+  max-width: min(18rem, calc(100vw - 8px));
+  padding: .35rem .55rem;
+  color: #ffedce;
+  background: #211e29;
+  border: 1px solid #927651;
+  font: 600 14px/1.3 Georgia, serif;
 }
 .sd-diorama
   :is(
@@ -422,6 +479,44 @@
 .table-hand-rules strong {
   display: block;
 }
+.sd-diorama .table-hand-rules {
+  position: absolute;
+  z-index: 7;
+  left: 12px;
+  bottom: clamp(16px, 3.8%, 34px);
+  margin: 0;
+  padding: 0;
+}
+.table-hand-rules summary::-webkit-details-marker { display: none; }
+.table-hand-rule-list, .table-hand-preview {
+  box-sizing: border-box;
+  color: #fff0d4;
+  background: #211e29;
+  border: 1px solid #927651;
+  border-radius: 3px;
+  padding: .7rem .8rem;
+  text-align: left;
+  font: 15px/1.4 Georgia, serif;
+}
+.sd-diorama .table-hand-rule-list {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  width: min(23rem, calc(100vw - 24px));
+  max-height: min(24rem, 65svh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.sd-battle-hud:not(.sd-diorama) #sd-hand { position: relative; }
+#sd-hand > .table-hand-preview {
+  --preview-width: min(17rem, 90vw, 100%);
+  position: absolute;
+  z-index: 6;
+  bottom: 100%;
+  left: clamp(0px, calc(var(--card-center) - var(--preview-width) / 2), calc(100% - var(--preview-width)));
+  width: var(--preview-width);
+}
+.table-hand-preview strong { display: block; }
 
 .table-turn,
 .table-series,
@@ -648,10 +743,7 @@
   .sd-diorama .sd-world {
     height: max(570px, 96svh);
   }
-  /* Reserve one touch-sized row for Hand rules on the challenge's first screen. */
-  .sd-diorama[data-contest-challenge] .sd-world {
-    height: max(570px, min(96svh, calc(100svh - 3rem)));
-  }
+  .sd-diorama .table-hand-rules { bottom: 7px; }
   .sd-diorama #sd-hand {
     width: 97%;
     gap: 2px;

@@ -19,6 +19,7 @@ import {createShowdownSession} from "../match/showdown-session.js";
 import {matchOver, matchWinner, newMatch, nextGame, offersSwap, recordGame, swapPool, withSwap} from "../match/showdown-match.js";
 import {createCuePlayer, cuesFor} from "./showdown-cues.js";
 import {FACTION, movesOf, railHtml, raiseTarget, sheetHtml} from "./showdown-zones.js";
+import {boardZonesHtml} from "./showdown-board-zones.js";
 import {FRAMES} from "./card-frames.js";
 import {lessonSetup} from "./wizard-lesson.js";
 
@@ -180,6 +181,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     $("sd-home").toggleAttribute("data-return-wanted", fromWanted);
     $("sd-home").toggleAttribute("data-return-book", fromBook);
     $("sd-home").textContent = fromBook ? "Back to book" : fromWanted ? "Back to Wanted" : "Back to camp";
+    $("sd-home").setAttribute("aria-label", $("sd-home").textContent);
     lesson = rematch && seats === 1 && seat === "cowboy" && best === 1 ? rematch : null;
     camp = lesson || fromBook || duel.kind === "even-fight" ? null : own ?? (seat === "cowboy" ? campaign : null);
     const progress = solo() ? camp?.progress() : null;
@@ -221,6 +223,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     openingShot = null;
     $("sd-lesson").textContent = duel.lesson;
     $("sd-restart").textContent = "Restart this duel";
+    $("sd-restart").removeAttribute("data-replay-choice");
     playbackIdle = true;
     bootHillOffered = false;
     cues.clear();
@@ -417,6 +420,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     if (openingShot && playbackIdle) {
       $("sd-lesson").textContent = openingShot.report;
       $("sd-restart").textContent = openingShot.replayLabel;
+      $("sd-restart").setAttribute("data-replay-choice", "");
     }
     const shown = "contestChallenge" in root.dataset && Boolean(onBootHill) && campaign?.trailDuel?.()?.battlefield === "boot-hill" && challengeAttacked && playbackIdle;
     $("sd-boot-hill").hidden = !shown;
@@ -433,7 +437,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
       sheet.row, (id) => face(typeOf(id)));
   }
   function openSheet(side) {
-    if (curtain || pick || !session.view().sides[side].discard.length) return;
+    if (curtain || (pick && !$("sd-zone-rails").hasAttribute("data-board-zones")) || !session.view().sides[side].discard.length) return;
     sheet = {side, row: null};
     paintSheet();
     graveyardDialog.setAttribute("aria-labelledby", "sd-graveyard-title");
@@ -454,6 +458,32 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     closeSheet();
   });
   graveyardDialog.addEventListener("close", () => { if (!graveyardDialog.open) closeSheet(); });
+
+  function paintZones(view, illustrated) {
+    const rails = $("sd-zone-rails");
+    const shelf = $("sd-zones");
+    const challenge = "contestChallenge" in root.dataset;
+    const compact = illustrated && !lesson && duel.kind !== "lesson";
+    const shared = !solo() && Boolean(view.result);
+    // The challenge keeps its full shelf hidden. Only its occupied pile buttons enter the sky.
+    if (compact && challenge) {
+      if (rails.parentNode === shelf) shelf.before(rails);
+    } else if (rails.parentNode !== shelf) shelf.prepend(rails);
+    rails.toggleAttribute("data-board-zones", compact);
+    if (compact) {
+      rails.innerHTML = boardZonesHtml(view, {shared, challenge, recent: $("sd-zone-move").textContent});
+    } else {
+      rails.innerHTML = [opponent(view.viewer), view.viewer].map((side) => {
+        const s = view.sides[side];
+        return railHtml(side, s, {own: side === view.viewer, named: side === view.viewer && !shared,
+          raise: raiseTarget(s.discard, deckLists[side]), sprung: moves?.sprung[side], grew: moves?.grew[side]});
+      }).join("");
+      if (pick) for (const pile of rails.querySelectorAll("[data-graveyard]")) pile.disabled = true;
+    }
+  }
+  $("sd-field").querySelector("canvas.sd-world")?.addEventListener("webglcontextlost", () => {
+    if (session && !curtain) paintZones(session.view(), false);
+  });
 
   function render(presentationStart) {
     // The curtain: nothing of either seat's hand or traps stays in the page while the screen is passed.
@@ -584,13 +614,6 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     $("sd-log").innerHTML = lines.map((l, i) => `<li data-line="${i}"${l.cue ? ` data-cue-kind="${l.cue}"` : ""}${l.turn ? ' class="sd-turn"' : ""}>${l.text}</li>`).join("");
     $("sd-log").scrollTop = $("sd-log").scrollHeight;
     for (const side of ["cowboy", "wizard"]) $(`sd-${side}-graveyard`).textContent = view.sides[side].discard.map(name).join(", ") || "empty";
-    // The illustrated hand and action buttons are projected over #sd-table. Keep the zone shelf outside that box.
-    $("sd-zone-rails").innerHTML = [foe, own].map((side) => {
-      const pile = view.sides[side].discard;
-      return railHtml(side, view.sides[side], {own: side === own, named: side === own && !shared,
-        raise: raiseTarget(pile, deckLists[side]), sprung: moves?.sprung[side], grew: moves?.grew[side]});
-    }).join("");
-    if (pick) for (const pile of $("sd-zone-rails").querySelectorAll("[data-graveyard]")) pile.disabled = true;
     const recent = moves?.lines ?? [];
     $("sd-zone-move").textContent = recent.length > 4 ? `(+${recent.length - 4} earlier) ${recent.slice(-4).join(" · ")}` : recent.join(" · ");
     // Keywords from the duel's two public deck lists, so the list never depends on a hidden card.
@@ -599,6 +622,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
       || "<li>No keywords in this duel.</li>";
     cues.paint();
     boardPresentation?.paint(view,presentationStart);
+    paintZones(view, root.classList.contains("sd-diorama"));
     if (lost && !root.hidden) usable("#sd-hand button", "#sd-board [data-own]", "#sd-end", "#sd-result button")?.focus();
   }
 
@@ -694,10 +718,17 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     }
     else if (b.id === "sd-lesson-back") { cues.clear(); boardPresentation?.clear(); onLessonBack(); }
     else if (b.id === "sd-home" || b.id === "sd-camp") { cues.clear(); boardPresentation?.clear(); onHome(); }
+    else return; // An inspector or book owns its own focus.
     if (pickStarted(before)) origin = key;
     if (keyboard) refocus(key, before);
   });
   document.addEventListener("keydown", (event) => {
+    const zoneDetails = event.target.closest?.("[data-board-zone-details][open]");
+    if (event.key === "Escape" && zoneDetails && root.contains(zoneDetails)) {
+      zoneDetails.open = false;
+      zoneDetails.querySelector("summary").focus();
+      return;
+    }
     if (event.key === "Escape" && pick && !sheet && !root.hidden) {
       const [key, before] = [keyOf(document.activeElement), pick];
       pick = null;
