@@ -24,10 +24,40 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 22
-      - run: node experiments/boot-hill-poker/balance-evidence.mjs standard > "$RUNNER_TEMP/poker.json"
-      - uses: ./packages/frontier-kit
+      - name: Record the two Poker policies and a missing-pair control
+        run: |
+          node experiments/boot-hill-poker/balance-evidence.mjs standard > "$RUNNER_TEMP/poker.json"
+          node experiments/boot-hill-poker/balance-evidence.mjs pat > "$RUNNER_TEMP/stand-pat.json"
+          jq 'del(.holdout[-1])' "$RUNNER_TEMP/poker.json" > "$RUNNER_TEMP/missing.json"
+      - id: standard
+        uses: ./packages/frontier-kit
         with:
           plan: experiments/boot-hill-poker/balance-plan.json
           evidence: ${{ runner.temp }}/poker.json
+      - id: stand-pat
+        uses: ./packages/frontier-kit
+        continue-on-error: true
+        with:
+          plan: experiments/boot-hill-poker/balance-plan.json
+          evidence: ${{ runner.temp }}/stand-pat.json
+      - id: missing
+        uses: ./packages/frontier-kit
+        continue-on-error: true
+        with:
+          plan: experiments/boot-hill-poker/balance-plan.json
+          evidence: ${{ runner.temp }}/missing.json
+      - name: Verify the Action differentiated an unbalanced policy from an incomplete input
+        env:
+          STANDARD: ${{ steps.standard.outputs.exit-code }}
+          STAND_PAT: ${{ steps.stand-pat.outputs.exit-code }}
+          MISSING: ${{ steps.missing.outputs.exit-code }}
+          STAND_PAT_OUTCOME: ${{ steps.stand-pat.outcome }}
+          MISSING_OUTCOME: ${{ steps.missing.outcome }}
+        run: |
+          test "$STANDARD" = 0
+          test "$STAND_PAT" = 2
+          test "$STAND_PAT_OUTCOME" = failure
+          test "$MISSING" = 1
+          test "$MISSING_OUTCOME" = failure
       - name: Check rejected candidates and invalid evidence
         run: node --test tests/game/frontier-balance-gate.test.js

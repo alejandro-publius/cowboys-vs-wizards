@@ -7,13 +7,22 @@ inputs:
   evidence:
     description: Path to the caller's recorded pairs in JSON
     required: true
+outputs:
+  exit-code:
+    description: "0 for a pass, 2 for a measured rejection, 1 for invalid evidence"
+    value: ${{ steps.gate.outputs.exit-code }}
 runs:
   using: composite
   steps:
-    - shell: bash
+    - id: gate
+      shell: bash
       working-directory: ${{ github.workspace }}
       env:
         GATE_DIR: ${{ github.action_path }}
         PLAN: ${{ inputs.plan }}
         EVIDENCE: ${{ inputs.evidence }}
-      run: node "$GATE_DIR/balance-gate.mjs" "$PLAN" "$EVIDENCE"
+      run: |
+        status=0
+        node "$GATE_DIR/balance-gate.mjs" "$PLAN" "$EVIDENCE" || status=$?
+        printf 'exit-code=%s\n' "$status" >> "$GITHUB_OUTPUT"
+        exit "$status"
