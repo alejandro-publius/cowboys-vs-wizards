@@ -4,13 +4,15 @@
 
 For the commit and HTML checksum currently served to players, open the [live deployment manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json). The [Pages workflow](../.github/workflows/pages.yml) verifies them after deployment.
 
-The [Saloon table](evidence/showdown-saloon-billy-table.png) shows the player taking over turn nine after Kiro’s proposed shot. The Bone Fence screenshot captures an earlier November 26 build. At that time the root and `/3d/` matched GitHub commit `094af9b` and SHA-256 `d0fdf866772500eafdb418d9ed9b9ec951cae62fb3dcfe7f5cfaed8a87c57190`. [Screenshot](evidence/showdown-bone-fence-094af9b.png) · [Source revision](https://github.com/alejandro-publius/cowboys-vs-wizards/commit/094af9bee94a5f5d545ff24e67c6e0437a420a4c)
+The Saloon opens onto a Wanted board where a new player can scout a real hunt. The fifth campaign victory against a boss opens its earned card in the deck builder. [Campaign screenshots](../README.md#from-a-wanted-poster-to-your-deck) · [Browser check](../scripts/browser-showdown-bounty-journey.mjs)
+
+The archived [Saloon table](evidence/showdown-saloon-billy-table.png) shows the player taking over turn nine after Kiro’s proposed shot. The Bone Fence screenshot captures an earlier November 26 build. At that time the root and `/3d/` matched GitHub commit `094af9b` and SHA-256 `d0fdf866772500eafdb418d9ed9b9ec951cae62fb3dcfe7f5cfaed8a87c57190`. [Screenshot](evidence/showdown-bone-fence-094af9b.png) · [Source revision](https://github.com/alejandro-publius/cowboys-vs-wizards/commit/094af9bee94a5f5d545ff24e67c6e0437a420a4c)
 
 | In the public game | Where to see it |
 | --- | --- |
 | Night Shift Saloon, illustrated Outrider challenge, Boot Hill Trail and Camp | [Play](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Judge walkthrough](JUDGE-GUIDE.md) |
 | Billy’s two shots and your turn-nine choice against Headless Horseman | [Saloon table and recorded review](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) · [100,000-duel seat audit](evidence/billy-seat-audit/README.md) |
-| Two Wanted hunts and the 16-card Cowboy deck builder | Build your deck in Camp. Completing the Trail unlocks Wanted hunts. Both use the same career save. [Camp modes](../tests/match/showdown-modes.test.js) |
+| Two Wanted hunts and the 16-card Cowboy deck builder | Scout from the Saloon on a fresh save. Finish the Trail to hunt the Lantern Wraith or Graveyard Dragon. Five victories against the same boss earn a permanent card. [Wanted board](https://alejandro-publius.github.io/cowboys-vs-wizards/?room=wanted) · [Camp modes](../tests/match/showdown-modes.test.js) |
 | Two blind Ranger decisions, playable from Camp and Kiro Crew | [Replay Room](https://alejandro-publius.github.io/cowboys-vs-wizards/?room=replay) · [Replay checks and Crew evidence](evidence/showdown-replay-room.md) |
 | Even Fight solo, best of three and two players sharing a device | [Play the fixed-deck preview](https://alejandro-publius.github.io/cowboys-vs-wizards/?even-fight=1) · [Rules and paired balance results](design/even-fight-preview.md) |
 | Public graveyards for both factions, including the card Raise would return | Open an occupied graveyard during a duel. On a shared device the pass screen clears both sides’ information. [Board zone checks](../tests/match/showdown-zones.test.js) |
