@@ -22,9 +22,11 @@
       "route": "/cowboys-vs-wizards/?saloon=review",
       "width": 1200,
       "height": 800,
-      "bytes": 343640,
-      "sha256": "db101d34281f93b8c717ca19e1e7bb0500dcb274784257dd64a8d3759c9ca692",
-      "caption": "Night Shift Saloon courtroom: fire Billy at 2 attack vs Kiro's proposed 1 attack and inspect the 100,000-duel gate."
+      "bytes": 478593,
+      "sha256": "e30d46635e519e3767677534840665234bed2dbbee7affecc31aed40dfde04b6",
+      "caption": "Billy’s one-damage shot leaves Bone Wall standing. On turn nine the player chooses whether to attack the Headless Horseman or take cover.",
+      "commit": "ec9b67bbd657dda604c576d43fc12fd771d00fd1",
+      "indexHtmlSha256": "0f327faf3b644fb1e0c9902e3c60482c1f8de87dfbe602b8b6df25151d714977"
     },
     {
       "id": "03-outrider-3d-bone-fence",

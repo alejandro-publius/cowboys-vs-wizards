@@ -34,7 +34,8 @@ export const SHOTS = Object.freeze([
     rel: "?saloon=review",
     waitExpr: "!!document.querySelector('.saloon-billy-table button[data-shot]')",
     settleMs: 900,
-    caption: "Night Shift Saloon courtroom: fire Billy at 2 attack vs Kiro's proposed 1 attack and inspect the 100,000-duel gate.",
+    evalBeforeShot: "document.querySelector('.saloon-billy-table [data-shot=candidate]').click()",
+    caption: "Billy’s one-damage shot leaves Bone Wall standing. On turn nine the player chooses whether to attack the Headless Horseman or take cover.",
   },
   {
     id: "03-outrider-3d-bone-fence",
@@ -271,7 +272,7 @@ async function captureGallery({webDir, outDir}) {
     const manifest = {
       schema: "cvw-devpost-gallery/1",
       commit: buildJson.commit,
-      indexHtmlSha256: buildJson.sha256 ?? null,
+      indexHtmlSha256: buildJson.indexHtmlSha256 ?? null,
       aspectRatio: "3:2",
       width: WIDTH,
       height: HEIGHT,

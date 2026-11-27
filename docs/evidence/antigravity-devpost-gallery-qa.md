@@ -6,10 +6,10 @@
 
 ## Captured Artifacts (`1200x800`, `3:2` PNGs)
 
-Captured from `dist/web/` staged at commit `93db9f3e2f3970ec8b391650199027eac1d252db` (`index.html` SHA-256 `426092c5b9ea30c70afc78935db424b36f4487fcf2b44673323185eae6cc1f41`) with zero console or page errors:
+Images 1, 3, 4 and 5 were captured from `dist/web/` staged at commit `93db9f3e2f3970ec8b391650199027eac1d252db` (`index.html` SHA-256 `426092c5b9ea30c70afc78935db424b36f4487fcf2b44673323185eae6cc1f41`) with zero console or page errors:
 
 1. [`01-title-and-challenge.png`](devpost-gallery/01-title-and-challenge.png) (`1,437,362` bytes)
-2. [`02-saloon-billy-courtroom.png`](devpost-gallery/02-saloon-billy-courtroom.png) (`343,640` bytes)
+2. [`02-saloon-billy-courtroom.png`](devpost-gallery/02-saloon-billy-courtroom.png) (`478,593` bytes). Codex captured the player’s turn-nine decision from `ec9b67bbd657dda604c576d43fc12fd771d00fd1` after firing for one. The manifest records this image’s source commit and staged HTML digest.
 3. [`03-outrider-3d-bone-fence.png`](devpost-gallery/03-outrider-3d-bone-fence.png) (`234,330` bytes)
 4. [`04-even-fight-tactical-duel.png`](devpost-gallery/04-even-fight-tactical-duel.png) (`822,193` bytes)
 5. [`05-boot-hill-poker-frontier-kit.png`](devpost-gallery/05-boot-hill-poker-frontier-kit.png) (`536,378` bytes)
