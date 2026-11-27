@@ -128,6 +128,49 @@
   white-space: nowrap;
   pointer-events: none;
 }
+/* Keep the graybox zone table out of normal flow below the 3D canvas; expose only non-empty
+   graveyard buttons as compact Boot Hill pills in the upper-left sky band, clear of mobile actions. */
+.sd-diorama #sd-zones {
+  position: absolute;
+  left: clamp(12px, 2vw, 20px);
+  top: 50px;
+  z-index: 4;
+  display: flex;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+}
+.sd-diorama #sd-zones .sd-zone-rail,
+.sd-diorama #sd-zones [data-zone="graveyard"]:not(:has(.sd-empty)) {
+  display: contents;
+}
+.sd-diorama #sd-zones :is(.sd-zone-faction, [data-zone="deck"], [data-zone="hand-count"], [data-zone="traps"], [data-zone="graveyard"]:has(.sd-empty)) {
+  display: block;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.sd-diorama #sd-zones button.sd-pile {
+  pointer-events: auto;
+  min-height: 32px;
+  padding: 0.22rem 0.52rem;
+  border: 1px solid #7d6658;
+  border-radius: 3px;
+  background: rgb(22 19 29 / 84%);
+  color: #f3dfbd;
+  font: 600 12px/1.1 Georgia, serif;
+}
+.sd-diorama #sd-zones button.sd-pile .sd-zone-label {
+  display: none;
+}
+.sd-diorama #sd-zones button.sd-pile::before {
+  content: "✝ ";
+  opacity: 0.82;
+}
 /* The Ride or Fight? instruction is drawn over the sky, under the header. Two ids outrank the rule
    above, whose :is() list counts as (2,1,1). It overlays the board rather than pushing it down, so the
    hand, End turn and Continue to Boot Hill stay on the first screen of a phone. */
@@ -422,6 +465,15 @@
 .table-selection,
 .table-forecast-note {
   margin: 0;
+  display: inline-block;
+  padding: 0.16rem 0.58rem;
+  border-radius: 3px;
+  background: rgb(15 18 29 / 72%);
+  font-size: clamp(12px, 1.05vw, 15px);
+}
+.table-selection[hidden],
+.table-forecast-note[hidden] {
+  display: none;
 }
 .table-forecast-note {
   color: #ffde97;

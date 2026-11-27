@@ -11,4 +11,9 @@ fileMatchPattern: ["src/app.js", "src/ui/**", "prototypes/showdown/main.js", "pr
 - The lane duel and its lane-based 3D build are retired; old `?mode=` URLs land on Showdown. Their last source is at commit `ea183ee29dbdcde00105cc4db3ba8bc39eb8f4df`. Do not change lane screens unless the user reopens them.
 - Accept player input only through the controller's accepted actions; the match epoch cancels stale timers.
 - Preserve the approved card art in `assets/`. No new visuals without a plan agreed with the user.
+- **Art-first minimal copy budget (`tests/match/art-first-minimal-ui.test.js`):** Let painted card art, 3D miniatures, and the pixel Saloon stage lead visually while keeping full sentences in `#sd-prompt`, `.table-card-original`, and `aria-*` for screen readers:
+  - `.table-selection` visual cues stay `<= 10` space-separated tokens (never multi-sentence prose over the 3D board).
+  - `.table-card-rule` micro-rules stay `<= 5` tokens (`COMPACT_CARD_RULES`), with zero ellipsis truncation across all 29 Showdown cards.
+  - Empty 3D zones (`0` traps, `0` graveyard, no location) emit no floating text label (`""`); non-empty stacks show compact counts (`11`, `✝ 2`, `▲ 1`) while preserving `data-zone-title` / `data-zone-count` for referee inspection.
+  - Normal 3D Night Shift Saloon entry keeps `.saloon-ledger-drawer` (`Notice board & cast`) collapsed so the stage and playable Billy duel fill the viewport (`?saloon=review` and live/portrait fallbacks open it automatically).
 - Browser checks: run the one script for the changed screen (`scripts/browser-*.mjs`, `scripts/check-match-ui.sh`). Human clarity claims need a playtest.

@@ -6,36 +6,72 @@ export { cardArtwork };
 
 const icons = { troop: "◆", spell: "✦", trap: "△", gear: "◇", location: "▰" };
 
+export const COMPACT_CARD_RULES = Object.freeze({
+  shot: "−1 ●",
+  tie: "Stun",
+  hellfire: "All foes −1 ●",
+  snare: "−2 ●",
+  hex: "Cancel",
+  sixshooter: "+1 ATK",
+  bonearmor: "+2 ●",
+  office: "Lawmen +1",
+  boneyard: "Undead +1",
+});
+
+export function compactSelectionPrompt(raw) {
+  const text = String(raw ?? "").replace(/\s+/g, " ").trim();
+  if (!text || !/^(Choose|A Guard|No enemy|This troop)/.test(text)) return "";
+  if (text.includes("Pay ")) {
+    const clauses = [...text.matchAll(/Pay ([^:]+): ([^.]+)\./g)].map(([, who, out]) =>
+      /no Undead/i.test(out) ? `${who} → none` : `${who} → Raise 1●`
+    );
+    return clauses.length ? clauses.join(" · ") : "Choose tribute";
+  }
+  const trap = text.includes("A face-down trap springs before damage.");
+  if (text.startsWith("This troop cannot attack now.")) return "Rests this turn · Take cover";
+  if (text.startsWith("No enemy troops:")) {
+    return trap ? "Strike Base · Trap set! · or Cover" : "Strike Base · or Take cover";
+  }
+  if (text.startsWith("A Guard troop")) {
+    return trap ? "Guard blocks · Trap set!" : "Guard blocks · Pick Guard";
+  }
+  if (text.includes("Or take cover:")) {
+    return trap ? "Pick target · Trap set! · or Cover" : "Pick target · or Take cover";
+  }
+  if (/tribute/i.test(text)) return "Choose tribute";
+  if (/gear|carry/i.test(text)) return "Pick troop";
+  return "Pick target";
+}
+
 const el = (tag, cls, word) => {
   const node = document.createElement(tag);
   if (cls) node.className = cls;
   if (word) node.textContent = word;
   return node;
 };
-function paintedFace(type) {
+export function paintedFace(type) {
   const card = TYPES[type];
   const face = el("span", "table-card-face");
   face.setAttribute("aria-hidden", "true");
   const title = el("span", "table-card-title", card.name);
   const artwork = cardArtwork(type);
   const notes = el("span", "table-card-copy");
-  const kind = card.kind[0].toUpperCase() + card.kind.slice(1);
-  const category = el("span", "table-card-kind", icons[card.kind] + " " + kind);
   if (card.kind === "troop") {
     const stats = el("span", "table-card-stats");
     stats.append(el("span", "", card.attack + " ATK"), el("span", "", card.health + " ●"));
     const cost = tributes(type + "-1");
-    notes.append(category, stats);
+    notes.append(stats);
     if (cost || card.keys?.length)
       notes.append(
         el(
           "span",
           "table-card-rule",
-          [...(card.keys ?? []).map((key) => KEYWORDS[key][0]), ...(cost ? [cost + " tribute"] : [])].join(" · "),
+          [...(card.keys ?? []).map((key) => KEYWORDS[key][0]), ...(cost ? ["★" + cost] : [])].join(" · "),
         ),
       );
   } else {
-    notes.append(category, el("span", "table-card-rule", EFFECTS[card.effect].text));
+    const shortRule = COMPACT_CARD_RULES[card.effect] ?? EFFECTS[card.effect].text;
+    notes.append(el("span", "table-card-rule", `${icons[card.kind]} ${shortRule}`));
   }
   face.append(title);
   if (artwork) face.append(artwork);
@@ -106,14 +142,11 @@ export function bindTableUI(root) {
         ? "Choose a card"
         : (added?.textContent.split(":")[0] ?? status.textContent.split(" · ")[0]);
       goHome.textContent = "Camp";
-      // A pick's whole instruction: the choice, its trap or Raise hint, and the cover alternative.
-      if (!ended && /^(Choose|A Guard|No enemy|This troop)/.test(originalPrompt.textContent)) {
-        prompt.textContent = originalPrompt.textContent;
-        prompt.hidden = false;
-      } else {
-        prompt.textContent = "";
-        prompt.hidden = true;
-      }
+      // Visual prompt stays minimal so painted board props never collide with multi-sentence prose;
+      // #sd-prompt retains the full sentence for aria-describedby / screen readers.
+      const shortPrompt = ended ? "" : compactSelectionPrompt(originalPrompt.textContent);
+      prompt.textContent = shortPrompt;
+      prompt.hidden = !shortPrompt;
       finish();
     },
     restore() {

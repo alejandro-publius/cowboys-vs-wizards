@@ -53,19 +53,19 @@ export function mountBillyTable(root, table, portrait) {
   const {attackerId, targetId, baseline, candidate, targetOrbsBefore} = BILLY_REPLAY;
   const printed = cardOf(attackerId).attack === baseline.attack ? "Current" : "Recorded";
   root.hidden = false;
-  root.innerHTML = `<h3 id="saloon-shot-title">Billy at Bone Wall</h3>
-    <p>Kiro proposed cutting Billy’s attack from ${baseline.attack} to ${candidate.attack}. Take his shot under either rule.</p>
+  root.setAttribute("aria-label", `Billy at Bone Wall: Kiro proposed cutting Billy's attack from ${baseline.attack} to ${candidate.attack}`);
+  root.innerHTML = `<h3 id="saloon-shot-title">Billy ${baseline.attack} → ${candidate.attack}</h3>
     <div class="saloon-shot-cards">
-      <span data-shot-card="billy"><strong>Billy</strong></span>
+      <span data-shot-card="billy"><strong>Billy</strong><span class="saloon-shot-stat">${baseline.attack} → ${candidate.attack} ATK</span></span>
       <span data-shot-card="wall"><strong>Bone Wall</strong><span class="saloon-shot-orbs"></span></span>
     </div>
     <div class="saloon-shot-actions">
-      <button type="button" data-shot="baseline" aria-pressed="false">Fire for ${baseline.attack} · ${printed}</button>
-      <button type="button" data-shot="candidate" aria-pressed="false">Fire for ${candidate.attack} · Proposed</button>
+      <button type="button" data-shot="baseline" aria-pressed="false">Fire · ${baseline.attack} (${printed})</button>
+      <button type="button" data-shot="candidate" aria-pressed="false">Fire · ${candidate.attack} (Proposed)</button>
     </div>
     <p class="saloon-shot-result" role="status" aria-live="polite" aria-atomic="true"></p>
     <section class="saloon-shot-reply" aria-labelledby="saloon-reply-title" hidden>
-      <h4 id="saloon-reply-title">Take Billy’s next turn</h4><p class="saloon-reply-prompt"></p>
+      <h4 id="saloon-reply-title">Turn 9 · Your call</h4><p class="saloon-reply-prompt"></p>
       <div class="saloon-shot-actions">
         <button type="button" data-reply="attack" aria-pressed="false">Attack</button>
         <button type="button" data-reply="cover" aria-pressed="false">Take cover</button>
@@ -112,7 +112,7 @@ export function mountBillyTable(root, table, portrait) {
     replyResult.textContent = "";
     for (const move of moves) move.setAttribute("aria-pressed", "false");
     if (choice) {
-      reply.querySelector(".saloon-reply-prompt").textContent = `Turn ${choice.turn}. Billy faces ${choice.opponent}. Attack or take cover.`;
+      reply.querySelector(".saloon-reply-prompt").textContent = `vs. ${choice.opponent}`;
       reply.querySelector('[data-reply="attack"]').textContent = `Attack ${choice.opponent}`;
     }
   });

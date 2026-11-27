@@ -183,8 +183,16 @@ function observeSlot(slot, shown, text) {
 // The 3D layer: canvas motion, world labels and, when scene.js offers it, the presented pawns.
 function observeWorld(doc, win, incomplete, shown, text) {
   const canvas = doc.querySelector("canvas.sd-world");
-  const labels = [...doc.querySelectorAll(".sd-world-labels > *")].map((node) => ({
-    ...parseWorldLabel(text(node)), graveSide: node.dataset.graveLabel ?? null, shown: shown(node)}));
+  const labels = [...doc.querySelectorAll(".sd-world-labels > *")].map((node) => {
+    const parsed = node.dataset.zoneTitle
+      ? {
+          title: node.dataset.zoneTitle,
+          count: Number(node.dataset.zoneCount ?? 0),
+          ...(node.dataset.zoneMax ? {of: Number(node.dataset.zoneMax)} : {}),
+        }
+      : parseWorldLabel(text(node));
+    return {...parsed, graveSide: node.dataset.graveLabel ?? null, shown: shown(node)};
+  });
   const world = {present: Boolean(canvas), shown: shown(canvas), motion: canvas?.dataset.motion ?? null, labels, pawns: null};
   // Integration point: scene.js keeps its pawns in a closure-private map. A seat-safe hook would list
   // {side, slot, name} for each presented miniature after synchronize().
