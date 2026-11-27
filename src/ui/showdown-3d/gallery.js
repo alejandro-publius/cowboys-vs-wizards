@@ -114,6 +114,8 @@ export function mountGallery(title, duel, makeAttackStage) {
       </section>
     </div>`;
   document.body.append(dialog);
+  const heading = dialog.querySelector("#sd-gallery-heading");
+  const close = dialog.querySelector(".sd-gallery-close");
   const menu = dialog.querySelector(".sd-gallery-menu");
   const canvas = dialog.querySelector("canvas");
   const still = dialog.querySelector(".sd-gallery-still");
@@ -219,7 +221,7 @@ export function mountGallery(title, duel, makeAttackStage) {
         return button;
       }),
     );
-    const usePortrait = !hasModel || card.kind !== "troop";
+    const usePortrait = dialog.classList.contains("book-replay") || !hasModel || card.kind !== "troop";
     angle.closest("label").hidden = canvas.hidden = usePortrait;
     const art = usePortrait ? portrait(id) : null;
     still.hidden = !art;
@@ -231,7 +233,10 @@ export function mountGallery(title, duel, makeAttackStage) {
   for (const button of dialog.querySelectorAll("[data-step]"))
     button.onclick = () =>
       select(ROSTER[(order.get(active) + Number(button.dataset.step) + ROSTER.length) % ROSTER.length]);
-  dialog.querySelector(".sd-gallery-close").onclick = () => dialog.close();
+  close.onclick = () => dialog.close();
+  dialog.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") event.stopPropagation();
+  });
   reel.onclick = () => {
     if (playingAll) {
       stopReel();
@@ -245,6 +250,9 @@ export function mountGallery(title, duel, makeAttackStage) {
   dialog.addEventListener("close", () => {
     stopReel();
     restoreModel();
+    dialog.classList.remove("book-replay");
+    heading.textContent = "Card gallery";
+    close.textContent = "Close";
   });
   function open() {
     dialog.showModal();
@@ -267,4 +275,15 @@ export function mountGallery(title, duel, makeAttackStage) {
     else anchor.append(button);
   }
   if (new URLSearchParams(location.search).get("gallery") === "1") open();
+  return function openReplay(id) {
+    const moves = attackPreviews(id);
+    if (!moves.length) return;
+    dialog.classList.add("book-replay");
+    heading.textContent = id === "wizard-singularity" ? TYPES[id].name + " · Area preview" : TYPES[id].name;
+    close.textContent = "Back to book";
+    select(id);
+    dialog.showModal();
+    close.focus();
+    watch(id, moves[0][0]);
+  };
 }

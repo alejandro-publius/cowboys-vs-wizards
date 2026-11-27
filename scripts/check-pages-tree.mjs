@@ -42,6 +42,7 @@ import {createServer} from "node:http";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {verifyLive} from "./verify-build-identity.mjs";
+import {checkCharacterBook} from "./check-character-book.mjs";
 import {shuffleDeck, newDeal} from "../experiments/boot-hill-poker/engine.js";
 import {SAVE_KEY} from "../src/game/showdown/campaign-store.js";
 import {newSave, settle} from "../src/game/showdown/progress.js";
@@ -275,6 +276,13 @@ async function browserChecks() {
       assert.deepEqual(bad, [], "no HTTP errors");
       assert.deepEqual(report.errors, [], "no page errors or failed requests");
     };
+
+    for (const width of [390, 1440]) {
+      await send("Emulation.setDeviceMetricsOverride", {width, height: width === 390 ? 844 : 900, deviceScaleFactor: 1, mobile: false});
+      await checkCharacterBook({open, click, press, evaluate, wait});
+    }
+    clean();
+    check("The field guide opens every painted card, shows its rules and tribute cost, and returns from a replay to the selected entry");
 
     const playOpensCamp = async () => {
       await click("#menu-play");

@@ -169,7 +169,7 @@ dialog.character-book::backdrop {
 .character-book .book-portrait {
   position: relative;
   display: grid;
-  align-content: center;
+  align-content: start;
   justify-items: center;
   min-block-size: 42px;
   padding: 3px;
@@ -187,6 +187,12 @@ dialog.character-book::backdrop {
   aspect-ratio: 1;
   object-fit: cover;
   object-position: center 28%;
+}
+
+.character-book .book-caption {
+  padding: 4px 1px 2px;
+  font: 700 .86rem/1.05 var(--book-serif);
+  text-wrap: balance;
 }
 
 .character-book .book-portrait:is([aria-pressed="true"], [aria-selected="true"], [aria-current="true"], .active, .selected, .is-selected) {
@@ -255,28 +261,35 @@ dialog.character-book::backdrop {
 }
 
 .character-book .book-stats {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 4px 10px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 3px 10px;
   margin: 0;
-  padding: 6px 8px;
+  padding: 5px 0;
   border-block: 1px solid #9c784e;
-  font: 700 .8rem/1.3 var(--book-small);
+  font: 700 .83rem/1.2 var(--book-small);
 }
 
 .character-book .book-stats:empty { display: none; }
-.character-book .book-stats span {
-  display: inline-flex;
-  gap: .28em;
-  align-items: center;
+.character-book .book-stats dt {
+  color: var(--faint-ink);
+  font-size: .68rem;
 }
-.character-book .book-stats img,
-.character-book .book-stats svg {
-  inline-size: 1.25em;
-  block-size: 1.25em;
-  object-fit: contain;
+.character-book .book-stats dd { margin: 2px 0 0; }
+
+.character-book .book-watch {
+  margin-top: 8px;
+  min-block-size: 36px;
+  padding: 5px 12px;
+  color: #ffedc3;
+  background: #75452c;
+  border: 1px solid #513724;
+  border-radius: 0;
+}
+.character-book .book-ownership {
+  margin: 7px 0 0;
+  color: var(--faint-ink);
+  font: 700 .72rem/1.3 var(--book-small);
 }
 
 .character-book .book-rule {
@@ -328,8 +341,9 @@ dialog.character-book::backdrop {
   .character-book .book-tabs { gap: 3px; margin-block-end: 7px; }
   .character-book .book-tabs button,
   .character-book .book-pages button { padding: 3px 5px; font-size: .7rem; }
-  .character-book .book-grid { gap: 5px; }
+  .character-book .book-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; }
   .character-book .book-portrait { padding: 1px; font-size: .65rem; }
+  .character-book .book-caption { font-size: .74rem; }
   .character-book .book-pages { padding-block-start: 8px; }
   .character-book .book-close { inset: 5px 5px auto auto; min-block-size: 29px; min-inline-size: 29px; }
   .character-book .book-hero { inline-size: 96%; margin-block-start: 9px; }
@@ -341,7 +355,7 @@ dialog.character-book::backdrop {
     font-size: .67rem;
     overflow-wrap: anywhere;
   }
-  .character-book .book-stats { gap: 4px 7px; padding-inline: 2px; }
+  .character-book .book-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px 14px; }
 }
 
 @media (max-width: 359px) {
@@ -352,6 +366,8 @@ dialog.character-book::backdrop {
     padding: 13px 17px 16px;
   }
   .character-book .book-portrait img { max-block-size: 58px; }
+  .character-book .book-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .character-book .book-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .character-book .book-hero { inline-size: 73%; margin-block-start: 4px; }
 }
 
@@ -382,3 +398,16 @@ dialog.character-book::backdrop {
 }
 .book-launch svg { vertical-align: middle; }
 .book-shelf .book-launch:hover { color: var(--frontier-brass); }
+
+/* The book borrows the gallery's replay stage and returns to the same spread. */
+.sd-gallery.book-replay .sd-gallery-grid { display: block; }
+.sd-gallery.book-replay :is(.sd-gallery-menu, .sd-gallery-info, .sd-gallery-nav, .sd-gallery-reel,
+  .sd-gallery-rule, .sd-gallery-subject, .sd-gallery-story, .sd-gallery-cue) { display: none; }
+.sd-gallery.book-replay .sd-gallery-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.sd-gallery.book-replay .sd-gallery-actions { order: 1; }
+.sd-gallery.book-replay .sd-attack-result { order: 2; }

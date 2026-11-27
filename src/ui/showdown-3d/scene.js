@@ -551,9 +551,9 @@ function build(host, canvas, screen, closeup = false) {
   return { paint, clear, animate, size, setBattlefield, frame: cameraControl.frame, lookAt: cameraControl.lookAt };
 }
 
-export function mountGallery(title, duel) {
-  mountCardGallery(title, duel, (host, canvas, dialog) => build(host, canvas, dialog, true));
-  mountCharacterBook(title, duel);
+export function mountGallery(title, duel, ownedBySide) {
+  const openReplay = mountCardGallery(title, duel, (host, canvas, dialog) => build(host, canvas, dialog, true));
+  mountCharacterBook(title, duel, {ownedBySide, openReplay});
 }
 
 function disposePawn(group) {

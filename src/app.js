@@ -48,7 +48,8 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     !(diorama && query.get("saloon") === "review") && query.get("replay") !== "billy";
   // K-096: a direct practice or Wizard preview visit writes no Cowboy key until the player chooses the Camp
   // (campaign.enter() in toCamp).
-  const campaign = createCampaign(storage, {deferImport: practice !== null || wizard || directRoom || evenFight !== null});
+  const directBook = diorama && query.get("book") === "1";
+  const campaign = createCampaign(storage, {deferImport: practice !== null || wizard || directRoom || directBook || evenFight !== null});
   // The Wizard preview's own save (cvw-showdown-wizard-preview-v1); creating it only reads that key.
   const preview = createWizardPreview(storage);
   // One line per finished solo game for the Camp's playtest report, under the prototype's key.
@@ -145,7 +146,7 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     onHome: () => { showOnly(title); play.focus(); },
     onBuild: openDeck,
     onDuel: startCampDuel});
-  diorama?.mountGallery(title, screen);
+  diorama?.mountGallery(title, screen, {cowboy: campaign.owned, wizard: preview.owned});
   // Play from the title is a fresh entry: forget the control of the last duel so toCamp opens on the Trail instead of
   // restoring that duel's room. Only a return from a duel (home, Back to camp) keeps `last`.
   play.addEventListener("click", () => { last = null; outpost?.close(); toCamp(); });

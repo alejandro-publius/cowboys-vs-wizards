@@ -1,8 +1,10 @@
-import { KEYWORDS, TYPES } from "../../game/showdown/cards.js";
+import { EFFECTS, KEYWORDS, TYPES, tributes } from "../../game/showdown/cards.js";
+import { attackPreviews } from "./attack-preview.js";
 
 const leafSize = 6;
 const factions = { cowboy: "Cowboys", wizard: "Wizards" };
-const roster = Object.entries(TYPES).filter(([, card]) => card.kind === "troop");
+const entries = Object.entries(TYPES);
+const roster = [...entries.filter(([, card]) => card.kind === "troop"), ...entries.filter(([, card]) => card.kind !== "troop")];
 const art = __CVW_BOOK_ART__;
 
 function element(tag, className, text) {
@@ -12,7 +14,7 @@ function element(tag, className, text) {
   return node;
 }
 
-export function mountCharacterBook(title, duel) {
+export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
   const book = element("dialog", "character-book");
   book.setAttribute("aria-labelledby", "field-guide-title");
   book.innerHTML = `
@@ -20,7 +22,7 @@ export function mountCharacterBook(title, duel) {
       <section class="book-index">
         <h2 id="field-guide-title">Field Guide</h2>
         <div class="book-tabs" role="group" aria-label="Faction"></div>
-        <div class="book-grid" role="group" aria-label="Characters"></div>
+        <div class="book-grid" role="group" aria-label="Card index"></div>
         <div class="book-pages">
           <button type="button" aria-label="Previous page">‹</button>
           <span></span>
@@ -32,41 +34,57 @@ export function mountCharacterBook(title, duel) {
         <p class="book-faction"></p>
         <h3 id="book-character-name" aria-live="polite"></h3>
         <figure class="book-hero"><img alt=""></figure>
-        <div class="book-stats" role="group" aria-label="Character stats"></div>
+        <dl class="book-stats" aria-label="Troop stats"></dl>
         <div class="book-rule"></div>
+        <button class="book-watch" type="button" hidden></button>
+        <p class="book-ownership"></p>
       </section>
     </div>`;
   document.body.append(book);
   const find = selector => book.querySelector(selector);
   const grid = find(".book-grid");
+  const watch = find(".book-watch");
   const [back, next] = book.querySelectorAll(".book-pages button");
   let side = "cowboy";
   let page = 0;
+  let selected;
   let opener;
 
   function select(id) {
+    selected = id;
     const card = TYPES[id];
     find(".book-hero img").src = art[id];
     find(".book-entry h3").textContent = card.name;
-    find(".book-faction").textContent = [card.tag, card.rarity].filter(Boolean).join(" · ");
-    const stats = [["⚔", "Attack", card.attack], ["♥", "Life orbs", card.health], ["★", "Stars", card.stars]];
-    find(".book-stats").replaceChildren(...stats.map(([icon, label, value]) => {
-      const stat = element("span", "", icon + " " + value);
-      stat.setAttribute("role", "img");
-      stat.setAttribute("aria-label", label + ": " + value);
-      stat.title = label + ": " + value;
+    find(".book-faction").textContent = [card.tag ?? card.kind, card.rarity].join(" · ");
+    const troop = card.kind === "troop";
+    const stats = troop ? [["Attack", card.attack], ["Orbs", card.health], ["Stars", card.stars], ["Tribute", tributes(id)]] : [];
+    find(".book-stats").replaceChildren(...stats.map(([label, value]) => {
+      const stat = element("div");
+      stat.append(element("dt", "", label), element("dd", "", value));
       return stat;
     }));
     const rules = find(".book-rule");
-    rules.hidden = !card.keys?.length;
-    rules.replaceChildren(...(card.keys ?? []).map(key => {
+    rules.replaceChildren(...(troop ? card.keys.map(key => {
       const [name, rule] = KEYWORDS[key];
       const detail = element("details");
       detail.append(element("summary", "", name), element("p", "", rule));
       return detail;
-    }));
+    }) : [element("p", "", EFFECTS[card.effect].text)]));
+    rules.hidden = !rules.childElementCount;
+
+    const moves = attackPreviews(id);
+    watch.hidden = !moves.length;
+    watch.textContent = id === "wizard-singularity" ? "Watch area preview" : moves[0]?.[1] ?? "";
+    const copies = ownedBySide[card.side](id);
+    find(".book-ownership").textContent = card.side === "wizard" ? `In Wizard deck · ${copies}`
+      : copies === Infinity ? "Unlimited copies" : copies === 0 ? "Uncollected" : `Owned · ${copies}`;
     for (const button of grid.children) button.setAttribute("aria-pressed", String(button.dataset.id === id));
   }
+
+  watch.onclick = () => {
+    watch.focus();
+    openReplay(selected);
+  };
 
   function turn() {
     const entries = roster.filter(([, card]) => card.side === side);
@@ -82,7 +100,7 @@ export function mountCharacterBook(title, duel) {
       const image = element("img");
       image.alt = "";
       image.src = art[id];
-      stamp.append(image);
+      stamp.append(image, element("span", "book-caption", card.name));
       stamp.onclick = () => select(id);
       return stamp;
     }));
@@ -102,10 +120,14 @@ export function mountCharacterBook(title, duel) {
   back.onclick = () => { page--; turn(); if (back.disabled) next.focus(); };
   next.onclick = () => { page++; turn(); if (next.disabled) back.focus(); };
   find(".book-close").onclick = () => book.close();
+  book.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") event.stopPropagation();
+  });
   book.addEventListener("close", () => opener?.focus());
   function open(source) {
     opener = source;
-    if (!grid.childElementCount) turn();
+    if (selected) select(selected);
+    else turn();
     book.showModal();
     find('.book-tabs [aria-pressed="true"]').focus();
   }

@@ -41,7 +41,7 @@ const atlas = diorama ? await readFile(file("assets/cards/showdown-diorama.webp"
 }) : "";
 // Keep the book usable offline in the same single-file build as the illustrated board.
 const bookArt = diorama ? Object.fromEntries(await Promise.all(
-  Object.entries(TYPES).filter(([, card]) => card.kind === "troop").map(async ([id]) =>
+  Object.keys(TYPES).map(async (id) =>
     [id, "data:image/webp;base64," + await readFile(file(`assets/cards/illustrated/${id}.webp`), "base64")])
 )) : {};
 const panorama = diorama ? await artwork("assets/scenes/showdown-storybook.webp") : "";
