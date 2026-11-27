@@ -1,9 +1,12 @@
 import * as T from "three";
 import { LOOK } from "../../../prototypes/showdown/art.js";
 import { EFFECTS, TYPES } from "../../game/showdown/cards.js";
+import { opponent } from "../../game/showdown/rules.js";
 import { makeCardModel } from "./card-models.js";
 import { PixelRenderer } from "./graphics/pixel-renderer.js";
 import { attackExample, attackPreviews } from "./attack-preview.js";
+import { presentationBeats } from "./event-positions.js";
+import { replayCards } from "./replay-cards.js";
 
 export const ROSTER = Object.keys(TYPES);
 const order = new Map(ROSTER.map((id, i) => [id, i]));
@@ -105,6 +108,7 @@ export function mountGallery(title, duel, makeAttackStage) {
         <div class="sd-gallery-attack" hidden>
           <canvas class="sd-attack-world" aria-label="Attack replay. Drag to orbit and scroll to zoom." tabindex="0" hidden></canvas>
           <div class="sd-world-labels" aria-hidden="true"></div>
+          <div class="sd-replay-cards" hidden></div>
         </div>
         <p class="sd-attack-result" role="status" hidden></p>
         <p class="sd-gallery-rule"></p>
@@ -122,6 +126,7 @@ export function mountGallery(title, duel, makeAttackStage) {
   const attackHost = dialog.querySelector(".sd-gallery-attack");
   const attackCanvas = attackHost.querySelector("canvas");
   const attackResult = dialog.querySelector(".sd-attack-result");
+  const cards = dialog.querySelector(".sd-replay-cards");
   const attackMoves = dialog.querySelector(".sd-gallery-moves");
   const reel = dialog.querySelector(".sd-gallery-reel");
   const choices = new Map();
@@ -143,6 +148,9 @@ export function mountGallery(title, duel, makeAttackStage) {
   }
   let preview,
     battle,
+    replaySource,
+    contactTimer,
+    battleUnavailable = false,
     reelTimer,
     playingAll = false,
     hasModel = true,
@@ -153,27 +161,17 @@ export function mountGallery(title, duel, makeAttackStage) {
     reel.textContent = "Watch all troops";
   }
   function restoreModel() {
+    window.clearTimeout(contactTimer);
+    cards.hidden = true;
     battle?.clear();
     attackHost.hidden = attackResult.hidden = true;
     angle.closest("label").hidden = canvas.hidden = !hasModel || TYPES[active].kind !== "troop";
     still.hidden = !still.firstChild;
   }
-  function watch(id, mode, finished) {
-    const example = attackExample(id, mode);
-    if (!example) return;
-    attackResult.hidden = false;
-    attackResult.textContent = example.summary;
-    try {
-      battle ??= makeAttackStage(attackHost, attackCanvas, dialog);
-    } catch {
-      stopReel();
-      return;
-    }
-    canvas.hidden = still.hidden = angle.closest("label").hidden = true;
-    attackHost.hidden = false;
-    attackCanvas.dataset.cardArt = id;
-    attackCanvas.dataset.previewMode = mode;
-    const zoom = id === "wizard-singularity" ? 1.34 : mode === "ride" ? 1.17 : 1.63;
+  function animateBattle(id, mode, example, finished) {
+    battle ??= makeAttackStage(attackHost, attackCanvas, dialog);
+    const troopZoom = replaySource ? 2.05 : 1.63;
+    const zoom = id === "wizard-singularity" ? 1.34 : mode === "ride" ? 1.17 : troopZoom;
     battle.frame(zoom);
     attackHost.dataset.spell = id === "wizard-singularity" ? "singularity" : id === "wizard-hellfire" ? "hellfire" : "";
     if (id === "wizard-singularity") {
@@ -184,6 +182,104 @@ export function mountGallery(title, duel, makeAttackStage) {
     battle.paint(example.end, example.before);
     battle.animate(example.trace, finished);
   }
+  function playPaintings(id, example, pieces, reduced, finished) {
+    battle?.clear();
+    attackCanvas.hidden = true;
+    cards.hidden = false;
+    cards.dataset.state = "before";
+    const labels = [];
+    let baseOrbs;
+    cards.replaceChildren(...pieces.map(piece => {
+      const figure = document.createElement("figure");
+      if (piece.id) {
+        const img = document.createElement("img");
+        img.alt = "";
+        img.src = __CVW_BOOK_ART__[piece.id];
+        figure.append(img);
+      } else {
+        baseOrbs = document.createElement("span");
+        baseOrbs.className = "sd-orbs";
+        baseOrbs.setAttribute("aria-hidden", "true");
+        figure.append(baseOrbs);
+      }
+      const caption = document.createElement("figcaption");
+      const state = document.createElement("strong");
+      caption.append(piece.name, state);
+      figure.append(caption);
+      labels.push(state);
+      return figure;
+    }));
+    function display(next, view) {
+      if (baseOrbs) {
+        const {base, baseMax} = view.sides[opponent(example.before.active)];
+        baseOrbs.textContent = "●".repeat(base) + "○".repeat(baseMax - base);
+      }
+      next.forEach(({before, after}, i) => {
+        labels[i].textContent = before === after ? after : before + " → " + after;
+        labels[i].closest("figure").classList.toggle("defeated", after === "Defeated");
+      });
+    }
+    function end() {
+      cards.dataset.state = "after";
+      display(pieces, example.end);
+      finished();
+    }
+    if (reduced) return end();
+    display(replayCards(id, example, example.before).pieces, example.before);
+    const beats = presentationBeats(example.trace);
+    function contact(i) {
+      const beat = beats[i];
+      if (!beat) return end();
+      contactTimer = window.setTimeout(() => {
+        display(replayCards(id, example, beat.hit).pieces, beat.hit);
+        contactTimer = window.setTimeout(() => contact(i + 1), beat.duration - beat.contact);
+      }, beat.contact);
+    }
+    contact(0);
+  }
+  function watch(id, mode, finished) {
+    const example = attackExample(id, mode);
+    if (!example) return;
+    window.clearTimeout(contactTimer);
+    attackResult.hidden = false;
+    const direct = dialog.classList.contains("book-replay");
+    const snapshot = direct ? replayCards(id, example) : null;
+    if (direct) {
+      const [actor, ...targets] = snapshot.pieces;
+      const target = targets.length === 1 ? targets[0].name : targets.length + " targets";
+      attackResult.textContent = actor.name + " vs. " + target;
+      for (const button of attackMoves.children) {
+        const selected = button.dataset.attackMode === mode;
+        button.setAttribute("aria-pressed", String(selected));
+        button.textContent = (selected ? "Replay " : "Play ") + button.dataset.moveName;
+      }
+    } else attackResult.textContent = example.summary;
+    const complete = () => {
+      if (direct) attackResult.textContent = snapshot.outcome;
+      finished?.();
+    };
+    const reduced = direct && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    attackCanvas.dataset.cardArt = id;
+    attackCanvas.dataset.previewMode = mode;
+    cards.hidden = true;
+    attackHost.hidden = false;
+    if (!reduced && !(direct && battleUnavailable)) {
+      try {
+        animateBattle(id, mode, example, complete);
+        canvas.hidden = still.hidden = angle.closest("label").hidden = true;
+        return;
+      } catch {
+        if (!direct) {
+          attackHost.hidden = true;
+          stopReel();
+          return;
+        }
+        battleUnavailable = true;
+      }
+    }
+    canvas.hidden = still.hidden = angle.closest("label").hidden = true;
+    playPaintings(id, example, snapshot.pieces, reduced, complete);
+  }
   function playReel(index) {
     if (!playingAll || !dialog.open) return;
     if (index === troopRoster.length) return stopReel();
@@ -192,6 +288,20 @@ export function mountGallery(title, duel, makeAttackStage) {
     watch(id, attackPreviews(id)[0][0], () => {
       if (playingAll) reelTimer = window.setTimeout(() => playReel(index + 1), 460);
     });
+  }
+  function setMoves(id) {
+    attackMoves.replaceChildren(...attackPreviews(id).map(([mode, label]) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.dataset.attackMode = mode;
+      button.dataset.moveName = label.replace(/^Watch /, "").replace(/^Against /, "vs. ");
+      button.textContent = label;
+      button.onclick = () => {
+        stopReel();
+        watch(id, mode);
+      };
+      return button;
+    }));
   }
   function select(id, fromReel = false) {
     if (!fromReel) stopReel();
@@ -208,20 +318,8 @@ export function mountGallery(title, duel, makeAttackStage) {
     dialog.querySelector(".sd-gallery-subject").textContent = LOOK[id].subject;
     dialog.querySelector(".sd-gallery-story").textContent = LOOK[id].scene;
     dialog.querySelector(".sd-gallery-cue").textContent = LOOK[id].cue;
-    attackMoves.replaceChildren(
-      ...attackPreviews(id).map(([mode, label]) => {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.dataset.attackMode = mode;
-        button.textContent = label;
-        button.onclick = () => {
-          stopReel();
-          watch(id, mode);
-        };
-        return button;
-      }),
-    );
-    const usePortrait = dialog.classList.contains("book-replay") || !hasModel || card.kind !== "troop";
+    setMoves(id);
+    const usePortrait = !hasModel || card.kind !== "troop";
     angle.closest("label").hidden = canvas.hidden = usePortrait;
     const art = usePortrait ? portrait(id) : null;
     still.hidden = !art;
@@ -248,11 +346,16 @@ export function mountGallery(title, duel, makeAttackStage) {
     playReel(0);
   };
   dialog.addEventListener("close", () => {
+    if (dialog.open) return;
     stopReel();
     restoreModel();
     dialog.classList.remove("book-replay");
     heading.textContent = "Card gallery";
     close.textContent = "Close";
+    attackCanvas.tabIndex = 0;
+    attackCanvas.removeAttribute("aria-hidden");
+    replaySource?.focus({preventScroll: true});
+    replaySource = null;
   });
   function open() {
     dialog.showModal();
@@ -278,12 +381,16 @@ export function mountGallery(title, duel, makeAttackStage) {
   return function openReplay(id) {
     const moves = attackPreviews(id);
     if (!moves.length) return;
+    replaySource = document.activeElement;
     dialog.classList.add("book-replay");
     heading.textContent = id === "wizard-singularity" ? TYPES[id].name + " · Area preview" : TYPES[id].name;
     close.textContent = "Back to book";
-    select(id);
+    stopReel();
+    setMoves(id);
+    attackCanvas.removeAttribute("tabindex");
+    attackCanvas.setAttribute("aria-hidden", "true");
     dialog.showModal();
-    close.focus();
+    attackMoves.firstElementChild.focus({preventScroll: true});
     watch(id, moves[0][0]);
   };
 }

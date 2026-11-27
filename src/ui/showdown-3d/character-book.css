@@ -460,14 +460,98 @@ dialog.character-book::backdrop {
 .book-shelf .book-launch:hover { color: var(--frontier-brass); }
 
 /* The book borrows the gallery's replay stage and returns to the same spread. */
-.sd-gallery.book-replay .sd-gallery-grid { display: block; }
+:root:has(.sd-gallery.book-replay[open]) { overflow: hidden; }
+.sd-gallery.book-replay[open] {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: .65rem;
+  width: min(52rem, calc(100% - 1rem));
+  height: min(38rem, calc(100dvh - 1rem));
+}
+.sd-gallery.book-replay .sd-gallery-grid { display: block; min-height: 0; }
+.sd-gallery.book-replay .sd-gallery-main {
+  height: 100%;
+  grid-template-rows: minmax(0, 1fr) auto auto;
+}
 .sd-gallery.book-replay :is(.sd-gallery-menu, .sd-gallery-info, .sd-gallery-nav, .sd-gallery-reel,
-  .sd-gallery-rule, .sd-gallery-subject, .sd-gallery-story, .sd-gallery-cue) { display: none; }
+  .sd-gallery-model, .sd-gallery-angle, .sd-gallery-still, .sd-gallery-rule,
+  .sd-gallery-subject, .sd-gallery-story, .sd-gallery-cue) { display: none; }
 .sd-gallery.book-replay .sd-gallery-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  margin: 0;
+}
+.sd-gallery.book-replay .sd-gallery-head h2 {
+  font-size: clamp(1.25rem, 3.8vw, 1.8rem);
+  line-height: 1.08;
+}
+.sd-gallery.book-replay .sd-gallery-close { flex-shrink: 0; }
+.sd-gallery.book-replay .sd-gallery-attack { border: 1px solid #76605e; }
+.sd-gallery.book-replay .sd-attack-world {
+  height: 100%;
+  aspect-ratio: auto;
+  pointer-events: none;
+}
+.sd-gallery.book-replay .sd-world-labels span:not([data-piece-label], [data-vortex-orbs]) { display: none; }
+.sd-gallery.book-replay .sd-replay-cards {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  height: 100%;
+  gap: clamp(4px, 1.5vw, 1rem);
+  padding: clamp(5px, 1.8vw, 1.3rem);
+  background: rgb(19 24 36 / 68%);
+}
+.sd-gallery.book-replay figure {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 4px;
+  margin: 0;
+  text-align: center;
+}
+.sd-gallery.book-replay figure img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.sd-gallery.book-replay figure.defeated img { filter: grayscale(1); opacity: .45; }
+.sd-gallery.book-replay figure > .sd-orbs {
+  align-self: center;
+  color: var(--frontier-brass);
+  font-size: clamp(1rem, 3.5vw, 2rem);
+}
+.sd-gallery.book-replay figcaption {
+  background: #201b24;
+  padding: .2rem;
+  color: var(--frontier-light);
+  font: 700 1rem/1.15 var(--frontier-display);
+  overflow-wrap: anywhere;
+}
+.sd-gallery.book-replay figcaption:only-child {
+  grid-row: 1 / -1;
+  align-self: center;
+}
+.sd-gallery.book-replay figcaption strong {
+  display: block;
+  color: var(--frontier-brass);
+  font: 600 .85rem/1.25 system-ui, sans-serif;
 }
 .sd-gallery.book-replay .sd-gallery-actions { order: 1; }
-.sd-gallery.book-replay .sd-attack-result { order: 2; }
+.sd-gallery.book-replay .sd-gallery-moves button {
+  min-height: 44px;
+  color: #f4dec0;
+  background: #292b3c;
+}
+.sd-gallery.book-replay .sd-gallery-moves button[aria-pressed="true"] {
+  color: #31232c;
+  background: #e4bd87;
+}
+.sd-gallery.book-replay .sd-attack-result { order: 2; line-height: 1.3; }
+
+@media (max-width: 450px) {
+  .sd-gallery.book-replay .sd-replay-cards:has(figure:nth-child(4)) {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+}
