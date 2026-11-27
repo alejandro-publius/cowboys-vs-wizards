@@ -207,10 +207,8 @@
   text-shadow: 1px 2px 2px #13151e;
   font: 600 15px/1.35 Georgia, serif;
 }
-/* On a short landscape screen (740 x 375) the board fills the view and the action row under it starts below
-   the fold. Once the attack has played, Continue to Boot Hill is drawn under the instruction instead, over the
-   sky and pinned to the viewport, so the next step needs no scroll. Boot Hill has no challenge marker and keeps
-   its own row. The underline is the title screen's text-button mark. */
+/* Keep the challenge handoff in view on short landscape screens. The compact board below
+   docks it with the rest of the actions when the full hand fits beneath the field. */
 @media (orientation: landscape) and (max-height: 570px) {
   /* A vertical swipe across the board reaches the hand below it. Horizontal drags still orbit. */
   .sd-diorama #sd-field .sd-world { touch-action: pan-y; }
@@ -787,6 +785,49 @@
   }
   .sd-diorama > header {
     left: 12px;
+  }
+}
+/* Short landscape gives the hand its own strip below the playfield. The canvas, its
+   projected controls and world labels share the same dimensions through the camera resize. */
+@media (orientation: landscape) and (min-width: 550px) and (max-width: 799px) and (max-height: 480px) {
+  .sd-diorama #sd-table {
+    min-height: 100svh;
+    background: #142033;
+  }
+  .sd-diorama #sd-field .sd-world {
+    height: calc(100svh - 106px);
+    touch-action: none;
+  }
+  .sd-diorama #sd-hand {
+    left: 46%;
+    bottom: 15px;
+    width: calc(100% - 210px);
+    gap: 4px;
+  }
+  .sd-diorama #sd-hand .sd-card {
+    flex: 0 1 66px;
+    min-width: 44px;
+    max-width: 66px;
+  }
+  .sd-diorama #sd-actions {
+    right: 8px;
+    bottom: 4px;
+    display: grid;
+    gap: 0;
+  }
+  #showdown.sd-diorama[data-contest-challenge] #sd-boot-hill {
+    position: absolute;
+    top: auto;
+    right: 0;
+    bottom: 100%;
+    left: auto;
+    translate: none;
+    width: 136px;
+  }
+  .sd-diorama .table-pick,
+  .sd-diorama .table-pick:has(.table-compare:not([hidden])) {
+    bottom: 0;
+    width: calc(100% - 210px);
   }
 }
 @media (prefers-reduced-motion: reduce) {
