@@ -48,9 +48,9 @@ const TEMPLATE = `
   <section class="camp-stop-list" aria-labelledby="camp-bounties-title"><h2 id="camp-bounties-title">Wanted</h2><ol id="camp-bounties" class="sd-row"></ol>
     <aside class="bounty-scout" aria-labelledby="bounty-scout-title">
       <h3 id="bounty-scout-title">The Ranger’s scouting report</h3>
-      <p>On the fifth Dragon hunt, your Ranger faces the Dragon and a Jack-o’-Lantern. Pick a target on two recorded deals, then play either turn yourself.</p>
+      <p>Shoot the Dragon or pick off its Jack-o’-Lantern escort? Take the Ranger’s place on two deals from the fifth hunt.</p>
       <button type="button" id="camp-scout-dragon" aria-describedby="bounty-scout-note">Scout the Graveyard Dragon</button>
-      <small id="bounty-scout-note">Practice is open before the Trail. Only real hunt wins count toward capture.</small>
+      <small id="bounty-scout-note">Scout anytime. Wins on the hunt count toward capture.</small>
     </aside></section>
   <section class="camp-stop-list" aria-labelledby="camp-open-title"><h2 id="camp-open-title">Open range</h2><div id="camp-open" class="sd-row"></div></section>
   <section class="camp-stop-list" id="camp-collection-room" aria-label="Your cards"><h2>Your cards</h2><p id="camp-collection" class="sd-note"></p>

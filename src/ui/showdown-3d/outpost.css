@@ -83,6 +83,18 @@ body:has(.camp-outpost[open], .builder-inspect[open]) {
   box-shadow: 0 3px #101a29;
 }
 .outpost-wanted .bounty-scout h3 { color: var(--frontier-brass); }
+#showdown-camp .outpost-wanted #camp-scout-dragon {
+  min-height: 44px;
+  padding: 0.45rem 1rem;
+  color: #2b201a;
+  background: #f1d29a;
+  border: 1px solid #fce6b9;
+  border-radius: 0;
+  box-shadow: 0 3px #987340;
+  font: 700 1rem/1.2 var(--frontier-display);
+}
+#showdown-camp .outpost-wanted #camp-scout-dragon:hover { background: #ffe7b7; }
+#showdown-camp .outpost-wanted #camp-scout-dragon:focus-visible { outline: 3px solid white; outline-offset: 3px; }
 #showdown-camp .outpost-stone .sd-tile {
   position: relative;
   display: flex;
@@ -483,7 +495,7 @@ body:has(.camp-outpost[open], .builder-inspect[open]) {
   z-index: -1;
   inset: 0 0 0 50%;
   background: linear-gradient(90deg, #e6c68c, transparent 20%),
-    var(--saloon-dragon-art, none) 54% 35% / cover no-repeat;
+    var(--saloon-dragon-art, none) 54% 18% / cover no-repeat;
 }
 .outpost-wanted [data-portrait="wizard-lantern-wraith"],
 .outpost-wanted [data-portrait="wizard-dragon"] {
@@ -494,7 +506,7 @@ body:has(.camp-outpost[open], .builder-inspect[open]) {
 .outpost-wanted [data-portrait="wizard-dragon"] { background-image: var(--saloon-dragon-art); }
 @media (max-width: 540px) {
   .saloon-bounty-copy { width: 62%; }
-  .saloon-bounty-bill::before { left: 58%; background-position: 45% 35%; }
+  .saloon-bounty-bill::before { left: 58%; background-position: 45% 24%; }
 }
 @media (max-height: 500px) {
   .saloon-bounty-copy { width: auto; padding: 0.25rem 1.1rem; }
