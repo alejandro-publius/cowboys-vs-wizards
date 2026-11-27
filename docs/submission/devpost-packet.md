@@ -114,6 +114,8 @@ Official rules: https://kiroween.devpost.com/rules. Deadlines: credit requests b
 
 ## URLs
 
+[Devpost gallery images, captions and alt text](devpost-gallery.md) follow the same Dragon from scouting to a saved deck.
+
 - Game: https://alejandro-publius.github.io/cowboys-vs-wizards/
 - Build manifest: https://alejandro-publius.github.io/cowboys-vs-wizards/build.json
 - Source: https://github.com/alejandro-publius/cowboys-vs-wizards
