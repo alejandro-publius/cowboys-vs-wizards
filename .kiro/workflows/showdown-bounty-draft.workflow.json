@@ -13,7 +13,7 @@
       "type": "step",
       "id": "draft-bounty-package",
       "agent": "showdown-bounty-drafter",
-      "prompt": "Prepare summary:\n{{previous.output}}\nInspect the target folder under tasks/showdown-bounties/ named in the prepare output. Ensure bounty.json, reward.md, portrait-brief.md, and model-brief.md satisfy all Showdown Wanted bounty rules (16-card Wizard escort deck within rarity caps, 5 progressive hunts, existing boss and Cowboy reward catalog cards, and explicit human gameplay approval gates before any art or Tripo model work). Write only under tasks/showdown-bounties/. Report completion with send_message to sessionId \"parent\" and severity \"success\"."
+      "prompt": "Prepare summary:\n{{previous.output}}\nUse the targetDir and design brief in the prepare output. The four draft files may be new. Ensure bounty.json, reward.md, portrait-brief.md, and model-brief.md satisfy all Showdown Wanted bounty rules (16-card Wizard escort deck within rarity caps, 5 progressive hunts, existing boss and Cowboy reward catalog cards, and explicit human gameplay approval gates before any art or Tripo model work). Write only under tasks/showdown-bounties/. Report completion with send_message to sessionId \"parent\" and severity \"success\"."
     },
     {
       "type": "step",

@@ -14,6 +14,12 @@
 3. **Dec 4 Scorecard `agents` Target (`SBP-8`):**
    - `node scripts/scorecard.mjs --offline` now measures **`8` active protected writer agents** (`target >= 8` -> **`PASS`**) with `0` unprotected writers and `0` shared write paths.
 
+## Codex integration review
+
+Codex ran the local verifier on the Bone Marshal example. With the post-Trail deck and seeds 0–23, the Cowboy won 23, 23, 23, 23 and 22 games across the five hunts. The scorecard and agent checks inspect configuration. The author and reviewer hook tests used local events. These checks establish deterministic winnability for this cohort. Human opponents have yet to play the draft.
+
+The sample stays outside Camp. Mounted Billy is a Rare card a player can already own twice. Before release, the reward needs to handle players at the collection cap so their saves still load. See the [reward brief](../../tasks/showdown-bounties/bone-marshal/reward.md).
+
 ## Reproduce
 
 ```sh

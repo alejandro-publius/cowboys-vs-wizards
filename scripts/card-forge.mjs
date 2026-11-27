@@ -258,7 +258,7 @@ function linkFree(root, rel) {
   return null;
 }
 
-function inputPaths(input) {
+export function inputPaths(input) {
   if (!plainObject(input)) return null;
   const paths = [];
   for (const key of ["path", "file_path", "filePath"]) if (input[key] !== undefined) paths.push(input[key]);
@@ -276,7 +276,7 @@ function inputPaths(input) {
   return paths;
 }
 
-function messageDecision(input) {
+export function messageDecision(input) {
   if (!plainObject(input)) return deny("send_message input is not an object");
   for (const key of Object.keys(input)) if (!MESSAGE_FIELDS.includes(key)) return deny(`send_message field ${key} is not allowed`);
   if (input.sessionIds !== undefined && input.sessionIds !== null) return deny("send_message may not list sessionIds");
@@ -339,10 +339,10 @@ function writeDecision(input, cwdRaw, root) {
 // Native Kiro sends {command, description, cwd, run_in_background, timeout}. The commands are
 // relative, so they may run only in this script's own project: the hook must fire there, and the
 // shell cwd, when given, must be "." or that root spelled exactly as the hook cwd or its real path.
-function shellDecision(input, cwdRaw, root) {
+export function shellDecision(input, cwdRaw, root, commands = REVIEWER_COMMANDS) {
   if (!plainObject(input)) return deny("shell input is not an object");
   for (const key of Object.keys(input)) if (!SHELL_FIELDS.includes(key)) return deny(`shell input field ${key} is not allowed`);
-  if (!REVIEWER_COMMANDS.includes(input.command)) return deny(`command ${JSON.stringify(input.command)} is not on the reviewer allowlist (${REVIEWER_COMMANDS.join(" | ")})`);
+  if (!commands.includes(input.command)) return deny(`command ${JSON.stringify(input.command)} is not on the reviewer allowlist (${commands.join(" | ")})`);
   for (const key of SHELL_TEXT_FIELDS) if (input[key] !== undefined && typeof input[key] !== "string") return deny(`shell ${key} must be text`);
   for (const key of SHELL_TIMEOUT_FIELDS) {
     const value = input[key];

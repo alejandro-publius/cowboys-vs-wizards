@@ -81,16 +81,24 @@ export async function verifyRepairAgentFence(candidate, task) {
   } catch {
     throw new Error(`Missing or invalid Kiro agent profile for ${task.agent}.`);
   }
-  const tools = Array.isArray(profile?.tools) ? profile.tools : [];
-  if (!tools.some((t) => t === "write" || t === "fs_write") ||
-      tools.some((t) => t === "shell" || t === "execute_bash" || t === "*" || t === "@builtin")) {
-    throw new Error(`Repair agent ${task.agent} must allow writes without shell tools.`);
+  // These two repair agents need only the repository's read/write profile.
+  // Review any new profile feature before the preview runner can dispatch it.
+  const fields = ["name", "description", "prompt", "tools", "permissions", "includeMcpJson"];
+  if (profile?.name !== task.agent || Object.keys(profile).some((key) => !fields.includes(key)) ||
+      (Object.hasOwn(profile, "includeMcpJson") && profile.includeMcpJson !== false)) {
+    throw new Error(`Unreviewed repair agent profile configuration for ${task.agent}.`);
   }
-  const rules = Array.isArray(profile?.permissions?.rules) ? profile.permissions.rules : [];
-  const allowedWrites = rules
-    .filter((r) => r?.capability === "fs_write" && r?.effect === "allow")
-    .flatMap((r) => Array.isArray(r.match) ? r.match : []);
-  if (allowedWrites.length !== 1 || allowedWrites[0] !== task.file) {
+  const tools = profile.tools;
+  if (!Array.isArray(tools) || !tools.some((tool) => tool === "write" || tool === "fs_write") ||
+      tools.some((tool) => !["read", "write", "fs_read", "fs_write"].includes(tool))) {
+    throw new Error(`Repair agent ${task.agent} must use only file read and write tools.`);
+  }
+  const rules = profile.permissions?.rules;
+  const rule = rules?.[0];
+  if (!Array.isArray(rules) || rules.length !== 1 || Object.keys(profile.permissions).length !== 1 ||
+      rule?.capability !== "fs_write" || rule.effect !== "allow" ||
+      Object.keys(rule).length !== 3 || !Array.isArray(rule.match) ||
+      rule.match.length !== 1 || rule.match[0] !== task.file) {
     throw new Error(`Repair agent ${task.agent} fs_write allowlist must be [${task.file}].`);
   }
 }

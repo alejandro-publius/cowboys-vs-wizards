@@ -5,7 +5,7 @@
   "reward": "cowboy-mounted-billy",
   "entrance": "lands",
   "lands": 4,
-  "lesson": "Wanted: the Bone Marshal. He rides onto the field on the Wizards' second turn and bypasses troops to strike your Base unless you race him down or catch his charge in a Bear Trap.",
+  "lesson": "Wanted: the Bone Marshal. He can land from turn 4 when a Wizard slot is free. A Guard stops him from riding past your troops for 1 Base orb. A Bear Trap takes 2 of his orbs before his attack.",
   "hunts": [
     {"level": 1, "base": 4, "orbs": 3},
     {"level": 1, "base": 4, "orbs": 4},

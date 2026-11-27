@@ -13,6 +13,7 @@
    - Unlike the retired lane-duel `bounty-designer` (`tasks/bounties/**`), Showdown Wanted bosses follow `BOUNTIES` in `src/game/showdown/progress.js` (5 progressive hunts with a 16-card Wizard escort deck and `"board"` or `"lands"` boss arrival).
    - **Author (`showdown-bounty-drafter`):** `tools: ["read", "write"]`, `fs_write` fenced to `tasks/showdown-bounties/**`, guarded by `PreToolUse` (`node scripts/verify-showdown-bounty-draft.mjs guard`).
    - **Independent Verifier (`showdown-bounty-reviewer`):** read-only (`fs_write` denied on `**`), allowed only to run `node scripts/verify-showdown-bounty-draft.mjs prepare` and `node scripts/verify-showdown-bounty-draft.mjs verify`.
+   - To select a new draft, the operator can put `{"id":"<bounty-id>","brief":"<design request>"}` in `tasks/showdown-bounties/active-brief.json`. Keep the request in place through verification. With no request the workflow checks the tracked Bone Marshal example. The author hook pins writes to the four draft files under the selected ID.
    - **Workflow (`.kiro/workflows/showdown-bounty-draft.workflow.json`):** orchestrates `prepare` -> `showdown-bounty-drafter` -> `verify` without touching live `src/game/` files or invoking asset generation before human gameplay approval.
 
 3. **Tracked Reference Package (`tasks/showdown-bounties/bone-marshal/`):**
