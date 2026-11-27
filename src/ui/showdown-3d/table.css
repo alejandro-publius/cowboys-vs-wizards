@@ -800,3 +800,24 @@
     bottom: 168px;
   }
 }
+
+.table-card-face .sd-card-art { position: relative; }
+.table-card-face .sd-card-art :is(.table-card-kind, [data-stat="tribute"]) {
+  position: absolute;
+  padding: 1px 3px;
+  background: var(--ink);
+  color: #fff0cc;
+  font: 700 clamp(8px, .7vw, 11px)/1.1 system-ui, sans-serif;
+}
+.table-card-face .sd-card-art .table-card-kind { left: 0; bottom: 0; }
+.table-card-face .sd-card-art [data-stat="tribute"] {
+  right: 0;
+  top: 0;
+  border-radius: 0 0 0 3px;
+  color: #ffda88;
+}
+.table-card-stats .table-card-badge {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  font-size: 1.15em;
+}

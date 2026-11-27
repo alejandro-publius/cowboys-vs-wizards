@@ -73,7 +73,7 @@ async function checkPracticeFace({click, evaluate, wait}, id) {
     const drawn = node => node.checkVisibility({opacityProperty: true, visibilityProperty: true}) &&
       node.getBoundingClientRect().height > 0;
     return {
-      printed: face.innerHTML, title: button.title, copy: face.querySelector('.table-card-copy').innerText,
+      printed: face.innerHTML, description: document.getElementById(button.getAttribute('aria-describedby'))?.textContent, copy: face.querySelector('.table-card-copy').innerText,
       rule: face.querySelector('.table-card-rule')?.innerText,
       stats: Object.fromEntries([...face.querySelectorAll('[data-stat]')].filter(drawn)
         .map(stat => [stat.dataset.stat, stat.innerText.match(/[0-9]+/)?.[0]])),
@@ -102,7 +102,7 @@ async function checkPracticeFace({click, evaluate, wait}, id) {
   if (card.kind === "location") rules.push("Applies to both sides.");
   for (const rule of rules) {
     assert.ok(inspected.includes(rule), `${id} hand inspection explains "${rule}"`);
-    assert.ok(hand.title.includes(rule), `${id} tooltip explains "${rule}"`);
+    assert.ok(hand.description?.includes(rule), `${id} accessible description explains "${rule}"`);
   }
   await click("[data-close-hand-rules]");
   if (id === "cowboy-billy") {
