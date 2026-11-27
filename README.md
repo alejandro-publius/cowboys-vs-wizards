@@ -1,27 +1,37 @@
 # Cowboys vs. Wizards: Showdown
 
-Built with Kiro for Kiroween 2026 (**Costume Contest**), **Cowboys vs. Wizards: Showdown** lets strategy players and game designers playtest an AI-proposed card balance change before it hits their deck. In the **Night Shift Saloon**, Kiro CLI proposed cutting Billy’s attack from `2` to `1` under a SHA-locked Kiro spec (`NSB-1` / `NSB-2`) verified across **100,000 held-out bot duels** (`59.792% → 51.920%` Cowboy share). Fire at Bone Wall under both rules—and when the weaker Billy loses in the bots’ hands, take over turn nine against the Headless Horseman and save the deal by taking cover. Beyond the Saloon, play the full haunted-Western Trail, build a 16-card deck in Camp, or deal into **Boot Hill Poker**, a second live game powered by the shared [`packages/frontier-kit`](packages/frontier-kit/README.md) engine tools.
+Ride out from Boot Hill with a 16-card deck. On the far side of the frontier, a Lantern Wraith ignores spells and a Graveyard Dragon can burn your whole line. Clear six Trail stops, hunt either boss five times, and you can play its card on your side of the table.
 
-**[Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/)** · [Night Shift Saloon (`?saloon=review`)](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) · [Kiro’s balance spec](.kiro/specs/night-shift-balance-contract/requirements.md) · [One-minute judge walkthrough](docs/JUDGE-GUIDE.md) · [Devpost packet](docs/submission/devpost-packet.md) · [Rules and cards](prototypes/showdown/RULEBOOK.md) · [Current build and review status](docs/PROJECT-STATUS.md#current-build)
+**[Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/)** · [Scout the Graveyard Dragon](https://alejandro-publius.github.io/cowboys-vs-wizards/?room=wanted) · [Visit the Night Shift Saloon](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review)
 
-| Playable AI Balance Courtroom (`?saloon=review`) | Recorded Native Kiro CLI Workflow (`wf_87723b3404bba1fc`) |
+[![The illustrated battlefield at the fifth Graveyard Dragon hunt. The Cowboy Ranger and a trap face the Dragon and its escort between the Western town and the Wizard castle.](docs/media/frontier-dragon-hunt.webp)](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5)
+
+<a id="play-showdown"></a>
+
+## From a Wanted poster to your deck
+
+| If you have… | Take this route |
 | --- | --- |
-| ![The Night Shift Saloon. Beside the recorded Kiro review, Billy can attack Headless Horseman or take cover on turn nine.](docs/evidence/showdown-saloon-billy-table.png) | ![Captured from Kiro CLI 3.5.0 stream output: night-shift-review preparing and testing one-number card balance proposals.](docs/evidence/kiro-night-shift-native.png) |
-| Fire Billy’s printed `2`-attack shot vs. Kiro’s `1`-attack proposal, then play turn nine yourself | Isolated preparer/reviewer agents gated by `.kiro/specs/night-shift-balance-contract/requirements.md` |
+| One minute | Open **Wanted**, choose **Scout the Graveyard Dragon**, and pick the Ranger’s target before revealing what happened. On the second deal the board looks familiar. Try your own move. Scouting is open from a fresh save. [Wanted board](https://alejandro-publius.github.io/cowboys-vs-wizards/?room=wanted) |
+| Time for a campaign | Choose **Camp → Boot Hill**. The first win earns two Covered Wagons. Rebuild your deck as you cross the Trail. On the Wanted board, a fifth victory over the same boss earns its card. Choose **Build with** on the result screen to decide what to take out of your 16. [Enter Camp from the title](https://alejandro-publius.github.io/cowboys-vs-wizards/) |
+| A second player | Open **Even Fight** for two players sharing one device and pass the screen between turns. At the Saloon’s back table, Boot Hill Poker deals a separate five-card game against the Wizard. [Two-player Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/?even-fight=two) · [Boot Hill Poker](https://alejandro-publius.github.io/cowboys-vs-wizards/poker/) |
 
-## Play Showdown
+<picture>
+  <source media="(max-width: 640px)" srcset="docs/media/frontier-dragon-capture-mobile.webp">
+  <img src="docs/media/frontier-dragon-capture.webp" alt="Three actual game screens. Scout the Graveyard Dragon, earn it on the fifth hunt, then save it in the deck builder.">
+</picture>
 
-| Where to start | What to try |
-| --- | --- |
-| [Night Shift Saloon](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) | Fire Billy’s current two-attack shot and Kiro’s proposed one-attack shot at the same Bone Wall. The original rules resolve your shot in your browser. With the proposed Billy, take his next turn against Headless Horseman and change the ending. The notice board holds the [100,000-duel audit](docs/evidence/billy-seat-audit/README.md). |
-| [Ride or Fight?](https://alejandro-publius.github.io/cowboys-vs-wizards/?outrider=case-e) | Pick the Outrider. Strike the Skeleton or ride past it and hit the Wizard Base. Restart the same turn and try the other choice. |
-| [Camp and the Trail](https://alejandro-publius.github.io/cowboys-vs-wizards/) | Choose **Camp**, then **Boot Hill** for your first Trail duel. Camp also holds the deck builder, Wanted bounties and two-player mode. |
-| [Replay Room](https://alejandro-publius.github.io/cowboys-vs-wizards/?room=replay) | Pick the Ranger’s target before seeing either outcome. Compare the two recorded lines and play the turn yourself. |
-| [Even Fight](https://alejandro-publius.github.io/cowboys-vs-wizards/?even-fight=1) | Try cover against spells and a seven-orb Base for the second player. Practice also offers a [best of three](https://alejandro-publius.github.io/cowboys-vs-wizards/?even-fight=series) and [two players on one device](https://alejandro-publius.github.io/cowboys-vs-wizards/?even-fight=two). |
-| [Boot Hill Poker](https://alejandro-publius.github.io/cowboys-vs-wizards/poker/) | Draw a five-card hand against the Wizard. The Saloon’s back table opens this second game. |
-| [Lightweight board](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) · [Reference game](https://alejandro-publius.github.io/cowboys-vs-wizards/showdown/) | The graybox opens directly into Camp. The reference page has a playable version of the rules. |
+The full campaign saves in your browser. The Dragon practice positions replay recorded deals and leave your collection alone. You can also try the Outrider’s opening choice or use the lightweight board. [Ride or Fight?](https://alejandro-publius.github.io/cowboys-vs-wizards/?outrider=case-e) · [Lightweight Camp](https://alejandro-publius.github.io/cowboys-vs-wizards/graybox/) · [Rules and cards](prototypes/showdown/RULEBOOK.md)
 
-The illustrated game also runs at `/3d/`. The [deployment manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) identifies the published commit and its HTML checksum. The [release record](docs/PROJECT-STATUS.md#current-build) links the source for the screenshot above.
+## How Kiro reviews a card change
+
+Built with Kiro for Kiroween. In the Night Shift Saloon, a recorded Kiro shift plays out at the bar. Behind the scene, Kiro drafts a card edit and bots play the same deals from both seats. The local reviewer can send a proposal back. Alex decides what goes into the game.
+
+![An animated telegraph traces Kiro's proposal through paired bot duels and the local reviewer to design approval. A separate Python referee checks the rules.](docs/media/frontier-night-shift.svg)
+
+One proposed edit moved Cowboy wins from **59.792% to 51.920%** across 100,000 bot duels. A separate Python referee agreed with the engine at **5,086 played positions** across 100 frozen duels. Its alternate-move audit still has an open Hellfire ruling. [Recorded Kiro workflow](docs/evidence/kiro-night-shift-native.png) · [Kiro balance spec](.kiro/specs/night-shift-balance-contract/requirements.md) · [Balance audit](docs/evidence/billy-seat-audit/README.md) · [Referee report](docs/evidence/claude-referee-legal-branches.md)
+
+[Judge walkthrough](docs/JUDGE-GUIDE.md) · [Current build and review status](docs/PROJECT-STATUS.md#current-build) · [Live build manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json)
 
 ## Local build
 
@@ -43,31 +53,11 @@ Open `dist/cowboys-vs-wizards-showdown-3d.html` in a browser to play the illustr
 
 ## How it is made
 
-**Kiro** sits at the center of both development and the playable Night Shift Saloon (`246+` tracked files under [`.kiro/`](.kiro/)):
+Codex now maintains the build and the pull request queue. The repository also records the original design and implementation work.
 
-| Kiro capability | Tracked in [`.kiro/`](.kiro/) | What it governs |
-| --- | --- | --- |
-| **Specs** | `44` spec folders (`660+` `SHALL` clauses, `10` written reviews) | Card catalog contracts, Outrider `G1–G7` gate, `NSB-1`/`NSB-2` balance thresholds, Saloon rooms |
-| **Custom agents** | `20` profiles in [`.kiro/agents/`](.kiro/agents/) | Path-fenced `contest-balance-preparer` vs. read-only `contest-balance-reviewer`, `showdown-presenter`, `showdown-seat-auditor` |
-| **Hooks** | `12` CLI hook configs across all `9` automatic triggers | `check-outrider-gate` on `PostFileSave` (`0 fresh, 10 stale` on drift), `PreToolUse` scope fences, doc-link checks, Stop gates |
-| **Scoped steering** | `6` files in [`.kiro/steering/`](.kiro/steering/) (`inclusion: fileMatch` & `always`) | `rules-area.md` loaded for `src/game/**` reads and excluded on UI reads ([receipt](docs/evidence/showdown-scoped-steering.md)) |
-| **Workflows, Power & Crew** | `7` Workflows, [`orb-duel-review`](.kiro/powers/orb-duel-review/) Power/MCP, [`Night Watch`](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch) Crew app | Native balance/audit loops, seat-private MCP duel play, and scheduled 2,000-duel commit patrols |
-
-- **Kiro** implemented the Showdown gameplay briefs, the 29-card catalog, Camp/saves, property suites, Power 1.3.0, and the recorded balance, rules, and release workflows. See [Built with Kiro](#built-with-kiro).
-- **Fable (Claude Code)** designed mechanics, progression, and engine contracts ([docs/design](docs/design/README.md)) and approves card/rule changes with Alex.
-- **Codex** maintains the integration queue, reviews PRs against the rules contract, and verifies staged Pages builds in headless Chrome.
-
-## How the haunted costume does a job
-
-Every spooky Western element in the Costume Contest interface carries a concrete gameplay or audit function:
-
-| Haunted interface element | Functional UX job |
-| --- | --- |
-| **Night Shift Saloon card table** | Turns a raw AI balance diff (`Billy attack 2 → 1`) into a playable two-shot courtroom where players prove counterplay survives |
-| **Glowing life orbs on troops & Bases** | Instant integer health & overflow math across desktop and `375px` phone screens without tiny-font arithmetic |
-| **Inspectable faction graveyards** | Shows the exact Undead card `Raise` will return and clears private hands behind a pass curtain in two-player hotseat |
-| **Bone Wall (`Guard`) & Outrider (`Ride`)** | Spatial silhouettes and target-forecast banners communicate blocking vs. riding past before a click commits |
-| **Sheriff’s Ledger & notice board** | Surfaces SHA-256 build digests, 100,000-duel held-out seat shares, and stale/fresh Outrider gate status in-world |
+- **Fable (Claude Code)** designed mechanics, progression and engine contracts. Its briefs are in [docs/design](docs/design/README.md).
+- **Kiro** implemented the gameplay briefs and ran the recorded balance, rules and release checks. See [Built with Kiro](#built-with-kiro).
+- **Codex** integrates current changes, reviews the game against its rules and tests the published build in a browser.
 
 ## Verify
 

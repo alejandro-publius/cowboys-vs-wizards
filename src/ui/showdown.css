@@ -22,6 +22,10 @@
 .sd-backs .card-back { width: 14px; height: 20px; border: 1px solid var(--line); border-radius: 2px; }
 #sd-prompt { min-height: 1.5rem; }
 .sd-row, #sd-hand { display: flex; gap: .5rem; flex-wrap: wrap; }
+.bounty-rewards { align-items: start; }
+.bounty-reward-group { display: grid; justify-items: center; gap: .5rem; margin: 0; }
+.bounty-reward-group h3 { margin: 0; font-size: 1rem; }
+.bounty-reward-group .sd-row { justify-content: center; }
 #sd-log { list-style: none; margin: 0; padding: 0; font-size: .92rem; color: var(--muted); max-height: 14rem; overflow: auto; }
 #sd-log .sd-turn { margin-top: .35rem; font-weight: 600; color: inherit; }
 #sd-keywords { margin: 0; padding-left: 1.25rem; font-size: .92rem; }
@@ -76,6 +80,10 @@
 @media (prefers-reduced-motion: reduce) { #showdown .sd-cue { animation: none; } }
 /* Slice 3: Camp rows for rivals and Wanted, the deck builder and the two-player curtain, as in prototypes/showdown/style.css. */
 #camp-rivals, #camp-bounties { list-style: none; margin: 0; padding: 0; }
+.bounty-scout { max-width: 36rem; margin: 1rem auto 0; padding: .85rem 1rem; border-left: 3px solid var(--cowboy); }
+.bounty-scout h3, .bounty-scout p { margin: 0 0 .5rem; }
+.bounty-scout small { display: block; margin-top: .45rem; line-height: 1.4; }
+#builder-reward-note { grid-column: 1 / -1; margin: .25rem 0; line-height: 1.35; }
 #showdown-builder { max-width: 920px; margin: auto; padding: clamp(1rem, 3vw, 2rem); display: grid; gap: .5rem; }
 .sd-build-row { display: grid; grid-template-columns: 10rem repeat(2, auto) 1fr; gap: .75rem; align-items: center; margin-bottom: .5rem; }
 .sd-build-row .sd-card { width: 10rem; }

@@ -41,13 +41,22 @@ export function mountBuilder(root, {campaign, writeCamp = (change) => change(), 
 
   function render() {
     const types = Object.keys(TYPES).filter((type) => TYPES[type].side === "cowboy" && (draft.pool ? draft.pool[type] : campaign.owned(type) > 0));
+    const deckSize = sum(draft.deck);
     $("builder-title").textContent = draft.pool ? "Between games: swap with your side deck" : "Build deck";
     $("builder-note").textContent = draft.pool ? "Move cards between your deck and your side deck. The change lasts for this match."
       : `A deck is ${DECK_SIZE} cards. A side deck is up to ${SIDE_SIZE} more, to swap in between the games of a best of three.`;
     $("builder-rows").innerHTML = types.map((type) => {
       const [deck, side] = [draft.deck[type] ?? 0, draft.side[type] ?? 0];
       const room = deck + side < limit(type);
-      const step = (zone, by, on, text) => `<button type="button" data-zone="${zone}" data-type="${type}" data-by="${by}" ${on ? "" : "disabled"} aria-label="${text} ${TYPES[type].name}">${by > 0 ? "+" : "−"}</button>`;
+      const focusReward = type === draft.focusType;
+      let rewardNote = "";
+      if (focusReward) {
+        if (deckSize > DECK_SIZE) rewardNote = `Use Deck − on a card you can spare. Save when the deck has ${DECK_SIZE} cards.`;
+        else if (deck > 0) rewardNote = `${TYPES[type].name} is in your deck. Save to keep your changes.`;
+        else if (side > 0 && !room) rewardNote = "Move a copy out of the side deck, then add it with Deck +.";
+        else rewardNote = `Add this card with Deck +. A full deck needs one other card removed before you save.`;
+      }
+      const step = (zone, by, on, text) => `<button type="button" data-zone="${zone}" data-type="${type}" data-by="${by}" ${on ? "" : "disabled"} aria-label="${text} ${TYPES[type].name}"${focusReward && zone === "deck" ? ' aria-describedby="builder-reward-note"' : ""}>${by > 0 ? "+" : "−"}</button>`;
       // Between games a card moves from one pile to the other, so "+" on the deck takes it from the side deck.
       const frame = `class="sd-card cowboy ${TYPES[type].rarity}" data-frame="${TYPES[type].kind}" data-face="${type}"`;
       const card = paintCardFaces
@@ -64,11 +73,11 @@ export function mountBuilder(root, {campaign, writeCamp = (change) => change(), 
       return `<div class="sd-build-row" data-row="${type}">${card}
         ${pile("deck", "Deck", deck, draft.pool ? side > 0 : room)}
         ${pile("side", "Side deck", side, draft.pool ? deck > 0 : room)}
-        <span class="sd-note builder-limit">${limitNote}</span></div>`;
+        <span class="sd-note builder-limit">${limitNote}</span>${focusReward ? `<p id="builder-reward-note">${rewardNote}</p>` : ""}</div>`;
     }).join("");
     paintCardFaces?.($("builder-rows"), "[data-face]");
     const listed = problems();
-    $("builder-problems").innerHTML = `Deck ${sum(draft.deck)} of ${DECK_SIZE} · side deck ${sum(draft.side)} of ${SIDE_SIZE}.${listed.length ? ` <span class="sd-warn">${listed.join(" ")}</span>` : ""}`;
+    $("builder-problems").innerHTML = `Deck ${deckSize} of ${DECK_SIZE} · side deck ${sum(draft.side)} of ${SIDE_SIZE}.${listed.length ? ` <span class="sd-warn">${listed.join(" ")}</span>` : ""}`;
     $("builder-save").disabled = listed.length > 0;
     $("builder-save").textContent = draft.pool ? "Play the next game" : "Save deck";
     $("builder-cancel").hidden = !draft.cancel;
@@ -113,7 +122,7 @@ export function mountBuilder(root, {campaign, writeCamp = (change) => change(), 
     // The saved deck: done() after it is kept, cancel() leaves it as it was.
     openDeck({done, cancel, focusType}) {
       const progress = campaign.progress();
-      draft = {pool: null, deck: {...progress.deck}, side: {...progress.side},
+      draft = {pool: null, deck: {...progress.deck}, side: {...progress.side}, focusType,
         done: (deck, side) => writeCamp(() => { campaign.withDeck(deck, side); done(); }), cancel};
       render();
       const rows = $("builder-rows");
