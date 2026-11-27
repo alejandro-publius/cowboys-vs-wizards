@@ -99,6 +99,30 @@ export const offerRow = (offer, owned) => `<div class="sd-row">${offer.map((type
 export const rewardDeckButton = (type) => `<button type="button" data-build-reward>Build with ${TYPES[type].name}</button>`;
 export const pays = (cards) => cards.map(([type, copies]) => `${TYPES[type].name}${copies > 1 ? ` ×${copies}` : ""}`).join(", ");
 
+// HSM-1 / HSM-2: Haunted-Western refusal guidance naming why a card is blocked and what to tap next,
+// computed strictly from `seat`'s public view while keeping "One troop a turn." verbatim.
+export function blockedReason(view, seat, cardId) {
+  const card = cardOf(cardId);
+  const mine = view.sides[seat];
+  if (view.attacking) return "Gunsmoke's out — no more cards this turn. Act with your troops or press End turn.";
+  if (card.kind === "troop") {
+    if (view.summonUsed) return "One troop a turn.";
+    const cost = tributes(cardId);
+    return mine.board.filter(Boolean).length < cost
+      ? `The grave demands ${plural(cost, "troop")} in tribute — summon free hands first.`
+      : "All three lanes are packed — attack or tribute a troop first.";
+  }
+  if (card.kind === "trap") {
+    return view.setUsed ? "One trap a turn — save that ambush for next round."
+      : mine.traps.length >= TRAP_SLOTS ? "Both trap slots are rigged — let a fool step in one first."
+      : "Hold that ambush for your main phase.";
+  }
+  if (view.castUsed) return "One spell, gear or location a turn — act with your troops or press End turn.";
+  return card.kind === "location" ? "That haunted ground is already in play — pick another card or attack."
+    : card.kind === "gear" ? "Ghost holster — summon a troop first so somebody can wear it."
+    : "Nothing undead or breathing to hex — summon a troop or press End turn.";
+}
+
 // campaign: the Cowboy seat's campaign. settle(duel, won) once per decided solo duel, choose(type), progress(), owned(type), trailDuel(),
 // duel(id, deck) for any Camp duel. playtest (optional): add(entry) once per finished solo game.
 // nextSeed() deals each later game (the next game of a match, a repeat, two players again); a Rematch
@@ -333,17 +357,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
 
   // Why a card in hand cannot be played now, read from this seat's view.
   function blocked(view, cardId) {
-    const card = cardOf(cardId);
-    const mine = view.sides[viewer()];
-    if (view.attacking) return "No more cards this turn: a troop has acted.";
-    if (card.kind === "troop") {
-      if (view.summonUsed) return "One troop a turn.";
-      const cost = tributes(cardId);
-      return mine.board.filter(Boolean).length < cost ? `Needs ${plural(cost, "troop")} of yours to pay with.` : "Your board is full.";
-    }
-    if (card.kind === "trap") return view.setUsed ? "One trap a turn." : mine.traps.length >= TRAP_SLOTS ? "Both trap slots are full." : "Not now.";
-    if (view.castUsed) return "One spell, gear or location a turn.";
-    return card.kind === "location" ? "Already the location." : card.kind === "gear" ? "No troop to carry it." : "No target.";
+    return blockedReason(view, viewer(), cardId);
   }
 
   const previewId = (target) => `sd-preview-${target}`;
