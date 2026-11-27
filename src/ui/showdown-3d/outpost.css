@@ -73,31 +73,135 @@ body:has(.camp-outpost[open], .builder-inspect[open]) {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: clamp(0.6rem, 2vw, 1.25rem);
 }
-#showdown-camp .outpost-wanted .camp-stop-list ol {
-  grid-template-columns: repeat(2, minmax(0, 220px));
-  justify-content: center;
+.outpost-wanted .outpost-room {
+  background:
+    linear-gradient(110deg, #24170d33, transparent 50%, #120d0999),
+    repeating-linear-gradient(0deg, #18120e 0 3px, #916341 3px 5px, transparent 5px 67px),
+    repeating-radial-gradient(ellipse 22rem 2.4rem at 9% 31%, transparent 0 20px, #33231c45 26px, transparent 40px),
+    #614432;
 }
-.outpost-wanted .bounty-scout {
-  background: #18273a;
-  border-color: var(--frontier-brass);
-  box-shadow: 0 3px #101a29;
+#showdown-camp .outpost-wanted #camp-bounties {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: clamp(1rem, 4vw, 2.5rem);
+  max-width: 43rem;
+  margin: 0 auto;
 }
-.outpost-wanted .bounty-scout h3 { color: var(--frontier-brass); }
-#showdown-camp .outpost-wanted #camp-scout-dragon {
-  min-height: 44px;
+.outpost-wanted #camp-bounties li { container-type: inline-size; text-align: center; }
+#showdown-camp .outpost-wanted [data-wanted-bounty] {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  justify-items: stretch;
   width: 100%;
-  margin-top: 0.4rem;
-  padding: 0.45rem 1rem;
-  color: #2b201a;
-  background: #f1d29a;
-  border: 1px solid #fce6b9;
-  border-radius: 0;
-  box-shadow: 0 3px #987340;
-  font: 700 1rem/1.2 var(--frontier-display);
+  padding: 1.2rem clamp(1rem, 3vw, 1.65rem) 1rem;
+  color: #36241b;
+  font: 700 1rem/1.15 var(--frontier-display);
+  text-align: center;
+  filter: drop-shadow(2px 4px 1px #180f0abc);
 }
-#showdown-camp .outpost-wanted .camp-stop-list .sd-tile { height: auto; }
-#showdown-camp .outpost-wanted #camp-scout-dragon:hover { background: #ffe7b7; }
-#showdown-camp .outpost-wanted #camp-scout-dragon:focus-visible { outline: 3px solid white; outline-offset: 3px; }
+.outpost-wanted [data-wanted-bounty]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse at 43% 37%, #fff1c7 0%, transparent 74%),
+    linear-gradient(103deg, #bc9257, #ecd09b 12% 85%, #c29a64);
+  clip-path: polygon(0 5px, 5% 5px, 5% 2px, 29% 2px, 29% 5px, 32% 5px, 32% 0,
+    78% 0, 78% 3px, 98% 3px, 98% 7px, 100% 7px, 100% 64%, 98.5% 64%, 98.5% 66%,
+    100% 66%, 100% 98.5%, 93% 98.5%, 93% 100%, 63% 100%, 63% 98.5%, 60% 98.5%, 60% 99.5%,
+    19% 99.5%, 19% 100%, 2% 100%, 2% 98.5%, 0 98.5%, 0 40%, 1.5% 40%, 1.5% 37%, 0 37%);
+}
+.wanted-masthead {
+  border-top: 4px double currentColor;
+  padding-top: 0.08em;
+  color: #782820;
+  font-size: clamp(2rem, 17.5cqi, 3.7rem);
+  font-weight: 900;
+  letter-spacing: -0.055em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.wanted-terms {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  margin: 0.3rem 0 0.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.wanted-terms::before, .wanted-terms::after { content: ""; flex: 1; border-top: 1px solid; }
+.wanted-portrait {
+  position: relative;
+  display: grid;
+  place-items: end center;
+  aspect-ratio: 1.22;
+  border: 3px double #684c30;
+  mix-blend-mode: multiply;
+}
+.wanted-portrait::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(156deg, transparent 0 3px, #34241726 3px 4px),
+    var(--wanted-art) center 33% / cover no-repeat;
+  image-rendering: pixelated;
+  filter: grayscale(1) contrast(1.12) brightness(1.26);
+}
+.wanted-portrait[data-portrait="wizard-lantern-wraith"] { --wanted-art: var(--saloon-wraith-art); }
+.wanted-portrait[data-portrait="wizard-dragon"] { --wanted-art: var(--saloon-dragon-art); }
+.wanted-stamp {
+  position: relative;
+  margin-bottom: 7%;
+  padding: 0.06em 0.3em;
+  transform: rotate(-7deg);
+  border: 4px double currentColor;
+  background: #efdcb0;
+  color: #77251d;
+  font-size: clamp(1.4rem, 3.6vw, 2.2rem);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.wanted-name { margin: 0.45rem 0; font-size: clamp(1rem, 6.65cqi, 1.5rem); }
+.wanted-tally {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.32rem;
+  font: 700 0.75rem/1 var(--frontier-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.wanted-tally i {
+  width: 0.4rem;
+  height: 1.1rem;
+  border: 1px solid;
+  transform: skew(-12deg);
+}
+.wanted-tally i:first-child { margin-left: 0.35rem; }
+.wanted-tally i.won { background: currentColor; border-width: 3px; }
+.wanted-action { margin-top: 0.65rem; border-top: 3px double; padding-top: 0.45rem; }
+#showdown-camp .outpost-wanted [data-wanted-bounty]:not(:disabled):hover {
+  color: #36241b;
+  text-decoration: none;
+}
+.outpost-wanted [data-wanted-bounty]:is(:hover, :focus-visible) .wanted-action,
+#showdown-camp .outpost-wanted #camp-scout-dragon:not([data-wanted-bounty]) {
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+#showdown-camp .outpost-wanted button:focus-visible { outline: 3px solid white; outline-offset: 3px; }
+#showdown-camp .outpost-wanted [data-wanted-bounty]:disabled { opacity: 1; }
+#wanted-hunt-condition {
+  margin: 0 auto 1rem;
+  width: fit-content;
+  padding: 0.35rem 0.75rem;
+  color: #ffedc8;
+  background: #302219;
+  text-align: center;
+}
 #showdown-camp .outpost-stone .sd-tile {
   position: relative;
   display: flex;
@@ -500,13 +604,6 @@ body:has(.camp-outpost[open], .builder-inspect[open]) {
   background: linear-gradient(90deg, #e6c68c, transparent 20%),
     var(--saloon-dragon-art, none) 54% 18% / cover no-repeat;
 }
-.outpost-wanted [data-portrait="wizard-lantern-wraith"],
-.outpost-wanted [data-portrait="wizard-dragon"] {
-  background-position: 50% 28% !important; /* The fallback atlas supplies its own inline position. */
-  background-size: cover;
-}
-.outpost-wanted [data-portrait="wizard-lantern-wraith"] { background-image: var(--saloon-wraith-art); }
-.outpost-wanted [data-portrait="wizard-dragon"] { background-image: var(--saloon-dragon-art); }
 @media (max-width: 540px) {
   .saloon-bounty-copy { width: 62%; }
   .saloon-bounty-bill::before { left: 58%; background-position: 45% 24%; }

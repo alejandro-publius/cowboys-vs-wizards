@@ -1,4 +1,4 @@
-import {BOUNTIES, RIVALS} from "../../game/showdown/progress.js";
+import {RIVALS} from "../../game/showdown/progress.js";
 import {cardArtwork} from "./table-ui.js";
 import {ledgerSectionHtml, mountNightShiftSaloon} from "./night-shift-saloon.js";
 import {createSaloonStage} from "./saloon-stage.js";
@@ -36,7 +36,7 @@ const RIVAL_ART = {
 };
 const ROOMS = [
   ["camp-rivals-title", "rivals", "Rivals", "stone"],
-  ["camp-bounties-title", "wanted", "Wanted", "stone"],
+  ["camp-bounties-title", "wanted", "Wanted", "wood"],
   ["camp-open-title", "range", "Open range", "wood"],
   ["camp-practice", "practice", "Practice", "wood"],
   ["camp-save", "save", "Save code", "wood"],
@@ -47,7 +47,6 @@ const ROOMS = [
 export function mountCampOutpost(root) {
   const byId = (id) => root.querySelector("#" + id);
   const wizard = byId("camp-wizard");
-  const dragonScout = byId("camp-scout-dragon");
   const rooms = new Map();
   let current;
 
@@ -147,12 +146,8 @@ export function mountCampOutpost(root) {
   replays.append(byId("camp-experiment"));
   practice.append(replays, wizard);
 
-  for (const [key, note] of [
-    ["camp-rivals-title", "Finish the Trail to unlock these duels."],
-    ["camp-bounties-title", "Scout now. Finish the Trail to hunt. Beat the same boss five times to take its card."],
-  ]) {
-    rooms.get(key).content.insertAdjacentHTML("afterbegin", `<p class="outpost-trail-lock">${note}</p>`);
-  }
+  rooms.get("camp-rivals-title").content.insertAdjacentHTML("afterbegin",
+    '<p class="outpost-trail-lock">Finish the Trail to unlock these duels.</p>');
   for (const [target, {room}] of rooms) {
     const control = root.querySelector(`[data-camp-destination="${target}"]`);
     room.id = `room-for-${target}`;
@@ -182,21 +177,16 @@ export function mountCampOutpost(root) {
   }
 
   function dressNotices(trailComplete) {
-    for (const [list, cards] of [
-      [byId("camp-rivals"), RIVALS.map(({id}) => RIVAL_ART[id])],
-      [byId("camp-bounties"), BOUNTIES.map(({boss}) => boss)],
-    ]) {
-      const content = list.closest(".outpost-room");
-      content.querySelector(".outpost-trail-lock").hidden = trailComplete;
-      for (const [index, button] of [...list.querySelectorAll("button.sd-tile")].entries()) {
-        const art = cardArtwork(cards[index]);
-        if (!art) continue;
-        art.classList.add("outpost-portrait");
-        art.dataset.portrait = cards[index];
-        button.prepend(art);
-        if (cards[index] === "wizard-dragon") button.after(dragonScout);
-        button.querySelector(".sd-note").classList.toggle("outpost-lock-note", !trailComplete);
-      }
+    const list = byId("camp-rivals");
+    list.closest(".outpost-room").querySelector(".outpost-trail-lock").hidden = trailComplete;
+    for (const [index, button] of list.querySelectorAll("button.sd-tile").entries()) {
+      const card = RIVAL_ART[RIVALS[index].id];
+      const art = cardArtwork(card);
+      if (!art) continue;
+      art.classList.add("outpost-portrait");
+      art.dataset.portrait = card;
+      button.prepend(art);
+      button.querySelector(".sd-note").classList.toggle("outpost-lock-note", !trailComplete);
     }
   }
 

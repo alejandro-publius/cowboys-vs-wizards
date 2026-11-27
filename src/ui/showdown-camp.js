@@ -9,6 +9,7 @@ import {decodeSaveCode, describeSave, encodeSave, sameSave} from "../game/showdo
 import {TRAIL} from "../game/showdown/trail.js";
 import {OFFER_HEADING, face, offerRow, pays, rewardDeckButton} from "./showdown-screen.js";
 import {mountLedger} from "./sheriffs-ledger.js";
+import {mountWantedBills} from "./wanted-bills.js";
 
 const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
 const sum = (counts) => Object.values(counts).reduce((total, copies) => total + copies, 0);
@@ -86,6 +87,7 @@ const TEMPLATE = `
 export function mountCamp(root, {campaign, writeCamp = (change) => change(), playtest, paintCardFaces, openDestination, dressNotices, onDuel, onHome, onBuild, confirm = (text) => window.confirm(text)}) {
   root.innerHTML = TEMPLATE;
   const $ = (id) => root.querySelector(`#${id}`);
+  const showBills = paintCardFaces && mountWantedBills($("camp-bounties"), $("camp-scout-dragon"));
   if (paintCardFaces) {
     $("camp-trail").insertAdjacentHTML("afterend", `<aside class="camp-trail-rail" aria-label="Trail actions">
       <h3 id="camp-current-stop"></h3><p id="camp-current-reward" aria-live="polite"></p>
@@ -149,7 +151,9 @@ export function mountCamp(root, {campaign, writeCamp = (change) => change(), pla
     }
     $("camp-rivals").innerHTML = list.filter((duel) => duel.kind === "rival").map((duel, i) =>
       tile(duel, rivalNote(progress, i, duel.state), duel.state === "locked")).join("");
-    $("camp-bounties").innerHTML = list.filter((duel) => duel.kind === "hunt").map((duel) => {
+    const hunts = list.filter((duel) => duel.kind === "hunt");
+    if (showBills) showBills(hunts, progress.offer);
+    else $("camp-bounties").innerHTML = hunts.map((duel) => {
       const bounty = BOUNTIES.find((each) => `hunt:${each.id}` === duel.id);
       return tile(duel, duel.state === "won" ? `Captured: ${TYPES[bounty.reward].name}` : duel.state === "locked" ? "After the Trail"
         : `${duel.cleared} of ${HUNTS} hunts won. Five capture ${TYPES[bounty.reward].name}.`);
