@@ -8,6 +8,16 @@ In Cowboys vs. Wizards, the Graveyard Dragon can burn your whole line. Win its f
 
 At another Saloon table, Kiro CLI proposed taking an attack point from Billy. A separate reviewer used a written Kiro spec to check it. Across 100,000 held-out bot duels, the Cowboys’ win rate moved from 59.792% to 51.920%. The Saloon lets players try the proposal while the Trail keeps Billy’s original attack. Other game makers can rerun the same balance check with `node scripts/billy-balance-gate.mjs --arm candidate`. [Kiro spec](../../.kiro/specs/night-shift-balance-contract/requirements.md) · [Recorded workflow](../evidence/kiro-night-shift-native.png) · [Audit and reproduction steps](../evidence/billy-seat-audit/README.md)
 
+## What a judge can try
+
+| Devpost criterion | See it in Showdown |
+| --- | --- |
+| Potential impact | A first-time strategy player can [scout the Dragon](https://alejandro-publius.github.io/cowboys-vs-wizards/?room=wanted) and try their own move before putting a career win on the line. The [build notes](../PROJECT-STATUS.md#current-build) track the outstanding first-time player test. |
+| Technological implementation | Follow one [recorded Kiro review](../evidence/kiro-contest-run.md#balance-run) from a proposed card edit to a reviewer’s decision. The [paired-seed audit](../evidence/billy-seat-audit/README.md) lets another developer repeat the larger experiment. |
+| Design | The same Dragon appears as a bounty poster, an opponent and an earned deck card. [See the hunt and deck on real screens](../../README.md#from-a-wanted-poster-to-your-deck). |
+| Innovation / idea | Choose a target in the Saloon’s recorded Dragon deal, reveal what happened to each choice, then [take over the Ranger’s turn](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5). |
+| Presentation | The [judge walkthrough](../JUDGE-GUIDE.md) opens on a playable choice and links to the original Kiro evidence. The public video link is still pending. |
+
 ## Built With
 
 Kiro, JavaScript, Node.js, Three.js, Python, fast-check, GitHub Actions, GitHub Pages.
@@ -95,7 +105,7 @@ On November 26, GitHub served the repository publicly and identified its root li
 ## Category and bonuses
 
 - **Proposed category for the form — Costume Contest.** At the Saloon, the Wizard brings a change to the table. The player fires the disputed shot and can take over the duel. The haunted room gives the player a job in the review. Alex confirms the category when submitting.
-- **Crew bonus:** the Night Watch app has [its own repository](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch). Its form write-up is not drafted.
+- **Crew bonus.** Night Watch compares two game commits on the same deals. [Crew bonus write-up and recorded runs](night-watch-crew-writeup.md) · [Standalone app](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch)
 - **Blog bonus:** requires a public third-party post that mentions Kiroween 2026. The publishable [build story](build-story.md) opens with the Billy audit. The earlier lane version is archived below its end marker.
 - **Social bonus:** optional. A person must write it; no agent should. Nothing has been posted.
 - **Student eligibility: OWNER.** Requires current enrollment and details for every teammate. School affiliation alone is insufficient.
