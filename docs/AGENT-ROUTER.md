@@ -39,7 +39,7 @@ Kiro agent: [`.kiro/agents/showdown-presenter.json`](../.kiro/agents/showdown-pr
 
 Do not send workers to these paths or run their checks unless the user reopens them. The earlier lane duel and its 3D build (`src/main.js`, `npm run build:art`, the lane rules in `src/game/` outside `showdown/`, `src/render/`, the lane files in `src/ui/` and `src/match/`, `presentation-manifest.js`) are retired. The last playable version is `main` commit `ea183ee29dbd`; read it with `git show ea183ee29dbd:<path>` or a separate worktree. The `duel-presenter` agent, the `orb-duel-replay` and `independent-release-review-lane-3d` workflows, the lane `scripts/browser-*.mjs` harnesses, `play-match.mjs` and `docs/kiro-task-01.md` belong to that build. Their receipts and specs stay as history.
 
-For current research-derived ownership and next handoffs, read [the active closeout queue](kiro-closeout-queue.md). Deep links live in [the source register](kiro-source-register.md); do not load it for unrelated code tasks.
+Use the [current build](PROJECT-STATUS.md#current-build) for Showdown work and its open checks. The [November 16 closeout queue](kiro-closeout-queue.md) records earlier assignments. The [source register](kiro-source-register.md) has the original research links.
 
 ## Context and provenance hygiene
 
