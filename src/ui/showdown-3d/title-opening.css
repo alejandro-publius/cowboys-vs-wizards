@@ -112,6 +112,14 @@
   background-size: 200% 100%;
   background-position: right;
 }
+/* Billy's sheet places the holstered pose to the left of the aiming pose. */
+@media (prefers-reduced-motion: no-preference) {
+  .opening-billy { animation: opening-draw 580ms step-end; }
+  @keyframes opening-draw {
+    from { background-position: left center; }
+    to { background-position: right center; }
+  }
+}
 .opening-wizard {
   right: 24%;
   transform: translateX(50%) scaleX(-1);

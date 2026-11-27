@@ -5,8 +5,8 @@
 //                                           structure preflight (source assets; nothing renders them)
 //   node scripts/verify-duel.mjs --browser  also stage the Pages tree once for HEAD (scripts/stage-pages.mjs)
 //                                           and check it in native Chrome (scripts/check-pages-tree.mjs
-//                                           --browser): Play opens the Camp at / and /graybox/, and /3d/
-//                                           serves the same illustrated build as / (byte-identical)
+//                                           --browser): Play opens the Outrider turn at / and Camp at /graybox/.
+//                                           The /3d/ alias serves the same illustrated build as /.
 // Browser outputs (pages-tree.json) go to .artifacts/pages-tree.
 // The first failing check's exit status is returned.
 import {spawnSync} from "node:child_process";
