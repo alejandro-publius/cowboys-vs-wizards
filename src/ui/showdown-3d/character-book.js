@@ -5,7 +5,32 @@ const leafSize = 6;
 const factions = { cowboy: "Cowboys", wizard: "Wizards" };
 const entries = Object.entries(TYPES);
 const roster = [...entries.filter(([, card]) => card.kind === "troop"), ...entries.filter(([, card]) => card.kind !== "troop")];
-const art = __CVW_BOOK_ART__;
+
+export function bookSpread(side, page, id) {
+  const cards = roster.filter(([, card]) => card.side === side);
+  if (id) page = Math.floor(cards.findIndex(([type]) => type === id) / leafSize);
+  return {page, leaves: Math.ceil(cards.length / leafSize), visible: cards.slice(page * leafSize, (page + 1) * leafSize)};
+}
+
+export function setBookMove(button, selected, openReplay) {
+  const [move] = attackPreviews(selected);
+  button.hidden = !move;
+  if (!move) {
+    button.onclick = null;
+    return;
+  }
+  const card = TYPES[selected];
+  let verb = "Attack";
+  if (card.kind !== "troop") verb = "Cast";
+  else if (move[0] === "guard") verb = "Guard";
+  else if (card.keys.includes("sweep")) verb = "Sweep";
+  button.textContent = verb;
+  button.setAttribute("aria-label", `${verb} with ${card.name}`);
+  button.onclick = () => {
+    button.focus({preventScroll: true});
+    openReplay(selected);
+  };
+}
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -15,12 +40,14 @@ function element(tag, className, text) {
 }
 
 export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
+  const art = __CVW_BOOK_ART__;
   const book = element("dialog", "character-book");
   book.setAttribute("aria-labelledby", "field-guide-title");
   book.innerHTML = `
     <div class="book-cover">
+      <button class="book-close" type="button" aria-label="Close character book">×</button>
       <section class="book-index">
-        <h2 id="field-guide-title">Field Guide</h2>
+        <h2 id="field-guide-title">Character book</h2>
         <div class="book-tabs" role="group" aria-label="Faction"></div>
         <div class="book-grid" role="group" aria-label="Card index"></div>
         <div class="book-pages">
@@ -30,14 +57,20 @@ export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
         </div>
       </section>
       <section class="book-entry" aria-labelledby="book-character-name">
-        <button class="book-close" type="button" aria-label="Close character book">×</button>
-        <p class="book-faction"></p>
         <h3 id="book-character-name" aria-live="polite"></h3>
-        <figure class="book-hero"><img alt=""></figure>
-        <dl class="book-stats" aria-label="Troop stats"></dl>
-        <div class="book-rule"></div>
-        <button class="book-watch" type="button" hidden></button>
-        <p class="book-ownership"></p>
+        <div class="book-leaf">
+          <figure class="book-hero"><img alt=""></figure>
+          <button class="book-watch" type="button" hidden></button>
+          <details class="book-details">
+            <summary>Card details</summary>
+            <div class="book-notes">
+              <p class="book-faction"></p>
+              <dl class="book-stats" aria-label="Troop stats"></dl>
+              <div class="book-rule"></div>
+              <p class="book-ownership"></p>
+            </div>
+          </details>
+        </div>
       </section>
     </div>`;
   document.body.append(book);
@@ -45,6 +78,7 @@ export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
   const grid = find(".book-grid");
   const watch = find(".book-watch");
   const ownership = find(".book-ownership");
+  const details = find(".book-details");
   const build = element("button", "book-build");
   build.type = "button";
   const [back, next] = book.querySelectorAll(".book-pages button");
@@ -56,6 +90,7 @@ export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
   function select(id) {
     selected = id;
     const card = TYPES[id];
+    details.open = false;
     find(".book-hero img").src = art[id];
     find(".book-entry h3").textContent = card.name;
     find(".book-faction").textContent = [card.tag ?? card.kind, card.rarity].join(" · ");
@@ -75,16 +110,14 @@ export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
     }) : [element("p", "", EFFECTS[card.effect].text)]));
     rules.hidden = !rules.childElementCount;
 
-    const moves = attackPreviews(id);
-    watch.hidden = !moves.length;
-    watch.textContent = id === "wizard-singularity" ? "Watch area preview" : moves[0]?.[1] ?? "";
+    setBookMove(watch, id, openReplay);
     const copies = ownedBySide[card.side](id);
     ownership.textContent = card.side === "wizard" ? `In Wizard deck · ${copies}`
       : copies === Infinity ? "Unlimited copies" : copies === 0 ? "Uncollected" : `Owned · ${copies}`;
     if (onBuild && card.side === "cowboy" && copies > 0) {
       build.dataset.buildBookCard = id;
       build.textContent = `Build with ${card.name}`;
-      ownership.after(build);
+      find(".book-entry").append(build);
     } else build.remove();
     for (const button of grid.children) button.setAttribute("aria-pressed", String(button.dataset.id === id));
   }
@@ -94,16 +127,10 @@ export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
     book.close();
     onBuild(selected);
   };
-  watch.onclick = () => {
-    watch.focus();
-    openReplay(selected);
-  };
-
   function turn(id) {
-    const entries = roster.filter(([, card]) => card.side === side);
-    const leaves = Math.ceil(entries.length / leafSize);
-    if (id) page = Math.floor(entries.findIndex(([type]) => type === id) / leafSize);
-    const visible = entries.slice(page * leafSize, (page + 1) * leafSize);
+    const spread = bookSpread(side, page, id);
+    const {leaves, visible} = spread;
+    page = spread.page;
     for (const tab of find(".book-tabs").children) tab.setAttribute("aria-pressed", String(tab.dataset.side === side));
     grid.replaceChildren(...visible.map(([id, card]) => {
       const stamp = element("button", "book-portrait");
@@ -136,6 +163,17 @@ export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
   find(".book-close").onclick = () => book.close();
   book.addEventListener("keydown", (event) => {
     if (event.key === "Escape") event.stopPropagation();
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    if ((event.key === "PageUp" || event.key === "PageDown") && event.target.closest(".book-notes")) return;
+    const previous = event.key === "ArrowLeft" || event.key === "PageUp";
+    const forward = event.key === "ArrowRight" || event.key === "PageDown";
+    if (!previous && !forward) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const control = previous ? back : next;
+    if (control.disabled) return;
+    control.click();
+    grid.querySelector('[aria-pressed="true"]').focus({preventScroll: true});
   });
   function open(id, source = document.activeElement, buildDeck) {
     if (id !== undefined && !Object.hasOwn(TYPES, id)) return;
@@ -148,7 +186,7 @@ export function mountCharacterBook(title, duel, {ownedBySide, openReplay}) {
     onBuild = buildDeck && (type => buildDeck(type, () => show(build)));
     if (id) side = TYPES[id].side;
     turn(id ?? selected);
-    show(find(id ? '.book-portrait[aria-pressed="true"]' : '.book-tabs [aria-pressed="true"]'));
+    show(watch.hidden ? find('.book-portrait[aria-pressed="true"]') : watch);
   }
   for (const gallery of [title, duel].map(screen => screen.querySelector(".sd-open-gallery")).filter(Boolean)) {
     const button = element("button", "book-launch", "Character book");
