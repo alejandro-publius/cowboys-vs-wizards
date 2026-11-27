@@ -15,7 +15,8 @@
 //     experiments/boot-hill-poker/, with no root-absolute links; every script, stylesheet and module
 //     import reachable from poker/index.html resolves inside poker/ and is served, and that import
 //     graph is exactly the six staged files; the root carries the saloon link
-// --browser, native headless Chrome with a fresh profile, mouse events only:
+// --browser, native headless Chrome with a fresh profile:
+//   - the 29-card index, both Wanted papers, a free scouting win, paid fifth captures and saved deck replacements
 //   - the title challenge and its deep link open the same playable Bone Fence board, with its
 //     "Choose the Outrider" instruction drawn on the first screen (not only screen-reader text)
 //   - at 375 x 740 a pointer reaches Ride, Continue to Boot Hill and Boot Hill on the first screen,
@@ -43,6 +44,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {verifyLive} from "./verify-build-identity.mjs";
 import {checkCharacterBook} from "./check-character-book.mjs";
+import {checkWantedCollection} from "./check-wanted-collection.mjs";
 import {shuffleDeck, newDeal} from "../experiments/boot-hill-poker/engine.js";
 import {SAVE_KEY} from "../src/game/showdown/campaign-store.js";
 import {newSave, settle} from "../src/game/showdown/progress.js";
@@ -226,11 +228,16 @@ async function browserChecks() {
       while (Date.now() < stop) { if (await evaluate(expression)) return; await sleep(100); }
       throw Error(`Timed out: ${expression}`);
     };
-    const click = async (selector) => {
-      const p = await evaluate(`(()=>{const n=document.querySelector(${JSON.stringify(selector)});if(!n)throw Error('Missing: '+${JSON.stringify(selector)});
+    const hitPoint = (selector) => evaluate(`(()=>{const n=document.querySelector(${JSON.stringify(selector)});if(!n)throw Error('Missing: '+${JSON.stringify(selector)});
         n.scrollIntoView({block:'center'});const b=n.getBoundingClientRect();const x=b.x+b.width/2,y=b.y+b.height/2;
         if(!n.contains(document.elementFromPoint(x,y)))throw Error('Covered: '+${JSON.stringify(selector)});return{x,y};})()`);
+    const click = async (selector) => {
+      const p = await hitPoint(selector);
       for (const type of ["mouseMoved", "mousePressed", "mouseReleased"]) await send("Input.dispatchMouseEvent", {type, button: "left", clickCount: 1, ...p});
+    };
+    const tap = async (selector) => {
+      await send("Input.dispatchTouchEvent", {type: "touchStart", touchPoints: [await hitPoint(selector)]});
+      await send("Input.dispatchTouchEvent", {type: "touchEnd", touchPoints: []});
     };
     const open = async (rel) => {
       await send("Page.navigate", {url: site + rel});
@@ -277,12 +284,24 @@ async function browserChecks() {
       assert.deepEqual(report.errors, [], "no page errors or failed requests");
     };
 
-    for (const width of [390, 1440]) {
+    let bookIndex;
+    for (const width of [1440, 390]) {
       await send("Emulation.setDeviceMetricsOverride", {width, height: width === 390 ? 844 : 900, deviceScaleFactor: 1, mobile: false});
-      await checkCharacterBook({open, click, press, evaluate, wait});
+      bookIndex = await checkCharacterBook({open, click, press, evaluate, wait});
     }
     clean();
     check("The field guide opens every painted card, shows its rules and tribute cost, and returns from a replay to the selected entry");
+
+    await send("Storage.clearDataForOrigin", {origin: new URL(site).origin, storageTypes: "all"});
+    await send("Emulation.setDeviceMetricsOverride", {width: 390, height: 844, deviceScaleFactor: 1, mobile: true});
+    await send("Emulation.setTouchEmulationEnabled", {enabled: true});
+    await send("Emulation.setEmulatedMedia", {features: [{name: "prefers-reduced-motion", value: "reduce"}]});
+    await checkWantedCollection({open, click, tap, press, activateByKey, evaluate, wait, bookIndex});
+    clean();
+    check("390 px Wanted papers scout without saving, award both fifth captures separately from bonuses, and reopen the earned cards after a 16-card deck replacement");
+    await send("Emulation.setEmulatedMedia", {features: []});
+    await send("Emulation.setTouchEmulationEnabled", {enabled: false});
+    await send("Emulation.setDeviceMetricsOverride", {width: 1440, height: 900, deviceScaleFactor: 1, mobile: false});
 
     const playOpensCamp = async () => {
       await click("#menu-play");
