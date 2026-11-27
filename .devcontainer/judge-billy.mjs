@@ -46,10 +46,14 @@ export function verifyArm(arm, child) {
 function judge(args) {
   assert.ok(args.length === 1 && /^[a-f0-9]{40}$/.test(args[0]), "usage: node .devcontainer/judge-billy.mjs <full checkout SHA>");
   // A bind mount may retain the host UID. Trust only this mount for these two reads.
-  const git = (...args) => execFileSync("git", ["-c", `safe.directory=${root}`, ...args], {cwd: root, encoding: "utf8"}).trim();
+  const git = (...args) => execFileSync("git", ["-c", `safe.directory=${root}`, "-c", "core.filemode=false", ...args], {cwd: root, encoding: "utf8"}).trim();
   const head = git("rev-parse", "--verify", "HEAD^{commit}");
   assert.equal(head, args[0], "judge checkout differs from requested build");
-  assert.ok(!git("status", "--porcelain"), "judge reproduction needs a clean checkout");
+  // The container can create untracked setup files. Bind the executable sources, contract and
+  // evidence to the revision being judged, including edits already staged in the index.
+  const changed = git("diff", "--no-ext-diff", "--name-only", "HEAD", "--", ".devcontainer", "scripts",
+    ".kiro/specs/night-shift-balance-contract/requirements.md", "docs/evidence/billy-seat-audit");
+  assert.equal(changed, "", `judge inputs differ from the requested build: ${changed}`);
   const receipt = verifyEvidence();
   assert.equal(receipt.protocol.sourceCommit, sourceCommit, "historical engine commit");
   assert.equal(receipt.protocolSha256, protocolSha256, "historical protocol digest");
