@@ -43,6 +43,7 @@ Each entry has one of three statuses:
 | --- | --- | --- |
 | [design/](design/) | Current | Start at its [index](design/README.md). Fable's design briefs for Kiro, as written, with an index of what was built, and the [release line and scoreboard](design/release-line.md): what is in the game, what is waiting on a playtest and what was cut. |
 | [evidence/](evidence/) | Record | One dated note per piece of work, with the receipts, screenshots, simulation output and logs it cites. Some files are tied to recorded hashes. Never edit an existing file; add a new note. |
+| [media/](media/) | Current | Images from the playable frontier and the illustrated Night Shift review diagram used on the repository front page. |
 | [references/](references/) | Record | A pinned copy of a third-party character-animation guide (Lucca Cerf, MIT license) used as a reference. Not project writing. |
 | [submission/](submission/) | Current | Drafts for the hackathon entry: the submission form text, the build story and the demo script with its playtest protocol. |
 

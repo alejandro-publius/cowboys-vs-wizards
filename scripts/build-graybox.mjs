@@ -45,7 +45,10 @@ const frontier = diorama ? await Promise.all(["title", "camp"].map(async (view) 
 })) : [];
 if (panorama) frontier.push(`--frontier-panorama:url("${panorama}");`);
 if (diorama) {
-  for (const [name, card] of [["billy", "cowboy-billy"], ["wall", "wizard-bone-wall"], ["horseman", "wizard-headless-horseman"]]) {
+  for (const [name, card] of [
+    ["billy", "cowboy-billy"], ["wall", "wizard-bone-wall"], ["horseman", "wizard-headless-horseman"],
+    ["wraith", "wizard-lantern-wraith"], ["dragon", "wizard-dragon"],
+  ]) {
     const painting = await artwork(`assets/cards/illustrated/${card}.webp`);
     if (painting) frontier.push(`--saloon-${name}-art:url("${painting}");`);
   }
@@ -79,7 +82,7 @@ await mkdir(file(".artifacts/outrider-ledger/"), {recursive: true});
 await writeFile(file(`.artifacts/outrider-ledger/${output.replace(/[/.]/g, "_")}.json`), `${JSON.stringify({build: label, gate: outrider.note, camp: outrider.camp,
   output, linked: outrider.cases.map((c) => c.id), ledger: outrider.ledger}, null, 2)}\n`);
 const preview = diorama
-  ? pagePreview("", "Cowboys vs. Wizards: Showdown", "Play a haunted Western card duel. Ride past a Skeleton, protect your Base, and build a deck for the Trail and its Wanted bounties.")
+  ? pagePreview("", "Cowboys vs. Wizards: Showdown", "Ride the six-stop Trail in a haunted Western card game. Scout the Graveyard Dragon, hunt it and bring its card back to your deck.")
   : pagePreview("graybox/", "Showdown | Lightweight board", "Play the lightweight Cowboys vs. Wizards board. Take on the Trail, build your deck, and hunt the Lantern Wraith and the Graveyard Dragon.");
 await writeFile(file(output), template.replace("@@PAGE_PREVIEW@@", () => preview).replace("@@STYLE@@", () => `${style}\n${showdownStyle}\n${replayStyle}\n${boardStyle}`)
   .replace("Cowboys vs. Wizards | Graybox", diorama ? "Cowboys vs. Wizards" : "Cowboys vs. Wizards | Graybox")

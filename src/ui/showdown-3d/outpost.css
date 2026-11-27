@@ -77,6 +77,27 @@ body:has(.camp-outpost[open], .builder-inspect[open]) {
   grid-template-columns: repeat(2, minmax(0, 220px));
   justify-content: center;
 }
+.outpost-wanted .bounty-scout {
+  background: #18273a;
+  border-color: var(--frontier-brass);
+  box-shadow: 0 3px #101a29;
+}
+.outpost-wanted .bounty-scout h3 { color: var(--frontier-brass); }
+#showdown-camp .outpost-wanted #camp-scout-dragon {
+  min-height: 44px;
+  width: 100%;
+  margin-top: 0.4rem;
+  padding: 0.45rem 1rem;
+  color: #2b201a;
+  background: #f1d29a;
+  border: 1px solid #fce6b9;
+  border-radius: 0;
+  box-shadow: 0 3px #987340;
+  font: 700 1rem/1.2 var(--frontier-display);
+}
+#showdown-camp .outpost-wanted .camp-stop-list .sd-tile { height: auto; }
+#showdown-camp .outpost-wanted #camp-scout-dragon:hover { background: #ffe7b7; }
+#showdown-camp .outpost-wanted #camp-scout-dragon:focus-visible { outline: 3px solid white; outline-offset: 3px; }
 #showdown-camp .outpost-stone .sd-tile {
   position: relative;
   display: flex;
@@ -438,6 +459,63 @@ body:has(.camp-outpost[open], .builder-inspect[open]) {
     repeating-linear-gradient(90deg, #00000024 0 2px, transparent 2px 46px), #241614;
 }
 .outpost-saloon > header { background: #241c1c; border-bottom: 2px solid #8a653f; }
+.saloon-bounty-bill {
+  position: relative;
+  isolation: isolate;
+  display: block;
+  overflow: hidden;
+  color: #321e17;
+  background: linear-gradient(102deg, #ecd6a3, #e0ba78 64%, #a67440);
+  border-block: 4px double #6a482c;
+  text-decoration: none;
+}
+.saloon-bounty-copy {
+  width: 56%;
+  padding: clamp(0.85rem, 2.8vw, 1.55rem) clamp(1rem, 4vw, 2.25rem);
+}
+#showdown-camp .saloon-bounty-copy h3 {
+  margin: 0;
+  font: 800 clamp(1.7rem, 4.2vw, 3rem)/1.02 var(--frontier-display);
+  color: #37241b;
+}
+.saloon-bounty-copy p {
+  max-width: 38ch;
+  margin: 0.45rem 0 0.65rem;
+  font-size: 1rem;
+  line-height: 1.33;
+}
+.saloon-bounty-action {
+  font: 700 1.06rem var(--frontier-display);
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+}
+.saloon-bounty-action span { display: inline-block; margin-inline-start: 0.25em; }
+.saloon-bounty-bill:hover .saloon-bounty-action { color: #733310; }
+.saloon-bounty-bill:focus-visible { outline: 4px solid #fff; outline-offset: -6px; }
+.saloon-bounty-bill::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 0 50%;
+  background: linear-gradient(90deg, #e6c68c, transparent 20%),
+    var(--saloon-dragon-art, none) 54% 18% / cover no-repeat;
+}
+.outpost-wanted [data-portrait="wizard-lantern-wraith"],
+.outpost-wanted [data-portrait="wizard-dragon"] {
+  background-position: 50% 28% !important; /* The fallback atlas supplies its own inline position. */
+  background-size: cover;
+}
+.outpost-wanted [data-portrait="wizard-lantern-wraith"] { background-image: var(--saloon-wraith-art); }
+.outpost-wanted [data-portrait="wizard-dragon"] { background-image: var(--saloon-dragon-art); }
+@media (max-width: 540px) {
+  .saloon-bounty-copy { width: 62%; }
+  .saloon-bounty-bill::before { left: 58%; background-position: 45% 24%; }
+}
+@media (max-height: 500px) {
+  .saloon-bounty-copy { width: auto; padding: 0.25rem 1.1rem; }
+  .saloon-bounty-copy :is(h3, p) { display: none; }
+  .saloon-bounty-bill::before { display: none; }
+}
 .saloon-billy-table {
   padding: clamp(0.7rem, 2vw, 1.15rem);
   color: #f7e6cb;
