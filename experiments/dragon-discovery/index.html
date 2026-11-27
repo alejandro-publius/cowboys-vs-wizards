@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; frame-src about:; form-action 'none'">
+<meta name="game-sha256" content="@@BUILD@@"><meta name="instrument-sha256" content="@@INSTRUMENT@@">
+<title>Showdown · Local observation</title>
+<style>
+  :root{font:1.05rem/1.5 system-ui;color:#241e1a;background:#fbf7ef}
+  body{margin:0}main{max-width:40rem;margin:4vh auto;padding:1rem}h1{line-height:1.2}
+  button,textarea,select{font:inherit}button,select{padding:.35em .7em}textarea{width:100%;box-sizing:border-box}
+  fieldset{margin:1em 0}label{display:block;margin:.5rem 0}button{cursor:pointer}
+  [hidden]{display:none!important}iframe{width:100%;height:calc(100dvh - 3rem);border:0;display:block}
+  #end{margin:.25rem .5rem}#error:not(:empty){margin:1rem;color:#841a10}blockquote{white-space:pre-wrap;overflow-wrap:anywhere}
+</style></head><body>
+<main><h1>Local observation</h1><div id="panel"></div>
+  <p><button id="export" hidden>Download observations (.json)</button></p>
+</main>
+<div id="play" hidden><button id="end" type="button">End observation</button></div>
+<p id="error" role="alert"></p>
+<script type="application/json" id="game">@@GAME@@</script>
+<script>@@SCRIPT@@</script>
+</body></html>
