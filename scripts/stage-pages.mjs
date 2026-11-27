@@ -8,6 +8,7 @@
 //                experiments/boot-hill-poker/ copied as is (index.html with inline CSS, app.js and its
 //                imports controls.js, render.js, engine.js); cli.mjs, tests and README stay source-only.
 //                The import map loads the shared RNG staged beside them. The Camp saloon links here from / and /3d/.
+//   /showdown-trailer.mp4  the 55-second gameplay trailer, streamed independently of game startup
 //   /build.json  with --commit: the release identity of /index.html (scripts/write-build-identity.mjs)
 // dist/web/ is deleted first, so nothing from an earlier layout survives.
 import {spawnSync} from "node:child_process";
@@ -45,6 +46,7 @@ await mkdir(new URL("poker/", web), {recursive: true});
 for (const name of POKER_FILES) await cp(new URL(name, POKER_SOURCE), new URL(`poker/${name}`, web));
 await mkdir(new URL("poker/frontier-kit/", web), {recursive: true});
 await cp(new URL("../src/game/frontier-kit/seeded-rng.js", import.meta.url), new URL("poker/frontier-kit/seeded-rng.js", web));
+await cp(new URL("../docs/media/showdown-trailer.mp4", import.meta.url), new URL("showdown-trailer.mp4", web));
 if (commit !== undefined) run("scripts/write-build-identity.mjs", "--commit", commit, "--dir", "dist/web");
 const digest = createHash("sha256").update(await readFile(new URL("index.html", web))).digest("hex");
 console.log(`Staged illustrated Showdown at / and /3d/, with /graybox/, /showdown/ and /poker/; index.html sha256 ${digest}`);
