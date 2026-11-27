@@ -1,4 +1,4 @@
-import {cardArtwork} from "./table-ui.js";
+import {cardArtwork, paintedFace} from "./table-ui.js";
 import {mountNightShiftSaloon} from "./night-shift-saloon.js";
 import {createSaloonStage} from "./saloon-stage.js";
 import {mountForgeShelf} from "../forge-shelf.js";
@@ -17,7 +17,7 @@ const stations = {
   arena: "Agent arena",
   poker: "Boot Hill Poker",
 };
-const readers = {forge: host => mountForgeShelf(host, {portrait: cardArtwork}), ruling: mountScoutRuling, rules: mountRulesDesk, arena: mountArenaTable};
+const readers = {forge: host => mountForgeShelf(host, {portrait: cardArtwork, handFace: type => paintedFace(type, true)}), ruling: mountScoutRuling, rules: mountRulesDesk, arena: mountArenaTable};
 const archived = ["shift", "ruling", "rules", "arena"];
 const button = (page, label = stations[page]) => `<button type="button" data-saloon-show="${page}">${label}</button>`;
 
