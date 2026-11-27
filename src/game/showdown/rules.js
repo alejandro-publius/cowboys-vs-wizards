@@ -425,22 +425,20 @@ export function planTurn(state) {
   return best.plan;
 }
 
-// What `side` can observe at this step: its own hand and traps, public boards, Bases and graveyards,
-// and counts only for both draw piles and the opponent's hidden hand and traps (matches contract.js viewFor).
-function seatPosition(state, side) {
+// The public table and this seat's private zones. Screens and the candidate beginner bot use the same view.
+export function viewFor(state, side) {
   const seen = (name) => {
     const {hand, deck, traps, ...open} = state.sides[name];
     return {...open, handCount: hand.length, deckCount: deck.length, trapCount: traps.length,
       ...(name === side ? {hand, traps} : {})};
   };
   const {sides, seed, ...table} = state;
-  return {...table, viewer: side, sides: {[side]: seen(side), [opponent(side)]: seen(opponent(side))}};
+  return structuredClone({...table, viewer: side, sides: {[side]: seen(side), [opponent(side)]: seen(opponent(side))}});
 }
 
 // A weaker opponent's next action, for a new player's first duels.
 // Level 0 takes any legal action it has. Level 1 takes the single action that looks best right now.
-// Opt-in `seatPrivate` (BSP-1, issue #223) hashes only `seatPosition` instead of `blind.sides` while keeping
-// the default November 20 snapshot behavior unchanged until the next rules cut approves updating Outrider receipts.
+// The optional beginner policy hashes only the information visible to the acting seat.
 function simpleStep(state, level, seatPrivate = false) {
   const side = state.active;
   const blind = structuredClone(state);
@@ -450,7 +448,7 @@ function simpleStep(state, level, seatPrivate = false) {
   if (level === 0) {
     if (!moves.length) return {type: "end"};
     // The position picks the action, so a deal replays the same way.
-    const source = seatPrivate ? seatPosition(state, side) : blind.sides;
+    const source = seatPrivate ? viewFor(state, side) : blind.sides;
     let hash = 0;
     for (const char of JSON.stringify(source)) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
     return moves[hash % moves.length];
@@ -466,10 +464,9 @@ function simpleStep(state, level, seatPrivate = false) {
 
 // Plays the active side's whole turn with the bot. Level 2 plans the whole turn; 0, 1 and 1.5 are weaker opponents.
 // A sprung trap or a Scout draw changes what level 2 knows, so the rest of its plan is made again.
-export function playTurn(state, level = 2, onAction, options = {}) {
+export function playTurn(state, level = 2, onAction, {seatPrivate = false} = {}) {
   if (state.result) return {state, events: []};
   const side = state.active;
-  const seatPrivate = Boolean(options?.seatPrivate || state.seatPrivate);
   // Level 1.5 plans every other turn of its own and plays the rest as level 1.
   if (level === 1.5) level = Math.floor(state.turn / 2) % 2 ? 1 : 2;
   const events = [];

@@ -3,6 +3,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fc from "fast-check";
+import {practiceDuel} from "../../src/match/showdown-practice.js";
 import {viewFor} from "../../src/game/showdown/contract.js";
 import {applyAction, createShowdown, legalActions, opponent, playTurn} from "../../src/game/showdown/rules.js";
 
@@ -80,6 +81,32 @@ test("BSP-2 & BSP-3: seed 6 reproduces the snapshot leak without flag and is inv
     collectPreRevealActions(first, 0, {seatPrivate: true}),
     collectPreRevealActions(second, 0, {seatPrivate: true}),
   );
+});
+
+// Follow the same first-legal Cowboy clicks as showdown-session.test.js, through each recorded practice deal.
+test("the two Boot Hill practice deals replay under the snapshot and candidate beginner policies", () => {
+  function play(seed, options) {
+    let state = createShowdown(seed, practiceDuel(seed).duel.options);
+    while (!state.result) {
+      if (state.active === "wizard") {
+        state = playTurn(state, 0, undefined, options).state;
+      } else {
+        const legal = legalActions(state);
+        const action = legal.find((move) => move.type === "attack")
+          ?? legal.find((move) => move.type !== "end" && move.type !== "cover")
+          ?? legal.find((move) => move.type === "end");
+        state = applyAction(state, action).state;
+      }
+    }
+    return [state.result.winner, state.turn];
+  }
+  for (const [seed, snapshot, candidate] of [
+    [0, ["cowboy", 26], ["cowboy", 28]],
+    [60, ["cowboy", 26], ["wizard", 26]],
+  ]) {
+    assert.deepEqual(play(seed), snapshot);
+    assert.deepEqual(play(seed, {seatPrivate: true}), candidate);
+  }
 });
 
 test("BSP-1 & BSP-3: fast-check hidden-information invariance holds across levels 0, 1, 1.5 and 2 under {seatPrivate: true}", () => {
