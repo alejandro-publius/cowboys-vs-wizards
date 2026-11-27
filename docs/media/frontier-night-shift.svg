@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="551" viewBox="0 0 800 551"
+  role="img" aria-labelledby="title description">
+  <title id="title">Who changes a card? The Night Shift balance review in Cowboys vs Wizards</title>
+  <desc id="description">Kiro CLI changes one stat on a scratch card. A simulator plays the old and new
+    versions on identical seeded deals from both starting seats. The local reviewer checks faction wins
+    and first-seat advantage on tuning and holdout seeds, then seals a verdict. A failure informs
+    the next proposal, up to six attempts. A pass sends the proposal to Alex for design review with
+    Fable. Alex decides whether to keep the published rule or approve a change. In a separate rules
+    audit, an independent Python referee matched the engine at all 5,086 played positions in 100
+    frozen duels. The audit left 39 empty-board Hellfire cases for a design ruling.</desc>
+  <defs>
+    <style>
+      text { fill: #202e28; font-family: Arial, Helvetica, sans-serif; }
+      .serif { font-family: Georgia, "Times New Roman", serif; font-weight: bold; }
+      .small { font-size: 13px; font-weight: 700; letter-spacing: 1.5px; }
+      .body { font-size: 18px; }
+      .cream { fill: #fff2d7; }
+      .gold { fill: #e6bc79; }
+      .muted { fill: #535b4d; }
+      .track { stroke-linecap: round; stroke-linejoin: round; fill: none; }
+      .signal { display: none; }
+      @media (prefers-reduced-motion: no-preference) {
+        .signal { display: inline; animation: dispatch 9s linear 3; }
+      }
+      @keyframes dispatch {
+        0%, 8% { stroke-dashoffset: 35; }
+        28%, 34% { stroke-dashoffset: -252; }
+        55%, 63% { stroke-dashoffset: -550; }
+        92%, 100% { stroke-dashoffset: -1025; }
+      }
+    </style>
+    <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse">
+      <path d="M-1 1 1-1M0 6 6 0M5 7 7 5" fill="none" stroke="#e6bc79" stroke-opacity=".24" stroke-width=".8"/>
+    </pattern>
+    <path id="route" d="M67 199H730Q754 199 754 223V334Q754 353 735 353H632Q614 353 614 371V387" pathLength="1000"/>
+    <clipPath id="header"><path d="M0 0h800v107H0z"/></clipPath>
+  </defs>
+
+  <!-- A telegraph masthead, drawn in two inks like a railway dispatch. -->
+  <path fill="#f5eddc" d="M0 0h800v551H0z"/>
+  <g clip-path="url(#header)" aria-hidden="true">
+    <path fill="#20352f" d="M0 0h800v108H0z"/>
+    <circle cx="714" cy="59" r="32" fill="url(#hatch)" stroke="#a68e64" stroke-width=".8"/>
+    <path d="m488 109 47-21 20 5 31-13 16 4 35-15 28 9 32-5 22 8 46-22 35 11v40z" fill="#34483d"/>
+    <path d="m512 109 51-17 22 8 35-9 24 5 40-14 31 9 18-3 38 8 29-8v22z" fill="#172822"/>
+    <g fill="none" stroke="#a79570" stroke-width="1.25">
+      <path d="M559 55q41 28 86-23 67 37 139-24"/>
+      <path d="M563 62q40 26 91-23 66 36 136-24"/>
+      <path d="M565 66q40 29 95-21 70 36 136-22"/>
+    </g>
+    <g fill="#b9a57c">
+      <path d="m560 52 3-1 7 58h-4zm-7 6 15-2 .6 2-15 2zm1 5 16-2 .6 2-16 2z"/>
+      <path d="m646 24 4-1 12 86h-5zm-10 9 26-4 .7 3-26 4zm.8 9 28-4 .7 3-28 4z"/>
+      <path d="m779-4 5-1 18 113h-7zm-17 13 38-6 1 4-38 6zm2 12 37-6 1 4-37 6z"/>
+    </g>
+    <path stroke="#d2ad73" d="M0 102.5h800"/>
+  </g>
+  <text x="34" y="31" class="small gold">COWBOYS VS WIZARDS <tspan dx="7">/</tspan><tspan dx="7">NIGHT SHIFT</tspan></text>
+  <text x="32" y="84" class="serif cream" font-size="47">Who changes a card?</text>
+
+  <!-- The return line leads into the next draft. Only the pass line reaches design review. -->
+  <g class="track" aria-hidden="true">
+    <path d="M563 180v-20q0-14-14-14H81q-14 0-14 14v13" stroke="#9c7253" stroke-width="1.8" stroke-dasharray="3 4"/>
+    <path d="m62 168 5 8 5-8" stroke="#85573b" stroke-width="2"/>
+    <use href="#route" stroke="#575d4e" stroke-width="5"/>
+    <use href="#route" stroke="#f5eddc" stroke-width="1.6"/>
+    <use href="#route" class="signal" stroke="#b86630" stroke-width="5.5" stroke-dasharray="23 1100" stroke-dashoffset="35"/>
+    <g stroke="#575d4e" stroke-width="2">
+      <path d="m191 194 8 5-8 5m247-10 8 5-8 5"/>
+      <path d="m749 304 5 8 5-8m-94 44-8 5 8 5"/>
+    </g>
+  </g>
+  <rect x="169" y="132" width="295" height="26" fill="#f5eddc"/>
+  <text x="316" y="151" text-anchor="middle" font-size="15.5" font-weight="bold" fill="#85573b">Fail → revise, up to six attempts</text>
+
+  <!-- Three station signs. The icons repeat the written labels in pictures. -->
+  <g stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
+    <g fill="#27423a" stroke="#34483b" stroke-width="1.5">
+      <circle cx="67" cy="199" r="23"/><circle cx="314" cy="199" r="23"/><circle cx="563" cy="199" r="23"/>
+    </g>
+    <g fill="none" stroke="#e4bd80" stroke-width="1.8">
+      <path d="M57 187h14l5 5v19H57zm13 0v6h6m-14 5h9m-9 5h6"/>
+      <path d="m302 190 12-3 4 18-12 3z" fill="#27423a"/>
+      <path d="m314 190 12 2-3 17-12-2z" fill="#27423a"/>
+      <path d="m319 195 2 4-3 3-2-4z"/>
+      <path d="M553 187h18v24l-3-2-3 2-3-2-3 2-3-2-3 2zm4 5h9m-9 4h6m-5 6 3 3 6-7"/>
+    </g>
+  </g>
+  <text x="34" y="258" class="serif" font-size="27">Kiro CLI</text>
+  <text x="34" y="285" class="body"><tspan x="34">Changes one stat on a</tspan><tspan x="34" dy="24">scratch copy of a card.</tspan></text>
+  <text x="281" y="258" class="serif" font-size="27">Seeded duels</text>
+  <text x="281" y="285" class="body"><tspan x="281">Bots play old and new</tspan><tspan x="281" dy="24">cards on identical deals,</tspan><tspan x="281" dy="24">from both starting seats.</tspan></text>
+  <text x="530" y="258" class="serif" font-size="27">Local reviewer</text>
+  <text x="530" y="285" class="body"><tspan x="530">Checks faction wins and</tspan><tspan x="530" dy="24">first-seat advantage on</tspan><tspan x="530" dy="24">two sets of seeds.</tspan></text>
+  <rect x="665" y="342" width="52" height="22" fill="#f5eddc"/>
+  <text x="691" y="358" text-anchor="middle" font-size="14" font-weight="bold" letter-spacing="1.2">PASS</text>
+
+  <!-- The rules audit is a separate inquiry, not a stage or sign-off on a balance run. -->
+  <g>
+    <path fill="#e6e4d1" stroke="#9a9f87" d="M26.5 384.5h344v143h-344z"/>
+    <path d="M33 392h330m-330 128h330" stroke="#a8ab94" stroke-width="1"/>
+    <text x="44" y="417" class="small muted">INDEPENDENT RULES AUDIT</text>
+    <text x="43" y="449" class="serif" font-size="26">Python referee</text>
+    <text x="44" y="478" class="body"><tspan x="44">Matched the engine at all 5,086</tspan><tspan x="44" dy="24">played positions in 100 frozen duels.</tspan></text>
+  </g>
+  <g>
+    <path fill="#263d35" d="M395 384h379v144H395z"/>
+    <path d="M402 391h365v130H402z" stroke="#70806a" fill="none"/>
+    <path d="M607 381.5h14l-7 9z" fill="#b86630"/>
+    <text x="414" y="417" class="small gold">DESIGN DECISION</text>
+    <text x="413" y="449" class="serif cream" font-size="26">Alex reviews with Fable</text>
+    <text x="414" y="478" class="body cream"><tspan x="414">Alex decides whether to keep the</tspan><tspan x="414" dy="24">published rule or approve a change.</tspan></text>
+  </g>
+  <path d="M0 544h800" stroke="#b1a482"/>
+  <path d="M0 548h800" stroke="#706e57" stroke-width="2"/>
+</svg>
