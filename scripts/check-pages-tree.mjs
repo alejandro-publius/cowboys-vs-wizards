@@ -456,7 +456,9 @@ async function browserChecks() {
     await waitForSaloonHome();
     await tap('[data-saloon-show="forge"]');
     await wait(`document.querySelector("${witness} [data-cowboy]")?.textContent.includes("3 orbs")`);
-    const forgeOrbs = () => evaluate(`Array.from(document.querySelectorAll("${witness} li"), troop => troop.textContent)`);
+    const forgeOrbs = () => evaluate(`Array.from(document.querySelectorAll("${witness} .forge-troop-state"), troop => troop.textContent)`);
+    const paintedForgeCards = await evaluate(`[...document.querySelectorAll("${witness} [data-painting][aria-hidden=true] .table-card-face")].map(face => face.querySelector(".table-card-title").innerText)`);
+    assert.deepEqual(paintedForgeCards, ["Hellfire", "Hellfire", "Sheriff", "Skeleton"]);
     const openingTroops = ["Cowboys · Sheriff · 3 orbs", "Wizards · Skeleton · 3 orbs"];
     const afterHellfire = ["Cowboys · Sheriff · 3 → 2 orbs", "Wizards · Skeleton · 3 → 3 orbs"];
     assert.deepEqual(await forgeOrbs(), openingTroops);
