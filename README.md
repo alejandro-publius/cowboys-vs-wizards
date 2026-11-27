@@ -2,7 +2,7 @@
 
 Press **Play** and take the Outrider’s turn. Shoot the Skeleton or ride past it to hit the Wizard Base. In **Camp**, build a 16-card deck, clear six Trail stops and win five hunts to earn the Lantern Wraith or Graveyard Dragon.
 
-**[Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/)** · [Scout the Graveyard Dragon](https://alejandro-publius.github.io/cowboys-vs-wizards/?room=wanted) · [Play the Saloon character book](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=play)
+**[Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/)** · [Watch the 55-second trailer](https://alejandro-publius.github.io/cowboys-vs-wizards/showdown-trailer.mp4) · [Scout the Graveyard Dragon](https://alejandro-publius.github.io/cowboys-vs-wizards/?room=wanted) · [Play the Saloon character book](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=play)
 
 [![The illustrated battlefield at the fifth Graveyard Dragon hunt. The Cowboy Ranger and a trap face the Dragon and its escort between the Western town and the Wizard castle.](docs/media/frontier-dragon-hunt.webp)](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5)
 
