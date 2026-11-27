@@ -1,13 +1,9 @@
-# Design: Judge Devcontainer, Subagent Receipt Guard, and Blog Compliance
+# Judge verification and the Stop receipt guard
 
-## Architecture
+The judge devcontainer uses the Node 22 Bookworm image and the Python 3.12 feature. Creation runs `npm ci`. Ports 4179 and 8080 are available for the Saloon and staged site when a judge starts the respective servers.
 
-1. **One-Click Judge Reproduction Container (`JCS-1`):**
-   - `.devcontainer/devcontainer.json` uses `mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm` with the official `ghcr.io/devcontainers/features/python:1` (`3.12`) feature so Kiro IDE `1.5.11` (*Reopen in Container*) and GitHub Codespaces can run `npm run scorecard`, `node scripts/billy-balance-gate.mjs --arm candidate`, and `proof/referee/referee.py` with zero local setup.
+An ordinary `Stop` registration runs the receipt guard in a checkout. Kiro CLI 3.6 introduced the separate `SubagentStop` event for V3 sessions. Its registration is an opt-in example until a real dispatched subagent has produced a receipt. The guard reports the delivered event name and maps either event to the existing Saloon `Stop` phase.
 
-2. **Kiro CLI `3.5` / `3.6` `SubagentStop` & `Stop` Receipt Integrity Guard (`JCS-2..JCS-5`):**
-   - Adding `subagentstop: "Stop"` to `LEGACY` in `scripts/saloon-activity.mjs` preserves the 14-phase `PHASES` contract in `tests/match/night-shift-presence.test.js` while mapping Kiro CLI `3.6.0` `SubagentStop` events onto `"Stop"`.
-   - `scripts/check-subagent-stop.mjs` verifies checked-in `night-review/bundle@1` cryptographic seals (`bundleSealIntact`) and `reports/properties/latest.json` receipt entries (`auditPropertyReceipt`), failing closed on any tampered bundle or rejected property entry while preventing stop-hook loops.
+The guard enumerates committed evidence bundle paths and checks the working copies with `bundleSealIntact`. It also requires at least one property entry and verifies the receipt with the scorecard's `auditPropertyReceipt`. Each counted fast-check source must also be present at the cited commit. CI fetches the tested commit before invoking the guard in its shallow checkout. The guard itself needs only local Git objects.
 
-3. **Bonus Blog Rule Phrase (`JCS-6`):**
-   - Updates paragraph 2 of the `PUBLISH START`..`PUBLISH END` block in `docs/submission/build-story.md` to carry the exact required hackathon phrase from `docs/submission/rules-check.md` line 84.
+The publishable block of the build story includes the hackathon wording. The author owns publication on a third-party platform.

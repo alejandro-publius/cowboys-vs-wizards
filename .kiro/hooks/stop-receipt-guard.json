@@ -1,0 +1,13 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "stop-receipt-guard",
+      "trigger": "Stop",
+      "action": {
+        "type": "command",
+        "command": "node scripts/check-subagent-stop.mjs Stop"
+      }
+    }
+  ]
+}

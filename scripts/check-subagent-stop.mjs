@@ -1,129 +1,109 @@
-// SubagentStop / Stop receipt integrity guard for `.kiro/hooks/subagent-stop-receipt-guard.json` (JCS-3, JCS-4).
-// Verifies that every checked-in Night Shift review bundle (`night-review/bundle@1`) passes cryptographic seal
-// verification and that `reports/properties/latest.json` has zero rejected entries. Never re-enters on active stop hooks.
-import {existsSync, readdirSync, readFileSync} from "node:fs";
+// Offline Stop / SubagentStop audit of the committed bundle paths and historical property receipt.
+import {execFileSync} from "node:child_process";
+import {readFileSync} from "node:fs";
 import {join, resolve} from "node:path";
 import {fileURLToPath} from "node:url";
 import {bundleSealIntact} from "./night-review.mjs";
-import { canonicalPhase, resolvePhase } from "./saloon-activity.mjs";
+import {resolvePhase} from "./saloon-activity.mjs";
 import {PROPERTY_RECEIPT, auditPropertyReceipt} from "./scorecard.mjs";
 
-export const ROOT = resolve(fileURLToPath(new URL("..", import.meta.url)));
-
-const SHA40 = /^[0-9a-f]{40}$/;
-
-function auditPropertyEntriesShallowSafe(rawReceipt, root) {
-  const full = auditPropertyReceipt(rawReceipt, root);
-  const isShallow = existsSync(join(root, ".git/shallow"));
-  if (!isShallow || full.rejected.length !== 1 || full.rejected[0]?.reason !== "commit is not a commit in this repository") {
-    return full;
-  }
-  // In a shallow clone (e.g. CI fetch-depth: 1), verify 40-hex commit format and audit every entry directly.
-  if (rawReceipt?.schema !== "cvw-property-receipt/1" || !SHA40.test(rawReceipt?.commit ?? "")) {
-    return full;
-  }
-  const passed = new Map();
-  const rejected = [];
-  for (const p of Array.isArray(rawReceipt.properties) ? rawReceipt.properties : []) {
-    const id = typeof p?.id === "string" ? p.id.trim() : "";
-    const file = typeof p?.file === "string" ? p.file : "";
-    const fileOk = /^[\w./-]+\.(?:m?js|cjs|ts)$/.test(file) && !file.split("/").includes("..")
-      && existsSync(join(root, file)) && /["']fast-check["']/.test(readFileSync(join(root, file), "utf8"));
-    const problem = !id ? "no id" : p.status !== "passed" ? `status ${JSON.stringify(p?.status ?? null)}`
-      : !(Number.isSafeInteger(p.numRuns) && p.numRuns >= 1) ? "no executed runs"
-      : !fileOk ? `${file || "no file"} is not a fast-check test in this checkout`
-      : passed.has(id) ? "duplicate id" : null;
-    if (problem) rejected.push({id: id || null, reason: problem});
-    else passed.set(id, {file, numRuns: p.numRuns});
-  }
-  return {passed, rejected};
-}
+export const ROOT = fileURLToPath(new URL("..", import.meta.url));
+const BUNDLE_SCHEMA = "night-review/bundle@1";
 
 export function auditRepoReceipts(root = ROOT) {
-  const evidenceBase = join(root, "docs/evidence");
-  let sealedBundles = 0;
+  const git = (...args) => execFileSync("git", args, {cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"]});
   const tamperedBundles = [];
-  if (existsSync(evidenceBase)) {
-    for (const entry of readdirSync(evidenceBase, {recursive: true})) {
-      if (!/(^|[\\/])bundle\.json$/.test(String(entry))) continue;
-      const relPath = `docs/evidence/${String(entry).split("\\").join("/")}`;
-      let parsed;
-      try {
-        parsed = JSON.parse(readFileSync(join(root, relPath), "utf8"));
-      } catch {
-        tamperedBundles.push(`${relPath}: invalid JSON`);
-        continue;
-      }
-      if (parsed?.schema !== "night-review/bundle@1") continue;
-      if (bundleSealIntact(parsed)) sealedBundles += 1;
-      else tamperedBundles.push(`${relPath}: broken bundleSha256 seal`);
-    }
-  }
-
-  const propFile = join(root, PROPERTY_RECEIPT);
-  let propertyPassed = 0;
-  let propertyRejected = [];
-  if (existsSync(propFile)) {
-    let rawReceipt;
+  let sealedBundles = 0;
+  // Enumerate committed paths so deleting a bundle in the working tree cannot hide it.
+  const tracked = git("ls-tree", "-rz", "--name-only", "HEAD", "--", "docs/evidence").split("\0");
+  for (const file of tracked.filter((path) => path.endsWith("/bundle.json"))) {
     try {
-      rawReceipt = JSON.parse(readFileSync(propFile, "utf8"));
+      const bundle = JSON.parse(readFileSync(join(root, file), "utf8"));
+      if (bundle?.schema !== BUNDLE_SCHEMA) {
+        if (JSON.parse(git("show", `HEAD:${file}`))?.schema === BUNDLE_SCHEMA) {
+          tamperedBundles.push(`${file}: missing Night Shift bundle schema`);
+        }
+      } else if (bundleSealIntact(bundle)) {
+        sealedBundles += 1;
+      } else {
+        tamperedBundles.push(`${file}: broken bundleSha256 seal`);
+      }
     } catch {
-      rawReceipt = null;
+      tamperedBundles.push(`${file}: missing, unreadable or invalid JSON`);
     }
-    const audited = auditPropertyEntriesShallowSafe(rawReceipt, root);
-    propertyPassed = audited.passed.size;
-    propertyRejected = audited.rejected;
   }
 
-  const ok = tamperedBundles.length === 0 && propertyRejected.length === 0 && sealedBundles > 0;
+  let propertyPassed = 0;
+  const propertyRejected = [];
+  try {
+    const receipt = JSON.parse(readFileSync(join(root, PROPERTY_RECEIPT), "utf8"));
+    const {passed, rejected} = auditPropertyReceipt(receipt, root);
+    propertyRejected.push(...rejected);
+    const verifiedFiles = new Map();
+    for (const [id, {file}] of passed) {
+      if (!verifiedFiles.has(file)) {
+        try {
+          const testedSource = git("cat-file", "blob", `${receipt.commit}:${file}`);
+          verifiedFiles.set(file, /["']fast-check["']/.test(testedSource));
+        } catch {
+          verifiedFiles.set(file, false);
+        }
+      }
+      if (verifiedFiles.get(file)) propertyPassed++;
+      else propertyRejected.push({id, reason: `${file} is not a fast-check source at ${receipt.commit}`});
+    }
+    if (propertyPassed === 0 && propertyRejected.length === 0) {
+      propertyRejected.push({reason: "receipt contains no property runs"});
+    }
+  } catch {
+    propertyRejected.push({reason: "receipt is missing, unreadable or invalid JSON"});
+  }
+
   return {
-    ok,
-    sealedBundles,
-    tamperedBundles,
-    propertyPassed,
-    propertyRejected,
+    ok: sealedBundles > 0 && tamperedBundles.length === 0 && propertyRejected.length === 0,
+    sealedBundles, tamperedBundles, propertyPassed, propertyRejected,
   };
 }
 
 export function runStopGuard({stdinText = "", configuredTrigger = "Stop", env = process.env, root = ROOT} = {}) {
-  if (env.SUBAGENT_GUARD_ACTIVE === "1") {
-    return {skipped: true, code: 0, output: ""};
-  }
-  let event = {};
-  if (stdinText.trim()) {
-    try { event = JSON.parse(stdinText); } catch { event = {}; }
-  }
-  if (event?.stop_hook_active === true) {
-    return {skipped: true, code: 0, output: ""};
-  }
-  const phase = resolvePhase(event, configuredTrigger) ?? canonicalPhase(configuredTrigger) ?? "Stop";
+  const skipped = {skipped: true, code: 0, output: ""};
+  if (env.SUBAGENT_GUARD_ACTIVE === "1") return skipped;
+  const event = stdinText.trim() ? JSON.parse(stdinText) : {};
+  const phase = resolvePhase(event, configuredTrigger);
+  if (event?.stop_hook_active === true || phase !== "Stop") return skipped;
+
   const report = auditRepoReceipts(root);
   const summary = {
     guard: "subagent-stop-receipt-guard",
     phase,
-    deliveredEvent: event?.hook_event_name ?? event?.hookEventName ?? configuredTrigger,
+    configuredTrigger,
+    deliveredEvent: event?.hook_event_name ?? event?.hookEventName ?? null,
     ok: report.ok,
     sealedBundles: report.sealedBundles,
     tamperedCount: report.tamperedBundles.length,
     propertyPassed: report.propertyPassed,
     propertyRejectedCount: report.propertyRejected.length,
   };
-  return {
-    skipped: false,
-    code: report.ok ? 0 : 1,
-    output: JSON.stringify(summary),
-    summary,
-    report,
-  };
+  if (!report.ok) {
+    summary.problems = [
+      ...report.tamperedBundles,
+      ...new Set(report.propertyRejected.map(({reason}) => `${PROPERTY_RECEIPT}: ${reason}`)),
+    ];
+    if (report.sealedBundles === 0) summary.problems.push("no intact Night Shift bundles found");
+  }
+  return {skipped: false, code: report.ok ? 0 : 1, output: JSON.stringify(summary), summary, report};
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  let stdinText = "";
-  try { stdinText = readFileSync(0, "utf8"); } catch { stdinText = ""; }
-  const res = runStopGuard({stdinText, configuredTrigger: process.argv[2] ?? "Stop"});
-  if (!res.skipped && res.output) {
-    if (res.code === 0) console.log(res.output);
-    else console.error(res.output);
+  try {
+    const stdinText = process.stdin.isTTY ? "" : readFileSync(0, "utf8");
+    const result = runStopGuard({stdinText, configuredTrigger: process.argv[2]});
+    if (result.output) {
+      (result.code === 0 ? process.stdout : process.stderr).write(result.output + "\n");
+    }
+    process.exitCode = result.code;
+  } catch (error) {
+    console.error(`Receipt guard failed: ${error.message}`);
+    process.exitCode = 1;
   }
-  process.exitCode = res.code;
 }

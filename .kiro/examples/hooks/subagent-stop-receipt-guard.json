@@ -3,10 +3,10 @@
   "hooks": [
     {
       "name": "subagent-stop-receipt-guard",
-      "trigger": "Stop",
+      "trigger": "SubagentStop",
       "action": {
         "type": "command",
-        "command": "node scripts/check-subagent-stop.mjs Stop"
+        "command": "node scripts/check-subagent-stop.mjs SubagentStop"
       }
     }
   ]
