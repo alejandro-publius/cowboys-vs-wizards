@@ -85,6 +85,13 @@ export function mountCampOutpost(root) {
   saloonRoom.className = "camp-outpost outpost-saloon outpost-wood";
   saloonRoom.setAttribute("aria-labelledby", "outpost-saloon-title");
   saloonRoom.innerHTML = `<header><h2 id="outpost-saloon-title">Night Shift saloon</h2><button type="button" autofocus>Back to map</button></header>
+      <a class="saloon-bounty-bill" data-saloon-wanted href="?room=wanted">
+        <div class="saloon-bounty-copy">
+          <h3>Wanted on the frontier</h3>
+          <p>The Lantern Wraith shrugs off spells. The Graveyard Dragon burns the whole line.</p>
+          <span class="saloon-bounty-action">Open the Wanted board <span aria-hidden="true">→</span></span>
+        </div>
+      </a>
       <div class="outpost-room"></div>`;
   saloonRoom.querySelector("header button").addEventListener("click", () => saloonRoom.close());
   root.append(saloonRoom);
@@ -177,10 +184,11 @@ export function mountCampOutpost(root) {
     ]) {
       const content = list.closest(".outpost-room");
       content.querySelector(".outpost-trail-lock").hidden = trailComplete;
-      for (const [index, button] of [...list.querySelectorAll("button")].entries()) {
+      for (const [index, button] of [...list.querySelectorAll("button.sd-tile")].entries()) {
         const art = cardArtwork(cards[index]);
         if (!art) continue;
         art.classList.add("outpost-portrait");
+        art.dataset.portrait = cards[index];
         button.prepend(art);
         button.querySelector(".sd-note").classList.toggle("outpost-lock-note", !trailComplete);
       }
