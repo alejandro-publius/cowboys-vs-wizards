@@ -17,6 +17,7 @@
 //     graph is exactly the six staged files; the root carries the saloon link
 // --browser, native headless Chrome with a fresh profile:
 //   - the 29-card index, both Wanted papers, a free scouting win, paid fifth captures and saved deck replacements
+//   - the title fits desktop, portrait and short landscape. Play lands a real Outrider attack from /
 //   - the title challenge and its deep link open the same playable Bone Fence board, with its
 //     "Choose the Outrider" instruction drawn on the first screen (not only screen-reader text)
 //   - at 375 x 740 a pointer reaches Ride, Continue to Boot Hill and Boot Hill on the first screen,
@@ -46,6 +47,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {verifyLive} from "./verify-build-identity.mjs";
 import {checkCharacterBook} from "./check-character-book.mjs";
+import {checkTitleArt} from "./check-title-art.mjs";
 import {checkWantedCollection} from "./check-wanted-collection.mjs";
 import {shuffleDeck, newDeal} from "../experiments/boot-hill-poker/engine.js";
 import {SAVE_KEY} from "../src/game/showdown/campaign-store.js";
@@ -308,10 +310,57 @@ async function browserChecks() {
       return at?.onScreen && !at.scrolled;
     };
 
+    const waitForTitle = () => wait("document.querySelector('#title-screen #menu-challenge')?.checkVisibility()");
+    const waitForChallenge = () => wait(`document.querySelector('#showdown[data-contest-challenge]:not([hidden]) #sd-field[data-battlefield="bone-fence"] canvas.sd-world')?.width > 0`);
+    const selectOutrider = async (activate) => {
+      const slots = '[data-slot^="cowboy-"]';
+      const rider = await evaluate(`[...document.querySelectorAll(${JSON.stringify(slots)})].find(x => x.textContent.includes('Outrider'))?.dataset.slot`);
+      assert.ok(rider, "the Outrider is on the board");
+      assert.ok(axNamed(await axTree(), "button", /\bOutrider\b/, enabled), "Outrider is an enabled named choice");
+      await activate(`[data-slot="${rider}"]`);
+      await wait(`document.querySelector('[data-base="wizard"]')?.dataset.enemy === 'base' && !!document.querySelector('[data-slot^="wizard-"][data-enemy]')`);
+    };
+    const shotShown = async (eventText, replayLabel) => {
+      await wait(`document.getElementById('sd-restart').textContent === ${JSON.stringify(replayLabel)}`);
+      const shot = await evaluate(`({report: document.getElementById('sd-lesson').innerText,
+        event: [...document.querySelectorAll('#sd-log li')].findLast((line) => line.textContent.includes(${JSON.stringify(eventText)}))?.textContent})`);
+      assert.ok(shot.event, eventText);
+      assert.equal(shot.report, shot.event, "the illustrated board reports the move that actually landed");
+    };
+
     for (const [width, height] of [[375, 667], [740, 375], [1440, 900]]) {
       await send("Emulation.setDeviceMetricsOverride", {width, height, deviceScaleFactor: 1, mobile: width < 1000});
       await open("");
-      await wait("document.querySelector('#menu-saloon')?.checkVisibility()");
+      await waitForTitle();
+      await evaluate("document.fonts.ready.then(() => true)");
+      assert.deepEqual(await evaluate("[innerWidth, innerHeight]"), [width, height], "title viewport");
+      await evaluate(`(${checkTitleArt})()`);
+      for (const [id, label] of [["menu-challenge", "Play"], ["menu-saloon", "Saloon"], ["menu-play", "Camp"]]) {
+        const selector = "#title-screen #" + id;
+        assert.equal(await evaluate(`document.querySelector('${selector}').innerText.trim().toLowerCase()`), label.toLowerCase());
+        assert.ok(await visibleWithoutScroll(selector), `${width} x ${height}: ${label} receives the first-screen hit`);
+      }
+      await pressSeen("#menu-challenge");
+      await waitForChallenge();
+      await selectOutrider(pressSeen);
+      await pressSeen('[data-base="wizard"]');
+      await shotShown("Outrider struck the Wizards' Base for 1", "Try fighting instead");
+      check(`${width} x ${height}: Play opens Bone Fence and the Outrider rides past the Skeleton to hit the Base`);
+
+      await open("");
+      await waitForTitle();
+      const more = "#title-screen summary[data-title-more]";
+      const gallery = "#title-screen details .sd-open-gallery";
+      assert.ok(await evaluate(`document.querySelector('${more}')?.closest('details:not([open])')?.contains(document.querySelector('${gallery}'))`),
+        "More starts closed with the card gallery inside");
+      await pressSeen(more);
+      assert.ok(await visibleWithoutScroll("#title-screen details[open] .book-launch"), "More reveals the book on the first screen");
+      await pressSeen(gallery);
+      await wait("document.querySelector('.sd-gallery[open]')?.checkVisibility()");
+      assert.ok(axNamed(await axTree(), "dialog", /^Card gallery$/), "the title opens the card gallery");
+      await press("Escape", 27);
+      await wait(`!document.querySelector('.sd-gallery').open && document.activeElement.matches('${gallery}')`);
+      await pressSeen(more);
       await pressSeen("#menu-saloon");
       await waitForSaloonHome();
       await evaluate("document.fonts.ready.then(() => true)");
@@ -423,7 +472,7 @@ async function browserChecks() {
     await send("Emulation.setTouchEmulationEnabled", {enabled: false});
     await send("Emulation.setDeviceMetricsOverride", {width: 1440, height: 900, deviceScaleFactor: 1, mobile: false});
 
-    const playOpensCamp = async () => {
+    const openCampFromTitle = async () => {
       await click("#menu-play");
       await wait(`${shown("showdown-camp")}&&document.getElementById('title-screen').hidden`);
       const tile = await evaluate(`document.querySelector('#camp-trail button strong')?.textContent??null`);
@@ -438,10 +487,10 @@ async function browserChecks() {
       await open(rel);
       if (rel === "graybox/") assert.equal(await evaluate(`Boolean(document.getElementById('menu-challenge'))`), false);
       assert.deepEqual(await mainLandmarks(), ["Main menu"], `${BASE_PATH}${rel} exposes only the title's main landmark`);
-      await playOpensCamp();
-      assert.deepEqual(await mainLandmarks(), ["Camp"], `${BASE_PATH}${rel} exposes only the Camp's main landmark after Play`);
+      await openCampFromTitle();
+      assert.deepEqual(await mainLandmarks(), ["Camp"], `${BASE_PATH}${rel} exposes only the Camp's main landmark after entry`);
       clean();
-      check(`${BASE_PATH}${rel}: Play on a clean profile opens the Camp (first Trail duel Boot Hill)`);
+      check(`${BASE_PATH}${rel}: ${rel === "graybox/" ? "Play" : "Camp"} on a clean profile opens the Camp (first Trail duel Boot Hill)`);
       check(`${BASE_PATH}${rel}: Chrome exposes one named main landmark for the title and then the Camp`);
     }
     // A returning player opens the illustrated Camp with a real, unclaimed first Trail reward.
@@ -483,6 +532,10 @@ async function browserChecks() {
     const coverRule = "cover: until your next turn it keeps extra damage off your Base, but it will not hit back.";
     const baseOrbs = () => evaluate(`document.querySelector('[data-base="cowboy"] .sd-orbs').getAttribute('aria-label')`);
     const beforeAttack = await baseOrbs();
+    const trapStacks = await evaluate(`[...document.querySelectorAll('#sd-field [data-zone-title="Traps"]')]
+      .map(n => [n.dataset.zoneCount, n.dataset.zoneMax, n.textContent, n.hidden]).sort()`);
+    assert.deepEqual(trapStacks, [["0", "2", "", true], ["1", "2", "▲ 1", false]],
+      "only the occupied trap stack draws a count, and both stacks report their public capacity");
     const threat = await evaluate(`(() => {
       const painted = document.querySelector('#sd-field .table-selection');
       const note = document.querySelector('.table-forecast-note');
@@ -490,8 +543,8 @@ async function browserChecks() {
         preview: document.getElementById('sd-preview-base').textContent,
         note: note?.checkVisibility({opacityProperty: true, visibilityProperty: true}) ? note.innerText : ''};
     })()`);
-    assert.ok(threat.prompt.includes(trapRisk) && threat.visible.includes(trapRisk), "the aiming prompt and illustrated board explain the public trap risk");
-    assert.equal(threat.visible, `No enemy troops: strike the Base. ${trapRisk} Or take ${coverRule}`, "the trap risk stays with the attack, and the cover choice is drawn too");
+    assert.equal(threat.prompt, `No enemy troops: strike the Base. ${trapRisk} Or take ${coverRule}`, "the accessible prompt retains trap timing and the full cover rule");
+    assert.equal(threat.visible, "Strike Base · trap before damage · or take cover", "the table draws both choices and the trap timing");
     assert.equal(threat.preview, "Without trap effects: Hit the Base for 3", "the Imp's printed damage is conditional while a trap is set");
     assert.equal(threat.note, `Cowboy Base · ${threat.preview}`, "the single legal target's conditional forecast is shown before attacking");
     assert.doesNotMatch(Object.values(threat).join(" "), /Bear Trap|Hex/, "the forecast keeps the trap's identity private");
@@ -512,7 +565,7 @@ async function browserChecks() {
       const orbsOf = (selector) => evaluate(`document.querySelector('${selector} .sd-orbs').getAttribute('aria-label')`);
       const feedback = (text) => wait(`document.getElementById('sd-feedback').textContent.includes(${JSON.stringify(text)})`);
       const pass = async () => { await click("#sd-end"); await wait(shown("sd-curtain")); await click("#sd-ready"); };
-      const fight = `Choose what to attack. Or take ${coverRule}`;
+      const fight = "Pick attack target · or take cover";
       await open("?seed=5");
       await click("#menu-play");
       await click('[data-camp-destination="camp-open-title"]');
@@ -523,7 +576,7 @@ async function browserChecks() {
       await pass();
       await click('[data-slot="wizard-0"]');
       const strike = `No enemy troops: strike the Base. Or take ${coverRule}`;
-      assert.equal(await painted(), strike, "the illustrated table draws both choices before the click");
+      assert.equal(await painted(), "Strike Base · or take cover", "the illustrated table draws both choices before the click");
       await click("#sd-cancel");
       assert.equal(await painted(), "", "Cancel clears the drawn choice");
       await activateByKey('[data-slot="wizard-0"]');
@@ -531,6 +584,7 @@ async function browserChecks() {
         "keyboard focus lands on the Base with its forecast and the cover choice");
       await tabTo("#sd-cover");
       assert.ok(axNamed(await axTree(), "button", /^Take cover$/, (node) => focused(node) && node.description?.value === strike), "Take cover describes the rule at keyboard focus");
+      assert.equal(await evaluate("document.getElementById('sd-cover').title"), strike, "the cover button offers the same full rule on hover");
       const untouched = await orbsOf('[data-base="cowboy"]');
       await press("Enter", 13);
       await feedback("The Wizards' Skeleton took cover.");
@@ -545,7 +599,7 @@ async function browserChecks() {
       await activateByKey('[data-slot="cowboy-0"]');
       const only = `This troop cannot attack now. Take ${coverRule}`;
       assert.ok(axNamed(await axTree(), "button", /^Take cover$/, (node) => focused(node) && node.description?.value === only), "375 px: a troop that cannot attack focuses Take cover, which says why and what it does");
-      assert.equal(await painted(), only, "375 px: the cover-only choice is drawn");
+      assert.equal(await painted(), "Cannot attack · Take cover", "375 px: the cover-only choice is drawn");
       const layout = await evaluate(`(() => {
         const box = (n) => { const r = n.getBoundingClientRect(); return {top: r.top, bottom: r.bottom, left: r.left, right: r.right}; };
         const text = box(document.querySelector('#sd-field .table-selection'));
@@ -599,7 +653,7 @@ async function browserChecks() {
       await click('[data-card^="wizard-wizard-"]');
       const forecast = "Pay Skeleton: Skeleton returns with 1 orb. Pay Imp: no Undead to return.";
       assert.ok(await evaluate(`document.querySelector('.table-selection').checkVisibility() &&
-        document.querySelector('.table-selection').innerText.includes(${JSON.stringify(forecast)})`),
+        document.querySelector('.table-selection').innerText === "Wizard tribute · Skeleton → Skeleton (1 orb) · Imp → no Undead"`),
         "the illustrated table distinguishes both payments before commitment");
       assert.ok(axNamed(await axTree(), "button", new RegExp(tribute),
         (node) => enabled(node) && node.description?.value?.includes(forecast)), "the tribute button describes the choice");
@@ -647,7 +701,7 @@ async function browserChecks() {
     for (const rel of ["", "3d/"]) {
       await send("Storage.clearDataForOrigin", {origin: new URL(site).origin, storageTypes: "all"});
       await open(rel);
-      await playOpensCamp();
+      await openCampFromTitle();
       await click('[data-camp-destination="night-shift-saloon"]');
       await waitForSaloonHome();
       const link = `${saloonRoom} .outpost-poker-link`;
@@ -687,7 +741,7 @@ async function browserChecks() {
       await evaluate(`localStorage.setItem(${JSON.stringify(SAVE_KEY)}, ${JSON.stringify(before)})`);
       await send("Emulation.setDeviceMetricsOverride", {width: 740, height: 375, deviceScaleFactor: 1, mobile: true});
       await open("");
-      await wait(`document.querySelector(".title-scene nav button")?.id === "menu-saloon"`);
+      await waitForTitle();
       await activateByKey("#menu-saloon");
       await waitForSaloonHome();
       assert.ok(axNamed(await axTree(), "dialog", /^Night Shift Saloon$/), "the Saloon home has a dialog name");
@@ -830,7 +884,7 @@ async function browserChecks() {
     await open("graybox/?replay=billy");
     await wait(replayFocused);
     await open("?outrider=case-e&replay=billy");
-    await wait(`${shown("showdown")} && document.querySelector('#sd-field[data-battlefield="bone-fence"] canvas.sd-world')?.width > 0`);
+    await waitForChallenge();
     clean();
     check("The Saloon links directly to Billy's playable replay; the copied URL opens in graybox and respects duel links");
 
@@ -855,20 +909,15 @@ async function browserChecks() {
       assert.ok(at.end.bottom <= at.height, `${label} leaves End turn on the first screen: ${JSON.stringify(at.end)}`);
     };
     const challengeOpens = async (activate) => {
-      await wait(`${shown("showdown")} && document.querySelector('#sd-field[data-battlefield="bone-fence"] canvas.sd-world')?.width > 0`);
+      await waitForChallenge();
       assert.match(await evaluate(`document.getElementById('sd-status').textContent`), /^Ride or Fight\?/);
       await instructionShown();
-      const slots = '[data-slot^="cowboy-"]';
-      const rider = await evaluate(`[...document.querySelectorAll(${JSON.stringify(slots)})].find(x => x.textContent.includes('Outrider'))?.dataset.slot`);
-      assert.ok(rider, "the Outrider is on the board");
-      assert.ok(axNamed(await axTree(), "button", /\bOutrider\b/, enabled), "Outrider is an enabled named choice");
-      await activate(`[data-slot="${rider}"]`);
-      await wait(`document.querySelector('[data-base="wizard"]')?.dataset.enemy === 'base' && !!document.querySelector('[data-slot^="wizard-"][data-enemy]')`);
+      await selectOutrider(activate);
       clean();
     };
     await open("");
-    await wait(`document.getElementById('menu-challenge')?.textContent === 'Ride or Fight?'`);
-    assert.ok(axNamed(await axTree(), "button", /^Ride or Fight\?$/, enabled), "the title challenge has a name");
+    await waitForTitle();
+    assert.ok(axNamed(await axTree(), "button", /^Play Showdown$/, enabled), "the primary title button names the game");
     await activateByKey("#menu-challenge");
     await challengeOpens(activateByKey);
     const openingPosition = () => evaluate(`({
@@ -910,13 +959,6 @@ async function browserChecks() {
     assert.ok(await evaluate("!document.querySelector('.table-forecast-dialog').open && document.activeElement.matches('.table-compare')"),
       "Escape returns to the comparison button with the Outrider still aimed");
     await activateByKey('[data-base="wizard"]');
-    const shotShown = async (eventText, replayLabel) => {
-      await wait(`document.getElementById('sd-restart').textContent === ${JSON.stringify(replayLabel)}`);
-      const shot = await evaluate(`({report: document.getElementById('sd-lesson').innerText,
-        event: [...document.querySelectorAll('#sd-log li')].findLast((line) => line.textContent.includes(${JSON.stringify(eventText)}))?.textContent})`);
-      assert.ok(shot.event, eventText);
-      assert.equal(shot.report, shot.event, "the illustrated board reports the move that actually landed");
-    };
     await shotShown("Outrider struck the Wizards' Base for 1", "Try fighting instead");
     await activateByKey("#sd-restart");
     assert.ok(await evaluate(`document.activeElement?.matches('[data-own]') && document.activeElement.textContent.includes('Outrider')`), "replay returns keyboard focus to the Outrider");
@@ -932,7 +974,7 @@ async function browserChecks() {
     check("Chrome exposes the challenge and targets, recorded Saloon dialog and results, and replay keyboard focus in its accessibility tree");
 
     await open("");
-    await wait(`document.getElementById('menu-challenge')?.textContent === 'Ride or Fight?'`);
+    await waitForTitle();
     await activateByKey("#menu-challenge");
     await challengeOpens(activateByKey);
     assert.equal(await evaluate(`document.getElementById('sd-boot-hill')?.hidden`), true, "Continue to Boot Hill starts hidden");
@@ -960,8 +1002,8 @@ async function browserChecks() {
     await send("Emulation.setDeviceMetricsOverride", {width: 375, height: 740, deviceScaleFactor: 1, mobile: true});
     await send("Storage.clearDataForOrigin", {origin: new URL(site).origin, storageTypes: "all"});
     await open("?seed=0"); // This layout check needs a playable Boot Hill card on turn one.
-    await wait(`document.getElementById('menu-challenge')?.textContent === 'Ride or Fight?'`);
-    await click("#menu-challenge");
+    await waitForTitle();
+    await pressSeen("#menu-challenge");
     await challengeOpens(click);
     await click('[data-base="wizard"]');
     await wait(`/Outrider struck the Wizards' Base for 1/.test(document.getElementById('sd-log').textContent) && !document.getElementById('sd-boot-hill').hidden`);
@@ -984,13 +1026,11 @@ async function browserChecks() {
     const shortChallenge = async (activate) => {
       await send("Storage.clearDataForOrigin", {origin: new URL(site).origin, storageTypes: "all"});
       await open("?seed=0");
-      await wait(`document.getElementById('menu-challenge')?.textContent === 'Ride or Fight?'`);
+      await waitForTitle();
       await activate("#menu-challenge");
-      await wait(`${shown("showdown")} && document.querySelector('#sd-field[data-battlefield="bone-fence"] canvas.sd-world')?.width > 0`);
-      const rider = await evaluate(`[...document.querySelectorAll('[data-slot^="cowboy-"]')].find(x => x.textContent.includes('Outrider'))?.dataset.slot`);
+      await waitForChallenge();
       const end = await evaluate(`document.getElementById('sd-end').getBoundingClientRect().top + scrollY`);
-      await activate(`[data-slot="${rider}"]`);
-      await wait(`document.querySelector('[data-base="wizard"]')?.dataset.enemy === 'base' && !!document.querySelector('[data-slot^="wizard-"][data-enemy]')`);
+      await selectOutrider(activate);
       return end;
     };
     // After the attack has played: Continue to Boot Hill sits under the instruction, clear of the header, turn

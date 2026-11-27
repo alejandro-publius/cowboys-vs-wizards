@@ -114,7 +114,12 @@ const READ = `(() => {
   const spans = host ? [...host.querySelectorAll(".sd-world-labels span")] : [];
   const shown = (s) => !s.hidden && s.textContent.length > 0;
   const orbs = (side) => spans.filter((s) => s.dataset.vortexOrbs === side && shown(s)).map((s) => [...s.textContent].filter((c) => c === "●").length);
-  const grave = (side) => { const m = spans.find((s) => s.dataset.graveLabel === side)?.textContent.match(/Graveyard (\\d+)/); return m ? Number(m[1]) : null; };
+  const grave = (side) => {
+    const node = spans.find((s) => s.dataset.graveLabel === side);
+    if (node?.dataset.zoneCount) return Number(node.dataset.zoneCount);
+    const match = node?.textContent.match(/^Graveyard (\\d+)$/);
+    return match ? Number(match[1]) : null;
+  };
   const names = (wizard) => spans.filter((s) => s.dataset.pieceLabel === "1" && (s.dataset.runeLabel === "1") === wizard && shown(s)).map((s) => s.textContent);
   return {motion: canvas?.dataset.motion ?? null, mode: canvas?.dataset.previewMode ?? null, darkness: Number(host?.style.getPropertyValue("--spell-darkness") || 0),
     cowboyOrbs: orbs("cowboy"), wizardOrbs: orbs("wizard"), cowboyGrave: grave("cowboy"), wizardGrave: grave("wizard"),
@@ -218,8 +223,10 @@ try {
   };
 
   await send("Page.navigate", {url: pathToFileURL(htmlFile).href});
-  await wait(`document.readyState==='complete'&&[...document.querySelectorAll('.sd-open-gallery')].some(e=>e.getClientRects().length)`);
-  await click(".sd-open-gallery");
+  await wait(`document.readyState==='complete'&&document.querySelector('#title-screen .sd-open-gallery')`);
+  const more = "#title-screen details:not([open]) > summary[data-title-more]";
+  if (await evaluate(`!!document.querySelector('${more}')`)) await click(more);
+  await click("#title-screen .sd-open-gallery");
   await wait(`document.querySelector('dialog.sd-gallery')?.open`);
   await click('.sd-gallery-menu [data-art="wizard-singularity"]');
   await wait(`document.querySelector('.sd-gallery-info h3')?.textContent===${JSON.stringify(TYPES["wizard-singularity"].name)}&&document.querySelectorAll('.sd-gallery-moves [data-attack-mode]').length===2`);
@@ -334,9 +341,9 @@ try {
       check("the gallery stays usable after stopping the reel", true);
     }
   }
+  await click(".sd-gallery-close");
+  await wait('!document.querySelector("dialog.sd-gallery").open && document.activeElement.matches("#title-screen .sd-open-gallery")');
   if (scope === "--check-maintenance") {
-    await click(".sd-gallery-close");
-    await wait('!document.querySelector("dialog.sd-gallery").open');
     await click("#menu-play");
     await click('[data-camp-destination="camp-open-title"]');
     await click('#camp-open [data-two="1"]');

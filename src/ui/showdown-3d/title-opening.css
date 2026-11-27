@@ -1,0 +1,254 @@
+/* The original title board, Billy's right-hand aiming frame and the Wizard roster cutout. */
+#title-screen {
+  --rim: #856343;
+  --paper: #ffe4b3;
+  --stage-ink: #132133;
+  max-width: none;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: clamp(8px, 2.2vmin, 24px);
+  background: #100f17;
+}
+.title-scene {
+  isolation: isolate;
+  position: relative;
+  overflow: clip;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  justify-items: center;
+  gap: 0;
+  width: min(100%, 1380px);
+  height: min(880px, calc(100svh - 2 * clamp(8px, 2.2vmin, 24px)));
+  min-height: 310px;
+  border: 1px solid var(--rim);
+  box-shadow: inset 0 0 0 4px #171a22, inset 0 0 0 5px #785d494d;
+  background:
+    radial-gradient(ellipse 72% 69% at 50% 0%, #514034, #29242f 55%, transparent),
+    var(--stage-ink);
+}
+.title-scene::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  pointer-events: none;
+  background:
+    linear-gradient(135deg, var(--rim) 6px, transparent 7px) left top,
+    linear-gradient(225deg, var(--rim) 6px, transparent 7px) right top,
+    linear-gradient(45deg, var(--rim) 6px, transparent 7px) left bottom,
+    linear-gradient(315deg, var(--rim) 6px, transparent 7px) right bottom;
+  background-size: 12px 12px;
+  background-repeat: no-repeat;
+}
+#title-screen h1 {
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  align-self: start;
+  padding-top: clamp(26px, 8svh, 88px);
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+}
+.title-matchup {
+  display: flex;
+  align-items: center;
+  gap: .5em;
+  font: 900 clamp(16px, min(3.8vw, 3.8svh), 32px)/1.1 Rockwell, Georgia, serif;
+  letter-spacing: .05em;
+  text-shadow: 1px 2px #15121b;
+}
+.title-matchup::before, .title-matchup::after {
+  content: "";
+  width: clamp(12px, 3vw, 45px);
+  height: 4px;
+  border-block: 1px solid var(--rim);
+}
+.title-cowboys { color: #f3c081; }
+.title-wizards { color: #d7bee9; }
+.title-versus { color: #c4a48a; font-size: .57em; font-style: italic; }
+.title-showdown {
+  margin: .045em 0 0;
+  transform: skewX(-3deg);
+  color: var(--paper);
+  font: 900 clamp(50px, min(12vw, 13.5svh), 126px)/.98 Impact, Haettenschweiler, "Arial Narrow", sans-serif;
+  letter-spacing: .017em;
+  text-shadow: 0 1px #edc284, 0 3px #a56942, 0 5px #754530, 0 7px #33212a, 0 9px 10px #100b15aa;
+}
+.opening-stage {
+  --table-width: 100%;
+  position: absolute;
+  bottom: 2%;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  width: min(100%, 159svh, 1240px);
+  aspect-ratio: 1440 / 565;
+}
+.opening-stage::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: var(--table-width);
+  transform: translateX(-50%);
+  aspect-ratio: 1440 / 475;
+  background: var(--frontier-title) center bottom / 100% auto no-repeat;
+  mask-image: linear-gradient(to bottom, transparent, #000 16%, #000 90%, transparent);
+}
+.opening-stage i {
+  position: absolute;
+  bottom: 21%;
+  height: min(43svh, 29vw, 356px);
+  background-repeat: no-repeat;
+  filter: drop-shadow(1px 3px 1px #211622b0);
+}
+.opening-billy {
+  left: 23%;
+  transform: translateX(-52%);
+  aspect-ratio: 584 / 466;
+  background-image: var(--frontier-billy);
+  background-size: 200% 100%;
+  background-position: right;
+}
+/* Billy's sheet places the holstered pose to the left of the aiming pose. */
+@media (prefers-reduced-motion: no-preference) {
+  .opening-billy { animation: opening-draw 580ms step-end; }
+  @keyframes opening-draw {
+    from { background-position: left center; }
+    to { background-position: right center; }
+  }
+}
+.opening-wizard {
+  right: 24%;
+  transform: translateX(50%) scaleX(-1);
+  aspect-ratio: 301 / 424;
+  background-image: var(--frontier-wizard);
+  background-size: contain;
+}
+.title-scene nav {
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  justify-content: center;
+  justify-items: center;
+  align-content: start;
+  gap: 6px 0;
+  margin-top: clamp(18px, 3.3svh, 32px);
+}
+.title-scene nav button {
+  color: #e3cfb3;
+  min-width: 72px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font: 700 16px/1.1 Rockwell, Georgia, serif;
+}
+.title-scene nav .title-play {
+  position: relative;
+  order: -1;
+  grid-column: 1 / -1;
+  min-width: clamp(154px, 18vw, 232px);
+  min-height: clamp(46px, 6.5svh, 64px);
+  padding: .2em 1.3em;
+  color: #382319;
+  border: 2px solid #301f19;
+  border-radius: 4px;
+  outline: 1px solid #a3764f;
+  outline-offset: 1px;
+  background:
+    radial-gradient(circle at 10px 50%, #8c5d37 1.5px, transparent 2px),
+    radial-gradient(circle at calc(100% - 10px) 50%, #8c5d37 1.5px, transparent 2px),
+    linear-gradient(#f9d99c, #e1ae6d);
+  box-shadow: inset 0 0 0 2px #f7d097, inset 0 0 0 3px #9b6e47, 0 4px #64452e, 0 6px 0 1px #131521;
+  font: 900 clamp(24px, 3.7svh, 34px)/1 Rockwell, Georgia, serif;
+  text-transform: uppercase;
+  letter-spacing: .055em;
+}
+.title-scene nav button:not(.title-play) {
+  justify-self: stretch;
+  background: linear-gradient(#3b3231, #282730);
+  border-block: 1px solid #675543;
+}
+.title-scene nav button:not(.title-play) + button { border-left: 1px solid #675543; }
+.title-scene nav button:nth-child(2):last-child { grid-column: 1 / -1; }
+.title-scene nav button:hover { color: #fff4dc; text-decoration: underline; text-underline-offset: .2em; }
+.title-scene nav .title-play:hover { color: #402618; filter: brightness(1.08); }
+.title-scene nav button:active { translate: 0 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .title-scene nav button:active { translate: none; }
+}
+#title-screen nav button:focus-visible, #title-screen summary:focus-visible {
+  outline: 3px solid #fff1c6;
+  outline-offset: 4px;
+}
+.opening-more {
+  position: absolute;
+  z-index: 2;
+  top: 9px;
+  right: 11px;
+}
+#title-screen .opening-more summary {
+  display: grid;
+  place-content: center;
+  margin-left: auto;
+  width: 44px;
+  padding: 0;
+  color: #d4b99b;
+  font: 700 17px/1 system-ui, sans-serif;
+  letter-spacing: .1em;
+  list-style: none;
+}
+.opening-more summary::-webkit-details-marker { display: none; }
+.opening-more .book-shelf {
+  display: grid;
+  justify-content: stretch;
+  gap: 0;
+  min-width: 155px;
+  padding: 5px;
+  border: 1px solid var(--rim);
+  background: #211e27;
+  box-shadow: 0 4px 12px #0d0c12ad;
+}
+#title-screen .book-shelf button {
+  justify-content: start;
+  justify-self: stretch;
+  margin: 0;
+  padding: .6rem;
+  background: transparent;
+  border: 0;
+  color: var(--paper);
+  font: 600 15px/1.2 system-ui, sans-serif;
+  text-align: left;
+}
+#title-screen .book-shelf button:hover { background: #39313a; }
+
+@media (max-width: 600px) and (orientation: portrait) {
+  .title-scene { align-content: center; }
+  #title-screen h1 { padding-top: 0; }
+  .title-showdown { font-size: clamp(46px, 16vw, 82px); }
+  .opening-stage {
+    --table-width: 148%;
+    position: relative;
+    width: 100%;
+    bottom: auto;
+    left: auto;
+    transform: none;
+    margin-top: clamp(9px, 2svh, 18px);
+    aspect-ratio: 1.35;
+  }
+  .opening-stage i { bottom: 19%; height: min(47vw, 33svh); }
+  .opening-billy { left: 26%; }
+  .opening-wizard { right: 21%; }
+}
+@media (max-height: 480px) and (orientation: landscape) {
+  #title-screen h1 { padding-top: 9px; }
+  .title-matchup { font-size: 14px; }
+  .title-showdown { font-size: min(12svh, 62px); }
+  .title-scene nav { margin-top: 13px; gap: 1px 0; }
+  .opening-stage { bottom: 0; width: min(100%, 174svh); }
+  .opening-stage i { height: 41svh; bottom: 15%; }
+  .opening-billy { left: 25%; }
+  .opening-wizard { right: 24%; }
+}

@@ -243,7 +243,7 @@ function build(host, canvas, screen, closeup = false) {
     }
   });
 
-  function label(key, [x, y, z], word, active = true) {
+  function label(key, [x, y, z], word) {
     if (!worldLabels.has(key)) {
       const text = document.createElement("span");
       labelLayer.append(text);
@@ -252,8 +252,8 @@ function build(host, canvas, screen, closeup = false) {
     const text = worldLabels.get(key);
     text.hidden = !word;
     text.textContent = word;
-    text.classList.toggle("empty", !active);
     place(text, x, y, z);
+    return text;
   }
   function pieceAt(side, at, index = 0) {
     const key = side + at + index;
@@ -323,26 +323,30 @@ function build(host, canvas, screen, closeup = false) {
               : 0,
         );
       }
-      for (const [at, count, title] of [
-        ["deck", s.deckCount, "Deck"],
-        ["discard", s.discard.length, "Graveyard"],
+      for (const [at, count, title, glyph] of [
+        ["deck", s.deckCount, "Deck", ""],
+        ["discard", s.discard.length, "Graveyard", "✝ "],
       ]) {
         const [x, , z] = zone(side, at);
         const stack = pieceAt(side, at);
         stack.visible = count > 0;
         stack.scale.y = Math.min(4, 1 + count / 7);
-        label(side + at, [x, 0.071, z + 0.7], title + " " + count, count > 0);
-        if (at === "discard") worldLabels.get(side + at).dataset.graveLabel = side;
+        const node = label(side + at, [x, 0.071, z + 0.7], count > 0 ? glyph + count : "");
+        node.dataset.zoneTitle = title;
+        node.dataset.zoneCount = String(count);
+        if (at === "discard") node.dataset.graveLabel = side;
       }
       const [x, , z] = zone(side, "trap", TRAP_SLOTS - 1);
       // A trap's identity never leaves Showdown's own seat-scoped controls.
       for (let slot = 0; slot < TRAP_SLOTS; slot++) pieceAt(side, "trap", slot).visible = s.trapCount > slot;
-      label(
+      const trapNode = label(
         side + "traps",
         [x + (side === "wizard" ? 1.04 : -0.28), 0.066, z + 0.81],
-        "Traps " + s.trapCount + "/" + TRAP_SLOTS,
-        s.trapCount > 0,
+        s.trapCount > 0 ? "▲ " + s.trapCount : "",
       );
+      trapNode.dataset.zoneTitle = "Traps";
+      trapNode.dataset.zoneCount = String(s.trapCount);
+      trapNode.dataset.zoneMax = String(TRAP_SLOTS);
     }
     const location = display.location?.cardId;
     if ((location ?? null) !== locationId) {
@@ -355,7 +359,7 @@ function build(host, canvas, screen, closeup = false) {
         locationGroup.add(prop);
       }
     }
-    label("location", [0, 0.08, 1.5], location ? cardOf(location).name : "Location", Boolean(location));
+    label("location", [0, 0.08, 1.5], location ? cardOf(location).name : "");
   }
 
   function draw(flare) {
@@ -554,7 +558,11 @@ function build(host, canvas, screen, closeup = false) {
 
 export function mountGallery(title, duel, ownedBySide) {
   const openReplay = mountCardGallery(title, duel, (host, canvas, dialog) => build(host, canvas, dialog, true));
-  return mountCharacterBook(title, duel, {ownedBySide, openReplay, portrait: cardArtwork, handFace: paintedFace});
+  const openBook = mountCharacterBook(title, duel, {ownedBySide, openReplay, portrait: cardArtwork, handFace: paintedFace});
+  const more = title.querySelector(".opening-more");
+  more.open = new URLSearchParams(location.search).get("book") === "1";
+  more.append(title.querySelector(".book-shelf"));
+  return openBook;
 }
 
 function disposePawn(group) {
@@ -593,13 +601,20 @@ export function mountDiorama(root) {
   field.prepend(canvas, labels);
   let game,
     venue,
+    animationFinished,
     failed = false;
+  function finishAnimation() {
+    const finished = animationFinished;
+    animationFinished = null;
+    finished?.();
+  }
   function fallback() {
+    failed = true;
     game?.clear();
     canvas.hidden = true;
     root.classList.remove("sd-diorama");
-    table.restore();
-    failed = true;
+    table.restoreBoard();
+    finishAnimation();
   }
   canvas.addEventListener("webglcontextlost", fallback);
   return {
@@ -607,27 +622,30 @@ export function mountDiorama(root) {
       venue = id;
     },
     paint(view, start) {
-      if (failed) return;
-      try {
-        game ??= build(field, canvas, root);
-        game.setBattlefield(venue);
-      } catch (error) {
-        console.warn("Showdown 3D unavailable.", error);
-        fallback();
-        return;
+      animationFinished = null;
+      if (!failed) {
+        try {
+          game ??= build(field, canvas, root);
+          game.setBattlefield(venue);
+          root.classList.add("sd-diorama");
+        } catch (error) {
+          console.warn("Showdown 3D unavailable.", error);
+          fallback();
+        }
       }
-      root.classList.add("sd-diorama");
       table.paint(view);
-      game.paint(view, start);
+      if (!failed) game.paint(view, start);
     },
     clear() {
+      animationFinished = null;
       game?.clear();
-      table.restore();
+      table.clear();
       root.classList.remove("sd-diorama");
     },
     animate(trace, finished) {
-      if (!failed && game) game.animate(trace, finished);
-      else finished?.();
+      animationFinished = finished;
+      if (!failed && game) game.animate(trace, finishAnimation);
+      else finishAnimation();
     },
   };
 }

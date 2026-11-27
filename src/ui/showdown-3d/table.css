@@ -380,10 +380,10 @@
   color: #fff0cc;
   padding-inline: 1px;
 }
-:is(.sd-diorama #sd-hand, .book-hero) .sd-card-art {
+:is(#sd-hand, .book-hero) .sd-card-art {
   position: relative;
 }
-:is(.sd-diorama #sd-hand, .book-hero) .sd-card-art .table-card-kind {
+:is(#sd-hand, .book-hero) .sd-card-art .table-card-kind {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -394,13 +394,22 @@
   font: 650 clamp(8px, 0.65vw, 10px)/1.1 system-ui, sans-serif;
   letter-spacing: normal;
 }
-:is(.sd-diorama #sd-hand, .book-hero) .table-card-copy {
+:is(#sd-hand, .book-hero) .table-card-copy {
   font-size: clamp(8px, 0.72vw, 11px);
 }
-:is(.sd-diorama #sd-hand, .book-hero) .table-card-rule {
+:is(#sd-hand, .book-hero) .table-card-rule {
   display: block;
   overflow: visible;
   overflow-wrap: anywhere;
+}
+#showdown:not(.sd-diorama) #sd-hand .table-card-painted {
+  width: min(9rem, calc(50% - .25rem));
+}
+#showdown:not(.sd-diorama) #sd-hand .table-card-title {
+  font-size: 1rem;
+}
+#showdown:not(.sd-diorama) #sd-hand :is(.table-card-copy, .table-card-kind) {
+  font-size: .75rem;
 }
 .table-hand-rules {
   max-width: 54rem;
@@ -454,7 +463,12 @@
 }
 .table-selection,
 .table-forecast-note {
-  margin: 0;
+  width: fit-content;
+  margin: 0 auto;
+  padding: 0.16rem 0.58rem;
+  border-radius: 3px;
+  background: rgb(15 18 29 / 72%);
+  font-size: clamp(13px, 1.05vw, 15px);
 }
 .table-forecast-note {
   color: #ffde97;

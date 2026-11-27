@@ -1,4 +1,4 @@
-// Check eight staged landing states with Chrome’s accessibility tree and DOM.
+// Check staged landing states with Chrome’s accessibility tree and DOM.
 // Usage:
 //   node scripts/stage-pages.mjs --commit "$(git rev-parse HEAD)"
 //   node scripts/browser-accessibility-audit.mjs [--dir dist/web] [--out .artifacts/accessibility-audit.json]
@@ -30,7 +30,8 @@ const mime = {
 
 // Select generated, route-specific content so static shells and loading screens cannot pass.
 const ROUTES = [
-  {id: "title-3d", rel: "", marker: "#title-screen #menu-saloon"},
+  {id: "title-3d", rel: "", marker: "#title-screen #menu-challenge", buttonName: "Play Showdown"},
+  {id: "title-play", rel: "", enter: "#title-screen #menu-challenge", marker: "#showdown[data-contest-challenge] [data-own]", polite: true},
   {id: "saloon-review", rel: "?saloon=review", enter: '#room-for-night-shift-saloon[open] [data-saloon-show="table"]',
     marker: '[data-saloon-page="table"] [data-shot=baseline]', modal: true, polite: true, feedback: ".saloon-shot-result"},
   {id: "outrider-challenge", rel: "?outrider=case-e", marker: "#showdown[data-contest-challenge] [data-own]", polite: true},
@@ -193,6 +194,12 @@ try {
     await send("Input.dispatchKeyEvent", {type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13});
   }
 
+  async function exposedNodes(selector) {
+    const {result} = await send("Runtime.evaluate", {expression: `document.querySelector(${JSON.stringify(selector)})`});
+    const {nodes} = await send("Accessibility.getPartialAXTree", {objectId: result.objectId, fetchRelatives: false});
+    return nodes.filter((node) => !node.ignored);
+  }
+
   // Exercise one keyboard action in each recorded review. Check the updated text and its exposed live property.
   async function checkFeedback(route) {
     const status = `document.querySelector(${JSON.stringify(route.feedback)})`;
@@ -200,9 +207,7 @@ try {
     const before = await evaluate(visibleText);
     await activateByKey(route.marker);
     await wait(`${visibleText}.length > 0 && ${visibleText} !== ${JSON.stringify(before)}`);
-    const {result} = await send("Runtime.evaluate", {expression: status});
-    const {nodes} = await send("Accessibility.getPartialAXTree", {objectId: result.objectId, fetchRelatives: false});
-    return nodes.some((node) => !node.ignored && isPolite(node));
+    return (await exposedNodes(route.feedback)).some(isPolite);
   }
 
   const isPolite = (node) => node.properties?.some((p) => p.name === "live" && p.value.value === "polite");
@@ -231,6 +236,9 @@ try {
     if (domAudit.duplicateIds.length) routeIssues.push(`duplicate ids: ${domAudit.duplicateIds.join(", ")}`);
     if (domAudit.brokenAriaRefs.length) routeIssues.push(`broken ARIA refs: ${domAudit.brokenAriaRefs.join(", ")}`);
     if (!controls.length) routeIssues.push("no exposed controls");
+    if (route.buttonName && !(await exposedNodes(route.marker)).some((node) => node.role.value === "button" && node.name?.value === route.buttonName)) {
+      routeIssues.push(`${route.marker} must expose a button named "${route.buttonName}"`);
+    }
     if (unnamed.length) routeIssues.push(`unnamed controls: ${unnamed.map((n) => n.role.value + "#" + n.backendDOMNodeId).join(", ")}`);
     if (route.modal ? dialogs !== 1 || mains !== 0 : mains !== 1) {
       routeIssues.push(`expected ${route.modal ? "one named modal with the background excluded" : "one main landmark"}; found ${mains} main, ${dialogs} named dialog(s)`);

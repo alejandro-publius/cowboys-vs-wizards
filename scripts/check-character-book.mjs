@@ -60,6 +60,14 @@ export async function checkBookEntry(evaluate, id) {
 
 // Play the staged book through its pages and launchers, including a troop a new player does not own.
 export async function checkCharacterBook({open, click, press, evaluate, wait}) {
+  await open("");
+  await wait("document.querySelector('#title-screen details:not([open]) > summary[data-title-more]')?.checkVisibility()");
+  await click("#title-screen summary[data-title-more]");
+  await click("#title-screen details[open] .book-launch");
+  await wait("document.querySelector('.character-book[open] .book-portrait[aria-pressed=true]')?.checkVisibility()");
+  await press("Escape", 27);
+  await wait("!document.querySelector('.character-book').open && document.activeElement.matches('#title-screen .book-launch')");
+
   await open("?book=1");
   await wait("document.querySelector('.character-book')?.open");
   const career = () => evaluate(`localStorage.getItem(${JSON.stringify(SAVE_KEY)})`);

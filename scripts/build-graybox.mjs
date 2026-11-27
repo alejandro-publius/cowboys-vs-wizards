@@ -41,8 +41,10 @@ const atlas = diorama ? await readFile(file("assets/cards/showdown-diorama.webp"
   throw error;
 }) : "";
 const panorama = diorama ? await artwork("assets/scenes/showdown-storybook.webp") : "";
-const frontier = diorama ? await Promise.all(["title", "camp"].map(async (view) => {
-  const image = await readFile(file(`assets/scenes/showdown-${view}.webp`), "base64");
+const frontier = diorama ? await Promise.all(Object.entries({
+  title: "showdown-title", camp: "showdown-camp", billy: "billy-poses", wizard: "actors/wizard-wizard",
+}).map(async ([view, scene]) => {
+  const image = await readFile(file(`assets/scenes/${scene}.webp`), "base64");
   return `--frontier-${view}:url("data:image/webp;base64,${image}");`;
 })) : [];
 if (panorama) frontier.push(`--frontier-panorama:url("${panorama}");`);
@@ -59,6 +61,7 @@ const [template, style, showdownStyle, replayStyle, boardStyle, boardLicense, bu
   read("apps/replay-room/src/room.css"),
   diorama ? Promise.all([
     read("src/ui/showdown-3d/frontier.css"),
+    read("src/ui/showdown-3d/title-opening.css"),
     read("src/ui/showdown-3d/board.css"),
     read("src/ui/showdown-3d/table.css"),
     read("src/ui/showdown-3d/character-book.css"),
@@ -85,5 +88,7 @@ const preview = diorama
 const pageTemplate = saloonBook ? template.replace("<body>", '<body data-entry-room="saloon">') : template;
 await writeFile(file(output), pageTemplate.replace("@@PAGE_PREVIEW@@", () => preview).replace("@@STYLE@@", () => `${style}\n${showdownStyle}\n${replayStyle}\n${boardStyle}`)
   .replace("Cowboys vs. Wizards | Graybox", diorama ? "Cowboys vs. Wizards" : "Cowboys vs. Wizards | Graybox")
+  .replace("@@TITLE_NAME@@", diorama ? ' <span class="title-showdown">Showdown</span>' : "")
+  .replace("@@TITLE_STAGE@@", diorama ? '<div class="opening-stage" aria-hidden="true"><i class="opening-billy"></i><i class="opening-wizard"></i></div><details class="opening-more"><summary data-title-more aria-label="More" title="More">•••</summary></details>' : "")
   .replace("@@SCRIPT@@", () => script + (boardLicense ? `\n/*\n${boardLicense}\n*/` : "")));
 console.log(`Built ${output} (${diorama ? "3D diorama" : "graybox"}, build ${label ?? "not identified"}); Outrider gate: ${outrider.note}`);

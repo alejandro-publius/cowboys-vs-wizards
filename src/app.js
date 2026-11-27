@@ -286,10 +286,10 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     const challenge = document.createElement("button");
     challenge.id = "menu-challenge";
     challenge.type = "button";
-    challenge.className = "frontier-plaque";
-    challenge.textContent = "Ride or Fight?";
+    challenge.textContent = "Play";
     challenge.addEventListener("click", () => openOutrider("case-e"));
     play.before(challenge);
+    play.textContent = "Camp";
   }
   // K-096: Boot Hill practice, collapsed at the end of the Camp. Each deal is a native link (?practice=<seed>) that can
   // be copied or opened in a new tab; a plain click or Enter opens the same duel here through openPractice.
@@ -357,14 +357,16 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     const saloon = document.createElement("button");
     saloon.id = "menu-saloon";
     saloon.type = "button";
-    saloon.className = "frontier-plaque";
-    saloon.textContent = "Night Shift Saloon";
+    saloon.textContent = "Saloon";
     saloon.setAttribute("aria-haspopup", "dialog");
     saloon.setAttribute("aria-controls", "room-for-night-shift-saloon");
     saloon.addEventListener("click", () => openSaloon());
-    play.parentElement.prepend(saloon);
-    play.textContent = "Camp";
-    play.classList.add("menu-camp");
+    (node("menu-challenge") ?? play).after(saloon);
+  }
+  if (diorama) {
+    const primary = node("menu-challenge") ?? play;
+    primary.classList.add("title-play");
+    primary.setAttribute("aria-label", "Play Showdown");
   }
   const openBillyReplay = () => {
     outpost?.open("camp-collection-room");
@@ -394,5 +396,6 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
       openBillyReplay();
     } else if (directRoom) openRoom();
     else if (query.get("room") === "wanted" && evenFight === null) openWanted();
+    else if (outpost && !directBook && query.get("saloon") === "play") openSaloon();
   }
   });
