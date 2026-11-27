@@ -67,7 +67,7 @@ test("links: anchors follow GitHub's heading slugs, repeats and explicit anchors
   for (const none of ["a.md", "a.md#", "x.js#L12", "x.js#L3-L9"]) assert.equal(fragmentOf(none), null, none);
 });
 
-test("links: every relative link and image in tracked Markdown points at something that exists", () => {
+test("JSP-4 links: every relative link and image in tracked Markdown points at something that exists", () => {
   const {files, links, broken} = checkLinks();
   assert.ok(files > 0 && links > 0, "found Markdown files and links to check");
   const found = broken.map(({file, target}) => `${file} -> ${target}`);
