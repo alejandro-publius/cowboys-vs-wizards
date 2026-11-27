@@ -1,0 +1,38 @@
+name: Judge devcontainer
+
+on:
+  pull_request:
+    paths:
+      - .devcontainer/devcontainer.json
+      - .github/workflows/judge-devcontainer.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  boot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install the Dev Container CLI on the runner
+        run: |
+          npm install --prefix "$RUNNER_TEMP/judge-cli" @devcontainers/cli@0.90.0
+          echo "$RUNNER_TEMP/judge-cli/node_modules/.bin" >> "$GITHUB_PATH"
+
+      - name: Boot the judge devcontainer and run its postCreateCommand
+        run: devcontainer up --workspace-folder .
+
+      - name: Check runtimes, installed dependencies and judge commands
+        run: |
+          devcontainer exec --workspace-folder . bash -euo pipefail -c '
+            node --version | grep -E "^v22\."
+            python3 --version | grep -E "^Python 3\.12\."
+            npm ls --depth=0
+            python3 proof/referee/referee.py --check-catalog prototypes/showdown/cards.csv
+            node scripts/billy-balance-gate.mjs --arm candidate
+          '
