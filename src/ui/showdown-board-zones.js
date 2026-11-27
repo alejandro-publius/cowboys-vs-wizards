@@ -10,7 +10,7 @@ export function boardZonesHtml(view, {shared, challenge, recent}) {
     const pile = view.sides[side].discard;
     if (!pile.length) return "";
     const label = `${FACTION[side]} graveyard · ${pile.length} ${pile.length === 1 ? "card" : "cards"} · newest ${name(pile.at(-1))}`;
-    return `<button type="button" data-graveyard="${side}" aria-haspopup="dialog" aria-label="${label}" title="${label}"><span aria-hidden="true">✝</span> ${FACTION[side]} ${pile.length}</button>`;
+    return `<button type="button" data-graveyard="${side}" aria-haspopup="dialog" aria-label="${label}"><span class="sd-pile-count" aria-hidden="true">${pile.length}</span><span class="sd-pile-side" aria-hidden="true">${FACTION[side]}</span></button>`;
   }).join("");
   if (challenge) return piles;
 

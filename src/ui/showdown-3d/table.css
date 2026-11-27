@@ -100,7 +100,7 @@
 }
 .sd-diorama #sd-end {
   order: 9;
-  font-size: clamp(13px, 1.15vw, 17px);
+  font-size: clamp(15px, 1.15vw, 17px);
 }
 .sd-diorama #sd-restart {
   font-size: 12px;
@@ -212,6 +212,8 @@
    sky and pinned to the viewport, so the next step needs no scroll. Boot Hill has no challenge marker and keeps
    its own row. The underline is the title screen's text-button mark. */
 @media (orientation: landscape) and (max-height: 570px) {
+  /* A vertical swipe across the board reaches the hand below it. Horizontal drags still orbit. */
+  .sd-diorama #sd-field .sd-world { touch-action: pan-y; }
   #showdown.sd-diorama[data-contest-challenge] #sd-boot-hill {
     position: fixed;
     top: 100px;
@@ -286,6 +288,13 @@
     1px 1px 1px #161926,
     -1px 0 1px #161926,
     0 2px 2px #12151b;
+}
+.sd-diorama #sd-field .sd-world-labels > span:not(:empty) {
+  padding: 1px 3px;
+  border-radius: 2px;
+  background: #171922d9;
+  font: 650 clamp(11px, 1vw, 14px)/1.1 system-ui, sans-serif;
+  text-shadow: 0 1px 1px #12151b;
 }
 .sd-diorama .sd-world-labels span[data-piece-label="1"] {
   color: #fff1d9;
@@ -510,6 +519,7 @@
 .sd-battle-hud:not(.sd-diorama) #sd-hand { position: relative; }
 #sd-hand > .table-hand-preview {
   --preview-width: min(17rem, 90vw, 100%);
+  pointer-events: none;
   position: absolute;
   z-index: 6;
   bottom: 100%;
@@ -767,16 +777,13 @@
     align-items: center;
   }
   .sd-diorama #sd-actions button {
-    font-size: 12px;
+    font-size: 13px;
   }
   .sd-diorama #sd-restart {
     order: 6;
   }
   .table-pick {
     bottom: 151px;
-  }
-  .sd-diorama .sd-world-labels span[data-piece-label="1"] {
-    font-size: 8px;
   }
   .sd-diorama > header {
     left: 12px;

@@ -421,7 +421,7 @@
   position: absolute;
   z-index: 4;
   top: 55px;
-  left: clamp(12px, 1.6vw, 20px);
+  left: 12px;
   display: flex;
   align-items: start;
   gap: 4px;
@@ -434,13 +434,58 @@
   box-sizing: border-box;
   min-height: 44px;
   margin: 0;
-  padding: 12px 8px;
-  border: 1px solid transparent;
+  min-width: 44px;
+  padding: 2px 6px;
+  border: 1px solid #927651;
   border-radius: 3px;
-  background: #181924c9;
-  color: inherit;
+  background: #211e29ee;
+  color: #f2d49b;
   font: inherit;
   cursor: pointer;
+}
+/* Public zone controls share the header's pixel outlines. Keep the native summary's name. */
+.sd-diorama #sd-zone-rails[data-board-zones] summary {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  font-size: 0;
+  line-height: 0;
+  list-style: none;
+}
+.sd-diorama [data-board-zone-details] summary::-webkit-details-marker { display: none; }
+.sd-diorama [data-board-zone-details] summary::before {
+  content: "";
+  width: 24px;
+  height: 20px;
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath fill-rule='evenodd' d='M1 1h22v18H1zm3 3v4h6V4zm9 0v4h7V4zm-9 7v5h6v-5zm9 0v5h7v-5z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.sd-diorama #sd-zone-rails [data-graveyard] {
+  display: grid;
+  grid-template-columns: 16px auto;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  column-gap: 3px;
+  color: #ffcf91;
+}
+.sd-diorama #sd-zone-rails [data-graveyard="wizard"] { color: #dfceff; }
+.sd-diorama [data-graveyard]::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M5 1h6v1h2v2h1v9h1v2H1v-2h1V4h1V2h2zm2 3v2H5v2h2v3h2V8h2V6H9V4z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.sd-pile-count { font: 700 16px/1 system-ui, sans-serif; }
+.sd-pile-side { grid-column: 1 / -1; font: 600 12px/1.1 Georgia, serif; }
+@media (min-width: 800px) {
+  .sd-diorama #sd-zone-rails[data-board-zones],
+  .sd-diorama[data-contest-challenge] #sd-zone-rails[data-board-zones] {
+    top: 6px;
+    left: 153px;
+  }
 }
 .sd-diorama #sd-zone-rails[data-board-zones] :is(summary, button):is(:hover, :focus-visible) {
   border-color: #e3bf85;
