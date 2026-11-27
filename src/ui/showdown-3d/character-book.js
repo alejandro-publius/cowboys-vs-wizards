@@ -197,7 +197,7 @@ export function mountCharacterBook(title, duel, {ownedBySide, openReplay, portra
       book.showModal();
       focus.focus();
     };
-    reopenOrigin = () => open(id ?? selected, source, buildDeck);
+    reopenOrigin = () => open(selected, source, buildDeck);
     onBuild = buildDeck && (type => buildDeck(type, () => show(build)));
     if (id) side = TYPES[id].side;
     turn(id ?? selected);

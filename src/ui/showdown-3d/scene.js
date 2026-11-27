@@ -15,6 +15,7 @@ import { dressTable } from "./table-dressing.js";
 import { makeEmbers, makeFaeries } from "./embers.js";
 import { mountCharacterBook } from "./character-book.js";
 import { mountGallery as mountCardGallery } from "./gallery.js";
+export { bookPractice } from "../../match/showdown-book-practice.js";
 export { mountCampOutpost } from "./camp-outpost.js";
 export { paintCardFaces, cardArtwork } from "./table-ui.js";
 import { COLORS, SIDES, zone } from "./layout.js";

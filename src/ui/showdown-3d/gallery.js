@@ -182,7 +182,7 @@ export function mountGallery(title, duel, makeAttackStage) {
     battle.paint(example.end, example.before);
     battle.animate(example.trace, finished);
   }
-  function playPaintings(id, example, pieces, reduced, finished) {
+  function playPortraits(id, example, pieces, reduced, finished) {
     battle?.clear();
     attackCanvas.hidden = true;
     cards.hidden = false;
@@ -192,10 +192,8 @@ export function mountGallery(title, duel, makeAttackStage) {
     cards.replaceChildren(...pieces.map(piece => {
       const figure = document.createElement("figure");
       if (piece.id) {
-        const img = document.createElement("img");
-        img.alt = "";
-        img.src = __CVW_BOOK_ART__[piece.id];
-        figure.append(img);
+        const face = portrait(piece.id);
+        if (face) figure.append(face);
       } else {
         baseOrbs = document.createElement("span");
         baseOrbs.className = "sd-orbs";
@@ -278,7 +276,7 @@ export function mountGallery(title, duel, makeAttackStage) {
       }
     }
     canvas.hidden = still.hidden = angle.closest("label").hidden = true;
-    playPaintings(id, example, snapshot.pieces, reduced, complete);
+    playPortraits(id, example, snapshot.pieces, reduced, complete);
   }
   function playReel(index) {
     if (!playingAll || !dialog.open) return;

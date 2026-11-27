@@ -174,13 +174,13 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
   // best 3 plays a best of three. players 2: two people on one screen, starter decks, nothing saved.
   // seat "wizard" (solo): the human plays the Wizards. Its campaign, if any, comes with this start; without one the
   // Wizard seat settles nothing. The Cowboy seat keeps the mount's campaign unless another is passed.
-  function start(nextDuel, dealSeed, {players: seats = 1, best = 1, seat: side = "cowboy", campaign: own, lesson: rematch = null, fromWanted = false} = {}) {
+  function start(nextDuel, dealSeed, {players: seats = 1, best = 1, seat: side = "cowboy", campaign: own, lesson: rematch = null, fromWanted = false, fromBook = false} = {}) {
     const opener = document.activeElement; // the control that opened this duel, read before the deal
     [duel, players, seat] = [nextDuel, seats, seats === 1 ? side : "cowboy"];
     $("sd-home").toggleAttribute("data-return-wanted", fromWanted);
-    $("sd-home").textContent = fromWanted ? "Back to Wanted" : "Back to camp";
+    $("sd-home").textContent = fromBook ? "Back to book" : fromWanted ? "Back to Wanted" : "Back to camp";
     lesson = rematch && seats === 1 && seat === "cowboy" && best === 1 ? rematch : null;
-    camp = lesson || duel.kind === "even-fight" ? null : own ?? (seat === "cowboy" ? campaign : null);
+    camp = lesson || fromBook || duel.kind === "even-fight" ? null : own ?? (seat === "cowboy" ? campaign : null);
     const progress = solo() ? camp?.progress() : null;
     match = best > 1 ? newMatch(progress ? {deck: progress.deck, side: progress.side} : {}) : null;
     deal(dealSeed);
@@ -379,7 +379,7 @@ export function mountShowdown(root, {onHome, campaign, writeCamp = (change) => c
     const again = (label ? `<button type="button" id="sd-again">${label}</button>` : "") + review;
     if (!outcome.earned) {
       const notice = outcome.conflict ? `<p role="status">${outcome.conflict} This duel did not change your career.</p>` : "";
-      return `${notice}<div class="sd-row">${again}<button type="button" id="sd-camp">${$("sd-home").hasAttribute("data-return-wanted") ? "Back to Wanted" : "Back to camp"}</button></div>`;
+      return `${notice}<div class="sd-row">${again}<button type="button" id="sd-camp">${$("sd-home").textContent}</button></div>`;
     }
     const {won, earned, intoDeck, grit} = outcome;
     const offer = camp.progress().offer;

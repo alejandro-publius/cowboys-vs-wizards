@@ -151,6 +151,25 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
     onBuild: openDeck,
     onDuel: startCampDuel});
   const openBookCard = diorama?.mountGallery(title, screen, {cowboy: campaign.owned, wizard: preview.owned});
+  openBookCard?.setPractice((id, reopen) => {
+    const setup = diorama.bookPractice(id);
+    if (!setup) return;
+    const origin = campRoot.hidden ? title : campRoot;
+    const station = campRoot.querySelector(".camp-outpost[open]")?.id.slice("room-for-".length);
+    back = () => {
+      if (origin === campRoot) {
+        last = null;
+        toCamp();
+        if (station) outpost.open(station);
+      } else showOnly(title);
+      reopen?.();
+    };
+    showOnly(screen);
+    showdown.start(setup.duel, setup.seed, {seat: setup.seat, fromBook: true});
+    const piece = setup.duel.options.opening[setup.seat][0].type === id
+      ? screen.querySelector('#sd-board [data-own]:not(:disabled)') : null;
+    (piece ?? screen.querySelector('#sd-hand [data-card]:not(:disabled)') ?? node("sd-end")).focus({preventScroll: true});
+  }, () => screen.hidden);
   function openCollectionBook(id, source) {
     const origin = campRoot.contains(source) ? campRoot : screen;
     openBookCard(id, source, (type, reopen) => writeCamp(() => {

@@ -508,13 +508,13 @@ dialog.character-book::backdrop {
   margin: 0;
   text-align: center;
 }
-.sd-gallery.book-replay figure img {
+.sd-gallery.book-replay figure .sd-card-art {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  margin: 0; aspect-ratio: auto;
 }
-.sd-gallery.book-replay figure.defeated img { filter: grayscale(1); opacity: .45; }
+.sd-gallery.book-replay figure.defeated .sd-card-art { filter: grayscale(1); opacity: .45; }
 .sd-gallery.book-replay figure > .sd-orbs {
   align-self: center;
   color: var(--frontier-brass);
