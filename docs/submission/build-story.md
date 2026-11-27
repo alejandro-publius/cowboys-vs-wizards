@@ -17,7 +17,7 @@ tags: gamedev, javascript, testing, ai
 
 In a 100,000-duel bot audit, lowering one Cowboy card, Billy, from 2 attack to 1 moves Cowboy wins from **59.792% to 51.920%**. The first number fails my written balance gate (exit 2) and the second passes (exit 0). I haven't applied it: Billy still has 2 attack, the change awaits design approval, and the opening-player edge it leaves behind is what worries me.
 
-This is a build note from my Kiroween 2026 entry, a haunted-Western card duel. I’ve linked the source from the version used for this write-up, `c5fa4ee`. You can play the deal on the current site. [Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Open the recorded review](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review)
+This post is being written as part of the Kiroween 2026 hackathon, covering my entry *Cowboys vs. Wizards: Showdown*, a haunted-Western card duel. I’ve linked the source from the version used for this write-up, `c5fa4ee`. You can play the deal on the current site. [Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Open the recorded review](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review)
 
 ## The rule, the numbers, the controls
 

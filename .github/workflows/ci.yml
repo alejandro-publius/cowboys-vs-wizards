@@ -31,6 +31,9 @@ jobs:
           1908eaaa5d995d6f5589d4fbc4a2c30b83e02683
           2fcf39b7fe4db6f78cb33f6b2c474e053e89bbc7
 
+      - name: Fetch the commit cited by the property receipt
+        run: sh scripts/fetch-property-receipt-commit.sh
+
       - run: npm ci
 
       - run: npm test

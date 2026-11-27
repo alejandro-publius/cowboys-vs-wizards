@@ -1,0 +1,25 @@
+{
+  "name": "Cowboys vs. Wizards: Showdown (Judge & Kiro Verification)",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12"
+    }
+  },
+  "postCreateCommand": "npm ci",
+  "forwardPorts": [4179, 8080],
+  "portsAttributes": {
+    "4179": {
+      "label": "Night Shift Saloon (loopback witness)",
+      "onAutoForward": "silent"
+    },
+    "8080": {
+      "label": "Showdown staged Pages preview",
+      "onAutoForward": "silent"
+    }
+  },
+  "remoteEnv": {
+    "GH_PROMPT_DISABLED": "1",
+    "GH_NO_UPDATE_NOTIFIER": "1"
+  }
+}
