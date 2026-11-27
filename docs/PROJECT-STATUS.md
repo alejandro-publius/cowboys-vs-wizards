@@ -4,7 +4,7 @@
 
 For the commit and HTML checksum currently served to players, open the [live deployment manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json). The [Pages workflow](../.github/workflows/pages.yml) verifies them after deployment.
 
-The Saloon opens onto two Wanted posters. A new player can scout the Graveyard Dragon or read the Lantern Wraith’s field-guide entry. Each poster tracks five campaign wins. The fifth awards the Cowboy version of that boss, whose field-guide page opens its move replay and the 16-card deck builder. [Campaign screenshots](../README.md#from-a-wanted-poster-to-your-deck) · [Browser check](../scripts/browser-showdown-bounty-journey.mjs)
+In the November 27 build, `?saloon=play` opens the playable character book. Choose **Wanted** to reach the two posters. A new player can scout the Graveyard Dragon or read the Lantern Wraith’s field-guide entry. Each poster tracks five campaign wins. The fifth awards the Cowboy version of that boss, whose field-guide page opens its move replay and the 16-card deck builder. [Campaign screenshots](../README.md#from-a-wanted-poster-to-your-deck) · [Browser check](../scripts/browser-showdown-bounty-journey.mjs)
 
 The archived [Saloon table](evidence/showdown-saloon-billy-table.png) shows the player taking over turn nine after Kiro’s proposed shot. The Bone Fence screenshot captures an earlier November 26 build. At that time the root and `/3d/` matched GitHub commit `094af9b` and SHA-256 `d0fdf866772500eafdb418d9ed9b9ec951cae62fb3dcfe7f5cfaed8a87c57190`. [Screenshot](evidence/showdown-bone-fence-094af9b.png) · [Source revision](https://github.com/alejandro-publius/cowboys-vs-wizards/commit/094af9bee94a5f5d545ff24e67c6e0437a420a4c)
 

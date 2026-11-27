@@ -2,7 +2,7 @@
 
 Ride out from Boot Hill with a 16-card deck. Deadeye can't target the Lantern Wraith. The Graveyard Dragon can take an orb from every troop beside the one it attacks. Clear six Trail stops and beat either boss in five hunts to earn its card for your deck.
 
-**[Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/)** · [Scout the Graveyard Dragon](https://alejandro-publius.github.io/cowboys-vs-wizards/?room=wanted) · [Visit the Night Shift Saloon](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review)
+**[Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/)** · [Scout the Graveyard Dragon](https://alejandro-publius.github.io/cowboys-vs-wizards/?room=wanted) · [Play the Saloon character book](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=play)
 
 [![The illustrated battlefield at the fifth Graveyard Dragon hunt. The Cowboy Ranger and a trap face the Dragon and its escort between the Western town and the Wizard castle.](docs/media/frontier-dragon-hunt.webp)](https://alejandro-publius.github.io/cowboys-vs-wizards/?turn=dragon-c5)
 
@@ -65,7 +65,7 @@ Open `dist/cowboys-vs-wizards-showdown-3d.html` in a browser to play the illustr
 | Lightweight board | `npm run build` | `dist/cowboys-vs-wizards-board-duel.html` |
 | Full Pages site, including Poker | `node scripts/stage-pages.mjs --commit "$(git rev-parse HEAD)"` | `dist/web/` |
 | Play the staged site locally | `python3 -m http.server 8000 --directory dist/web` | Open `http://localhost:8000/` |
-| Verify the staged routes and play them in Chrome | `node scripts/check-pages-tree.mjs --browser` | Checks the page identity, links, table controls and Saloon route |
+| Verify the staged build for Antigravity | `node scripts/check-pages-tree.mjs --browser` | Checks the Saloon book, battle hand faces and recorded review. To check direct entry, open `/?saloon=play`, then choose **Map** to return to Camp. |
 
 ## How it is made
 

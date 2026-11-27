@@ -394,5 +394,6 @@ Promise.all([import("./ui/showdown-screen.js"), import("./ui/showdown-camp.js"),
       openBillyReplay();
     } else if (directRoom) openRoom();
     else if (query.get("room") === "wanted" && evenFight === null) openWanted();
+    else if (outpost && !directBook && query.get("saloon") === "play") openSaloon();
   }
   });
