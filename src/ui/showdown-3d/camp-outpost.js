@@ -146,8 +146,11 @@ export function mountCampOutpost(root) {
   replays.append(byId("camp-experiment"));
   practice.append(replays, wizard);
 
-  for (const key of ["camp-rivals-title", "camp-bounties-title"]) {
-    rooms.get(key).content.insertAdjacentHTML("afterbegin", '<p class="outpost-trail-lock">Finish the Trail to unlock these duels.</p>');
+  for (const [key, note] of [
+    ["camp-rivals-title", "Finish the Trail to unlock these duels."],
+    ["camp-bounties-title", "Finish the Trail to hunt. Five wins against one boss earn its card for your deck."],
+  ]) {
+    rooms.get(key).content.insertAdjacentHTML("afterbegin", `<p class="outpost-trail-lock">${note}</p>`);
   }
   for (const [target, {room}] of rooms) {
     const control = root.querySelector(`[data-camp-destination="${target}"]`);
