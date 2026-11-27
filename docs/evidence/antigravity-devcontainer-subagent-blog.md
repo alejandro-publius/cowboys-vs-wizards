@@ -8,6 +8,8 @@ Open the repository in Codespaces, or use **Dev Containers: Reopen in Container*
 
 The [Judge devcontainer workflow](../../.github/workflows/judge-devcontainer.yml) boots this configuration on a fresh Linux runner and checks the runtimes, installed dependencies and both commands. The first boot passed both judges but reported Node 22.16.0, below the repository’s 22.18 minimum. The configuration now tracks the Node 22 Bookworm image, and the workflow checks that minimum inside the running container. [First boot](https://github.com/alejandro-publius/cowboys-vs-wizards/actions/runs/45962495706)
 
+The corrected container booted with Node 22.23.5 and Python 3.12.16. Its bootstrap installed the project dependencies, the Python referee reported `catalog OK`, and the balance gate reproduced the result from 100,000 recorded duels. [Verified container run](https://github.com/alejandro-publius/cowboys-vs-wizards/actions/runs/45963132065)
+
 To use the forwarded ports, run `node scripts/night-shift-saloon.mjs` for the loopback witness on 4179. For the playable site on 8080, run `node scripts/stage-pages.mjs --commit "$(git rev-parse HEAD)"` and then `python3 -m http.server 8080 --bind 127.0.0.1 --directory dist/web`.
 
 ## Local receipt verification
@@ -31,7 +33,7 @@ Kiro documents a separate V3 event when a dispatched subagent finishes. The [exa
 cp .kiro/examples/hooks/subagent-stop-receipt-guard.json .kiro/hooks/
 ```
 
-Codex checked the registration, this copy command and the guard using synthetic events. The installed CLI reported version 3.5.0. A native 3.6+ dispatched-worker receipt is pending before default activation. The devcontainer passed the official Dev Container base JSON Schema. The catalog and balance commands ran on the host. A container boot remains unverified here because the Docker daemon was inaccessible.
+Codex checked the registration, this copy command and the guard using synthetic events. The installed CLI reported version 3.5.0. A native 3.6+ dispatched-worker receipt is pending before default activation.
 
 ## Bonus blog draft
 
