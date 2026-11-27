@@ -31,7 +31,7 @@ function run(cmd, cmdArgs) {
   if (r.status !== 0) process.exit(r.status ?? 1);
 }
 
-const files = ["tests/game", "tests/match", "tests/assets", "prototypes/showdown", "experiments/boot-hill-poker"].flatMap((dir) =>
+const files = ["tests/game", "tests/match", "tests/assets", "prototypes/showdown", "experiments/boot-hill-poker", "experiments/dragon-discovery"].flatMap((dir) =>
   readdirSync(new URL(`../${dir}/`, import.meta.url))
     .filter((f) => /\.test\.m?js$/.test(f))
     .sort()

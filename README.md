@@ -31,6 +31,8 @@ The full campaign saves in your browser. The Dragon practice positions replay re
 
 At the **Night Shift Saloon → Forge shelf**, cast Hellfire on a Sheriff standing across from your Skeleton. Choose what “every troop” should mean, see exactly whose orbs changed, then replay the same deal with the other wording. [Playtest and referee results](docs/evidence/player-card-forge/hellfire-witness.md)
 
+To run a first-time playtest, build the local moderator with `node experiments/dragon-discovery/build.mjs`. It starts each person at the title, times their first Ranger target, and lets you record how they think the Dragon is earned. [Five-player protocol](experiments/dragon-discovery/PROTOCOL.md)
+
 <a id="how-kiro-reviews-a-card-change"></a>
 
 ## Inside the Night Shift
