@@ -47,6 +47,7 @@ const ROOMS = [
 export function mountCampOutpost(root) {
   const byId = (id) => root.querySelector("#" + id);
   const wizard = byId("camp-wizard");
+  const dragonScout = byId("camp-scout-dragon");
   const rooms = new Map();
   let current;
 
@@ -148,7 +149,7 @@ export function mountCampOutpost(root) {
 
   for (const [key, note] of [
     ["camp-rivals-title", "Finish the Trail to unlock these duels."],
-    ["camp-bounties-title", "Finish the Trail to hunt. Five wins against one boss earn its card for your deck."],
+    ["camp-bounties-title", "Scout now. Finish the Trail to hunt. Beat the same boss five times to take its card."],
   ]) {
     rooms.get(key).content.insertAdjacentHTML("afterbegin", `<p class="outpost-trail-lock">${note}</p>`);
   }
@@ -193,6 +194,7 @@ export function mountCampOutpost(root) {
         art.classList.add("outpost-portrait");
         art.dataset.portrait = cards[index];
         button.prepend(art);
+        if (cards[index] === "wizard-dragon") button.after(dragonScout);
         button.querySelector(".sd-note").classList.toggle("outpost-lock-note", !trailComplete);
       }
     }
