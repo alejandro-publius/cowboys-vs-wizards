@@ -77,6 +77,7 @@ body:has(.camp-outpost[open], .builder-inspect[open]) {
   background:
     linear-gradient(110deg, #24170d33, transparent 50%, #120d0999),
     repeating-linear-gradient(0deg, #18120e 0 3px, #916341 3px 5px, transparent 5px 67px),
+    repeating-linear-gradient(178deg, #ddbc8d0e 0 1px, transparent 2px 7px, #21160e1f 8px 9px, transparent 10px 16px),
     repeating-radial-gradient(ellipse 22rem 2.4rem at 9% 31%, transparent 0 20px, #33231c45 26px, transparent 40px),
     #614432;
 }
@@ -113,6 +114,19 @@ body:has(.camp-outpost[open], .builder-inspect[open]) {
     100% 66%, 100% 98.5%, 93% 98.5%, 93% 100%, 63% 100%, 63% 98.5%, 60% 98.5%, 60% 99.5%,
     19% 99.5%, 19% 100%, 2% 100%, 2% 98.5%, 0 98.5%, 0 40%, 1.5% 40%, 1.5% 37%, 0 37%);
 }
+.outpost-wanted li:nth-child(even) [data-wanted-bounty]::before { transform: scaleX(-1); }
+.outpost-wanted [data-wanted-bounty]::after {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: calc(50% - 4px);
+  width: 8px;
+  height: 7px;
+  border-radius: 50%;
+  background: radial-gradient(at 35% 28%, #bcad88, #64523c 45%, #3c2a1b 75%);
+  box-shadow: 1px 2px 1px #715434;
+  pointer-events: none;
+}
 .wanted-masthead {
   border-top: 4px double currentColor;
   padding-top: 0.08em;
@@ -135,8 +149,6 @@ body:has(.camp-outpost[open], .builder-inspect[open]) {
 .wanted-terms::before, .wanted-terms::after { content: ""; flex: 1; border-top: 1px solid; }
 .wanted-portrait {
   position: relative;
-  display: grid;
-  place-items: end center;
   aspect-ratio: 1.22;
   border: 3px double #684c30;
   mix-blend-mode: multiply;
@@ -153,10 +165,11 @@ body:has(.camp-outpost[open], .builder-inspect[open]) {
 .wanted-portrait[data-portrait="wizard-lantern-wraith"] { --wanted-art: var(--saloon-wraith-art); }
 .wanted-portrait[data-portrait="wizard-dragon"] { --wanted-art: var(--saloon-dragon-art); }
 .wanted-stamp {
-  position: relative;
-  margin-bottom: 7%;
+  position: absolute;
+  left: 50%;
+  bottom: 8%;
   padding: 0.06em 0.3em;
-  transform: rotate(-7deg);
+  transform: translateX(-50%) rotate(-7deg);
   border: 4px double currentColor;
   background: #efdcb0;
   color: #77251d;

@@ -13,8 +13,10 @@ export function mountWantedBills(list, scout) {
     const button = document.createElement("button");
     button.type = "button";
     item.append(button);
-    if (bounty.boss === "wizard-dragon") item.append(scout);
-    list.append(item);
+    if (bounty.boss === "wizard-dragon") {
+      item.append(scout);
+      list.prepend(item);
+    } else list.append(item);
     bills.set(`hunt:${bounty.id}`, {bounty, button});
   }
 

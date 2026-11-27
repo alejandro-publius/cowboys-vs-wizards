@@ -12,10 +12,9 @@ export function attackPreviews(id) {
   const card = TYPES[id];
   if (card?.kind !== "troop") return [];
   if (card.attack === 0) return [["guard", "Watch Guard"]];
-  const label = {
-    "cowboy-dynamiter": "Watch Dynamite",
-    "cowboy-gatling-crew": "Watch Sweep",
-  }[id] ?? "Watch attack";
+  let label = "Watch attack";
+  if (card.keys.includes("sweep")) label = "Watch Sweep";
+  else if (id === "cowboy-dynamiter") label = "Watch Dynamite";
   const options = [["attack", label]];
   if (card.keys.includes("ride")) options.push(["ride", "Watch Ride"]);
   if (card.keys.includes("laststand")) options.push(["laststand", "Watch Last Stand"]);

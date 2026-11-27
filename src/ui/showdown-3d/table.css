@@ -387,7 +387,7 @@
   position: absolute;
   bottom: 0;
   left: 0;
-  padding: 1px 3px;
+  padding: 1px 2px;
   border-radius: 0 2px 0 0;
   background: var(--ink);
   color: #fff0cc;
@@ -400,6 +400,7 @@
 .sd-diorama #sd-hand .table-card-rule {
   display: block;
   overflow: visible;
+  overflow-wrap: anywhere;
 }
 .table-hand-rules summary {
   cursor: pointer;
@@ -676,5 +677,18 @@
 @media (prefers-reduced-motion: reduce) {
   .sd-diorama #sd-hand .sd-card {
     transition: none;
+  }
+}
+@media (max-width: 480px) {
+  /* Six cards still fit across. Keep room for the portrait above a wrapped effect. */
+  .sd-diorama #sd-hand .sd-card {
+    min-height: 108px;
+    padding: 1px;
+  }
+  .sd-diorama #sd-hand .table-card-face {
+    padding: 1px;
+  }
+  .table-pick {
+    bottom: 168px;
   }
 }

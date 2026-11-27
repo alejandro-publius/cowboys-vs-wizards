@@ -5,6 +5,7 @@ import {TYPES} from "../src/game/showdown/cards.js";
 import {BOUNTIES, DECK_SIZE, HUNTS, choose, duelFor, newSave, settle, trailDone, withDeck} from "../src/game/showdown/progress.js";
 import {applyAction, createShowdown, planTurn, playTurn} from "../src/game/showdown/rules.js";
 import {turnDuel} from "../src/match/showdown-turn.js";
+import {attackExample} from "../src/ui/showdown-3d/attack-preview.js";
 import {checkBookEntry} from "./check-character-book.mjs";
 
 const paper = id => `[data-wanted-bounty="${id}"]`;
@@ -80,9 +81,12 @@ export async function checkWantedCollection({open, click, tap, press, activateBy
     await wait(`${node(selector)}?.checkVisibility()`);
     const state = await evaluate(`(() => {
       const p = ${node(selector)}, r = p.getBoundingClientRect();
-      return {wins: p.dataset.wantedWins, fits: r.left >= 0 && r.right <= innerWidth + 1 && p.scrollWidth <= p.clientWidth + 1};
+      const tally = p.querySelector(".wanted-tally");
+      return {wins: p.dataset.wantedWins, marks: tally.childElementCount, filled: tally.querySelectorAll(".won").length,
+        painted: getComputedStyle(p.querySelector(".wanted-portrait"), "::before").backgroundImage.includes('url("data:image/webp;'),
+        stamped: Boolean(p.querySelector(".wanted-stamp")), fits: r.left >= 0 && r.right <= innerWidth + 1 && p.scrollWidth <= p.clientWidth + 1};
     })()`);
-    assert.deepEqual(state, {wins: String(wins), fits: true}, id);
+    assert.deepEqual(state, {wins: String(wins), marks: HUNTS, filled: wins, painted: true, stamped: wins === HUNTS, fits: true}, id);
   }
   async function readEntry(id) {
     await wait("document.querySelector('.character-book')?.open");
@@ -91,11 +95,25 @@ export async function checkWantedCollection({open, click, tap, press, activateBy
     if (!await evaluate(`${node(rule)}.open`)) await activateByKey(`${rule} summary`);
     assert.ok(await visible(`${rule} p`), `${id}'s keyword explanation is readable`);
   }
+  async function browseTo(id) {
+    await click(`.book-tabs [data-side="${TYPES[id].side}"]`);
+    const portrait = `.book-portrait[data-id="${id}"]`;
+    for (let page = 0; page < bookIndex.size; page++) {
+      if (await visible(portrait)) return click(portrait);
+      await click(".book-pages button:last-child:not(:disabled)");
+    }
+    assert.fail(`${id} missing from the book`);
+  }
   const dragon = "graveyard-dragon", wraith = "lantern-wraith";
   await open("");
   assert.equal(await evaluate("document.documentElement.clientWidth"), 390, "phone-width layout");
   await activateByKey("#menu-saloon");
   await activateByKey("[data-saloon-wanted]");
+  assert.ok(await evaluate(`(() => {
+    const action = document.querySelector("#camp-scout-dragon .wanted-action");
+    const rect = action.getBoundingClientRect();
+    return rect.top >= 0 && rect.bottom <= innerHeight;
+  })()`), "the free scout is visible before the first scroll on a fresh phone-width board");
   for (const {bounty} of hunts) {
     await checkPaper(bounty.id, 0);
     assert.ok(!await visible(paperAction(bounty.id, "[data-duel]:not(:disabled)")), "fresh careers cannot start paid hunts");
@@ -105,13 +123,12 @@ export async function checkWantedCollection({open, click, tap, press, activateBy
   await tap(wraithBook);
   await readEntry("wizard-lantern-wraith");
   assert.ok(!await visible(build), "a Wizard reference cannot launch the Cowboy builder");
-  await click('.book-tabs [data-side="cowboy"]');
-  await click('.book-portrait[data-id="cowboy-captured-wraith"]');
+  await browseTo("cowboy-captured-wraith");
   assert.ok(!await visible(build), "browsing an unearned Cowboy form cannot build it");
   await press("Escape", 27);
   await wait(`document.activeElement.matches(${JSON.stringify(wraithBook)})`);
 
-  const scoutButton = paperAction(dragon, "#camp-scout-dragon");
+  const scoutButton = paperAction(dragon, ":is(button, a[href]):not(:disabled, [data-book-card])");
   await activateByKey(scoutButton);
   await click('#replay-room [data-branch="dragon"]');
   await click("#replay-room .rr-play");
@@ -138,8 +155,7 @@ export async function checkWantedCollection({open, click, tap, press, activateBy
     assert.ok((await evaluate("document.getElementById('sd-status').innerText")).includes(duel.name), duel.name);
     if (bounty.id === dragon) {
       await click("#showdown .book-launch");
-      await click('.book-tabs [data-side="cowboy"]');
-      await click('.book-portrait[data-id="cowboy-covered-wagon"]');
+      await browseTo("cowboy-covered-wagon");
       assert.ok(!await visible(build), "an owned Trail reward cannot leave the live paid hunt for the builder");
       await press("Escape", 27);
       await wait("document.activeElement.matches('#showdown .book-launch')");
@@ -153,7 +169,19 @@ export async function checkWantedCollection({open, click, tap, press, activateBy
     await activateByKey(captureButton);
     await readEntry(reward);
     assert.ok(await visible(build), "the earned Cowboy can be built from its capture");
+    if (bounty.id === dragon) {
+      assert.equal(await evaluate(`${node(".book-watch")}.innerText`), "Watch Sweep");
+      await click(".book-watch");
+      await wait("document.querySelector('.sd-gallery.book-replay')?.open");
+      const example = attackExample(reward, "attack");
+      assert.ok(example.trace[0].events.some(event => event.type === "sweep"));
+      assert.equal(await evaluate("document.querySelector('.sd-attack-result').innerText"), example.summary);
+      await press("Escape", 27);
+      await wait("document.activeElement.matches('.book-watch')");
+      await readEntry(reward);
+    }
 
+    // Build the Dragon at the verdict with its bonus outstanding. Claim the Wraith bonus and build from Camp.
     let expected = captured;
     if (bounty.id === wraith) {
       await press("Escape", 27);
@@ -188,10 +216,9 @@ export async function checkWantedCollection({open, click, tap, press, activateBy
     await readEntry(reward);
     assert.match(await evaluate(`${node(".book-ownership")}.innerText`), /\b1\b/, TYPES[reward].name);
     const other = hunts.find(hunt => hunt.bounty.id !== bounty.id).bounty.reward;
-    await click(`.book-portrait[data-id="${other}"]`);
+    await browseTo(other);
     assert.ok(!await visible(build), "reopening a capture does not authorize building the other bounty");
-    await click('.book-tabs [data-side="wizard"]');
-    await click(`.book-portrait[data-id="${bounty.boss}"]`);
+    await browseTo(bounty.boss);
     await checkBookEntry(evaluate, bounty.boss);
     assert.ok(!await visible(build), "the Wizard original cannot build the owned Cowboy form");
     assert.deepEqual(await career(), expected, "reopening the poster and book pays nothing");
