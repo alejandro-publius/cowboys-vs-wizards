@@ -47,6 +47,7 @@ const ROOMS = [
 export function mountCampOutpost(root) {
   const byId = (id) => root.querySelector("#" + id);
   const wizard = byId("camp-wizard");
+  const dragonScout = byId("camp-scout-dragon");
   const rooms = new Map();
   let current;
 
@@ -85,6 +86,13 @@ export function mountCampOutpost(root) {
   saloonRoom.className = "camp-outpost outpost-saloon outpost-wood";
   saloonRoom.setAttribute("aria-labelledby", "outpost-saloon-title");
   saloonRoom.innerHTML = `<header><h2 id="outpost-saloon-title">Night Shift saloon</h2><button type="button" autofocus>Back to map</button></header>
+      <a class="saloon-bounty-bill" data-saloon-wanted href="?room=wanted">
+        <div class="saloon-bounty-copy">
+          <h3>Wanted on the frontier</h3>
+          <p>The Lantern Wraith shrugs off spells. The Graveyard Dragon burns the whole line.</p>
+          <span class="saloon-bounty-action">Open the Wanted board <span aria-hidden="true">→</span></span>
+        </div>
+      </a>
       <div class="outpost-room"></div>`;
   saloonRoom.querySelector("header button").addEventListener("click", () => saloonRoom.close());
   root.append(saloonRoom);
@@ -139,8 +147,11 @@ export function mountCampOutpost(root) {
   replays.append(byId("camp-experiment"));
   practice.append(replays, wizard);
 
-  for (const key of ["camp-rivals-title", "camp-bounties-title"]) {
-    rooms.get(key).content.insertAdjacentHTML("afterbegin", '<p class="outpost-trail-lock">Finish the Trail to unlock these duels.</p>');
+  for (const [key, note] of [
+    ["camp-rivals-title", "Finish the Trail to unlock these duels."],
+    ["camp-bounties-title", "Scout now. Finish the Trail to hunt. Beat the same boss five times to take its card."],
+  ]) {
+    rooms.get(key).content.insertAdjacentHTML("afterbegin", `<p class="outpost-trail-lock">${note}</p>`);
   }
   for (const [target, {room}] of rooms) {
     const control = root.querySelector(`[data-camp-destination="${target}"]`);
@@ -177,11 +188,13 @@ export function mountCampOutpost(root) {
     ]) {
       const content = list.closest(".outpost-room");
       content.querySelector(".outpost-trail-lock").hidden = trailComplete;
-      for (const [index, button] of [...list.querySelectorAll("button")].entries()) {
+      for (const [index, button] of [...list.querySelectorAll("button.sd-tile")].entries()) {
         const art = cardArtwork(cards[index]);
         if (!art) continue;
         art.classList.add("outpost-portrait");
+        art.dataset.portrait = cards[index];
         button.prepend(art);
+        if (cards[index] === "wizard-dragon") button.after(dragonScout);
         button.querySelector(".sd-note").classList.toggle("outpost-lock-note", !trailComplete);
       }
     }

@@ -2,17 +2,25 @@
 
 [Play](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Source](https://github.com/alejandro-publius/cowboys-vs-wizards) · [Demo narration and timestamps](submission/judge-demo-narration.md) · [Devpost packet](submission/devpost-packet.md)
 
-## One-minute walkthrough
+## Play the frontier
 
-Start on the illustrated title. The live manifest gives the commit and HTML checksum for the game you open. To play the same version offline, check out that commit, run `npm run build -- --diorama --contest` and open `dist/cowboys-vs-wizards-showdown-3d.html`. The release notes also link a dated screenshot of the opening challenge. [Play Showdown](https://alejandro-publius.github.io/cowboys-vs-wizards/) · [Live build manifest](https://alejandro-publius.github.io/cowboys-vs-wizards/build.json) · [Release notes and screenshot](PROJECT-STATUS.md#current-build)
+1. From the Night Shift Saloon, open **Wanted**. The posters name two bosses. Choose **Scout the Graveyard Dragon**. This works on a fresh save. [Open the Saloon](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) · [Direct Wanted board](https://alejandro-publius.github.io/cowboys-vs-wizards/?room=wanted)
+2. Pick whom the Ranger should shoot. Reveal the recorded outcomes, switch to the second deal, or take the turn yourself. **Back to Wanted** returns you to the poster. Scouting leaves your career untouched.
+3. To earn the card, start at **Camp → Boot Hill** and clear the six-stop Trail. Win five real hunts against one boss. On the fifth victory, **Build with Captured Dragon** or **Build with Captured Wraith** opens that card in the deck builder. Choose what to replace before saving your 16. [Campaign and capture images](../README.md#from-a-wanted-poster-to-your-deck)
 
-| # | Time | Click (**bold**) | What you should see | Source |
-| --- | --- | --- | --- | --- |
-| 1 | 0:00–0:20 | On the title choose **Night Shift Saloon**. At **Billy at Bone Wall**, choose **Fire for 2**. | Billy breaks the two-orb wall. The bots finish the deal and the Cowboys win on turn 13. | [Saloon table](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) · [Pinned game inputs](../scripts/billy-replay-engine.mjs) |
-| 2 | 0:20–0:40 | Choose **Fire for 1**. Under **Take Billy’s next turn**, try **Attack Headless Horseman**, then **Take cover**. | The bots lose for the Cowboys on turn 20. On your turn nine, attacking loses on turn 18. Taking cover wins for the Cowboys on turn 21. Both choices start from the same board. | [Balance audit](evidence/billy-seat-audit/README.md) · [Recorded Ledger replay](https://alejandro-publius.github.io/cowboys-vs-wizards/?replay=billy) |
-| 3 | 0:40–1:00 | Choose **Back to map**, **Main menu**, then **Ride or Fight?**. Choose the on-board Outrider and the Wizard Base. Restart and target the Skeleton. | Riding hits the Base for one. Fighting leaves the Skeleton on two orbs and the Outrider on one. | [Playable opening](https://alejandro-publius.github.io/cowboys-vs-wizards/?outrider=case-e) · [Outrider evidence](evidence/outrider-gate.md) |
+The capture images come from a staged browser game. A legal post-Trail save supplied the starting collection. The fifth Dragon fight was won through the board controls and the 16-card deck was saved and reopened. For the full browser check, the runner plays all five hunts and checks the save after each one. [Browser acceptance script](../scripts/browser-showdown-bounty-journey.mjs)
 
-The current 1:20 cut follows the first two steps. The same choices work from the title or the direct Saloon link. Leaving the table returns to Camp with the player’s career intact. [English transcript and captions](submission/judge-demo-narration.md) · [Browser regression](../scripts/check-pages-tree.mjs)
+To repeat it, stage and serve the Pages build as described in the [local build guide](../README.md#local-build). With that server running, use a second terminal in the checkout:
+
+```sh
+npm install --no-save --package-lock=false playwright-core@1.62.1
+npx playwright-core install chromium
+node scripts/browser-showdown-bounty-journey.mjs http://127.0.0.1:8000/
+```
+
+## Watch Kiro at work
+
+Open the Saloon and use **Play** or **Step** at the bar to follow its recorded shift. At the balance table you can try the proposed rule and take over a losing deal. The 1:20 narrated cut follows this separate experiment. [Saloon](https://alejandro-publius.github.io/cowboys-vs-wizards/?saloon=review) · [Narration and captions](submission/judge-demo-narration.md) · [How the reviewer works](../README.md#how-kiro-reviews-a-card-change)
 
 ## The Kiro decision behind the Saloon
 

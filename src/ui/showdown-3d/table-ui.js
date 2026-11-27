@@ -86,7 +86,7 @@ export function bindTableUI(root) {
       const ended = Boolean(view.result);
       table.classList.toggle("table-resolved", ended);
       root.classList.toggle("table-resolved", ended);
-      paintCardFaces(root, "#sd-hand [data-card], #sd-result [data-choose]");
+      paintCardFaces(root, "#sd-hand [data-card], #sd-result [data-choose], #sd-result [data-face]");
       const handCards = [...hand.querySelectorAll("[data-card]")];
       handCards.forEach((button, i) => {
         const fan = i - (handCards.length - 1) / 2;
@@ -102,10 +102,10 @@ export function bindTableUI(root) {
       series.textContent = status.querySelector("[data-series]")?.textContent ?? "";
       series.hidden = !series.textContent;
       forecasts.paint();
-      headline.textContent = result.querySelector("[data-choose]")
+      headline.textContent = result.querySelector("[data-capture-title]")?.textContent ?? (result.querySelector("[data-choose]")
         ? "Choose a card"
-        : (added?.textContent.split(":")[0] ?? status.textContent.split(" · ")[0]);
-      goHome.textContent = "Camp";
+        : (added?.textContent.split(":")[0] ?? status.textContent.split(" · ")[0]));
+      if (!goHome.hasAttribute("data-return-wanted")) goHome.textContent = "Camp";
       // A pick's whole instruction: the choice, its trap or Raise hint, and the cover alternative.
       if (!ended && /^(Choose|A Guard|No enemy|This troop)/.test(originalPrompt.textContent)) {
         prompt.textContent = originalPrompt.textContent;
@@ -121,7 +121,7 @@ export function bindTableUI(root) {
       hand.inert = false;
       table.classList.remove("table-resolved");
       root.classList.remove("table-resolved");
-      goHome.textContent = "Back to camp";
+      if (!goHome.hasAttribute("data-return-wanted")) goHome.textContent = "Back to camp";
       prompt.textContent = "";
       prompt.hidden = turn.hidden = series.hidden = headline.hidden = true;
     },

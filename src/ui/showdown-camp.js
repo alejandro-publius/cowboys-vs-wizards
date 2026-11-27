@@ -45,7 +45,13 @@ const TEMPLATE = `
   <div id="camp-claim" aria-live="polite"></div>
   <section class="camp-map" aria-labelledby="camp-trail-title"><h2 id="camp-trail-title">The Trail</h2><ol id="camp-trail" class="sd-row"></ol></section>
   <section class="camp-stop-list" aria-labelledby="camp-rivals-title"><h2 id="camp-rivals-title">Rivals</h2><ol id="camp-rivals" class="sd-row"></ol></section>
-  <section class="camp-stop-list" aria-labelledby="camp-bounties-title"><h2 id="camp-bounties-title">Wanted</h2><ol id="camp-bounties" class="sd-row"></ol></section>
+  <section class="camp-stop-list" aria-labelledby="camp-bounties-title"><h2 id="camp-bounties-title">Wanted</h2><ol id="camp-bounties" class="sd-row"></ol>
+    <aside class="bounty-scout" aria-labelledby="bounty-scout-title">
+      <h3 id="bounty-scout-title">The Ranger’s scouting report</h3>
+      <p>Shoot the Dragon or pick off its Jack-o’-Lantern escort? Take the Ranger’s place on two deals from the fifth hunt.</p>
+      <button type="button" id="camp-scout-dragon" aria-describedby="bounty-scout-note">Scout the Graveyard Dragon</button>
+      <small id="bounty-scout-note">Scout anytime. Wins on the hunt count toward capture.</small>
+    </aside></section>
   <section class="camp-stop-list" aria-labelledby="camp-open-title"><h2 id="camp-open-title">Open range</h2><div id="camp-open" class="sd-row"></div></section>
   <section class="camp-stop-list" id="camp-collection-room" aria-label="Your cards"><h2>Your cards</h2><p id="camp-collection" class="sd-note"></p>
     <div class="sd-row"><button type="button" id="camp-build">Build deck</button></div></section>

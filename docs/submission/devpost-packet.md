@@ -4,9 +4,9 @@ Draft for Alex’s review. The pitch and Built With tags below are ready to past
 
 ## Pitch
 
-Cowboys vs. Wizards is a haunted Western card game for strategy players who like to ask, “Could I have won that turn?” In the Night Shift Saloon, Kiro proposes taking one point off Billy’s attack. Fire at the same Bone Wall under both rules. Then take Billy’s next turn against the Headless Horseman and see if you can save the deal the bots lost.
+In Cowboys vs. Wizards, the Graveyard Dragon can burn your whole line. Win its fifth bounty hunt and you can put that same monster in your deck. This haunted Western card game starts at Boot Hill with 16 cards and a six-stop Trail. Even a first-time visitor can walk into the Night Shift Saloon, take the Ranger’s place on a recorded hunt and decide whom to shoot. [Scout the Dragon](https://alejandro-publius.github.io/cowboys-vs-wizards/?room=wanted)
 
-Kiro CLI proposed the change. A separate reviewer used a written Kiro spec to check it. Across 100,000 held-out bot duels, the Cowboys’ win rate moved from 59.792% to 51.920%. The Saloon lets players try the proposal while the Trail keeps Billy’s original attack. Other game makers can rerun the same balance check with `node scripts/billy-balance-gate.mjs --arm candidate`. [Kiro spec](../../.kiro/specs/night-shift-balance-contract/requirements.md) · [Recorded workflow](../evidence/kiro-night-shift-native.png) · [Audit and reproduction steps](../evidence/billy-seat-audit/README.md)
+At another Saloon table, Kiro CLI proposed taking an attack point from Billy. A separate reviewer used a written Kiro spec to check it. Across 100,000 held-out bot duels, the Cowboys’ win rate moved from 59.792% to 51.920%. The Saloon lets players try the proposal while the Trail keeps Billy’s original attack. Other game makers can rerun the same balance check with `node scripts/billy-balance-gate.mjs --arm candidate`. [Kiro spec](../../.kiro/specs/night-shift-balance-contract/requirements.md) · [Recorded workflow](../evidence/kiro-night-shift-native.png) · [Audit and reproduction steps](../evidence/billy-seat-audit/README.md)
 
 ## Built With
 
@@ -103,6 +103,8 @@ On November 26, GitHub served the repository publicly and identified its root li
 Official rules: https://kiroween.devpost.com/rules. Deadlines: credit requests by December 1, 2026 at 12:00 p.m. Pacific; submission by December 4, 2026 at 2 p.m. Pacific.
 
 ## URLs
+
+[Devpost gallery images, captions and alt text](devpost-gallery.md) follow the same Dragon from scouting to a saved deck.
 
 - Game: https://alejandro-publius.github.io/cowboys-vs-wizards/
 - Build manifest: https://alejandro-publius.github.io/cowboys-vs-wizards/build.json
