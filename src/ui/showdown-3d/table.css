@@ -787,6 +787,29 @@
     left: 12px;
   }
 }
+/* The two post-attack choices wrap within their own buttons, leaving the bottom-left
+   corner for Hand rules and the whole hand clear of the action row. */
+@media (orientation: portrait) and (max-width: 480px) {
+  .sd-diorama[data-contest-challenge] #sd-actions:has(#sd-boot-hill:not([hidden])) {
+    display: grid;
+    left: 62px;
+    right: 8px;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.1fr) minmax(52px, .7fr);
+    align-items: stretch;
+    gap: 3px;
+  }
+  .sd-diorama[data-contest-challenge] #sd-actions:has(#sd-boot-hill:not([hidden])) button {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 2px;
+    white-space: normal;
+    text-wrap: balance;
+  }
+  .sd-diorama[data-contest-challenge]:has(#sd-boot-hill:not([hidden])) #sd-hand {
+    bottom: 61px;
+  }
+}
 /* Short landscape gives the hand its own strip below the playfield. The canvas, its
    projected controls and world labels share the same dimensions through the camera resize. */
 @media (orientation: landscape) and (min-width: 550px) and (max-width: 799px) and (max-height: 480px) {
