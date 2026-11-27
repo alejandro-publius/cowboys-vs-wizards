@@ -32,6 +32,7 @@ const LEGACY = new Map(Object.entries({
   agentspawn: "SessionStart",
   promptsubmit: "UserPromptSubmit",
   agentstop: "Stop",
+  subagentstop: "Stop",
   filecreated: "PostFileCreate",
   fileedited: "PostFileSave",
   filesaved: "PostFileSave",
