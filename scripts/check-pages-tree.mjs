@@ -29,10 +29,12 @@
 //   - single duels (two players, and Boot Hill at 375 px) draw no best-of-three tally; the tally itself is checked by
 //     MODES=bo3,hotseat scripts/browser-showdown-modes-check.mjs on the illustrated build
 //   - /showdown/: the reference forecasts Last Stand before the attack and resolves both defeats
-//   - the Camp saloon on / and /3d/ links to the one poker/ page; following it loads all six poker
-//     files, paints the BBS screen and raises no errors
-//   - /?saloon=review opens the recorded Night Shift saloon at the validated Billy proposal card with no
-//     /night-shift/events request; Replay from start hides the decision and Back to map returns to the Camp
+//   - the Camp Saloon on / and /3d/ opens Poker. Embedded tables return to the book, and the
+//     standalone poker/ page loads all six files and paints the BBS screen.
+//   - Saloon home, Billy and Forge at 375×667, 740×375 and 1440×900: short opening copy, docked book
+//     replay and two playable outcomes, reached by pointer at their displayed coordinates
+//   - /?saloon=review opens the Saloon home with the recorded shift ready at Billy's proposal in the Journal.
+//     Playback stays offline, Replay from start hides the decision, and Back retraces the path to Camp.
 //   - Chrome exposes the named challenge, Outrider controls, Saloon dialog and balance evidence in its accessibility tree
 //   No page error, failed request or HTTP error is allowed anywhere.
 import assert from "node:assert/strict";
@@ -284,6 +286,89 @@ async function browserChecks() {
       assert.deepEqual(report.errors, [], "no page errors or failed requests");
     };
 
+    const saloonRoom = "#room-for-night-shift-saloon";
+    const homeBook = '[data-saloon-page="home"] .character-book';
+    const waitForSaloonHome = () => wait(`document.querySelector('${saloonRoom}')?.open &&
+      document.querySelector('${homeBook} .book-portrait[aria-pressed="true"]')?.checkVisibility() &&
+      document.querySelector('${homeBook} .book-watch')?.checkVisibility()`);
+    const seen = (selector) => evaluate(`(() => { const n = document.querySelector(${JSON.stringify(selector)});
+      if (!n?.checkVisibility({opacityProperty: true, visibilityProperty: true}) || n.matches(':disabled')) return null;
+      const r = n.getBoundingClientRect(), x = r.x + r.width / 2, y = r.y + r.height / 2;
+      let scrolled = false;
+      for (let parent = n; parent; parent = parent.parentElement) scrolled ||= !!(parent.scrollLeft || parent.scrollTop);
+      return {top: Math.round(r.top), bottom: Math.round(r.bottom), left: Math.round(r.left), right: Math.round(r.right), x, y, scrollY: Math.round(scrollY), scrolled,
+        onScreen: r.top >= 0 && r.bottom <= innerHeight && r.left >= 0 && r.right <= innerWidth && n.contains(document.elementFromPoint(x, y))}; })()`);
+    const pressSeen = async (selector) => {
+      const at = await seen(selector);
+      assert.ok(at?.onScreen, `${selector} is on screen and on top where it is pressed: ${JSON.stringify(at)}`);
+      for (const type of ["mouseMoved", "mousePressed", "mouseReleased"]) await send("Input.dispatchMouseEvent", {type, button: "left", clickCount: 1, x: at.x, y: at.y});
+    };
+    const visibleWithoutScroll = async (selector) => {
+      const at = await seen(selector);
+      return at?.onScreen && !at.scrolled;
+    };
+
+    for (const [width, height] of [[375, 667], [740, 375], [1440, 900]]) {
+      await send("Emulation.setDeviceMetricsOverride", {width, height, deviceScaleFactor: 1, mobile: width < 1000});
+      await open("");
+      await wait("document.querySelector('#menu-saloon')?.checkVisibility()");
+      await pressSeen("#menu-saloon");
+      await waitForSaloonHome();
+      await evaluate("document.fonts.ready.then(() => true)");
+      const firstView = async (page, selectors) => {
+        const panel = `[data-saloon-page="${page}"]`;
+        await wait(`document.querySelector('${panel}')?.checkVisibility()`);
+        const state = await evaluate(`(() => {
+          const room = document.querySelector('${saloonRoom}');
+          return {width: innerWidth, height: innerHeight,
+            pages: [...room.querySelectorAll('[data-saloon-page]')].filter(n => n.checkVisibility()).map(n => n.dataset.saloonPage),
+            words: room.innerText.trim().split(/\\s+/).length};
+        })()`);
+        const label = `${width} x ${height} Saloon ${page}`;
+        assert.deepEqual([state.width, state.height], [width, height], label);
+        assert.deepEqual(state.pages, [page], `${label} is the only visible station`);
+        // Count the rendered room, including control labels. Closed reports are optional reading.
+        assert.ok(state.words <= 75, `${label} shows ${state.words} words on entry (budget 75)`);
+        for (const selector of selectors) {
+          const at = await seen(selector);
+          assert.ok(at?.onScreen && !at.scrolled, `${label}: ${selector} receives the hit without scrolling: ${JSON.stringify(at)}`);
+        }
+        return state.words;
+      };
+      const watch = `${homeBook} .book-watch`;
+      const tableButton = '[data-saloon-show="table"]';
+      const forgeButton = '[data-saloon-show="forge"]';
+      const homeWords = await firstView("home", [`${homeBook} .book-portrait[aria-pressed="true"]`, watch, tableButton,
+        forgeButton, '[data-saloon-show="journal"]', "[data-saloon-wanted]", ".outpost-poker-link"]);
+      await pressSeen(watch);
+      await wait(`(() => { const status = document.querySelector('.sd-gallery.book-replay[open] [role="status"]');
+        return status?.checkVisibility() && status.innerText.trim(); })()`);
+      await press("Escape", 27);
+      await wait("!document.querySelector('.sd-gallery').open");
+      await waitForSaloonHome();
+
+      await pressSeen(tableButton);
+      const tableWords = await firstView("table", ['[data-shot="baseline"]', '[data-shot="candidate"]']);
+      await pressSeen('[data-shot="candidate"]');
+      await pressSeen('[data-reply="cover"]');
+      assert.match(await evaluate("document.querySelector('.saloon-reply-result').innerText"), /Cowboys won on turn 21/);
+      assert.ok(await visibleWithoutScroll(".saloon-reply-result"), "Billy’s outcome is visible where the move was played");
+      await pressSeen("[data-saloon-back]");
+      await waitForSaloonHome();
+
+      await pressSeen(forgeButton);
+      const forgeWords = await firstView("forge", ['.forge-hellfire button[value="all"]', '.forge-hellfire button[value="enemy"]']);
+      await pressSeen('.forge-hellfire button[value="enemy"]');
+      assert.match(await evaluate("document.querySelector('.forge-hellfire [data-verdict]').innerText"), /matches this cast/);
+      assert.ok(await visibleWithoutScroll(".forge-hellfire [data-verdict]"), "the cast verdict is visible on the Forge board");
+      await pressSeen("[data-saloon-back]");
+      await waitForSaloonHome();
+      await pressSeen("[data-saloon-back]");
+      await wait(`!document.querySelector('${saloonRoom}').open && ${shown("showdown-camp")}`);
+      check(`${width} x ${height}: book replay, Billy's cover and Hellfire are playable from the first screen`, {homeWords, tableWords, forgeWords});
+    }
+
+    await send("Storage.clearDataForOrigin", {origin: new URL(site).origin, storageTypes: "all"});
     let bookIndex;
     for (const width of [1440, 390]) {
       await send("Emulation.setDeviceMetricsOverride", {width, height: width === 390 ? 844 : 900, deviceScaleFactor: 1, mobile: false});
@@ -300,13 +385,20 @@ async function browserChecks() {
     clean();
     check("390 px Wanted papers scout without saving, award both fifth captures separately from bonuses, and reopen the earned cards after a 16-card deck replacement");
 
+    const openRecordedShift = async () => {
+      await open("?saloon=review");
+      await waitForSaloonHome();
+      await click('[data-saloon-show="journal"]');
+      await click('[data-saloon-show="shift"]');
+      await wait(`document.querySelector('[data-saloon-page="shift"] .saloon-decision')?.checkVisibility()`);
+    };
+
     await open("?saloon=review");
-    const forge = ".outpost-drawer-forge";
-    const witness = `${forge} .forge-hellfire`;
+    const witness = ".forge-hellfire";
     const career = () => evaluate(`localStorage.getItem(${JSON.stringify(SAVE_KEY)})`);
     const savedBeforeForge = await career();
-    await wait(`document.querySelector("#room-for-night-shift-saloon")?.open`);
-    await tap(`${forge} > summary`);
+    await waitForSaloonHome();
+    await tap('[data-saloon-show="forge"]');
     await wait(`document.querySelector("${witness} [data-cowboy]")?.textContent.includes("3 orbs")`);
     const forgeOrbs = () => evaluate(`Array.from(document.querySelectorAll("${witness} li"), troop => troop.textContent)`);
     const openingTroops = ["Cowboys · Sheriff · 3 orbs", "Wizards · Skeleton · 3 orbs"];
@@ -557,18 +649,29 @@ async function browserChecks() {
       await open(rel);
       await playOpensCamp();
       await click('[data-camp-destination="night-shift-saloon"]');
-      await wait(`document.getElementById('room-for-night-shift-saloon')?.open`);
-      const link = "#room-for-night-shift-saloon .outpost-poker-link";
-      assert.equal(await evaluate(`document.querySelector(${JSON.stringify(link)}).href`), `${site}poker/`, `${rel || "/"} links the one poker/ page`);
-      const mark = responses.length;
+      await waitForSaloonHome();
+      const link = `${saloonRoom} .outpost-poker-link`;
+      const pokerURL = await evaluate(`document.querySelector('${link}').href`);
+      assert.equal(pokerURL, `${site}poker/`, `${rel || "/"} links the one poker/ page`);
+      const standalone = `document.readyState === "complete" && location.href.startsWith(${JSON.stringify(pokerURL)})`;
+      const embedded = `document.querySelector('[data-saloon-page="poker"] iframe')?.contentDocument?.querySelector('#screen')?.textContent.includes('Five-card draw')`;
+      let mark = responses.length;
       await click(link);
-      await wait(`document.readyState==='complete'&&location.href.startsWith(${JSON.stringify(`${site}poker/`)})`);
+      await wait(`${embedded} || (${standalone})`);
+      const inRoom = await evaluate(embedded);
+      if (inRoom) {
+        await click("[data-saloon-back]");
+        await waitForSaloonHome();
+        mark = responses.length;
+        await send("Page.navigate", {url: pokerURL});
+        await wait(standalone);
+      }
       await wait(`!!document.getElementById('screen')&&!document.getElementById('screen').textContent.startsWith('Dialing Boot Hill')`);
       await sleep(500);
       clean();
       const loaded = POKER_FILES.filter((name) => responses.slice(mark).some((r) => r.status === 200 && new URL(r.url).pathname === `${BASE_PATH}poker/${name === "index.html" ? "" : name}`));
       assert.deepEqual(loaded, POKER_FILES, `${rel || "/"} -> poker/ loads all six browser files`);
-      check(`${BASE_PATH}${rel}: the Camp saloon opens Boot Hill Poker at ${BASE_PATH}poker/, loads its six files and paints the screen without errors`);
+      check(`${BASE_PATH}${rel} opens Poker from the Saloon. The standalone page loads all six files and paints the BBS screen`, {entry: inRoom ? "embedded table and Back" : "standalone page"});
     }
 
     const pokerSeeds = [0, 17, -1, "boot hill", "0x10"];
@@ -586,7 +689,10 @@ async function browserChecks() {
       await open("");
       await wait(`document.querySelector(".title-scene nav button")?.id === "menu-saloon"`);
       await activateByKey("#menu-saloon");
-      await wait(`document.querySelector("#room-for-night-shift-saloon")?.open && !document.querySelector("${table}").hidden`);
+      await waitForSaloonHome();
+      assert.ok(axNamed(await axTree(), "dialog", /^Night Shift Saloon$/), "the Saloon home has a dialog name");
+      await activateByKey('[data-saloon-show="table"]');
+      await wait(`document.querySelector("${table}")?.checkVisibility()`);
       assert.ok(await evaluate(`(() => { const r = document.querySelector('${table} [data-shot="baseline"]').getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; })()`), "the Saloon shot is in view on a short phone");
       const result = `document.querySelector("${table} .saloon-shot-result").textContent`;
       assert.equal(await evaluate(result), "");
@@ -622,41 +728,44 @@ async function browserChecks() {
         else assert.notEqual(await evaluate(vitals), beforeMove);
       }
       assert.equal(await evaluate(storedCareer), before);
+      await click("[data-saloon-back]");
+      await waitForSaloonHome();
+      await press("Escape", 27);
+      await wait(`!document.querySelector('${saloonRoom}').open && ${shown("showdown-camp")}`);
       await send("Emulation.setDeviceMetricsOverride", {width: 1440, height: 900, deviceScaleFactor: 1, mobile: false});
       check("the title opens the Night Shift Saloon; both Billy shots reproduce their finishes, and Billy can attack or take cover to change the result without changing the career");
     }
 
-    // ?saloon=review: the staged illustrated root opens the recorded room at the validated Billy decision.
+    // The review link primes the Billy decision for the Journal's recorded shift.
     {
-      const room = "#room-for-night-shift-saloon";
+      const room = saloonRoom;
       const decision = `document.querySelector('${room} .saloon-decision')`;
       const feedRequests = () => requests.filter((url) => url.includes("/night-shift/events"));
       await send("Storage.clearDataForOrigin", {origin: new URL(site).origin, storageTypes: "all"});
       const mark = requests.length;
-      await open("?saloon=review");
-      await wait(`document.querySelector('${room}')?.open&&${decision}&&!${decision}.hidden`);
+      await openRecordedShift();
       assert.ok(await evaluate(shown("showdown-camp")), "?saloon=review opens over the Camp");
       assert.equal(await evaluate(`document.querySelector('${room} .saloon-mode-label').textContent`), "Recorded Kiro shift");
       assert.match(await evaluate(`${decision}.querySelector('h5').textContent`), /^Review of Kiro's proposal: Billy\b.* attack 2 → 1$/);
       assert.match(await evaluate(`${decision}.textContent`), /Passed the written balance rule/);
       assert.match(await evaluate(`document.querySelector('${room} .saloon-target-stat').textContent`), /^Billy\b.*: attack 2 → 1/);
       const at = await evaluate(`document.querySelector('${room} .saloon-progress').textContent`);
-      assert.match(at, /^· step [1-9]\d* of \d+$/, "the room opens at the review step");
+      assert.match(at, /^· step 5 of \d+$/, "the review link primes Billy's proposal at step 5");
       const audit = `${decision}.querySelector(".saloon-audit")`;
       assert.equal(await evaluate(`${audit}.open`), false);
       await evaluate(`${audit}.querySelector("summary").focus()`);
       await press("Enter", 13);
       await wait(`${audit}.open`);
       const saloonAx = await axTree();
-      assert.ok(axNamed(saloonAx, "dialog", /^Night Shift saloon$/), "the recorded room has a dialog name");
-      for (const label of [/^Play$/, /^Step$/, /^Replay from start$/]) {
-        assert.ok(axNamed(saloonAx, "button", label, enabled), `${label} is an enabled playback control`);
-      }
+      assert.ok(axNamed(saloonAx, "dialog", /^Shift recording$/), "the recorded room has a dialog name");
+      assert.ok(axNamed(saloonAx, "button", /^Replay from start$/, enabled), "the archived decision can be replayed");
       assert.ok(axNamed(saloonAx, "heading", /^Review of Kiro's proposal: Billy attack 2 → 1$/), "the balance review has a heading");
       const noticeText = saloonAx.filter((node) => node.role?.value === "StaticText").map((node) => node.name?.value).join(" ");
       for (const detail of ["59.792%", "51.920%", "100,000", "awaits design approval"]) {
         assert.ok(noticeText.includes(detail), `the review exposes ${detail}`);
       }
+      await hitPoint(`${room} .saloon-decision-note`);
+      assert.ok(await visibleWithoutScroll(`${room} [data-saloon-back]`), "reading the end of the archived decision keeps Back on screen");
       await sleep(3500); // longer than the slowest live poll interval
       // Keyboard: a real Enter on the focused control; keyboard focus must land on Play, not <body>.
       const total = Number(at.match(/ of (\d+)$/)[1]);
@@ -672,6 +781,10 @@ async function browserChecks() {
       assert.ok(axNamed(await axTree(), "button", /^Play$/, focused), "Chrome exposes Play as focused after restart");
       for (let n = 0; n < total - 1; n++) await click(`${room} .saloon-step`);
       await wait(`document.querySelector('${room} .saloon-progress').textContent==='· step ${total - 1} of ${total}'`);
+      const playbackAx = await axTree();
+      for (const label of [/^Play$/, /^Step$/, /^Replay from start$/]) {
+        assert.ok(axNamed(playbackAx, "button", label, enabled), `${label} is an enabled playback control`);
+      }
       await focusOn("step");
       await press("Enter", 13);
       await wait(`document.querySelector('${room} .saloon-progress').textContent==='· step ${total} of ${total}'`);
@@ -679,16 +792,20 @@ async function browserChecks() {
       assert.ok(await evaluate(onPlay), "Step by Enter at the last event moves focus to the enabled Replay button");
       assert.equal(await evaluate(`document.activeElement.textContent`), "Replay");
       assert.ok(axNamed(await axTree(), "button", /^Replay$/, focused), "Chrome exposes Replay as focused after the last event");
-      await click(`${room} header button`);
+      await click("[data-saloon-back]");
+      await wait(`document.querySelector('[data-saloon-page="journal"] [data-saloon-show="shift"]')?.checkVisibility()`);
+      await click("[data-saloon-back]");
+      await waitForSaloonHome();
+      await click("[data-saloon-back]");
       await wait(`!document.querySelector('${room}').open&&${shown("showdown-camp")}`);
       assert.deepEqual(feedRequests(), [], "?saloon=review makes no /night-shift/events request");
       assert.ok(requests.length > mark, "the review page made its own requests");
       clean();
-      check(`${BASE_PATH}?saloon=review: the recorded saloon opens at the validated Billy proposal (${at.slice(2)}), makes 0 /night-shift/events requests; Enter on Replay from start hides the decision and Enter on Step at the last event keeps focus on Play/Replay; Back to map returns to the Camp`);
+      check(`${BASE_PATH}?saloon=review opens the Saloon home with the Journal at Billy's proposal (${at.slice(2)}). Playback stays offline, Replay and the final Step return focus to Play/Replay, and Back retraces the Journal and home before returning to Camp`);
     }
 
     // Follow the actual evidence link, then open the copied URL in the lightweight build.
-    await open("?saloon=review");
+    await openRecordedShift();
     const replayLink = '.saloon-decision a[href="?replay=billy"]';
     await wait(`document.querySelector('${replayLink}')?.getClientRects().length > 0`);
     const campDocument = await evaluate("performance.timeOrigin");
@@ -861,16 +978,6 @@ async function browserChecks() {
     // A short landscape phone, 740 x 375: the board fills the screen and the action row under it starts below the
     // fold. Every control here is pressed where the viewport already shows it; nothing scrolls it into view first.
     await send("Emulation.setDeviceMetricsOverride", {width: 740, height: 375, deviceScaleFactor: 1, mobile: true});
-    const seen = (selector) => evaluate(`(() => { const n = document.querySelector(${JSON.stringify(selector)});
-      if (!n || n.hidden || !n.getClientRects().length) return null;
-      const r = n.getBoundingClientRect(), x = r.x + r.width / 2, y = r.y + r.height / 2;
-      return {top: Math.round(r.top), bottom: Math.round(r.bottom), left: Math.round(r.left), right: Math.round(r.right), x, y, scrollY: Math.round(scrollY),
-        onScreen: r.top >= 0 && r.bottom <= innerHeight && r.left >= 0 && r.right <= innerWidth && n.contains(document.elementFromPoint(x, y))}; })()`);
-    const pressSeen = async (selector) => {
-      const at = await seen(selector);
-      assert.ok(at?.onScreen, `740 x 375: ${selector} is on screen and on top where it is pressed: ${JSON.stringify(at)}`);
-      for (const type of ["mouseMoved", "mousePressed", "mouseReleased"]) await send("Input.dispatchMouseEvent", {type, button: "left", clickCount: 1, x: at.x, y: at.y});
-    };
     const shortChallenge = async (activate) => {
       await send("Storage.clearDataForOrigin", {origin: new URL(site).origin, storageTypes: "all"});
       await open("?seed=0");

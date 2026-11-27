@@ -31,7 +31,8 @@ const mime = {
 // Select generated, route-specific content so static shells and loading screens cannot pass.
 const ROUTES = [
   {id: "title-3d", rel: "", marker: "#title-screen #menu-saloon"},
-  {id: "saloon-review", rel: "?saloon=review", marker: "#room-for-night-shift-saloon[open] [data-shot=baseline]", modal: true, polite: true, feedback: ".saloon-shot-result"},
+  {id: "saloon-review", rel: "?saloon=review", enter: '#room-for-night-shift-saloon[open] [data-saloon-show="table"]',
+    marker: '[data-saloon-page="table"] [data-shot=baseline]', modal: true, polite: true, feedback: ".saloon-shot-result"},
   {id: "outrider-challenge", rel: "?outrider=case-e", marker: "#showdown[data-contest-challenge] [data-own]", polite: true},
   {id: "replay-room", rel: "?room=replay", marker: "#replay-room [data-branch]", feedback: ".rr-step-status"},
   {id: "even-fight", rel: "?even-fight=1", marker: "#showdown #sd-status", text: "Even Fight preview", polite: true},
@@ -186,14 +187,18 @@ try {
     throw new Error(`Timed out waiting for: ${expression}`);
   };
 
+  async function activateByKey(selector) {
+    await evaluate(`document.querySelector(${JSON.stringify(selector)}).focus()`);
+    await send("Input.dispatchKeyEvent", {type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, text: "\r"});
+    await send("Input.dispatchKeyEvent", {type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13});
+  }
+
   // Exercise one keyboard action in each recorded review. Check the updated text and its exposed live property.
   async function checkFeedback(route) {
     const status = `document.querySelector(${JSON.stringify(route.feedback)})`;
     const visibleText = `(${status}?.checkVisibility({visibilityProperty: true}) ? ${status}.textContent.trim() : "")`;
     const before = await evaluate(visibleText);
-    await evaluate(`document.querySelector(${JSON.stringify(route.marker)}).focus()`);
-    await send("Input.dispatchKeyEvent", {type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, text: "\r"});
-    await send("Input.dispatchKeyEvent", {type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13});
+    await activateByKey(route.marker);
     await wait(`${visibleText}.length > 0 && ${visibleText} !== ${JSON.stringify(before)}`);
     const {result} = await send("Runtime.evaluate", {expression: status});
     const {nodes} = await send("Accessibility.getPartialAXTree", {objectId: result.objectId, fetchRelatives: false});
@@ -207,6 +212,10 @@ try {
     const url = site + route.rel;
     const navigation = await send("Page.navigate", {url});
     if (navigation.errorText) throw new Error(navigation.errorText);
+    if (route.enter) {
+      await wait(`(${landingReady})(${JSON.stringify(url)}, ${JSON.stringify({marker: route.enter})})`);
+      await activateByKey(route.enter);
+    }
     await wait(`(${landingReady})(${JSON.stringify(url)}, ${JSON.stringify(route)})`);
 
     const domAudit = await evaluate(`(${inspectDocument})()`);

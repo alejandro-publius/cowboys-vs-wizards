@@ -10,6 +10,7 @@
 //      from the Kiro hooks (.kiro/hooks/night-shift-activity.json) when the agent's own write tool creates a new
 //      file. For each: the first poll that carried it, the first change on that actor's portrait after that poll
 //      (stir class or ambient line), and the next animation frame. Latency = that frame's wall time - the record's `at`.
+//      In each mode the visitor opens the shift from Camp → Saloon → Journal → Shift recording.
 //   3. Privacy: every activity record in every poll body has only id, at, kind, actor, phase; the saloon's text and
 //      the poll bodies contain no scratch file name or content (.artifacts/saloon-live-witness/scratch/*) and no tool name.
 //   4. Cadence: with document.visibilityState emulated as hidden, then with the room closed.
@@ -180,18 +181,34 @@ async function openPage(cdp, url, requests) {
     while (Date.now() < stop) { if (await evaluate(expression)) return; await sleep(100); }
     throw new Error(`Timed out: ${expression}`);
   };
-  // Play, then the Camp's Night Shift saloon button, as a visitor would.
-  const enterSaloon = async () => {
+  const room = "#room-for-night-shift-saloon[open]";
+  const visit = async (control, destination) => {
+    const button = JSON.stringify(`${room} ${control}`);
+    const page = JSON.stringify(`${room} [data-saloon-page="${destination}"]`);
+    await wait(`document.querySelector(${button})?.checkVisibility()`);
+    await evaluate(`document.querySelector(${button}).click()`);
+    await wait(`document.querySelector(${page})?.checkVisibility()`);
+  };
+  const enterShift = async () => {
     await wait(`document.readyState === "complete" && document.querySelector("#menu-play")`);
     await evaluate(`document.querySelector("#menu-play").click()`);
     await wait(`!document.getElementById("showdown-camp").hidden && document.querySelector('[data-camp-destination="night-shift-saloon"]')`);
     await evaluate(`document.querySelector('[data-camp-destination="night-shift-saloon"]').click()`);
-    await wait(`document.querySelector("#room-for-night-shift-saloon")?.open && window.__witness.observe()`);
+    await wait(`document.querySelector('${room} [data-saloon-page="home"] .character-book .book-watch')?.checkVisibility()`);
+    await visit('[data-saloon-show="journal"]', "journal");
+    await visit('[data-saloon-show="shift"]', "shift");
+    await wait(`window.__witness.observe()`);
+  };
+  const leaveShift = async () => {
+    await visit("[data-saloon-back]", "journal");
+    await visit("[data-saloon-back]", "home");
+    await evaluate(`document.querySelector('${room} [data-saloon-back]').click()`);
+    await wait(`!document.querySelector('${room}') && document.getElementById('showdown-camp').checkVisibility()`);
   };
   const roomState = () => evaluate(`(() => { const r = document.querySelector("#room-for-night-shift-saloon");
     return {label: r.querySelector(".saloon-mode-label").textContent, progress: r.querySelector(".saloon-progress").textContent,
       now: r.querySelector(".saloon-now").textContent, view: r.querySelector(".saloon-room").dataset.view}; })()`);
-  return {send, evaluate, wait, enterSaloon, roomState, close: () => cdp.send("Target.closeTarget", {targetId})};
+  return {send, evaluate, wait, enterShift, leaveShift, roomState, close: () => cdp.send("Target.closeTarget", {targetId})};
 }
 
 // Pairs each wanted record with the first poll that carried it and the first change on its actor after that poll.
@@ -258,7 +275,7 @@ try {
   {
     const requests = [];
     const page = await openPage(cdp, `${origin}/`, requests);
-    await page.enterSaloon();
+    await page.enterShift();
     await sleep(7000);
     const state = await page.roomState();
     report.phases.public = {url: `${origin}/`, state, feedRequests: requests.length};
@@ -270,7 +287,7 @@ try {
     const requests = [];
     const url = `${pathToFileURL(BUILD).href}?saloon=live`;
     const page = await openPage(cdp, url, requests);
-    await page.enterSaloon();
+    await page.enterShift();
     await sleep(7000);
     const state = await page.roomState();
     report.phases.recordedOnly = {url: "file:…/dist/cowboys-vs-wizards-showdown-3d.html?saloon=live", state, feedRequests: requests.length};
@@ -282,7 +299,7 @@ try {
   // 2. Native live.
   const requests = [];
   const live = await openPage(cdp, `${origin}/?saloon=live`, requests);
-  await live.enterSaloon();
+  await live.enterShift();
   await live.wait(`document.querySelector("#room-for-night-shift-saloon .saloon-progress").textContent.includes("watching")`);
   const readyAt = new Date().toISOString();
   writeFileSync(path.join(OUT, "ready.json"), `${JSON.stringify({readyAt, url: `${origin}/?saloon=live`}, null, 2)}\n`);
@@ -346,7 +363,7 @@ try {
   await live.evaluate(`(() => { delete document.visibilityState; delete document.hidden; document.dispatchEvent(new Event("visibilitychange")); return true; })()`);
   report.phases.hidden = {emulated: true, requests: hiddenTimes.length, intervalsMs: hiddenGaps};
   check(`hidden page (emulated): poll gaps never shorter than POLL_MS ${POLL_MS} ms`, hiddenGaps.length > 0 && hiddenGaps.every((g) => g >= POLL_MS - 50), hiddenGaps);
-  await live.evaluate(`document.querySelector("#room-for-night-shift-saloon > header button").click()`);
+  await live.leaveShift();
   const closedFrom = Date.now();
   await sleep(7000);
   const closedCount = requests.filter((t) => t > closedFrom + 100).length;
@@ -361,7 +378,7 @@ try {
   fixtureSaloon = await startSaloon({root: fixtureRoot, port: 0});
   const fixtureRequests = [];
   const fixture = await openPage(cdp, `http://127.0.0.1:${fixtureSaloon.port}/?saloon=live`, fixtureRequests);
-  await fixture.enterSaloon();
+  await fixture.enterShift();
   await fixture.wait(`document.querySelector("#room-for-night-shift-saloon .saloon-progress").textContent.includes("watching")`);
   await sleep(500);
   const written = recordActivity(fixtureRoot, {kind: "activity", actor: "hunter", phase: "PreTaskExecution"});
