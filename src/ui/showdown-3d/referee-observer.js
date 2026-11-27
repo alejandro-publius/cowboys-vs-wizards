@@ -64,8 +64,13 @@ export function parseGraveyard(text) {
   return !t || t === "empty" ? [] : t.split(", ");
 }
 
-// A 3D world label: "Deck 12", "Graveyard 3", "Traps 1/2".
-export function parseWorldLabel(text) {
+// Compact zones carry their public counts even when the zero label is hidden.
+export function parseWorldLabel(text, {zoneTitle, zoneCount, zoneMax} = {}) {
+  if (zoneTitle) {
+    const label = {title: zoneTitle, count: zoneCount ? Number(zoneCount) : null};
+    if (zoneMax) label.of = Number(zoneMax);
+    return label;
+  }
   const t = String(text ?? "").replace(/\s+/g, " ").trim();
   const traps = /^Traps (\d+)\/(\d+)$/.exec(t);
   if (traps) return {title: "Traps", count: Number(traps[1]), of: Number(traps[2])};
@@ -184,7 +189,7 @@ function observeSlot(slot, shown, text) {
 function observeWorld(doc, win, incomplete, shown, text) {
   const canvas = doc.querySelector("canvas.sd-world");
   const labels = [...doc.querySelectorAll(".sd-world-labels > *")].map((node) => ({
-    ...parseWorldLabel(text(node)), graveSide: node.dataset.graveLabel ?? null, shown: shown(node)}));
+    ...parseWorldLabel(text(node), node.dataset), graveSide: node.dataset.graveLabel ?? null, shown: shown(node)}));
   const world = {present: Boolean(canvas), shown: shown(canvas), motion: canvas?.dataset.motion ?? null, labels, pawns: null};
   // Integration point: scene.js keeps its pawns in a closure-private map. A seat-safe hook would list
   // {side, slot, name} for each presented miniature after synchronize().

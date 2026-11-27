@@ -483,6 +483,10 @@ async function browserChecks() {
     const coverRule = "cover: until your next turn it keeps extra damage off your Base, but it will not hit back.";
     const baseOrbs = () => evaluate(`document.querySelector('[data-base="cowboy"] .sd-orbs').getAttribute('aria-label')`);
     const beforeAttack = await baseOrbs();
+    const trapStacks = await evaluate(`[...document.querySelectorAll('#sd-field [data-zone-title="Traps"]')]
+      .map(n => [n.dataset.zoneCount, n.dataset.zoneMax, n.textContent, n.hidden]).sort()`);
+    assert.deepEqual(trapStacks, [["0", "2", "", true], ["1", "2", "▲ 1", false]],
+      "only the occupied trap stack draws a count, and both stacks report their public capacity");
     const threat = await evaluate(`(() => {
       const painted = document.querySelector('#sd-field .table-selection');
       const note = document.querySelector('.table-forecast-note');
@@ -490,8 +494,8 @@ async function browserChecks() {
         preview: document.getElementById('sd-preview-base').textContent,
         note: note?.checkVisibility({opacityProperty: true, visibilityProperty: true}) ? note.innerText : ''};
     })()`);
-    assert.ok(threat.prompt.includes(trapRisk) && threat.visible.includes(trapRisk), "the aiming prompt and illustrated board explain the public trap risk");
-    assert.equal(threat.visible, `No enemy troops: strike the Base. ${trapRisk} Or take ${coverRule}`, "the trap risk stays with the attack, and the cover choice is drawn too");
+    assert.equal(threat.prompt, `No enemy troops: strike the Base. ${trapRisk} Or take ${coverRule}`, "the accessible prompt retains trap timing and the full cover rule");
+    assert.equal(threat.visible, "Strike Base · trap before damage · or take cover", "the table draws both choices and the trap timing");
     assert.equal(threat.preview, "Without trap effects: Hit the Base for 3", "the Imp's printed damage is conditional while a trap is set");
     assert.equal(threat.note, `Cowboy Base · ${threat.preview}`, "the single legal target's conditional forecast is shown before attacking");
     assert.doesNotMatch(Object.values(threat).join(" "), /Bear Trap|Hex/, "the forecast keeps the trap's identity private");
@@ -512,7 +516,7 @@ async function browserChecks() {
       const orbsOf = (selector) => evaluate(`document.querySelector('${selector} .sd-orbs').getAttribute('aria-label')`);
       const feedback = (text) => wait(`document.getElementById('sd-feedback').textContent.includes(${JSON.stringify(text)})`);
       const pass = async () => { await click("#sd-end"); await wait(shown("sd-curtain")); await click("#sd-ready"); };
-      const fight = `Choose what to attack. Or take ${coverRule}`;
+      const fight = "Pick attack target · or take cover";
       await open("?seed=5");
       await click("#menu-play");
       await click('[data-camp-destination="camp-open-title"]');
@@ -523,7 +527,7 @@ async function browserChecks() {
       await pass();
       await click('[data-slot="wizard-0"]');
       const strike = `No enemy troops: strike the Base. Or take ${coverRule}`;
-      assert.equal(await painted(), strike, "the illustrated table draws both choices before the click");
+      assert.equal(await painted(), "Strike Base · or take cover", "the illustrated table draws both choices before the click");
       await click("#sd-cancel");
       assert.equal(await painted(), "", "Cancel clears the drawn choice");
       await activateByKey('[data-slot="wizard-0"]');
@@ -531,6 +535,7 @@ async function browserChecks() {
         "keyboard focus lands on the Base with its forecast and the cover choice");
       await tabTo("#sd-cover");
       assert.ok(axNamed(await axTree(), "button", /^Take cover$/, (node) => focused(node) && node.description?.value === strike), "Take cover describes the rule at keyboard focus");
+      assert.equal(await evaluate("document.getElementById('sd-cover').title"), strike, "the cover button offers the same full rule on hover");
       const untouched = await orbsOf('[data-base="cowboy"]');
       await press("Enter", 13);
       await feedback("The Wizards' Skeleton took cover.");
@@ -545,7 +550,7 @@ async function browserChecks() {
       await activateByKey('[data-slot="cowboy-0"]');
       const only = `This troop cannot attack now. Take ${coverRule}`;
       assert.ok(axNamed(await axTree(), "button", /^Take cover$/, (node) => focused(node) && node.description?.value === only), "375 px: a troop that cannot attack focuses Take cover, which says why and what it does");
-      assert.equal(await painted(), only, "375 px: the cover-only choice is drawn");
+      assert.equal(await painted(), "Cannot attack · Take cover", "375 px: the cover-only choice is drawn");
       const layout = await evaluate(`(() => {
         const box = (n) => { const r = n.getBoundingClientRect(); return {top: r.top, bottom: r.bottom, left: r.left, right: r.right}; };
         const text = box(document.querySelector('#sd-field .table-selection'));
@@ -599,7 +604,7 @@ async function browserChecks() {
       await click('[data-card^="wizard-wizard-"]');
       const forecast = "Pay Skeleton: Skeleton returns with 1 orb. Pay Imp: no Undead to return.";
       assert.ok(await evaluate(`document.querySelector('.table-selection').checkVisibility() &&
-        document.querySelector('.table-selection').innerText.includes(${JSON.stringify(forecast)})`),
+        document.querySelector('.table-selection').innerText === "Wizard tribute · Skeleton → Skeleton (1 orb) · Imp → no Undead"`),
         "the illustrated table distinguishes both payments before commitment");
       assert.ok(axNamed(await axTree(), "button", new RegExp(tribute),
         (node) => enabled(node) && node.description?.value?.includes(forecast)), "the tribute button describes the choice");

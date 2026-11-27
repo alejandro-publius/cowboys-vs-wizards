@@ -202,6 +202,11 @@
   font-weight: 700;
   text-decoration: underline;
 }
+#showdown-camp .saloon-decision summary {
+  color: #3a1f12;
+  font-weight: 700;
+  cursor: pointer;
+}
 .saloon-decision h5 {
   margin: 0 0 0.3rem;
   font: 700 1rem/1.15 var(--frontier-display);
