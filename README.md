@@ -29,6 +29,8 @@ The full campaign saves in your browser. The Dragon practice positions replay re
 | **Captured** stamped across the portrait | Open the portrait to see the Cowboy card you earned. Choose **Build with** to put it in your deck. |
 | **Ghostly** on the Wraith | A spell that picks a target, such as Deadeye, can't choose it. Once your captured Wraith faces the Wizard, Hellfire can still take an orb from it. |
 
+At the **Night Shift Saloon → Forge shelf**, cast Hellfire on a Sheriff standing across from your Skeleton. Choose what “every troop” should mean, see exactly whose orbs changed, then replay the same deal with the other wording. [Playtest and referee results](docs/evidence/player-card-forge/hellfire-witness.md)
+
 <a id="how-kiro-reviews-a-card-change"></a>
 
 ## Inside the Night Shift

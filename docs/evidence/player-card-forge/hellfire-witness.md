@@ -15,9 +15,9 @@ The matrix’s Score Bridge cell G2 calls for dealing the smallest hand that bre
 
 - `node --test tests/match/forge-hellfire.test.js tests/match/forge-shelf.test.js tests/match/camp-side-games.test.js` passed all 17 checks. The witness checks pin the cast, both verdicts, the restored board and focus on the alternate wording.
 - `python3 -B proof/referee/referee.py --stream` accepted the four-action input. In engine IDs the summons are `cowboy-sheriff-3` and `wizard-skeleton-4`, and the spell is `wizard-hellfire-1`. The input used the seed-0 opening hands followed by their remaining decks, with printed card names for the referee.
-- `node scripts/stage-pages.mjs` produced the illustrated entry in `dist/web/index.html`. This worker could not bind loopback (`EPERM`) or start Chromium (macOS denied Mach port registration).
+- The [staged Chrome check](../../../scripts/check-pages-tree.mjs) cast both wordings at a 390-pixel viewport using touch and keyboard. It checked both troops' orbs, focus after retry, and the saved career. The [Python referee comparison](../../../tests/match/forge-referee.test.js) replays all four actions in the standard test suite.
 
-## Parent Chrome check
+## Play the deal in Chrome
 
 1. From this checkout, serve the staged game with `python3 -m http.server 4173 --bind 127.0.0.1 --directory dist/web`. Open `http://127.0.0.1:4173/` in Chrome.
 2. Choose **Night Shift Saloon → Forge shelf → Who gets burned by Hellfire?** Activate **Remove 1 orb from every troop.** The verdict should receive focus and the board should show Sheriff 3 → 2 and Skeleton 3 → 3.

@@ -32,7 +32,7 @@ jobs:
         with:
           node-version: 22
       - run: node ci/record-pairs.mjs > "$RUNNER_TEMP/pairs.json"
-      - uses: alejandro-publius/cowboys-vs-wizards/packages/frontier-kit@<reviewed-commit>
+      - uses: alejandro-publius/cowboys-vs-wizards/packages/frontier-kit@27583b16aab4ab38805fab93b720d383eb4fb7d8
         with:
           plan: ci/plan.json
           evidence: ${{ runner.temp }}/pairs.json
@@ -41,6 +41,8 @@ jobs:
 Exit **0** means both candidate side win shares are within 45–55% and opening-seat skew grew by at most 1 percentage point versus baseline, separately on tune and holdout. All games count in the denominator. Exit **2** reports a measured rejection. Both print JSON with counts and shares per arm, changed winners and each cohort's checks. Exit **1** reports invalid inputs on stderr, including missing, duplicated or out-of-order pairs. The Action reads the thresholds from its pinned [Night Shift contract](../../.kiro/specs/night-shift-balance-contract/requirements.md). The caller supplies the simulator and the evidence of which versions it ran.
 
 ### Import the Kiro Power
+
+On November 27, Kiro CLI 3.5.0 installed the Power in a fresh profile. From a checkout containing the Power, run `kiro-cli powers install "$PWD/.kiro/powers/balance-gate"`.
 
 In Kiro IDE, open **Powers → Add Custom Power → Import power from a folder**, select `.kiro/powers/balance-gate` in the checkout, then click **Install**. Once this directory is public, use **Import power from a repository URL** (called **Import power from GitHub** in earlier versions) and paste its GitHub directory URL. With a game workspace open, ask “Run the paired balance gate on ci/plan.json and pairs.json. Which cohort and rule explain the verdict?” The Power contains the input contract and CLI instructions. [Power directory](../../.kiro/powers/balance-gate/) · [Kiro installation guide](https://kiro.dev/docs/powers/installation/)
 

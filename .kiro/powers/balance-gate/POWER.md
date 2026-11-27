@@ -25,10 +25,10 @@ From the game's workspace, point Node at a reviewed checkout of Cowboys vs. Wiza
 node /path/to/cowboys-vs-wizards/packages/frontier-kit/balance-gate.mjs PLAN.json EVIDENCE.json
 ```
 
-For GitHub Actions, use a step after the calling repository has checked out its game and produced both files. Replace `<reviewed-commit>` with the full commit SHA containing the action. [Frontier Kit instructions](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/main/packages/frontier-kit/README.md)
+For GitHub Actions, use this pinned step after the calling repository checks out its game and produces both files. [Frontier Kit instructions](https://github.com/alejandro-publius/cowboys-vs-wizards/blob/27583b16aab4ab38805fab93b720d383eb4fb7d8/packages/frontier-kit/README.md)
 
 ```yaml
-- uses: alejandro-publius/cowboys-vs-wizards/packages/frontier-kit@<reviewed-commit>
+- uses: alejandro-publius/cowboys-vs-wizards/packages/frontier-kit@27583b16aab4ab38805fab93b720d383eb4fb7d8
   with:
     plan: PLAN.json
     evidence: EVIDENCE.json
