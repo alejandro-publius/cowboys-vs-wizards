@@ -12,7 +12,38 @@ const {chromium} = require("playwright-core");
 const site = pathToFileURL(path.resolve(process.argv[2] ?? "dist/cowboys-vs-wizards-showdown-3d.html"));
 const browser = await chromium.launch({executablePath: process.env.CHROME_PATH, args: ["--enable-unsafe-swiftshader"]});
 
-async function checkReplay(viewport, {reduced = false, noWebGL = false} = {}) {
+async function checkPracticeFallback(page, book, noWebGL) {
+  const billy = book.locator('[data-id="cowboy-billy"]');
+  await billy.click();
+  const printed = await book.locator(".book-hero .table-card-face").innerHTML();
+  await book.locator(".book-practice").click();
+
+  const canvas = page.locator("#sd-field .sd-world");
+  if (!noWebGL) {
+    await canvas.waitFor({state: "visible"});
+    await canvas.evaluate(el => el.getContext("webgl2").getExtension("WEBGL_lose_context").loseContext());
+  }
+  await canvas.waitFor({state: "hidden"});
+  const hand = page.locator("#sd-hand");
+  const card = hand.locator('[data-card="cowboy-billy-1"]');
+  assert.equal(await card.locator(".table-card-face").innerHTML(), printed);
+  await card.click();
+  assert.equal(await card.evaluate(el => el.classList.contains("sd-pick")), true);
+  assert.match(await page.locator("#sd-prompt").innerText(), /Choose 1/);
+  await page.locator("#sd-cancel").click();
+  await page.locator('#sd-board [data-own="0"]').click();
+  await page.locator('#sd-board [data-enemy="0"]').click();
+  assert.equal(await page.locator('#sd-board [data-slot="wizard-0"] .sd-orbs').getAttribute("aria-label"), "2 of 4 orbs");
+  assert.ok(await hand.locator("[data-card]").evaluateAll(cards => cards.length > 0 && cards.every(el => {
+    const art = el.querySelector(".table-card-face .sd-card-art");
+    return art?.getBoundingClientRect().height > 0 && getComputedStyle(art).backgroundImage.includes("data:image/webp");
+  })), "each card still shows its painting after the fight rerenders");
+  await page.getByRole("button", {name: "Back to book", exact: true}).click();
+  await book.waitFor();
+  assert.equal(await billy.getAttribute("aria-pressed"), "true");
+}
+
+async function checkReplay(viewport, {reduced = false, noWebGL = false, loseWebGL = false} = {}) {
   const page = await browser.newPage({viewport, isMobile: true, hasTouch: true, reducedMotion: reduced ? "reduce" : "no-preference"});
   try {
     if (noWebGL) await page.addInitScript(() => {
@@ -96,6 +127,7 @@ async function checkReplay(viewport, {reduced = false, noWebGL = false} = {}) {
     await dialog.waitFor({state: "hidden"});
     assert.equal(await watch.evaluate(button => button === document.activeElement), true);
     assert.equal(await billy.getAttribute("aria-pressed"), "true");
+    if (noWebGL || loseWebGL) await checkPracticeFallback(page, book, noWebGL);
     await page.keyboard.press("Escape");
     assert.equal(await launch.evaluate(button => button === document.activeElement), true);
     console.log(`ok ${viewport.width}×${viewport.height} ${noWebGL ? "no WebGL" : reduced ? "reduced motion" : "WebGL"}`);
@@ -107,7 +139,7 @@ async function checkReplay(viewport, {reduced = false, noWebGL = false} = {}) {
 try {
   const portrait = {width: 375, height: 667}, landscape = {width: 740, height: 375};
   await checkReplay(portrait);
-  await checkReplay(landscape);
+  await checkReplay(landscape, {loseWebGL: true});
   await checkReplay(portrait, {noWebGL: true});
   await checkReplay(landscape, {reduced: true});
 } finally {

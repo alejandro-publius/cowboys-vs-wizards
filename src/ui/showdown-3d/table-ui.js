@@ -120,14 +120,25 @@ export function bindTableUI(root) {
     hand.inert = !headline.hidden;
   }
 
+  function restoreBoard() {
+    forecasts.clear();
+    hand.inert = false;
+    table.classList.remove("table-resolved");
+    root.classList.remove("table-resolved");
+    if (!goHome.matches("[data-return-wanted], [data-return-book]")) goHome.textContent = "Back to camp";
+    prompt.textContent = "";
+    prompt.hidden = turn.hidden = series.hidden = headline.hidden = true;
+  }
+
   return {
     paint(view) {
       const ended = Boolean(view.result);
-      table.classList.toggle("table-resolved", ended);
-      root.classList.toggle("table-resolved", ended);
       paintCardFaces(root, "#sd-hand [data-card], #sd-result [data-choose], #sd-result [data-face]", view.evenFight);
       const handCards = [...hand.querySelectorAll("[data-card]")];
       showHandRules(ended ? [] : handCards);
+      if (!root.classList.contains("sd-diorama")) return;
+      table.classList.toggle("table-resolved", ended);
+      root.classList.toggle("table-resolved", ended);
       handCards.forEach((button, i) => {
         const fan = i - (handCards.length - 1) / 2;
         button.style.setProperty("--fan", fan * 2.1 + "deg");
@@ -156,15 +167,10 @@ export function bindTableUI(root) {
       }
       finish();
     },
-    restore() {
-      forecasts.clear();
+    restoreBoard,
+    clear() {
+      restoreBoard();
       showHandRules([]);
-      hand.inert = false;
-      table.classList.remove("table-resolved");
-      root.classList.remove("table-resolved");
-      if (!goHome.matches("[data-return-wanted], [data-return-book]")) goHome.textContent = "Back to camp";
-      prompt.textContent = "";
-      prompt.hidden = turn.hidden = series.hidden = headline.hidden = true;
     },
   };
 }

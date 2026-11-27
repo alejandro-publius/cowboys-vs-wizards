@@ -593,13 +593,20 @@ export function mountDiorama(root) {
   field.prepend(canvas, labels);
   let game,
     venue,
+    animationFinished,
     failed = false;
+  function finishAnimation() {
+    const finished = animationFinished;
+    animationFinished = null;
+    finished?.();
+  }
   function fallback() {
+    failed = true;
     game?.clear();
     canvas.hidden = true;
     root.classList.remove("sd-diorama");
-    table.restore();
-    failed = true;
+    table.restoreBoard();
+    finishAnimation();
   }
   canvas.addEventListener("webglcontextlost", fallback);
   return {
@@ -607,27 +614,30 @@ export function mountDiorama(root) {
       venue = id;
     },
     paint(view, start) {
-      if (failed) return;
-      try {
-        game ??= build(field, canvas, root);
-        game.setBattlefield(venue);
-      } catch (error) {
-        console.warn("Showdown 3D unavailable.", error);
-        fallback();
-        return;
+      animationFinished = null;
+      if (!failed) {
+        try {
+          game ??= build(field, canvas, root);
+          game.setBattlefield(venue);
+          root.classList.add("sd-diorama");
+        } catch (error) {
+          console.warn("Showdown 3D unavailable.", error);
+          fallback();
+        }
       }
-      root.classList.add("sd-diorama");
       table.paint(view);
-      game.paint(view, start);
+      if (!failed) game.paint(view, start);
     },
     clear() {
+      animationFinished = null;
       game?.clear();
-      table.restore();
+      table.clear();
       root.classList.remove("sd-diorama");
     },
     animate(trace, finished) {
-      if (!failed && game) game.animate(trace, finished);
-      else finished?.();
+      animationFinished = finished;
+      if (!failed && game) game.animate(trace, finishAnimation);
+      else finishAnimation();
     },
   };
 }
