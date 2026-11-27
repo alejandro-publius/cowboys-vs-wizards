@@ -10,6 +10,35 @@ import {PROPERTY_RECEIPT, auditPropertyReceipt} from "./scorecard.mjs";
 
 export const ROOT = resolve(fileURLToPath(new URL("..", import.meta.url)));
 
+const SHA40 = /^[0-9a-f]{40}$/;
+
+function auditPropertyEntriesShallowSafe(rawReceipt, root) {
+  const full = auditPropertyReceipt(rawReceipt, root);
+  const isShallow = existsSync(join(root, ".git/shallow"));
+  if (!isShallow || full.rejected.length !== 1 || full.rejected[0]?.reason !== "commit is not a commit in this repository") {
+    return full;
+  }
+  // In a shallow clone (e.g. CI fetch-depth: 1), verify 40-hex commit format and audit every entry directly.
+  if (rawReceipt?.schema !== "cvw-property-receipt/1" || !SHA40.test(rawReceipt?.commit ?? "")) {
+    return full;
+  }
+  const passed = new Map();
+  const rejected = [];
+  for (const p of Array.isArray(rawReceipt.properties) ? rawReceipt.properties : []) {
+    const id = typeof p?.id === "string" ? p.id.trim() : "";
+    const file = typeof p?.file === "string" ? p.file : "";
+    const fileOk = /^[\w./-]+\.(?:m?js|cjs|ts)$/.test(file) && !file.split("/").includes("..")
+      && existsSync(join(root, file)) && /["']fast-check["']/.test(readFileSync(join(root, file), "utf8"));
+    const problem = !id ? "no id" : p.status !== "passed" ? `status ${JSON.stringify(p?.status ?? null)}`
+      : !(Number.isSafeInteger(p.numRuns) && p.numRuns >= 1) ? "no executed runs"
+      : !fileOk ? `${file || "no file"} is not a fast-check test in this checkout`
+      : passed.has(id) ? "duplicate id" : null;
+    if (problem) rejected.push({id: id || null, reason: problem});
+    else passed.set(id, {file, numRuns: p.numRuns});
+  }
+  return {passed, rejected};
+}
+
 export function auditRepoReceipts(root = ROOT) {
   const evidenceBase = join(root, "docs/evidence");
   let sealedBundles = 0;
@@ -41,7 +70,7 @@ export function auditRepoReceipts(root = ROOT) {
     } catch {
       rawReceipt = null;
     }
-    const audited = auditPropertyReceipt(rawReceipt, root);
+    const audited = auditPropertyEntriesShallowSafe(rawReceipt, root);
     propertyPassed = audited.passed.size;
     propertyRejected = audited.rejected;
   }

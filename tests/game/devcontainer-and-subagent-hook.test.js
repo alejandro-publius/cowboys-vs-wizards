@@ -59,6 +59,25 @@ test("JCS-3 & JCS-4: check-subagent-stop skips re-entry, passes real repo receip
   const badAudit = auditRepoReceipts(dir);
   assert.equal(badAudit.ok, false);
   assert.equal(badAudit.tamperedBundles.length, 1);
+
+  // Shallow clone (.git/shallow) still validates property entries when historical commit is unfetched
+  const shallowDir = mkdtempSync(join(tmpdir(), "cvw-shallow-guard-"));
+  t.after(() => rmSync(shallowDir, {recursive: true, force: true}));
+  mkdirSync(join(shallowDir, ".git"), {recursive: true});
+  writeFileSync(join(shallowDir, ".git/shallow"), "93db9f3e2f3970ec8b391650199027eac1d252db\n");
+  mkdirSync(join(shallowDir, "docs/evidence/intact"), {recursive: true});
+  writeFileSync(join(shallowDir, "docs/evidence/intact/bundle.json"), readFileSync(join(ROOT, realBundlePath), "utf8"));
+  mkdirSync(join(shallowDir, "tests/game"), {recursive: true});
+  writeFileSync(join(shallowDir, "tests/game/fc.test.js"), 'import fc from "fast-check";\n');
+  mkdirSync(join(shallowDir, "reports/properties"), {recursive: true});
+  writeFileSync(join(shallowDir, "reports/properties/latest.json"), JSON.stringify({
+    schema: "cvw-property-receipt/1",
+    commit: "e1e2d325958b82c5f99e54c4831484901d994508",
+    properties: [{id: "P1", file: "tests/game/fc.test.js", status: "passed", numRuns: 25, seed: 1}],
+  }));
+  const shallowOk = auditRepoReceipts(shallowDir);
+  assert.equal(shallowOk.ok, true);
+  assert.equal(shallowOk.propertyPassed, 1);
 });
 
 test("JCS-5: subagent-stop-receipt-guard.json passes scorecard measureHooks with zero problems", () => {
