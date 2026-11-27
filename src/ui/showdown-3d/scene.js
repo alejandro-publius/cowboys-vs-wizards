@@ -13,6 +13,7 @@ import { tableCamera } from "./table-camera.js";
 import { createTableTransfers } from "./table-transfers.js";
 import { dressTable } from "./table-dressing.js";
 import { makeEmbers, makeFaeries } from "./embers.js";
+import { mountCharacterBook } from "./character-book.js";
 import { mountGallery as mountCardGallery } from "./gallery.js";
 export { mountCampOutpost } from "./camp-outpost.js";
 export { paintCardFaces } from "./table-ui.js";
@@ -552,6 +553,7 @@ function build(host, canvas, screen, closeup = false) {
 
 export function mountGallery(title, duel) {
   mountCardGallery(title, duel, (host, canvas, dialog) => build(host, canvas, dialog, true));
+  mountCharacterBook(title, duel);
 }
 
 function disposePawn(group) {

@@ -1,4 +1,5 @@
 import {build} from "esbuild";
+import {TYPES} from "../src/game/showdown/cards.js";
 import {pagePreview} from "./showdown-page-preview.mjs";
 import {mkdir, readFile, rm, writeFile} from "node:fs/promises";
 import {fileURLToPath} from "node:url";
@@ -38,6 +39,11 @@ const atlas = diorama ? await readFile(file("assets/cards/showdown-diorama.webp"
   if (error.code === "ENOENT") return "";
   throw error;
 }) : "";
+// Keep the book usable offline in the same single-file build as the illustrated board.
+const bookArt = diorama ? Object.fromEntries(await Promise.all(
+  Object.entries(TYPES).filter(([, card]) => card.kind === "troop").map(async ([id]) =>
+    [id, "data:image/webp;base64," + await readFile(file(`assets/cards/illustrated/${id}.webp`), "base64")])
+)) : {};
 const panorama = diorama ? await artwork("assets/scenes/showdown-storybook.webp") : "";
 const frontier = diorama ? await Promise.all(["title", "camp"].map(async (view) => {
   const image = await readFile(file(`assets/scenes/showdown-${view}.webp`), "base64");
@@ -56,7 +62,7 @@ if (diorama) {
 const options = {absWorkingDir: fileURLToPath(root), bundle: true, write: false, platform: "browser", target: "es2022", minify: true,
   define: {__CVW_GRAYBOX_BUILD__: JSON.stringify(label), __CVW_OUTRIDER__: JSON.stringify({cases: outrider.cases, camp: outrider.camp}),
     __CVW_OUTRIDER_LEDGER__: JSON.stringify(outrider.ledger), __CVW_DIORAMA__: JSON.stringify(diorama), __CVW_CONTEST__: JSON.stringify(contest),
-    __CVW_DIORAMA_ATLAS__: JSON.stringify(atlas), __CVW_HAS_PANORAMA__: JSON.stringify(Boolean(panorama))}};
+    __CVW_BOOK_ART__: JSON.stringify(bookArt), __CVW_DIORAMA_ATLAS__: JSON.stringify(atlas), __CVW_HAS_PANORAMA__: JSON.stringify(Boolean(panorama))}};
 const [template, style, showdownStyle, replayStyle, boardStyle, boardLicense, bundle] = await Promise.all([
   read("src/ui/graybox.html"),
   read("src/ui/graybox.css"),
@@ -66,6 +72,7 @@ const [template, style, showdownStyle, replayStyle, boardStyle, boardLicense, bu
     read("src/ui/showdown-3d/frontier.css"),
     read("src/ui/showdown-3d/board.css"),
     read("src/ui/showdown-3d/table.css"),
+    read("src/ui/showdown-3d/character-book.css"),
     read("src/ui/showdown-3d/outpost.css"),
     read("src/ui/showdown-3d/saloon-tables.css"),
   ]).then(parts => [`:root{${frontier.join("")}}`, ...parts].join("\n")) : "",

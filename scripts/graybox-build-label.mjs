@@ -12,7 +12,7 @@ const COMMON = ["src", "scripts/graybox-build-label.mjs", "package.json", "packa
 const CAMP = ["scripts/build-graybox.mjs", "scripts/outrider-gate.mjs", "scripts/outrider-ledger.mjs",
   "experiments/showdown-outrider/decision", "docs/evidence/outrider-gate/receipt.json",
   "docs/evidence/outrider-gate/night-watch-engine.json", "docs/evidence/night-shift/receipt.json", "prototypes/showdown/rules.js"];
-const ILLUSTRATIONS = ["assets/cards/showdown-diorama.webp", "assets/scenes/showdown-storybook.webp",
+const ILLUSTRATIONS = ["assets/cards/illustrated", "assets/cards/showdown-diorama.webp", "assets/scenes/showdown-storybook.webp",
   "assets/scenes/showdown-title.webp", "assets/scenes/showdown-camp.webp"];
 const REFERENCE = ["build.mjs", "index.html", "style.css", "main.js", "cards.js", "contract.js", "rules.js",
   "progress.js", "trail.js", "savecode.js"].map((file) => `prototypes/showdown/${file}`);
