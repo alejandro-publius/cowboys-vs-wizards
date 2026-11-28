@@ -8,6 +8,14 @@ Codex reviewed engine `07e2b791a08b29e72bd07a840b1759ecf4897d81` on 500 seeds pl
 
 Ordinary verification accepted an altered but arithmetically possible owner-win count in the published card summary. Full replay caught the discrepancy. The receipt verifier now compares the summary with the recorded draw counts before replay. All nine cohort receipts passed the stricter check, and the regression test rejected an altered numerator. This checks consistency within a receipt. Full replay still independently checks the underlying game outcomes and draw counts.
 
+## Contested location follow-up
+
+On the same 500 seeds from both seats, replacing one Sheriff with Sheriff’s Office gained 73 net Cowboy wins per 1,000 games against the default Wizard deck (226 gains, 153 losses). Against a Wizard deck with one Boneyard replacing one Skeleton, the same change gained 76 net wins (242 gains, 166 losses). The observed difference between the two deck effects was three games in this cohort.
+
+Office’s owner won 416 of 689 games when Office was drawn against the Boneyard deck (60.38%), down from 509 of 708 (71.89%). Drawing Office selects a different subset of games in each matchup. The paired all-game comparison above gives little indication that adding Boneyard removed the benefit of the Office substitution. These exploratory games reuse the original study seeds. The reserved confirmation seeds remain available.
+
+Reproduce from the PR checkout with `node docs/evidence/contested-locations/measure.mjs`. The script checks the engine against the original cohort commit. [Recorded comparison](../../../docs/evidence/contested-locations/result.json)
+
 ## Findings
 
 - The control Cowboys won 613 of 1,000 games. All ten control Cowboy cards exceeded 55% when drawn and all eleven control Wizard cards fell below 45%. Adjusting individual outliers before testing the known Billy proposal could obscure a shared faction imbalance.
