@@ -22,6 +22,7 @@ import {SHOWDOWN_SPECS} from "../src/game/card-specs.generated.js";
 import {linkProblem, runChecks} from "./contest-submission-check.mjs";
 import {bundleSealIntact} from "./night-review.mjs";
 import {canonicalPhase} from "./saloon-activity.mjs";
+import {reportProblems} from "./balance-evidence.mjs";
 import {inBand} from "./showdown-balance-contract.mjs";
 
 export const ROOT = fileURLToPath(new URL("..", import.meta.url));
@@ -319,6 +320,13 @@ export function measureBalance(root = ROOT, files = balanceFiles(root)) {
   for (const file of files) {
     const report = readJson(file), list = samplesOf(report), source = rel(root, file);
     if (!list) { rejected.push({file: source, reason: report === undefined ? "not JSON" : "unknown schema"}); continue; }
+    if (report.schema === "cvw-balance-report/1" && Object.hasOwn(report, "cardStudy")) {
+      const problems = reportProblems(report);
+      if (problems.length) {
+        rejected.push({file: source, reason: problems.join("; ")});
+        continue;
+      }
+    }
     for (const s of list) {
       const problem = sampleProblem(s);
       if (problem) rejected.push({file: source, side: s.side, reason: problem});

@@ -206,6 +206,20 @@ export function reportProblems(r) {
       p.push("cards entries must be {games, wins} with wins <= games <= games of the report");
     }
   }
+  if (!p.length && "cardStudy" in r) {
+    const focus = r.cardStudy?.focus;
+    const control = focus === "control";
+    if (r.cardStudy?.metric !== "owner wins among games drawn" ||
+        (!control && (typeof focus !== "string" || !Object.hasOwn(r.perCard, focus) || !r.perCard[focus].inDeck.games))) {
+      p.push("invalid drawn-win study metric or focus");
+    } else {
+      const types = control ? Object.keys(r.perCard) : [focus];
+      if (r.decks !== (control ? DECKS_ID : `even-match/substitute/${focus}`)) p.push("study deck label differs from its focus");
+      if (!r.cards || Array.isArray(r.cards) || canonical(r.cards) !== canonical(drawnRates(r, types))) {
+        p.push("study card estimates differ from recorded draw counts");
+      }
+    }
+  }
   return p;
 }
 
@@ -322,14 +336,39 @@ export async function loadEngine(dir) {
   return {createShowdown: rules.createShowdown, playTurn: rules.playTurn, TYPES: cards.TYPES, DECKS: cards.DECKS, typeOf: cards.typeOf};
 }
 
+// The control and each one-card substitution use the same seeds and both starting seats.
+function cardStudy(engine, focus) {
+  const anchors = {cowboy: "cowboy-sheriff", wizard: "wizard-skeleton"};
+  const decks = structuredClone(engine.DECKS);
+  let measured = SIDES.flatMap(side => Object.keys(decks[side]));
+  if (focus !== "control") {
+    const side = engine.TYPES[focus]?.side;
+    if (!side || decks[side][focus]) throw new Error("study card must be absent from the default decks");
+    decks[side][anchors[side]] -= 1;
+    decks[side][focus] = 1;
+    measured = [focus];
+  }
+  return {engine: {...engine, DECKS: decks, createShowdown: (seed, options) => engine.createShowdown(seed, {...options, decks})}, measured};
+}
+
+function drawnRates(run, types) {
+  return Object.fromEntries(types.filter(type => run.perCard[type].drawn.games > 0).map(type => {
+    const {games, wins} = run.perCard[type].drawn;
+    return [type, {games, wins}];
+  }));
+}
+
 export function rerunProblems(report, engine, deals = Infinity) {
   const total = report.seeds.to - report.seeds.from + 1;
   const n = Math.min(deals, total);
-  const run = playDeals(engine, report.seeds.from, n);
+  const study = report.cardStudy ? cardStudy(engine, report.cardStudy.focus) : null;
+  const run = playDeals(study?.engine ?? engine, report.seeds.from, n);
   const p = [];
   if (run.decksSha256 !== report.engine.decksSha256) p.push("decks at the commit differ from engine.decksSha256");
   if (run.outcomes !== report.outcomes.slice(0, 2 * n)) p.push(`outcomes differ from a replay of seeds ${report.seeds.from}-${report.seeds.from + n - 1}`);
+  if (study && report.decks !== (report.cardStudy.focus === "control" ? DECKS_ID : `even-match/substitute/${report.cardStudy.focus}`)) p.push("study deck label differs from the sampled decks");
   if (n === total) {
+    if (study && canonical(drawnRates(run, study.measured)) !== canonical(report.cards ?? {})) p.push("card win rates differ from a full replay");
     if (canonical(run.perCard) !== canonical(report.perCard)) p.push("perCard differs from a full replay");
     if (canonical(run.reasons) !== canonical(report.reasons)) p.push("reasons differ from a full replay");
   }
@@ -365,9 +404,17 @@ async function run(named) {
   try {
     const engine = await loadEngine(dir);
     const started = Date.now();
-    const played = playDeals(engine, from, deals);
+    const study = named["study-card"] ? cardStudy(engine, named["study-card"]) : null;
+    const played = playDeals(study?.engine ?? engine, from, deals);
     const elapsedMs = Date.now() - started;
     const report = buildReport({commit, engine: engineIds(commit), run: played, from, deals, generatedAt: new Date().toISOString(), runner, elapsedMs});
+    if (study) {
+      const focus = named["study-card"];
+      report.cardStudy = {metric: "owner wins among games drawn", focus};
+      report.cards = drawnRates(played, study.measured);
+      if (focus !== "control") report.decks = `even-match/substitute/${focus}`;
+      delete report.cardsOmitted;
+    }
     const problems = reportProblems(report);
     if (problems.length) throw new Error(`generated receipt failed its own check: ${problems.join("; ")}`);
     mkdirSync(dirname(out), {recursive: true});

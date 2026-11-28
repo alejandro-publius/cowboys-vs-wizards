@@ -1,0 +1,608 @@
+{
+ "schema": "cvw-balance-report/1",
+ "ruleset": "showdown",
+ "commit": "07e2b791a08b29e72bd07a840b1759ecf4897d81",
+ "bot": "playTurn level 2 (both seats)",
+ "decks": "even-match/substitute/cowboy-gatling-crew",
+ "seeds": {
+  "from": 70000,
+  "to": 70499,
+  "gamesPerDeal": 2
+ },
+ "games": 1000,
+ "results": {
+  "cowboy": 642,
+  "wizard": 358,
+  "draw": 0
+ },
+ "generatedAt": "2026-11-28T17:56:40.847Z",
+ "engine": {
+  "tree": "efca0faef3705ce12688910fdd70ccd1d373637e",
+  "specBlob": "88491a02c0ca15525f9f16ef161b6a8e1e5ea935",
+  "rngBlob": "d3d67acc0f187f6ac5aebbe1cc94400f9dc85519",
+  "decksSha256": "5f77e682b5e6bb5d86a2bd09b396d5842100eaa6e604f69bb20d4066507fae01",
+  "paths": [
+   "src/game/showdown",
+   "src/game/card-specs.generated.js",
+   "src/game/frontier-kit/seeded-rng.js"
+  ]
+ },
+ "runner": {
+  "path": "scripts/balance-evidence.mjs",
+  "sha256": "7e51debc32dc6f5587d01dc8d7886395fc0b167cedca2ee3843cbc577f028801",
+  "node": "v24.22.3",
+  "committedAtCommit": false
+ },
+ "elapsedMs": 16049,
+ "seatOrder": "game 2k has Cowboy first, game 2k+1 Wizard first, for deal seed from+k",
+ "seats": {
+  "first": 586,
+  "second": 414
+ },
+ "byStartingSide": {
+  "cowboy": {
+   "cowboy": 364,
+   "wizard": 136,
+   "draw": 0
+  },
+  "wizard": {
+   "cowboy": 278,
+   "wizard": 222,
+   "draw": 0
+  }
+ },
+ "reasons": {
+  "base": 1000
+ },
+ "outcomes": "cwccccwwcwccwcccwwwcwwcccccwcccwcwccccccccwccccwwwwccwccccwwwccwcccccwcwccwcccccccwwwwcwcccccccccwwwcccccccwwwccccwwccccwwwccwccccwwwcccwcwwwccwcccwcccccccccwcccccccwccwwwwcwwwwwcwccccccccccccwccwccccwwwwcccccccwcccwwwwccwcwcccccwccwwccwcwwcccwcccwcccccwcwccccwwcccwwcwwwwcccwcwccccwwcwccwwwwwwcccccwcccwwwcccccccccccwcccccwcccwcccwccwwcccccwcwcccwcwcwccwcccccwwcccccwwwccccwccccccwcwwwccwcccwwwcwwcwccccccwwcccwcwcccwccccwwcccwccccccccwwcwcwccwccccccwcwwwwwwwccwccccccwcwcwcccccwccccccccccwcwwwcwccwcwccccwcccccwcwwcwcwcwccccwwcwcwcwwwcccccwccwwwwwcccwccwcwcwccccwwwwwwwwcwcwccwcwccccccwcwcwcccwcwccwwcccccwcccwcwccwwwwccccccccccwccwwccccccwwwwwwccwwwccwwwwccwwccccccwwcccwcccccwcccccccwcccwwwcccwcwcwcccccccccccwcccwwwccccwwccccwwccccwwwwcwcwcccwwwwccwcccwwwwwccccwwccwwwwcwwwwwcwcwcccwwccccwccccwwcwcwwwcccwccccwwcwcccccccwcccccwccccccwccwcccwwwccwwccccccccccwwccwwccwwwwccwwccwccwcwcccccwccccwwcccwcwccwwwcccccccccccwccccccccwcwwcwwcwccwwwccccwcwccwwwwcwwccccccccccccccwcwccccccwwccccwwcccwcwccwc",
+ "outcomesSha256": "b22f77035e395b823cf848367c48f7d6d2ab283cc48c36a1ff7d6aa9f8549d2b",
+ "perCard": {
+  "cowboy-bear-trap": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 1000,
+    "wins": 642,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 684,
+    "wins": 498,
+    "draws": 0
+   },
+   "played": {
+    "games": 684,
+    "wins": 498,
+    "draws": 0
+   }
+  },
+  "cowboy-billy": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 1000,
+    "wins": 642,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 910,
+    "wins": 586,
+    "draws": 0
+   },
+   "played": {
+    "games": 584,
+    "wins": 454,
+    "draws": 0
+   }
+  },
+  "cowboy-captured-dragon": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "played": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   }
+  },
+  "cowboy-captured-wraith": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "played": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   }
+  },
+  "cowboy-covered-wagon": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 1000,
+    "wins": 642,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 875,
+    "wins": 602,
+    "draws": 0
+   },
+   "played": {
+    "games": 849,
+    "wins": 580,
+    "draws": 0
+   }
+  },
+  "cowboy-deadeye": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 1000,
+    "wins": 642,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 670,
+    "wins": 463,
+    "draws": 0
+   },
+   "played": {
+    "games": 663,
+    "wins": 456,
+    "draws": 0
+   }
+  },
+  "cowboy-dynamiter": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 1000,
+    "wins": 642,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 687,
+    "wins": 415,
+    "draws": 0
+   },
+   "played": {
+    "games": 617,
+    "wins": 347,
+    "draws": 0
+   }
+  },
+  "cowboy-gatling-crew": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 1000,
+    "wins": 642,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 708,
+    "wins": 465,
+    "draws": 0
+   },
+   "played": {
+    "games": 400,
+    "wins": 379,
+    "draws": 0
+   }
+  },
+  "cowboy-lasso": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 1000,
+    "wins": 642,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 682,
+    "wins": 440,
+    "draws": 0
+   },
+   "played": {
+    "games": 670,
+    "wins": 428,
+    "draws": 0
+   }
+  },
+  "cowboy-mounted-billy": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 1000,
+    "wins": 642,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 649,
+    "wins": 439,
+    "draws": 0
+   },
+   "played": {
+    "games": 190,
+    "wins": 187,
+    "draws": 0
+   }
+  },
+  "cowboy-outrider": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 1000,
+    "wins": 642,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 912,
+    "wins": 593,
+    "draws": 0
+   },
+   "played": {
+    "games": 868,
+    "wins": 554,
+    "draws": 0
+   }
+  },
+  "cowboy-ranger": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 1000,
+    "wins": 642,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 651,
+    "wins": 419,
+    "draws": 0
+   },
+   "played": {
+    "games": 533,
+    "wins": 406,
+    "draws": 0
+   }
+  },
+  "cowboy-sheriff": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 1000,
+    "wins": 642,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 975,
+    "wins": 634,
+    "draws": 0
+   },
+   "played": {
+    "games": 827,
+    "wins": 524,
+    "draws": 0
+   }
+  },
+  "cowboy-sheriffs-office": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "played": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   }
+  },
+  "cowboy-six-shooter": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "played": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   }
+  },
+  "wizard-bone-armor": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "played": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   }
+  },
+  "wizard-bone-wall": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 1000,
+    "wins": 358,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 889,
+    "wins": 304,
+    "draws": 0
+   },
+   "played": {
+    "games": 805,
+    "wins": 266,
+    "draws": 0
+   }
+  },
+  "wizard-boneyard": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "played": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   }
+  },
+  "wizard-dragon": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 1000,
+    "wins": 358,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 676,
+    "wins": 252,
+    "draws": 0
+   },
+   "played": {
+    "games": 221,
+    "wins": 190,
+    "draws": 0
+   }
+  },
+  "wizard-headless-horseman": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 1000,
+    "wins": 358,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 696,
+    "wins": 230,
+    "draws": 0
+   },
+   "played": {
+    "games": 535,
+    "wins": 200,
+    "draws": 0
+   }
+  },
+  "wizard-hellfire": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 1000,
+    "wins": 358,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 686,
+    "wins": 254,
+    "draws": 0
+   },
+   "played": {
+    "games": 686,
+    "wins": 254,
+    "draws": 0
+   }
+  },
+  "wizard-hex": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 1000,
+    "wins": 358,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 633,
+    "wins": 244,
+    "draws": 0
+   },
+   "played": {
+    "games": 633,
+    "wins": 244,
+    "draws": 0
+   }
+  },
+  "wizard-imp": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 1000,
+    "wins": 358,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 725,
+    "wins": 279,
+    "draws": 0
+   },
+   "played": {
+    "games": 686,
+    "wins": 250,
+    "draws": 0
+   }
+  },
+  "wizard-jack-o-lantern": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 1000,
+    "wins": 358,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 684,
+    "wins": 217,
+    "draws": 0
+   },
+   "played": {
+    "games": 494,
+    "wins": 101,
+    "draws": 0
+   }
+  },
+  "wizard-lantern-wraith": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "played": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   }
+  },
+  "wizard-raven-familiar": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 1000,
+    "wins": 358,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 669,
+    "wins": 197,
+    "draws": 0
+   },
+   "played": {
+    "games": 631,
+    "wins": 166,
+    "draws": 0
+   }
+  },
+  "wizard-singularity": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 1000,
+    "wins": 358,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 672,
+    "wins": 258,
+    "draws": 0
+   },
+   "played": {
+    "games": 667,
+    "wins": 253,
+    "draws": 0
+   }
+  },
+  "wizard-skeleton": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 1000,
+    "wins": 358,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 983,
+    "wins": 347,
+    "draws": 0
+   },
+   "played": {
+    "games": 790,
+    "wins": 266,
+    "draws": 0
+   }
+  },
+  "wizard-wizard": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 1000,
+    "wins": 358,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 901,
+    "wins": 325,
+    "draws": 0
+   },
+   "played": {
+    "games": 758,
+    "wins": 313,
+    "draws": 0
+   }
+  }
+ },
+ "coverage": {
+  "catalog": 29,
+  "inDeck": 22,
+  "drawn": 22,
+  "played": 22,
+  "missing": [
+   "cowboy-captured-dragon",
+   "cowboy-captured-wraith",
+   "cowboy-sheriffs-office",
+   "cowboy-six-shooter",
+   "wizard-bone-armor",
+   "wizard-boneyard",
+   "wizard-lantern-wraith"
+  ]
+ },
+ "cardStudy": {
+  "metric": "owner wins among games drawn",
+  "focus": "cowboy-gatling-crew"
+ },
+ "cards": {
+  "cowboy-gatling-crew": {
+   "games": 708,
+   "wins": 465
+  }
+ }
+}

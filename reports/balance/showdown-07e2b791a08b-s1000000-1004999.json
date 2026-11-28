@@ -1,0 +1,600 @@
+{
+ "schema": "cvw-balance-report/1",
+ "ruleset": "showdown",
+ "commit": "07e2b791a08b29e72bd07a840b1759ecf4897d81",
+ "bot": "playTurn level 2 (both seats)",
+ "decks": "even-match",
+ "seeds": {
+  "from": 1000000,
+  "to": 1004999,
+  "gamesPerDeal": 2
+ },
+ "games": 10000,
+ "results": {
+  "cowboy": 5973,
+  "wizard": 4027,
+  "draw": 0
+ },
+ "generatedAt": "2026-11-28T17:57:54.352Z",
+ "engine": {
+  "tree": "efca0faef3705ce12688910fdd70ccd1d373637e",
+  "specBlob": "88491a02c0ca15525f9f16ef161b6a8e1e5ea935",
+  "rngBlob": "d3d67acc0f187f6ac5aebbe1cc94400f9dc85519",
+  "decksSha256": "ceecfecdc5e32e55f74f823460907915da6cef9ac71616a47769500a281d828d",
+  "paths": [
+   "src/game/showdown",
+   "src/game/card-specs.generated.js",
+   "src/game/frontier-kit/seeded-rng.js"
+  ]
+ },
+ "runner": {
+  "path": "scripts/balance-evidence.mjs",
+  "sha256": "ecf92e8fb6c660b110f37cb48d47d3291a58fe5feaa453d45a6a165fdfefc663",
+  "node": "v24.22.3",
+  "committedAtCommit": true
+ },
+ "elapsedMs": 183607,
+ "seatOrder": "game 2k has Cowboy first, game 2k+1 Wizard first, for deal seed from+k",
+ "seats": {
+  "first": 6023,
+  "second": 3977
+ },
+ "byStartingSide": {
+  "cowboy": {
+   "cowboy": 3498,
+   "wizard": 1502,
+   "draw": 0
+  },
+  "wizard": {
+   "cowboy": 2475,
+   "wizard": 2525,
+   "draw": 0
+  }
+ },
+ "reasons": {
+  "base": 10000
+ },
+ "outcomes": "cwwwwwcccwwwcccwwcccwwccwcwwccwcwwcwccwwwwcwwccccccwccwwcccwccwwcccccwcwwwcwwcccwwwwcwccwwwccccwcccccccwcccccccwcwcccwcwcccwcwcwcccwwwwwwwcwwcccccccccccwwwwwccwcwcwcccwcwwwwwcwccwccwccccwwwwwwcwwwccwwcwcwwwcccccwcwcwwcwwcwcccwccccccccccccwwwwcccwccccccwwcwccwwwwcccwcwwwcccwwccwwwccccwwwwcwccccwccwwcccccwwwwcwcccccwwwcccccwcwcccccwwcccwccwcwcccwcwccwccwwwwwccccccccccwwwwccccccccwwwccwccwccwccccccccwccwcwccccwwcwccccccwcwwwwwwwcwcccwwcwcwcccwccccwwcwccwwwwcwwcccwwcwwwcwcwwcccwwwwwwcwwwwwcccwcwccwwcwcccwcwwwwwwccwcccwcccwwwcwcwcwcwcwccwwcwccccccccwwcwwccwcwccccccwcccwwcccccccwccccwwcccwccccccwccwcwcwwcccccccccwcwwwcwwwcwwcccwcwcccwcccwccccwccccccccwcccwccccwcwwwwccccccwccwwwwccccwccwwcccccwwwcwwwcccwcccwcwcccwcwcwcccwcccccccwcwcccccwcccwwwcccwwwwwcwwwcwwwcwcccwcwcccwwwwwccccwccccwcwwwwwcwcwcwcwwccwcwcwcwwwcccwcccwwwcccccwcccccccwcwcwcwcwcwcwcccccwwwwwcccwwwccwcccwwccccwwwwccwccwwwcwccwwwwcwwwwwccwcwcwccwwwcwccwwcwcwcwwwcccccccccwcwcwcccwcwcccwwwcwwwcwcccwwcwwcccccwcccwcwcwwwcccccwcwcwwwcwcwwwwcwwwwcwcccwcwwwcccccccwwwwwcwcccwwwwccwcwwwcccwwwcwwccwcwcwcwcccwwwcwcccccwccccwwwcwwwccwwcwwwwcwcccwccwccwccccccwwcwcccwcwwcwwcwcwcwcwwwcwcwcccwcccwwcwwcwwcwcccccwwccwwcwccwcccccccccwwcwcwwwcwwcwwcccccwccwwcccccwwwcccwcccccwcccwcwccccwwcccwccwwccwwccwwccwwcccwccwwccccwwccwwcwccwcccccccwccccwwcwwccwwccwwwwccwwwwccwcwccccwwwwccwcwcwcccccccwwcwwcccccwwwcwwwcwwwccwwccwwcccwwwccwwcccwccwwccwwcccwwwwcwwwwcwwwwwwwcwcwcwccwwwwcwcwwwwwccccccwccwccccwwwccwccwwcwcwcccccccwcwccwccwwwwwwccwwcccwccccwcwcwcwwwccwwwwcwccwwcccwcccccccwwwwwwcwwcccccwcwcccccwccwwcwccccwwcwwwwwcccwwwcwcccccwcwccwwccwwwwcwcccwcccccccwcwcccccccwcccccwcwccwwwwcccwcwccwwwwcwwccwwccwwwccwwcccccwwwwcccwwccccccccccwwcwcccwcccwccwwcwcccccccccwcwcwcwcwccccwwcwcccwcccccwcccwccwcwwwwcwcwwwcwccccccccwwcccccwcccwwwccccwwcccccwwcccwwcwcccwwcwwcccwccccwcwwcwwwwccwccccccccccccwwcccwwwcwccccwcwccwwwcwcccccwcwcccwcwcccwwwcwcwcwwccccccwccccwwcwcccccwccccccwwwwwwccccccwwcccwcwcwwccwcccccwwwwwccwwccwccwccwwcwcwcwcwccccwwcccccwcwccwwccccwwccwwccwwcccwwwccwwccccccwwwwccwwwccccccwwwcccccccwwwwwcwccccwcwwwwcwccwwcccwcwcwwwcccwwwcccwwwcccwwccccwcwcwcwcccccccccwwwwwccccwwccwcwwcccwccwwccwcwwcccwwwcccwcwwwccwccwcccccccccccccccwccccwwccccwwwwcwccwwccwwwcwccccccwcwcwwwcwccccccwccwccwwwwcccwcwcccccwcccwwcwcwwcwcwccccccccwwcwccccwwwwwccccccwcwwwcwcccwwwccccccwwccccwwcwcwccwcccwcccwwcccwwccccwwwcccwcwcwccwwccwcwcccccccwwcccccwccwwccccwwcwcccwccccccwwcccwcccwcwwcccwcccwcwcwwwccwcwccwwcccwwccccwcwwwcccwcwcwwwwwwcccwccwwwcwcwwwccwwcwccwcccwwcwcwcwcwwwcccwccccccwcwwwwwwwccwcwccwwwccwwwcccwcwccccccwwccccccwcwwccwwwwcwwwwccccwwwwwwwcccwcwwwccccccccccwccwwwcccwcccccccwcccccccccwcwcccwwwcwcwcccwcccccwwwcwcwcccwcwwwwwcwccwccwccwwccwwcwwccwcwcccwcwwwcwcwcwccwwwwcwccwwcccwcccwccwwcwcccwwcccwwccwwwwcwcwcwcwcwccwccwccwwcwcccccwcwccwwcwcwcwcccccwwwcccwwwccccwcwwccwcccwwcccccccccwwwcccwccwcwwcccwccwwccwwccccwwwwcwcwcwwccccwccwcccwwcwccwwwwcwcwwwcwccwwwwwcwwcwccwwwccccwcwccwwcccccccwcccwcwcwwwcccccccwcccwwccccccwwcccccwwwccwcccwwwccwwccccwwccwcccwcccwcwwcccccccwwwcwcccccwccccccwccwwwcwwccccccccwwwcccwcccwwccwwwccwwcwcwcwcwcwwwcwwcccwwcwwwccccwwcccccccwwwccccccccccccwwcwccwwccccwccwccwwcwcccccwcwcwccccccwwwwcccwcccwcwcwcccwcwwwccccwwcccccccwcccwcccccwcccwcccwwwcwwwwccccwwwcccwwwcccccwcccccwwcccwcwcwccwcwcwcccwcwwwwwcccccwccwcwwcccwcccccccccccccccwccwccccwcwcwwwccccwwccwwcwccwccccwcccwccccccwccwwccccwccwwcccwcccccwcccccwccwwcwccwcwwcccwwwcccwcwccwccwcwwccccccccwcccwwwwwwcwwcwccwwcwcwcccwcwccccwwcwcwcwcccccccccwcwwwccwwcccwwwccwwwwwccwcccwcwcwcwcwcwcwcccwcwcwccwccwwcwwccccccwwcwwwccwwcwcwccwcwccwcwwwwwcwcwccwwcwwccwwwccccwwccwwcwcccccwcccwcwwwccccwccwcwcwccwwcwccwccccccccwcccccwccccwwwwccccwcwccwwccccccwccccccwccwcccwcwcwwwccccccwwccccwwcwcccccccwcccccccwcccccccwccwwcwcccwcccccccwcwcwwcccccwwwwwccccccwwwccwcccwccwcwcccccwccccccwwwwcccwwwcwccccwwcwcwcwccccwcccccccccccwwcccccwcwcwccwwccwwcccwwwcwwwwwcwcccccccwwwcwwcwwwwcwwwcccwcwwwcwcwwccccccccwwccwccwwccwwwwccwwcccwccccccwwcwwwwcwwcwcccccwcwwwwwcccwcccccwcwcccwcwcccccccwwccwccccccwccwwwcwcccccccwccccccwwcwcccccccwwccwwwccwcccccwwccccccwwcwcwcwcccwwwwwcwcwcccccwwwccccccwwcccccwccwccccwwwwccwcwwwcccccccccwwwwwccwwwwcwcwwwcwwwwwccccwwcwcccccccwccwcccccwcwccwccwwcwwwcwcccwcccwcwcccwwwccccccccccwwcccwwwcwccwwcwccccccwcccccwwccwccccwcccwcwcwcwwwcccccccccccccwwcwwcwcccwwwwccwccccwwwwcwcccwcwcccwccwwcccwccwwwwcwcwcwcccwcwcwcwccwwccwwcccwwccccccwcccccccccwwcwwccccccccwcwwcccccccwccwwcccwwwwwwwcwcccccwccccccccwwcccwwcwcccwcccwwwwcccwcwccwwccwwwwcwwwcccccccwcwcccwcccccwccwwcwwwccwwcccwcccwccwcccccwwcccccwcwccwwcwcccwwwccwcccwwwwwccccwccccccccwccwcwcccccccccwcwwwcwccwwccwwcccwccwwccwcccccccwwwwwcccccwwcwcccccccccwwwwwcwcwcccwwwccccwwccwwcwccwcwccwcwcccwccwwcccccwwwcwccccccwwcccccccwccwwcccwwwccwcccwwcwcccwcccccccwccccccccccccwcccccccwwcwcwcwcwwccwwwwwcccccccwwwccccwwcwwcccwwcwcwwccwccccwcccwwccccwwwwwccwwccccccccwccccwwccccwwccwccwccwccccwwcccccwwccccwwcwwccccwwcccccccwccwccccwcwwccwwcwwcccwwccwccwwwwwcccccwcwcccccwcwccwwwcwwcwwcwwccccwwcwcccwccwwcwcccwccccwwcwcccwwwwwccwwcccccccwccwwccccwcwcwccccwcccwccccwwccccccccccccwwcccccwcwccwccwcccwccwwwccccccccccccccccccwwcwwcwwcwwccccccwwccccwcwwcccwwwcwccwwccccwwcwcccccwwwccccwwccccwwcccccwwwcwcccwcccwwwwwcwcccwcwccwcccwwccwcccccwwcccwwccwccwwwwwwwcwwcwwwcccwwwcwcccccwcccwcccwwcwwwwwwcwccwcwwcwcccwwwcwcwwwcwccwwccwwwwccwwcwcwcwccccwwccccwwcwwccwcccwccccccwccccccwcccwwwwwcwcccccwcccwcccwcccwwcwwccwccwcwcccccwcccwwwcwccwwwwwwcccccwcccwwwwcwcccwcccccccccwwccwwccccwcwccccwcwccwcwwccccwwcccwwwwwwcwwccwwcwcccwcwwwwwccwcccwwwwcwccccwwcccwcccwcccwcccwcwcwcwccccccwwcwwwcwcwwccwcccwcccccwcwcccwcccwwcwwccwwccccccccwcwwwwccwwwwwwwwcwwwcwcccccccwccccwwcccwwwcwwwcccwcwcwcwcccccccccwcccccwcwcwccwwcccccwwccccwcccccwcwcwccwcwcccwwcwcccwcwwwcwwcccwwcwccwwwccwccccccwwcccwwccwccwcwccccccwcccwcwccccwwccccwcwwcwwwccwcwwwwcwccccwwcwccwcwwccwwwccwccwwwwcwcccwwwccwwccwwcccccwcwwcwcccccccwwccwwcccwwccccccwcccwwwwwcwccccccwccwcwcwcwwcccwwcwwccwwccccwcwwwwcccccwccwcwccwwccwwcwccwwcccwcccccwcccccccccccwcwwwccccwccwcwwwccccccccccwwcwccccwwwcwwcccwcwcccccccccwwwwwcccwcccccccwccwcwwcwcwwwcwwwcccwcccccwcwwwwwccwwwwcccccccwccwwwwccwccccwcwccccccwwwccwwwwwwwccccwwcwwwccccccccccccwwccwccwwwccwccwcccwwwwcccwccwccccwwwcwwwcwccccwwwcccccwcccwccccwwcwccccwwwccwwcccccwwcccccwwwcwcwcwcwcwwccccccwcccwcccwwwcwcwcwcwcwcwcccccwwwccwcccccccccwwcwwwwwcwwwcwccccwwwcwccwcccccccccwwwwwcwcwcccwcwcwcccccwcwcccccwcccwcwcccwcwwwccccwccwcccwcccccwccccwwwwccwwwwwwccccccwwccwwwcwwcccwwwccccccwwcwcccccwwcccccwcccwcwwccwwcwcwwwccwwcccwcwcccccccwcwcccccccccwwwcwcccccwccccccccwwwccccwccccwwcwccccwwwwccwwwwccwwcccccwccccccccwwcccwcwccccwwcwccwwcwcwwwcwcccwcwwwwcwwcccwcccwcccccwccwwcccwcwwcwwcccwccccwwwccccccwwwwwcwcccwcccccccccccccccwwwwwccwwcccwccwccwcwwwwcwccccwcccwwwcwwccwwwccwwccccwwwwwwccccwwcwwwcwwccwwwcwcccwccwcccccccccccwwwwcwcccwcwcwccwcwwcccwcwcwcwcwccccwwcwwccwwwccwwcwcccwcwcccwccwcwccccwcwcwcwwccccwccccccwcccwwwcwcwwwcwwcwcwcccwwccwcccccwwwcccccwwwwwcccwcwwcccccccccwccccwccwwcwcccwwwccccwwcccwwwcwcwwwcccccccwcwcccwcccccwccccwcccwcccccwwwwwwwccwcwccwwcccccwwcwcwwccwwcwcwccccccwwcwwwcwccwwccccwcwwcccwwwccwccwcccwwwcwcwcccccwccwwccwwccccccccwccwccwcwccwcccccwcccwcccccwcwcccccwccwwcwwwwwcwwwccwwwccccccccccccwccccwwwwcccwcwwwcwcwccwccwcwcwcwccwcwwwwccwccwwwcwcccwwwccwcwccwwwwcccccccccwccwwwccwwccwcccccwwcwwwcccccwcwccccwwwccccccccwcccccwcccwcccccccwcwccwccwwwcwwcccccwccccccwcccwcwcccccwccccwwcccccccccccwcwcwcccccwwwcwcwcccwccwwwwcwwwccwwcwcwcwcccwwwcwwwcwccwwwwccwwccwcwwccwwcwcwwcwwwwcwwccccccwcwccwwcwccccccwwwccwcccwccccccwccwccccwwwwwcwwccccwwwwccccwwccwccwccccwwcwwwwwcwcwcccccccwcccwwwcwwwwwccccccwccwwccwwwcccwwccwcwcwcwcwcccwcwwcccwwcccccccwcccwcccccccwcwcwcwccccwwwwcwcccwcccccwcwcwcwcwcccccwcccccwcwcccwcccwcccccccwccwcwwwwcwcwwwccccwwccwcccccccwwwwcccccccwccwwwwcwwwwwcccccccwcccccccwcwcccwwwcccwwwwwcwwwcccwcwwcwwwcccwcccccccwwwwcwccccccccccccccccwwcwcwwwwwcccwcwwccccwwccwccccwwccccccwwcccwcccccwcwcwcccwcwcwcwwwwcccwcwwwwwwccccccccccwwcccwccccccwwcccccwwwwwccwwwcccwwcccwccccwccwcwcwwwwccccwccwwccwwwccwccwwccwcwcccccwwcwcccccccccwcwccwwwwcccwwwcccwccccwwcwwwcwcwcccwwwwcccwwccwccwccwwcwcccccccwwwccwwcwcccccwcwccccccccwwccwwwwccwwccwwcwcwcwcccwwcccccwwwwcwwwwwwwwwcccwcwccccccccwwcccccwcwcccccwcwcwcwwwccwwcccwcccccccccwccwwccwcccwccwcwwwwcwccccwccwwwcccwwwwcccwwcccccwwcwcwccwwwccwwwccccccwccccccccccwcccwcwcwwwccccwwwwcccwccccwwcwwwccwcwwwwwcwwccccccwcwwcwcwcccwcccccccwccwwccwwwwccwcccwwcccwcccccccwcwwwcwwcccccccwcccwcccccccccccwcwccwcccwcwwwcwcwwcwwwwwcwwcccwccwcwwcwcccccwccwcccwwcwcwwwccccccwwccccwcwwccccwwcwcccwcwccccccwwcwcccwcwwccwccwccccccccwwcwwcccwwccwcwcwccwwcccwwwwwcccwcwwwccccccwccwcwccwwwwcwcwcccccccwcwwccccccwwwccccccccccwwwccccccwcwcccccccccccwccwwcwccwcwwccwwcwccwwcwccwccwwwcwccccwwcccccccwwwcccwcwccwccwcwwcccwccwcccccccwcccccwwwcccwcccwcccwccwwcwcwcwwwccwccccwcwccwccwcwcwcccwcwwccwcccccwwwwwwwcwcwwwwwwwcwcccwcccccccwwwcccwcwwwcccwccwccccccccwccwccwcwcwwwcccwwwcwwcwwcccwwwcwwcwcwwcccwcwcwcccwcccwcwcwcwccccwwwwcwwccccwcwcwcccwcwcwccwcccccwwcwwcccwwcwwwccccwcwwcccccccwcwwwcwcccwwwcccccccwcwccccccwwcwcwwcwwcwcccccccwcwcwccwwccwcwcwwwccwwwcwwwcwccwcccwcwwwwcccccwccccccccwwcwcwwwcwcwcwcccwwwcwwwwwcccwccwwccwwcccwccwccccccwwcccwwwcwwwwccwcwwwcwwcwcccwcwccccccccccwwcwcccwccwwcccccccwcccccccccccwcwcwwwwwcccwcwwwcccwwwcccwcwwwcwcwcwcwccccwwwwwwcccwccccccwwcwwwwwccwcccccccccccwwcwcccccccwcccwcwwccwccwwcccwcwwccccwcwcwcwwwccwwwwcwwwcccwwwwwwwwwcwcwwwccwwccwwcccwwwcccwwwccccwwcwcccwwcwwcwcccwcwcwccwwwwwwccwwccwwwwwwccwwwwcccccwcwcwccccwwcwccwwccwcwwcwwwcwccwwwwcccwccccccccccccwwcwcwwccwwwccccwwwcccccwwcwcccccwcwwwccwwcwcccwcwcwcwcwccwccccwcccwwwcwcwcwwwcccwwwcwccccwwcwcccwcwcwwwccccccwwwwcccwccwcwcwwcwcwcwcccccccwcccccwwwcccccwcwwwcwcccwwccccccwccccwwwwcwcwwwccccwccwcwccccwwccwwwccccwcccwcwccwwcwwwcwcccccccccccwcwccwwcwcwcwwwwcwwcwwwcwwwcwwcccwwccccwwwwwwccwcwwcccccccwwcccwwwccwccccccccwwcccccwccwwwwcwwwcwwwcccccwwcwwcwwccccccwwcwcccccccccccwwwwccwwcwwccccwwwcwcccccwcccwcccwwcwwwwcccccccwccccccccccccccccwcwwwwcwwwwwwcccwwcwcwcwcwccwcccccccwccwcwwcwwwwcwccccwwcccwwccccwcccwcwcccwcccc",
+ "outcomesSha256": "6a8d367f5c289f8e43c3aacabf8c90a7ed3c2478cbf8d11713e15fbd8324d45a",
+ "perCard": {
+  "cowboy-bear-trap": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 10000,
+    "wins": 5973,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 6979,
+    "wins": 4758,
+    "draws": 0
+   },
+   "played": {
+    "games": 6979,
+    "wins": 4758,
+    "draws": 0
+   }
+  },
+  "cowboy-billy": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 10000,
+    "wins": 5973,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 9179,
+    "wins": 5534,
+    "draws": 0
+   },
+   "played": {
+    "games": 6529,
+    "wins": 4948,
+    "draws": 0
+   }
+  },
+  "cowboy-captured-dragon": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "played": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   }
+  },
+  "cowboy-captured-wraith": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "played": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   }
+  },
+  "cowboy-covered-wagon": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 10000,
+    "wins": 5973,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 8955,
+    "wins": 5574,
+    "draws": 0
+   },
+   "played": {
+    "games": 8669,
+    "wins": 5322,
+    "draws": 0
+   }
+  },
+  "cowboy-deadeye": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 10000,
+    "wins": 5973,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 7058,
+    "wins": 4666,
+    "draws": 0
+   },
+   "played": {
+    "games": 7017,
+    "wins": 4625,
+    "draws": 0
+   }
+  },
+  "cowboy-dynamiter": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 10000,
+    "wins": 5973,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 7074,
+    "wins": 3911,
+    "draws": 0
+   },
+   "played": {
+    "games": 6395,
+    "wins": 3254,
+    "draws": 0
+   }
+  },
+  "cowboy-gatling-crew": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "played": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   }
+  },
+  "cowboy-lasso": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 10000,
+    "wins": 5973,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 7091,
+    "wins": 4393,
+    "draws": 0
+   },
+   "played": {
+    "games": 7018,
+    "wins": 4322,
+    "draws": 0
+   }
+  },
+  "cowboy-mounted-billy": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 10000,
+    "wins": 5973,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 7116,
+    "wins": 4320,
+    "draws": 0
+   },
+   "played": {
+    "games": 3366,
+    "wins": 3149,
+    "draws": 0
+   }
+  },
+  "cowboy-outrider": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 10000,
+    "wins": 5973,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 9197,
+    "wins": 5529,
+    "draws": 0
+   },
+   "played": {
+    "games": 8596,
+    "wins": 5014,
+    "draws": 0
+   }
+  },
+  "cowboy-ranger": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 10000,
+    "wins": 5973,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 6781,
+    "wins": 4095,
+    "draws": 0
+   },
+   "played": {
+    "games": 5739,
+    "wins": 3995,
+    "draws": 0
+   }
+  },
+  "cowboy-sheriff": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 10000,
+    "wins": 5973,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 9889,
+    "wins": 5913,
+    "draws": 0
+   },
+   "played": {
+    "games": 8277,
+    "wins": 4892,
+    "draws": 0
+   }
+  },
+  "cowboy-sheriffs-office": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "played": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   }
+  },
+  "cowboy-six-shooter": {
+   "side": "cowboy",
+   "inDeck": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "played": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   }
+  },
+  "wizard-bone-armor": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "played": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   }
+  },
+  "wizard-bone-wall": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 10000,
+    "wins": 4027,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 8884,
+    "wins": 3503,
+    "draws": 0
+   },
+   "played": {
+    "games": 8272,
+    "wins": 3168,
+    "draws": 0
+   }
+  },
+  "wizard-boneyard": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "played": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   }
+  },
+  "wizard-dragon": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 10000,
+    "wins": 4027,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 7245,
+    "wins": 2957,
+    "draws": 0
+   },
+   "played": {
+    "games": 2882,
+    "wins": 2355,
+    "draws": 0
+   }
+  },
+  "wizard-headless-horseman": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 10000,
+    "wins": 4027,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 7327,
+    "wins": 2766,
+    "draws": 0
+   },
+   "played": {
+    "games": 5930,
+    "wins": 2434,
+    "draws": 0
+   }
+  },
+  "wizard-hellfire": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 10000,
+    "wins": 4027,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 6979,
+    "wins": 3032,
+    "draws": 0
+   },
+   "played": {
+    "games": 6956,
+    "wins": 3015,
+    "draws": 0
+   }
+  },
+  "wizard-hex": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 10000,
+    "wins": 4027,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 6843,
+    "wins": 2802,
+    "draws": 0
+   },
+   "played": {
+    "games": 6843,
+    "wins": 2802,
+    "draws": 0
+   }
+  },
+  "wizard-imp": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 10000,
+    "wins": 4027,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 7275,
+    "wins": 3064,
+    "draws": 0
+   },
+   "played": {
+    "games": 6946,
+    "wins": 2779,
+    "draws": 0
+   }
+  },
+  "wizard-jack-o-lantern": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 10000,
+    "wins": 4027,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 7135,
+    "wins": 2545,
+    "draws": 0
+   },
+   "played": {
+    "games": 5681,
+    "wins": 1391,
+    "draws": 0
+   }
+  },
+  "wizard-lantern-wraith": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   },
+   "played": {
+    "games": 0,
+    "wins": 0,
+    "draws": 0
+   }
+  },
+  "wizard-raven-familiar": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 10000,
+    "wins": 4027,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 6803,
+    "wins": 2458,
+    "draws": 0
+   },
+   "played": {
+    "games": 6449,
+    "wins": 2153,
+    "draws": 0
+   }
+  },
+  "wizard-singularity": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 10000,
+    "wins": 4027,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 6934,
+    "wins": 2928,
+    "draws": 0
+   },
+   "played": {
+    "games": 6917,
+    "wins": 2914,
+    "draws": 0
+   }
+  },
+  "wizard-skeleton": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 10000,
+    "wins": 4027,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 9909,
+    "wins": 3970,
+    "draws": 0
+   },
+   "played": {
+    "games": 7729,
+    "wins": 3049,
+    "draws": 0
+   }
+  },
+  "wizard-wizard": {
+   "side": "wizard",
+   "inDeck": {
+    "games": 10000,
+    "wins": 4027,
+    "draws": 0
+   },
+   "drawn": {
+    "games": 9080,
+    "wins": 3672,
+    "draws": 0
+   },
+   "played": {
+    "games": 7859,
+    "wins": 3492,
+    "draws": 0
+   }
+  }
+ },
+ "coverage": {
+  "catalog": 29,
+  "inDeck": 21,
+  "drawn": 21,
+  "played": 21,
+  "missing": [
+   "cowboy-captured-dragon",
+   "cowboy-captured-wraith",
+   "cowboy-gatling-crew",
+   "cowboy-sheriffs-office",
+   "cowboy-six-shooter",
+   "wizard-bone-armor",
+   "wizard-boneyard",
+   "wizard-lantern-wraith"
+  ]
+ },
+ "cardsOmitted": "The scorecard's cards field is left out: no per-card metric (in deck, drawn, played) has been chosen for the 45-55% target, and the in-deck rate is the faction rate under fixed decks."
+}

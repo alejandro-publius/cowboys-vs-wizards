@@ -1,0 +1,32 @@
+{
+  "commit": "07e2b791a08b29e72bd07a840b1759ecf4897d81",
+  "seeds": {
+    "from": 70000,
+    "to": 70499,
+    "gamesPerDeal": 2
+  },
+  "seats": "game 2k has Cowboy first, game 2k+1 Wizard first, for deal seed from+k",
+  "games": 1000,
+  "outcomesSha256": "440e37f2bb4e825b97d8526474f0a7a4daad947778ac2d1be6994125ce3c8819",
+  "cowboyWins": 554,
+  "drawn": {
+    "cowboy-sheriffs-office": {
+      "games": 689,
+      "wins": 416,
+      "draws": 0
+    },
+    "wizard-boneyard": {
+      "games": 628,
+      "wins": 304,
+      "draws": 0
+    }
+  },
+  "addOfficeAgainstDefault": {
+    "cowboyWinsGained": 226,
+    "cowboyWinsLost": 153
+  },
+  "addOfficeAgainstBoneyard": {
+    "cowboyWinsGained": 242,
+    "cowboyWinsLost": 166
+  }
+}
