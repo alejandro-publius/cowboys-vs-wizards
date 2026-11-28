@@ -128,8 +128,10 @@ test("full study replay rejects a card win count that differs from the draws", (
   control.cards = Object.fromEntries(Object.entries(control.perCard)
     .filter(([, row]) => row.drawn.games)
     .map(([type, {drawn}]) => [type, {games: drawn.games, wins: drawn.wins}]));
+  assert.deepEqual(reportProblems(control), []);
   assert.deepEqual(rerunProblems(control, engine), []);
   const measured = Object.values(control.cards)[0];
   measured.wins = measured.wins ? 0 : 1;
+  assert.ok(reportProblems(control).includes("study card estimates differ from recorded draw counts"));
   assert.ok(rerunProblems(control, engine).includes("card win rates differ from a full replay"));
 });

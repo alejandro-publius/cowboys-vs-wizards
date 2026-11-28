@@ -10,4 +10,6 @@ The question is how often the owning faction wins after drawing a particular car
 - CBS-6: A full replay SHALL reproduce the card numerators, denominators and per-game outcomes from the recorded engine commit.
 - CBS-7: When interpreting the 45–55% target, the review SHALL report sample sizes and distinguish observed rates from evidence that the underlying rate falls within the band.
 
+- CBS-8: Ordinary receipt verification SHALL reject a study whose published focal estimates differ from its recorded owner wins and games drawn, even when the published counts are arithmetically possible.
+
 The first cohort uses seeds 70000 through 70499 inclusive, each with both starting seats. All nine arms use the same original engine. For a substitution, comparing all game outcomes with the corresponding control seats estimates the effect of the deck change. Reserve seeds 75000 through 79999 for confirmation after a balance decision has been frozen.

@@ -206,6 +206,20 @@ export function reportProblems(r) {
       p.push("cards entries must be {games, wins} with wins <= games <= games of the report");
     }
   }
+  if (!p.length && "cardStudy" in r) {
+    const focus = r.cardStudy?.focus;
+    const control = focus === "control";
+    if (r.cardStudy?.metric !== "owner wins among games drawn" ||
+        (!control && (typeof focus !== "string" || !Object.hasOwn(r.perCard, focus) || !r.perCard[focus].inDeck.games))) {
+      p.push("invalid drawn-win study metric or focus");
+    } else {
+      const types = control ? Object.keys(r.perCard) : [focus];
+      if (r.decks !== (control ? DECKS_ID : `even-match/substitute/${focus}`)) p.push("study deck label differs from its focus");
+      if (!r.cards || Array.isArray(r.cards) || canonical(r.cards) !== canonical(drawnRates(r, types))) {
+        p.push("study card estimates differ from recorded draw counts");
+      }
+    }
+  }
   return p;
 }
 

@@ -4,6 +4,10 @@ Status: changes requested
 
 Codex reviewed engine `07e2b791a08b29e72bd07a840b1759ecf4897d81` on 500 seeds played from both seats. Each of the nine arms finished 1,000 games. The table counts a win only if the card reached its owner’s hand. For a substituted card, the last column gives all-game outcomes that flipped to an owner win / away from an owner win versus the control on the same seed and seat.
 
+## Verification follow-up
+
+Ordinary verification accepted an altered but arithmetically possible owner-win count in the published card summary. Full replay caught the discrepancy. The receipt verifier now compares the summary with the recorded draw counts before replay. All nine cohort receipts passed the stricter check, and the regression test rejected an altered numerator. This checks consistency within a receipt. Full replay still independently checks the underlying game outcomes and draw counts.
+
 ## Findings
 
 - The control Cowboys won 613 of 1,000 games. All ten control Cowboy cards exceeded 55% when drawn and all eleven control Wizard cards fell below 45%. Adjusting individual outliers before testing the known Billy proposal could obscure a shared faction imbalance.
