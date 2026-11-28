@@ -6,6 +6,7 @@ import { disposeBoard, makeBoard } from "./board.js";
 import { battlefield } from "./battlefields.js";
 import { presentationBeats } from "./event-positions.js";
 import { createCombatEffects } from "./combat-effects.js";
+import { locationBadge, locationTag, createLocationMist, tintLocation } from "./location-effects.js";
 import { makeBases } from "./bases.js";
 import { makeCardModel, makeLiveCardModel } from "./card-models.js";
 import { bindTableUI, cardArtwork, paintedFace } from "./table-ui.js";
@@ -87,6 +88,7 @@ function pawn(side, id) {
   pips.position.set(0, 0.21, 0.76);
   group.add(pips);
   const pipsMaterial = flat(orb);
+  const bonus = locationBadge(group, cardOf(id).tag);
   const cover = new T.Group(),
     left = side === "cowboy";
   cover.position.set(left ? 1.11 : -1.11, 0.12, 0.043);
@@ -120,15 +122,26 @@ function pawn(side, id) {
       border.visible = mode !== 0;
       rim.color.setHex(mode === 2 ? 0xffebac : 0xd6b675);
     },
-    update(troop) {
+    update(troop, fieldTag) {
+      if (bonus) bonus.visible = fieldTag === cardOf(id).tag;
       this.restY = troop.cover ? 0.066 : 0.146;
       miniature.position.set(0, this.restY, -0.07);
       miniature.rotation.set(0, 0, 0);
       const rider = miniature.getObjectByName("rider");
       if (rider) {
         rider.visible = true;
-        rider.rotation.z = 0;
+        rider.rotation.set(0, 0, 0);
       }
+      miniature.getObjectByName("draw-arm")?.rotation.set(0, 0, 0);
+      for (const side of [-1, 1]) {
+        for (const front of [-1, 1]) {
+          miniature.getObjectByName(`horse-leg-${front}-${side}`)?.rotation.set(0, 0, 0);
+        }
+      }
+      if (typeOf(id) === "cowboy-covered-wagon")
+        miniature.traverse(node => {
+          if (node.name === "wagon-wheel") node.rotation.z = 0;
+        });
       const skull = miniature.getObjectByName("skull");
       if (skull) {
         skull.position.set(0, 0, 0);
@@ -197,6 +210,10 @@ function build(host, canvas, screen, closeup = false) {
   const labelLayer = host.querySelector(".sd-world-labels");
   const locationGroup = new T.Group();
   moves.add(locationGroup);
+  const mistGroup = new T.Group();
+  moves.add(mistGroup);
+  mistGroup.visible = false;
+  const driftMist = createLocationMist(mistGroup);
   const worldLabels = new Map();
   const sideMarks = new Map();
 
@@ -308,9 +325,10 @@ function build(host, canvas, screen, closeup = false) {
         if (closeup) {
           const orbs = side + "orbs" + slot;
           const dragon = troop && typeOf(troop.cardId).endsWith("-dragon");
-          label(orbs, [x, dragon ? 2.66 : 3.06, z - 0.08],
+          const orbLabel = label(orbs, [x, dragon ? 2.66 : 3.06, z - 0.08],
             host.dataset.spell && troop?.health ? "●".repeat(troop.health) : "");
-          worldLabels.get(orbs).dataset.vortexOrbs = side;
+          orbLabel.dataset.vortexOrbs = side;
+          orbLabel.dataset.health = troop?.health ?? "";
         }
         const text = worldLabels.get(side + "snapshot" + slot);
         text.dataset.pieceLabel = "1";
@@ -352,11 +370,20 @@ function build(host, canvas, screen, closeup = false) {
     if ((location ?? null) !== locationId) {
       locationId = location ?? null;
       locationGroup.clear();
+      const tag = locationTag(locationId);
+      tintLocation(tag, lighting, hemi, sun);
+      mistGroup.visible = tag === "Undead";
       if (locationId) {
         const prop = makeCardModel(locationId, { width: 2.38, height: 1.41, depth: 1.58 });
         prop.position.set(...zone(null, "location"));
         prop.position.y = 0.17;
         locationGroup.add(prop);
+        if (tag === "Lawman") {
+          const star = locationBadge(locationGroup, tag);
+          star.position.set(prop.position.x, 1.95, prop.position.z + 0.24);
+          star.scale.setScalar(1.63);
+          star.visible = true;
+        }
       }
     }
     label("location", [0, 0.08, 1.5], location ? cardOf(location).name : "");
@@ -366,6 +393,7 @@ function build(host, canvas, screen, closeup = false) {
     if (width && height && view && !canvas.hidden) {
       const now = REDUCED.matches ? 0 : performance.now();
       bases.wizard.ambient(now);
+      if (mistGroup.visible) driftMist(now);
       const frame = Math.floor(now / 78);
       faeries(frame);
       for (const [key, pawn] of held) {
@@ -402,6 +430,7 @@ function build(host, canvas, screen, closeup = false) {
 
   function synchronize(next) {
     display = next;
+    const fieldTag = locationTag(next.location?.cardId);
     for (const side of SIDES)
       next.sides[side].board.forEach((troop, slot) => {
         const key = side + slot;
@@ -418,7 +447,7 @@ function build(host, canvas, screen, closeup = false) {
             held.set(key, token);
           }
         }
-        if (troop) token.update(troop);
+        if (troop) token.update(troop, fieldTag);
       });
     size();
   }
@@ -441,7 +470,7 @@ function build(host, canvas, screen, closeup = false) {
     const [sky, earth] = lighting.hemi;
     hemi.color.setHex(sky);
     hemi.groundColor.setHex(earth);
-    sun.color.setHex(lighting.sun[0]);
+    tintLocation(locationTag(locationId), lighting, hemi, sun);
     moon.color.setHex(lighting.moon[0]);
     spellDarkness(0);
     cameraControl.frame(closeup ? 1.63 : venue ? 0.93 : 1, closeup ? GALLERY_FOCUS : venue?.focus ?? BOOT_HILL_FOCUS);
@@ -471,7 +500,7 @@ function build(host, canvas, screen, closeup = false) {
   function animate(trace, finished) {
     stop();
     if (!view) return;
-    const beats = !REDUCED.matches ? presentationBeats(trace) : [];
+    const beats = !REDUCED.matches ? presentationBeats(trace, { match: !closeup }) : [];
     if (!beats.length) {
       synchronize(view);
       finished?.();
@@ -479,19 +508,31 @@ function build(host, canvas, screen, closeup = false) {
     }
     const run = epoch;
     const initial = performance.now();
+    const intro = closeup ? 550 : 0;
+    const lastCall = closeup && beats[0].kind === "last-call";
+    if (lastCall) fx.stageLastCall(beats[0]);
     let index = 0,
       edge = 0,
-      phase = "";
+      phase = "",
+      pullback = -1;
     function frame(now) {
       if (run !== epoch) return;
       const elapsed = now - initial;
-      const intro = closeup ? 550 : 0;
+      const playTime = elapsed - intro;
+      if (lastCall) {
+        fx.frameLastCallSet(playTime);
+        const wide = T.MathUtils.smoothstep(elapsed, 780, 1370);
+        if (wide !== pullback) {
+          pullback = wide;
+          cameraControl.lookAt([-2.24 * (1 - wide), 1.23 + 0.19 * wide, -3.48],
+            0.20 - 0.06 * wide, 0.54 + 0.08 * wide, 2.62 - 0.40 * wide);
+        }
+      }
       if (elapsed < intro) {
         draw();
         requestAnimationFrame(frame);
         return;
       }
-      const playTime = elapsed - intro;
       while (index < beats.length && playTime >= edge + beats[index].duration) {
         edge += beats[index].duration;
         index++;
@@ -511,13 +552,15 @@ function build(host, canvas, screen, closeup = false) {
         phase = index + ":" + (hit ? "hit" : "pre");
         synchronize(hit ? beat.hit : beat.pre);
         if (newBeat) {
-          fx.begin(beat, makePawn, (token) => disposePawn(token.group));
+          fx.begin(beat, makePawn, (token) => disposePawn(token.group), lastCall);
           transfers.begin(beat);
         }
       }
       canvas.dataset.motion = beat.kind;
       const vortex = beat.kind === "area-vortex" || beat.kind === "vortex";
-      const shade = vortex ? 0.77 : beat.kind === "hellfire" ? 0.49 : 0;
+      const lantern = beat.kind === "blade" && typeOf(beat.cardId ?? "").endsWith("-wraith");
+      const cannon = beat.kind === "blade" && typeOf(beat.cardId ?? "") === "wizard-wizard";
+      const shade = vortex ? 0.77 : beat.kind === "spell-study" ? 0.51 : beat.kind === "hellfire" ? 0.49 : cannon || lantern ? 0.33 : 0;
       if (shade || host.style.getPropertyValue("--spell-darkness")) {
         const darkness = shade
           ? shade * T.MathUtils.smoothstep(local, 120, beat.contact * 0.60) * (1 - T.MathUtils.smoothstep(local, beat.contact + 45, beat.duration))

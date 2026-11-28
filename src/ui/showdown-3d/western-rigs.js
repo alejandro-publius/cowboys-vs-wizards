@@ -5,12 +5,13 @@ const cream = 0xded0ad,
   iron = 0x5b5667,
   skin = 0xc98e6e,
   teal = 0x48968a;
-function person(b, x, y, z, s, scout = false, apron = false) {
+function person(b, x, y, z, s, scout = false, apron = false, armed = !scout && !apron) {
   const part = (kind, color, dx, dy, dz, w, h, d, rx = 0, rz = 0) =>
     b.piece(kind, color, x + dx * s, y + dy * s, z + dz * s, w * s, h * s, d * s, rx, 0, rz);
   for (const side of [-1, 1]) {
     part("box", 0x62505b, side * 0.118, 0.33, 0, 0.174, 0.49, 0.2, 0, side * 0.093);
     part("box", dark, side * 0.124, 0.113, 0.072, 0.214, 0.18, 0.33);
+    if (side === 1 && armed) continue;
     part(
       "round",
       cream,
@@ -42,10 +43,14 @@ function person(b, x, y, z, s, scout = false, apron = false) {
   part("box", dark, -0.057, 1.288, -0.106, 0.22, 0.244, 0.154, 0.084);
   part("round", apron ? dark : 0xc49a69, 0, 1.434, -0.025, 0.558, 0.073, 0.478, -0.19);
   part("rock", apron ? 0x7f5e55 : 0xbe9261, 0, 1.509, -0.057, 0.332, 0.225, 0.327, -0.12);
-  if (!scout && !apron) {
-    part("rock", skin, 0.307, 1.129, 0.13, 0.141, 0.161, 0.133);
-    part("box", iron, 0.313, 1.294, 0.16, 0.089, 0.35, 0.096, 0, -0.14);
-    part("box", brown, 0.322, 1.15, 0.203, 0.105, 0.121, 0.083, 0, -0.32);
+  if (armed) {
+    b.group("draw-arm", () => {
+      part("round", cream, 0.237, 0.88, 0.015, 0.157, 0.31, 0.156, -0.81, 0.33);
+      part("rock", skin, 0.307, 1.129, 0.13, 0.141, 0.161, 0.133);
+      part("box", iron, 0.313, 1.294, 0.16, 0.089, 0.35, 0.096, 0, -0.14);
+      part("box", brown, 0.322, 1.15, 0.203, 0.105, 0.121, 0.083, 0, -0.32);
+      b.anchor("muzzle", x + 0.337 * s, y + 1.467 * s, z + 0.16 * s);
+    }, [x + 0.215 * s, y + 1.02 * s, z]);
   }
   if (scout) part("box", 0xb4a083, 0.133, 0.68, -0.202, 0.45, 0.53, 0.062, -0.35, 0.59);
 }
@@ -63,27 +68,11 @@ function horse(b, gray) {
     for (const front of [-1, 1]) {
       const x = front * 0.471 + (front === 1 ? 0.25 : 0),
         angle = gray ? front * 0.45 : side * 0.33 - front * 0.19;
-      b.box(
-        hide,
-        x,
-        0.411 + (front === 1 && !gray ? 0.094 : 0),
-        side * 0.219,
-        0.117,
-        0.644,
-        0.141,
-        0,
-        0,
-        angle,
-      );
-      b.box(
-        dark,
-        x + Math.sin(angle) * 0.3,
-        0.139 + (front === 1 && !gray ? 0.094 : 0),
-        side * 0.22,
-        0.163,
-        0.15,
-        0.167,
-      );
+      const lift = front === 1 && !gray ? 0.094 : 0;
+      b.group(`horse-leg-${front}-${side}`, () => {
+        b.box(hide, x, 0.411 + lift, side * 0.219, 0.117, 0.644, 0.141, 0, 0, angle);
+        b.box(dark, x + Math.sin(angle) * 0.3, 0.139 + lift, side * 0.22, 0.163, 0.15, 0.167);
+      }, [x, 0.697, side * 0.219]);
     }
   }
   b.box(mane, -0.71, 0.637, 0.042, 0.151, 0.52, 0.156, 0, 0, -0.65);
@@ -109,7 +98,7 @@ export const ART = {
   "cowboy-outrider"(b) {
     horse(b, true);
     b.group("rider", () => {
-      person(b, 0.299, 0.77, 0, 0.72, true);
+      person(b, 0.299, 0.77, 0, 0.72, true, false, true);
       b.piece("box", 0x9a805e, -0.065, 1.359, 0.018, 0.572, 0.187, 0.249, 0, 0, 0.34);
     });
   },
@@ -119,7 +108,9 @@ export const ART = {
     b.piece("round", cream, -0.19, 0.827, 0, 1.27, 1.65, 1.35, 0, 0, Math.PI / 2);
     b.box(brown, -0.18, 0.536, 0, 1.69, 0.51, 1.34);
     for (const z of [-0.584, 0.587]) {
-      for (const x of [-0.63, 0.55]) wheel(b, x, 0.356, z, 0.702);
+      for (const x of [-0.63, 0.55]) {
+        b.group("wagon-wheel", () => wheel(b, x, 0.356, z, 0.702), [x, 0.356, z]);
+      }
       for (let i = 0; i < 5; i++) {
         b.box(iron, -0.758 + i * 0.27, 0.635, z, 0.234, 0.235, 0.05, 0, 0, 0.08 * (i % 2));
         b.box(brass, -0.758 + i * 0.27, 0.653, z * 1.05, 0.035, 0.04, 0.02);

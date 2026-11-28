@@ -196,6 +196,7 @@ export const ART = {
     for (const s of [-1, 1]) limb(b, "box", C.wood, 0.46, 1.66, 0.46 + s * 0.08, 1.8, 0.06, 0.03);
     glow(b, "gem", C.cyan, 0.46, 1.8, 0.06, 0.16, 0.24, 0.16);
     b.group("staff-tip", () => {}, [0.46, 1.8, 0.06]);
+    b.group("staff-foot", () => {}, [0.46, 0, 0.06]);
     // off-hand magic
     glow(b, "orb", C.pink, -0.46, 1.06, 0.18, 0.2, 0.2, 0.2);
     [
@@ -225,19 +226,21 @@ export const ART = {
     b.piece("orb", C.magenta, 0, 0.72, 0, 0.3, 0.4, 0.24);
     // wiry arms with claws
     for (const s of [-1, 1]) {
-      chain(
-        b,
-        "box",
-        C.magenta,
-        [
-          [s * 0.14, 0.86],
-          [s * 0.36, 0.7],
-          [s * 0.42, 0.5],
-        ],
-        0.04,
-        0.06,
-      );
-      b.piece("cone", C.dark, s * 0.43, 0.44, 0.06, 0.06, 0.08, 0.06, P);
+      b.group(s < 0 ? "imp-left-claw" : "imp-right-claw", () => {
+        chain(
+          b,
+          "box",
+          C.magenta,
+          [
+            [s * 0.14, 0.86],
+            [s * 0.36, 0.7],
+            [s * 0.42, 0.5],
+          ],
+          0.04,
+          0.06,
+        );
+        b.piece("cone", C.dark, s * 0.43, 0.44, 0.06, 0.06, 0.08, 0.06, P);
+      }, [s * 0.14, 0.86, 0.04]);
     }
     // big head, large ears, horns, lime eyes, grin
     b.piece("orb", C.magenta, 0, 1.06, 0.02, 0.42, 0.36, 0.34);
@@ -272,7 +275,12 @@ export const ART = {
       [-0.6, 0.76, 1.0, 0.04],
       [0.55, 0.78, 1.1, -0.05],
     ].forEach(([x, y, w, r]) => b.box(C.bone, x, y, -0.02, w, 0.14, 0.46, 0, 0, r));
-    b.box(C.boneD, -0.2, 1.42, -0.04, 1.6, 0.12, 0.4, 0, 0, 0.06);
+    b.group("bone-cap", () => {
+      b.box(C.boneD, -0.2, 1.42, -0.04, 1.6, 0.12, 0.4, 0, 0, 0.06);
+      // Crossed long bones rest on the capstone.
+      limb(b, "round", C.bone, -0.9, 1.34, -0.2, 1.62, 0, 0.07);
+      limb(b, "round", C.bone, -0.86, 1.62, -0.24, 1.36, 0.04, 0.07);
+    }, [-0.2, 1.42, -0.04]);
     // irregular stacked skulls
     [
       [-0.88, 0.46, 0.36, 0.1],
@@ -291,9 +299,6 @@ export const ART = {
       [0.26, 1.1],
     ])
       for (let i = 0; i < 3; i++) b.piece("ring", C.bone, x, y - 0.1 + i * 0.1, 0.12, 0.2, 0.03, 0.24, P / 2);
-    // crossed long bones on top
-    limb(b, "round", C.bone, -0.9, 1.34, -0.2, 1.62, 0, 0.07);
-    limb(b, "round", C.bone, -0.86, 1.62, -0.24, 1.36, 0.04, 0.07);
     // iron straps with rivets
     for (const y of [0.64, 0.92]) {
       b.box(C.iron, 0, y, 0.25, 2.3, 0.07, 0.05);

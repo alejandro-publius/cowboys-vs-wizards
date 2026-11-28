@@ -2,18 +2,29 @@
 // A killed piece stays in the contact snapshot at zero orbs, long enough to show the reaction.
 import { attackOf, opponent, TRAP_SLOTS } from "../../game/showdown/rules.js";
 import { cardOf, has, typeOf } from "../../game/showdown/cards.js";
+import { SPELL_STUDIES } from "./spell-studies.js";
 
+const wizardCasts = [undefined, ...Object.keys(SPELL_STUDIES)];
 const zone = (side, at, slot) => ({ side, at, slot });
 const source = (side, at) => zone(side, at);
+export const LAST_CALL_TIMING = Object.freeze({
+  duration: 2190,
+  contact: 1570,
+  release: 880,
+  bounces: Object.freeze([1050, 1230, 1400]),
+});
+
 const timings = {
+  "last-call": [LAST_CALL_TIMING.duration, LAST_CALL_TIMING.contact],
   gun: [720, 300],
   blade: [710, 350],
   breath: [940, 540],
   ride: [1240, 770],
   sweep: [850, 535],
   laststand: [720, 470],
-  trap: [690, 395],
+  trap: [1190, 660],
   lasso: [1060, 550],
+  deadeye: [1310, 880],
   shell: [630, 380],
   hellfire: [1430, 870],
   vortex: [1790, 1150],
@@ -25,7 +36,7 @@ const timings = {
   fatigue: [420, 205],
   overflow: [390, 230],
   gear: [350, 190],
-  location: [410, 200],
+  location: [1050, 325],
   tribute: [340, 220],
   burn: [285, 160],
   draw: [640, 500],
@@ -35,12 +46,18 @@ const timings = {
 
 const attackTimings = {
   "cowboy-sheriff": [1030, 474],
+  "cowboy-billy": [1190, 735],
+  "cowboy-mounted-billy": [1100, 640],
   "cowboy-dynamiter": [1430, 835],
   "cowboy-gatling-crew": [900, 460],
+  "cowboy-outrider": [990, 510],
+  "cowboy-ranger": [1100, 630],
+  "cowboy-six-shooter": [790, 410],
   "cowboy-covered-wagon": [950, 520],
   "wizard-skeleton": [1140, 598],
-  "wizard-wizard": [1080, 620],
-  "wizard-raven-familiar": [860, 470],
+  "wizard-wizard": [2490, 1440],
+  "wizard-raven-familiar": [1080, 548],
+  "wizard-headless-horseman": [1180, 690],
   "wizard-lantern-wraith": [1010, 550],
   "cowboy-captured-wraith": [1010, 550],
 };
@@ -54,9 +71,12 @@ function attackKind(id, to, standing) {
   return "blade";
 }
 
-export function presentationBeats(trace) {
+export function presentationBeats(trace, { match = false } = {}) {
   const beats = [];
-  for (const { before, after, events } of trace) {
+  for (const { before, after, events, spellStudy, lastCall } of trace) {
+    // Use the public turn to pick a cast so a replay shows the same move.
+    const round = Math.floor((before.turn - 1) / 2);
+    const cast = spellStudy ?? (match ? wizardCasts[round % wizardCasts.length] : undefined);
     const table = structuredClone(before);
     const fallen = new Map();
     const departures = [];
@@ -64,7 +84,7 @@ export function presentationBeats(trace) {
       const slot = table.sides[side].board.findIndex((t) => t?.cardId === id);
       return slot < 0 ? (fallen.get(id)?.mark ?? source(side, "row")) : { side, slot };
     };
-    const get = (mark) => (mark.slot === undefined ? null : table.sides[mark.side].board[mark.slot]);
+    const get = (mark) => (mark.slot === undefined || mark.at ? null : table.sides[mark.side].board[mark.slot]);
     const hurt = (mark, hp) => {
       const t = get(mark);
       if (t) t.health = hp;
@@ -91,7 +111,8 @@ export function presentationBeats(trace) {
     };
     const add = (kind, from, targets, details, apply) => {
       const [duration, contact] =
-        ((kind === "gun" || kind === "blade") && details.cardId && attackTimings[typeOf(details.cardId)]) ||
+        (kind === "spell-study" && SPELL_STUDIES[details.spellStudy]?.timing) ||
+        ((kind === "gun" || kind === "blade" || kind === "gear") && details.cardId && attackTimings[typeOf(details.cardId)]) ||
         timings[kind];
       const pre = structuredClone(table);
       const receiver = targets.map((mark) => ({ mark, hp: get(mark)?.health ?? null }));
@@ -205,16 +226,17 @@ export function presentationBeats(trace) {
           break;
         }
         case "spell": {
+          const spell = typeOf(e.cardId);
           const kind = e.areaVortex ? "area-vortex" :
-            { tie: "lasso", hellfire: "hellfire" }[cardOf(e.cardId).effect] ??
-            (typeOf(e.cardId) === "wizard-singularity" ? "vortex" : "shell");
+            { "cowboy-deadeye": "deadeye", "wizard-singularity": "vortex" }[spell] ??
+            { tie: "lasso", hellfire: "hellfire" }[cardOf(e.cardId).effect] ?? "shell";
           const hits = [e];
           while ((kind === "hellfire" || kind === "area-vortex") &&
             events[i + 1]?.type === "spell" && events[i + 1].cardId === e.cardId)
             hits.push(events[++i]);
           const targets = hits.map((h) => foe(h.target));
           add("play", source(s, "hand"), [source(s, "row")], e);
-          const casterType = kind === "vortex" ? "wizard-wizard" : kind === "lasso" ? "cowboy-sheriff" : null;
+          const casterType = { vortex: "wizard-wizard", lasso: "cowboy-sheriff", deadeye: "cowboy-ranger" }[kind];
           const caster = casterType && table.sides[s].board.find((troop) => typeOf(troop?.cardId ?? "") === casterType);
           add(kind, e.caster ? own(e.caster) : caster ? own(caster.cardId) : source(s, "row"), targets, e, () => {
             hits.forEach((h, j) => {
@@ -232,11 +254,15 @@ export function presentationBeats(trace) {
           const to = e.target === "base" ? enemyBase : foe(e.target);
           primary = to.slot;
           const footing = table.sides[other].board.some(Boolean);
-          const kind = attackKind(e.cardId, to, footing);
+          const exposed = !to.at && !e.covered;
+          const study = exposed && typeOf(e.cardId) === "wizard-wizard" && Object.hasOwn(SPELL_STUDIES, cast);
+          const ricochet = exposed && (match || lastCall) && typeOf(e.cardId) === "cowboy-sheriff" &&
+            typeOf(e.target) === "wizard-wizard";
+          const kind = ricochet ? "last-call" : study ? "spell-study" : attackKind(e.cardId, to, footing);
           const damage = to.at === "base" ? e.baseDamage : Math.max(0, (get(to)?.health ?? 0) - e.targetLeft);
           const shooter = get(from);
           const blocked = shooter && e.covered ? Math.max(0, attackOf(before, shooter) - damage) : 0;
-          add(kind, from, [to], { ...e, damage, blocked }, () => {
+          add(kind, from, [to], { ...e, damage, blocked, ...(study ? { spellStudy: cast } : {}) }, () => {
             if (e.target === "base")
               table.sides[other].base = Math.max(0, table.sides[other].base - e.baseDamage);
             else hurt(to, e.targetLeft);

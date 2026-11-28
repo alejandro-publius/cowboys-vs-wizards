@@ -125,10 +125,11 @@ export function tableCamera(canvas, camera, changed, initialZoom = 1, initialFoc
       initialFocus = nextFocus;
       reset();
     },
-    lookAt(position, yaw, tilt) {
+    lookAt(position, yaw, tilt, nextZoom = zoom) {
       focus.set(...position);
       azimuth = yaw;
       pitch = tilt;
+      zoom = nextZoom;
       refresh();
     },
     resize(width, height) {

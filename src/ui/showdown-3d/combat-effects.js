@@ -2,7 +2,13 @@ import * as T from "three";
 import { typeOf } from "../../game/showdown/cards.js";
 import { makeCardModel } from "./card-models.js";
 import { zone } from "./layout.js";
+import { drawBearTrap, drawHex } from "./trap-effects.js";
+import { createCreatureCombat } from "./creature-combat.js";
 import { createHellfireColumns } from "./hellfire-columns.js";
+import { createRuneCannon } from "./rune-cannon.js";
+import { createLastCall } from "./last-call.js";
+import { createSpellStudyEffects } from "./spell-study-effects.js";
+import { createWraithAttack } from "./wraith-attack.js";
 
 const mounted = new Set(["cowboy-mounted-billy", "cowboy-outrider", "wizard-headless-horseman"]);
 const heavy = new Set(["cowboy-covered-wagon", "wizard-bone-wall", "cowboy-gatling-crew"]);
@@ -34,6 +40,8 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
   const effect = new T.Group();
   parent.add(effect);
   const hellfire = createHellfireColumns(effect, camera);
+  const runeCannon = createRuneCannon(effect, camera, { bar, dot });
+  const wraith = createWraithAttack(effect, camera, bar, dot);
   const shapes = {
     shard: new T.OctahedronGeometry(0.5),
     flame: new T.ConeGeometry(0.5, 1, 5),
@@ -77,6 +85,9 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
     if (key === "muzzle") v.x += mark.side === "cowboy" ? 0.39 : -0.39;
     return v;
   };
+  const creatures = createCreatureCombat(effect, { movePawn, bar, dot, at });
+  const lastCall = createLastCall(effect, { at, movePawn, bar, dot, gunFlash, impactSparks, flecks });
+  const spellStudies = createSpellStudyEffects(effect, camera, { at, movePawn });
   function dot(part, color, pos, w, h = w, d = w, rx = 0, ry = 0, rz = 0) {
     const n = pool[index++];
     if (!n) return;
@@ -233,6 +244,25 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
     token.model.rotation.z = tilt;
     token.model.rotation.y = yaw;
   }
+  function drawGun(actor, aim, kick) {
+    const arm = actor?.model?.getObjectByName("draw-arm");
+    if (!arm) return;
+    const ranger = typeOf(actor.id) === "cowboy-ranger";
+    arm.rotation.z = -(ranger ? 1.97 : 1.42) * aim + 0.21 * kick;
+    arm.rotation.x = 0.19 * aim;
+  }
+  function ridePose(actor, time, gallop, bank) {
+    const rider = actor?.model?.getObjectByName("rider");
+    if (!rider) return;
+    rider.rotation.z = -0.28 * bank;
+    rider.rotation.x = 0.18 * bank;
+    for (const side of [-1, 1]) {
+      for (const front of [-1, 1]) {
+        const leg = actor.model.getObjectByName(`horse-leg-${front}-${side}`);
+        if (leg) leg.rotation.z = 0.42 * front * side * Math.sin(time * 26) * gallop;
+      }
+    }
+  }
   function dynamiteAttack(actor, from, target, t, edge, dir) {
     const release = edge - 0.50;
     const age = t - edge;
@@ -374,6 +404,10 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
         }
         break;
       case "guard":
+        if (typeOf(token.id) === "wizard-bone-wall") {
+          creatures.boneWall(token, t, impact, falling, dir);
+          break;
+        }
         movePawn(token, 0, -0.2 * falling, 0, dir * (0.067 * impact + 0.23 * falling));
         break;
       case "dragon":
@@ -411,6 +445,25 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
     const center = new T.Vector3(-direction * 1.94, 1.90, -0.18);
     const wizard = pawnAt(from);
     if (wizard) movePawn(wizard, -direction * 0.11 * gather, 0, 0, -direction * 0.22 * pull);
+
+    if (step.kind === "vortex" && targets[0].slot !== undefined) {
+      // A ground tell singles out the legal target before the void starts pulling.
+      const mark = ground(targets[0]);
+      mark.y = 0.15;
+      const ink = smooth(t, 0.035, edge * 0.52) * (1 - smooth(age, 0.07, 0.40));
+      for (let i = 0; ink > 0.012 && i < 12; i++) {
+        const angle = Math.PI * 2 * i / 12;
+        const radius = (1.24 + i % 3 * 0.045) * (1 - 0.19 * gather);
+        const tip = mark.clone().add(new T.Vector3(Math.cos(angle) * radius, 0, Math.sin(angle) * radius));
+        const tail = mark.clone().add(new T.Vector3(Math.cos(angle + 0.23) * radius, 0, Math.sin(angle + 0.23) * radius));
+        bar(tip, tail, i % 3 === 0 ? 0xf0b667 : 0xb46cdd, (i % 3 === 0 ? 0.09 : 0.058) * ink);
+      }
+      const release = pulse(age, 0.01, 0.095, 0.35);
+      if (release > 0.01) {
+        const sweep = 1.1 + smooth(age, 0, 0.30) * 2.35;
+        dot("ring", 0xb670df, mark, sweep, sweep, 0.7 * release, Math.PI / 2);
+      }
+    }
 
     lens.visible = gather * collapse > 0.025;
     lens.position.copy(center);
@@ -513,14 +566,29 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
     active = null;
     lens.visible = false;
     hellfire.clear();
+    runeCannon.clear();
+    spellStudies.clear();
+    wraith.clear();
+    creatures.clear();
     for (const n of pool) n.visible = false;
   }
   return {
-    clear: teardown,
-    begin(beat, makeCameo, disposeCameo) {
+    clear() {
+      teardown();
+      lastCall.clear();
+    },
+    stageLastCall: lastCall.stage,
+    frameLastCallSet(ms) {
+      lastCall.scenery(ms / 1000);
+    },
+    begin(beat, makeCameo, disposeCameo, keepLastCall) {
       teardown();
       active = beat;
       discardSpare = disposeCameo;
+      if (!keepLastCall) {
+        lastCall.clear();
+        if (beat.kind === "last-call") lastCall.stage(beat);
+      }
       if (beat.kind !== "burial" && beat.fromTroop && !pawnAt(beat.from) && beat.from.slot !== undefined) {
         spare = makeCameo(beat.from, beat.fromTroop);
         effect.add(spare.group);
@@ -540,6 +608,7 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
       const id = typeOf(step.cardId ?? "");
       const colors = step.cardId?.startsWith("cowboy-") ? palette.gold : palette.green;
       index = 0;
+      creatures.frame();
       for (const piece of pool) piece.visible = false;
       if (prop) prop.visible = false;
       const a = at(from, kind === "breath" || kind === "sweep" ? "mouth" : "muzzle");
@@ -551,6 +620,37 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
       const easeHit = smooth(t, 0.09, edge);
       const recover = 1 - smooth(t, edge + 0.07, step.duration / 1000);
       switch (kind) {
+        case "last-call":
+          lastCall.scenery(t);
+          lastCall.draw(step, actor, victim, t);
+          if (step.hit.sides[target.side].board[target.slot]?.health === 0) react(victim, age, true, dir, b);
+          break;
+        case "spell-study":
+          spellStudies.draw(step, actor, victim, t);
+          break;
+        case "deadeye": {
+          const launch = edge - 0.18;
+          const aim = smooth(t, 0.08, launch - 0.07) * (1 - smooth(t, edge + 0.06, edge + 0.33));
+          const kick = pulse(t, launch, launch + 0.045, edge + 0.17);
+          drawGun(actor, aim, kick);
+          movePawn(actor, -0.17 * kick, -0.06 * aim, 0, -0.18 * aim + 0.19 * kick);
+          const muzzle = at(from, "muzzle", 1.14);
+          const read = smooth(t, 0.10, 0.28) * (1 - smooth(t, launch - 0.07, edge));
+          if (read > 0.01) {
+            const reach = 0.49 + 0.44 * (1 - aim);
+            for (const corner of [-1, 1]) {
+              const high = b.clone().add(new T.Vector3(corner * reach, 0.09, 0.30));
+              const low = high.clone().add(new T.Vector3(0, -0.51, 0));
+              bar(high, low, 0xd69551, 0.10 * read);
+              bar(low, low.clone().add(new T.Vector3(-corner * 0.23, 0, 0)), 0xffe4a6, 0.078 * read);
+            }
+            bar(muzzle, b, 0xa97a53, 0.037 * read);
+          }
+          tracer(muzzle, b, (t - launch) / 0.18, 0.16, 0xffeca8, 0.36);
+          gunFlash(muzzle, b, t - launch, 0.86);
+          impactSparks(b, age, palette.gold, 1.35);
+          break;
+        }
         case "gun":
         case "shell":
         case "overflow": {
@@ -561,27 +661,37 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
           const trigger = edge - 0.18;
           const profile = gunShapes[id] ?? { width: 0.12, burst: 0.65, shots: 1, glow: 0xfcc37b };
           const n = kind === "gun" ? profile.shots : 1;
+          const gap = n === 2 ? 0.125 : 0.054;
           if (kind === "gun") {
+            const first = trigger - gap * (n - 1);
+            const aim = smooth(t, 0.04, Math.max(0.12, first - 0.04)) * recover;
+            const kick = Math.max(
+              pulse(t, first, first + 0.045, first + 0.15),
+              pulse(t, trigger, trigger + 0.045, trigger + 0.19),
+            );
             actor?.rig?.pose({
               aim: smooth(t, 0.03, Math.max(0.13, trigger - 0.035)) * recover,
               brace: 0.4 * pulse(t, 0, 0.14, trigger + 0.12),
               recoil: pulse(t, trigger, trigger + 0.047, trigger + 0.19),
               time: 0,
             });
-            if (!actor?.rig)
+            if (!actor?.rig) {
+              drawGun(actor, aim, kick);
               movePawn(
                 actor,
-                -dir * 0.15 * pulse(t, trigger, trigger + 0.04, trigger + 0.22),
-                0.05 * easeHit,
+                -dir * 0.18 * kick,
+                -0.07 * aim,
                 0,
-                dir * 0.12 * pulse(t, 0.08, 0.19, 0.51),
+                dir * (-0.13 * aim + 0.27 * kick),
               );
+              if (mounted.has(id)) ridePose(actor, t, 0.32 * kick, 0.46 * aim);
+            }
           }
           const muzzle = kind === "gun" && id === "cowboy-gatling-crew"
             ? crankGatling(actor, from, b, t, trigger - 0.12, edge)
             : at(from, "muzzle", 0.98);
           for (let i = 0; i < n; i++) {
-            const offset = (i - n + 1) * 0.054;
+            const offset = (i - n + 1) * gap;
             const f = (t - trigger - offset) / 0.18;
             const lane = (i - (n - 1) * 0.5) * 0.17;
             const start = muzzle.clone().add(new T.Vector3(0, lane * 0.3, lane));
@@ -595,6 +705,11 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
               id === "cowboy-sheriff" ? 0.24 : id === "cowboy-ranger" ? 0.2 : 0.16,
             );
             if (kind === "gun") gunFlash(start, end, t - trigger - offset, profile.burst);
+          }
+          if (n === 2 && age >= -gap && age < 0) {
+            const flinch = pulse(age + gap, 0, 0.048, gap);
+            movePawn(victim, dir * 0.18 * flinch, 0.03 * flinch, 0, -dir * 0.26 * flinch);
+            impactSparks(b, age + gap, palette.gold, 0.67);
           }
           if (step.blocked) {
             const slab = b.clone().add(new T.Vector3(-dir * 0.84, -0.48, 0));
@@ -634,54 +749,31 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
             if (ready > 0.67) bar(tip, tip.clone().add(new T.Vector3(-0.14, 0.13, 0.09)), 0xf6e6ca, 0.1);
             cut(b, dir, age, palette.bone, 1.36);
           } else if (id === "wizard-wizard") {
-            const launch = edge - 0.28;
-            const f = (t - launch) / 0.28;
-            const staff = at(from, "staff-tip", 1.85);
+            const launch = edge - 0.44;
+            const windup = smooth(t, 0.06, launch - 0.10) * (1 - smooth(t, launch - 0.08, launch));
+            const release = pulse(t, launch - 0.075, launch + 0.028, edge + 0.33);
+            const recoil = pulse(t, launch + 0.023, launch + 0.12, edge + 0.22);
             movePawn(
               actor,
-              -dir * 0.26 * ready,
-              0.06 * ready,
+              dir * (0.12 * release - 0.20 * windup - 0.22 * recoil),
+              -0.075 * windup,
               0,
-              dir * pulse(t, launch, launch + 0.1, edge + 0.25) * 0.37,
+              dir * (0.18 * windup - 0.23 * release + 0.12 * recoil),
             );
-            const fork = (fraction, j) =>
-              fly(staff, b, fraction).add(
-                new T.Vector3(
-                  0,
-                  Math.sin(j * 1.8) * 0.54 * Math.sin(Math.PI * fraction),
-                  j % 2 ? 0.28 : -0.19,
-                ),
-              );
-            if (f > 0 && f < 1.35) {
-              for (let j = Math.max(0, Math.ceil((f - 0.4) * 8)); j < Math.min(8, f * 8); j++)
-                bar(fork(j / 8, j), fork((j + 1) / 8, j + 1), palette.violet[j % 3], j % 2 ? 0.23 : 0.14);
-              gunFlash(staff, b, t - launch, 0.41);
+            runeCannon.draw(at(from, "staff-tip", 1.85), b, t, launch, edge);
+            if (victim && body(victim.id) === "foot" && age < 0) {
+              const brace = smooth(age, -0.24, -0.075);
+              movePawn(victim, -dir * 0.09 * brace, -0.10 * brace, 0, dir * 0.18 * brace);
+              victim.rig?.pose({ brace, aim: 0.11 * brace });
             }
-            impactSparks(b, age, palette.violet, 1.11);
           } else if (id.endsWith("-wraith")) {
-            movePawn(
-              actor,
-              dx * travel * 0.79,
-              0.53 * travel,
-              dz * travel + 0.38 * Math.sin(travel * Math.PI),
-              -dir * 0.24 * travel,
-              yaw * 0.34 * travel,
-            );
-            const drift = a.clone().lerp(b, 0.77);
-            if (go > 0) trail(a, drift, travel, palette.violet, 9, 0.27);
-            coals(b, age, palette.violet, 1.17);
-          } else if (id === "wizard-raven-familiar") {
-            const air = Math.sin(Math.PI * travel) * 1.67;
-            movePawn(
-              actor,
-              dx * travel * 0.9,
-              air,
-              dz * travel,
-              dir * (0.46 * travel - 0.28 * air),
-              yaw * 0.66,
-            );
-            cut(b, dir, age, palette.violet, 0.64);
-            flecks(b, age, palette.violet, 4);
+            wraith.draw(actor, origin, b, t, edge, step.duration / 1000, id === "cowboy-captured-wraith");
+          } else if (actor && id === "wizard-raven-familiar") {
+            creatures.raven(actor, b, t, edge, step.duration / 1000);
+          } else if (actor && id === "wizard-imp") {
+            creatures.imp(actor, origin, b, t, edge, step.duration / 1000);
+          } else if (actor && id === "wizard-headless-horseman") {
+            creatures.horseman(actor, origin, b, t, edge, step.duration / 1000, false);
           } else if (id === "cowboy-covered-wagon" || id === "wizard-bone-wall") {
             movePawn(
               actor,
@@ -691,10 +783,13 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
               -dir * 0.14 * travel,
               yaw * 0.26 * travel,
             );
+            actor?.model?.traverse(node => {
+              if (node.name === "wagon-wheel") node.rotation.z = -dir * travel * 4.7;
+            });
             if (travel > 0.09) coals(fly(origin, ending, travel), t % 0.3, palette.bone, 0.75);
             impactSparks(b, age, palette.bone, 1.2);
           } else {
-            const leap = id === "wizard-imp" ? 0.76 : id === "wizard-jack-o-lantern" ? 1.01 : 0.29;
+            const leap = id === "wizard-jack-o-lantern" ? 1.01 : 0.29;
             movePawn(
               actor,
               dx * travel * 0.88,
@@ -704,11 +799,15 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
               yaw * 0.55 * travel,
             );
             if (id === "wizard-jack-o-lantern") coals(b, age, palette.gold, 0.96);
-            else cut(b, dir, age, id === "wizard-imp" ? palette.green : palette.violet, 1.11);
+            else cut(b, dir, age, palette.violet, 1.11);
           }
           break;
         }
         case "ride": {
+          if (actor && id === "wizard-headless-horseman") {
+            creatures.horseman(actor, origin, b, t, edge, step.duration / 1000, true);
+            break;
+          }
           const go = smooth(t, 0.17, edge),
             returning = smooth(t, edge + 0.11, step.duration / 1000);
           const run = go * (1 - returning);
@@ -722,10 +821,21 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
             -dir * 0.29 * pulse(t, 0, 0.135, 0.34),
             dir * 0.24 * run,
           );
-          if (run > 0.07 && run < 0.96)
-            flecks(fly(origin, ending, run, 0.1), (0.32 * t) % 0.29, palette.bone, 4);
+          const gallop = smooth(run, 0.02, 0.13);
+          ridePose(actor, t, gallop, swing);
+          if (run > 0.07 && run < 0.96) {
+            const heels = fly(origin, ending, run, 0.1);
+            heels.x -= 0.74 * dir;
+            heels.z += lane * swing;
+            flecks(heels, (0.32 * t) % 0.29, palette.bone, 7);
+          }
           if (from.side === "cowboy") {
-            tracer(at(from, "muzzle", 1.15), b, (t - edge + 0.12) / 0.12, 0.18, 0xffd287);
+            const launch = edge - 0.13;
+            drawGun(actor, pulse(t, launch - 0.20, launch, edge + 0.23),
+              pulse(t, launch, launch + 0.05, edge + 0.08));
+            const muzzle = at(from, "muzzle", 1.15);
+            tracer(muzzle, b, (t - launch) / 0.13, 0.18, 0xffd287);
+            gunFlash(muzzle, b, t - launch, 0.83);
             impactSparks(b, age, palette.gold, 1.13);
           } else cut(b, dir, age, palette.violet, 1.05);
           break;
@@ -755,39 +865,25 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
             }
             break;
           }
-          const start = edge - 0.22;
-          const coil = smooth(t, 0.06, start) * (1 - smooth(t, start, edge + 0.22));
-          const flame = pulse(t, start, edge, edge + 0.29);
-          movePawn(actor, dir * (0.20 * flame - 0.18 * coil), 0.14 * coil, 0, dir * (0.10 * coil - 0.08 * flame));
-          actor?.rig?.pose({
-            charge: smooth(t, 0, start) * (1 - smooth(t, edge, edge + 0.19)),
-            breath: pulse(t, start, edge, edge + 0.31),
-            time: 0,
-          });
-          const mouth = at(from, "mouth", 1.31);
-          targets.forEach((mark, i) => {
-            const chest = at(mark, "hit", 1.09);
-            const time = (t - start - (kind === "sweep" ? i * 0.046 : 0)) / 0.22;
-            trail(mouth, chest, time, colors, kind === "sweep" ? 13 : 15, kind === "sweep" ? 0.55 : 0.31);
-            coals(chest, age, colors, kind === "sweep" ? 0.83 : 1.16);
-            impactSparks(chest, age, colors, kind === "sweep" ? 0.93 : 1.28);
-            if (age > 0.105 && age < 0.39) flecks(chest, age - 0.08, colors, 4);
-          });
+          creatures.dragon(actor, from, targets, t, edge, step.duration / 1000);
           break;
         }
         case "trap": {
-          const hex = typeOf(step.cardId) === "wizard-hex";
-          const sourcePoint = ground(from);
-          sourcePoint.y = 0.19;
-          const foot = ground(target);
-          foot.y = 0.22;
-          const lift = smooth(t, 0.12, edge);
-          showProp(step.cardId, sourcePoint, hex ? sourcePoint : foot, lift, 0.31);
-          if (hex) {
-            dot("ring", palette.violet[0], foot, 1.37 * lift, 1.37 * lift, 0.2, Math.PI / 2, 0, t * 2.3);
-            if (actor !== victim && step.stopped)
-              movePawn(victim, 0, -0.038 * lift, 0, dir * 0.17 * lift * recover);
-          } else explode(foot, age, palette.bone, 0.64);
+          const foot = ending.clone();
+          foot.y = 0.29;
+          if (t < 0.13) break;
+          const hex = id === "wizard-hex";
+          const reveal = smooth(t, 0.13, edge - 0.24);
+          const source = origin.clone();
+          source.y = 0.43;
+          // The springing prop lands forward of the silhouette so its jaws, pan and wick stay in view.
+          foot.z += hex ? 0.60 : 0.27;
+          showProp(step.cardId, source, foot, reveal, 0.55, {width: 2.75, height: 1.50, depth: 2.34});
+          const fade = 1 - smooth(age, 0.23, step.duration / 1000 - edge);
+          prop.position.y -= 0.23 * (1 - fade);
+          if (hex) drawHex({prop, foot, target, victim, muzzle: at(target, "muzzle", 1.51),
+            t, edge, dot, bar, movePawn});
+          else drawBearTrap({prop, foot, target, step, t, edge, dot, impactSparks});
           break;
         }
         case "lasso": {
@@ -852,6 +948,31 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
           );
           break;
         }
+        case "location": {
+          if (age < 0 || age > 0.69) break;
+          const reach = smooth(age, 0, 0.69);
+          const color = id === "wizard-boneyard" ? 0x85c6b1 : 0xc99c59;
+          const radius = 1 + 6.6 * reach;
+          const width = 0.15 * (1 - smooth(age, 0.37, 0.69));
+          const point = angle => ending.clone().add(new T.Vector3(Math.cos(angle) * radius, 0.18,
+            Math.sin(angle) * radius * 0.61));
+          for (let i = 0; i < 24; i++) {
+            const a = i * Math.PI / 12;
+            bar(point(a), point(a + 0.21), color, width);
+          }
+          break;
+        }
+        case "gear": {
+          if (id !== "cowboy-six-shooter") break;
+          const tool = ending.clone().add(new T.Vector3(-0.58, 1.2, 0.58));
+          if (age < 0) {
+            showProp(step.cardId, tool.clone().add(new T.Vector3(-2.0, 0.26, 0.8)),
+              tool, smooth(t, 0.045, edge), 0.82, {width: 1.12, height: 0.71, depth: 0.55});
+            prop.rotation.z = -0.62 * (1 - smooth(t, 0.07, edge));
+          }
+          impactSparks(tool, age, palette.gold, 0.76);
+          break;
+        }
         case "tribute":
         case "burn":
         case "set":
@@ -875,13 +996,26 @@ export function createCombatEffects(parent, pawnAt, bases, camera) {
           flecks(b, age, from.side === "wizard" ? palette.violet : palette.gold, 5);
       }
       if (
-        !["area-vortex", "vortex", "lasso", "summon", "raise", "cover", "set", "gear", "location", "tribute", "burn"].includes(kind) &&
+        !["last-call", "area-vortex", "vortex", "lasso", "summon", "raise", "cover", "set", "gear", "location", "tribute", "burn"].includes(kind) &&
         !(kind === "trap" && typeOf(step.cardId) === "wizard-hex")
       ) {
         for (const mark of targets) {
           const token = pawnAt(mark);
           const troop = mark.slot === undefined ? null : step.hit.sides[mark.side].board[mark.slot];
           react(token, age, troop?.health === 0, dir, at(mark, "hit", 0.93));
+          if (kind === "spell-study" && token && troop?.health > 0) {
+            spellStudies.react(step.spellStudy, token, age, dir);
+          }
+          if (kind === "blade" && id === "wizard-wizard" && token && troop?.health > 0 && body(token.id) === "foot" && age >= 0) {
+            const stagger = pulse(age, -0.021, 0.077, 0.43);
+            const skid = pulse(age, -0.017, 0.19, 0.78);
+            movePawn(token, dir * skid * 0.84, 0.12 * stagger, -0.15 * stagger, -dir * 0.48 * stagger);
+            token.rig?.pose({ recoil: stagger, brace: 0.76 * skid * (1 - stagger) });
+            const grit = ground(mark);
+            grit.x += dir * 0.58;
+            grit.y += 0.13;
+            flecks(grit, age - 0.045, palette.gold, 9);
+          }
         }
       }
     },

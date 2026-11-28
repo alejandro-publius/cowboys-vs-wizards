@@ -1442,7 +1442,9 @@ test("CARD-WIZARD-SINGULARITY-01 CARD-WIZARD-SINGULARITY-02 CARD-WIZARD-SINGULAR
   assert.deepEqual(burials.map((beat) => beat.cardId).sort(), ["cowboy-dynamiter-3", GEAR.cowboy, "wizard-singularity-1"]);
 
   // 19, 20, 21, 22: Gallery replays
-  assert.deepEqual(attackPreviews("wizard-singularity"), [["sheriffs", "Against three Sheriffs"], ["graveyard", "Against Skeleton and Dragon"]]);
+  assert.deepEqual(attackPreviews("wizard-singularity"), [
+    ["sheriffs", "Against three Sheriffs"], ["graveyard", "Against Skeleton and Dragon"], ["targeted", "Watch one target"],
+  ]);
   const exSh = attackExample("wizard-singularity", "sheriffs");
   assert.equal(exSh.summary, "Each Sheriff loses one orb.");
   assert.deepEqual(exSh.end.sides.cowboy.board.map((t) => [t.cardId.replace(/-\d+$/, ""), t.health]),

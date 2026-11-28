@@ -191,25 +191,22 @@ export const ART = {
   "cowboy-bear-trap": function (b) {
     base(b, C.dirt, 2.3, 1.7);
     b.box(C.iron, 0, 0.12, 0, 1.5, 0.06, 0.3); // base bar
-    b.piece("round", C.copper, 0, 0.16, 0, 0.36, 0.04, 0.36); // pan
-    const a = 0.75,
-      h = 0.7,
-      hy = 0.14;
-    for (const sd of [1, -1]) {
-      // two jaws open front/back
-      b.box(C.red, 0, hy + (h / 2) * Math.cos(a), sd * (h / 2) * Math.sin(a), 1.5, h, 0.07, sd * a);
-      for (let i = 0; i < 8; i++)
-        b.piece(
-          "cone",
-          C.steel,
-          -0.66 + i * 0.19,
-          hy + h * Math.cos(a) + 0.06,
-          sd * (h * Math.sin(a) - 0.02),
-          0.12,
-          0.2,
-          0.08,
-          sd * (a - 0.5),
-        );
+    b.group("pressure-plate", () => {
+      b.piece("round", C.copper, 0, 0.19, 0, 0.58, 0.10, 0.53);
+      b.box(C.brass, 0, 0.25, 0.03, 0.29, 0.025, 0.06);
+    }, [0, 0.19, 0]);
+    const hy = 0.20;
+    for (const side of [-1, 1]) {
+      b.group("iron-jaw-" + side, () => {
+        // Each D-shaped band turns on the common axle. The teeth interleave when shut.
+        for (let i = 0; i < 9; i++) {
+          const arc = (i + 0.5) * P / 9;
+          const x = 0.86 * Math.cos(arc), z = side * 0.69 * Math.sin(arc);
+          b.box(C.iron, x, hy, z, 0.34, 0.14, 0.16, 0, side * (P / 2 - arc), 0);
+          b.piece("cone", 0xb8b6b0, x + side * 0.035, hy + 0.13, z, 0.16, 0.31, 0.16,
+            -side * 0.25);
+        }
+      }, [0, hy, 0]);
     }
     for (const x of [-0.78, 0.78]) {
       b.piece("orb", C.brass, x, hy, 0, 0.14, 0.14, 0.14);
@@ -263,29 +260,34 @@ export const ART = {
         x = 0.9 * Math.cos(k),
         z = 0.9 * Math.sin(k);
       b.piece("round", C.black, x, 0.18, z, 0.08, 0.2, 0.08);
-      glow(b, "cone", 0xffd27a, x, 0.32, z, 0.05, 0.08, 0.05);
+      b.group("candle-flame-" + i, () => {
+        glow(b, "cone", 0xffb751, x, 0.42, z, 0.12, 0.27, 0.12);
+        glow(b, "gem", C.ivory, x, 0.36, z + 0.025, 0.07, 0.15, 0.07);
+      }, [x, 0.28, z]);
     }
     [
       [-0.4, 0.3],
       [0.45, -0.2],
       [0.1, 0.5],
     ].forEach(([x, z]) => glow(b, "orb", 0xb48ae0, x, 0.12, z, 0.5, 0.04, 0.35));
-    b.piece("round", C.deep, 0, 0.36, 0, 0.3, 0.42, 0.24); // stitched violet doll
-    b.piece("orb", C.deep, 0, 0.7, 0, 0.32, 0.3, 0.28);
-    for (const s of [1, -1]) {
-      b.box(C.deep, s * 0.22, 0.44, 0, 0.18, 0.08, 0.08, 0, 0, s * 0.5);
-      b.box(C.deep, s * 0.08, 0.12, 0.02, 0.08, 0.16, 0.08);
-      b.piece("orb", C.black, s * 0.07, 0.73, 0.14, 0.05, 0.05, 0.03);
-    }
-    b.box(C.black, 0, 0.38, 0.125, 0.02, 0.26, 0.01); // seam
-    [
-      [0.06, 0.82, 0.05, -0.5],
-      [-0.05, 0.42, 0.1, 0.6],
-      [0.26, 0.48, 0.02, -0.9],
-    ].forEach(([x, y, z, t]) => {
-      b.box(C.iron, x, y, z, 0.025, 0.34, 0.025, 0.3, 0, t);
-      b.piece("orb", 0xd4d4dc, x - Math.sin(t) * 0.17, y + Math.cos(t) * 0.17, z + 0.05, 0.06, 0.06, 0.06);
-    });
+    b.group("cloth-charm", () => {
+      b.piece("round", C.deep, 0, 0.36, 0, 0.3, 0.42, 0.24); // stitched violet doll
+      b.piece("orb", C.deep, 0, 0.7, 0, 0.32, 0.3, 0.28);
+      for (const s of [1, -1]) {
+        b.box(C.deep, s * 0.22, 0.44, 0, 0.18, 0.08, 0.08, 0, 0, s * 0.5);
+        b.box(C.deep, s * 0.08, 0.12, 0.02, 0.08, 0.16, 0.08);
+        b.piece("orb", C.black, s * 0.07, 0.73, 0.14, 0.05, 0.05, 0.03);
+      }
+      b.box(C.black, 0, 0.38, 0.125, 0.02, 0.26, 0.01); // seam
+      [
+        [0.06, 0.82, 0.05, -0.5],
+        [-0.05, 0.42, 0.1, 0.6],
+        [0.26, 0.48, 0.02, -0.9],
+      ].forEach(([x, y, z, t]) => {
+        b.box(C.iron, x, y, z, 0.025, 0.34, 0.025, 0.3, 0, t);
+        b.piece("orb", 0xd4d4dc, x - Math.sin(t) * 0.17, y + Math.cos(t) * 0.17, z + 0.05, 0.06, 0.06, 0.06);
+      });
+    }, [0, 0.13, 0]);
   },
   "cowboy-six-shooter": function (b) {
     b.box(C.wood, 0, 0.12, 0, 2.2, 0.24, 1.1); // timber display table

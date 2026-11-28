@@ -319,7 +319,7 @@ function makeHead(M, glowMats, captured) {
   mouth.rotation.y = Math.PI / 2;
   mouth.userData.forward = new T.Vector3(-1, 0, 0);
   skull.add(mouth);
-  return { head, jaw, mouth };
+  return { head, jaw, mouth, skull };
 }
 
 // ---------- assembly ----------
@@ -423,7 +423,7 @@ export function makeDragon({ captured = false } = {}) {
     r.rotation.z = -0.4;
     r.scale.set(0.8, 0.8, 0.5);
   }
-  const { head, jaw, mouth } = makeHead(M, glowMats, captured);
+  const { head, jaw, mouth, skull } = makeHead(M, glowMats, captured);
   head.position.x = -0.4;
   n1.add(head);
 
@@ -495,7 +495,9 @@ export function makeDragon({ captured = false } = {}) {
     n0.rotation.z = -0.95 + idle * 0.03 - c * 0.2 + b * 0.45 - kick * 0.35;
     n1.rotation.z = 0.42 - c * 0.1 + b * 0.12 - kick * 0.15;
     head.rotation.z = 0.53 + c * 0.25 - b * 0.42 + kick * 0.25;
-    jaw.rotation.z = 0.06 + c * 0.18 + b * 0.5 - kick * 0.06 + Math.max(0, idle) * 0.02;
+    // The intake broadens the cheeks before the hinged jaw drops on release.
+    skull.scale.set(1 - c * 0.06, 1 + c * 0.18, 1 + c * 0.49);
+    jaw.rotation.z = 0.06 - c * 0.04 + b * 0.62 - kick * 0.06 + Math.max(0, idle) * 0.02;
 
     glowMats.glow.emissiveIntensity = 1.3 + c * 1.4 + b * 2.4 + Math.sin(t * 3.1) * 0.15;
     glowMats.eye.emissiveIntensity = 0.9 + c * 1.0 + b * 0.8;

@@ -8,6 +8,7 @@ import { attackExample, attackPreviews } from "./attack-preview.js";
 import { presentationBeats } from "./event-positions.js";
 import { replayCards } from "./replay-cards.js";
 import { bindBattleHud } from "./battle-hud.js";
+import { SPELL_STUDIES } from "./spell-studies.js";
 
 export const ROSTER = Object.keys(TYPES);
 const order = new Map(ROSTER.map((id, i) => [id, i]));
@@ -15,6 +16,20 @@ const troopRoster = ROSTER.filter((id) => TYPES[id].kind === "troop");
 const sideName = { cowboy: "Cowboys", wizard: "Wizards" };
 const kinds = { troop: "Troop", spell: "Spell", trap: "Trap", gear: "Gear", location: "Location" };
 const atlas = typeof __CVW_DIORAMA_ATLAS__ === "undefined" ? "" : __CVW_DIORAMA_ATLAS__;
+
+function frameCowboy(battle, id, mode) {
+  if (TYPES[id].side !== "cowboy" || mode === "last-call") return;
+  let [zoom, focus, yaw, pitch] = [2.28, [0, 1.21, -3.43], 0.12, 0.56];
+  if (mode === "ride") [zoom, focus, yaw, pitch] = [1.73, [3.34, 1.14, -2.02], 0.08, 0.57];
+  else if (mode === "guard" || TYPES[id].keys?.includes("sweep"))
+    [zoom, focus, yaw, pitch] = [1.89, [0.75, 1.12, -1.25], 0.10, 0.67];
+  else if (mode === "scout") [zoom, focus, yaw, pitch] = [1.93, [-7.75, 1.13, 0.48], -0.18, 0.71];
+  else if (mode === "equip") [zoom, focus, yaw, pitch] = [2.34, [-4.00, 1.06, -2.83], -0.15, 0.58];
+  else if (mode === "survive") [zoom, focus, yaw, pitch] = [1.67, [-2.83, 1.10, -2.42], 0.10, 0.59];
+  else if (mode === "defeat") [zoom, focus, yaw, pitch] = [2.48, [4.18, 1.10, -2.96], 0.12, 0.62];
+  else if (mode === "field") [zoom, focus, yaw, pitch] = [1.72, [0, 0.87, 0.08], 0.10, 0.62];
+  battle.lookAt(focus, yaw, pitch, zoom);
+}
 
 export function portrait(id) {
   if (!atlas) return null;
@@ -173,13 +188,27 @@ export function mountGallery(title, duel, makeAttackStage) {
     battle ??= makeAttackStage(attackHost, attackCanvas, dialog);
     const troopZoom = replaySource ? 2.05 : 1.63;
     const zoom = id === "wizard-singularity" ? 1.34 : mode === "ride" ? 1.17 : troopZoom;
-    battle.frame(zoom);
+    battle.frame(TYPES[id].kind === "location" ? 1.31 : zoom);
+    if (TYPES[id].kind === "trap") {
+      const attacker = example.before.active === "cowboy" ? -1 : 1;
+      battle.lookAt([3.9 * attacker, 0.68, -2.32], 0.10, 0.58);
+    }
     attackHost.dataset.spell = id === "wizard-singularity" ? "singularity" : id === "wizard-hellfire" ? "hellfire" : "";
+    if (mode === "last-call") attackHost.dataset.spell = mode;
     if (id === "wizard-singularity") {
-      const side = mode === "sheriffs" ? "cowboy" : "wizard";
+      const side = mode === "graveyard" ? "wizard" : "cowboy";
       battle.lookAt(side === "cowboy" ? [-1.65, 0.98, 0.8] : [2.1, 1.02, 0.65], side === "cowboy" ? 0.61 : -0.33, 0.68);
     }
     if (id === "wizard-hellfire") battle.lookAt([-2.2, 2.0, 0.5], 0.66, 0.51);
+    if (id === "wizard-wizard" && mode === "attack" && !replaySource) {
+      battle.frame(2.32);
+      battle.lookAt([0, 1.03, -3.7], 0.16, 0.55);
+    }
+    if (id === "wizard-wizard" && SPELL_STUDIES[mode]) {
+      battle.frame(2.34);
+      battle.lookAt([-1.25, 1.52, -3.7], 0.24, 0.57);
+    }
+    frameCowboy(battle, id, mode);
     battle.paint(example.end, example.before);
     battle.animate(example.trace, finished);
   }

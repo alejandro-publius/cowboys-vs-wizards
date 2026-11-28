@@ -96,6 +96,7 @@ const moves = new Set([
   "burn",
   "tribute",
   "set",
+  "trap",
   "gear",
   "location",
 ]);
@@ -137,6 +138,16 @@ export function createTableTransfers(scene, camera, viewer, signal) {
     },
     frame(ms) {
       if (!active) return;
+      if (active.kind === "trap") {
+        const turn = T.MathUtils.smoothstep(ms, 0, 220);
+        model.visible = ms < 240;
+        model.position.copy(anchor(active.from));
+        model.position.y += 0.42 + 0.47 * Math.sin(Math.PI * turn);
+        model.quaternion.copy(camera.quaternion);
+        model.rotateY(Math.PI * (1 - turn));
+        model.scale.setScalar(0.94);
+        return;
+      }
       const f = T.MathUtils.smoothstep(ms, 12, active.contact + 25);
       model.visible = ms < active.contact + 49;
       if (!model.visible) signal();

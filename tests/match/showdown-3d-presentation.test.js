@@ -6,7 +6,8 @@ import { viewFor } from "../../src/game/showdown/contract.js";
 import { applyAction, createShowdown, legalActions, opponent, random } from "../../src/game/showdown/rules.js";
 import { createShowdownSession } from "../../src/match/showdown-session.js";
 import { turnDuel } from "../../src/match/showdown-turn.js";
-import { presentationBeats } from "../../src/ui/showdown-3d/event-positions.js";
+import { LAST_CALL_TIMING, presentationBeats } from "../../src/ui/showdown-3d/event-positions.js";
+import { SPELL_STUDIES } from "../../src/ui/showdown-3d/spell-studies.js";
 
 function fixture(cowboy, wizard, side = "cowboy") {
   const state = createShowdown(7, { first: side, opening: { cowboy, wizard } });
@@ -15,11 +16,47 @@ function fixture(cowboy, wizard, side = "cowboy") {
 }
 const actor = (type, health) => ({ type, health });
 
+test("Last Call has one Sheriff hit followed by the Wizard's Rune Cannon counter", () => {
+  const example = attackExample("cowboy-sheriff", "last-call");
+  const beats = presentationBeats(example.trace);
+  assert.deepEqual(beats.map(beat => beat.kind), ["last-call", "blade"]);
+  const [shot, counter] = beats;
+  assert.deepEqual([shot.duration, shot.contact], [LAST_CALL_TIMING.duration, LAST_CALL_TIMING.contact]);
+  assert.equal(shot.pre.sides.wizard.board[0].health, 4);
+  assert.equal(shot.hit.sides.wizard.board[0].health, 3);
+  assert.equal(shot.hit.sides.cowboy.board[0].health, 3);
+  assert.equal(counter.counter, true);
+  assert.equal(counter.pre.sides.cowboy.board[0].health, 3);
+  assert.equal(counter.hit.sides.cowboy.board[0].health, 1);
+  assert.equal(presentationBeats(attackExample("cowboy-sheriff", "attack").trace)[0].kind, "gun");
+});
+
+test("spell studies retain the Wizard's actual hit and the Sheriff's counter", () => {
+  const standard = attackExample("wizard-wizard", "attack");
+  for (const [mode, { timing }] of Object.entries(SPELL_STUDIES)) {
+    const example = attackExample("wizard-wizard", mode);
+    assert.deepEqual(example.trace[0].events, standard.trace[0].events, mode);
+    assert.deepEqual(example.before, standard.before, mode);
+    assert.deepEqual(example.end, standard.end, mode);
+    const [hit, counter] = presentationBeats(example.trace);
+    assert.equal(hit.kind, "spell-study");
+    assert.equal(hit.spellStudy, mode);
+    assert.deepEqual([hit.duration, hit.contact], timing);
+    assert.equal(hit.pre.sides.cowboy.board[0].health, 3);
+    assert.equal(hit.hit.sides.cowboy.board[0].health, 1);
+    assert.equal(counter.counter, true);
+    assert.equal(counter.spellStudy, undefined);
+    assert.equal(counter.kind, "gun");
+    assert.equal(counter.hit.sides.wizard.board[0].health, 3);
+  }
+  assert.equal(presentationBeats(standard.trace)[0].kind, "blade");
+});
+
 test("every troop opens a real rules-engine preview, including no-attack Guard, Ride, and Last Stand", () => {
   for (const [id, card] of Object.entries(TYPES)) {
     const previews = attackPreviews(id);
-    const hasSpellPreview = ["wizard-singularity", "wizard-hellfire", "cowboy-lasso"].includes(id);
-    assert.equal(previews.length > 0, card.kind === "troop" || hasSpellPreview, id);
+    const hasCardPreview = ["wizard-singularity", "wizard-hellfire", "cowboy-lasso", "cowboy-deadeye", "cowboy-six-shooter"].includes(id);
+    assert.equal(previews.length > 0, ["troop", "trap", "location"].includes(card.kind) || hasCardPreview, id);
     if (card.kind !== "troop") continue;
     for (const [mode] of previews) {
       const example = attackExample(id, mode);
@@ -29,6 +66,7 @@ test("every troop opens a real rules-engine preview, including no-attack Guard, 
       if (mode === "attack") assert.equal(events[0].cardId, id + "-0");
       if (mode === "guard") assert.equal(events[0].target, id + "-0");
       if (mode === "ride") assert.ok(beats.some((beat) => beat.kind === "ride"));
+      if (mode === "scout") assert.ok(beats.some((beat) => beat.kind === "draw"));
       if (mode === "laststand")
         assert.ok(beats.some((beat) => beat.kind === "laststand" && beat.cardId === id + "-0"));
       if (mode === "attack" && card.keys.includes("sweep"))
@@ -69,13 +107,55 @@ test("the Cowboy replays use actual attack targets and preserve the Lasso's orbs
   assert.equal(end.stunned, true);
   assert.equal(end.health, start.health);
 });
-function present(before, action) {
+function present(before, action, options) {
   assert.ok(legalActions(before).some((a) => JSON.stringify(a) === JSON.stringify(action)));
   const { state: after, events } = applyAction(before, action);
   return presentationBeats([
     { before: viewFor(before, before.active), after: viewFor(after, before.active), events },
-  ]);
+  ], options);
 }
+
+test("live Wizard attacks cycle through Rune Cannon and all eight casts with identical orb changes", () => {
+  const action = { type: "attack", slot: 0, target: 0 };
+  const casts = [undefined, ...Object.keys(SPELL_STUDIES)];
+  for (const [round, cast] of casts.entries()) {
+    const state = fixture([actor("cowboy-sheriff", 3)], [actor("wizard-wizard", 4)], "wizard");
+    state.first = "cowboy";
+    state.turn = 2 * round + 2;
+    const standard = present(state, action);
+    const live = present(state, action, { match: true });
+    assert.equal(live[0].kind, cast ? "spell-study" : "blade");
+    assert.equal(live[0].spellStudy, cast);
+    assert.deepEqual(live.map(beat => beat.hit), standard.map(beat => beat.hit));
+    assert.equal(live[1].kind, "gun");
+    assert.equal(live[1].counter, true);
+  }
+  const covered = fixture([actor("cowboy-sheriff", 3)], [actor("wizard-wizard", 4)], "wizard");
+  covered.sides.cowboy.board[0].cover = true;
+  assert.deepEqual(present(covered, action, { match: true }).map(beat => beat.kind), ["blade"]);
+  const open = fixture([], [actor("wizard-wizard", 4)], "wizard");
+  const [base] = present(open, { ...action, target: "base" }, { match: true });
+  assert.equal(base.kind, "blade");
+  assert.equal(base.hit.sides.cowboy.base, open.sides.cowboy.base - 2);
+});
+
+test("live Last Call tracks an uncovered Wizard and keeps ordinary Sheriff attacks and Wizard counters", () => {
+  const action = { type: "attack", slot: 0, target: 0 };
+  const duel = fixture([actor("cowboy-sheriff", 3)], [actor("wizard-wizard", 4)]);
+  const [shot, counter] = present(duel, action, { match: true });
+  assert.equal(shot.kind, "last-call");
+  assert.equal(shot.hit.sides.wizard.board[0].health, 3);
+  assert.equal(counter.kind, "blade");
+  assert.equal(counter.hit.sides.cowboy.board[0].health, 1);
+  duel.sides.wizard.board[0].cover = true;
+  assert.deepEqual(present(duel, action, { match: true }).map(beat => beat.kind), ["gun"]);
+  const skeleton = fixture([actor("cowboy-sheriff", 3)], [actor("wizard-skeleton", 3)]);
+  assert.equal(present(skeleton, action, { match: true })[0].kind, "gun");
+  const lethal = fixture([actor("cowboy-sheriff", 3)], [actor("wizard-wizard", 1)]);
+  const beats = present(lethal, action, { match: true });
+  assert.deepEqual(beats.map(beat => beat.kind), ["last-call", "burial"]);
+  assert.equal(beats[0].hit.sides.wizard.board[0].health, 0);
+});
 
 test("Ranger, Dragon counter, and a cancelled Dragon attack use their own contact snapshots", () => {
   const s = createShowdownSession(turnDuel("dragon-c5"));
