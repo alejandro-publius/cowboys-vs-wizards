@@ -104,7 +104,7 @@ On November 26, GitHub served the repository publicly and identified its root li
 
 ## Category and bonuses
 
-- **Proposed category for the form — Costume Contest.** At the Saloon, the Wizard brings a change to the table. The player fires the disputed shot and can take over the duel. The haunted room gives the player a job in the review. Alex confirms the category when submitting.
+**Category: Skeleton Crew.** Showdown and Boot Hill Poker use Frontier Kit to deal reproducible games from a seed. Judges can play both games, then run the same balance gate on Poker’s recorded deals. [Play Boot Hill Poker](https://alejandro-publius.github.io/cowboys-vs-wizards/poker/) · [Run the kit example](../../packages/frontier-kit/README.md)
 - **Crew bonus.** Night Watch compares two game commits on the same deals. [Crew bonus write-up and recorded runs](night-watch-crew-writeup.md) · [Standalone app](https://github.com/alejandro-publius/cowboys-vs-wizards-night-watch)
 - **Blog bonus:** requires a public third-party post that mentions Kiroween 2026. The publishable [build story](build-story.md) opens with the Billy audit. The earlier lane version is archived below its end marker.
 - **Social bonus:** optional. A person must write it; no agent should. Nothing has been posted.
@@ -127,7 +127,7 @@ Official rules: https://kiroween.devpost.com/rules. Deadlines: credit requests b
 ## Required form fields and owner inputs still open
 
 - Demo video approval and public YouTube URL
-- Category selection; Crew, blog and social bonuses if entering them
+- Crew, blog and social bonuses if entering them
 - Personal reflection on using Kiro, and the spec-versus-direct comparison in the builder's words (none should be generated)
 - Pre-existing work disclosure: when the board demo and the Tripo exports were made
 - Artist credits, the source of the card illustrations, and asset provenance for the illustrated build; missing Tripo and Mixamo license metadata

@@ -37,7 +37,7 @@ Nine things the project's documents did not have, or had only in part:
 | Public GitHub repository (not GitLab or Bitbucket) with all source, assets and instructions | Met | Public; README has build and run steps |
 | Open-source licence "detectable and visible at the top of the repository page (in the About section)" | Met | GitHub reports MIT |
 | `/.kiro` at the repository root and not in `.gitignore` | Met | Tracked; `.gitignore` does not mention it |
-| Category and bonus categories identified | **Open** | Draft says Costume Contest |
+| Category and bonus categories identified | Category selected | Skeleton Crew. Optional bonus entries remain open. |
 | Write-up on how Kiro was used | Drafted, incomplete | See the next section |
 | Team of at most three; one Representative enters | **Person** | Every teammate must have joined the hackathon on Devpost. The page this text was copied from still showed "Join hackathon" for the account that copied it. |
 | Materials in English | Met | |
