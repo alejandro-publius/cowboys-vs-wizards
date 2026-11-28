@@ -200,6 +200,20 @@ test("duels and card band: cumulative, duplicate and baseline-equals-candidate g
   assert.equal(sc.bandRow(sc.measureBalance(ROOT, [join(full, "in.json"), join(full, "out.json")])).value, `0/${SHOWDOWN_SPECS.length}`);
 });
 
+test("a newer study with a plausible but incorrect numerator cannot replace a verified card measurement", (t) => {
+  const type = "cowboy-sheriffs-office";
+  const source = join(ROOT, "reports/balance/catalog-drawn-cowboy-sheriffs-office.json");
+  const newer = JSON.parse(readFileSync(source, "utf8"));
+  const original = {...newer.cards[type]};
+  newer.generatedAt = new Date(Date.parse(newer.generatedAt) + 1000).toISOString();
+  newer.cards[type].wins = Math.floor(original.games / 2);
+  const dir = fixture(t, {"changed.json": newer});
+  const balance = sc.measureBalance(ROOT, [source, join(dir, "changed.json")]);
+  assert.equal(balance.cards.get(type).wins, original.wins);
+  assert.equal(balance.accepted, 1);
+  assert.match(balance.rejected[0].reason, /study card estimates differ/);
+});
+
 test("properties: only executed passing fast-check entries from a real commit count, once per id; a fresh gate stamp adds its ids", (t) => {
   const fcFile = "tests/game/showdown-fast-check.test.js";
   const receipt = {schema: "cvw-property-receipt/1", commit: HEAD, generatedAt: "2026-11-22T00:00:00Z", properties: [

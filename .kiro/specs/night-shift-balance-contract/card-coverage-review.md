@@ -1,8 +1,12 @@
 # Can the even-match duel sample establish individual card balance?
 
-Status: blocked
+Status: answered
 
 Codex reviewed the measurement section of the Night Shift balance contract against the shipped even-match decks at `07e2b79`. The question is whether scaling this particular experiment can establish a 45–55% win rate for all 29 cards.
+
+## Follow-up
+
+The [catalog study](../showdown-card-balance-study/cohort-review.md) answered the coverage question. Its control measured 21 default-deck cards and its eight paired substitution arms measured the rest. Each estimate uses owner wins among games drawn, with the observed draw count as its denominator. Each substitution also reports paired gains and losses on the same seeds and seats. Only two of the 29 observed rates fell within the target band. The original fixed-deck limitation below still applies to the bulk duel sample.
 
 ## Findings
 

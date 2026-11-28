@@ -1,12 +1,14 @@
 # First catalog balance cohort
 
-Status: changes requested
+Status: open
 
 Codex reviewed engine `07e2b791a08b29e72bd07a840b1759ecf4897d81` on 500 seeds played from both seats. Each of the nine arms finished 1,000 games. The table counts a win only if the card reached its owner’s hand. For a substituted card, the last column gives all-game outcomes that flipped to an owner win / away from an owner win versus the control on the same seed and seat.
 
 ## Verification follow-up
 
 Ordinary verification accepted an altered but arithmetically possible owner-win count in the published card summary. Full replay caught the discrepancy. The receipt verifier now compares the summary with the recorded draw counts before replay. All nine cohort receipts passed the stricter check, and the regression test rejected an altered numerator. This checks consistency within a receipt. Full replay still independently checks the underlying game outcomes and draw counts.
+
+A scorecard integration test found a second path that bypassed this check. A temporary copy of the Office receipt with a later timestamp and 354 wins from 708 draws displaced the verified 509 wins from 708 draws. The scorecard now applies the receipt verifier to each catalog study before accepting its games or card estimates. The regression exercises both receipts through the scorecard and checks that it retains the verified numerator.
 
 ## Contested location follow-up
 
@@ -16,11 +18,19 @@ Office’s owner won 416 of 689 games when Office was drawn against the Boneyard
 
 Reproduce from the PR checkout with `node docs/evidence/contested-locations/measure.mjs`. The script checks the engine against the original cohort commit. [Recorded comparison](../../../docs/evidence/contested-locations/result.json)
 
-## Findings
+## B1. Faction imbalance spans both default decks
 
-- The control Cowboys won 613 of 1,000 games. All ten control Cowboy cards exceeded 55% when drawn and all eleven control Wizard cards fell below 45%. Adjusting individual outliers before testing the known Billy proposal could obscure a shared faction imbalance.
-- Bone Armor and Captured Wraith were the only two cards inside the target band. Boneyard exceeded the upper boundary by 0.46 percentage points. The two seats share a seed, so a holdout analysis should preserve those pairs when estimating uncertainty.
-- Sheriff’s Office had the highest observed rate at 71.89% across 708 games where it reached the hand. The opposing default deck has no location card. Measure it against an opposing location as well before attributing that whole difference to the card.
+- **Status:** open. The catalog study has yet to measure the Billy proposal with these decks.
+
+The control Cowboys won 613 of 1,000 games. All ten control Cowboy cards exceeded 55% when drawn and all eleven control Wizard cards fell below 45%. Adjusting individual outliers before testing the known Billy proposal could obscure a shared faction imbalance.
+
+Bone Armor and Captured Wraith were the only two cards inside the target band. Boneyard exceeded the upper boundary by 0.46 percentage points. The two seats share a seed, so a holdout analysis should preserve those pairs when estimating uncertainty.
+
+## B2. The opposing deck had no competing location
+
+- **Status:** answered. The contested location follow-up above measures the requested matchup.
+
+Sheriff’s Office had the highest observed rate at 71.89% across 708 games where it reached the hand. The opposing default deck has no location card. Measure it against an opposing location as well before attributing that whole difference to the card.
 
 | Card | Owner wins when drawn | Games drawn | Observed rate | Paired gains / losses |
 | --- | ---: | ---: | ---: | ---: |
