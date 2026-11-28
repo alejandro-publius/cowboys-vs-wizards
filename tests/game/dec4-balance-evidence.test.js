@@ -121,3 +121,15 @@ test("empty evidence is 0 duels with every card unknown, never a pass", () => {
   assert.deepEqual(result.groups, []);
   assert.equal(result.problems.length, 1);
 });
+
+test("full study replay rejects a card win count that differs from the draws", () => {
+  const control = copy(twoDeals);
+  control.cardStudy = {metric: "owner wins among games drawn", focus: "control"};
+  control.cards = Object.fromEntries(Object.entries(control.perCard)
+    .filter(([, row]) => row.drawn.games)
+    .map(([type, {drawn}]) => [type, {games: drawn.games, wins: drawn.wins}]));
+  assert.deepEqual(rerunProblems(control, engine), []);
+  const measured = Object.values(control.cards)[0];
+  measured.wins = measured.wins ? 0 : 1;
+  assert.ok(rerunProblems(control, engine).includes("card win rates differ from a full replay"));
+});
